@@ -108,7 +108,8 @@ void GWEN_SarFileHeader_free(GWEN_SAR_FILEHEADER *p_struct) {
       GWEN_Time_free(p_struct->ctime);
       p_struct->_refCount = 0;
       GWEN_FREE_OBJECT(p_struct);
-    } else
+    }
+    else
       p_struct->_refCount--;
   }
 }
@@ -300,7 +301,8 @@ void GWEN_SarFileHeader_SetPath(GWEN_SAR_FILEHEADER *p_struct, const char *p_src
   }
   if (p_src) {
     p_struct->path = strdup(p_src);
-  } else {
+  }
+  else {
     p_struct->path = NULL;
   }
 }

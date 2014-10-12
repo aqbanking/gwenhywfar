@@ -192,12 +192,12 @@ GWEN_MDIGEST_UPDATE_FN GWEN_MDigest_SetUpdateFn(GWEN_MDIGEST *md, GWEN_MDIGEST_U
 
 
 int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
-			const char *password,
-			const uint8_t *pSalt,
-			uint32_t lSalt,
+                        const char *password,
+                        const uint8_t *pSalt,
+                        uint32_t lSalt,
                         uint8_t *pKey,
-			uint32_t lKey,
-			uint32_t iterations) {
+                        uint32_t lKey,
+                        uint32_t iterations) {
   int rv;
   uint8_t hash[128];
   uint32_t hsize;
@@ -277,8 +277,8 @@ int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
 
 
 static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
-				  const char *fname,
-				  GWEN_BUFFER *hbuf) {
+                                  const char *fname,
+                                  GWEN_BUFFER *hbuf) {
   GWEN_SYNCIO *sio;
   int rv;
   uint8_t buffer[1024];
@@ -313,10 +313,10 @@ static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
     else {
       rv=GWEN_MDigest_Update(md, (const uint8_t*) buffer, rv);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_SyncIo_Disconnect(sio);
-	GWEN_SyncIo_free(sio);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_SyncIo_Disconnect(sio);
+        GWEN_SyncIo_free(sio);
+        return rv;
       }
     }
   }
@@ -333,7 +333,7 @@ static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
   GWEN_SyncIo_free(sio);
 
   rv=GWEN_Text_ToHexBuffer((const char*) GWEN_MDigest_GetDigestPtr(md),
-			   GWEN_MDigest_GetDigestSize(md),
+                           GWEN_MDigest_GetDigestSize(md),
                            hbuf, 0, 0, 0);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -346,10 +346,10 @@ static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
 
 
 static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
-				      const char *baseFolder,
-				      const char *relFolder,
-				      const char *ignoreFile,
-				      GWEN_STRINGLIST *sl) {
+                                      const char *baseFolder,
+                                      const char *relFolder,
+                                      const char *ignoreFile,
+                                      GWEN_STRINGLIST *sl) {
   GWEN_STRINGLIST *files;
   GWEN_STRINGLISTENTRY *se;
   GWEN_BUFFER *pbuf;
@@ -384,67 +384,67 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
     if (s && *s) {
       GWEN_Buffer_AppendString(pbuf, s+1);
       if (*s=='d') {
-	if (strcasecmp(s+1, ".")!=0 && strcasecmp(s+1, "..")!=0) {
-	  rv=GWEN_MDigest__HashFileTree(md,
-					baseFolder,
-					GWEN_Buffer_GetStart(pbuf)+rpos,
-					ignoreFile,
-					sl);
-	  if (rv<0) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(pbuf);
-	    GWEN_StringList_free(files);
+        if (strcasecmp(s+1, ".")!=0 && strcasecmp(s+1, "..")!=0) {
+          rv=GWEN_MDigest__HashFileTree(md,
+                                        baseFolder,
+                                        GWEN_Buffer_GetStart(pbuf)+rpos,
+                                        ignoreFile,
+                                        sl);
+          if (rv<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(pbuf);
+            GWEN_StringList_free(files);
             return rv;
-	  }
-	}
+          }
+        }
       }
       else if (*s=='f') {
-	if (!(ignoreFile && strcasecmp(ignoreFile, s+1)==0)) {
-	  GWEN_BUFFER *tbuf;
-	  GWEN_BUFFER *xbuf;
-	  char *p;
+        if (!(ignoreFile && strcasecmp(ignoreFile, s+1)==0)) {
+          GWEN_BUFFER *tbuf;
+          GWEN_BUFFER *xbuf;
+          char *p;
 
-	  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  GWEN_Buffer_AppendString(xbuf, GWEN_Buffer_GetStart(pbuf)+rpos);
-	  p=GWEN_Buffer_GetStart(xbuf);
-	  while(*p) {
-	    if (*p=='\\')
-	      *p='/';
-	    p++;
-	  }
+          xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          GWEN_Buffer_AppendString(xbuf, GWEN_Buffer_GetStart(pbuf)+rpos);
+          p=GWEN_Buffer_GetStart(xbuf);
+          while(*p) {
+            if (*p=='\\')
+              *p='/';
+            p++;
+          }
 
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-	  /* add relative path to line buffer */
-	  GWEN_Buffer_AppendString(tbuf, "F");
-	  rv=GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(xbuf), tbuf);
-	  GWEN_Buffer_free(xbuf);
-	  if (rv<0) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(tbuf);
-	    GWEN_Buffer_free(pbuf);
-	    GWEN_StringList_free(files);
-	    return rv;
-	  }
-	  GWEN_Buffer_AppendString(tbuf, ":");
+          /* add relative path to line buffer */
+          GWEN_Buffer_AppendString(tbuf, "F");
+          rv=GWEN_Text_EscapeToBuffer(GWEN_Buffer_GetStart(xbuf), tbuf);
+          GWEN_Buffer_free(xbuf);
+          if (rv<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(tbuf);
+            GWEN_Buffer_free(pbuf);
+            GWEN_StringList_free(files);
+            return rv;
+          }
+          GWEN_Buffer_AppendString(tbuf, ":");
 
           /* hash file */
-	  rv=GWEN_MDigest__HashFile(md, GWEN_Buffer_GetStart(pbuf), tbuf);
-	  if (rv<0) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(tbuf);
-	    GWEN_Buffer_free(pbuf);
-	    GWEN_StringList_free(files);
-	    return rv;
-	  }
+          rv=GWEN_MDigest__HashFile(md, GWEN_Buffer_GetStart(pbuf), tbuf);
+          if (rv<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(tbuf);
+            GWEN_Buffer_free(pbuf);
+            GWEN_StringList_free(files);
+            return rv;
+          }
 
-	  /* append line to stringlist */
+          /* append line to stringlist */
           GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 0);
-	  GWEN_Buffer_free(tbuf);
-	}
+          GWEN_Buffer_free(tbuf);
+        }
       }
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "Unknown file type in [%s]", s);
+        DBG_INFO(GWEN_LOGDOMAIN, "Unknown file type in [%s]", s);
       }
       GWEN_Buffer_Crop(pbuf, 0, ppos);
     }
@@ -459,9 +459,9 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
 
 
 int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
-			      const char *folder,
-			      const char *ignoreFile,
-			      GWEN_STRINGLIST *sl) {
+                              const char *folder,
+                              const char *ignoreFile,
+                              GWEN_STRINGLIST *sl) {
   int rv;
 
   rv=GWEN_MDigest__HashFileTree(md, folder, NULL, ignoreFile, sl);
@@ -476,10 +476,10 @@ int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
 
 
 int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
-			       const char *folder,
-			       const char *checksumFile,
-			       int strictCheck,
-			       uint32_t pid) {
+                               const char *folder,
+                               const char *checksumFile,
+                               int strictCheck,
+                               uint32_t pid) {
   GWEN_STRINGLIST *sl;
   GWEN_STRINGLIST *savedList;
   GWEN_BUFFER *tbuf;
@@ -494,7 +494,7 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
   rv=GWEN_MDigest_HashFileTree(md, folder, checksumFile, sl);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			  I18N("Error unpacking program (%d)"), rv);
+                          I18N("Error unpacking program (%d)"), rv);
     GWEN_StringList_free(sl);
     return rv;
   }
@@ -507,11 +507,11 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
   GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Buffer_AppendString(tbuf, checksumFile);
   rv=GWEN_SyncIo_Helper_ReadFileToStringList(GWEN_Buffer_GetStart(tbuf),
-					     -1,
-					     savedList);
+      -1,
+      savedList);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			  I18N("Error loading checksum file (%d)"), rv);
+                          I18N("Error loading checksum file (%d)"), rv);
     GWEN_Buffer_free(tbuf);
     GWEN_StringList_free(savedList);
     GWEN_StringList_free(sl);
@@ -528,8 +528,8 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
     if (s && *s) {
       validLines++;
       if (0==GWEN_StringList_RemoveString(sl, s)) {
-	DBG_ERROR(0, "Hash not found: %s", s);
-	allHashesOk=0;
+        DBG_ERROR(0, "Hash not found: %s", s);
+        allHashesOk=0;
       }
     }
     se=GWEN_StringListEntry_Next(se);
@@ -537,7 +537,7 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
 
   if (validLines==0) {
     GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			  I18N("Checksum file does not contain valid lines"));
+                          I18N("Checksum file does not contain valid lines"));
     GWEN_StringList_free(savedList);
     GWEN_StringList_free(sl);
     return GWEN_ERROR_VERIFY;
@@ -545,7 +545,7 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
 
   if (allHashesOk==0) {
     GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			  I18N("Integrity check on folder failed"));
+                          I18N("Integrity check on folder failed"));
     GWEN_StringList_free(savedList);
     GWEN_StringList_free(sl);
     return GWEN_ERROR_VERIFY;
@@ -555,15 +555,15 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
   if (GWEN_StringList_Count(sl)) {
     if (strictCheck) {
       GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			    I18N("Folder contains %d files without checksum"),
-			    GWEN_StringList_Count(sl));
+                            I18N("Folder contains %d files without checksum"),
+                            GWEN_StringList_Count(sl));
       GWEN_StringList_free(savedList);
       GWEN_StringList_free(sl);
     }
     else
       GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Warning,
-			    I18N("Folder contains %d files without checksum"),
-			    GWEN_StringList_Count(sl));
+                            I18N("Folder contains %d files without checksum"),
+                            GWEN_StringList_Count(sl));
   }
   GWEN_StringList_free(savedList);
   GWEN_StringList_free(sl);

@@ -73,18 +73,18 @@ void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
 
 
 uint32_t GWEN_Debug_PrintDec(char *buffer,
-                                     uint32_t size,
-                                     uint32_t num,
-                                     int leadingZero,
-                                     uint32_t length);
+                             uint32_t size,
+                             uint32_t num,
+                             int leadingZero,
+                             uint32_t length);
 
 
 uint32_t GWEN_Debug_PrintHex(char *buffer,
-                                     uint32_t size,
-                                     uint32_t num,
-                                     int leadingZero,
-                                     int up,
-                                     uint32_t length);
+                             uint32_t size,
+                             uint32_t num,
+                             int leadingZero,
+                             int up,
+                             uint32_t length);
 
 
 

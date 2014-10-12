@@ -31,8 +31,8 @@ GWEN_INHERIT(HTML_GROUP, GROUP_UNORDEREDLIST)
 
 
 HTML_GROUP *HtmlGroup_UnorderedList_new(const char *groupName,
-					HTML_GROUP *parent,
-					GWEN_XML_CONTEXT *ctx) {
+                                        HTML_GROUP *parent,
+                                        GWEN_XML_CONTEXT *ctx) {
   HTML_GROUP *g;
   GROUP_UNORDEREDLIST *xg;
 
@@ -43,7 +43,7 @@ HTML_GROUP *HtmlGroup_UnorderedList_new(const char *groupName,
   /* inherit */
   GWEN_NEW_OBJECT(GROUP_UNORDEREDLIST, xg);
   GWEN_INHERIT_SETDATA(HTML_GROUP, GROUP_UNORDEREDLIST, g, xg,
-		       HtmlGroup_UnorderedList_FreeData);
+                       HtmlGroup_UnorderedList_FreeData);
 
   /* set virtual functions */
   HtmlGroup_SetStartTagFn(g, HtmlGroup_UnorderedList_StartTag);
@@ -112,7 +112,7 @@ int HtmlGroup_UnorderedList_StartTag(HTML_GROUP *g, const char *tagName) {
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unexpected group [%s]", tagName);
+              "Unexpected group [%s]", tagName);
     return GWEN_ERROR_BAD_DATA;
   }
 

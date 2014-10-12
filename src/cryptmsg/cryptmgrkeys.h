@@ -22,15 +22,15 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
-				     GWEN_CRYPT_KEY *localKey,
-				     const char *peerName,
-				     GWEN_CRYPT_KEY *peerKey,
-				     int ownKeys);
+                                     GWEN_CRYPT_KEY *localKey,
+                                     const char *peerName,
+                                     GWEN_CRYPT_KEY *peerKey,
+                                     int ownKeys);
 
 GWENHYWFAR_API
 void GWEN_CryptMgrKeys_SetPeerKey(GWEN_CRYPTMGR *mgr,
-				  GWEN_CRYPT_KEY *peerKey,
-				  int ownKey);
+                                  GWEN_CRYPT_KEY *peerKey,
+                                  int ownKey);
 
 
 #ifdef __cplusplus

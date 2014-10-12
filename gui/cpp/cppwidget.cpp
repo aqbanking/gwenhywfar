@@ -37,10 +37,10 @@ GWEN_INHERIT(GWEN_WIDGET, CppWidget);
 
 
 int CppWidgetLinker::SetIntProperty(GWEN_WIDGET *w,
-				    GWEN_DIALOG_PROPERTY prop,
-				    int index,
-				    int value,
-				    int doSignal) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int value,
+                                    int doSignal) {
   CppWidget *xw;
 
   assert(w);
@@ -54,9 +54,9 @@ int CppWidgetLinker::SetIntProperty(GWEN_WIDGET *w,
 
 
 int CppWidgetLinker::GetIntProperty(GWEN_WIDGET *w,
-				    GWEN_DIALOG_PROPERTY prop,
-				    int index,
-				    int defaultValue) {
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    int index,
+                                    int defaultValue) {
   CppWidget *xw;
 
   assert(w);
@@ -69,10 +69,10 @@ int CppWidgetLinker::GetIntProperty(GWEN_WIDGET *w,
 
 
 int CppWidgetLinker::SetCharProperty(GWEN_WIDGET *w,
-				     GWEN_DIALOG_PROPERTY prop,
-				     int index,
-				     const char *value,
-				     int doSignal) {
+                                     GWEN_DIALOG_PROPERTY prop,
+                                     int index,
+                                     const char *value,
+                                     int doSignal) {
   CppWidget *xw;
 
   assert(w);
@@ -85,9 +85,9 @@ int CppWidgetLinker::SetCharProperty(GWEN_WIDGET *w,
 
 
 const char *CppWidgetLinker::GetCharProperty(GWEN_WIDGET *w,
-					     GWEN_DIALOG_PROPERTY prop,
-					     int index,
-					     const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   CppWidget *xw;
 
   assert(w);
@@ -125,18 +125,16 @@ void CppWidgetLinker::freeData(void *bp, void *p) {
 
 
 CppWidget::CppWidget()
-:_widget(NULL)
-{
+  :_widget(NULL) {
 }
 
 
 
 CppWidget::CppWidget(GWEN_WIDGET *w)
-:_widget(w)
-{
+  :_widget(w) {
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, CppWidget,
-		       _widget, this,
-		       CppWidgetLinker::freeData);
+                       _widget, this,
+                       CppWidgetLinker::freeData);
 
   _setIntPropertyFn=GWEN_Widget_SetSetIntPropertyFn(_widget, CppWidgetLinker::SetIntProperty);
   _getIntPropertyFn=GWEN_Widget_SetGetIntPropertyFn(_widget, CppWidgetLinker::GetIntProperty);
@@ -186,9 +184,9 @@ CppDialog *CppWidget::getDialog() {
 
 
 int CppWidget::setIntProperty(GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      int value,
-			      int doSignal) {
+                              int index,
+                              int value,
+                              int doSignal) {
   if (_setIntPropertyFn)
     return _setIntPropertyFn(_widget, prop, index, value, doSignal);
   else
@@ -198,8 +196,8 @@ int CppWidget::setIntProperty(GWEN_DIALOG_PROPERTY prop,
 
 
 int CppWidget::getIntProperty(GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      int defaultValue) {
+                              int index,
+                              int defaultValue) {
   if (_getIntPropertyFn)
     return _getIntPropertyFn(_widget, prop, index, defaultValue);
   else
@@ -209,9 +207,9 @@ int CppWidget::getIntProperty(GWEN_DIALOG_PROPERTY prop,
 
 
 int CppWidget::setCharProperty(GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       const char *value,
-			       int doSignal) {
+                               int index,
+                               const char *value,
+                               int doSignal) {
   if (_setCharPropertyFn)
     return _setCharPropertyFn(_widget, prop, index, value, doSignal);
   else
@@ -221,8 +219,8 @@ int CppWidget::setCharProperty(GWEN_DIALOG_PROPERTY prop,
 
 
 const char *CppWidget::getCharProperty(GWEN_DIALOG_PROPERTY prop,
-				       int index,
-				       const char *defaultValue) {
+                                       int index,
+                                       const char *defaultValue) {
   if (_getCharPropertyFn)
     return _getCharPropertyFn(_widget, prop, index, defaultValue);
   else

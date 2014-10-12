@@ -245,10 +245,14 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
   if (fd==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "open(%s, %d): %s", xio->path, xio->creationMode, strerror(errno));
     switch(errno) {
-    case EEXIST: return GWEN_ERROR_FOUND;
-    case EACCES: return GWEN_ERROR_PERMISSIONS;
-    case ENOENT: return GWEN_ERROR_NOT_FOUND;
-    default:     return GWEN_ERROR_IO;
+    case EEXIST:
+      return GWEN_ERROR_FOUND;
+    case EACCES:
+      return GWEN_ERROR_PERMISSIONS;
+    case ENOENT:
+      return GWEN_ERROR_NOT_FOUND;
+    default:
+      return GWEN_ERROR_IO;
     }
   }
 
@@ -276,13 +280,16 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
   if (!(GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_DONTCLOSE)) {
     do {
       rv=close(xio->fd);
-    } while (rv==-1 && errno==EINTR);
+    }
+    while (rv==-1 && errno==EINTR);
 
     if (rv==-1) {
       DBG_ERROR(GWEN_LOGDOMAIN, "close(%s): %s", xio->path, strerror(errno));
       switch(errno) {
-      case ENOSPC: return GWEN_ERROR_MEMORY_FULL;
-      default:     return GWEN_ERROR_IO;
+      case ENOSPC:
+        return GWEN_ERROR_MEMORY_FULL;
+      default:
+        return GWEN_ERROR_IO;
       }
     }
   }
@@ -296,8 +303,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
-					uint8_t *buffer,
-					uint32_t size) {
+                                        uint8_t *buffer,
+                                        uint32_t size) {
   GWEN_SYNCIO_FILE *xio;
   ssize_t rv;
 
@@ -317,7 +324,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
   do {
     rv=read(xio->fd, buffer, size);
-  } while (rv==-1 && errno==EINTR);
+  }
+  while (rv==-1 && errno==EINTR);
 
   if (rv==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "read(%s, %lu): %s", xio->path, (long unsigned int) size, strerror(errno));
@@ -330,8 +338,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
-					 const uint8_t *buffer,
-					 uint32_t size) {
+    const uint8_t *buffer,
+    uint32_t size) {
   GWEN_SYNCIO_FILE *xio;
   ssize_t rv;
 
@@ -346,13 +354,16 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
 
   do {
     rv=write(xio->fd, buffer, size);
-  } while (rv==-1 && errno==EINTR);
+  }
+  while (rv==-1 && errno==EINTR);
 
   if (rv==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "write(%d, %s, %lu): %s", xio->fd, xio->path, (long unsigned int) size, strerror(errno));
     switch(errno) {
-    case ENOSPC: return GWEN_ERROR_MEMORY_FULL;
-    default:     return GWEN_ERROR_IO;
+    case ENOSPC:
+      return GWEN_ERROR_MEMORY_FULL;
+    default:
+      return GWEN_ERROR_IO;
     }
   }
 
@@ -371,9 +382,15 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
   assert(xio);
 
   switch(whence) {
-  case GWEN_SyncIo_File_Whence_Set:     w=SEEK_SET; break;
-  case GWEN_SyncIo_File_Whence_Current: w=SEEK_CUR; break;
-  case GWEN_SyncIo_File_Whence_End:     w=SEEK_END; break;
+  case GWEN_SyncIo_File_Whence_Set:
+    w=SEEK_SET;
+    break;
+  case GWEN_SyncIo_File_Whence_Current:
+    w=SEEK_CUR;
+    break;
+  case GWEN_SyncIo_File_Whence_End:
+    w=SEEK_END;
+    break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Invalid seek mode (%d)", whence);
     return GWEN_ERROR_INVALID;
@@ -382,7 +399,7 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
   rv=lseek(xio->fd, pos, w);
   if (rv==-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "lseek(%s, %lli): %s",
-	      xio->path, (long long int) pos, strerror(errno));
+              xio->path, (long long int) pos, strerror(errno));
     return GWEN_ERROR_IO;
   }
   return rv;

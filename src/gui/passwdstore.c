@@ -99,13 +99,13 @@ static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
       p=GWEN_Buffer_GetPosPointer(dbuf);
       s=fread(p, 1, l, f);
       if (s==0)
-	break;
+        break;
       if (s==(ssize_t)-1) {
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		  "fread(%s): %s",
-		  fname, strerror(errno));
-	fclose(f);
-	return GWEN_ERROR_IO;
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "fread(%s): %s",
+                  fname, strerror(errno));
+        fclose(f);
+        return GWEN_ERROR_IO;
       }
 
       GWEN_Buffer_IncrementPos(dbuf, s);
@@ -142,8 +142,8 @@ static int writeToFile(FILE *f, const char *p, int len) {
     s=fwrite(p, 1, l, f);
     if (s==(ssize_t)-1 || s==0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-	       "fwrite: %s",
-	       strerror(errno));
+                "fwrite: %s",
+                strerror(errno));
       return GWEN_ERROR_IO;
     }
     p+=s;
@@ -175,7 +175,7 @@ static int writeFile(const char *fname, const char *p, int len) {
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s): %s",
-	      fname, strerror(errno));
+              fname, strerror(errno));
     return GWEN_ERROR_IO;
   }
 
@@ -276,7 +276,7 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(tbuf, "PASSWORD_STORE_");
     GWEN_Text_UnescapeToBufferTolerant(sto->fileName, tbuf);
-  
+
     if (sto->pw[0]==0) {
       rv=GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_DIRECT,
                            I18N("Enter Password"),
@@ -295,9 +295,9 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
         return rv;
       }
     }
-  
+
     pos1=GWEN_Buffer_GetPos(secbuf);
-  
+
     rv=GWEN_SmallTresor_Decrypt((const uint8_t*) GWEN_Buffer_GetStart(sbuf),
                                 GWEN_Buffer_GetUsedBytes(sbuf),
                                 sto->pw,
@@ -314,14 +314,14 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
       /* check and remove hash */
       pos2=GWEN_Buffer_GetPos(secbuf);
       len=pos2-pos1;
-    
+
       if (len>=20) {
         const uint8_t *p1;
         const uint8_t *p2;
-    
+
         p1=(const uint8_t*)GWEN_Buffer_GetStart(secbuf)+pos1;      /* start of decrypted data */
         p2=(const uint8_t*)GWEN_Buffer_GetStart(secbuf)+(pos2-20); /* start of hash */
-    
+
         rv=GWEN_PasswordStore_CheckDigest(p1, len-20, p2);
         if (rv<0) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -373,37 +373,37 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
       rv=GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_DIRECT | GWEN_GUI_INPUT_FLAGS_CONFIRM,
                            I18N("Create New Password Store"),
                            I18N(
-                                "You are about to create a new password store.\n"
-                                "Passwords you store here will be encrypted with a passphrase\n"
-                                "which you must enter now.\n"
-                                "\n"
+                             "You are about to create a new password store.\n"
+                             "Passwords you store here will be encrypted with a passphrase\n"
+                             "which you must enter now.\n"
+                             "\n"
 
-                                "Later you will only need to remember the passphrase for the\n"
-                                "password store, not all the individuell passwords.\n"
-                                "\n"
-                                "WARNING: Storing your passwords in the password store\n"
-                                "can be considered a security risk, especially if the passphrase protecting it\n"
-                                "is not strong enough!\n"
-                                "\n"
-                                "You can safely abort this step, in which case your passwords will not be stored.\n"
-                                "\n"
-                                "Please enter the passphrase for the password store to be created or abort.\n"
-                                "<html>"
-                                "<p>You are about to create a new <b>password store</b>.</p>"
-                                "<br>"
-                                "<p>Passwords you store here will be encrypted with a passphrase "
-                                "which you must enter now.</p>"
-                                "<p>Later you will only need to remember the passphrase for the "
-                                "password store, not all the individuell passwords.<p>"
-                                "<p><font color=\"red\">"
-                                "<b>Warning:</b> Storing your passwords in the password store "
-                                "can be considered a <b>security risk</b>, especially if the passphrase protecting it "
-                                "is not strong enough!"
-                                "</font></p>"
-                                "<p><b>You can safely abort this step</b>, in which case your passwords will not be stored.</p>"
-                                "<br>"
-                                "<p>Please enter the passphrase for the password store to be created or abort.</p>"
-                                "</html>"),
+                             "Later you will only need to remember the passphrase for the\n"
+                             "password store, not all the individuell passwords.\n"
+                             "\n"
+                             "WARNING: Storing your passwords in the password store\n"
+                             "can be considered a security risk, especially if the passphrase protecting it\n"
+                             "is not strong enough!\n"
+                             "\n"
+                             "You can safely abort this step, in which case your passwords will not be stored.\n"
+                             "\n"
+                             "Please enter the passphrase for the password store to be created or abort.\n"
+                             "<html>"
+                             "<p>You are about to create a new <b>password store</b>.</p>"
+                             "<br>"
+                             "<p>Passwords you store here will be encrypted with a passphrase "
+                             "which you must enter now.</p>"
+                             "<p>Later you will only need to remember the passphrase for the "
+                             "password store, not all the individuell passwords.<p>"
+                             "<p><font color=\"red\">"
+                             "<b>Warning:</b> Storing your passwords in the password store "
+                             "can be considered a <b>security risk</b>, especially if the passphrase protecting it "
+                             "is not strong enough!"
+                             "</font></p>"
+                             "<p><b>You can safely abort this step</b>, in which case your passwords will not be stored.</p>"
+                             "<br>"
+                             "<p>Please enter the passphrase for the password store to be created or abort.</p>"
+                             "</html>"),
                            sto->pw,
                            4,
                            sizeof(sto->pw)-1,
@@ -450,7 +450,7 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
   rv=GWEN_SmallTresor_Encrypt((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
                               GWEN_Buffer_GetUsedBytes(tbuf),
                               sto->pw,
-			      sbuf,
+                              sbuf,
                               GWEN_PASSWDSTORE_PW_ITERATIONS,
                               GWEN_PASSWDSTORE_CRYPT_ITERATIONS);
   if (rv<0) {

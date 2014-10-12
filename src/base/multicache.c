@@ -224,7 +224,7 @@ void *GWEN_MultiCache_Type_GetData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id) 
 
 
 void *GWEN_MultiCache_Type_GetDataWithParams(const GWEN_MULTICACHE_TYPE *ct, uint32_t id,
-                                             uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4) {
+    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4) {
 
   GWEN_MULTICACHE_ENTRY *e;
 
@@ -253,8 +253,8 @@ void *GWEN_MultiCache_Type_GetDataWithParams(const GWEN_MULTICACHE_TYPE *ct, uin
 
 
 void *GWEN_MultiCache_Type_GetDataWithParams5(const GWEN_MULTICACHE_TYPE *ct, uint32_t id,
-					      uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
-					      double param5) {
+    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
+    double param5) {
 
   GWEN_MULTICACHE_ENTRY *e;
 
@@ -266,8 +266,8 @@ void *GWEN_MultiCache_Type_GetDataWithParams5(const GWEN_MULTICACHE_TYPE *ct, ui
     if ((GWEN_MultiCache_Entry_GetParam1(e)==param1) &&
         (GWEN_MultiCache_Entry_GetParam2(e)==param2) &&
         (GWEN_MultiCache_Entry_GetParam3(e)==param3) &&
-	(GWEN_MultiCache_Entry_GetParam4(e)==param4) &&
-	(GWEN_MultiCache_Entry_GetParam5(e)==param5)) {
+        (GWEN_MultiCache_Entry_GetParam4(e)==param4) &&
+        (GWEN_MultiCache_Entry_GetParam5(e)==param5)) {
       void *p;
 
       GWEN_MultiCache_UsingEntry(ct->multiCache, e);
@@ -298,7 +298,7 @@ void GWEN_MultiCache_Type_SetData(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *p
 
 
 void GWEN_MultiCache_Type_SetDataWithParams(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size,
-                                            uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4) {
+    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4) {
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
@@ -318,8 +318,8 @@ void GWEN_MultiCache_Type_SetDataWithParams(GWEN_MULTICACHE_TYPE *ct, uint32_t i
 
 
 void GWEN_MultiCache_Type_SetDataWithParams5(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size,
-                                             uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
-                                             double param5) {
+    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
+    double param5) {
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
@@ -440,20 +440,20 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
 
       ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
       while(ce) {
-	GWEN_MultiCache_ReleaseEntry(mc, ce);
-	ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
+        GWEN_MultiCache_ReleaseEntry(mc, ce);
+        ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
       }
 
       GWEN_MultiCache_Entry_List_free(mc->entryList);
       GWEN_MultiCache_Type_List_free(mc->typeList);
 
       DBG_NOTICE(GWEN_LOGDOMAIN, "MultiCache usage: %lld hits, %lld misses, %lld drops, %lld mb max memory used from %lld mb (%d %%)",
-		 (unsigned long long int) mc->cacheHits,
-		 (unsigned long long int) mc->cacheMisses,
-		 (unsigned long long int) mc->cacheDrops,
-		 (unsigned long long int) ((mc->maxSizeUsed)/(1024*1024)),
-		 (unsigned long long int) ((mc->maxSize)/(1024*1024)),
-		 (int)((mc->maxSizeUsed)*100.0/mc->maxSize));
+                 (unsigned long long int) mc->cacheHits,
+                 (unsigned long long int) mc->cacheMisses,
+                 (unsigned long long int) mc->cacheDrops,
+                 (unsigned long long int) ((mc->maxSizeUsed)/(1024*1024)),
+                 (unsigned long long int) ((mc->maxSize)/(1024*1024)),
+                 (int)((mc->maxSizeUsed)*100.0/mc->maxSize));
 
       mc->_refCount=0;
       GWEN_FREE_OBJECT(mc);
@@ -492,8 +492,8 @@ int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
       ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
       if (ce) {
         nsize-=GWEN_MultiCache_Entry_GetDataSize(ce);
-	GWEN_MultiCache_ReleaseEntry(mc, ce);
-	mc->cacheDrops++;
+        GWEN_MultiCache_ReleaseEntry(mc, ce);
+        mc->cacheDrops++;
       }
       else {
         DBG_ERROR(GWEN_LOGDOMAIN, "No entry left to release, cache size limit too low");

@@ -77,29 +77,29 @@ protected:
   virtual int print(const char *docTitle,
                     const char *docType,
                     const char *descr,
-		    const char *text,
-		    uint32_t guiid);
+                    const char *text,
+                    uint32_t guiid);
 
   virtual int getPassword(uint32_t flags,
-			  const char *token,
-			  const char *title,
-			  const char *text,
-			  char *buffer,
-			  int minLen,
-			  int maxLen,
-			  uint32_t guiid);
+                          const char *token,
+                          const char *title,
+                          const char *text,
+                          char *buffer,
+                          int minLen,
+                          int maxLen,
+                          uint32_t guiid);
 
   virtual int setPasswordStatus(const char *token,
-				const char *pin,
-				GWEN_GUI_PASSWORD_STATUS status,
-				uint32_t guiid);
+                                const char *pin,
+                                GWEN_GUI_PASSWORD_STATUS status,
+                                uint32_t guiid);
 
   virtual int checkCert(const GWEN_SSLCERTDESCR *cert,
-			GWEN_SYNCIO *sio,
-			uint32_t guiid);
+                        GWEN_SYNCIO *sio,
+                        uint32_t guiid);
 
   virtual int logHook(const char *logDomain,
-		      GWEN_LOGGER_LEVEL priority, const char *s);
+                      GWEN_LOGGER_LEVEL priority, const char *s);
 
   virtual int execDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
@@ -108,19 +108,19 @@ protected:
   virtual int runDialog(GWEN_DIALOG *dlg, int untilEnd);
 
   virtual int getFileName(const char *caption,
-			  GWEN_GUI_FILENAME_TYPE fnt,
-			  uint32_t flags,
-			  const char *patterns,
-			  GWEN_BUFFER *pathBuffer,
-			  uint32_t guiid);
+                          GWEN_GUI_FILENAME_TYPE fnt,
+                          uint32_t flags,
+                          const char *patterns,
+                          GWEN_BUFFER *pathBuffer,
+                          uint32_t guiid);
 
 
   int checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
-		       GWEN_SYNCIO *sio,
-		       uint32_t guiid);
+                       GWEN_SYNCIO *sio,
+                       uint32_t guiid);
 
 
-  };
+};
 
 
 

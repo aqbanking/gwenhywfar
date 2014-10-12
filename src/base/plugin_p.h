@@ -59,7 +59,7 @@ struct GWEN_PLUGIN {
 
 void GWEN_Plugin_SetLibLoader(GWEN_PLUGIN *p, GWEN_LIBLOADER *ll);
 GWEN_PLUGIN *GWEN_PluginManager__FindPlugin(GWEN_PLUGIN_MANAGER *pm,
-                                            const char *s);
+    const char *s);
 
 
 

@@ -27,9 +27,8 @@
 
 
 QT4_Gui::QT4_Gui()
-:CppGui()
-,_parentWidget(NULL)
-{
+  :CppGui()
+  ,_parentWidget(NULL) {
 
   GWEN_Gui_AddFlags(_gui, GWEN_GUI_FLAGS_DIALOGSUPPORTED);
   GWEN_Gui_UseDialogs(_gui);
@@ -83,11 +82,11 @@ QString QT4_Gui::extractHtml(const char *text) {
         if (toupper(*t)=='M') {
           t++;
           if (toupper(*t)=='L') {
-	    t++;
-	    if (toupper(*t)=='>') {
-	      break;
-	    }
-	  }
+            t++;
+            if (toupper(*t)=='>') {
+              break;
+            }
+          }
         }
       }
     }
@@ -100,26 +99,26 @@ QString QT4_Gui::extractHtml(const char *text) {
     p2=p;
     while ((p2=strchr(p2, '<'))) {
       const char *t;
-  
+
       t=p2;
       t++;
       if (toupper(*t)=='/') {
-	t++;
-	if (toupper(*t)=='H') {
-	  t++;
-	  if (toupper(*t)=='T') {
-	    t++;
-	    if (toupper(*t)=='M') {
-	      t++;
-	      if (toupper(*t)=='L') {
-		t++;
-		if (toupper(*t)=='>') {
-		  break;
-		}
-	      }
-	    }
-	  }
-	}
+        t++;
+        if (toupper(*t)=='H') {
+          t++;
+          if (toupper(*t)=='T') {
+            t++;
+            if (toupper(*t)=='M') {
+              t++;
+              if (toupper(*t)=='L') {
+                t++;
+                if (toupper(*t)=='>') {
+                  break;
+                }
+              }
+            }
+          }
+        }
       }
       p2++;
     } /* while */
@@ -190,11 +189,11 @@ int QT4_Gui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
 
 
 int QT4_Gui::getFileName(const char *caption,
-			 GWEN_GUI_FILENAME_TYPE fnt,
-			 uint32_t flags,
-			 const char *patterns,
-			 GWEN_BUFFER *pathBuffer,
-			 uint32_t guiid) {
+                         GWEN_GUI_FILENAME_TYPE fnt,
+                         uint32_t flags,
+                         const char *patterns,
+                         GWEN_BUFFER *pathBuffer,
+                         uint32_t guiid) {
   QString sCaption;
   QString sPatterns;
   QString sPath;
@@ -212,21 +211,21 @@ int QT4_Gui::getFileName(const char *caption,
     while(s1 && *s1) {
       s2=strchr(s1, '\t');
       if (s2) {
-	str=QString::fromUtf8(s1, s2-s1);
-	str.replace(',', ' ');
-	str.replace(';', ' ');
-	/* skip tab */
+        str=QString::fromUtf8(s1, s2-s1);
+        str.replace(',', ' ');
+        str.replace(';', ' ');
+        /* skip tab */
         s2++;
       }
       else {
-	str=QString::fromUtf8(s1);
+        str=QString::fromUtf8(s1);
         str.replace(',', ' ');
-	str.replace(';', ' ');
-	s2=NULL;
+        str.replace(';', ' ');
+        s2=NULL;
       }
 
       if (!str.isEmpty())
-	sPatterns+=";;";
+        sPatterns+=";;";
       sPatterns+=str;
 
       s1=s2;

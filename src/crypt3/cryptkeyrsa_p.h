@@ -36,28 +36,28 @@ static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, con
 static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, size_t nbytes);
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
-                                                const uint8_t *pInData,
-                                                uint32_t inLen,
-                                                uint8_t *pSignatureData,
-                                                uint32_t *pSignatureLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pSignatureData,
+    uint32_t *pSignatureLen);
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
-                                                  const uint8_t *pInData,
-                                                  uint32_t inLen,
-                                                  const uint8_t *pSignatureData,
-                                                  uint32_t signatureLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    const uint8_t *pSignatureData,
+    uint32_t signatureLen);
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
-                                                    const uint8_t *pInData,
-                                                    uint32_t inLen,
-                                                    uint8_t *pOutData,
-                                                    uint32_t *pOutLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen);
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
-                                                    const uint8_t *pInData,
-                                                    uint32_t inLen,
-                                                    uint8_t *pOutData,
-                                                    uint32_t *pOutLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen);
 
 
 

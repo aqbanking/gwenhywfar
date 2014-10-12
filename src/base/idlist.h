@@ -124,7 +124,7 @@ uint32_t GWEN_IdList_GetNextId(GWEN_IDLIST *idl);
  */
 GWENHYWFAR_API
 uint32_t GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
-                                         uint32_t *hdl);
+                                 uint32_t *hdl);
 
 /**
  * This function returns the next id stored in the list. It can also
@@ -135,7 +135,7 @@ uint32_t GWEN_IdList_GetFirstId2(const GWEN_IDLIST *idl,
  */
 GWENHYWFAR_API
 uint32_t GWEN_IdList_GetNextId2(const GWEN_IDLIST *idl,
-                                        uint32_t *hdl);
+                                uint32_t *hdl);
 
 
 /**

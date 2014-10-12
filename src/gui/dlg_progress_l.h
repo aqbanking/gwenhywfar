@@ -29,8 +29,8 @@ GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetSecondProgress(const GWEN_DIALOG *dlg);
 void GWEN_DlgProgress_SetSecondProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd);
 
 void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
-				 GWEN_LOGGER_LEVEL level,
-				 const char *s);
+                                 GWEN_LOGGER_LEVEL level,
+                                 const char *s);
 
 void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd);
 void GWEN_DlgProgress_TotalChanged(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd);

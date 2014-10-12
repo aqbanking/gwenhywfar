@@ -168,7 +168,7 @@ int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char
     nn=GWEN_XMLNode_FindFirstTag(n, "element", NULL, NULL);
     while(nn) {
       int rv;
-  
+
       rv=GWEN_ParserElement_Tree_ReadXml(et, nn);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

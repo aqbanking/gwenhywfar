@@ -51,28 +51,28 @@ void GWEN_Tag16_free(GWEN_TAG16 *tlv) {
 
 
 
-unsigned int GWEN_Tag16_GetTagType(const GWEN_TAG16 *tlv){
+unsigned int GWEN_Tag16_GetTagType(const GWEN_TAG16 *tlv) {
   assert(tlv);
   return tlv->tagType;
 }
 
 
 
-unsigned int GWEN_Tag16_GetTagLength(const GWEN_TAG16 *tlv){
+unsigned int GWEN_Tag16_GetTagLength(const GWEN_TAG16 *tlv) {
   assert(tlv);
   return tlv->tagLength;
 }
 
 
 
-unsigned int GWEN_Tag16_GetTagSize(const GWEN_TAG16 *tlv){
+unsigned int GWEN_Tag16_GetTagSize(const GWEN_TAG16 *tlv) {
   assert(tlv);
   return tlv->tagSize;
 }
 
 
 
-const void *GWEN_Tag16_GetTagData(const GWEN_TAG16 *tlv){
+const void *GWEN_Tag16_GetTagData(const GWEN_TAG16 *tlv) {
   assert(tlv);
   return tlv->tagData;
 }
@@ -81,7 +81,6 @@ const void *GWEN_Tag16_GetTagData(const GWEN_TAG16 *tlv){
 
 GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   const char *p;
-  unsigned int tagMode;
   unsigned int tagType;
   unsigned int tagLength;
   const char *tagData;
@@ -98,7 +97,7 @@ GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
 
   startPos=GWEN_Buffer_GetPos(mbuf);
 
-  tagMode=tagType=tagLength=0;
+  tagType=tagLength=0;
 
   p=GWEN_Buffer_GetPosPointer(mbuf);
   pos=0;
@@ -206,7 +205,7 @@ GWEN_TAG16 *GWEN_Tag16_fromBuffer2(const uint8_t *p, uint32_t l, int doCopy) {
 void GWEN_Tag16_DirectlyToBuffer(unsigned int tagType,
                                  const char *p,
                                  int size,
-                                 GWEN_BUFFER *buf){
+                                 GWEN_BUFFER *buf) {
   assert(buf);
   if (size==-1) {
     assert(p);

@@ -77,12 +77,11 @@ FOX16_Gui::WinScope::~WinScope() {
 
 
 FOX16_Gui::FOX16_Gui(FXApp *a)
-:CppGui()
-,m_app(a)
-,m_lastId(0)
-,m_updater()
-,m_fontList(NULL)
-{
+  :CppGui()
+  ,m_app(a)
+  ,m_lastId(0)
+  ,m_updater()
+  ,m_fontList(NULL) {
   m_updater=new FOX16_GuiUpdater();
   GWEN_Gui_AddFlags(_gui, GWEN_GUI_FLAGS_DIALOGSUPPORTED);
   GWEN_Gui_UseDialogs(_gui);
@@ -196,8 +195,8 @@ int FOX16_Gui::print(const char *docTitle,
                      const char *descr,
                      const char *text,
                      uint32_t guiid) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Not implemented");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
+  DBG_ERROR(GWEN_LOGDOMAIN, "Not implemented");
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
@@ -223,11 +222,11 @@ FXString FOX16_Gui::getRawText(const char *text) {
         if (toupper(*t)=='M') {
           t++;
           if (toupper(*t)=='L') {
-	    t++;
-	    if (toupper(*t)=='>') {
-	      break;
-	    }
-	  }
+            t++;
+            if (toupper(*t)=='>') {
+              break;
+            }
+          }
         }
       }
     }
@@ -240,26 +239,26 @@ FXString FOX16_Gui::getRawText(const char *text) {
     p2+=6; /* skip "<html>" */
     while ((p2=strchr(p2, '<'))) {
       const char *t;
-  
+
       t=p2;
       t++;
       if (toupper(*t)=='/') {
-	t++;
-	if (toupper(*t)=='H') {
-	  t++;
-	  if (toupper(*t)=='T') {
-	    t++;
-	    if (toupper(*t)=='M') {
-	      t++;
-	      if (toupper(*t)=='L') {
-		t++;
-		if (toupper(*t)=='>') {
-		  break;
-		}
-	      }
-	    }
-	  }
-	}
+        t++;
+        if (toupper(*t)=='H') {
+          t++;
+          if (toupper(*t)=='T') {
+            t++;
+            if (toupper(*t)=='M') {
+              t++;
+              if (toupper(*t)=='L') {
+                t++;
+                if (toupper(*t)=='>') {
+                  break;
+                }
+              }
+            }
+          }
+        }
       }
       p2++;
     } /* while */
@@ -303,11 +302,11 @@ FXString FOX16_Gui::getHtmlText(const char *text) {
         if (toupper(*t)=='M') {
           t++;
           if (toupper(*t)=='L') {
-	    t++;
-	    if (toupper(*t)=='>') {
-	      break;
-	    }
-	  }
+            t++;
+            if (toupper(*t)=='>') {
+              break;
+            }
+          }
         }
       }
     }
@@ -320,26 +319,26 @@ FXString FOX16_Gui::getHtmlText(const char *text) {
     p2=p;
     while ((p2=strchr(p2, '<'))) {
       const char *t;
-  
+
       t=p2;
       t++;
       if (toupper(*t)=='/') {
-	t++;
-	if (toupper(*t)=='H') {
-	  t++;
-	  if (toupper(*t)=='T') {
-	    t++;
-	    if (toupper(*t)=='M') {
-	      t++;
-	      if (toupper(*t)=='L') {
-		t++;
-		if (toupper(*t)=='>') {
-		  break;
-		}
-	      }
-	    }
-	  }
-	}
+        t++;
+        if (toupper(*t)=='H') {
+          t++;
+          if (toupper(*t)=='T') {
+            t++;
+            if (toupper(*t)=='M') {
+              t++;
+              if (toupper(*t)=='L') {
+                t++;
+                if (toupper(*t)=='>') {
+                  break;
+                }
+              }
+            }
+          }
+        }
       }
       p2++;
     } /* while */
@@ -425,11 +424,11 @@ int FOX16_Gui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
 
 
 int FOX16_Gui::getFileName(const char *caption,
-			   GWEN_GUI_FILENAME_TYPE fnt,
-			   uint32_t flags,
-			   const char *patterns,
-			   GWEN_BUFFER *pathBuffer,
-			   uint32_t guiid) {
+                           GWEN_GUI_FILENAME_TYPE fnt,
+                           uint32_t flags,
+                           const char *patterns,
+                           GWEN_BUFFER *pathBuffer,
+                           uint32_t guiid) {
   FXString sCaption;
   FXString sPatterns;
   FXString sPath;
@@ -447,27 +446,27 @@ int FOX16_Gui::getFileName(const char *caption,
     while(s1 && *s1) {
       s2=strchr(s1, '\t');
       if (s2) {
-	str=FXString(s1, s2-s1);
-	/* skip tab */
+        str=FXString(s1, s2-s1);
+        /* skip tab */
         s2++;
       }
       else {
-	str=FXString(s1);
+        str=FXString(s1);
         s2=NULL;
       }
 
       if (str.contains('(')) {
-	if (!sPatterns.empty())
-	  sPatterns+='\n';
-	sPatterns+=str.before('(');
-	str=str.after('(');
-	sPatterns+='(';
-	sPatterns+=str.substitute(';', ',');
+        if (!sPatterns.empty())
+          sPatterns+='\n';
+        sPatterns+=str.before('(');
+        str=str.after('(');
+        sPatterns+='(';
+        sPatterns+=str.substitute(';', ',');
       }
       else {
-	if (!sPatterns.empty())
-	  sPatterns+='\n';
-	sPatterns+=str.substitute(';', ',');
+        if (!sPatterns.empty())
+          sPatterns+='\n';
+        sPatterns+=str.substitute(';', ',');
       }
 
       s1=s2;
@@ -517,8 +516,8 @@ int FOX16_Gui::getFileName(const char *caption,
 
 
 HTML_FONT *FOX16_Gui::findFont(const char *fontName,
-			       int fontSize,
-			       uint32_t fontFlags) {
+                               int fontSize,
+                               uint32_t fontFlags) {
   HTML_FONT *fnt;
 
   assert(m_fontList);
@@ -528,9 +527,9 @@ HTML_FONT *FOX16_Gui::findFont(const char *fontName,
 
     s=HtmlFont_GetFontName(fnt);
     if (s && *s &&
-	HtmlFont_GetFontSize(fnt)==fontSize &&
-	HtmlFont_GetFontFlags(fnt)==fontFlags &&
-	strcasecmp(s, fontName)==0)
+        HtmlFont_GetFontSize(fnt)==fontSize &&
+        HtmlFont_GetFontFlags(fnt)==fontFlags &&
+        strcasecmp(s, fontName)==0)
       break;
     fnt=HtmlFont_List_Next(fnt);
   }
@@ -541,8 +540,8 @@ HTML_FONT *FOX16_Gui::findFont(const char *fontName,
 
 
 HTML_FONT *FOX16_Gui::getFont(const char *fontName,
-			      int fontSize,
-			      uint32_t fontFlags) {
+                              int fontSize,
+                              uint32_t fontFlags) {
   HTML_FONT *fnt;
 
   fnt=findFont(fontName, fontSize, fontFlags);

@@ -44,8 +44,8 @@ struct GWEN_LIBLOADER {
 int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h, const char *name);
 
 int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
-					const char *path,
-					const char *name);
+                                        const char *path,
+                                        const char *name);
 
 
 #endif /* GWENHYWFAR_LIBLOADER_P_H */

@@ -18,23 +18,23 @@ class FOX16_HtmlCtxLinker {
   friend class FOX16_HtmlCtx;
 
   static int GetTextWidth(GWEN_XML_CONTEXT *ctx,
-			  HTML_FONT *fnt,
-			  const char *s);
+                          HTML_FONT *fnt,
+                          const char *s);
 
   static int GetTextHeight(GWEN_XML_CONTEXT *ctx,
-			   HTML_FONT *fnt,
-			   const char *s);
+                           HTML_FONT *fnt,
+                           const char *s);
 
   static uint32_t GetColorFromName(const GWEN_XML_CONTEXT *ctx,
-				   const char *name);
+                                   const char *name);
 
   static HTML_FONT *GetFont(GWEN_XML_CONTEXT *ctx,
-			    const char *fontName,
-			    int fontSize,
-			    uint32_t fontFlags);
+                            const char *fontName,
+                            int fontSize,
+                            uint32_t fontFlags);
 
   static HTML_IMAGE *GetImage(GWEN_XML_CONTEXT *ctx,
-			      const char *imageName);
+                              const char *imageName);
 
   static GWENHYWFAR_CB void freeData(void *bp, void *p);
   static GWENHYWFAR_CB void freeFontData(void *bp, void *p);

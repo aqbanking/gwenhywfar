@@ -57,10 +57,10 @@ static GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c);
 static void GWEN_DateTmplChar_free(GWEN_DATE_TMPLCHAR *e);
 static GWEN_DATE_TMPLCHAR *GWEN_Date__findTmplChar(GWEN_DATE_TMPLCHAR_LIST *ll, char c);
 static void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const char *tmpl,
-				       GWEN_UNUSED GWEN_BUFFER *buf,
-				       GWEN_DATE_TMPLCHAR_LIST *ll);
+                                       GWEN_UNUSED GWEN_BUFFER *buf,
+                                       GWEN_DATE_TMPLCHAR_LIST *ll);
 static void GWEN_Date__fillTmplChars(const GWEN_DATE *t,
-				     GWEN_DATE_TMPLCHAR_LIST *ll);
+                                     GWEN_DATE_TMPLCHAR_LIST *ll);
 
 
 

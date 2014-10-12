@@ -78,7 +78,7 @@ GWEN_INHERIT_FUNCTIONS(GWEN_DBIO)
 GWEN_INHERIT(GWEN_PLUGIN, GWEN_DBIO_PLUGIN)
 
 
-int GWEN_DBIO_ModuleInit(void){
+int GWEN_DBIO_ModuleInit(void) {
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -103,9 +103,9 @@ int GWEN_DBIO_ModuleInit(void){
       GWEN_Buffer_AppendString(pbuf, GWEN_StringListEntry_Data(se));
       GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_DBIO_FOLDER);
       DBG_INFO(GWEN_LOGDOMAIN, "Adding plugin path [%s]",
-	       GWEN_Buffer_GetStart(pbuf));
+               GWEN_Buffer_GetStart(pbuf));
       GWEN_PluginManager_AddPath(pm, GWEN_PM_LIBNAME,
-				 GWEN_Buffer_GetStart(pbuf));
+                                 GWEN_Buffer_GetStart(pbuf));
       GWEN_Buffer_Reset(pbuf);
       se=GWEN_StringListEntry_Next(se);
     }
@@ -118,7 +118,7 @@ int GWEN_DBIO_ModuleInit(void){
 
 
 
-int GWEN_DBIO_ModuleFini(void){
+int GWEN_DBIO_ModuleFini(void) {
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager("dbio");
@@ -128,7 +128,7 @@ int GWEN_DBIO_ModuleFini(void){
     rv=GWEN_PluginManager_Unregister(pm);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Could not unregister DBIO plugin manager (%d)", rv);
+                "Could not unregister DBIO plugin manager (%d)", rv);
       return rv;
     }
     else
@@ -143,15 +143,15 @@ int GWEN_DBIO_ModuleFini(void){
 
 
 GWEN_PLUGIN *GWEN_DBIO_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
-				  const char *name,
-				  const char *fileName) {
+                                  const char *name,
+                                  const char *fileName) {
   GWEN_PLUGIN *pl;
   GWEN_DBIO_PLUGIN *pldbio;
 
   pl=GWEN_Plugin_new(pm, name, fileName);
   GWEN_NEW_OBJECT(GWEN_DBIO_PLUGIN, pldbio);
   GWEN_INHERIT_SETDATA(GWEN_PLUGIN, GWEN_DBIO_PLUGIN, pl, pldbio,
-		       GWEN_DBIO_Plugin_FreeData);
+                       GWEN_DBIO_Plugin_FreeData);
 
   return pl;
 }
@@ -181,7 +181,7 @@ GWEN_DBIO *GWEN_DBIO_Plugin_Factory(GWEN_PLUGIN *pl) {
 
 
 void GWEN_DBIO_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
-				   GWEN_DBIO_PLUGIN_FACTORYFN f) {
+                                   GWEN_DBIO_PLUGIN_FACTORYFN f) {
   GWEN_DBIO_PLUGIN *pldbio;
 
   assert(pl);
@@ -198,7 +198,7 @@ void GWEN_DBIO_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
 
 
 
-GWEN_DBIO *GWEN_DBIO_new(const char *name, const char *descr){
+GWEN_DBIO *GWEN_DBIO_new(const char *name, const char *descr) {
   GWEN_DBIO *dbio;
 
   assert(name);
@@ -215,7 +215,7 @@ GWEN_DBIO *GWEN_DBIO_new(const char *name, const char *descr){
 
 
 
-void GWEN_DBIO_free(GWEN_DBIO *dbio){
+void GWEN_DBIO_free(GWEN_DBIO *dbio) {
   if (dbio) {
     assert(dbio->usage);
     if (--(dbio->usage)==0) {
@@ -232,7 +232,7 @@ void GWEN_DBIO_free(GWEN_DBIO *dbio){
 
 
 
-void GWEN_DBIO_Attach(GWEN_DBIO *dbio){
+void GWEN_DBIO_Attach(GWEN_DBIO *dbio) {
   assert(dbio);
   dbio->usage++;
 }
@@ -240,10 +240,10 @@ void GWEN_DBIO_Attach(GWEN_DBIO *dbio){
 
 
 int GWEN_DBIO_Import(GWEN_DBIO *dbio,
-		     GWEN_SYNCIO *sio,
-		     GWEN_DB_NODE *db,
-		     GWEN_DB_NODE *params,
-		     uint32_t flags) {
+                     GWEN_SYNCIO *sio,
+                     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params,
+                     uint32_t flags) {
   assert(dbio);
   assert(sio);
   assert(db);
@@ -264,10 +264,10 @@ int GWEN_DBIO_Import(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_Export(GWEN_DBIO *dbio,
-		     GWEN_SYNCIO *sio,
-		     GWEN_DB_NODE *db,
-		     GWEN_DB_NODE *params,
-		     uint32_t flags) {
+                     GWEN_SYNCIO *sio,
+                     GWEN_DB_NODE *db,
+                     GWEN_DB_NODE *params,
+                     uint32_t flags) {
   assert(dbio);
   assert(sio);
   assert(db);
@@ -283,7 +283,7 @@ int GWEN_DBIO_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
-					       const char *fname) {
+    const char *fname) {
   assert(dbio);
   assert(fname);
 
@@ -297,41 +297,41 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CheckFile(GWEN_DBIO *dbio,
 
 
 
-const char *GWEN_DBIO_GetName(const GWEN_DBIO *dbio){
+const char *GWEN_DBIO_GetName(const GWEN_DBIO *dbio) {
   assert(dbio);
   return dbio->name;
 }
 
 
 
-const char *GWEN_DBIO_GetDescription(const GWEN_DBIO *dbio){
+const char *GWEN_DBIO_GetDescription(const GWEN_DBIO *dbio) {
   assert(dbio);
   return dbio->descr;
 }
 
 
 
-void GWEN_DBIO_SetImportFn(GWEN_DBIO *dbio, GWEN_DBIO_IMPORTFN f){
+void GWEN_DBIO_SetImportFn(GWEN_DBIO *dbio, GWEN_DBIO_IMPORTFN f) {
   assert(dbio);
   dbio->importFn=f;
 }
 
 
 
-void GWEN_DBIO_SetExportFn(GWEN_DBIO *dbio, GWEN_DBIO_EXPORTFN f){
+void GWEN_DBIO_SetExportFn(GWEN_DBIO *dbio, GWEN_DBIO_EXPORTFN f) {
   assert(dbio);
   dbio->exportFn=f;
 }
 
 
-void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f){
+void GWEN_DBIO_SetCheckFileFn(GWEN_DBIO *dbio, GWEN_DBIO_CHECKFILEFN f) {
   assert(dbio);
   dbio->checkFileFn=f;
 }
 
 
 
-GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname){
+GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname) {
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_DBIO *dbio;
@@ -351,7 +351,7 @@ GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname){
   dbio=GWEN_DBIO_Plugin_Factory(pl);
   if (!dbio) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "Plugin did not create a GWEN_DBIO");
+             "Plugin did not create a GWEN_DBIO");
   }
   return dbio;
 }
@@ -359,10 +359,10 @@ GWEN_DBIO *GWEN_DBIO_GetPlugin(const char *modname){
 
 
 int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
-			   const char *fname,
-			   GWEN_DB_NODE *db,
-			   GWEN_DB_NODE *params,
-			   uint32_t dbflags) {
+                           const char *fname,
+                           GWEN_DB_NODE *db,
+                           GWEN_DB_NODE *params,
+                           uint32_t dbflags) {
   int rv;
   GWEN_FSLOCK *lck=0;
   GWEN_SYNCIO *sio;
@@ -388,9 +388,9 @@ int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
   if (dbflags & GWEN_DB_FLAGS_APPEND_FILE)
     GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_APPEND);
   GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD |
                        GWEN_SYNCIO_FILE_FLAGS_UWRITE);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
@@ -446,10 +446,10 @@ int GWEN_DBIO_ExportToFile(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_ExportToBuffer(GWEN_DBIO *dbio,
-			     GWEN_BUFFER *buf,
-			     GWEN_DB_NODE *db,
-			     GWEN_DB_NODE *params,
-			     uint32_t flags) {
+                             GWEN_BUFFER *buf,
+                             GWEN_DB_NODE *db,
+                             GWEN_DB_NODE *params,
+                             uint32_t flags) {
   GWEN_SYNCIO *sio;
   int rv;
 
@@ -469,10 +469,10 @@ int GWEN_DBIO_ExportToBuffer(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_ImportFromFile(GWEN_DBIO *dbio,
-			     const char *fname,
-			     GWEN_DB_NODE *db,
-			     GWEN_DB_NODE *params,
-			     uint32_t dbflags) {
+                             const char *fname,
+                             GWEN_DB_NODE *db,
+                             GWEN_DB_NODE *params,
+                             uint32_t dbflags) {
   GWEN_SYNCIO *sio;
   int rv;
   GWEN_FSLOCK *lck=0;

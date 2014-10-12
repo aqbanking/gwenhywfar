@@ -57,7 +57,7 @@ struct GWEN_CONFIGMGR_PLUGIN {
 void GWENHYWFAR_CB GWEN_ConfigMgr_Plugin_FreeData(void *bp, void *p);
 
 GWEN_CONFIGMGR *GWEN_ConfigMgr_Plugin_Factory(GWEN_PLUGIN *pl,
-					      const char *url);
+    const char *url);
 
 
 

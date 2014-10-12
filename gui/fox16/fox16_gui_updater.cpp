@@ -20,7 +20,7 @@
 
 
 
-FXDEFMAP(FOX16_GuiUpdater) FOX16_GuiUpdaterMap[]={
+FXDEFMAP(FOX16_GuiUpdater) FOX16_GuiUpdaterMap[]= {
   FXMAPFUNC(SEL_CHORE, FOX16_GuiUpdater::ID_CHORE, FOX16_GuiUpdater::onChore),
 };
 
@@ -30,9 +30,8 @@ FXIMPLEMENT(FOX16_GuiUpdater, FXObject, FOX16_GuiUpdaterMap, ARRAYNUMBER(FOX16_G
 
 
 FOX16_GuiUpdater::FOX16_GuiUpdater()
-:FXObject()
-, m_guiIdleFlag(0)
-{
+  :FXObject()
+  , m_guiIdleFlag(0) {
 }
 
 
@@ -55,7 +54,7 @@ void FOX16_GuiUpdater::guiUpdate() {
 
 
 
-long FOX16_GuiUpdater::onChore(FXObject*, FXSelector, void*){
+long FOX16_GuiUpdater::onChore(FXObject*, FXSelector, void*) {
   m_guiIdleFlag=1;
   return 1;
 }

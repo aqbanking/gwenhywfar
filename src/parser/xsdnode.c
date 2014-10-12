@@ -44,8 +44,8 @@ GWEN_LIST_FUNCTIONS(GWEN_XSD_NODE, GWEN_XsdNode)
 
 
 GWEN_XSD_NODE *GWEN_XsdNode_new(GWEN_XSD_NODE *parent,
-				GWEN_XSD_NODETYPE t,
-				const char *name) {
+                                GWEN_XSD_NODETYPE t,
+                                const char *name) {
   GWEN_XSD_NODE *xsdNode;
 
   GWEN_NEW_OBJECT(GWEN_XSD_NODE, xsdNode);
@@ -147,7 +147,7 @@ void GWEN_XsdNode_Unlink(GWEN_XSD_NODE *xsdNode) {
 
 
 GWEN_XSDNODE_READ_FN GWEN_XsdNode_SetReadFn(GWEN_XSD_NODE *xsdNode,
-					    GWEN_XSDNODE_READ_FN fn) {
+    GWEN_XSDNODE_READ_FN fn) {
   GWEN_XSDNODE_READ_FN oldFn;
 
   assert(xsdNode);
@@ -159,7 +159,7 @@ GWEN_XSDNODE_READ_FN GWEN_XsdNode_SetReadFn(GWEN_XSD_NODE *xsdNode,
 
 
 GWEN_XSDNODE_WRITE_FN GWEN_XsdNode_SetWriteFn(GWEN_XSD_NODE *xsdNode,
-					      GWEN_XSDNODE_WRITE_FN fn) {
+    GWEN_XSDNODE_WRITE_FN fn) {
   GWEN_XSDNODE_WRITE_FN oldFn;
 
   assert(xsdNode);
@@ -171,8 +171,8 @@ GWEN_XSDNODE_WRITE_FN GWEN_XsdNode_SetWriteFn(GWEN_XSD_NODE *xsdNode,
 
 
 int GWEN_XsdNode_Read(GWEN_XSD_NODE *xsdNode,
-		      GWEN_XMLNODE *xmlNode,
-		      GWEN_DB_NODE *db) {
+                      GWEN_XMLNODE *xmlNode,
+                      GWEN_DB_NODE *db) {
   assert(xsdNode);
   if (xsdNode->readFn)
     return xsdNode->readFn(xsdNode, xmlNode, db);
@@ -183,8 +183,8 @@ int GWEN_XsdNode_Read(GWEN_XSD_NODE *xsdNode,
 
 
 int GWEN_XsdNode_Write(GWEN_XSD_NODE *xsdNode,
-		       GWEN_XMLNODE *xmlNode,
-		       GWEN_DB_NODE *db) {
+                       GWEN_XMLNODE *xmlNode,
+                       GWEN_DB_NODE *db) {
   assert(xsdNode);
   if (xsdNode->writeFn)
     return xsdNode->writeFn(xsdNode, xmlNode, db);

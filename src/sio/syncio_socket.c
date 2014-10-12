@@ -180,9 +180,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Error setting up socket: %d"),
-			  rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Error setting up socket: %d"),
+                          rv);
     GWEN_Socket_free(sk);
     return rv;
   }
@@ -191,15 +191,15 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
   rv=GWEN_InetAddr_SetAddress(addr, xio->address);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Debug,
-			  I18N("Resolving hostname \"%s\" ..."),
-			  xio->address);
+                          GWEN_LoggerLevel_Debug,
+                          I18N("Resolving hostname \"%s\" ..."),
+                          xio->address);
     rv=GWEN_InetAddr_SetName(addr, xio->address);
     if (rv<0) {
       GWEN_Gui_ProgressLog2(0,
-			    GWEN_LoggerLevel_Error,
-			    I18N("Unknown hostname \"%s\""),
-			    xio->address);
+                            GWEN_LoggerLevel_Error,
+                            I18N("Unknown hostname \"%s\""),
+                            xio->address);
       GWEN_InetAddr_free(addr);
       GWEN_Socket_free(sk);
       return rv;
@@ -213,27 +213,27 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       }
       else
-	GWEN_Gui_ProgressLog2(0,
-			      GWEN_LoggerLevel_Debug,
-			      I18N("IP address is \"%s\""),
-			      addrBuf);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Debug,
+                              I18N("IP address is \"%s\""),
+                              addrBuf);
     }
   }
   GWEN_InetAddr_SetPort(addr, xio->port);
 
   /* connect */
   GWEN_Gui_ProgressLog2(0,
-			GWEN_LoggerLevel_Debug,
-			I18N("Connecting to \"%s\""),
-			xio->address);
+                        GWEN_LoggerLevel_Debug,
+                        I18N("Connecting to \"%s\""),
+                        xio->address);
   rv=GWEN_Socket_Connect(sk, addr);
   GWEN_InetAddr_free(addr);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Error connecting to \"%s\": %s"),
-			  xio->address,
-			  strerror(errno));
+                          GWEN_LoggerLevel_Error,
+                          I18N("Error connecting to \"%s\": %s"),
+                          xio->address,
+                          strerror(errno));
     GWEN_Socket_free(sk);
     return rv;
   }
@@ -243,9 +243,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
   GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
   DBG_INFO(GWEN_LOGDOMAIN, "Connected to \"%s\"", xio->address);
   GWEN_Gui_ProgressLog2(0,
-			GWEN_LoggerLevel_Debug,
-			I18N("Connected to \"%s\""),
-			xio->address);
+                        GWEN_LoggerLevel_Debug,
+                        I18N("Connected to \"%s\""),
+                        xio->address);
   return 0;
 }
 
@@ -272,8 +272,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
-					  uint8_t *buffer,
-					  uint32_t size) {
+    uint8_t *buffer,
+    uint32_t size) {
   GWEN_SYNCIO_SOCKET *xio;
   int rv;
   int i;
@@ -290,7 +290,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
   if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
     /* not connected */
     DBG_ERROR(GWEN_LOGDOMAIN, "Socket not connected (%d)",
-	      GWEN_SyncIo_GetStatus(sio));
+              GWEN_SyncIo_GetStatus(sio));
     return GWEN_ERROR_NOT_CONNECTED;
   }
 
@@ -302,7 +302,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
   /* check whether there is data available */
   do {
     rv=GWEN_Socket_WaitForRead(xio->socket, 0);
-  } while (rv==GWEN_ERROR_INTERRUPTED);
+  }
+  while (rv==GWEN_ERROR_INTERRUPTED);
 
 
   /* nothing to read immediately, wait for data availability */
@@ -314,7 +315,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
 
     do {
       rv=GWEN_Gui_WaitForSockets(sl, NULL, 0, GWEN_SYNCIO_SOCKET_READ_TIMEOUT);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     GWEN_Socket_List2_free(sl);
     if (rv<0) {
@@ -347,8 +349,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
-					   const uint8_t *buffer,
-					   uint32_t size) {
+    const uint8_t *buffer,
+    uint32_t size) {
   GWEN_SYNCIO_SOCKET *xio;
   int rv;
   int i;
@@ -371,7 +373,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
   /* check whether the socket is writeable */
   do {
     rv=GWEN_Socket_WaitForWrite(xio->socket, 0);
-  } while (rv==GWEN_ERROR_INTERRUPTED);
+  }
+  while (rv==GWEN_ERROR_INTERRUPTED);
 
   if (rv==GWEN_ERROR_TIMEOUT) {
     int rv;
@@ -382,7 +385,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
 
     do {
       rv=GWEN_Gui_WaitForSockets(NULL, sl, 0, GWEN_SYNCIO_SOCKET_WRITE_TIMEOUT);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

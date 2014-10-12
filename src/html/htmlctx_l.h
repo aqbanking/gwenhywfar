@@ -31,27 +31,27 @@ void HtmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s);
 GWEN_DB_NODE *HtmlCtx_GetCurrentAttributes(const GWEN_XML_CONTEXT *ctx);
 
 HTML_FONT *HtmlCtx_FindFont(const GWEN_XML_CONTEXT *ctx,
-			    const char *fontName,
-			    int fontSize,
-			    uint32_t fontFlags);
+                            const char *fontName,
+                            int fontSize,
+                            uint32_t fontFlags);
 
 
 int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
-			 const char *data,
-			 GWEN_BUFFER *buf);
+                         const char *data,
+                         GWEN_BUFFER *buf);
 
 
 uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
-				  const char *name);
+                                  const char *name);
 
 
 int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
-			 HTML_FONT *fnt,
-			 const char *s);
+                         HTML_FONT *fnt,
+                         const char *s);
 
 int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
-			  HTML_FONT *fnt,
-			  const char *s);
+                          HTML_FONT *fnt,
+                          const char *s);
 
 #endif
 

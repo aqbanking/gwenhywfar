@@ -143,8 +143,8 @@ int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess);
  */
 GWENHYWFAR_API
 int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
-				const char *httpCommand,
-				const uint8_t *buf, uint32_t blen);
+                                const char *httpCommand,
+                                const uint8_t *buf, uint32_t blen);
 
 /**
  * This function receives a response packet from the server and closes

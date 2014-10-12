@@ -140,8 +140,8 @@ int GWEN_Crypt_PaddAlgo_toDb(const GWEN_CRYPT_PADDALGO *a, GWEN_DB_NODE *db) {
   assert(a->refCount);
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "id",
-		       GWEN_Crypt_PaddAlgoId_toString(a->id));
+                       "id",
+                       GWEN_Crypt_PaddAlgoId_toString(a->id));
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "paddSize", a->paddSize);
   return 0;
@@ -175,7 +175,7 @@ void GWEN_Crypt_PaddAlgo_free(GWEN_CRYPT_PADDALGO *a) {
 
 
 
-GWEN_CRYPT_PADDALGOID GWEN_Crypt_PaddAlgo_GetId(const GWEN_CRYPT_PADDALGO *a){
+GWEN_CRYPT_PADDALGOID GWEN_Crypt_PaddAlgo_GetId(const GWEN_CRYPT_PADDALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->id;
@@ -183,7 +183,7 @@ GWEN_CRYPT_PADDALGOID GWEN_Crypt_PaddAlgo_GetId(const GWEN_CRYPT_PADDALGO *a){
 
 
 
-int GWEN_Crypt_PaddAlgo_GetPaddSize(const GWEN_CRYPT_PADDALGO *a){
+int GWEN_Crypt_PaddAlgo_GetPaddSize(const GWEN_CRYPT_PADDALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->paddSize;
@@ -191,7 +191,7 @@ int GWEN_Crypt_PaddAlgo_GetPaddSize(const GWEN_CRYPT_PADDALGO *a){
 
 
 
-void GWEN_Crypt_PaddAlgo_SetPaddSize(GWEN_CRYPT_PADDALGO *a, int s){
+void GWEN_Crypt_PaddAlgo_SetPaddSize(GWEN_CRYPT_PADDALGO *a, int s) {
   assert(a);
   assert(a->refCount);
   a->paddSize=s;

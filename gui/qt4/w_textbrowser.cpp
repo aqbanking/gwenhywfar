@@ -58,9 +58,9 @@ public:
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-		      int index,
-		      const char *value,
-		      int doSignal) {
+                      int index,
+                      const char *value,
+                      int doSignal) {
     QTextBrowser *qw;
     QString text;
 
@@ -89,8 +89,8 @@ public:
     }
 
     DBG_WARN(GWEN_LOGDOMAIN,
-	     "Function is not appropriate for this type of widget (%s)",
-	     GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
+             "Function is not appropriate for this type of widget (%s)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
     return GWEN_ERROR_INVALID;
   };
 

@@ -36,10 +36,10 @@ public:
   };
 
   FOX16_HtmlLabel(FXComposite* p, const FXString& text,
-		  FXuint opts=0,
-		  FXint x=0, FXint y=0, FXint w=0, FXint h=0,
-		  FXint pl=DEFAULT_PAD, FXint pr=DEFAULT_PAD,
-		  FXint pt=DEFAULT_PAD, FXint pb=DEFAULT_PAD);
+                  FXuint opts=0,
+                  FXint x=0, FXint y=0, FXint w=0, FXint h=0,
+                  FXint pl=DEFAULT_PAD, FXint pr=DEFAULT_PAD,
+                  FXint pt=DEFAULT_PAD, FXint pb=DEFAULT_PAD);
   ~FOX16_HtmlLabel();
 
   /// Set the text for this label

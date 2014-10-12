@@ -98,7 +98,7 @@ void GWEN_Dialog_free(GWEN_DIALOG *dlg) {
       /* try to save preferences */
       rv=GWEN_Gui_WriteDialogPrefs(dlg->dialogId, dlg->dbPreferences);
       if (rv<0) {
-	DBG_WARN(GWEN_LOGDOMAIN, "Could not write dialog preferences (%d)", rv);
+        DBG_WARN(GWEN_LOGDOMAIN, "Could not write dialog preferences (%d)", rv);
       }
 
       GWEN_INHERIT_FINI(GWEN_DIALOG, dlg);
@@ -194,9 +194,9 @@ void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s) {
 
 
 void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
-					      const char *destlib,
-					      const char *pathName,
-					      const char *relPath) {
+    const char *destlib,
+    const char *pathName,
+    const char *relPath) {
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_PathManager_GetPaths(destlib, pathName);
@@ -208,20 +208,20 @@ void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       while(se) {
-	const char *s;
+        const char *s;
 
-	s=GWEN_StringListEntry_Data(se);
-	assert(s);
-	if (relPath) {
-	  GWEN_Buffer_AppendString(tbuf, s);
-	  GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-	  GWEN_Buffer_AppendString(tbuf, relPath);
-	  GWEN_StringList_AppendString(dlg->mediaPaths, GWEN_Buffer_GetStart(tbuf), 0, 1);
-	  GWEN_Buffer_Reset(tbuf);
-	}
-	else
-	  GWEN_StringList_AppendString(dlg->mediaPaths, s, 0, 1);
-	se=GWEN_StringListEntry_Next(se);
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        if (relPath) {
+          GWEN_Buffer_AppendString(tbuf, s);
+          GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+          GWEN_Buffer_AppendString(tbuf, relPath);
+          GWEN_StringList_AppendString(dlg->mediaPaths, GWEN_Buffer_GetStart(tbuf), 0, 1);
+          GWEN_Buffer_Reset(tbuf);
+        }
+        else
+          GWEN_StringList_AppendString(dlg->mediaPaths, s, 0, 1);
+        se=GWEN_StringListEntry_Next(se);
       }
       GWEN_Buffer_free(tbuf);
     }
@@ -241,7 +241,7 @@ GWEN_STRINGLIST *GWEN_Dialog_GetMediaPaths(const GWEN_DIALOG *dlg) {
 
 
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_SIGNALHANDLER fn) {
+    GWEN_DIALOG_SIGNALHANDLER fn) {
   GWEN_DIALOG_SIGNALHANDLER oh;
 
   assert(dlg);
@@ -256,8 +256,8 @@ GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
 
 
 int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
-			   GWEN_DIALOG_EVENTTYPE t,
-			   const char *sender) {
+                           GWEN_DIALOG_EVENTTYPE t,
+                           const char *sender) {
   assert(dlg);
   assert(dlg->refCount);
 
@@ -265,7 +265,7 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
     return (dlg->signalHandler)(dlg, t, sender);
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "No signal handler in dialog [%s]",
-	     (dlg->dialogId)?(dlg->dialogId):"-unnamed-");
+             (dlg->dialogId)?(dlg->dialogId):"-unnamed-");
     return GWEN_DialogEvent_ResultNotHandled;
   }
 }
@@ -273,8 +273,8 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 
 
 int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
-				GWEN_DIALOG_EVENTTYPE t,
-				const char *sender) {
+                                GWEN_DIALOG_EVENTTYPE t,
+                                const char *sender) {
   int rv;
   GWEN_DIALOG *subdlg;
 
@@ -285,7 +285,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
   while(subdlg) {
     rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
-	rv!=GWEN_DialogEvent_ResultNotHandled)
+        rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
     subdlg=GWEN_Dialog_List_Next(subdlg);
   }
@@ -293,7 +293,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
   if (dlg->signalHandler) {
     rv=(dlg->signalHandler)(dlg, t, sender);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
-	rv!=GWEN_DialogEvent_ResultNotHandled)
+        rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
   }
 
@@ -304,7 +304,7 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 
 int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
                              const char *parentName,
-			     GWEN_DIALOG *subdlg) {
+                             GWEN_DIALOG *subdlg) {
   GWEN_WIDGET *wparent;
 
   wparent=GWEN_Dialog_FindWidgetByName(dlg, parentName);
@@ -316,10 +316,10 @@ int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
     subRoot=GWEN_Widget_Tree_GetFirst(subdlg->widgets);
     if (subRoot) {
       while( (cw=GWEN_Widget_Tree_GetFirstChild(subRoot)) ) {
-	if (subdlg->firstSubWidget==NULL)
-	  subdlg->firstSubWidget=cw;
-	GWEN_Widget_Tree_Del(cw);
-	GWEN_Widget_Tree_AddChild(wparent, cw);
+        if (subdlg->firstSubWidget==NULL)
+          subdlg->firstSubWidget=cw;
+        GWEN_Widget_Tree_Del(cw);
+        GWEN_Widget_Tree_AddChild(wparent, cw);
       }
     }
 
@@ -342,8 +342,8 @@ int GWEN_Dialog_AddSubDialog(GWEN_DIALOG *dlg,
 
 
 int GWEN_Dialog__ReadXmlWidget(GWEN_DIALOG *dlg,
-			       GWEN_WIDGET *wparent,
-			       GWEN_XMLNODE *node) {
+                               GWEN_WIDGET *wparent,
+                               GWEN_XMLNODE *node) {
   GWEN_XMLNODE *n;
   GWEN_WIDGET *w;
   int rv;
@@ -411,8 +411,8 @@ int GWEN_Dialog_ReadXmlFile(GWEN_DIALOG *dlg, const char *fname) {
 
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   rv=GWEN_XML_ReadFile(n, fname,
-		       GWEN_XML_FLAGS_DEFAULT |
-		       GWEN_XML_FLAGS_HANDLE_HEADERS);
+                       GWEN_XML_FLAGS_DEFAULT |
+                       GWEN_XML_FLAGS_HANDLE_HEADERS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_XMLNode_free(n);
@@ -510,7 +510,7 @@ GWEN_WIDGET_TREE *GWEN_Dialog_GetWidgets(const GWEN_DIALOG *dlg) {
 
 
 GWEN_DIALOG_SETINTPROPERTY_FN GWEN_Dialog_SetSetIntPropertyFn(GWEN_DIALOG *dlg,
-							      GWEN_DIALOG_SETINTPROPERTY_FN fn) {
+    GWEN_DIALOG_SETINTPROPERTY_FN fn) {
   GWEN_DIALOG_SETINTPROPERTY_FN oh;
 
   assert(dlg);
@@ -524,7 +524,7 @@ GWEN_DIALOG_SETINTPROPERTY_FN GWEN_Dialog_SetSetIntPropertyFn(GWEN_DIALOG *dlg,
 
 
 GWEN_DIALOG_GETINTPROPERTY_FN GWEN_Dialog_SetGetIntPropertyFn(GWEN_DIALOG *dlg,
-							      GWEN_DIALOG_GETINTPROPERTY_FN fn) {
+    GWEN_DIALOG_GETINTPROPERTY_FN fn) {
   GWEN_DIALOG_GETINTPROPERTY_FN oh;
 
   assert(dlg);
@@ -538,7 +538,7 @@ GWEN_DIALOG_GETINTPROPERTY_FN GWEN_Dialog_SetGetIntPropertyFn(GWEN_DIALOG *dlg,
 
 
 GWEN_DIALOG_SETCHARPROPERTY_FN GWEN_Dialog_SetSetCharPropertyFn(GWEN_DIALOG *dlg,
-								GWEN_DIALOG_SETCHARPROPERTY_FN fn) {
+    GWEN_DIALOG_SETCHARPROPERTY_FN fn) {
   GWEN_DIALOG_SETCHARPROPERTY_FN oh;
 
   assert(dlg);
@@ -552,7 +552,7 @@ GWEN_DIALOG_SETCHARPROPERTY_FN GWEN_Dialog_SetSetCharPropertyFn(GWEN_DIALOG *dlg
 
 
 GWEN_DIALOG_GETCHARPROPERTY_FN GWEN_Dialog_SetGetCharPropertyFn(GWEN_DIALOG *dlg,
-								GWEN_DIALOG_GETCHARPROPERTY_FN fn) {
+    GWEN_DIALOG_GETCHARPROPERTY_FN fn) {
   GWEN_DIALOG_GETCHARPROPERTY_FN oh;
 
   assert(dlg);
@@ -569,11 +569,11 @@ GWEN_DIALOG_GETCHARPROPERTY_FN GWEN_Dialog_SetGetCharPropertyFn(GWEN_DIALOG *dlg
 
 
 int GWEN_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
-			       const char *name,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int value,
-			       int doSignal) {
+                               const char *name,
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int value,
+                               int doSignal) {
   GWEN_WIDGET *w;
 
   assert(dlg);
@@ -598,10 +598,10 @@ int GWEN_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
 
 
 int GWEN_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
-			       const char *name,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int defaultProperty) {
+                               const char *name,
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int defaultProperty) {
   GWEN_WIDGET *w;
 
   assert(dlg);
@@ -626,11 +626,11 @@ int GWEN_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
 
 
 int GWEN_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
-				const char *name,
-				GWEN_DIALOG_PROPERTY prop,
-				int index,
-				const char *value,
-				int doSignal) {
+                                const char *name,
+                                GWEN_DIALOG_PROPERTY prop,
+                                int index,
+                                const char *value,
+                                int doSignal) {
   GWEN_WIDGET *w;
 
   assert(dlg);
@@ -655,10 +655,10 @@ int GWEN_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
 
 
 const char *GWEN_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
-					const char *name,
-					GWEN_DIALOG_PROPERTY prop,
-					int index,
-					const char *defaultProperty) {
+                                        const char *name,
+                                        GWEN_DIALOG_PROPERTY prop,
+                                        int index,
+                                        const char *defaultProperty) {
   GWEN_WIDGET *w;
 
   assert(dlg);

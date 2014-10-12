@@ -16,17 +16,23 @@
 
 
 // Draw rectangle
-static void drawRectangle(FXDC& dc,FXColor lower,FXColor upper,FXint x,FXint y,FXint w,FXint h){
+static void drawRectangle(FXDC& dc,FXColor lower,FXColor upper,FXint x,FXint y,FXint w,FXint h) {
   register FXint rr,gg,bb,dr,dg,db,r1,g1,b1,r2,g2,b2,yl,yh,yy,dy,n,t;
   const FXint MAXSTEPS=128;
 
-  if(0<w && 0<h){
+  if(0<w && 0<h) {
     dc.setStipple(STIPPLE_NONE);
     dc.setFillStyle(FILL_SOLID);
 
-    r1=FXREDVAL(lower);   r2=FXREDVAL(upper);   dr=r2-r1;
-    g1=FXGREENVAL(lower); g2=FXGREENVAL(upper); dg=g2-g1;
-    b1=FXBLUEVAL(lower);  b2=FXBLUEVAL(upper);  db=b2-b1;
+    r1=FXREDVAL(lower);
+    r2=FXREDVAL(upper);
+    dr=r2-r1;
+    g1=FXGREENVAL(lower);
+    g2=FXGREENVAL(upper);
+    dg=g2-g1;
+    b1=FXBLUEVAL(lower);
+    b2=FXBLUEVAL(upper);
+    db=b2-b1;
 
     n=FXABS(dr);
     if((t=FXABS(dg))>n) n=t;
@@ -53,29 +59,30 @@ static void drawRectangle(FXDC& dc,FXColor lower,FXColor upper,FXint x,FXint y,F
       rr+=dr;
       gg+=dg;
       bb+=db;
-    } while(yh<h);
+    }
+    while(yh<h);
   }
 }
 
 
 
 
-FXDEFMAP(ThemeButton) ThemeButtonMap[]={
-	FXMAPFUNC( SEL_PAINT, 0, ThemeButton::onPaint)
+FXDEFMAP(ThemeButton) ThemeButtonMap[]= {
+  FXMAPFUNC( SEL_PAINT, 0, ThemeButton::onPaint)
 };
 
 FXIMPLEMENT( ThemeButton, FXButton, ThemeButtonMap, ARRAYNUMBER(ThemeButtonMap) );
 
 
 ThemeButton::ThemeButton(FXComposite* p, const FXString& text, FXIcon* ic,
-			 FXObject* tgt, FXSelector sel, FXuint opts,
-			 FXint x, FXint y, FXint w, FXint h,
-			 FXint pl, FXint pr, FXint pt, FXint pb)
+                         FXObject* tgt, FXSelector sel, FXuint opts,
+                         FXint x, FXint y, FXint w, FXint h,
+                         FXint pl, FXint pr, FXint pt, FXint pb)
   : FXButton( p, text, ic, tgt, sel, opts, x, y, w, h, pl, pr, pt, pb )
 {}
 
 // Handle repaint
-long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
+long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr) {
   FXint tw=0,th=0,iw=0,ih=0,tx,ty,ix,iy;
   FXEvent*ev=(FXEvent*)ptr;
   FXDCWindow dc(this,ev);
@@ -89,21 +96,21 @@ long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
 
   FXColor bordercolor = FXRGB(123,158,189);
 
-/*
-  FXPoint borderbackground[12]={FXPoint(0,0),FXPoint(0,1),FXPoint(1,0),
-  FXPoint(width-1,0),FXPoint(width-2,0),FXPoint(width-1,1),
-  FXPoint(0,height-1),FXPoint(0,height-2),FXPoint(1,height-1),
-  FXPoint(width-1,height-1),FXPoint(width-1,height-2),FXPoint(width-2,height-1)};
-*/
-  FXPoint basebackground[4]={FXPoint(0,0),FXPoint(width-1,0),FXPoint(0,height-1),FXPoint(width-1,height-1)};
+  /*
+    FXPoint borderbackground[12]={FXPoint(0,0),FXPoint(0,1),FXPoint(1,0),
+    FXPoint(width-1,0),FXPoint(width-2,0),FXPoint(width-1,1),
+    FXPoint(0,height-1),FXPoint(0,height-2),FXPoint(1,height-1),
+    FXPoint(width-1,height-1),FXPoint(width-1,height-2),FXPoint(width-2,height-1)};
+  */
+  FXPoint basebackground[4]= {FXPoint(0,0),FXPoint(width-1,0),FXPoint(0,height-1),FXPoint(width-1,height-1)};
 
-  FXPoint bordershade[16]={
+  FXPoint bordershade[16]= {
     FXPoint(0,1),FXPoint(1,0),FXPoint(1,2),FXPoint(2,1),
     FXPoint(width-2,0),FXPoint(width-1,1),FXPoint(width-3,1),FXPoint(width-2,2),
     FXPoint(0,height-2),FXPoint(1,height-1),FXPoint(1,height-3),FXPoint(2,height-2),
     FXPoint(width-1,height-2),FXPoint(width-2,height-1),FXPoint(width-2,height-3),FXPoint(width-3,height-2)
   };
-  FXPoint bordercorners[4]={
+  FXPoint bordercorners[4]= {
     FXPoint(1,1),FXPoint(1,height-2),FXPoint(width-2,1),FXPoint(width-2,height-2)
   };
 
@@ -151,11 +158,11 @@ long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
   }
 
   // Place text & icon
-  if(!label.empty()){
+  if(!label.empty()) {
     tw=labelWidth(label);
     th=labelHeight(label);
   }
-  if(icon){
+  if(icon) {
     iw=icon->getWidth();
     ih=icon->getHeight();
   }
@@ -164,21 +171,24 @@ long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
   just_y(ty,iy,th,ih);
 
   // Shift a bit when pressed
-  if (state && (options&(FRAME_RAISED|FRAME_SUNKEN))){
-    ++tx; ++ty; ++ix; ++iy;
+  if (state && (options&(FRAME_RAISED|FRAME_SUNKEN))) {
+    ++tx;
+    ++ty;
+    ++ix;
+    ++iy;
   }
 
   // Draw enabled state
-  if(isEnabled()){
-    if(icon){
+  if(isEnabled()) {
+    if(icon) {
       dc.drawIcon(icon,ix,iy);
     }
-    if(!label.empty()){
+    if(!label.empty()) {
       dc.setFont(font);
       dc.setForeground(textColor);
       drawLabel(dc,label,hotoff,tx,ty,tw,th);
     }
-    if(hasFocus()){
+    if(hasFocus()) {
       dc.drawFocusRectangle(border+1,border+1,width-2*border-2,height-2*border-2);
     }
   }
@@ -202,22 +212,21 @@ long ThemeButton::onPaint(FXObject*,FXSelector,void* ptr){
 
 
 
-FXDEFMAP(ThemeTextField) ThemeTextFieldMap[]={
+FXDEFMAP(ThemeTextField) ThemeTextFieldMap[]= {
   FXMAPFUNC( SEL_PAINT, 0, ThemeTextField::onPaint)
 };
 
 FXIMPLEMENT( ThemeTextField, FXTextField, ThemeTextFieldMap, ARRAYNUMBER(ThemeTextFieldMap) );
 
 ThemeTextField::ThemeTextField(FXComposite* p,FXint ncols,FXObject* tgt,FXSelector sel,
-			       FXuint opts,FXint x,FXint y,FXint w,FXint h,
-			       FXint pl,FXint pr,FXint pt,FXint pb)
-  : FXTextField( p, ncols, tgt, sel, opts, x, y, w, h, pl, pr, pt, pb )
-{
-	
+                               FXuint opts,FXint x,FXint y,FXint w,FXint h,
+                               FXint pl,FXint pr,FXint pt,FXint pb)
+  : FXTextField( p, ncols, tgt, sel, opts, x, y, w, h, pl, pr, pt, pb ) {
+
 }
 
 static void drawFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h) {
-  if(0<w && 0<h){
+  if(0<w && 0<h) {
     dc.setForeground(FXRGB(123,158,189));
     dc.fillRectangle(x,y,w,1);
     dc.fillRectangle(x,y,1,h);
@@ -230,8 +239,8 @@ static void drawFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h) {
 
 
 
-static void drawSunkenFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h){
-  if(0<w && 0<h){
+static void drawSunkenFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h) {
+  if(0<w && 0<h) {
     dc.setForeground(FXRGB(255,158,100));
     dc.fillRectangle(x,y,w,1);
     dc.fillRectangle(x,y,1,h);
@@ -239,7 +248,7 @@ static void drawSunkenFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h){
     dc.fillRectangle(x,y+h-1,w,1);
     dc.fillRectangle(x+w-1,y,1,h);
 
-    if(1<w && 1<h){
+    if(1<w && 1<h) {
       dc.fillRectangle(x+1,y+1,w-3,1);
       dc.fillRectangle(x+1,y+1,1,h-3);
       dc.fillRectangle(x+1,y+h-2,w-2,1);
@@ -251,7 +260,7 @@ static void drawSunkenFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h){
 
 
 static void drawHighlightFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h) {
-  if (0<w && 0<h){
+  if (0<w && 0<h) {
     dc.setForeground(FXRGB(123,158,255));
     dc.fillRectangle(x,y,w,1);
     dc.fillRectangle(x,y,1,h);
@@ -259,7 +268,7 @@ static void drawHighlightFrame(FXDCWindow& dc,FXint x,FXint y,FXint w,FXint h) {
     dc.fillRectangle(x,y+h-1,w,1);
     dc.fillRectangle(x+w-1,y,1,h);
 
-    if (1<w && 1<h){
+    if (1<w && 1<h) {
       dc.fillRectangle(x+1,y+1,w-3,1);
       dc.fillRectangle(x+1,y+1,1,h-3);
       dc.fillRectangle(x+1,y+h-2,w-2,1);
@@ -289,9 +298,9 @@ long ThemeTextField::onPaint(FXObject*,FXSelector,void* ptr) {
   // Draw text, clipped against frame interior
   dc.setClipRectangle(border,border,width-(border<<1),height-(border<<1));
   drawTextRange(dc,0,contents.length());
-  
+
   // Draw caret
-  if (flags&FLAG_CARET){
+  if (flags&FLAG_CARET) {
     int xx=coord(cursor)-1;
     dc.setForeground(cursorColor);
     dc.fillRectangle(xx,padtop+border,1,height-padbottom-padtop-(border<<1));
@@ -315,11 +324,11 @@ struct ColorTheme {
   FXColor tipfore;
   FXColor menuback;
   FXColor menufore;
-  };
+};
 
 
-const ColorTheme ColorThemes[]={
-	{"Redmond XP",FXRGB(238,238,230),FXRGB(  0,  0,  0),FXRGB(255,255,255),FXRGB(  0,  0,  0),FXRGB( 74,121,205),FXRGB(255,255,255),FXRGB(255,255,225),FXRGB(  0,  0,  0),FXRGB( 74,121,205),FXRGB(255,255,255)}
+const ColorTheme ColorThemes[]= {
+  {"Redmond XP",FXRGB(238,238,230),FXRGB(  0,  0,  0),FXRGB(255,255,255),FXRGB(  0,  0,  0),FXRGB( 74,121,205),FXRGB(255,255,255),FXRGB(255,255,225),FXRGB(  0,  0,  0),FXRGB( 74,121,205),FXRGB(255,255,255)}
 };
 
 
@@ -341,29 +350,28 @@ void init_theme(FXApp *app) {
 
 
 
-FXDEFMAP(ThemeComboBox) ThemeComboBoxMap[]={
+FXDEFMAP(ThemeComboBox) ThemeComboBoxMap[]= {
   FXMAPFUNC( SEL_PAINT, 0, ThemeComboBox::onPaint)
 };
 
 FXIMPLEMENT( ThemeComboBox, FXComboBox, ThemeComboBoxMap, ARRAYNUMBER(ThemeComboBoxMap) );
 
 ThemeComboBox::ThemeComboBox(FXComposite *p,FXint cols,FXObject* tgt,FXSelector sel,FXuint opts,
-			     FXint x,FXint y,FXint w,FXint h,
-			     FXint pl,FXint pr,FXint pt,FXint pb)
-  : FXComboBox(p,cols, tgt, sel, opts,x,y,w,h, pl,pr,pt,pb)
-{
+                             FXint x,FXint y,FXint w,FXint h,
+                             FXint pl,FXint pr,FXint pt,FXint pb)
+  : FXComboBox(p,cols, tgt, sel, opts,x,y,w,h, pl,pr,pt,pb) {
   delete button;
 
   button=new ThemeMenuButton(this,FXString::null, NULL, pane,
-			     FRAME_RAISED|MENUBUTTON_DOWN|MENUBUTTON_ATTACH_RIGHT,
-			     0,0,0,0, 0,0,0,0);
+                             FRAME_RAISED|MENUBUTTON_DOWN|MENUBUTTON_ATTACH_RIGHT,
+                             0,0,0,0, 0,0,0,0);
   button->setXOffset(border);
   button->setYOffset(border);
 }
 
 
 
-long ThemeComboBox::onPaint(FXObject*,FXSelector,void* ptr){
+long ThemeComboBox::onPaint(FXObject*,FXSelector,void* ptr) {
   FXEvent *ev=(FXEvent*)ptr;
   FXDCWindow dc(this,ev);
 
@@ -377,17 +385,16 @@ long ThemeComboBox::onPaint(FXObject*,FXSelector,void* ptr){
 
 
 
-FXDEFMAP(ThemeLabel) ThemeLabelMap[]={
-	FXMAPFUNC( SEL_PAINT, 0, ThemeLabel::onPaint )
+FXDEFMAP(ThemeLabel) ThemeLabelMap[]= {
+  FXMAPFUNC( SEL_PAINT, 0, ThemeLabel::onPaint )
 };
 
 FXIMPLEMENT( ThemeLabel, FXLabel, ThemeLabelMap, ARRAYNUMBER( ThemeLabelMap ));
 
 ThemeLabel::ThemeLabel(FXComposite* p,const FXString& text,FXIcon* ic,FXuint opts,
-		       FXint x,FXint y,FXint w,FXint h,FXint pl,FXint pr,FXint pt,FXint pb)
-  : FXLabel( p, text, ic, opts, x, y, w, h, pl, pr, pt, pb )
-{
-	
+                       FXint x,FXint y,FXint w,FXint h,FXint pl,FXint pr,FXint pt,FXint pb)
+  : FXLabel( p, text, ic, opts, x, y, w, h, pl, pr, pt, pb ) {
+
 }
 
 
@@ -399,11 +406,11 @@ long ThemeLabel::onPaint(FXObject*,FXSelector,void* ptr) {
   FXint      tw=0,th=0,iw=0,ih=0,tx,ty,ix,iy;
   dc.setForeground(backColor);
   dc.fillRectangle(0,0,width,height);
-  if (!label.empty()){
+  if (!label.empty()) {
     tw=labelWidth(label);
     th=labelHeight(label);
   }
-  if (icon){
+  if (icon) {
     iw=icon->getWidth();
     ih=icon->getHeight();
   }
@@ -415,9 +422,9 @@ long ThemeLabel::onPaint(FXObject*,FXSelector,void* ptr) {
     else
       dc.drawIconSunken(icon,ix,iy);
   }
-  if (!label.empty()){
+  if (!label.empty()) {
     dc.setFont(font);
-    if(isEnabled()){
+    if(isEnabled()) {
       dc.setForeground(textColor);
       drawLabel(dc,label,hotoff,tx,ty,tw,th);
     }
@@ -443,16 +450,15 @@ long ThemeLabel::onPaint(FXObject*,FXSelector,void* ptr) {
 
 
 
-FXDEFMAP(ThemeTabItem) ThemeTabItemMap[]={
+FXDEFMAP(ThemeTabItem) ThemeTabItemMap[]= {
 //	FXMAPFUNC( SEL_PAINT, 0, ThemeTabItem::onPaint )
 };
 
 FXIMPLEMENT( ThemeTabItem, FXTabItem, ThemeTabItemMap, ARRAYNUMBER( ThemeTabItemMap ));
 
 ThemeTabItem::ThemeTabItem(FXTabBar* p,const FXString& text,FXIcon* ic,FXuint opts,
-			   FXint x,FXint y,FXint w,FXint h,FXint pl,FXint pr,FXint pt,FXint pb)
-  : FXTabItem(p,text,ic,opts,x,y,w,h,pl,pr,pt,pb)
-{
+                           FXint x,FXint y,FXint w,FXint h,FXint pl,FXint pr,FXint pt,FXint pb)
+  : FXTabItem(p,text,ic,opts,x,y,w,h,pl,pr,pt,pb) {
   shadowColor = FXRGB(123,158,189);
   borderColor = FXRGB(123,158,189);
   hiliteColor = FXRGB(123,158,189);
@@ -462,17 +468,15 @@ ThemeTabItem::ThemeTabItem(FXTabBar* p,const FXString& text,FXIcon* ic,FXuint op
 
 
 ThemeVerticalFrame::ThemeVerticalFrame(FXComposite* p,FXuint opts,FXint x,FXint y,FXint w,FXint h,
-				       FXint pl,FXint pr,FXint pt,FXint pb,FXint hs,FXint vs)
-: FXVerticalFrame( p, opts, x, y, w, h, pl, pr, pt, pb, hs, vs )
-{
+                                       FXint pl,FXint pr,FXint pt,FXint pb,FXint hs,FXint vs)
+  : FXVerticalFrame( p, opts, x, y, w, h, pl, pr, pt, pb, hs, vs ) {
   setHiliteColor( FXRGB(123,158,189) );
 }
 
 
 ThemeHorizontalFrame::ThemeHorizontalFrame(FXComposite* p,FXuint opts,FXint x,FXint y,FXint w,FXint h,
-					   FXint pl,FXint pr,FXint pt,FXint pb,FXint hs,FXint vs)
-: FXHorizontalFrame( p, opts, x, y, w, h, pl, pr, pt, pb, hs, vs )
-{
+    FXint pl,FXint pr,FXint pt,FXint pb,FXint hs,FXint vs)
+  : FXHorizontalFrame( p, opts, x, y, w, h, pl, pr, pt, pb, hs, vs ) {
   setHiliteColor( FXRGB(123,158,189) );
 }
 
@@ -482,7 +486,7 @@ ThemeHorizontalFrame::ThemeHorizontalFrame(FXComposite* p,FXuint opts,FXint x,FX
 #define MENUBUTTONARROW_WIDTH  13
 #define MENUBUTTONARROW_HEIGHT  5
 
-FXDEFMAP(ThemeMenuButton) ThemeMenuButtonMap[]={
+FXDEFMAP(ThemeMenuButton) ThemeMenuButtonMap[]= {
   FXMAPFUNC( SEL_PAINT, 0, ThemeMenuButton::onPaint)
 };
 
@@ -490,12 +494,11 @@ FXIMPLEMENT( ThemeMenuButton, FXMenuButton, ThemeMenuButtonMap, ARRAYNUMBER(Them
 
 
 ThemeMenuButton::ThemeMenuButton(FXComposite* p,const FXString& text,
-				 FXIcon* ic,FXPopup* pup,FXuint opts,
-				 FXint x,FXint y,FXint w,FXint h,
-				 FXint pl,FXint pr,FXint pt,FXint pb )
+                                 FXIcon* ic,FXPopup* pup,FXuint opts,
+                                 FXint x,FXint y,FXint w,FXint h,
+                                 FXint pl,FXint pr,FXint pt,FXint pb )
   : FXMenuButton( p, text, ic, pup, opts, x, y, w, h,
-		 pl, pr, pt, pb)
-{
+                  pl, pr, pt, pb) {
 }
 
 
@@ -520,130 +523,130 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
   // FXColor bordercolor = FXRGB(123,158,189);
   FXColor bordercolor = shade;
 
-  FXPoint basebackground[4]={
+  FXPoint basebackground[4]= {
     FXPoint(0,0),FXPoint(width-1,0),FXPoint(0,height-1),FXPoint(width-1,height-1)
   };
-  FXPoint bordershade[16]={
+  FXPoint bordershade[16]= {
     FXPoint(0,1),FXPoint(1,0),FXPoint(1,2),FXPoint(2,1),
     FXPoint(width-2,0),FXPoint(width-1,1),FXPoint(width-3,1),FXPoint(width-2,2),
     FXPoint(0,height-2),FXPoint(1,height-1),FXPoint(1,height-3),FXPoint(2,height-2),
     FXPoint(width-1,height-2),FXPoint(width-2,height-1),FXPoint(width-2,height-3),FXPoint(width-3,height-2)
   };
-  FXPoint bordercorners[4]={
+  FXPoint bordercorners[4]= {
     FXPoint(1,1),FXPoint(1,height-2),FXPoint(width-2,1),FXPoint(width-2,height-2)
   };
 
 
   // Got a border at all?
-  if (options&(FRAME_RAISED|FRAME_SUNKEN)){
+  if (options&(FRAME_RAISED|FRAME_SUNKEN)) {
 
     // Toolbar style
-    if (options&MENUBUTTON_TOOLBAR){
+    if (options&MENUBUTTON_TOOLBAR) {
 
       // Enabled and cursor inside, and not popped up
-      if (isEnabled() && underCursor() && !state){
-	dc.setForeground(backColor);
-	dc.fillRectangle(border,border,width-border*2,height-border*2);
-	if(options&FRAME_THICK) drawDoubleRaisedRectangle(dc,0,0,width,height);
-	else drawRaisedRectangle(dc,0,0,width,height);
+      if (isEnabled() && underCursor() && !state) {
+        dc.setForeground(backColor);
+        dc.fillRectangle(border,border,width-border*2,height-border*2);
+        if(options&FRAME_THICK) drawDoubleRaisedRectangle(dc,0,0,width,height);
+        else drawRaisedRectangle(dc,0,0,width,height);
       }
 
       // Enabled and popped up
-      else if (isEnabled() && state){
-	dc.setForeground(hiliteColor);
-	dc.fillRectangle(border,border,width-border*2,height-border*2);
-	if(options&FRAME_THICK) drawDoubleSunkenRectangle(dc,0,0,width,height);
-	else drawSunkenRectangle(dc,0,0,width,height);
+      else if (isEnabled() && state) {
+        dc.setForeground(hiliteColor);
+        dc.fillRectangle(border,border,width-border*2,height-border*2);
+        if(options&FRAME_THICK) drawDoubleSunkenRectangle(dc,0,0,width,height);
+        else drawSunkenRectangle(dc,0,0,width,height);
       }
 
       // Disabled or unchecked or not under cursor
       else {
-	dc.setForeground(backColor);
-	dc.fillRectangle(0,0,width,height);
+        dc.setForeground(backColor);
+        dc.fillRectangle(0,0,width,height);
       }
     }
 
     // Normal style
     else {
       // Draw in up state if disabled or up
-      if (!isEnabled() || !state){
-	/*
-         * dc.setForeground(backColor);
-	 dc.fillRectangle(border,border,width-border*2,height-border*2);
-	 if(options&FRAME_THICK) drawDoubleRaisedRectangle(dc,0,0,width,height);
-	 else drawRaisedRectangle(dc,0,0,width,height);
-	 */
-	/// Outside Background
-	dc.setForeground(baseColor);
-	dc.drawPoints(basebackground,4);
-	/// Border
-	dc.setForeground(bordercolor);
-	dc.drawRectangle(2,0,width-5,0);
-	dc.drawRectangle(2,height-1,width-5,height-1);
-	dc.drawRectangle(0,2,0,height-5);
-	dc.drawRectangle(width-1,2,0,height-5);
-	dc.drawPoints(bordercorners,4);
-	dc.setForeground(shade);
-	dc.drawPoints(bordershade,16);
-	/// Gradient
-	drawRectangle(dc,top,bottom,2,1,width-4,height-2);
-	dc.setForeground(top);
-	dc.drawRectangle(1,3,0,height-7);
-	dc.setForeground(bottom);
-	dc.drawRectangle(width-2,3,0,height-7);
+      if (!isEnabled() || !state) {
+        /*
+               * dc.setForeground(backColor);
+         dc.fillRectangle(border,border,width-border*2,height-border*2);
+         if(options&FRAME_THICK) drawDoubleRaisedRectangle(dc,0,0,width,height);
+         else drawRaisedRectangle(dc,0,0,width,height);
+         */
+        /// Outside Background
+        dc.setForeground(baseColor);
+        dc.drawPoints(basebackground,4);
+        /// Border
+        dc.setForeground(bordercolor);
+        dc.drawRectangle(2,0,width-5,0);
+        dc.drawRectangle(2,height-1,width-5,height-1);
+        dc.drawRectangle(0,2,0,height-5);
+        dc.drawRectangle(width-1,2,0,height-5);
+        dc.drawPoints(bordercorners,4);
+        dc.setForeground(shade);
+        dc.drawPoints(bordershade,16);
+        /// Gradient
+        drawRectangle(dc,top,bottom,2,1,width-4,height-2);
+        dc.setForeground(top);
+        dc.drawRectangle(1,3,0,height-7);
+        dc.setForeground(bottom);
+        dc.drawRectangle(width-2,3,0,height-7);
       }
 
       // Draw sunken if enabled and either checked or pressed
       else {
-	dc.setForeground(baseColor);
-	dc.drawPoints(basebackground,4);
-	/// Border
-	dc.setForeground(bordercolor);
-	dc.drawRectangle(2,0,width-5,0);
-	dc.drawRectangle(2,height-1,width-5,height-1);
-	dc.drawRectangle(0,2,0,height-5);
-	dc.drawRectangle(width-1,2,0,height-5);
-	dc.drawPoints(bordercorners,4);
-	dc.setForeground(shade);
-	dc.drawPoints(bordershade,16);
+        dc.setForeground(baseColor);
+        dc.drawPoints(basebackground,4);
+        /// Border
+        dc.setForeground(bordercolor);
+        dc.drawRectangle(2,0,width-5,0);
+        dc.drawRectangle(2,height-1,width-5,height-1);
+        dc.drawRectangle(0,2,0,height-5);
+        dc.drawRectangle(width-1,2,0,height-5);
+        dc.drawPoints(bordercorners,4);
+        dc.setForeground(shade);
+        dc.drawPoints(bordershade,16);
 
-	dc.setForeground(FXRGB(0xdc,0xd4,0xc9));
-	dc.fillRectangle(2,1,width-4,height-2);
+        dc.setForeground(FXRGB(0xdc,0xd4,0xc9));
+        dc.fillRectangle(2,1,width-4,height-2);
       }
     }
   }
 
   // No borders
   else {
-    if(isEnabled() && state){
+    if(isEnabled() && state) {
       dc.setForeground(hiliteColor);
       dc.fillRectangle(0,0,width,height);
     }
-    else{
+    else {
       dc.setForeground(backColor);
       dc.fillRectangle(0,0,width,height);
     }
   }
 
   // Position text & icon
-  if (!label.empty()){
+  if (!label.empty()) {
     tw=labelWidth(label);
     th=labelHeight(label);
   }
 
   // Icon?
-  if (icon){
+  if (icon) {
     iw=icon->getWidth();
     ih=icon->getHeight();
   }
 
   // Arrows?
-  else if(!(options&MENUBUTTON_NOARROWS)){
-    if(options&MENUBUTTON_LEFT){
+  else if(!(options&MENUBUTTON_NOARROWS)) {
+    if(options&MENUBUTTON_LEFT) {
       ih=MENUBUTTONARROW_WIDTH;
       iw=MENUBUTTONARROW_HEIGHT;
     }
-    else{
+    else {
       iw=MENUBUTTONARROW_WIDTH;
       ih=MENUBUTTONARROW_HEIGHT;
     }
@@ -654,12 +657,15 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
   just_y(ty,iy,th,ih);
 
   // Move a bit when pressed
-  if (state){
-    ++tx; ++ty; ++ix; ++iy;
+  if (state) {
+    ++tx;
+    ++ty;
+    ++ix;
+    ++iy;
   }
 
   // Draw icon
-  if (icon){
+  if (icon) {
     if (isEnabled())
       dc.drawIcon(icon,ix,iy);
     else
@@ -667,14 +673,14 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
   }
 
   // Draw arrows
-  else if (!(options&MENUBUTTON_NOARROWS)){
+  else if (!(options&MENUBUTTON_NOARROWS)) {
 
     // Right arrow
-    if ((options&MENUBUTTON_RIGHT)==MENUBUTTON_RIGHT){
+    if ((options&MENUBUTTON_RIGHT)==MENUBUTTON_RIGHT) {
       if (isEnabled())
-	dc.setForeground(buttoncolor);
+        dc.setForeground(buttoncolor);
       else
-	dc.setForeground(shadowColor);
+        dc.setForeground(shadowColor);
       points[0].x=ix;
       points[0].y=iy;
       points[1].x=ix;
@@ -685,11 +691,11 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
     }
 
     // Left arrow
-    else if (options&MENUBUTTON_LEFT){
+    else if (options&MENUBUTTON_LEFT) {
       if (isEnabled())
-	dc.setForeground(buttoncolor);
+        dc.setForeground(buttoncolor);
       else
-	dc.setForeground(shadowColor);
+        dc.setForeground(shadowColor);
       points[0].x=ix+MENUBUTTONARROW_HEIGHT;
       points[0].y=iy;
       points[1].x=ix+MENUBUTTONARROW_HEIGHT;
@@ -700,11 +706,11 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
     }
 
     // Up arrow
-    else if (options&MENUBUTTON_UP){
+    else if (options&MENUBUTTON_UP) {
       if(isEnabled())
-	dc.setForeground(buttoncolor);
+        dc.setForeground(buttoncolor);
       else
-	dc.setForeground(shadowColor);
+        dc.setForeground(shadowColor);
       points[0].x=(FXshort)(ix+(MENUBUTTONARROW_WIDTH>>1));
       points[0].y=iy-1;
       points[1].x=ix;
@@ -717,9 +723,9 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
     // Down arrow
     else {
       if(isEnabled())
-	dc.setForeground(buttoncolor);
+        dc.setForeground(buttoncolor);
       else
-	dc.setForeground(shadowColor);
+        dc.setForeground(shadowColor);
       points[0].x=ix+1;
       points[0].y=iy;
       points[2].x=ix+MENUBUTTONARROW_WIDTH-1;
@@ -737,9 +743,9 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
   }
 
   // Draw text
-  if (!label.empty()){
+  if (!label.empty()) {
     dc.setFont(font);
-    if(isEnabled()){
+    if(isEnabled()) {
       dc.setForeground(textColor);
       drawLabel(dc,label,hotoff,tx,ty,tw,th);
     }
@@ -752,8 +758,8 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
   }
 
   // Draw focus
-  if (hasFocus()){
-    if (isEnabled()){
+  if (hasFocus()) {
+    if (isEnabled()) {
       dc.drawFocusRectangle(border+1,border+1,width-2*border-2,height-2*border-2);
     }
   }
@@ -763,13 +769,14 @@ long ThemeMenuButton::onPaint(FXObject*,FXSelector,void* ptr) {
 
 
 // Get default width
-FXint ThemeMenuButton::getDefaultWidth(){
+FXint ThemeMenuButton::getDefaultWidth() {
   FXint tw=0,iw=0,s=0,w,pw;
 
-  if (!label.empty()){
-    tw=labelWidth(label); s=4;
+  if (!label.empty()) {
+    tw=labelWidth(label);
+    s=4;
   }
-  if (!(options&MENUBUTTON_NOARROWS)){
+  if (!(options&MENUBUTTON_NOARROWS)) {
     if (options&MENUBUTTON_LEFT)
       iw=MENUBUTTONARROW_HEIGHT;
     else
@@ -785,10 +792,10 @@ FXint ThemeMenuButton::getDefaultWidth(){
   if (!(options&MENUBUTTON_LEFT) &&
       (options&MENUBUTTON_ATTACH_RIGHT) &&
       (options&MENUBUTTON_ATTACH_CENTER)) {
-    if (pane){
+    if (pane) {
       pw=pane->getDefaultWidth();
       if(pw>w)
-	w=pw;
+        w=pw;
     }
   }
   return w;
@@ -798,7 +805,7 @@ FXint ThemeMenuButton::getDefaultWidth(){
 
 
 #if 0
-FXDEFMAP(ThemeHeaderItem) ThemeHeaderItemMap[]={
+FXDEFMAP(ThemeHeaderItem) ThemeHeaderItemMap[]= {
   FXMAPFUNC(SEL_PAINT, 0, ThemeHeaderItem::onPaint)
 };
 
@@ -807,8 +814,7 @@ FXIMPLEMENT(ThemeHeaderItem, FXHeaderItem, ThemeHeaderItemMap, ARRAYNUMBER(Theme
 
 
 ThemeHeaderItem::ThemeHeaderItem(const FXString& text, FXIcon* ic, FXint s, void* ptr)
-  :FXHeaderItem(text, ic, s, ptr)
-{
+  :FXHeaderItem(text, ic, s, ptr) {
 }
 
 
@@ -832,8 +838,10 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
   drawRectangle(dc,top, bottom, x+2, y+1, w-4, h-2);
 
   // Shrink by margins
-  x+=ml; w-=ml+mr;
-  y+=mt; h-=mt+mb;
+  x+=ml;
+  w-=ml+mr;
+  y+=mt;
+  h-=mt+mb;
 
   // Initial clip rectangle
   dc.setClipRectangle(x,y,w,h);
@@ -851,7 +859,7 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
   while(end<label.length());
 
   // Icon size
-  if(icon){
+  if(icon) {
     iw=icon->getWidth();
     ih=icon->getHeight();
   }
@@ -861,7 +869,7 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
     s=ICON_SPACING;
 
   // Draw arrows
-  if (state&(ARROW_UP|ARROW_DOWN)){
+  if (state&(ARROW_UP|ARROW_DOWN)) {
     aa=(font->getFontHeight()-5)|1;
     ay=y+(h-aa)/2;
     ax=x+w-aa-2;
@@ -884,52 +892,56 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
   }
 
   // Fix x coordinate
-  if (state&LEFT){
-    if(state&BEFORE){
-      ix=x; tx=ix+iw+s;
+  if (state&LEFT) {
+    if(state&BEFORE) {
+      ix=x;
+      tx=ix+iw+s;
     }
-    else if (state&AFTER){
-      tx=x; ix=tx+tw+s;
+    else if (state&AFTER) {
+      tx=x;
+      ix=tx+tw+s;
     }
     else {
-      ix=x; tx=x;
+      ix=x;
+      tx=x;
     }
   }
-  else if(state&RIGHT){
-    if(state&BEFORE){
+  else if(state&RIGHT) {
+    if(state&BEFORE) {
       tx=x+w-tw;
       ix=tx-iw-s;
     }
-    else if (state&AFTER){
+    else if (state&AFTER) {
       ix=x+w-iw;
       tx=ix-tw-s;
     }
     else {
-      ix=x+w-iw; tx=x+w-tw;
+      ix=x+w-iw;
+      tx=x+w-tw;
     }
   }
-  else{
-    if (state&BEFORE){
+  else {
+    if (state&BEFORE) {
       ix=x+(w-tw-iw-s)/2;
       tx=ix+iw+s;
     }
-    else if (state&AFTER){
+    else if (state&AFTER) {
       tx=x+(w-tw-iw-s)/2;
       ix=tx+tw+s;
     }
-    else{
+    else {
       ix=x+(w-iw)/2;
       tx=x+(w-tw)/2;
     }
   }
 
   // Fix y coordinate
-  if(state&TOP){
-    if (state&ABOVE){
+  if(state&TOP) {
+    if (state&ABOVE) {
       iy=y;
       ty=iy+ih;
     }
-    else if (state&BELOW){
+    else if (state&BELOW) {
       ty=y;
       iy=ty+th;
     }
@@ -938,26 +950,26 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
       ty=y;
     }
   }
-  else if(state&BOTTOM){
-    if (state&ABOVE){
+  else if(state&BOTTOM) {
+    if (state&ABOVE) {
       ty=y+h-th;
       iy=ty-ih;
     }
-    else if (state&BELOW){
+    else if (state&BELOW) {
       iy=y+h-ih;
       ty=iy-th;
     }
-    else{
+    else {
       iy=y+h-ih;
       ty=y+h-th;
     }
   }
   else {
-    if (state&ABOVE){
+    if (state&ABOVE) {
       iy=y+(h-th-ih)/2;
       ty=iy+ih;
     }
-    else if (state&BELOW){
+    else if (state&BELOW) {
       ty=y+(h-th-ih)/2;
       iy=ty+th;
     }
@@ -968,7 +980,7 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
   }
 
   // Offset a bit when pressed
-  if (state&PRESSED){
+  if (state&PRESSED) {
     tx++;
     ty++;
     ix++;
@@ -976,7 +988,7 @@ void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint
   }
 
   // Paint icon
-  if (icon){
+  if (icon) {
     dc.drawIcon(icon,ix,iy);
   }
 

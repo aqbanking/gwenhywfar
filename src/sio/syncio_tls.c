@@ -280,34 +280,34 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
     rv=GWEN_Directory_GetMatchingFilesRecursively(folder, fileList, "*.crt");
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error reading list of certificate files (%d) in folder [%s]",
-		rv, folder);
+                "Error reading list of certificate files (%d) in folder [%s]",
+                rv, folder);
     }
     else {
       GWEN_STRINGLISTENTRY *se;
-  
+
       se=GWEN_StringList_FirstEntry(fileList);
       while(se) {
-	const char *s;
+        const char *s;
 
-	s=GWEN_StringListEntry_Data(se);
-	if (s && *s) {
-	  rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-						    s,
-						    GNUTLS_X509_FMT_PEM);
-	  if (rv<=0) {
-	    DBG_WARN(GWEN_LOGDOMAIN,
-		     "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
-		     s, rv, gnutls_strerror(rv));
-	  }
-	  else {
-	    DBG_INFO(GWEN_LOGDOMAIN,
-		     "Added %d trusted certs from [%s]", rv, s);
-	    successfullTustFileCount++;
-	  }
-	}
+        s=GWEN_StringListEntry_Data(se);
+        if (s && *s) {
+          rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
+              s,
+              GNUTLS_X509_FMT_PEM);
+          if (rv<=0) {
+            DBG_WARN(GWEN_LOGDOMAIN,
+                     "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+                     s, rv, gnutls_strerror(rv));
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN,
+                     "Added %d trusted certs from [%s]", rv, s);
+            successfullTustFileCount++;
+          }
+        }
 
-	se=GWEN_StringListEntry_Next(se);
+        se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
     GWEN_StringList_free(fileList);
@@ -372,7 +372,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     }
   }
 #else /* new code */
-  { /* TODO: The following does not work with all servers, disabled for now  */
+  {
+    /* TODO: The following does not work with all servers, disabled for now  */
     const char *errPos=NULL;
     const char *ciphers_default;
     GWEN_BUFFER *ciphers = NULL;
@@ -385,58 +386,58 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     if (ciphers_default && *ciphers_default) { /* use cipher list from env var */
       rv=GWEN_Buffer_AppendString(ciphers, ciphers_default);
       if (rv!=0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-	GWEN_Buffer_free(ciphers);
-	gnutls_deinit(xio->session);
-	return GWEN_ERROR_GENERIC;
+        DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
+        GWEN_Buffer_free(ciphers);
+        gnutls_deinit(xio->session);
+        return GWEN_ERROR_GENERIC;
       }
     }
     else { /* use hardcoded default ciphers */
 
       /* this might get removed later, because it is no longer needed */
       if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3) {
-	rv=GWEN_Buffer_AppendString(ciphers, "+VERS-SSL3.0:");
-	if (rv!=0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "failed to append SSLv3 prefix to cipher list: %d", rv);
-	  GWEN_Buffer_free(ciphers);
-	  gnutls_deinit(xio->session);
-	  return GWEN_ERROR_GENERIC;
-	}
+        rv=GWEN_Buffer_AppendString(ciphers, "+VERS-SSL3.0:");
+        if (rv!=0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "failed to append SSLv3 prefix to cipher list: %d", rv);
+          GWEN_Buffer_free(ciphers);
+          gnutls_deinit(xio->session);
+          return GWEN_ERROR_GENERIC;
+        }
       }
 
       if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_UNSAFE_CIPHERS) {
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("TLS: Warning - Forcing unsafe SSL-Ciphers per user request."));
-	/* add hardcoded 128-Bit-ciphers ciphers */
-	rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_UNSAFE);
-	if (rv!=0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-	  GWEN_Buffer_free(ciphers);
-	  gnutls_deinit(xio->session);
-	  return GWEN_ERROR_GENERIC;
-	}
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("TLS: Warning - Forcing unsafe SSL-Ciphers per user request."));
+        /* add hardcoded 128-Bit-ciphers ciphers */
+        rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_UNSAFE);
+        if (rv!=0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
+          GWEN_Buffer_free(ciphers);
+          gnutls_deinit(xio->session);
+          return GWEN_ERROR_GENERIC;
+        }
       }
       else {
-	/* add hardcoded default ciphers */
-	rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_DEFAULT);
-	if (rv!=0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-	  GWEN_Buffer_free(ciphers);
-	  gnutls_deinit(xio->session);
-	  return GWEN_ERROR_GENERIC;
-	}
-  
-	/* add list of disabled ciphers */
-	if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Removing unsafe ciphers");
-	  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("TLS: Disabling unsafe ciphers per user request."));
-	  rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
-	  if (rv!=0) {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
-	    GWEN_Buffer_free(ciphers);
-	    gnutls_deinit(xio->session);
-	    return GWEN_ERROR_GENERIC;
-	  }
-	}
+        /* add hardcoded default ciphers */
+        rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_DEFAULT);
+        if (rv!=0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
+          GWEN_Buffer_free(ciphers);
+          gnutls_deinit(xio->session);
+          return GWEN_ERROR_GENERIC;
+        }
+
+        /* add list of disabled ciphers */
+        if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Removing unsafe ciphers");
+          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("TLS: Disabling unsafe ciphers per user request."));
+          rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
+          if (rv!=0) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
+            GWEN_Buffer_free(ciphers);
+            gnutls_deinit(xio->session);
+            return GWEN_ERROR_GENERIC;
+          }
+        }
       }
     }
 
@@ -445,7 +446,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     rv=gnutls_priority_set_direct(xio->session, GWEN_Buffer_GetStart(ciphers), &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %d (%s) [%s]",
-		GWEN_Buffer_GetStart(ciphers), rv, gnutls_strerror(rv), errPos?errPos:"");
+                GWEN_Buffer_GetStart(ciphers), rv, gnutls_strerror(rv), errPos?errPos:"");
       GWEN_Buffer_free(ciphers);
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
@@ -473,15 +474,15 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   /* possibly set key file and cert file */
   if (xio->localCertFile && xio->localKeyFile) {
     rv=gnutls_certificate_set_x509_key_file(xio->credentials,
-					    xio->localCertFile,
-					    xio->localKeyFile,
-					    GNUTLS_X509_FMT_PEM);
+                                            xio->localCertFile,
+                                            xio->localKeyFile,
+                                            GNUTLS_X509_FMT_PEM);
     if (rv<0) {
       if (rv) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: %d (%s)", rv, gnutls_strerror(rv));
-	gnutls_certificate_free_credentials(xio->credentials);
-	gnutls_deinit(xio->session);
-	return GWEN_ERROR_GENERIC;
+        DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: %d (%s)", rv, gnutls_strerror(rv));
+        gnutls_certificate_free_credentials(xio->credentials);
+        gnutls_deinit(xio->session);
+        return GWEN_ERROR_GENERIC;
       }
     }
   }
@@ -501,27 +502,27 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
       nbuf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=GWEN_Directory_FindFileInPaths(paths,
-					"ca-certificates.crt",
-					nbuf);
+                                        "ca-certificates.crt",
+                                        nbuf);
       GWEN_StringList_free(paths);
       if (rv==0) {
-	DBG_INFO(GWEN_LOGDOMAIN,
-		 "Using default ca-bundle from [%s]",
-		 GWEN_Buffer_GetStart(nbuf));
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "Using default ca-bundle from [%s]",
+                 GWEN_Buffer_GetStart(nbuf));
 
-	rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-						  GWEN_Buffer_GetStart(nbuf),
-						  GNUTLS_X509_FMT_PEM);
-	if (rv<=0) {
-	  DBG_WARN(GWEN_LOGDOMAIN,
-		   "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
-		   GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
-	}
-	else {
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Added %d trusted certs from [%s]", rv, GWEN_Buffer_GetStart(nbuf));
-	  trustFileSet=1;
-	}
+        rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
+            GWEN_Buffer_GetStart(nbuf),
+            GNUTLS_X509_FMT_PEM);
+        if (rv<=0) {
+          DBG_WARN(GWEN_LOGDOMAIN,
+                   "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+                   GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Added %d trusted certs from [%s]", rv, GWEN_Buffer_GetStart(nbuf));
+          trustFileSet=1;
+        }
       }
       GWEN_Buffer_free(nbuf);
     }
@@ -533,13 +534,13 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     if (trustFileSet==0) {
       rv=GWEN_Directory_GetPath("/usr/share/ca-certificates", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
       if (rv>=0) {
-	rv=GWEN_SyncIo_Tls_AddCaCertFolder(sio, "/usr/share/ca-certificates");
-	if (rv<=0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	}
-	else {
-	  trustFileSet=1;
-	}
+        rv=GWEN_SyncIo_Tls_AddCaCertFolder(sio, "/usr/share/ca-certificates");
+        if (rv<=0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        }
+        else {
+          trustFileSet=1;
+        }
       }
     }
 
@@ -553,32 +554,32 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       /* try to find our trust file */
       paths=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
       if (paths) {
-	GWEN_BUFFER *nbuf;
+        GWEN_BUFFER *nbuf;
 
-	nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	rv=GWEN_Directory_FindFileInPaths(paths,
-					  "ca-bundle.crt",
-					  nbuf);
-	GWEN_StringList_free(paths);
-	if (rv==0) {
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Using default ca-bundle from [%s]",
-		   GWEN_Buffer_GetStart(nbuf));
-	  rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-						    GWEN_Buffer_GetStart(nbuf),
-						    GNUTLS_X509_FMT_PEM);
-	  if (rv<=0) {
-	    DBG_ERROR(GWEN_LOGDOMAIN,
-		      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
-		      GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
-	  }
-	  else {
-	    DBG_INFO(GWEN_LOGDOMAIN,
-		     "Added %d trusted certs", rv);
-	    trustFileSet=1;
-	  }
-	}
-	GWEN_Buffer_free(nbuf);
+        nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        rv=GWEN_Directory_FindFileInPaths(paths,
+                                          "ca-bundle.crt",
+                                          nbuf);
+        GWEN_StringList_free(paths);
+        if (rv==0) {
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Using default ca-bundle from [%s]",
+                   GWEN_Buffer_GetStart(nbuf));
+          rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
+              GWEN_Buffer_GetStart(nbuf),
+              GNUTLS_X509_FMT_PEM);
+          if (rv<=0) {
+            DBG_ERROR(GWEN_LOGDOMAIN,
+                      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+                      GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN,
+                     "Added %d trusted certs", rv);
+            trustFileSet=1;
+          }
+        }
+        GWEN_Buffer_free(nbuf);
       }
     }
 
@@ -590,13 +591,13 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   /* possibly set trust file */
   if (xio->localTrustFile) {
     rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-					      xio->localTrustFile,
-					      GNUTLS_X509_FMT_PEM);
+        xio->localTrustFile,
+        GNUTLS_X509_FMT_PEM);
     if (rv<=0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
-		(xio->localTrustFile)?(xio->localTrustFile):"-none-",
-		rv, gnutls_strerror(rv));
+                "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
+                (xio->localTrustFile)?(xio->localTrustFile):"-none-",
+                rv, gnutls_strerror(rv));
       gnutls_certificate_free_credentials(xio->credentials);
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
@@ -626,11 +627,11 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
       rv=gnutls_dh_params_init(&dh_params);
       if (rv<0) {
-	GWEN_Buffer_free(dbuf);
-	DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_dh_params_init: %d (%s)", rv, gnutls_strerror(rv));
-	gnutls_certificate_free_credentials(xio->credentials);
-	gnutls_deinit(xio->session);
-	return GWEN_ERROR_GENERIC;
+        GWEN_Buffer_free(dbuf);
+        DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_dh_params_init: %d (%s)", rv, gnutls_strerror(rv));
+        gnutls_certificate_free_credentials(xio->credentials);
+        gnutls_deinit(xio->session);
+        return GWEN_ERROR_GENERIC;
       }
 
       d.size=GWEN_Buffer_GetUsedBytes(dbuf);
@@ -638,11 +639,11 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
       rv=gnutls_dh_params_import_pkcs3(dh_params, &d, GNUTLS_X509_FMT_PEM);
       if (rv<0) {
-	GWEN_Buffer_free(dbuf);
-	DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_dh_params_import_pkcs3: %d (%s)", rv, gnutls_strerror(rv));
-	gnutls_certificate_free_credentials(xio->credentials);
-	gnutls_deinit(xio->session);
-	return GWEN_ERROR_GENERIC;
+        GWEN_Buffer_free(dbuf);
+        DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_dh_params_import_pkcs3: %d (%s)", rv, gnutls_strerror(rv));
+        gnutls_certificate_free_credentials(xio->credentials);
+        gnutls_deinit(xio->session);
+        return GWEN_ERROR_GENERIC;
       }
       GWEN_Buffer_free(dbuf);
 
@@ -735,7 +736,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
   /* some general tests */
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT)
     gnutls_certificate_set_verify_flags(xio->credentials,
-					GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
+                                        GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
 
   rv=gnutls_certificate_verify_peers2(xio->session, &status);
   if (rv<0) {
@@ -754,21 +755,21 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
   if (status & GNUTLS_CERT_SIGNER_NOT_FOUND) {
     DBG_INFO(GWEN_LOGDOMAIN, "Signer not found");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-			 I18N("Signer not found"));
+                         I18N("Signer not found"));
     errFlags|=GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND;
   }
 
   if (status & GNUTLS_CERT_INVALID) {
     DBG_INFO(GWEN_LOGDOMAIN, "Certificate is not trusted");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-			 I18N("Certificate is not trusted"));
+                         I18N("Certificate is not trusted"));
     errFlags|=GWEN_SSL_CERT_FLAGS_INVALID;
   }
 
   if (status & GNUTLS_CERT_REVOKED) {
     DBG_INFO(GWEN_LOGDOMAIN, "Certificate has been revoked");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-			 I18N("Certificate has been revoked"));
+                         I18N("Certificate has been revoked"));
     errFlags|=GWEN_SSL_CERT_FLAGS_REVOKED;
   }
 
@@ -796,85 +797,85 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
     }
 
     if (i==0) {
-      gnutls_datum_t n={NULL, 0};
-      gnutls_datum_t e={NULL, 0};
+      gnutls_datum_t n= {NULL, 0};
+      gnutls_datum_t e= {NULL, 0};
 
       /* get public key from cert, if any */
       rv=gnutls_x509_crt_get_pk_rsa_raw(cert, &n, &e);
       if (rv!=0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "gnutls_x509_crt_get_pk_rsa_raw: %d (%s)", rv, gnutls_strerror(rv));
+        DBG_INFO(GWEN_LOGDOMAIN, "gnutls_x509_crt_get_pk_rsa_raw: %d (%s)", rv, gnutls_strerror(rv));
       }
       else {
-	GWEN_BUFFER *kbuf;
+        GWEN_BUFFER *kbuf;
 
-	DBG_INFO(GWEN_LOGDOMAIN, "Key stored within certificate, extracting (modlen=%d, explen=%d)",
-		 n.size, e.size);
+        DBG_INFO(GWEN_LOGDOMAIN, "Key stored within certificate, extracting (modlen=%d, explen=%d)",
+                 n.size, e.size);
 
-	kbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        kbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-	if (n.data && n.size) {
-	  /* store public modulus */
-	  GWEN_Text_ToHexBuffer((const char*)(n.data), n.size, kbuf, 0, 0, 0);
-	  GWEN_SslCertDescr_SetPubKeyModulus(certDescr, GWEN_Buffer_GetStart(kbuf));
-	  GWEN_Buffer_Reset(kbuf);
-	}
+        if (n.data && n.size) {
+          /* store public modulus */
+          GWEN_Text_ToHexBuffer((const char*)(n.data), n.size, kbuf, 0, 0, 0);
+          GWEN_SslCertDescr_SetPubKeyModulus(certDescr, GWEN_Buffer_GetStart(kbuf));
+          GWEN_Buffer_Reset(kbuf);
+        }
 
-	if (e.data && e.size) {
-	  /* store public exponent */
-	  GWEN_Text_ToHexBuffer((const char*)(e.data), e.size, kbuf, 0, 0, 0);
-	  GWEN_SslCertDescr_SetPubKeyExponent(certDescr, GWEN_Buffer_GetStart(kbuf));
-	  GWEN_Buffer_Reset(kbuf);
-	}
+        if (e.data && e.size) {
+          /* store public exponent */
+          GWEN_Text_ToHexBuffer((const char*)(e.data), e.size, kbuf, 0, 0, 0);
+          GWEN_SslCertDescr_SetPubKeyExponent(certDescr, GWEN_Buffer_GetStart(kbuf));
+          GWEN_Buffer_Reset(kbuf);
+        }
 
-	GWEN_Buffer_free(kbuf);
-	if (n.data)
-	  gcry_free(n.data);
-	if (e.data)
-	  gcry_free(e.data);
+        GWEN_Buffer_free(kbuf);
+        if (n.data)
+          gcry_free(n.data);
+        if (e.data)
+          gcry_free(e.data);
       }
 
-        /* get fingerprint */
+      /* get fingerprint */
       size=16;
       rv=gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_MD5, buffer1, &size);
       if (rv!=0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "gnutls_x509_crt_get_fingerprint: %d (%s)", rv, gnutls_strerror(rv));
-	GWEN_SslCertDescr_free(certDescr);
-	gnutls_x509_crt_deinit(cert);
-	return GWEN_ERROR_GENERIC;
+        DBG_INFO(GWEN_LOGDOMAIN, "gnutls_x509_crt_get_fingerprint: %d (%s)", rv, gnutls_strerror(rv));
+        GWEN_SslCertDescr_free(certDescr);
+        gnutls_x509_crt_deinit(cert);
+        return GWEN_ERROR_GENERIC;
       }
       else {
-	GWEN_BUFFER *dbuf;
+        GWEN_BUFFER *dbuf;
 
-	dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ buffer1,
-				  size, dbuf, 2, ':', 0)) {
-	  DBG_ERROR(GWEN_LOGDOMAIN,
-		    "Could not convert fingerprint to hex");
-	}
-	else {
-	  GWEN_SslCertDescr_SetFingerPrint(certDescr, GWEN_Buffer_GetStart(dbuf));
-	}
-	GWEN_Buffer_free(dbuf);
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ buffer1,
+            size, dbuf, 2, ':', 0)) {
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "Could not convert fingerprint to hex");
+        }
+        else {
+          GWEN_SslCertDescr_SetFingerPrint(certDescr, GWEN_Buffer_GetStart(dbuf));
+        }
+        GWEN_Buffer_free(dbuf);
       }
 
       if (xio->hostName) {
         DBG_INFO(GWEN_LOGDOMAIN, "Checking hostname [%s]", xio->hostName);
-	if (!gnutls_x509_crt_check_hostname(cert, xio->hostName)) {
-	  DBG_WARN(GWEN_LOGDOMAIN,
-		   "Certificate was not issued for this host");
-	  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-			       I18N("Certificate was not issued for this host"));
-	  errFlags|=GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME;
-	}
-	else {
+        if (!gnutls_x509_crt_check_hostname(cert, xio->hostName)) {
+          DBG_WARN(GWEN_LOGDOMAIN,
+                   "Certificate was not issued for this host");
+          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
+                               I18N("Certificate was not issued for this host"));
+          errFlags|=GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME;
+        }
+        else {
           DBG_INFO(GWEN_LOGDOMAIN, "Cert is for this server");
-	}
+        }
       }
       else {
-	DBG_WARN(GWEN_LOGDOMAIN,
-		 "Hostname is not set, unable to verify the sender");
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-			     I18N("No hostname to verify the sender!"));
+        DBG_WARN(GWEN_LOGDOMAIN,
+                 "Hostname is not set, unable to verify the sender");
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
+                             I18N("No hostname to verify the sender!"));
       }
 
     }
@@ -887,16 +888,16 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
     }
     else {
       if (t>t0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Cert is not yet active");
-	errFlags|=GWEN_SSL_CERT_FLAGS_NOT_ACTIVE;
+        DBG_INFO(GWEN_LOGDOMAIN, "Cert is not yet active");
+        errFlags|=GWEN_SSL_CERT_FLAGS_NOT_ACTIVE;
       }
       if (i==0) {
-	GWEN_TIME *ti;
+        GWEN_TIME *ti;
 
-	ti=GWEN_Time_fromSeconds(t);
-	if (ti)
-	  GWEN_SslCertDescr_SetNotBefore(certDescr, ti);
-	GWEN_Time_free(ti);
+        ti=GWEN_Time_fromSeconds(t);
+        if (ti)
+          GWEN_SslCertDescr_SetNotBefore(certDescr, ti);
+        GWEN_Time_free(ti);
       }
     }
 
@@ -908,16 +909,16 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
     }
     else {
       if (t<t0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Cert has expired");
-	errFlags|=GWEN_SSL_CERT_FLAGS_EXPIRED;
+        DBG_INFO(GWEN_LOGDOMAIN, "Cert has expired");
+        errFlags|=GWEN_SSL_CERT_FLAGS_EXPIRED;
       }
       if (i==0) {
-	GWEN_TIME *ti;
+        GWEN_TIME *ti;
 
-	ti=GWEN_Time_fromSeconds(t);
-	if (ti)
-	  GWEN_SslCertDescr_SetNotAfter(certDescr, ti);
-	GWEN_Time_free(ti);
+        ti=GWEN_Time_fromSeconds(t);
+        if (ti)
+          GWEN_SslCertDescr_SetNotAfter(certDescr, ti);
+        GWEN_Time_free(ti);
       }
     }
 
@@ -926,37 +927,37 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
       size=sizeof(buffer1)-1;
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_COMMON_NAME, 0, 0, buffer1, &size);
       if (rv==0) {
-	GWEN_SslCertDescr_SetCommonName(certDescr, buffer1);
-	if (xio->hostName && strcasecmp(xio->hostName, buffer1)!=0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Owner of certificate does not match hostname");
-	  errFlags|=GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME;
-	}
+        GWEN_SslCertDescr_SetCommonName(certDescr, buffer1);
+        if (xio->hostName && strcasecmp(xio->hostName, buffer1)!=0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Owner of certificate does not match hostname");
+          errFlags|=GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME;
+        }
       }
 
       size=sizeof(buffer1)-1;
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_ORGANIZATION_NAME, 0, 0, buffer1, &size);
       if (rv==0)
-	GWEN_SslCertDescr_SetOrganizationName(certDescr, buffer1);
+        GWEN_SslCertDescr_SetOrganizationName(certDescr, buffer1);
 
       size=sizeof(buffer1)-1;
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_ORGANIZATIONAL_UNIT_NAME, 0, 0, buffer1, &size);
       if (rv==0)
-	GWEN_SslCertDescr_SetOrganizationalUnitName(certDescr, buffer1);
+        GWEN_SslCertDescr_SetOrganizationalUnitName(certDescr, buffer1);
 
       size=sizeof(buffer1)-1;
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_LOCALITY_NAME, 0, 0, buffer1, &size);
       if (rv==0)
-	GWEN_SslCertDescr_SetLocalityName(certDescr, buffer1);
+        GWEN_SslCertDescr_SetLocalityName(certDescr, buffer1);
 
       size=sizeof(buffer1)-1;
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_STATE_OR_PROVINCE_NAME, 0, 0, buffer1, &size);
       if (rv==0)
-	GWEN_SslCertDescr_SetStateOrProvinceName(certDescr, buffer1);
+        GWEN_SslCertDescr_SetStateOrProvinceName(certDescr, buffer1);
 
       size=sizeof(buffer1)-1;
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_COUNTRY_NAME, 0, 0, buffer1, &size);
       if (rv==0)
-	GWEN_SslCertDescr_SetCountryName(certDescr, buffer1);
+        GWEN_SslCertDescr_SetCountryName(certDescr, buffer1);
     }
 
     gnutls_x509_crt_deinit(cert);
@@ -1240,26 +1241,27 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
 
   do {
     rv=gnutls_handshake(xio->session);
-  } while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  }
+  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
 
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_handshake: %d (%s) [%s]",
-	      rv, gnutls_strerror(rv), gnutls_error_is_fatal(rv)?"fatal":"non-fatal");
+              rv, gnutls_strerror(rv), gnutls_error_is_fatal(rv)?"fatal":"non-fatal");
     if (rv==GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("A TLS handshake error occurred. "
-				"If you are using AqBanking you should "
-				"consider enabling the option "
-				"\"force SSLv3\" in the user settings "
-				"dialog."));
+                           GWEN_LoggerLevel_Error,
+                           I18N("A TLS handshake error occurred. "
+                                "If you are using AqBanking you should "
+                                "consider enabling the option "
+                                "\"force SSLv3\" in the user settings "
+                                "dialog."));
     }
     else {
       GWEN_Gui_ProgressLog2(0,
-			    GWEN_LoggerLevel_Error,
-			    I18N("TLS Handshake Error: %d (%s)"),
-			    rv,
-			    gnutls_strerror(rv));
+                            GWEN_LoggerLevel_Error,
+                            I18N("TLS Handshake Error: %d (%s)"),
+                            rv,
+                            gnutls_strerror(rv));
     }
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
@@ -1275,32 +1277,32 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
     rv=GWEN_SyncIo_Tls_GetPeerCert(sio);
     if (rv<0) {
       if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_NEED_PEER_CERT) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "No peer certificate when needed, aborting connection");
-	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
-	GWEN_SyncIo_Tls_UndoPrepare(sio);
-	GWEN_SyncIo_Disconnect(baseIo);
-	return GWEN_ERROR_SSL_SECURITY;
+        DBG_ERROR(GWEN_LOGDOMAIN, "No peer certificate when needed, aborting connection");
+        GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+        GWEN_SyncIo_Tls_UndoPrepare(sio);
+        GWEN_SyncIo_Disconnect(baseIo);
+        return GWEN_ERROR_SSL_SECURITY;
       }
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "SSL connected (insecure)");
-	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
-	return 0;
+        DBG_INFO(GWEN_LOGDOMAIN, "SSL connected (insecure)");
+        GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
+        return 0;
       }
     }
     else {
       /* present cert to the user */
       rv=GWEN_Gui_CheckCert(xio->peerCertDescr, sio, 0);
       if (rv<0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);
-	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
-	GWEN_SyncIo_Tls_UndoPrepare(sio);
-	GWEN_SyncIo_Disconnect(baseIo);
-	return GWEN_ERROR_SSL_SECURITY;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);
+        GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+        GWEN_SyncIo_Tls_UndoPrepare(sio);
+        GWEN_SyncIo_Disconnect(baseIo);
+        return GWEN_ERROR_SSL_SECURITY;
       }
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "SSL connected (secure)");
-	GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_TLS_FLAGS_SECURE);
-	GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
+        DBG_INFO(GWEN_LOGDOMAIN, "SSL connected (secure)");
+        GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_TLS_FLAGS_SECURE);
+        GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
         return 0;
       }
     }
@@ -1330,15 +1332,16 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio) {
 
   do {
     rv=gnutls_bye(xio->session, GNUTLS_SHUT_RDWR);
-  } while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  }
+  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
 
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_bye: %d (%s)", rv, gnutls_strerror(rv));
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Info,
-			  I18N("Error on gnutls_bye: %d (%s)"),
-			  rv,
-			  gnutls_strerror(rv));
+                          GWEN_LoggerLevel_Info,
+                          I18N("Error on gnutls_bye: %d (%s)"),
+                          rv,
+                          gnutls_strerror(rv));
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
     GWEN_SyncIo_Disconnect(baseIo);
@@ -1354,8 +1357,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
-				       uint8_t *buffer,
-				       uint32_t size) {
+                                       uint8_t *buffer,
+                                       uint32_t size) {
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1376,16 +1379,17 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
 
   do {
     rv=gnutls_record_recv(xio->session, buffer, size);
-  } while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  }
+  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
 
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_recv: %d (%s)", rv, gnutls_strerror(rv));
 #if 0
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Error on gnutls_record_recv: %d (%s)"),
-			  rv,
-			  gnutls_strerror(rv));
+                          GWEN_LoggerLevel_Error,
+                          I18N("Error on gnutls_record_recv: %d (%s)"),
+                          rv,
+                          gnutls_strerror(rv));
 #endif
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
@@ -1404,8 +1408,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
-					const uint8_t *buffer,
-					uint32_t size) {
+                                        const uint8_t *buffer,
+                                        uint32_t size) {
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1431,15 +1435,16 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
 
   do {
     rv=gnutls_record_send(xio->session, buffer, size);
-  } while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  }
+  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
 
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_send: %d (%s)", rv, gnutls_strerror(rv));
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Error on gnutls_record_send: %d (%s)"),
-			  rv,
-			  gnutls_strerror(rv));
+                          GWEN_LoggerLevel_Error,
+                          I18N("Error on gnutls_record_send: %d (%s)"),
+                          rv,
+                          gnutls_strerror(rv));
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
     GWEN_SyncIo_Disconnect(baseIo);

@@ -36,8 +36,8 @@ GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGSHOWBOX)
 
 
 GWEN_DIALOG *GWEN_DlgShowBox_new(uint32_t flags,
-				 const char *title,
-				 const char *text) {
+                                 const char *title,
+                                 const char *text) {
   GWEN_DIALOG *dlg;
   GWEN_DLGSHOWBOX *xdlg;
   GWEN_BUFFER *fbuf;
@@ -47,15 +47,15 @@ GWEN_DIALOG *GWEN_DlgShowBox_new(uint32_t flags,
   GWEN_NEW_OBJECT(GWEN_DLGSHOWBOX, xdlg);
 
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GWEN_DLGSHOWBOX, dlg, xdlg,
-		       GWEN_DlgShowBox_FreeData);
+                       GWEN_DlgShowBox_FreeData);
 
   GWEN_Dialog_SetSignalHandler(dlg, GWEN_DlgShowBox_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "gwenhywfar/dialogs/dlg_showbox.dlg",
-			       fbuf);
+                               "gwenhywfar/dialogs/dlg_showbox.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -149,26 +149,26 @@ void GWEN_DlgShowBox_Fini(GWEN_DIALOG *dlg) {
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
   GWEN_DB_SetIntValue(dbParams,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
   GWEN_DB_SetIntValue(dbParams,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
 
 int GWENHYWFAR_CB GWEN_DlgShowBox_SignalHandler(GWEN_DIALOG *dlg,
-						GWEN_DIALOG_EVENTTYPE t,
-						const char *sender) {
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender) {
   GWEN_DLGSHOWBOX *xdlg;
 
   assert(dlg);

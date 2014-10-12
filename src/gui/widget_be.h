@@ -47,33 +47,34 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_WIDGET, GWENHYWFAR_API)
 
 
 typedef enum {
-    GWEN_Widget_TypeUnknown=-1,
-    GWEN_Widget_TypeNone=0,
-    GWEN_Widget_TypeLabel=1,
-    GWEN_Widget_TypePushButton,
-    GWEN_Widget_TypeLineEdit,
-    GWEN_Widget_TypeTextEdit,
-    GWEN_Widget_TypeComboBox,
-    GWEN_Widget_TypeRadioButton,
-    GWEN_Widget_TypeProgressBar,
-    GWEN_Widget_TypeGroupBox,
-    GWEN_Widget_TypeHSpacer,
-    GWEN_Widget_TypeVSpacer,
-    GWEN_Widget_TypeHLayout,
-    GWEN_Widget_TypeVLayout,
-    GWEN_Widget_TypeGridLayout,
-    GWEN_Widget_TypeListBox,
-    GWEN_Widget_TypeDialog,
-    GWEN_Widget_TypeTabBook,
-    GWEN_Widget_TypeTabPage,
-    GWEN_Widget_TypeCheckBox,
-    GWEN_Widget_TypeWidgetStack,
-    GWEN_Widget_TypeScrollArea,
-    GWEN_Widget_TypeHLine,
-    GWEN_Widget_TypeVLine,
-    GWEN_Widget_TypeTextBrowser,
-    GWEN_Widget_TypeSpinBox
-} GWEN_WIDGET_TYPE;
+  GWEN_Widget_TypeUnknown=-1,
+  GWEN_Widget_TypeNone=0,
+  GWEN_Widget_TypeLabel=1,
+  GWEN_Widget_TypePushButton,
+  GWEN_Widget_TypeLineEdit,
+  GWEN_Widget_TypeTextEdit,
+  GWEN_Widget_TypeComboBox,
+  GWEN_Widget_TypeRadioButton,
+  GWEN_Widget_TypeProgressBar,
+  GWEN_Widget_TypeGroupBox,
+  GWEN_Widget_TypeHSpacer,
+  GWEN_Widget_TypeVSpacer,
+  GWEN_Widget_TypeHLayout,
+  GWEN_Widget_TypeVLayout,
+  GWEN_Widget_TypeGridLayout,
+  GWEN_Widget_TypeListBox,
+  GWEN_Widget_TypeDialog,
+  GWEN_Widget_TypeTabBook,
+  GWEN_Widget_TypeTabPage,
+  GWEN_Widget_TypeCheckBox,
+  GWEN_Widget_TypeWidgetStack,
+  GWEN_Widget_TypeScrollArea,
+  GWEN_Widget_TypeHLine,
+  GWEN_Widget_TypeVLine,
+  GWEN_Widget_TypeTextBrowser,
+  GWEN_Widget_TypeSpinBox
+}
+GWEN_WIDGET_TYPE;
 
 
 
@@ -94,26 +95,26 @@ extern "C" {
 
 
 typedef int GWENHYWFAR_CB (*GWEN_WIDGET_SETINTPROPERTY_FN)(GWEN_WIDGET *w,
-							   GWEN_DIALOG_PROPERTY prop,
-							   int index,
-							   int value,
-							   int doSignal);
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int value,
+    int doSignal);
 
 typedef int GWENHYWFAR_CB (*GWEN_WIDGET_GETINTPROPERTY_FN)(GWEN_WIDGET *w,
-							   GWEN_DIALOG_PROPERTY prop,
-							   int index,
-							   int defaultValue);
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int defaultValue);
 
 typedef int GWENHYWFAR_CB (*GWEN_WIDGET_SETCHARPROPERTY_FN)(GWEN_WIDGET *w,
-							    GWEN_DIALOG_PROPERTY prop,
-							    int index,
-							    const char *value,
-							    int doSignal);
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *value,
+    int doSignal);
 
 typedef const char* GWENHYWFAR_CB (*GWEN_WIDGET_GETCHARPROPERTY_FN)(GWEN_WIDGET *w,
-								    GWEN_DIALOG_PROPERTY prop,
-								    int index,
-								    const char *defaultValue);
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue);
 
 typedef int GWENHYWFAR_CB (*GWEN_WIDGET_ADDCHILDGUIWIDGET_FN)(GWEN_WIDGET *w, GWEN_WIDGET *wChild);
 
@@ -270,7 +271,7 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s);
  */
 GWENHYWFAR_API
 GWEN_WIDGET_SETINTPROPERTY_FN GWEN_Widget_SetSetIntPropertyFn(GWEN_WIDGET *w,
-							      GWEN_WIDGET_SETINTPROPERTY_FN fn);
+    GWEN_WIDGET_SETINTPROPERTY_FN fn);
 
 /**
  * Set the handler for the GetIntProperty function (see @ref GWEN_WIDGET_GETINTPROPERTY_FN,
@@ -278,7 +279,7 @@ GWEN_WIDGET_SETINTPROPERTY_FN GWEN_Widget_SetSetIntPropertyFn(GWEN_WIDGET *w,
  */
 GWENHYWFAR_API
 GWEN_WIDGET_GETINTPROPERTY_FN GWEN_Widget_SetGetIntPropertyFn(GWEN_WIDGET *w,
-							      GWEN_WIDGET_GETINTPROPERTY_FN fn);
+    GWEN_WIDGET_GETINTPROPERTY_FN fn);
 
 /**
  * Set the handler for the SetCharProperty function (see @ref GWEN_WIDGET_SETCHARPROPERTY_FN,
@@ -286,7 +287,7 @@ GWEN_WIDGET_GETINTPROPERTY_FN GWEN_Widget_SetGetIntPropertyFn(GWEN_WIDGET *w,
  */
 GWENHYWFAR_API
 GWEN_WIDGET_SETCHARPROPERTY_FN GWEN_Widget_SetSetCharPropertyFn(GWEN_WIDGET *w,
-								GWEN_WIDGET_SETCHARPROPERTY_FN fn);
+    GWEN_WIDGET_SETCHARPROPERTY_FN fn);
 
 /**
  * Set the handler for the GetCharProperty function (see @ref GWEN_WIDGET_GETCHARPROPERTY_FN,
@@ -294,42 +295,42 @@ GWEN_WIDGET_SETCHARPROPERTY_FN GWEN_Widget_SetSetCharPropertyFn(GWEN_WIDGET *w,
  */
 GWENHYWFAR_API
 GWEN_WIDGET_GETCHARPROPERTY_FN GWEN_Widget_SetGetCharPropertyFn(GWEN_WIDGET *w,
-								GWEN_WIDGET_GETCHARPROPERTY_FN fn);
+    GWEN_WIDGET_GETCHARPROPERTY_FN fn);
 /**
  * Sets the handler for the AddChildGuiWidget function (see @ref GWEN_WIDGET_ADDCHILDGUIWIDGET_FN).
  */
 GWENHYWFAR_API
 GWEN_WIDGET_ADDCHILDGUIWIDGET_FN GWEN_Widget_SetAddChildGuiWidgetFn(GWEN_WIDGET *w,
-								    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn);
+    GWEN_WIDGET_ADDCHILDGUIWIDGET_FN fn);
 
 
 
 
 GWENHYWFAR_API
 int GWEN_Widget_SetIntProperty(GWEN_WIDGET *w,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int value,
-			       int doSignal);
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int value,
+                               int doSignal);
 
 GWENHYWFAR_API
 int GWEN_Widget_GetIntProperty(GWEN_WIDGET *w,
-			       GWEN_DIALOG_PROPERTY prop,
-			       int index,
-			       int defaultValue);
+                               GWEN_DIALOG_PROPERTY prop,
+                               int index,
+                               int defaultValue);
 
 GWENHYWFAR_API
 int GWEN_Widget_SetCharProperty(GWEN_WIDGET *w,
-				GWEN_DIALOG_PROPERTY prop,
-				int index,
-				const char *value,
-				int doSignal);
+                                GWEN_DIALOG_PROPERTY prop,
+                                int index,
+                                const char *value,
+                                int doSignal);
 
 GWENHYWFAR_API
 const char* GWEN_Widget_GetCharProperty(GWEN_WIDGET *w,
-					GWEN_DIALOG_PROPERTY prop,
-					int index,
-					const char *defaultValue);
+                                        GWEN_DIALOG_PROPERTY prop,
+                                        int index,
+                                        const char *defaultValue);
 
 GWENHYWFAR_API
 int GWEN_Widget_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild);

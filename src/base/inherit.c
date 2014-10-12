@@ -46,7 +46,7 @@ GWEN_INHERITDATA *GWEN_InheritData_new(const char *t,
                                        uint32_t id,
                                        void *data,
                                        void *baseData,
-                                       GWEN_INHERIT_FREEDATAFN freeDataFn){
+                                       GWEN_INHERIT_FREEDATAFN freeDataFn) {
   GWEN_INHERITDATA *d;
 
   assert(t);
@@ -80,8 +80,8 @@ void GWEN_InheritData_free(GWEN_INHERITDATA *d) {
 void GWEN_InheritData_freeData(GWEN_INHERITDATA *d) {
   if (d) {
     DBG_VERBOUS(GWEN_LOGDOMAIN,
-		"Freeing data for type \"%s\"",
-		d->typeName);
+                "Freeing data for type \"%s\"",
+                d->typeName);
     if (d->freeDataFn)
       d->freeDataFn(d->baseData, d->data);
     d->freeDataFn=NULL;
@@ -91,7 +91,7 @@ void GWEN_InheritData_freeData(GWEN_INHERITDATA *d) {
 
 
 
-void GWEN_InheritData_clear(GWEN_INHERITDATA *d){
+void GWEN_InheritData_clear(GWEN_INHERITDATA *d) {
   assert(d);
   d->freeDataFn=0;
   d->data=0;
@@ -99,21 +99,21 @@ void GWEN_InheritData_clear(GWEN_INHERITDATA *d){
 
 
 
-const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d){
+const char *GWEN_InheritData_GetTypeName(const GWEN_INHERITDATA *d) {
   assert(d);
   return d->typeName;
 }
 
 
 
-uint32_t GWEN_InheritData_GetId(const GWEN_INHERITDATA *d){
+uint32_t GWEN_InheritData_GetId(const GWEN_INHERITDATA *d) {
   assert(d);
   return d->id;
 }
 
 
 
-void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d){
+void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d) {
   assert(d);
   return d->data;
 }
@@ -121,7 +121,7 @@ void *GWEN_InheritData_GetData(const GWEN_INHERITDATA *d){
 
 
 GWEN_INHERIT_FREEDATAFN
-GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d){
+GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d) {
   assert(d);
   return d->freeDataFn;
 }
@@ -130,7 +130,7 @@ GWEN_InheritData_GetFreeDataFn(const GWEN_INHERITDATA *d){
 
 
 
-uint32_t GWEN_Inherit_MakeId(const char *typeName){
+uint32_t GWEN_Inherit_MakeId(const char *typeName) {
   unsigned int i, j;
   uint32_t result;
 
@@ -148,7 +148,7 @@ uint32_t GWEN_Inherit_MakeId(const char *typeName){
 
   DBG_VERBOUS(GWEN_LOGDOMAIN,
               "Id for type \"%s\" is \"%08x\"",
-            typeName, result);
+              typeName, result);
   return result;
 }
 
@@ -156,7 +156,7 @@ uint32_t GWEN_Inherit_MakeId(const char *typeName){
 
 void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
                             uint32_t id,
-                            int wantCreate){
+                            int wantCreate) {
   GWEN_INHERITDATA *ih;
 
   assert(l);
@@ -182,8 +182,8 @@ void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
 
 
 GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
-					 uint32_t id,
-					 int wantCreate){
+    uint32_t id,
+    int wantCreate) {
   GWEN_INHERITDATA *ih;
 
   assert(l);

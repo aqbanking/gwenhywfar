@@ -66,7 +66,7 @@ extern "C" {
 /** @name Path Management
  *
  * Gwenhywfar keeps track of registered directory paths for itself
- * and for other libraries.  
+ * and for other libraries.
  *
  * The paths are registered and stored in one global object (of
  * GWEN_DB_NODE type), so write-access to this GWEN_PathManager
@@ -134,7 +134,7 @@ GWENHYWFAR_API
 int GWEN_PathManager_AddPath(const char *callingLib,
                              const char *destLib,
                              const char *pathName,
-			     const char *pathValue);
+                             const char *pathValue);
 
 /**
  * Same as @ref GWEN_PathManager_AddPath but the path to add is given
@@ -156,7 +156,7 @@ int GWEN_PathManager_AddPath(const char *callingLib,
  * GWEN_Directory_GetHomeDirectory().
  *
  * All three variantes will then add the resulting path
- * to the PathManager. 
+ * to the PathManager.
  *
  * @param callingLib The name of the library that adds this path entry.
  *
@@ -177,14 +177,14 @@ int GWEN_PathManager_AddPath(const char *callingLib,
  */
 GWENHYWFAR_API
 int GWEN_PathManager_AddRelPath(const char *callingLib,
-				const char *destLib,
-				const char *pathName,
-				const char *pathValue,
-				GWEN_PATHMANAGER_RELMODE rm);
+                                const char *destLib,
+                                const char *pathName,
+                                const char *pathValue,
+                                GWEN_PATHMANAGER_RELMODE rm);
 /**
  * Add a directory path entry to a registered path entry in the
  * global GWEN_PathManager by looking up the directory path in the
- * Windows registry. 
+ * Windows registry.
  *
  * On non-windows platforms, the function does nothing and returns
  * zero, so you can safely call this in your multi-platform code.
@@ -261,7 +261,7 @@ int GWEN_PathManager_InsertPath(const char *callingLib,
  * GWEN_Directory_GetHomeDirectory().
  *
  * All three variantes will then add the resulting path
- * to the PathManager. 
+ * to the PathManager.
  *
  * @param callingLib The name of the library that adds this path entry.
  *
@@ -356,7 +356,7 @@ int GWEN_PathManager_PathChanged(const char *destLib,
  */
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
-                                           const char *pathName);
+    const char *pathName);
 
 
 /**
@@ -378,9 +378,9 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
  */
 GWENHYWFAR_API
 int GWEN_PathManager_FindFile(const char *destLib,
-			      const char *pathName,
-			      const char *fileName,
-			      GWEN_BUFFER *fbuf);
+                              const char *pathName,
+                              const char *fileName,
+                              GWEN_BUFFER *fbuf);
 
 /**
  * This function calls @ref GWEN_Directory_GetMatchingFilesRecursively() on every
@@ -401,10 +401,10 @@ int GWEN_PathManager_FindFile(const char *destLib,
  */
 GWENHYWFAR_API
 int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
-						 const char *pathName,
-						 const char *subFolderName,
-						 GWEN_STRINGLIST *sl,
-						 const char *mask);
+    const char *pathName,
+    const char *subFolderName,
+    GWEN_STRINGLIST *sl,
+    const char *mask);
 
 /*@}*/
 

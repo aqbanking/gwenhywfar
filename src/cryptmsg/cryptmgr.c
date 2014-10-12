@@ -196,8 +196,8 @@ int GWEN_CryptMgr_EncryptKey(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t l
 
 
 int GWEN_CryptMgr_VerifyData(GWEN_CRYPTMGR *cm,
-			     const uint8_t *pData, uint32_t lData,
-			     const uint8_t *pSignature, uint32_t lSignature) {
+                             const uint8_t *pData, uint32_t lData,
+                             const uint8_t *pSignature, uint32_t lSignature) {
   assert(cm);
   if (cm->verifyDataFn)
     return cm->verifyDataFn(cm, pData, lData, pSignature, lSignature);
@@ -218,7 +218,7 @@ int GWEN_CryptMgr_DecryptKey(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t l
 
 
 GWEN_CRYPTMGR_SIGNDATA_FN GWEN_CryptMgr_SetSignDataFn(GWEN_CRYPTMGR *cm,
-						      GWEN_CRYPTMGR_SIGNDATA_FN f) {
+    GWEN_CRYPTMGR_SIGNDATA_FN f) {
   GWEN_CRYPTMGR_SIGNDATA_FN of;
 
   assert(cm);
@@ -230,7 +230,7 @@ GWEN_CRYPTMGR_SIGNDATA_FN GWEN_CryptMgr_SetSignDataFn(GWEN_CRYPTMGR *cm,
 
 
 GWEN_CRYPTMGR_VERIFYDATA_FN GWEN_CryptMgr_SetVerifyDataFn(GWEN_CRYPTMGR *cm,
-							  GWEN_CRYPTMGR_VERIFYDATA_FN f) {
+    GWEN_CRYPTMGR_VERIFYDATA_FN f) {
   GWEN_CRYPTMGR_VERIFYDATA_FN of;
 
   assert(cm);
@@ -242,7 +242,7 @@ GWEN_CRYPTMGR_VERIFYDATA_FN GWEN_CryptMgr_SetVerifyDataFn(GWEN_CRYPTMGR *cm,
 
 
 GWEN_CRYPTMGR_ENCRYPTKEY_FN GWEN_CryptMgr_SetEncryptKeyFn(GWEN_CRYPTMGR *cm,
-							  GWEN_CRYPTMGR_ENCRYPTKEY_FN f) {
+    GWEN_CRYPTMGR_ENCRYPTKEY_FN f) {
   GWEN_CRYPTMGR_ENCRYPTKEY_FN of;
 
   assert(cm);
@@ -254,7 +254,7 @@ GWEN_CRYPTMGR_ENCRYPTKEY_FN GWEN_CryptMgr_SetEncryptKeyFn(GWEN_CRYPTMGR *cm,
 
 
 GWEN_CRYPTMGR_DECRYPTKEY_FN GWEN_CryptMgr_SetDecryptKeyFn(GWEN_CRYPTMGR *cm,
-							  GWEN_CRYPTMGR_DECRYPTKEY_FN f) {
+    GWEN_CRYPTMGR_DECRYPTKEY_FN f) {
   GWEN_CRYPTMGR_DECRYPTKEY_FN of;
 
   assert(cm);
@@ -305,9 +305,9 @@ int GWEN_CryptMgr_Sign(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData, 
   /* write data to buffer */
   if (pData && lData)
     GWEN_Tag16_DirectlyToBuffer(GWEN_CRYPTMGR_TLV_SIGDATA,
-				(const char*)pData,
-				lData,
-				dbuf);
+                                (const char*)pData,
+                                lData,
+                                dbuf);
 
   /* sign data: signature head TLV + data TLV */
   sigbuf=GWEN_Buffer_new(0, 300, 0, 1);
@@ -323,8 +323,8 @@ int GWEN_CryptMgr_Sign(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData, 
   /* create signature tail */
   st=GWEN_SigTail_new();
   GWEN_SigTail_SetSignature(st,
-			    (const uint8_t*)GWEN_Buffer_GetStart(sigbuf),
-			    GWEN_Buffer_GetUsedBytes(sigbuf));
+                            (const uint8_t*)GWEN_Buffer_GetStart(sigbuf),
+                            GWEN_Buffer_GetUsedBytes(sigbuf));
   GWEN_Buffer_free(sigbuf);
   GWEN_SigTail_SetSignatureNumber(st, 1);
 
@@ -381,9 +381,9 @@ int GWEN_CryptMgr_Encrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
   /* encrypt key */
   cryptbuf=GWEN_Buffer_new(0, lData+256, 0, 1);
   rv=GWEN_CryptMgr_EncryptKey(cm,
-			      GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(mkey),
+                              GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(mkey),
                               GWEN_Crypt_KeyBlowFish_GetKeyDataLen(mkey),
-			      cryptbuf);
+                              cryptbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(cryptbuf);
@@ -392,8 +392,8 @@ int GWEN_CryptMgr_Encrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
     return rv;
   }
   GWEN_CryptHead_SetKey(ch,
-			(const uint8_t*)GWEN_Buffer_GetStart(cryptbuf),
-			GWEN_Buffer_GetUsedBytes(cryptbuf));
+                        (const uint8_t*)GWEN_Buffer_GetStart(cryptbuf),
+                        GWEN_Buffer_GetUsedBytes(cryptbuf));
   GWEN_Buffer_free(cryptbuf);
 
   /* write crypt head to buffer */
@@ -414,9 +414,9 @@ int GWEN_CryptMgr_Encrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
   cryptbuf=GWEN_Buffer_new(0, lData+256, 0, 1);
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(cryptbuf);
   rv=GWEN_Crypt_Key_Encipher(mkey,
-			     (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
+                             (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
                              GWEN_Buffer_GetUsedBytes(tbuf),
-			     (uint8_t*)GWEN_Buffer_GetStart(cryptbuf),
+                             (uint8_t*)GWEN_Buffer_GetStart(cryptbuf),
                              &l);
   GWEN_Buffer_free(tbuf);
   if (rv<0) {
@@ -430,9 +430,9 @@ int GWEN_CryptMgr_Encrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
 
   /* write encrypted data */
   GWEN_Tag16_DirectlyToBuffer(GWEN_CRYPTMGR_TLV_CRYPTDATA,
-			      GWEN_Buffer_GetStart(cryptbuf),
-			      GWEN_Buffer_GetUsedBytes(cryptbuf),
-			      dbuf);
+                              GWEN_Buffer_GetStart(cryptbuf),
+                              GWEN_Buffer_GetUsedBytes(cryptbuf),
+                              dbuf);
   GWEN_Buffer_free(cryptbuf);
   GWEN_Crypt_Key_free(mkey);
 
@@ -485,12 +485,12 @@ int GWEN_CryptMgr_Verify(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
     subtag=GWEN_Tag16_fromBuffer2(p, l, 0);
     if (subtag) {
       if (GWEN_Tag16_GetTagType(subtag)==GWEN_CRYPTMGR_TLV_SIGHEAD) {
-	sh=GWEN_SigHead_fromBuffer(GWEN_Tag16_GetTagData(subtag),
-				   GWEN_Tag16_GetTagLength(subtag));
-	if (sh) {
-	  pSignedData=p;
-	  lSignedData=GWEN_Tag16_GetTagSize(subtag);
-	}
+        sh=GWEN_SigHead_fromBuffer(GWEN_Tag16_GetTagData(subtag),
+                                   GWEN_Tag16_GetTagLength(subtag));
+        if (sh) {
+          pSignedData=p;
+          lSignedData=GWEN_Tag16_GetTagSize(subtag);
+        }
       }
       p+=GWEN_Tag16_GetTagSize(subtag);
       l-=GWEN_Tag16_GetTagSize(subtag);
@@ -505,19 +505,19 @@ int GWEN_CryptMgr_Verify(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
     subtag=GWEN_Tag16_fromBuffer2(p, l, 0);
     if (subtag) {
       if (GWEN_Tag16_GetTagType(subtag)==GWEN_CRYPTMGR_TLV_SIGDATA) {
-	GWEN_Buffer_AppendBytes(dbuf,
-				GWEN_Tag16_GetTagData(subtag),
-				GWEN_Tag16_GetTagLength(subtag));
-	if ((pSignedData+lSignedData)==p) {
-	  lSignedData+=GWEN_Tag16_GetTagSize(subtag);
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "data TLV must follow sighead TLV");
-	  GWEN_Tag16_free(subtag);
+        GWEN_Buffer_AppendBytes(dbuf,
+                                GWEN_Tag16_GetTagData(subtag),
+                                GWEN_Tag16_GetTagLength(subtag));
+        if ((pSignedData+lSignedData)==p) {
+          lSignedData+=GWEN_Tag16_GetTagSize(subtag);
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN, "data TLV must follow sighead TLV");
+          GWEN_Tag16_free(subtag);
           GWEN_SigHead_free(sh);
-	  GWEN_Tag16_free(tag);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+          GWEN_Tag16_free(tag);
+          return GWEN_ERROR_BAD_DATA;
+        }
       }
       p+=GWEN_Tag16_GetTagSize(subtag);
       l-=GWEN_Tag16_GetTagSize(subtag);
@@ -532,8 +532,8 @@ int GWEN_CryptMgr_Verify(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
     subtag=GWEN_Tag16_fromBuffer2(p, l, 0);
     if (subtag) {
       if (GWEN_Tag16_GetTagType(subtag)==GWEN_CRYPTMGR_TLV_SIGTAIL) {
-	st=GWEN_SigTail_fromBuffer(GWEN_Tag16_GetTagData(subtag),
-				   GWEN_Tag16_GetTagLength(subtag));
+        st=GWEN_SigTail_fromBuffer(GWEN_Tag16_GetTagData(subtag),
+                                   GWEN_Tag16_GetTagLength(subtag));
       }
       p+=GWEN_Tag16_GetTagSize(subtag);
       l-=GWEN_Tag16_GetTagSize(subtag);
@@ -571,8 +571,8 @@ int GWEN_CryptMgr_Verify(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
     /* compare peer info with expected info */
     s=GWEN_SigHead_GetKeyName(sh);
     if (!(cm->peerKeyName && s && (strcasecmp(cm->peerKeyName, s)==0) &&
-	  (cm->peerKeyNumber==GWEN_SigHead_GetKeyNumber(sh)) &&
-	  (cm->peerKeyVersion==GWEN_SigHead_GetKeyVersion(sh)))) {
+          (cm->peerKeyNumber==GWEN_SigHead_GetKeyNumber(sh)) &&
+          (cm->peerKeyVersion==GWEN_SigHead_GetKeyVersion(sh)))) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected peer key information in signature");
       GWEN_SigTail_free(st);
       GWEN_SigHead_free(sh);
@@ -584,9 +584,9 @@ int GWEN_CryptMgr_Verify(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
 
   /* verify signature */
   rv=GWEN_CryptMgr_VerifyData(cm,
-			      pSignedData, lSignedData,
-			      GWEN_SigTail_GetSignaturePtr(st),
-			      GWEN_SigTail_GetSignatureLen(st));
+                              pSignedData, lSignedData,
+                              GWEN_SigTail_GetSignaturePtr(st),
+                              GWEN_SigTail_GetSignatureLen(st));
   GWEN_SigTail_free(st);
   GWEN_SigHead_free(sh);
   GWEN_Tag16_free(tag);
@@ -640,8 +640,8 @@ int GWEN_CryptMgr_Decrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
     subtag=GWEN_Tag16_fromBuffer2(p, l, 0);
     if (subtag) {
       if (GWEN_Tag16_GetTagType(subtag)==GWEN_CRYPTMGR_TLV_CRYPTHEAD) {
-	ch=GWEN_CryptHead_fromBuffer(GWEN_Tag16_GetTagData(subtag),
-				     GWEN_Tag16_GetTagLength(subtag));
+        ch=GWEN_CryptHead_fromBuffer(GWEN_Tag16_GetTagData(subtag),
+                                     GWEN_Tag16_GetTagLength(subtag));
       }
       p+=GWEN_Tag16_GetTagSize(subtag);
       l-=GWEN_Tag16_GetTagSize(subtag);
@@ -656,8 +656,8 @@ int GWEN_CryptMgr_Decrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
     subtag=GWEN_Tag16_fromBuffer2(p, l, 0);
     if (subtag) {
       if (GWEN_Tag16_GetTagType(subtag)==GWEN_CRYPTMGR_TLV_CRYPTDATA) {
-	pEncryptedData=GWEN_Tag16_GetTagData(subtag);
-	lEncryptedData=GWEN_Tag16_GetTagLength(subtag);
+        pEncryptedData=GWEN_Tag16_GetTagData(subtag);
+        lEncryptedData=GWEN_Tag16_GetTagLength(subtag);
       }
       p+=GWEN_Tag16_GetTagSize(subtag);
       l-=GWEN_Tag16_GetTagSize(subtag);
@@ -680,8 +680,8 @@ int GWEN_CryptMgr_Decrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
     /* compare peer info with expected info */
     s=GWEN_CryptHead_GetKeyName(ch);
     if (!(cm->localKeyName && s && (strcasecmp(cm->localKeyName, s)==0) &&
-	  (cm->localKeyNumber==GWEN_CryptHead_GetKeyNumber(ch)) &&
-	  (cm->localKeyVersion==GWEN_CryptHead_GetKeyVersion(ch)))) {
+          (cm->localKeyNumber==GWEN_CryptHead_GetKeyNumber(ch)) &&
+          (cm->localKeyVersion==GWEN_CryptHead_GetKeyVersion(ch)))) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected local key information in signature");
       GWEN_CryptHead_free(ch);
       GWEN_Tag16_free(tag);
@@ -693,9 +693,9 @@ int GWEN_CryptMgr_Decrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
   /* decrypt message key */
   tbuf=GWEN_Buffer_new(0, GWEN_CryptHead_GetKeyLen(ch), 0, 1);
   rv=GWEN_CryptMgr_DecryptKey(cm,
-			      GWEN_CryptHead_GetKeyPtr(ch),
-			      GWEN_CryptHead_GetKeyLen(ch),
-			      tbuf);
+                              GWEN_CryptHead_GetKeyPtr(ch),
+                              GWEN_CryptHead_GetKeyLen(ch),
+                              tbuf);
   GWEN_CryptHead_free(ch);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -706,9 +706,9 @@ int GWEN_CryptMgr_Decrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
 
   /* create message key */
   mkey=GWEN_Crypt_KeyBlowFish_fromData(GWEN_Crypt_CryptMode_Cbc,
-				       256/8,
-				       (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-				       GWEN_Buffer_GetUsedBytes(tbuf));
+                                       256/8,
+                                       (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                                       GWEN_Buffer_GetUsedBytes(tbuf));
   GWEN_Buffer_free(tbuf);
   if (mkey==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unable to create BLOWFISH key from received data");
@@ -721,9 +721,9 @@ int GWEN_CryptMgr_Decrypt(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lDat
   tbuf=GWEN_Buffer_new(0, lEncryptedData+256, 0, 1);
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
   rv=GWEN_Crypt_Key_Decipher(mkey,
-			     pEncryptedData, lEncryptedData,
-			     (uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			     &l);
+                             pEncryptedData, lEncryptedData,
+                             (uint8_t*)GWEN_Buffer_GetStart(tbuf),
+                             &l);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -774,9 +774,9 @@ int GWEN_CryptMgr_Encode(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
   /* create encrypted object (containing a signed object in this case) */
   DBG_INFO(GWEN_LOGDOMAIN, "Encrypting data");
   rv=GWEN_CryptMgr_Encrypt(cm,
-			   (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			   GWEN_Buffer_GetUsedBytes(tbuf),
-			   dbuf);
+                           (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
+                           GWEN_Buffer_GetUsedBytes(tbuf),
+                           dbuf);
   GWEN_Buffer_free(tbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -806,9 +806,9 @@ int GWEN_CryptMgr_Decode(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData
   /* verify signature, copy signed data to dbuf in the process */
   DBG_INFO(GWEN_LOGDOMAIN, "Verifying data");
   rv=GWEN_CryptMgr_Verify(cm,
-			  (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			  GWEN_Buffer_GetUsedBytes(tbuf),
-			  dbuf);
+                          (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
+                          GWEN_Buffer_GetUsedBytes(tbuf),
+                          dbuf);
   GWEN_Buffer_free(tbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

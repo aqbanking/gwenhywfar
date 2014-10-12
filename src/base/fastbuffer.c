@@ -100,15 +100,15 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
 
     if (fb->bufferReadPos>=fb->bufferWritePos) {
       int rv;
-  
+
       rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize);
       if (rv<0) {
-	if (rv==GWEN_ERROR_EOF && hadSome) {
+        if (rv==GWEN_ERROR_EOF && hadSome) {
           /* done */
-	  return 0;
-	}
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+          return 0;
+        }
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       else if (rv==0) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met");
@@ -118,11 +118,11 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
         /* TODO: maybe we should have a flag that indicates that we met EOF here... */
       }
       else {
-	fb->bufferWritePos=rv;
-	fb->bufferReadPos=0;
+        fb->bufferWritePos=rv;
+        fb->bufferReadPos=0;
       }
     }
-  
+
     bytes=fb->bufferWritePos-fb->bufferReadPos;
     p=fb->buffer+fb->bufferReadPos;
     while(bytes) {
@@ -134,15 +134,15 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
       fb->bytesRead++;
       bytes--;
       if (c==10) {
-	lineComplete=1;
-	/* don't include this character */
-	break;
+        lineComplete=1;
+        /* don't include this character */
+        break;
       }
       else if (c==13) {
-	break;
+        break;
       }
       else {
-	copied++;
+        copied++;
       }
     } /* while */
 

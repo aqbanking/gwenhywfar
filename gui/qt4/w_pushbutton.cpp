@@ -54,8 +54,8 @@ public:
     assert(qtDialog);
 
     qw->connect(qw, SIGNAL(clicked(bool)),
-		qtDialog->getMainWindow(),
-		SLOT(slotActivated()));
+                qtDialog->getMainWindow(),
+                SLOT(slotActivated()));
 
     if (wParent)
       GWEN_Widget_AddChildGuiWidget(wParent, _widget);
@@ -65,9 +65,9 @@ public:
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-		      int index,
-		      const char *value,
-		      int doSignal) {
+                      int index,
+                      const char *value,
+                      int doSignal) {
     QPushButton *qw;
     QString text;
 
@@ -86,16 +86,16 @@ public:
     }
 
     DBG_WARN(GWEN_LOGDOMAIN,
-	     "Function is not appropriate for this type of widget (%s)",
-	     GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
+             "Function is not appropriate for this type of widget (%s)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
     return GWEN_ERROR_INVALID;
   };
 
 
 
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      const char *defaultValue) {
+                              int index,
+                              const char *defaultValue) {
     QPushButton *qw;
     QString str;
 
@@ -106,10 +106,10 @@ public:
     case GWEN_DialogProperty_Title:
       str=qw->text();
       if (str.isEmpty())
-	return defaultValue;
+        return defaultValue;
       else {
-	GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_TITLE, str.toUtf8());
-	return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_TITLE);
+        GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_TITLE, str.toUtf8());
+        return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_TITLE);
       }
       break;
 
@@ -118,8 +118,8 @@ public:
     }
 
     DBG_WARN(GWEN_LOGDOMAIN,
-	     "Function is not appropriate for this type of widget (%s)",
-	     GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
+             "Function is not appropriate for this type of widget (%s)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
     return defaultValue;
   };
 

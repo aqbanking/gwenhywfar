@@ -89,86 +89,124 @@ int GWEN_Error_ToString(int c, char *buffer, int bsize) {
 
 
 
-const char *GWEN_Error_SimpleToString(int i){
+const char *GWEN_Error_SimpleToString(int i) {
   const char *s;
 
   switch(i) {
   case GWEN_SUCCESS:
-    s=I18N("Ok"); break;
+    s=I18N("Ok");
+    break;
   case GWEN_ERROR_GENERIC:
-    s=I18N("Generic error"); break;
+    s=I18N("Generic error");
+    break;
   case GWEN_ERROR_ABORTED:
-    s=I18N("Aborted"); break;
+    s=I18N("Aborted");
+    break;
   case GWEN_ERROR_NOT_AVAILABLE:
-    s=I18N("Not available"); break;
+    s=I18N("Not available");
+    break;
   case GWEN_ERROR_BAD_SOCKETTYPE:
-    s=I18N("Bad socket type"); break;
+    s=I18N("Bad socket type");
+    break;
   case GWEN_ERROR_NOT_OPEN:
-    s=I18N("Not open"); break;
+    s=I18N("Not open");
+    break;
   case GWEN_ERROR_TIMEOUT:
-    s=I18N("Timeout"); break;
+    s=I18N("Timeout");
+    break;
   case GWEN_ERROR_IN_PROGRESS:
-    s=I18N("In Progress"); break;
+    s=I18N("In Progress");
+    break;
   case GWEN_ERROR_STARTUP:
-    s=I18N("Startup error"); break;
+    s=I18N("Startup error");
+    break;
   case GWEN_ERROR_INTERRUPTED:
-    s=I18N("Interrupted system call"); break;
+    s=I18N("Interrupted system call");
+    break;
   case GWEN_ERROR_NOT_SUPPORTED:
-    s=I18N("Not supported"); break;
+    s=I18N("Not supported");
+    break;
   case GWEN_ERROR_BROKEN_PIPE:
-    s=I18N("Broken pipe"); break;
+    s=I18N("Broken pipe");
+    break;
   case GWEN_ERROR_MEMORY_FULL:
-    s=I18N("Memory full"); break;
+    s=I18N("Memory full");
+    break;
   case GWEN_ERROR_BAD_ADDRESS:
-    s=I18N("Bad address"); break;
+    s=I18N("Bad address");
+    break;
   case GWEN_ERROR_BUFFER_OVERFLOW:
-    s=I18N("Buffer overflow"); break;
+    s=I18N("Buffer overflow");
+    break;
   case GWEN_ERROR_HOST_NOT_FOUND:
-    s=I18N("Host not found"); break;
+    s=I18N("Host not found");
+    break;
   case GWEN_ERROR_NO_ADDRESS:
-    s=I18N("No address"); break;
+    s=I18N("No address");
+    break;
   case GWEN_ERROR_NO_RECOVERY:
-    s=I18N("No recovery"); break;
+    s=I18N("No recovery");
+    break;
   case GWEN_ERROR_TRY_AGAIN:
-    s=I18N("Try again"); break;
+    s=I18N("Try again");
+    break;
   case GWEN_ERROR_UNKNOWN_DNS_ERROR:
-    s=I18N("Unknown DNS error"); break;
+    s=I18N("Unknown DNS error");
+    break;
   case GWEN_ERROR_BAD_ADDRESS_FAMILY:
-    s=I18N("Bad address family"); break;
+    s=I18N("Bad address family");
+    break;
   case GWEN_ERROR_COULD_NOT_LOAD:
-    s=I18N("Could not load"); break;
+    s=I18N("Could not load");
+    break;
   case GWEN_ERROR_COULD_NOT_RESOLVE:
-    s=I18N("Could not resolve a symbol"); break;
+    s=I18N("Could not resolve a symbol");
+    break;
   case GWEN_ERROR_NOT_FOUND:
-    s=I18N("Not found"); break;
+    s=I18N("Not found");
+    break;
   case GWEN_ERROR_READ:
-    s=I18N("Could not read"); break;
+    s=I18N("Could not read");
+    break;
   case GWEN_ERROR_WRITE:
-    s=I18N("Could not write"); break;
+    s=I18N("Could not write");
+    break;
   case GWEN_ERROR_CLOSE:
-    s=I18N("Could not close"); break;
+    s=I18N("Could not close");
+    break;
   case GWEN_ERROR_NO_DATA:
-    s=I18N("No data"); break;
+    s=I18N("No data");
+    break;
   case GWEN_ERROR_PARTIAL:
-    s=I18N("Partial data"); break;
+    s=I18N("Partial data");
+    break;
   case GWEN_ERROR_EOF:
-    s=I18N("EOF met"); break;
+    s=I18N("EOF met");
+    break;
   case GWEN_ERROR_ALREADY_REGISTERED:
-    s=I18N("Already registered"); break;
+    s=I18N("Already registered");
+    break;
   case GWEN_ERROR_NOT_REGISTERED:
-    s=I18N("Not registered"); break;
+    s=I18N("Not registered");
+    break;
   case GWEN_ERROR_BAD_SIZE:
-    s=I18N("Bad size"); break;
+    s=I18N("Bad size");
+    break;
   case GWEN_ERROR_ENCRYPT:
-    s=I18N("Could not encrypt"); break;
+    s=I18N("Could not encrypt");
+    break;
   case GWEN_ERROR_DECRYPT:
-    s=I18N("Could not decrypt"); break;
+    s=I18N("Could not decrypt");
+    break;
   case GWEN_ERROR_SIGN:
-    s=I18N("Could not sign"); break;
+    s=I18N("Could not sign");
+    break;
   case GWEN_ERROR_VERIFY:
-    s=I18N("Could not verify"); break;
+    s=I18N("Could not verify");
+    break;
   case GWEN_ERROR_SSL:
-    s=I18N("Generic SSL error"); break;
+    s=I18N("Generic SSL error");
+    break;
   default:
     s="Unknown error";
   }

@@ -46,15 +46,15 @@ GWEN_DIALOG *GWEN_DlgProgress_new(void) {
   GWEN_NEW_OBJECT(GWEN_DLGPROGRESS, xdlg);
 
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg, xdlg,
-		       GWEN_DlgProgress_FreeData);
+                       GWEN_DlgProgress_FreeData);
 
   GWEN_Dialog_SetSignalHandler(dlg, GWEN_DlgProgress_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "gwenhywfar/dialogs/dlg_progress.dlg",
-			       fbuf);
+                               "gwenhywfar/dialogs/dlg_progress.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -146,17 +146,17 @@ void GWEN_DlgProgress_SetShowLog(GWEN_DIALOG *dlg, int b) {
 
       GWEN_Dialog_SetIntProperty(dlg, "logGroup", GWEN_DialogProperty_Visibility, 0, b, 0);
       if (b) {
-	int i;
+        int i;
 
         i=xdlg->withLogWidth;
-	if (i<DIALOG_MINWIDTH)
-	  i=DIALOG_MINWIDTH;
-	GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+        if (i<DIALOG_MINWIDTH)
+          i=DIALOG_MINWIDTH;
+        GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
 
-	i=xdlg->withLogHeight;
-	if (i<DIALOG_MINHEIGHT)
-	  i=DIALOG_MINHEIGHT;
-	GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+        i=xdlg->withLogHeight;
+        if (i<DIALOG_MINHEIGHT)
+          i=DIALOG_MINHEIGHT;
+        GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
       }
     }
   }
@@ -191,17 +191,17 @@ void GWEN_DlgProgress_SetFirstProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
 
       s=GWEN_ProgressData_GetTitle(xdlg->firstProgress);
       if (s && *s)
-	GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, s, 0);
+        GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, s, 0);
 
       s=GWEN_ProgressData_GetText(xdlg->firstProgress);
       if (s && *s)
-	GWEN_Dialog_SetCharProperty(dlg, "descrLabel", GWEN_DialogProperty_Title, 0, s, 0);
+        GWEN_Dialog_SetCharProperty(dlg, "descrLabel", GWEN_DialogProperty_Title, 0, s, 0);
 
       GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_Enabled, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_MaxValue, 0,
-				 GWEN_ProgressData_GetTotal(xdlg->firstProgress), 0);
+                                 GWEN_ProgressData_GetTotal(xdlg->firstProgress), 0);
       GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_Value, 0,
-				 GWEN_ProgressData_GetCurrent(xdlg->firstProgress), 0);
+                                 GWEN_ProgressData_GetCurrent(xdlg->firstProgress), 0);
     }
     else {
       /* let it show 100 % */
@@ -238,9 +238,9 @@ void GWEN_DlgProgress_SetSecondProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd
     if (xdlg->secondProgress) {
       GWEN_Dialog_SetIntProperty(dlg, "currentProgress", GWEN_DialogProperty_Enabled, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, "currentProgress", GWEN_DialogProperty_MaxValue, 0,
-				 GWEN_ProgressData_GetTotal(xdlg->secondProgress), 0);
+                                 GWEN_ProgressData_GetTotal(xdlg->secondProgress), 0);
       GWEN_Dialog_SetIntProperty(dlg, "currentProgress", GWEN_DialogProperty_Value, 0,
-				 GWEN_ProgressData_GetCurrent(xdlg->secondProgress), 0);
+                                 GWEN_ProgressData_GetCurrent(xdlg->secondProgress), 0);
     }
     else {
       GWEN_Dialog_SetIntProperty(dlg, "currentProgress", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -252,8 +252,8 @@ void GWEN_DlgProgress_SetSecondProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd
 
 
 void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
-				 GWEN_LOGGER_LEVEL level,
-				 const char *s) {
+                                 GWEN_LOGGER_LEVEL level,
+                                 const char *s) {
   GWEN_DLGPROGRESS *xdlg;
   GWEN_TIME *ti;
   int rv;
@@ -310,10 +310,10 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
 
   /* assemble full string, containing HTML and text log */
   tbuf=GWEN_Buffer_new(0,
-		       GWEN_Buffer_GetUsedBytes(xdlg->logBufferHtml)+
-		       GWEN_Buffer_GetUsedBytes(xdlg->logBufferTxt)+256,
-		       0,
-		       1);
+                       GWEN_Buffer_GetUsedBytes(xdlg->logBufferHtml)+
+                       GWEN_Buffer_GetUsedBytes(xdlg->logBufferTxt)+256,
+                       0,
+                       1);
 
   GWEN_Buffer_AppendString(tbuf, "<html><table>");
   GWEN_Buffer_AppendString(tbuf, GWEN_Buffer_GetStart(xdlg->logBufferHtml));
@@ -321,7 +321,7 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
   GWEN_Buffer_AppendString(tbuf, GWEN_Buffer_GetStart(xdlg->logBufferTxt));
 
   GWEN_Dialog_SetCharProperty(dlg, "logText", GWEN_DialogProperty_Value, 0,
-			      GWEN_Buffer_GetStart(tbuf), 0);
+                              GWEN_Buffer_GetStart(tbuf), 0);
   GWEN_Buffer_free(tbuf);
 }
 
@@ -341,13 +341,13 @@ void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
     s="currentProgress";
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Progress %08x is neither primary nor secondary",
-	      GWEN_ProgressData_GetId(pd));
+              GWEN_ProgressData_GetId(pd));
     return;
   }
 
   if (xdlg->wasInit) {
     GWEN_Dialog_SetIntProperty(dlg, s, GWEN_DialogProperty_Value, 0,
-			       GWEN_ProgressData_GetCurrent(pd), 0);
+                               GWEN_ProgressData_GetCurrent(pd), 0);
   }
 }
 
@@ -367,7 +367,7 @@ void GWEN_DlgProgress_TotalChanged(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
     s="currentProgress";
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Progress %08x is neither primary nor secondary",
-	      GWEN_ProgressData_GetId(pd));
+              GWEN_ProgressData_GetId(pd));
     return;
   }
 
@@ -396,11 +396,11 @@ void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
 
   if (xdlg->showLog) {
     int i;
-  
+
     i=xdlg->withLogWidth;
     if (i>=DIALOG_MINWIDTH)
       GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
-  
+
     i=xdlg->withLogHeight;
     if (i>=DIALOG_MINHEIGHT)
       GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
@@ -412,7 +412,7 @@ void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
     i=GWEN_DB_GetIntValue(dbParams, "dialog_width_nolog", 0, -1);
     if (i>=DIALOG_MINWIDTH)
       GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
-  
+
     /* read height */
     i=GWEN_DB_GetIntValue(dbParams, "dialog_height_nolog", 0, -1);
     if (i>=DIALOG_MINHEIGHT_NOLOG)
@@ -433,16 +433,16 @@ void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
       GWEN_Dialog_SetCharProperty(dlg, "descrLabel", GWEN_DialogProperty_Title, 0, s, 0);
 
     GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_MaxValue, 0,
-			       GWEN_ProgressData_GetTotal(xdlg->firstProgress), 0);
+                               GWEN_ProgressData_GetTotal(xdlg->firstProgress), 0);
     GWEN_Dialog_SetIntProperty(dlg, "allProgress", GWEN_DialogProperty_Value, 0,
-			       GWEN_ProgressData_GetCurrent(xdlg->firstProgress), 0);
+                               GWEN_ProgressData_GetCurrent(xdlg->firstProgress), 0);
   }
 
   if (xdlg->secondProgress) {
     GWEN_Dialog_SetIntProperty(dlg, "currentProgress", GWEN_DialogProperty_MaxValue, 0,
-			       GWEN_ProgressData_GetTotal(xdlg->secondProgress), 0);
+                               GWEN_ProgressData_GetTotal(xdlg->secondProgress), 0);
     GWEN_Dialog_SetIntProperty(dlg, "currentProgress", GWEN_DialogProperty_Value, 0,
-			       GWEN_ProgressData_GetCurrent(xdlg->secondProgress), 0);
+                               GWEN_ProgressData_GetCurrent(xdlg->secondProgress), 0);
   }
 
   GWEN_Dialog_SetIntProperty(dlg, "abortButton", GWEN_DialogProperty_Enabled, 0, 1, 0);
@@ -469,30 +469,30 @@ void GWEN_DlgProgress_Fini(GWEN_DIALOG *dlg) {
   if (xdlg->showLog) {
     i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
     GWEN_DB_SetIntValue(dbParams,
-			GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"dialog_width",
-			i);
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "dialog_width",
+                        i);
 
     /* store dialog height */
     i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
     GWEN_DB_SetIntValue(dbParams,
-			GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"dialog_height",
-			i);
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "dialog_height",
+                        i);
   }
   else {
     i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
     GWEN_DB_SetIntValue(dbParams,
-			GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"dialog_width_nolog",
-			i);
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "dialog_width_nolog",
+                        i);
 
     /* store dialog height */
     i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
     GWEN_DB_SetIntValue(dbParams,
-			GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"dialog_height_nolog",
-			i);
+                        GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "dialog_height_nolog",
+                        i);
   }
 }
 
@@ -529,8 +529,8 @@ int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB GWEN_DlgProgress_SignalHandler(GWEN_DIALOG *dlg,
-						 GWEN_DIALOG_EVENTTYPE t,
-						 const char *sender) {
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender) {
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);

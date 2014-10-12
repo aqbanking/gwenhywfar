@@ -82,8 +82,7 @@
 QT4_GuiDialog::QT4_GuiDialog(QT4_Gui *gui, GWEN_DIALOG *dlg)
   :CppDialog(dlg)
   ,_gui(gui)
-  ,_mainWidget(NULL)
-{
+  ,_mainWidget(NULL) {
 
 }
 
@@ -188,10 +187,11 @@ int QT4_GuiDialog::runDialog(bool untilEnd) {
   if (untilEnd) {
     dialogBox->cont();
   }
-  else { {
-    /* gui update */
-    qApp->processEvents();
-  }
+  else {
+    {
+      /* gui update */
+      qApp->processEvents();
+    }
   }
 
   return 0;
@@ -200,38 +200,38 @@ int QT4_GuiDialog::runDialog(bool untilEnd) {
 
 
 int QT4_GuiDialog::setIntProperty(GWEN_WIDGET *w,
-				  GWEN_DIALOG_PROPERTY prop,
-				  int index,
-				  int value,
-				  int doSignal) {
+                                  GWEN_DIALOG_PROPERTY prop,
+                                  int index,
+                                  int value,
+                                  int doSignal) {
   return GWEN_Widget_SetIntProperty(w, prop, index, value, doSignal);
 }
 
 
 
 int QT4_GuiDialog::getIntProperty(GWEN_WIDGET *w,
-				  GWEN_DIALOG_PROPERTY prop,
-				  int index,
-				  int defaultValue) {
+                                  GWEN_DIALOG_PROPERTY prop,
+                                  int index,
+                                  int defaultValue) {
   return GWEN_Widget_GetIntProperty(w, prop, index, defaultValue);
 }
 
 
 
 int QT4_GuiDialog::setCharProperty(GWEN_WIDGET *w,
-				   GWEN_DIALOG_PROPERTY prop,
-				   int index,
-				   const char *value,
-				   int doSignal) {
+                                   GWEN_DIALOG_PROPERTY prop,
+                                   int index,
+                                   const char *value,
+                                   int doSignal) {
   return GWEN_Widget_SetCharProperty(w, prop, index, value, doSignal);
 }
 
 
 
 const char *QT4_GuiDialog::getCharProperty(GWEN_WIDGET *w,
-					   GWEN_DIALOG_PROPERTY prop,
-					   int index,
-					   const char *defaultValue) {
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   return GWEN_Widget_GetCharProperty(w, prop, index, defaultValue);
 }
 
@@ -315,7 +315,7 @@ int QT4_GuiDialog::setupTree(GWEN_WIDGET *w) {
     break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d (%s)",
-	      GWEN_Widget_GetType(w), GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+              GWEN_Widget_GetType(w), GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
     break;
   }
 
@@ -341,8 +341,8 @@ int QT4_GuiDialog::setupTree(GWEN_WIDGET *w) {
       /* recursion */
       rv=setupTree(wChild);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       wChild=GWEN_Widget_Tree_GetNext(wChild);
     }

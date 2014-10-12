@@ -38,11 +38,11 @@ class FOX16GUI_API ThemeButton : public FXButton {
 protected:
   ThemeButton() {}
 
-public:	
+public:
   ThemeButton(FXComposite* p,const FXString& text,FXIcon* ic=NULL,
-	      FXObject* tgt=NULL,FXSelector sel=0,FXuint opts=BUTTON_NORMAL,
-	      FXint x=0,FXint y=0,FXint w=0,FXint h=0,FXint pl=DEFAULT_PAD,
-	      FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
+              FXObject* tgt=NULL,FXSelector sel=0,FXuint opts=BUTTON_NORMAL,
+              FXint x=0,FXint y=0,FXint w=0,FXint h=0,FXint pl=DEFAULT_PAD,
+              FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 
   long onPaint(FXObject*,FXSelector,void* ptr);
 };
@@ -57,8 +57,8 @@ protected:
 
 public:
   ThemeTextField(FXComposite* p,FXint ncols,FXObject* tgt=NULL,FXSelector sel=0,
-		 FXuint opts=TEXTFIELD_NORMAL,FXint x=0,FXint y=0,FXint w=0,
-		 FXint h=0,FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
+                 FXuint opts=TEXTFIELD_NORMAL,FXint x=0,FXint y=0,FXint w=0,
+                 FXint h=0,FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 
   long onPaint(FXObject*,FXSelector,void* ptr);
 
@@ -82,8 +82,8 @@ protected:
 
 public:
   ThemeComboBox(FXComposite *p,FXint cols,FXObject* tgt=NULL,FXSelector sel=0,
-		FXuint opts=COMBOBOX_NORMAL,FXint x=0,FXint y=0,FXint w=0,FXint h=0,
-		FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
+                FXuint opts=COMBOBOX_NORMAL,FXint x=0,FXint y=0,FXint w=0,FXint h=0,
+                FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 
   long onPaint(FXObject*,FXSelector,void* ptr);
 };
@@ -99,8 +99,8 @@ protected:
 
 public:
   ThemeLabel(FXComposite* p,const FXString& text,FXIcon* ic=0,FXuint opts=LABEL_NORMAL,
-	     FXint x=0,FXint y=0,FXint w=0,FXint h=0,
-	     FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
+             FXint x=0,FXint y=0,FXint w=0,FXint h=0,
+             FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 
   long onPaint(FXObject*,FXSelector,void* ptr);
 };
@@ -116,10 +116,10 @@ protected:
 
 public:
   ThemeTabItem(FXTabBar* p,const FXString& text,FXIcon* ic=0,
-	       FXuint opts=TAB_TOP_NORMAL,
-	       FXint x=0,FXint y=0,FXint w=0,FXint h=0,
-	       FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,
-	       FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
+               FXuint opts=TAB_TOP_NORMAL,
+               FXint x=0,FXint y=0,FXint w=0,FXint h=0,
+               FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,
+               FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 };
 
 
@@ -131,8 +131,8 @@ protected:
 
 public:
   ThemeVerticalFrame(FXComposite *p,FXuint opts=0,FXint x=0,FXint y=0,FXint w=0,FXint h=0,
-		     FXint pl=DEFAULT_SPACING,FXint pr=DEFAULT_SPACING,FXint pt=DEFAULT_SPACING,
-		     FXint pb=DEFAULT_SPACING,FXint hs=DEFAULT_SPACING,FXint vs=DEFAULT_SPACING);
+                     FXint pl=DEFAULT_SPACING,FXint pr=DEFAULT_SPACING,FXint pt=DEFAULT_SPACING,
+                     FXint pb=DEFAULT_SPACING,FXint hs=DEFAULT_SPACING,FXint vs=DEFAULT_SPACING);
 };
 
 
@@ -144,8 +144,8 @@ protected:
 
 public:
   ThemeHorizontalFrame(FXComposite *p,FXuint opts=0,FXint x=0,FXint y=0,FXint w=0,FXint h=0,FXint
-		       pl=DEFAULT_SPACING,FXint pr=DEFAULT_SPACING,FXint pt=DEFAULT_SPACING,
-		       FXint pb=DEFAULT_SPACING,FXint hs=DEFAULT_SPACING,FXint vs=DEFAULT_SPACING);
+                       pl=DEFAULT_SPACING,FXint pr=DEFAULT_SPACING,FXint pt=DEFAULT_SPACING,
+                       FXint pb=DEFAULT_SPACING,FXint hs=DEFAULT_SPACING,FXint vs=DEFAULT_SPACING);
 };
 
 
@@ -159,11 +159,11 @@ protected:
 
 public:
   ThemeMenuButton(FXComposite* p,const FXString& text,FXIcon* ic=NULL,
-		  FXPopup* pup=NULL,
-		  FXuint opts=JUSTIFY_NORMAL|ICON_BEFORE_TEXT|MENUBUTTON_DOWN,
-		  FXint x=0,FXint y=0,FXint w=0,FXint h=0,
-		  FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,
-		  FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
+                  FXPopup* pup=NULL,
+                  FXuint opts=JUSTIFY_NORMAL|ICON_BEFORE_TEXT|MENUBUTTON_DOWN,
+                  FXint x=0,FXint y=0,FXint w=0,FXint h=0,
+                  FXint pl=DEFAULT_PAD,FXint pr=DEFAULT_PAD,
+                  FXint pt=DEFAULT_PAD,FXint pb=DEFAULT_PAD);
 
 
   long onPaint(FXObject*,FXSelector,void* ptr);

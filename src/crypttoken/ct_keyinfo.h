@@ -81,8 +81,8 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_new(uint32_t kid,
-						       GWEN_CRYPT_CRYPTALGOID a,
-						       int keySize);
+    GWEN_CRYPT_CRYPTALGOID a,
+    int keySize);
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_free(GWEN_CRYPT_TOKEN_KEYINFO *ki);
@@ -129,8 +129,8 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetModulusLen(const GWEN_CRYPT_TOKEN_KEYINFO *
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetModulus(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					 const uint8_t *p,
-					 uint32_t len);
+    const uint8_t *p,
+    uint32_t len);
 
 GWENHYWFAR_API
 const uint8_t *GWEN_Crypt_Token_KeyInfo_GetExponentData(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
@@ -140,29 +140,29 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetExponentLen(const GWEN_CRYPT_TOKEN_KEYINFO 
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetExponent(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					  const uint8_t *p,
-					  uint32_t len);
+    const uint8_t *p,
+    uint32_t len);
 
 GWENHYWFAR_API
 uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyNumber(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetKeyNumber(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					   uint32_t i);
+    uint32_t i);
 
 GWENHYWFAR_API
 uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyVersion(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetKeyVersion(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					    uint32_t i);
+    uint32_t i);
 
 GWENHYWFAR_API
 uint32_t GWEN_Crypt_Token_KeyInfo_GetSignCounter(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetSignCounter(GWEN_CRYPT_TOKEN_KEYINFO *ki,
-					     uint32_t i);
+    uint32_t i);
 
 
 #ifdef __cplusplus

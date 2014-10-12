@@ -32,11 +32,11 @@ GWEN_INHERIT(GWEN_GUI, CppGui);
 
 
 int CppGuiLinker::Print(GWEN_GUI *gui,
-			const char *docTitle,
-			const char *docType,
-			const char *descr,
-			const char *text,
-			uint32_t guiid){
+                        const char *docTitle,
+                        const char *docType,
+                        const char *descr,
+                        const char *text,
+                        uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -49,14 +49,14 @@ int CppGuiLinker::Print(GWEN_GUI *gui,
 
 
 int CppGuiLinker::GetPassword(GWEN_GUI *gui,
-			      uint32_t flags,
-			      const char *token,
-			      const char *title,
-			      const char *text,
-			      char *buffer,
-			      int minLen,
-			      int maxLen,
-			      uint32_t guiid) {
+                              uint32_t flags,
+                              const char *token,
+                              const char *title,
+                              const char *text,
+                              char *buffer,
+                              int minLen,
+                              int maxLen,
+                              uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -69,10 +69,10 @@ int CppGuiLinker::GetPassword(GWEN_GUI *gui,
 
 
 int CppGuiLinker::SetPasswordStatus(GWEN_GUI *gui,
-				    const char *token,
-				    const char *pin,
-				    GWEN_GUI_PASSWORD_STATUS status,
-				    uint32_t guiid) {
+                                    const char *token,
+                                    const char *pin,
+                                    GWEN_GUI_PASSWORD_STATUS status,
+                                    uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -85,9 +85,9 @@ int CppGuiLinker::SetPasswordStatus(GWEN_GUI *gui,
 
 
 int CppGuiLinker::CheckCert(GWEN_GUI *gui,
-			    const GWEN_SSLCERTDESCR *cert,
-			    GWEN_SYNCIO *sio,
-			    uint32_t guiid) {
+                            const GWEN_SSLCERTDESCR *cert,
+                            GWEN_SYNCIO *sio,
+                            uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -100,8 +100,8 @@ int CppGuiLinker::CheckCert(GWEN_GUI *gui,
 
 
 int CppGuiLinker::LogHook(GWEN_GUI *gui,
-			  const char *logDomain,
-			  GWEN_LOGGER_LEVEL priority, const char *s) {
+                          const char *logDomain,
+                          GWEN_LOGGER_LEVEL priority, const char *s) {
   CppGui *xgui;
 
   assert(gui);
@@ -114,8 +114,8 @@ int CppGuiLinker::LogHook(GWEN_GUI *gui,
 
 
 int CppGuiLinker::ExecDialog(GWEN_GUI *gui,
-			     GWEN_DIALOG *dlg,
-			     uint32_t guiid) {
+                             GWEN_DIALOG *dlg,
+                             uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -128,8 +128,8 @@ int CppGuiLinker::ExecDialog(GWEN_GUI *gui,
 
 
 int CppGuiLinker::OpenDialog(GWEN_GUI *gui,
-			     GWEN_DIALOG *dlg,
-			     uint32_t guiid) {
+                             GWEN_DIALOG *dlg,
+                             uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -144,7 +144,7 @@ int CppGuiLinker::OpenDialog(GWEN_GUI *gui,
 
 
 int CppGuiLinker::CloseDialog(GWEN_GUI *gui,
-			      GWEN_DIALOG *dlg) {
+                              GWEN_DIALOG *dlg) {
   CppGui *xgui;
 
   assert(gui);
@@ -157,8 +157,8 @@ int CppGuiLinker::CloseDialog(GWEN_GUI *gui,
 
 
 int CppGuiLinker::RunDialog(GWEN_GUI *gui,
-			    GWEN_DIALOG *dlg,
-			    int untilEnd) {
+                            GWEN_DIALOG *dlg,
+                            int untilEnd) {
   CppGui *xgui;
 
   assert(gui);
@@ -171,12 +171,12 @@ int CppGuiLinker::RunDialog(GWEN_GUI *gui,
 
 
 int CppGuiLinker::GetFileName(GWEN_GUI *gui,
-			      const char *caption,
-			      GWEN_GUI_FILENAME_TYPE fnt,
-			      uint32_t flags,
-			      const char *patterns,
-			      GWEN_BUFFER *pathBuffer,
-			      uint32_t guiid) {
+                              const char *caption,
+                              GWEN_GUI_FILENAME_TYPE fnt,
+                              uint32_t flags,
+                              const char *patterns,
+                              GWEN_BUFFER *pathBuffer,
+                              uint32_t guiid) {
   CppGui *xgui;
 
   assert(gui);
@@ -212,13 +212,13 @@ void CppGuiLinker::freeData(void *bp, void *p) {
 
 
 CppGui::CppGui()
-:_checkCertFn(NULL)
-,_gui(NULL) {
+  :_checkCertFn(NULL)
+  ,_gui(NULL) {
   _gui=GWEN_Gui_new();
 
   GWEN_INHERIT_SETDATA(GWEN_GUI, CppGui,
-		       _gui, this,
-		       CppGuiLinker::freeData);
+                       _gui, this,
+                       CppGuiLinker::freeData);
   GWEN_Gui_UseDialogs(_gui);
   _checkCertFn=GWEN_Gui_SetCheckCertFn(_gui, CppGuiLinker::CheckCert);
   _printFn=GWEN_Gui_SetPrintFn(_gui, CppGuiLinker::Print);
@@ -234,7 +234,7 @@ CppGui::CppGui()
 
 
 
-CppGui::~CppGui(){
+CppGui::~CppGui() {
   if (_gui) {
     GWEN_INHERIT_UNLINK(GWEN_GUI, CppGui, _gui)
     GWEN_Gui_free(_gui);
@@ -244,15 +244,15 @@ CppGui::~CppGui(){
 
 
 int CppGui::checkCert(const GWEN_SSLCERTDESCR *cd,
-		      GWEN_SYNCIO *sio,
-		      uint32_t guiid) {
+                      GWEN_SYNCIO *sio,
+                      uint32_t guiid) {
   return checkCertBuiltIn(cd, sio, guiid);
 }
 
 
 
 int CppGui::logHook(const char *logDomain,
-		    GWEN_LOGGER_LEVEL priority, const char *s) {
+                    GWEN_LOGGER_LEVEL priority, const char *s) {
   /* not hooked */
   return 0;
 }
@@ -286,11 +286,11 @@ int CppGui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
 
 
 int CppGui::getFileName(const char *caption,
-			GWEN_GUI_FILENAME_TYPE fnt,
-			uint32_t flags,
-			const char *patterns,
-			GWEN_BUFFER *pathBuffer,
-			uint32_t guiid) {
+                        GWEN_GUI_FILENAME_TYPE fnt,
+                        uint32_t flags,
+                        const char *patterns,
+                        GWEN_BUFFER *pathBuffer,
+                        uint32_t guiid) {
   DBG_ERROR(0, "Not supported");
   return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -298,10 +298,10 @@ int CppGui::getFileName(const char *caption,
 
 
 int CppGui::print(const char *docTitle,
-		  const char *docType,
-		  const char *descr,
-		  const char *text,
-		  uint32_t guiid){
+                  const char *docType,
+                  const char *descr,
+                  const char *text,
+                  uint32_t guiid) {
   if (_printFn)
     return _printFn(_gui, docTitle, docType, descr, text, guiid);
   else
@@ -312,8 +312,8 @@ int CppGui::print(const char *docTitle,
 
 
 int CppGui::checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
-			     GWEN_SYNCIO *sio,
-			     uint32_t guiid) {
+                             GWEN_SYNCIO *sio,
+                             uint32_t guiid) {
   if (_checkCertFn)
     return _checkCertFn(_gui, cert, sio, guiid);
   else {
@@ -326,11 +326,11 @@ int CppGui::checkCertBuiltIn(const GWEN_SSLCERTDESCR *cert,
 
 int CppGui::getPassword(uint32_t flags,
                         const char *token,
-			const char *title,
-			const char *text,
-			char *buffer,
-			int minLen,
-			int maxLen,
+                        const char *title,
+                        const char *text,
+                        char *buffer,
+                        int minLen,
+                        int maxLen,
                         uint32_t guiid) {
   if (_getPasswordFn)
     return _getPasswordFn(_gui, flags, token, title, text, buffer, minLen, maxLen, guiid);
@@ -341,9 +341,9 @@ int CppGui::getPassword(uint32_t flags,
 
 
 int CppGui::setPasswordStatus(const char *token,
-			      const char *pin,
-			      GWEN_GUI_PASSWORD_STATUS status,
-			      uint32_t guiid) {
+                              const char *pin,
+                              GWEN_GUI_PASSWORD_STATUS status,
+                              uint32_t guiid) {
   if (_setPasswordStatusFn)
     return _setPasswordStatusFn(_gui, token, pin, status, guiid);
   else
@@ -366,13 +366,13 @@ void CppGui::setPasswordStore(GWEN_PASSWD_STORE *sto) {
 
 
 
-GWEN_GUI *CppGui::getCInterface(){
+GWEN_GUI *CppGui::getCInterface() {
   return _gui;
 }
 
 
 
-CppGui *CppGui::getCppGui(){
+CppGui *CppGui::getCppGui() {
   GWEN_GUI *gui;
   CppGui *xgui;
 

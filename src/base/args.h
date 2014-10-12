@@ -61,7 +61,8 @@ extern "C" {
 typedef enum {
   GWEN_ArgsType_Char=0,
   GWEN_ArgsType_Int
-} GWEN_ARGS_TYPE;
+}
+GWEN_ARGS_TYPE;
 
 typedef enum {
   GWEN_ArgsOutType_Txt=0,
@@ -96,10 +97,10 @@ struct GWEN_ARGS {
  */
 GWENHYWFAR_API
 int GWEN_Args_Check(int argc, char **argv,
-		    int startAt,
-		    uint32_t mode,
-		    const GWEN_ARGS *args,
-		    GWEN_DB_NODE *db);
+                    int startAt,
+                    uint32_t mode,
+                    const GWEN_ARGS *args,
+                    GWEN_DB_NODE *db);
 
 /** Print a "usage" message into the given GWEN_BUFFER @c
  * ubuf. The message lists all available options. The

@@ -201,17 +201,17 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
   }
 
   fh=CreateFile(xio->path,
-		dwDesiredAccess,                    /* dwDesiredAccess */
-		FILE_SHARE_READ | FILE_SHARE_WRITE, /* dwShareMode */
-		NULL,                               /* pSecurityAttributes */
-		dwCreationDistribution,             /* dwCreationDistribution */
-		dwFlagsAndAttrs,                    /* dwFlagsAndAttrs */
+                dwDesiredAccess,                    /* dwDesiredAccess */
+                FILE_SHARE_READ | FILE_SHARE_WRITE, /* dwShareMode */
+                NULL,                               /* pSecurityAttributes */
+                dwCreationDistribution,             /* dwCreationDistribution */
+                dwFlagsAndAttrs,                    /* dwFlagsAndAttrs */
                 NULL);                              /* hTemplateFile */
   if (fh==INVALID_HANDLE_VALUE) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Error opening file[%s]: %d",
+              "Error opening file[%s]: %d",
               xio->path,
-	      (int)GetLastError());
+              (int)GetLastError());
     return GWEN_ERROR_IO;
   }
 
@@ -232,12 +232,12 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
   if (xio->fh!=INVALID_HANDLE_VALUE) {
     if (!(GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_DONTCLOSE)) {
       if (!CloseHandle(xio->fh)) {
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		  "Error closing file[%s]: %d",
-		  xio->path,
-		  (int)GetLastError());
-	xio->fh=INVALID_HANDLE_VALUE;
-	return GWEN_ERROR_IO;
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Error closing file[%s]: %d",
+                  xio->path,
+                  (int)GetLastError());
+        xio->fh=INVALID_HANDLE_VALUE;
+        return GWEN_ERROR_IO;
       }
     }
     xio->fh=INVALID_HANDLE_VALUE;
@@ -249,8 +249,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
-					uint8_t *buffer,
-					uint32_t size) {
+                                        uint8_t *buffer,
+                                        uint32_t size) {
   GWEN_SYNCIO_FILE *xio;
   DWORD bytesRead=0;
 
@@ -266,8 +266,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
   if (!ReadFile(xio->fh, buffer, size, &bytesRead, NULL)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error on ReadFile(%s): %d",
-	      xio->path,
-	      (int)GetLastError());
+              xio->path,
+              (int)GetLastError());
     return GWEN_ERROR_IO;
   }
 
@@ -277,8 +277,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
-					 const uint8_t *buffer,
-					 uint32_t size) {
+    const uint8_t *buffer,
+    uint32_t size) {
   GWEN_SYNCIO_FILE *xio;
   DWORD bytesWritten=0;
 
@@ -294,8 +294,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
 
   if (!WriteFile(xio->fh, buffer, size, &bytesWritten, NULL)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error on WriteFile(%s): %d",
-	      xio->path,
-	      (int)GetLastError());
+              xio->path,
+              (int)GetLastError());
     return GWEN_ERROR_IO;
   }
 
@@ -319,9 +319,15 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
   }
 
   switch(whence) {
-  case GWEN_SyncIo_File_Whence_Set:     w=FILE_BEGIN; break;
-  case GWEN_SyncIo_File_Whence_Current: w=FILE_CURRENT; break;
-  case GWEN_SyncIo_File_Whence_End:     w=FILE_END; break;
+  case GWEN_SyncIo_File_Whence_Set:
+    w=FILE_BEGIN;
+    break;
+  case GWEN_SyncIo_File_Whence_Current:
+    w=FILE_CURRENT;
+    break;
+  case GWEN_SyncIo_File_Whence_End:
+    w=FILE_END;
+    break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Invalid seek mode (%d)", whence);
     return GWEN_ERROR_INVALID;
@@ -329,19 +335,19 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
 
   li.QuadPart = pos;
   li.LowPart=SetFilePointer(xio->fh,
-			    li.LowPart,
-			    &li.HighPart,
-			    w);
+                            li.LowPart,
+                            &li.HighPart,
+                            w);
   if (li.LowPart==INVALID_SET_FILE_POINTER) {
     DWORD rv;
 
     rv=GetLastError();
     if (rv!=NO_ERROR) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error seeking in file[%s] at %llu: %d",
-		xio->path,
-		(unsigned long long) pos,
-		(int)rv);
+                "Error seeking in file[%s] at %llu: %d",
+                xio->path,
+                (unsigned long long) pos,
+                (int)rv);
       return GWEN_ERROR_IO;
     }
   }

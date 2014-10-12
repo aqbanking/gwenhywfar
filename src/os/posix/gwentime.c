@@ -42,7 +42,7 @@
 
 
 
-int GWEN_Time__GetCurrentTime(GWEN_TIME *ti){
+int GWEN_Time__GetCurrentTime(GWEN_TIME *ti) {
   struct timezone tz;
   struct timeval tv;
 

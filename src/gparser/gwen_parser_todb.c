@@ -49,8 +49,8 @@ int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE
     while(eChild) {
       rv=GWEN_Parser__toDbElementAndChildren(eChild, dbThis?dbThis:dbParent, depth+1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d) [%d]", rv, depth);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d) [%d]", rv, depth);
+        return rv;
       }
 
       GWEN_ParserElement_Tree_GetNext(eChild);

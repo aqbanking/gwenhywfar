@@ -23,18 +23,18 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_CRYPTMGR, GWENHYWFAR_API)
 
 
 typedef GWENHYWFAR_CB int (*GWEN_CRYPTMGR_SIGNDATA_FN)(GWEN_CRYPTMGR *cm,
-						       const uint8_t *pData, uint32_t lData,
-						       GWEN_BUFFER *dbuf);
+    const uint8_t *pData, uint32_t lData,
+    GWEN_BUFFER *dbuf);
 typedef GWENHYWFAR_CB int (*GWEN_CRYPTMGR_ENCRYPTKEY_FN)(GWEN_CRYPTMGR *cm,
-							 const uint8_t *pData, uint32_t lData,
-							 GWEN_BUFFER *dbuf);
+    const uint8_t *pData, uint32_t lData,
+    GWEN_BUFFER *dbuf);
 
 typedef GWENHYWFAR_CB int (*GWEN_CRYPTMGR_VERIFYDATA_FN)(GWEN_CRYPTMGR *cm,
-							 const uint8_t *pData, uint32_t lData,
-							 const uint8_t *pSignature, uint32_t lSignature);
+    const uint8_t *pData, uint32_t lData,
+    const uint8_t *pSignature, uint32_t lSignature);
 typedef GWENHYWFAR_CB int (*GWEN_CRYPTMGR_DECRYPTKEY_FN)(GWEN_CRYPTMGR *cm,
-							 const uint8_t *pData, uint32_t lData,
-							 GWEN_BUFFER *dbuf);
+    const uint8_t *pData, uint32_t lData,
+    GWEN_BUFFER *dbuf);
 
 
 
@@ -68,8 +68,8 @@ int GWEN_CryptMgr_EncryptKey(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t l
 
 GWENHYWFAR_API
 int GWEN_CryptMgr_VerifyData(GWEN_CRYPTMGR *cm,
-			     const uint8_t *pData, uint32_t lData,
-			     const uint8_t *pSignature, uint32_t lSignature);
+                             const uint8_t *pData, uint32_t lData,
+                             const uint8_t *pSignature, uint32_t lSignature);
 
 GWENHYWFAR_API
 int GWEN_CryptMgr_DecryptKey(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t lData, GWEN_BUFFER *dbuf);
@@ -77,20 +77,20 @@ int GWEN_CryptMgr_DecryptKey(GWEN_CRYPTMGR *cm, const uint8_t *pData, uint32_t l
 
 GWENHYWFAR_API
 GWEN_CRYPTMGR_SIGNDATA_FN GWEN_CryptMgr_SetSignDataFn(GWEN_CRYPTMGR *cm,
-						      GWEN_CRYPTMGR_SIGNDATA_FN f);
+    GWEN_CRYPTMGR_SIGNDATA_FN f);
 
 GWENHYWFAR_API
 GWEN_CRYPTMGR_VERIFYDATA_FN GWEN_CryptMgr_SetVerifyDataFn(GWEN_CRYPTMGR *cm,
-							  GWEN_CRYPTMGR_VERIFYDATA_FN f);
+    GWEN_CRYPTMGR_VERIFYDATA_FN f);
 
 GWENHYWFAR_API
 GWEN_CRYPTMGR_ENCRYPTKEY_FN
-  GWEN_CryptMgr_SetEncryptKeyFn(GWEN_CRYPTMGR *cm,
-				GWEN_CRYPTMGR_ENCRYPTKEY_FN f);
+GWEN_CryptMgr_SetEncryptKeyFn(GWEN_CRYPTMGR *cm,
+                              GWEN_CRYPTMGR_ENCRYPTKEY_FN f);
 
 GWENHYWFAR_API
 GWEN_CRYPTMGR_DECRYPTKEY_FN GWEN_CryptMgr_SetDecryptKeyFn(GWEN_CRYPTMGR *cm,
-							  GWEN_CRYPTMGR_DECRYPTKEY_FN f);
+    GWEN_CRYPTMGR_DECRYPTKEY_FN f);
 
 
 #ifdef __cplusplus

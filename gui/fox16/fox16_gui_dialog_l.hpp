@@ -42,8 +42,8 @@ protected:
       std::list<FXRadioButton*>::iterator it;
 
       for (it=m_buttonList.begin(); it!=m_buttonList.end(); it++)
-	/* reset target pointer in buttons because we are about to destroy the FXDataTarget */
-	(*it)->setTarget(NULL);
+        /* reset target pointer in buttons because we are about to destroy the FXDataTarget */
+        (*it)->setTarget(NULL);
     };
 
     int getGroupId() { return m_groupId;};
@@ -106,26 +106,26 @@ protected:
   void guiUpdate();
 
   virtual int setIntProperty(GWEN_WIDGET *w,
-			     GWEN_DIALOG_PROPERTY prop,
-			     int index,
-			     int value,
-			     int doSignal);
+                             GWEN_DIALOG_PROPERTY prop,
+                             int index,
+                             int value,
+                             int doSignal);
 
   virtual int getIntProperty(GWEN_WIDGET *w,
-			     GWEN_DIALOG_PROPERTY prop,
-			     int index,
-			     int defaultValue);
+                             GWEN_DIALOG_PROPERTY prop,
+                             int index,
+                             int defaultValue);
 
   virtual int setCharProperty(GWEN_WIDGET *w,
-			      GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      const char *value,
-			      int doSignal);
+                              GWEN_DIALOG_PROPERTY prop,
+                              int index,
+                              const char *value,
+                              int doSignal);
 
   virtual const char *getCharProperty(GWEN_WIDGET *w,
-				      GWEN_DIALOG_PROPERTY prop,
-				      int index,
-				      const char *defaultValue);
+                                      GWEN_DIALOG_PROPERTY prop,
+                                      int index,
+                                      const char *defaultValue);
 
 };
 

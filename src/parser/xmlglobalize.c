@@ -26,7 +26,7 @@
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__FindNameSpaceByUrl(GWEN_XMLNODE_NAMESPACE_LIST *l,
-						       const char *s) {
+    const char *s) {
   GWEN_XMLNODE_NAMESPACE *ns;
 
   assert(l);
@@ -46,7 +46,7 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__FindNameSpaceByUrl(GWEN_XMLNODE_NAMESPACE_LI
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
-							 const char *prefix) {
+    const char *prefix) {
   while(n) {
     if (n->type==GWEN_XMLNodeTypeTag) {
       GWEN_XMLNODE_NAMESPACE *ns;
@@ -54,12 +54,12 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
       DBG_ERROR(0, "Checking in node [%s]", GWEN_XMLNode_GetData(n));
       ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
       while(ns) {
-	const char *d;
+        const char *d;
 
-	d=GWEN_XMLNode_NameSpace_GetName(ns);
-	if (d && strcasecmp(d, prefix)==0)
-	  return ns;
-	ns=GWEN_XMLNode_NameSpace_List_Next(ns);
+        d=GWEN_XMLNode_NameSpace_GetName(ns);
+        if (d && strcasecmp(d, prefix)==0)
+          return ns;
+        ns=GWEN_XMLNode_NameSpace_List_Next(ns);
       }
     }
 
@@ -72,14 +72,14 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
 
 
 int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
-			      GWEN_XMLNODE_NAMESPACE_LIST *l,
-			      char **pValue) {
+                              GWEN_XMLNODE_NAMESPACE_LIST *l,
+                              char **pValue) {
   GWEN_XMLNODE_NAMESPACE *ns;
   char *dcopy=NULL;
   char *v;
   const char *prefix;
   const char *name;
-  
+
   /* split into prefix and value */
   dcopy=strdup(*pValue);
   v=strchr(dcopy, ':');
@@ -105,7 +105,7 @@ int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
 
       /* translate prefix part of the name */
       newValue=(char*)malloc(strlen(GWEN_XMLNode_NameSpace_GetName(newNs))+
-			     strlen(name)+1+1);
+                             strlen(name)+1+1);
       assert(newValue);
       strcpy(newValue, GWEN_XMLNode_NameSpace_GetName(newNs));
       strcat(newValue, ":");
@@ -115,8 +115,8 @@ int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Namespace for [%s] not in list, should not happen.",
-		GWEN_XMLNode_NameSpace_GetUrl(ns));
+                "Namespace for [%s] not in list, should not happen.",
+                GWEN_XMLNode_NameSpace_GetUrl(ns));
       abort();
     }
     free(dcopy);
@@ -133,56 +133,56 @@ int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
 
 
 int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
-				 GWEN_XMLNODE_NAMESPACE_LIST *l,
-				 uint32_t *pLastId) {
+                                 GWEN_XMLNODE_NAMESPACE_LIST *l,
+                                 uint32_t *pLastId) {
   GWEN_XMLNODE *nn;
 
   if (n->type==GWEN_XMLNodeTypeTag) {
     GWEN_XMLNODE_NAMESPACE *ns;
     GWEN_XMLPROPERTY *pr;
     int rv;
-  
+
     ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
     while(ns) {
       const char *url;
-  
+
       url=GWEN_XMLNode_NameSpace_GetUrl(ns);
       if (url) {
-	if (GWEN_XMLGL__FindNameSpaceByUrl(l, url)==NULL) {
-	  char namebuf[32];
-	  GWEN_XMLNODE_NAMESPACE *newNs;
-  
-	  snprintf(namebuf, sizeof(namebuf)-1, "_%d_", ++(*pLastId));
-	  newNs=GWEN_XMLNode_NameSpace_new(namebuf, url);
-	  GWEN_XMLNode_NameSpace_List_Add(newNs, l);
-	}
+        if (GWEN_XMLGL__FindNameSpaceByUrl(l, url)==NULL) {
+          char namebuf[32];
+          GWEN_XMLNODE_NAMESPACE *newNs;
+
+          snprintf(namebuf, sizeof(namebuf)-1, "_%d_", ++(*pLastId));
+          newNs=GWEN_XMLNode_NameSpace_new(namebuf, url);
+          GWEN_XMLNode_NameSpace_List_Add(newNs, l);
+        }
       }
       ns=GWEN_XMLNode_NameSpace_List_Next(ns);
     }
-  
+
     /* translate some properties */
     pr=n->properties;
     while(pr) {
       if (pr->name && pr->value) {
-	if (strcasecmp(pr->name, "type")==0 ||
-	    strcasecmp(pr->name, "ref")==0 ||
-	    strcasecmp(pr->name, "base")==0) {
-	  rv=GWEN_XMLGL__TranslateName(n, l, &(pr->value));
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        if (strcasecmp(pr->name, "type")==0 ||
+            strcasecmp(pr->name, "ref")==0 ||
+            strcasecmp(pr->name, "base")==0) {
+          rv=GWEN_XMLGL__TranslateName(n, l, &(pr->value));
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
             return rv;
-	  }
-	}
+          }
+        }
       }
       pr=pr->next;
     }
-  
+
     /* translate this node */
     if (n->data) {
       rv=GWEN_XMLGL__TranslateName(n, l, &(n->data));
       if (rv) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }
@@ -218,8 +218,8 @@ void GWEN_XMLGL__ClearNameSpaces(GWEN_XMLNODE *n) {
 
 
 int GWEN_XMLNode_GlobalizeWithList(GWEN_XMLNODE *n,
-				   GWEN_XMLNODE_NAMESPACE_LIST *l,
-				   uint32_t *pLastId) {
+                                   GWEN_XMLNODE_NAMESPACE_LIST *l,
+                                   uint32_t *pLastId) {
   int rv;
 
   rv=GWEN_XMLGL__SampleNameSpaces(n, l, pLastId);

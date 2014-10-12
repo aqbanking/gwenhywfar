@@ -62,46 +62,46 @@ void GWEN_ConfigMgr_free(GWEN_CONFIGMGR *mgr);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_GetGroup(GWEN_CONFIGMGR *mgr,
-			    const char *groupName,
-			    const char *subGroupName,
-			    GWEN_DB_NODE **pDb);
+                            const char *groupName,
+                            const char *subGroupName,
+                            GWEN_DB_NODE **pDb);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
-			    const char *groupName,
-			    const char *subGroupName,
-			    GWEN_DB_NODE *db);
+                            const char *groupName,
+                            const char *subGroupName,
+                            GWEN_DB_NODE *db);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_LockGroup(GWEN_CONFIGMGR *mgr,
-			     const char *groupName,
-			     const char *subGroupName);
+                             const char *groupName,
+                             const char *subGroupName);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
-			       const char *groupName,
-			       const char *subGroupName);
+                               const char *groupName,
+                               const char *subGroupName);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
-			       const char *groupName,
-			       char *buffer,
-			       uint32_t bufferLen);
+                               const char *groupName,
+                               char *buffer,
+                               uint32_t bufferLen);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
-			       const char *groupName,
-			       const char *subGroupName);
+                               const char *groupName,
+                               const char *subGroupName);
 
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_ListGroups(GWEN_CONFIGMGR *mgr,
-			      GWEN_STRINGLIST *sl);
+                              GWEN_STRINGLIST *sl);
 
 GWENHYWFAR_API
 int GWEN_ConfigMgr_ListSubGroups(GWEN_CONFIGMGR *mgr,
-				 const char *groupName,
-				 GWEN_STRINGLIST *sl);
+                                 const char *groupName,
+                                 GWEN_STRINGLIST *sl);
 
 
 #ifdef __cplusplus

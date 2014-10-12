@@ -70,17 +70,17 @@ GWENHYWFAR_API GWEN_MDIGEST *GWEN_MDigest_Sha256_new(void);
  * Generate a key from a given password and a salt according to RFC 2898.
  */
 GWENHYWFAR_API int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
-				       const char *password,
-				       const uint8_t *pSalt,
-				       uint32_t lSalt,
-				       uint8_t *pKey,
-				       uint32_t lKey,
-				       uint32_t iterations);
+                                       const char *password,
+                                       const uint8_t *pSalt,
+                                       uint32_t lSalt,
+                                       uint8_t *pKey,
+                                       uint32_t lKey,
+                                       uint32_t iterations);
 
 GWENHYWFAR_API int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
-					     const char *folder,
-					     const char *ignoreFile,
-					     GWEN_STRINGLIST *sl);
+    const char *folder,
+    const char *ignoreFile,
+    GWEN_STRINGLIST *sl);
 
 
 /**
@@ -96,10 +96,10 @@ GWENHYWFAR_API int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
  */
 GWENHYWFAR_API
 int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
-			       const char *folder,
-			       const char *checksumFile,
-			       int strictCheck,
-			       uint32_t pid);
+                               const char *folder,
+                               const char *checksumFile,
+                               int strictCheck,
+                               uint32_t pid);
 
 #ifdef __cplusplus
 }

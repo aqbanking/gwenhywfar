@@ -54,8 +54,8 @@ public:
     assert(qtDialog);
 
     qw->connect(qw, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-		qtDialog->getMainWindow(),
-		SLOT(slotActivated()));
+                qtDialog->getMainWindow(),
+                SLOT(slotActivated()));
 
     if (wParent)
       GWEN_Widget_AddChildGuiWidget(wParent, _widget);
@@ -65,9 +65,9 @@ public:
 
 
   int setIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int value,
-		     int doSignal) {
+                     int index,
+                     int value,
+                     int doSignal) {
     QTreeWidget *qw;
 
     qw=(QTreeWidget*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -84,8 +84,8 @@ public:
       item=qw->topLevelItem(index);
 
       if (item==NULL) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
-	return GWEN_ERROR_INVALID;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
+        return GWEN_ERROR_INVALID;
       }
 
       qw->setCurrentItem(item);
@@ -99,15 +99,15 @@ public:
     case GWEN_DialogProperty_SelectionMode:
       switch(value) {
       case GWEN_Dialog_SelectionMode_None:
-	qw->setSelectionMode(QAbstractItemView::NoSelection);
-	return 0;
+        qw->setSelectionMode(QAbstractItemView::NoSelection);
+        return 0;
       case GWEN_Dialog_SelectionMode_Single:
-	qw->setSelectionMode(QAbstractItemView::SingleSelection);
-	return 0;
+        qw->setSelectionMode(QAbstractItemView::SingleSelection);
+        return 0;
       case GWEN_Dialog_SelectionMode_Multi:
-	qw->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	return 0;
-	;
+        qw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        return 0;
+        ;
       }
       DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d", value);
       return GWEN_ERROR_INVALID;
@@ -115,14 +115,14 @@ public:
     case GWEN_DialogProperty_SortDirection:
       switch(value) {
       case GWEN_DialogSortDirection_None:
-	qw->sortByColumn(-1, Qt::AscendingOrder);
-	break;
+        qw->sortByColumn(-1, Qt::AscendingOrder);
+        break;
       case GWEN_DialogSortDirection_Up:
-	qw->sortByColumn(index, Qt::AscendingOrder);
-	break;
+        qw->sortByColumn(index, Qt::AscendingOrder);
+        break;
       case GWEN_DialogSortDirection_Down:
-	qw->sortByColumn(index, Qt::DescendingOrder);
-	break;
+        qw->sortByColumn(index, Qt::DescendingOrder);
+        break;
       }
       return 0;
 
@@ -131,10 +131,10 @@ public:
 
       c=qw->sortColumn();
       if (c!=-1) {
-	QHeaderView *h;
+        QHeaderView *h;
 
-	h=qw->header();
-	qw->sortItems(c, h->sortIndicatorOrder());
+        h=qw->header();
+        qw->sortItems(c, h->sortIndicatorOrder());
       }
       return 0;
     }
@@ -147,8 +147,8 @@ public:
 
 
   int getIntProperty(GWEN_DIALOG_PROPERTY prop,
-		     int index,
-		     int defaultValue) {
+                     int index,
+                     int defaultValue) {
     QTreeWidget *qw;
 
     qw=(QTreeWidget*) GWEN_Widget_GetImplData(_widget, QT4_DIALOG_WIDGET_REAL);
@@ -161,8 +161,8 @@ public:
 
       item=qw->currentItem();
       while(item) {
-	item=qw->itemAbove(item);
-	i++;
+        item=qw->itemAbove(item);
+        i++;
       }
 
       return i;
@@ -174,30 +174,30 @@ public:
     case GWEN_DialogProperty_SelectionMode:
       switch(qw->selectionMode()) {
       case QAbstractItemView::NoSelection:
-	return GWEN_Dialog_SelectionMode_None;
+        return GWEN_Dialog_SelectionMode_None;
       case QAbstractItemView::SingleSelection:
-	return GWEN_Dialog_SelectionMode_Single;
+        return GWEN_Dialog_SelectionMode_Single;
       case QAbstractItemView::ExtendedSelection:
-	return GWEN_Dialog_SelectionMode_Multi;
+        return GWEN_Dialog_SelectionMode_Multi;
       default:
-	break;
+        break;
       }
       DBG_ERROR(GWEN_LOGDOMAIN, "Unknown SelectionMode %d",
-		qw->selectionMode());
+                qw->selectionMode());
       return GWEN_ERROR_INVALID;
 
     case GWEN_DialogProperty_SortDirection:
       if (qw->sortColumn()!=index)
-	return GWEN_DialogSortDirection_None;
+        return GWEN_DialogSortDirection_None;
       else {
-	switch(qw->header()->sortIndicatorOrder()) {
-	case Qt::AscendingOrder:
-	  return GWEN_DialogSortDirection_Up;
-	case Qt::DescendingOrder:
-	  return GWEN_DialogSortDirection_Down;
-	default:
-	  return GWEN_DialogSortDirection_None;
-	}
+        switch(qw->header()->sortIndicatorOrder()) {
+        case Qt::AscendingOrder:
+          return GWEN_DialogSortDirection_Up;
+        case Qt::DescendingOrder:
+          return GWEN_DialogSortDirection_Down;
+        default:
+          return GWEN_DialogSortDirection_None;
+        }
       }
       break;
 
@@ -209,9 +209,9 @@ public:
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-		      int index,
-		      const char *value,
-		      int doSignal) {
+                      int index,
+                      const char *value,
+                      int doSignal) {
     QTreeWidget *qw;
     QString text;
 
@@ -232,9 +232,9 @@ public:
       qw->header()->reset();
 
       str=text;
-      while(!(t=str.section('\t', n, n)).isEmpty()){
-	sl+=t;
-	n++;
+      while(!(t=str.section('\t', n, n)).isEmpty()) {
+        sl+=t;
+        n++;
       }
       qw->setHeaderLabels(sl);
       return 0;
@@ -252,9 +252,9 @@ public:
       QTreeWidgetItem *item;
 
       str=text;
-      while(!(t=str.section('\t', n, n)).isEmpty()){
-	sl+=t;
-	n++;
+      while(!(t=str.section('\t', n, n)).isEmpty()) {
+        sl+=t;
+        n++;
       }
       item=new QTreeWidgetItem(qw, sl);
       return 0;
@@ -268,8 +268,8 @@ public:
 
 
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      const char *defaultValue) {
+                              int index,
+                              const char *defaultValue) {
     QTreeWidget *qw;
     QString str;
 
@@ -282,19 +282,19 @@ public:
 
       item=qw->headerItem();
       if (item) {
-	int i;
+        int i;
 
-	for (i=0; i<qw->columnCount(); i++) {
-	  if (i)
-	    str+='\t';
-	  str+=item->text(i);
-	}
-	if (str.isEmpty())
-	  return defaultValue;
-	else {
-	  GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_TITLE, str.toUtf8());
-	  return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_TITLE);
-	}
+        for (i=0; i<qw->columnCount(); i++) {
+          if (i)
+            str+='\t';
+          str+=item->text(i);
+        }
+        if (str.isEmpty())
+          return defaultValue;
+        else {
+          GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_TITLE, str.toUtf8());
+          return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_TITLE);
+        }
       }
       return defaultValue;
     }
@@ -306,20 +306,20 @@ public:
       item=qw->topLevelItem(index);
 
       if (item==NULL) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", index);
-	return defaultValue;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", index);
+        return defaultValue;
       }
 
       for (i=0; i<qw->columnCount(); i++) {
-	if (i)
-	  str+='\t';
-	str+=item->text(i);
+        if (i)
+          str+='\t';
+        str+=item->text(i);
       }
       if (str.isEmpty())
-	return defaultValue;
+        return defaultValue;
       else {
-	GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_VALUE, str.toUtf8());
-	return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_VALUE);
+        GWEN_Widget_SetText(_widget, QT4_DIALOG_STRING_VALUE, str.toUtf8());
+        return GWEN_Widget_GetText(_widget, QT4_DIALOG_STRING_VALUE);
       }
     }
 

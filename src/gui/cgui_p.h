@@ -49,76 +49,76 @@ void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(void *bp, void *p);
 
 char GWEN_Gui_CGui__readCharFromStdin(int waitFor);
 int GWEN_Gui_CGui__input(GWEN_GUI *gui,
-			 uint32_t flags,
-			 char *buffer,
-			 int minLen,
-			 int maxLen,
-			 uint32_t guiid);
+                         uint32_t flags,
+                         char *buffer,
+                         int minLen,
+                         int maxLen,
+                         uint32_t guiid);
 
 GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id);
 
 
 int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
-			     uint32_t flags,
-			     const char *title,
-			     const char *text,
-			     const char *b1,
-			     const char *b2,
-			     const char *b3,
-			     uint32_t guiid);
+                             uint32_t flags,
+                             const char *title,
+                             const char *text,
+                             const char *b1,
+                             const char *b2,
+                             const char *b3,
+                             uint32_t guiid);
 
 int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
-			   uint32_t flags,
-			   const char *title,
-			   const char *text,
-			   char *buffer,
-			   int minLen,
-			   int maxLen,
-			   uint32_t guiid);
+                           uint32_t flags,
+                           const char *title,
+                           const char *text,
+                           char *buffer,
+                           int minLen,
+                           int maxLen,
+                           uint32_t guiid);
 
 uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
-			       uint32_t flags,
-			       const char *title,
-			       const char *text,
-			       uint32_t guiid);
+                               uint32_t flags,
+                               const char *title,
+                               const char *text,
+                               uint32_t guiid);
 
 void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, uint32_t id);
 
 uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
-				     uint32_t progressFlags,
-				     const char *title,
-				     const char *text,
-				     uint64_t total,
-				     uint32_t guiid);
+                                     uint32_t progressFlags,
+                                     const char *title,
+                                     const char *text,
+                                     uint64_t total,
+                                     uint32_t guiid);
 
 int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
-				  uint32_t id,
-				  uint64_t progress);
+                                  uint32_t id,
+                                  uint64_t progress);
 
 int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total);
 
 int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
-			      uint32_t id,
-			      GWEN_LOGGER_LEVEL level,
-			      const char *text);
+                              uint32_t id,
+                              GWEN_LOGGER_LEVEL level,
+                              const char *text);
 
 int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui, uint32_t id);
 
 int GWEN_Gui_CGui_Print(GWEN_GUI *gui,
-			const char *docTitle,
-			const char *docType,
-			const char *descr,
-			const char *text,
-			uint32_t guiid);
+                        const char *docTitle,
+                        const char *docType,
+                        const char *descr,
+                        const char *text,
+                        uint32_t guiid);
 
 int GWEN_Gui_CGui__HashPassword(const char *token,
-				const char *pin,
-				GWEN_BUFFER *buf);
+                                const char *pin,
+                                GWEN_BUFFER *buf);
 
 
 static int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
-                                                 const GWEN_SSLCERTDESCR *cd,
-                                                 GWEN_SYNCIO *sio, uint32_t guiid);
+    const GWEN_SSLCERTDESCR *cd,
+    GWEN_SYNCIO *sio, uint32_t guiid);
 
 
 #endif

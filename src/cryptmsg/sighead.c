@@ -70,67 +70,67 @@ GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l) {
 
       subtag=GWEN_Tag16_fromBuffer2(sp, sl, 0);
       if (subtag==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Bad sub-tag");
-	GWEN_SigHead_free(sh);
-	return NULL;
+        DBG_INFO(GWEN_LOGDOMAIN, "Bad sub-tag");
+        GWEN_SigHead_free(sh);
+        return NULL;
       }
       subtagLen=GWEN_Tag16_GetTagLength(subtag);
       subtagPtr=(const char*)GWEN_Tag16_GetTagData(subtag);
 
       if (subtagLen && subtagPtr) {
-	switch(GWEN_Tag16_GetTagType(subtag)) {
-	case GWEN_SIGHEAD_TLV_KEYNAME:
-	  sh->keyName=(char*)malloc(subtagLen+1);
-	  memmove(sh->keyName, subtagPtr, subtagLen);
-	  sh->keyName[subtagLen]=0;
-	  break;
+        switch(GWEN_Tag16_GetTagType(subtag)) {
+        case GWEN_SIGHEAD_TLV_KEYNAME:
+          sh->keyName=(char*)malloc(subtagLen+1);
+          memmove(sh->keyName, subtagPtr, subtagLen);
+          sh->keyName[subtagLen]=0;
+          break;
 
-	case GWEN_SIGHEAD_TLV_KEYNUM:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    sh->keyNumber=i;
-	  break;
+        case GWEN_SIGHEAD_TLV_KEYNUM:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            sh->keyNumber=i;
+          break;
 
-	case GWEN_SIGHEAD_TLV_KEYVER:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    sh->keyVersion=i;
-	  break;
+        case GWEN_SIGHEAD_TLV_KEYVER:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            sh->keyVersion=i;
+          break;
 
-	case GWEN_SIGHEAD_TLV_DATETIME:
-	  if (subtagLen<128) {
-	    char dt[128];
+        case GWEN_SIGHEAD_TLV_DATETIME:
+          if (subtagLen<128) {
+            char dt[128];
 
-	    dt[0]=0;
-	    strncpy(dt, (const char*) subtagPtr, sizeof(dt)-1);
-	    dt[sizeof(dt)-1]=0;
-	    sh->dateTime=GWEN_Time_fromUtcString(dt, "YYYYMMDD-hh:mm:ss");
-	    if (sh->dateTime==NULL) {
-	      DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of dateTime [%s]", dt);
-	      GWEN_Tag16_free(subtag);
-	      GWEN_SigHead_free(sh);
+            dt[0]=0;
+            strncpy(dt, (const char*) subtagPtr, sizeof(dt)-1);
+            dt[sizeof(dt)-1]=0;
+            sh->dateTime=GWEN_Time_fromUtcString(dt, "YYYYMMDD-hh:mm:ss");
+            if (sh->dateTime==NULL) {
+              DBG_ERROR(GWEN_LOGDOMAIN, "Bad format of dateTime [%s]", dt);
+              GWEN_Tag16_free(subtag);
+              GWEN_SigHead_free(sh);
               return NULL;
-	    }
-	  }
-	  else {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Data for dateTime too long (%d bytes)", subtagLen);
-	    GWEN_Tag16_free(subtag);
-	    GWEN_SigHead_free(sh);
-	    return NULL;
-	  }
-	  break;
+            }
+          }
+          else {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Data for dateTime too long (%d bytes)", subtagLen);
+            GWEN_Tag16_free(subtag);
+            GWEN_SigHead_free(sh);
+            return NULL;
+          }
+          break;
 
-	case GWEN_SIGHEAD_TLV_SIGPROFILE:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    sh->signatureProfile=i;
-	  break;
+        case GWEN_SIGHEAD_TLV_SIGPROFILE:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            sh->signatureProfile=i;
+          break;
 
-	case GWEN_SIGHEAD_TLV_SIGNUM:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    sh->signatureNumber=i;
-	  break;
+        case GWEN_SIGHEAD_TLV_SIGNUM:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            sh->signatureNumber=i;
+          break;
 
-	default:
+        default:
           DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x", GWEN_Tag16_GetTagType(subtag));
-	}
+        }
       }
 
       sp+=GWEN_Tag16_GetTagSize(subtag);
@@ -169,9 +169,9 @@ int GWEN_SigHead_toBuffer(const GWEN_SIGHEAD *sh, GWEN_BUFFER *buf, uint8_t tagT
     tbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Time_toUtcString(sh->dateTime, "YYYYMMDD-hh:mm:ss", tbuf);
     GWEN_Tag16_DirectlyToBuffer(GWEN_SIGHEAD_TLV_DATETIME,
-				GWEN_Buffer_GetStart(tbuf),
-				-1,
-				buf);
+                                GWEN_Buffer_GetStart(tbuf),
+                                -1,
+                                buf);
     GWEN_Buffer_free(tbuf);
   }
 

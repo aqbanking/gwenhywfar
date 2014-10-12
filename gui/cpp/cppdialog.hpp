@@ -61,26 +61,26 @@ protected:
 
 
   virtual int setIntProperty(GWEN_WIDGET *w,
-			     GWEN_DIALOG_PROPERTY prop,
-			     int index,
-			     int value,
-			     int doSignal);
+                             GWEN_DIALOG_PROPERTY prop,
+                             int index,
+                             int value,
+                             int doSignal);
 
   virtual int getIntProperty(GWEN_WIDGET *w,
-			     GWEN_DIALOG_PROPERTY prop,
-			     int index,
-			     int defaultValue);
+                             GWEN_DIALOG_PROPERTY prop,
+                             int index,
+                             int defaultValue);
 
   virtual int setCharProperty(GWEN_WIDGET *w,
-			      GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      const char *value,
-			      int doSignal);
+                              GWEN_DIALOG_PROPERTY prop,
+                              int index,
+                              const char *value,
+                              int doSignal);
 
   virtual const char *getCharProperty(GWEN_WIDGET *w,
-				      GWEN_DIALOG_PROPERTY prop,
-				      int index,
-				      const char *defaultValue);
+                                      GWEN_DIALOG_PROPERTY prop,
+                                      int index,
+                                      const char *defaultValue);
 
 };
 

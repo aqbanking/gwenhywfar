@@ -16,8 +16,8 @@
 
 
 HTML_GROUP *HtmlGroup_UnorderedList_new(const char *groupName,
-					HTML_GROUP *parent,
-					GWEN_XML_CONTEXT *ctx);
+                                        HTML_GROUP *parent,
+                                        GWEN_XML_CONTEXT *ctx);
 
 
 

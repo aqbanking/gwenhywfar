@@ -25,7 +25,7 @@
 
 
 
-FXDEFMAP(FOX16_HtmlText) FOX16_HtmlTextMap[]={
+FXDEFMAP(FOX16_HtmlText) FOX16_HtmlTextMap[]= {
   FXMAPFUNC(SEL_PAINT,0,FOX16_HtmlText::onPaint),
 };
 
@@ -38,19 +38,18 @@ FXIMPLEMENT(FOX16_HtmlText, FXScrollArea, FOX16_HtmlTextMap, ARRAYNUMBER(FOX16_H
 
 
 FOX16_HtmlText::FOX16_HtmlText(FXComposite* p, const FXString& text,
-			       FXuint opts,
-			       FXint x, FXint y, FXint w, FXint h)
-:FXScrollArea(p, opts, x, y, w, h)
-,m_htmlCtx(NULL)
-,m_minWidth(0)
-,m_maxDefaultWidth(MAX_DEFAULT_WIDTH)
-,m_haveDefaultDims(false)
-,margintop(BORDER)
-,marginbottom(BORDER)
-,marginleft(BORDER)
-,marginright(BORDER)
-,barwidth(8)
-{
+                               FXuint opts,
+                               FXint x, FXint y, FXint w, FXint h)
+  :FXScrollArea(p, opts, x, y, w, h)
+  ,m_htmlCtx(NULL)
+  ,m_minWidth(0)
+  ,m_maxDefaultWidth(MAX_DEFAULT_WIDTH)
+  ,m_haveDefaultDims(false)
+  ,margintop(BORDER)
+  ,marginbottom(BORDER)
+  ,marginleft(BORDER)
+  ,marginright(BORDER)
+  ,barwidth(8) {
   setText(text);
   flags|=FLAG_ENABLED;
 }
@@ -58,10 +57,9 @@ FOX16_HtmlText::FOX16_HtmlText(FXComposite* p, const FXString& text,
 
 
 FOX16_HtmlText::FOX16_HtmlText()
-:FXScrollArea()
-,m_htmlCtx(NULL)
-,m_minWidth(0)
-{
+  :FXScrollArea()
+  ,m_htmlCtx(NULL)
+  ,m_minWidth(0) {
   flags|=FLAG_ENABLED;
 }
 
@@ -98,7 +96,7 @@ void FOX16_HtmlText::calcDefaultDims() {
   if (w<viewport_w)
     w=viewport_w;
   //if (w<wNeeded) {
-    m_htmlCtx->layout(w-BORDER*2, -1);
+  m_htmlCtx->layout(w-BORDER*2, -1);
   //}
   m_defaultWidth=m_htmlCtx->getWidth();
   m_defaultHeight=m_htmlCtx->getHeight();
@@ -143,25 +141,25 @@ long FOX16_HtmlText::onPaint(FXObject*, FXSelector, void *ptr) {
   dc.fillRectangle(event->rect.x, event->rect.y, event->rect.w, event->rect.h);
 
   // Paint top margin
-  if (event->rect.y<=margintop){
+  if (event->rect.y<=margintop) {
     dc.setForeground(backColor);
     dc.fillRectangle(0, 0, viewport_w, margintop);
   }
 
   // Paint bottom margin
-  if (event->rect.y+event->rect.h>=viewport_h-marginbottom){
+  if (event->rect.y+event->rect.h>=viewport_h-marginbottom) {
     dc.setForeground(backColor);
     dc.fillRectangle(0, viewport_h-marginbottom, viewport_w, marginbottom);
   }
 
   // Paint left margin
-  if(event->rect.x<marginleft){
+  if(event->rect.x<marginleft) {
     dc.setForeground(backColor);
     dc.fillRectangle(0, margintop, marginleft, viewport_h-margintop-marginbottom);
   }
 
   // Paint right margin
-  if(event->rect.x+event->rect.w>=viewport_w-marginright){
+  if(event->rect.x+event->rect.w>=viewport_w-marginright) {
     dc.setForeground(backColor);
     dc.fillRectangle(viewport_w-marginright, margintop, marginright, viewport_h-margintop-marginbottom);
   }
@@ -174,15 +172,15 @@ long FOX16_HtmlText::onPaint(FXObject*, FXSelector, void *ptr) {
   if (m_htmlCtx) {
 #if 0 /* this doesn work */
     m_htmlCtx->paintAt(&dc, -marginleft-pos_x, -margintop-pos_y,
-		       event->rect.x,
-		       event->rect.y,
-		       event->rect.w,
-		       event->rect.h);
+                       event->rect.x,
+                       event->rect.y,
+                       event->rect.w,
+                       event->rect.h);
 #else
     m_htmlCtx->paintAt(&dc, -marginleft-pos_x, -margintop-pos_y,
-		       0, 0,
-		       viewport_w-(marginleft+marginright+barwidth),
-		       viewport_h-(margintop+marginbottom));
+                       0, 0,
+                       viewport_w-(marginleft+marginright+barwidth),
+                       viewport_h-(margintop+marginbottom));
 #endif
   }
   else {

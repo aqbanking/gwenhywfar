@@ -45,8 +45,8 @@ static int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing);
 static int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data);
 static int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data);
 static int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
-			   const char *attrName,
-			   const char *attrData);
+                           const char *attrName,
+                           const char *attrData);
 
 
 #endif

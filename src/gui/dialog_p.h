@@ -66,8 +66,8 @@ struct GWEN_DIALOG {
 
 static
 int GWEN_Dialog__ReadXmlWidget(GWEN_DIALOG *dlg,
-			       GWEN_WIDGET *wparent,
-			       GWEN_XMLNODE *node);
+                               GWEN_WIDGET *wparent,
+                               GWEN_XMLNODE *node);
 
 
 #endif

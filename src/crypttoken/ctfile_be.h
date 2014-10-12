@@ -17,11 +17,11 @@
 
 
 
-typedef int GWENHYWFAR_CB 
-  (*GWEN_CRYPT_TOKEN_FILE_READ_FN)(GWEN_CRYPT_TOKEN *ct, int fd, uint32_t gid);
+typedef int GWENHYWFAR_CB
+(*GWEN_CRYPT_TOKEN_FILE_READ_FN)(GWEN_CRYPT_TOKEN *ct, int fd, uint32_t gid);
 
-typedef int GWENHYWFAR_CB 
-  (*GWEN_CRYPT_TOKEN_FILE_WRITE_FN)(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid);
+typedef int GWENHYWFAR_CB
+(*GWEN_CRYPT_TOKEN_FILE_WRITE_FN)(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid);
 
 
 
@@ -46,19 +46,19 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenFile_new(const char *typeName,
-					   const char *tokenName);
+    const char *tokenName);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_FILE_READ_FN GWEN_Crypt_TokenFile_SetReadFn(GWEN_CRYPT_TOKEN *ct,
-							     GWEN_CRYPT_TOKEN_FILE_READ_FN f);
-GWENHYWFAR_API 
+    GWEN_CRYPT_TOKEN_FILE_READ_FN f);
+GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_FILE_WRITE_FN GWEN_Crypt_TokenFile_SetWriteFn(GWEN_CRYPT_TOKEN *ct,
-							       GWEN_CRYPT_TOKEN_FILE_WRITE_FN f);
+    GWEN_CRYPT_TOKEN_FILE_WRITE_FN f);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void GWEN_Crypt_TokenFile_AddContext(GWEN_CRYPT_TOKEN *ct, GWEN_CRYPT_TOKEN_CONTEXT *ctx);
 
-GWENHYWFAR_API 
+GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenFile_GetContext(GWEN_CRYPT_TOKEN *ct, int idx);
 
 

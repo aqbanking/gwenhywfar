@@ -115,7 +115,7 @@ GWENHYWFAR_API
 void GWEN_Buffer_Attach(GWEN_BUFFER *bf);
 
 
-/** Frees the given buffer. 
+/** Frees the given buffer.
  *
  * If the internal storage was allocated for this new buffer, then
  * it will freed here. If the internal storage is used from a
@@ -293,8 +293,8 @@ int GWEN_Buffer_FillLeftWithBytes(GWEN_BUFFER *bf,
  * @return 0 if ok, !=0 on error
  */
 GWENHYWFAR_API
-  int GWEN_Buffer_AppendString(GWEN_BUFFER *bf,
-                               const char *buffer);
+int GWEN_Buffer_AppendString(GWEN_BUFFER *bf,
+                             const char *buffer);
 
 
 /**
@@ -359,9 +359,9 @@ int GWEN_Buffer_RemoveRoom(GWEN_BUFFER *bf, uint32_t size);
  */
 GWENHYWFAR_API
 int GWEN_Buffer_ReplaceBytes(GWEN_BUFFER *bf,
-			     uint32_t rsize,
-			     const char *buffer,
-			     uint32_t size);
+                             uint32_t rsize,
+                             const char *buffer,
+                             uint32_t size);
 
 
 /**
@@ -539,8 +539,8 @@ void GWEN_Buffer_OverwriteContent(GWEN_BUFFER *bf, int c);
  */
 GWENHYWFAR_API
 void GWEN_Buffer_SetSourceSyncIo(GWEN_BUFFER *bf,
-				 GWEN_SYNCIO *sio,
-				 int take);
+                                 GWEN_SYNCIO *sio,
+                                 int take);
 
 
 /** Print the current content of buffer @c bf into the file @c f. */

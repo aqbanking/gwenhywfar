@@ -48,9 +48,9 @@ struct GWEN_MEMCACHE_ENTRY {
 
 
 GWEN_MEMCACHE_ENTRY *GWEN_MemCacheEntry_new(GWEN_MEMCACHE *memCache,
-					    uint32_t id,
-					    void *dataPtr,
-					    size_t dataLen);
+    uint32_t id,
+    void *dataPtr,
+    size_t dataLen);
 
 int GWEN_MemCacheEntry_GetUseCounter(const GWEN_MEMCACHE_ENTRY *me);
 time_t GWEN_MemCacheEntry_GetUnusedSince(GWEN_MEMCACHE_ENTRY *me);
@@ -77,6 +77,6 @@ int GWEN_MemCache_Lock(GWEN_MEMCACHE *mc);
 int GWEN_MemCache_Unlock(GWEN_MEMCACHE *mc);
 
 int GWEN_MemCache__MakeRoom(GWEN_MEMCACHE *mc,
-			    size_t neededSize);
+                            size_t neededSize);
 
 #endif

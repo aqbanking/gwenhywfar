@@ -29,11 +29,11 @@ GWEN_TREE_FUNCTIONS(GWEN_PROGRESS_DATA, GWEN_ProgressData)
 
 
 GWEN_PROGRESS_DATA *GWEN_ProgressData_new(GWEN_GUI *gui,
-					  uint32_t id,
-					  uint32_t progressFlags,
-					  const char *title,
-					  const char *text,
-					  uint64_t total) {
+    uint32_t id,
+    uint32_t progressFlags,
+    const char *title,
+    const char *text,
+    uint64_t total) {
   GWEN_PROGRESS_DATA *pd;
 
   GWEN_NEW_OBJECT(GWEN_PROGRESS_DATA, pd);
@@ -181,8 +181,8 @@ void GWEN_ProgressData_ClearLogText(GWEN_PROGRESS_DATA *pd) {
 
 
 void GWEN_ProgressData_AddLogText(GWEN_PROGRESS_DATA *pd,
-				  GWEN_LOGGER_LEVEL level,
-				  const char *s) {
+                                  GWEN_LOGGER_LEVEL level,
+                                  const char *s) {
   assert(pd);
   GWEN_Buffer_AppendString(pd->logBuf, s);
 }

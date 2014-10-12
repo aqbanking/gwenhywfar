@@ -44,9 +44,9 @@ extern "C" {
 #endif
 
 
-  /* this is taken from the system header file assert.h and
-   * and modified by me (Martin Preuss).
-   */
+/* this is taken from the system header file assert.h and
+ * and modified by me (Martin Preuss).
+ */
 # if defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4)
 #   define GWEN_LOCATION_FUNCTION	__PRETTY_FUNCTION__
 # else
@@ -58,22 +58,22 @@ extern "C" {
 # endif
 
 
-  GWENHYWFAR_API
-  void *GWEN_Memory_malloc(size_t dsize);
-  GWENHYWFAR_API
-  void GWEN_Memory_dealloc(void *p);
+GWENHYWFAR_API
+void *GWEN_Memory_malloc(size_t dsize);
+GWENHYWFAR_API
+void GWEN_Memory_dealloc(void *p);
 
-  GWENHYWFAR_API
-  void *GWEN_Memory_realloc(void *oldp, size_t nsize);
+GWENHYWFAR_API
+void *GWEN_Memory_realloc(void *oldp, size_t nsize);
 
-  GWENHYWFAR_API 
-  char *GWEN_Memory_strdup(const char *s);
+GWENHYWFAR_API
+char *GWEN_Memory_strdup(const char *s);
 
-  GWENHYWFAR_API 
-  void GWEN_Memory_Collect(void);
+GWENHYWFAR_API
+void GWEN_Memory_Collect(void);
 
-  GWENHYWFAR_API 
-  void GWEN_Memory_Dump(void);
+GWENHYWFAR_API
+void GWEN_Memory_Dump(void);
 
 
 #define GWEN_MEM_NEW(typ, memptr) \

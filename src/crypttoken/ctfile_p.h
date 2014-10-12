@@ -55,97 +55,97 @@ static GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32
 
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid);
+GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid);
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid);
+GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid);
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid);
+GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid);
 
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
-				     uint32_t *pIdList,
-				     uint32_t *pCount,
-				     uint32_t gid);
+GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
+                                   uint32_t *pIdList,
+                                   uint32_t *pCount,
+                                   uint32_t gid);
 
 static const GWEN_CRYPT_TOKEN_KEYINFO* GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-				   uint32_t id,
-				   uint32_t flags,
-				   uint32_t gid);
+GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+                                 uint32_t id,
+                                 uint32_t flags,
+                                 uint32_t gid);
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-				   uint32_t id,
-				   const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-				   uint32_t gid);
+GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+                                 uint32_t id,
+                                 const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                                 uint32_t gid);
 
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
-					 uint32_t *pIdList,
-					 uint32_t *pCount,
-					 uint32_t gid);
+GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
+                                       uint32_t *pIdList,
+                                       uint32_t *pCount,
+                                       uint32_t gid);
 
 static const GWEN_CRYPT_TOKEN_CONTEXT* GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
-				   uint32_t id,
-				   uint32_t gid);
+GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
+                                 uint32_t id,
+                                 uint32_t gid);
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
-				   uint32_t id,
-				   const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
-				   uint32_t gid);
+GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
+                                 uint32_t id,
+                                 const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
+                                 uint32_t gid);
 
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
-			     uint32_t keyId,
-			     GWEN_CRYPT_PADDALGO *a,
-			     const uint8_t *pInData,
-			     uint32_t inLen,
-			     uint8_t *pSignatureData,
-			     uint32_t *pSignatureLen,
-			     uint32_t *pSeqCounter,
-			     uint32_t gid);
+GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
+                           uint32_t keyId,
+                           GWEN_CRYPT_PADDALGO *a,
+                           const uint8_t *pInData,
+                           uint32_t inLen,
+                           uint8_t *pSignatureData,
+                           uint32_t *pSignatureLen,
+                           uint32_t *pSeqCounter,
+                           uint32_t gid);
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
-			       uint32_t keyId,
-			       GWEN_CRYPT_PADDALGO *a,
-			       const uint8_t *pInData,
-			       uint32_t inLen,
-			       const uint8_t *pSignatureData,
-			       uint32_t signatureLen,
-			       uint32_t seqCounter,
-			       uint32_t gid);
+GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
+                             uint32_t keyId,
+                             GWEN_CRYPT_PADDALGO *a,
+                             const uint8_t *pInData,
+                             uint32_t inLen,
+                             const uint8_t *pSignatureData,
+                             uint32_t signatureLen,
+                             uint32_t seqCounter,
+                             uint32_t gid);
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t keyId,
-				 GWEN_CRYPT_PADDALGO *a,
-				 const uint8_t *pInData,
-				 uint32_t inLen,
-				 uint8_t *pOutData,
-				 uint32_t *pOutLen,
-				 uint32_t gid);
+GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
+                               uint32_t keyId,
+                               GWEN_CRYPT_PADDALGO *a,
+                               const uint8_t *pInData,
+                               uint32_t inLen,
+                               uint8_t *pOutData,
+                               uint32_t *pOutLen,
+                               uint32_t gid);
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
-				 uint32_t keyId,
-				 GWEN_CRYPT_PADDALGO *a,
-				 const uint8_t *pInData,
-				 uint32_t inLen,
-				 uint8_t *pOutData,
-				 uint32_t *pOutLen,
-				 uint32_t gid);
+GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
+                               uint32_t keyId,
+                               GWEN_CRYPT_PADDALGO *a,
+                               const uint8_t *pInData,
+                               uint32_t inLen,
+                               uint8_t *pOutData,
+                               uint32_t *pOutLen,
+                               uint32_t gid);
 
 static int GWENHYWFAR_CB
-  GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
-				    uint32_t keyId,
-				    const GWEN_CRYPT_CRYPTALGO *a,
-				    uint32_t gid);
+GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
+                                  uint32_t keyId,
+                                  const GWEN_CRYPT_CRYPTALGO *a,
+                                  uint32_t gid);
 
 
 

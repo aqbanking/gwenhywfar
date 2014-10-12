@@ -68,22 +68,22 @@ protected:
   CppWidget();
 
   virtual int setIntProperty(GWEN_DIALOG_PROPERTY prop,
-			     int index,
-			     int value,
-			     int doSignal);
+                             int index,
+                             int value,
+                             int doSignal);
 
   virtual int getIntProperty(GWEN_DIALOG_PROPERTY prop,
-			     int index,
-			     int defaultValue);
+                             int index,
+                             int defaultValue);
 
   virtual int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-			      int index,
-			      const char *value,
-			      int doSignal);
+                              int index,
+                              const char *value,
+                              int doSignal);
 
   virtual const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-				      int index,
-				      const char *defaultValue);
+                                      int index,
+                                      const char *defaultValue);
 
   virtual int addChildGuiWidget(GWEN_WIDGET *wChild);
 

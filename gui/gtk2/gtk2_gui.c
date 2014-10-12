@@ -67,8 +67,8 @@ GWENHYWFAR_CB void Gtk2_Gui_FreeData(void *bp, void *p) {
 
 
 GWENHYWFAR_CB int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
-				      GWEN_DIALOG *dlg,
-				      uint32_t guiid) {
+                                      GWEN_DIALOG *dlg,
+                                      uint32_t guiid) {
   int rv;
 
   assert(dlg);
@@ -91,8 +91,8 @@ GWENHYWFAR_CB int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
 
 
 GWENHYWFAR_CB int GTK2_Gui_OpenDialog(GWEN_GUI *gui,
-				      GWEN_DIALOG *dlg,
-				      uint32_t guiid) {
+                                      GWEN_DIALOG *dlg,
+                                      uint32_t guiid) {
   int rv;
   GtkWidget *g;
 
@@ -171,12 +171,12 @@ GWENHYWFAR_CB int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilE
 
 
 GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_GUI *gui,
-				       const char *caption,
-				       GWEN_GUI_FILENAME_TYPE fnt,
-				       uint32_t flags,
-				       const char *patterns,
-				       GWEN_BUFFER *pathBuffer,
-				       uint32_t guiid) {
+                                       const char *caption,
+                                       GWEN_GUI_FILENAME_TYPE fnt,
+                                       uint32_t flags,
+                                       const char *patterns,
+                                       GWEN_BUFFER *pathBuffer,
+                                       uint32_t guiid) {
   char *folder=NULL;
   char *fileName=NULL;
 
@@ -198,11 +198,11 @@ GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_GUI *gui,
     if (!(caption && *caption))
       caption=I18N("Open File");
     dialog=gtk_file_chooser_dialog_new (caption,
-					NULL,
-					GTK_FILE_CHOOSER_ACTION_OPEN,
-					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					NULL);
+                                        NULL,
+                                        GTK_FILE_CHOOSER_ACTION_OPEN,
+                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        NULL);
     if (folder && *folder)
       gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), folder);
     if (fileName && *fileName)
@@ -230,11 +230,11 @@ GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_GUI *gui,
     if (!(caption && *caption))
       caption=I18N("Save File");
     dialog=gtk_file_chooser_dialog_new (caption,
-					NULL,
-					GTK_FILE_CHOOSER_ACTION_SAVE,
-					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					NULL);
+                                        NULL,
+                                        GTK_FILE_CHOOSER_ACTION_SAVE,
+                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        NULL);
     gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
     if (folder && *folder)
       gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), folder);
@@ -263,11 +263,11 @@ GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_GUI *gui,
     if (!(caption && *caption))
       caption=I18N("Select Folder");
     dialog=gtk_file_chooser_dialog_new (caption,
-					NULL,
-					GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					NULL);
+                                        NULL,
+                                        GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        NULL);
     if (gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_ACCEPT) {
       char *filename;
 

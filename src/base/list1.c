@@ -212,7 +212,7 @@ void *GWEN_List1Element_GetData(const GWEN_LIST1_ELEMENT *el) {
 
 
 
-void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el){
+void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el) {
   if (el->prevElement)
     return el->prevElement->data;
   return 0;
@@ -220,7 +220,7 @@ void *GWEN_List1Element_GetPrevious(const GWEN_LIST1_ELEMENT *el){
 
 
 
-void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el){
+void *GWEN_List1Element_GetNext(const GWEN_LIST1_ELEMENT *el) {
   if (el->nextElement)
     return el->nextElement->data;
   return 0;

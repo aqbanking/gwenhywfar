@@ -44,19 +44,19 @@
 
 
 
-int GWEN_LibLoader_ModuleInit(void){
+int GWEN_LibLoader_ModuleInit(void) {
   return 0;
 }
 
 
 
-int GWEN_LibLoader_ModuleFini(void){
+int GWEN_LibLoader_ModuleFini(void) {
   return 0;
 }
 
 
 
-GWEN_LIBLOADER *GWEN_LibLoader_new(void){
+GWEN_LIBLOADER *GWEN_LibLoader_new(void) {
   GWEN_LIBLOADER *h;
 
   GWEN_NEW_OBJECT(GWEN_LIBLOADER, h);
@@ -65,7 +65,7 @@ GWEN_LIBLOADER *GWEN_LibLoader_new(void){
 
 
 
-void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
+void GWEN_LibLoader_free(GWEN_LIBLOADER *h) {
   if (h) {
     GWEN_FREE_OBJECT(h);
   }
@@ -74,7 +74,7 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h){
 
 
 int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-			       const char *name){
+                               const char *name) {
   assert(h);
 
   h->handle=(void*)LoadLibrary(name);
@@ -85,22 +85,22 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
     werr=GetLastError();
 
     /* DEBUG */
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-		  FORMAT_MESSAGE_FROM_SYSTEM |
-		  FORMAT_MESSAGE_IGNORE_INSERTS,
-		  NULL,
-		  werr,
-		  MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),
-		  (LPTSTR) &lpMsgBuf,
-		  0,
-		  NULL);
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                  FORMAT_MESSAGE_FROM_SYSTEM |
+                  FORMAT_MESSAGE_IGNORE_INSERTS,
+                  NULL,
+                  werr,
+                  MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT),
+                  (LPTSTR) &lpMsgBuf,
+                  0,
+                  NULL);
     DBG_DEBUG(GWEN_LOGDOMAIN, "Error loading DLL \"%s\": %d\n%d = %s",
-	      name, werr, werr, lpMsgBuf);
+              name, werr, werr, lpMsgBuf);
     LocalFree(lpMsgBuf);
 
     if ( (werr == ERROR_DLL_NOT_FOUND) ||
-	 (werr == ERROR_FILE_NOT_FOUND) ||
-	 (werr == ERROR_MOD_NOT_FOUND) ) {
+         (werr == ERROR_FILE_NOT_FOUND) ||
+         (werr == ERROR_MOD_NOT_FOUND) ) {
       DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", name);
       return GWEN_ERROR_NOT_FOUND;
     }
@@ -115,7 +115,7 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 
 
 
-int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h){
+int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h) {
   assert(h);
 
   if (!h->handle)
@@ -129,7 +129,7 @@ int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h){
 
 
 int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
-                                      const char *name, void **p){
+                           const char *name, void **p) {
   assert(h);
   assert(name);
   assert(p);
@@ -143,15 +143,15 @@ int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
     return GWEN_ERROR_COULD_NOT_RESOLVE;
   }
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %08x",
-	      name, (int)*p);
+              name, (int)*p);
   return 0;
 }
 
 
 
 int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
-                                                   const char *path,
-                                                   const char *name){
+                                        const char *path,
+                                        const char *name) {
   GWEN_BUFFER *buffer;
   unsigned int pos;
   unsigned int i;
@@ -189,7 +189,7 @@ int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
   }
 
   DBG_INFO(GWEN_LOGDOMAIN, "Library \"%s\" loaded",
-	   GWEN_Buffer_GetStart(buffer));
+           GWEN_Buffer_GetStart(buffer));
   GWEN_Buffer_free(buffer);
   return 0;
 }
@@ -197,8 +197,8 @@ int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
 
 
 int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
-                                                  const char *path,
-						  const char *name){
+                                       const char *path,
+                                       const char *name) {
   int err;
 
   assert(h);
@@ -232,13 +232,13 @@ int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
 
 
 int GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
-					  const char *name){
+                               const char *name) {
   return GWEN_LibLoader_OpenLibraryWithPath(h, 0, name);
 }
 
 
 
-const char *GWEN_LibLoader_ErrorString(int c){
+const char *GWEN_LibLoader_ErrorString(int c) {
   const char *s;
 
   switch(c) {

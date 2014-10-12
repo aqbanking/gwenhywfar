@@ -25,8 +25,8 @@ extern "C" {
 #endif
 
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_CRYPT_PADDALGO,
-			     GWEN_Crypt_PaddAlgo,
-			     GWENHYWFAR_API)
+                             GWEN_Crypt_PaddAlgo,
+                             GWENHYWFAR_API)
 
 #ifdef __cplusplus
 }

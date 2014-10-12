@@ -123,7 +123,7 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
  * @return 0 if not found, !=0 if found and removed
  */
 GWENHYWFAR_API int GWEN_StringList2_RemoveString(GWEN_STRINGLIST2 *sl2,
-                                                const char *s);
+    const char *s);
 
 /**
  * Checks whether the given string already exists within in the
@@ -131,7 +131,7 @@ GWENHYWFAR_API int GWEN_StringList2_RemoveString(GWEN_STRINGLIST2 *sl2,
  * @return !=0 if found, 0 otherwise
  */
 GWENHYWFAR_API int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
-                                              const char *s);
+    const char *s);
 
 
 GWENHYWFAR_API const char *GWEN_StringList2_GetStringAt(const GWEN_STRINGLIST2 *sl2, int idx);
@@ -163,7 +163,7 @@ const char *GWEN_StringList2Iterator_Data(GWEN_STRINGLIST2_ITERATOR *li);
 
 GWENHYWFAR_API
 unsigned int
-  GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li);
+GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li);
 
 
 GWENHYWFAR_API

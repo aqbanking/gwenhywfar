@@ -73,7 +73,7 @@ void GWEN_IdMap_free(GWEN_IDMAP *map) {
 
 
 GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
-				    uint32_t id,
+                                    uint32_t id,
                                     void *ptr) {
   assert(map);
   assert(ptr);
@@ -190,7 +190,7 @@ void GWEN_IdMapHex4_free(GWEN_IDMAP *map) {
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4Map_new(GWEN_IDMAP_HEX4_TABLE *p,
-                                             int isPtrTable) {
+    int isPtrTable) {
   GWEN_IDMAP_HEX4_TABLE *t;
 
   GWEN_NEW_OBJECT(GWEN_IDMAP_HEX4_TABLE, t);
@@ -355,7 +355,7 @@ void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, uint32_t id) {
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetTable(GWEN_IDMAP_HEX4_TABLE *t,
-                                                uint32_t id) {
+    uint32_t id) {
   void **p;
 
   p=&(t->ptrs[(id>>28) & 0xf]);
@@ -399,7 +399,7 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetTable(GWEN_IDMAP_HEX4_TABLE *t,
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
-                                                     uint32_t *pid) {
+    uint32_t *pid) {
   uint32_t id;
   int i;
 
@@ -432,8 +432,8 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
-                                                    uint32_t *pid,
-                                                    int incr) {
+    uint32_t *pid,
+    int incr) {
   uint32_t id;
 
   id=*pid;
@@ -482,7 +482,7 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
 
 
 GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(const GWEN_IDMAP *map,
-                                           uint32_t *pid) {
+    uint32_t *pid) {
 
   GWEN_IDMAP_HEX4_TABLE *t;
   GWEN_IDMAP_HEX4 *xmap;
@@ -502,7 +502,7 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(const GWEN_IDMAP *map,
 
 
 GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(const GWEN_IDMAP *map,
-                                          uint32_t *pid) {
+    uint32_t *pid) {
   GWEN_IDMAP_HEX4_TABLE *t;
   GWEN_IDMAP_HEX4 *xmap;
   uint32_t id;

@@ -50,7 +50,7 @@
 static GWEN_DB_NODE *gwen__paths=0;
 
 
-int GWEN_PathManager_ModuleInit(void){
+int GWEN_PathManager_ModuleInit(void) {
   gwen__paths=GWEN_DB_Group_new("paths");
 
   return 0;
@@ -58,7 +58,7 @@ int GWEN_PathManager_ModuleInit(void){
 
 
 
-int GWEN_PathManager_ModuleFini(void){
+int GWEN_PathManager_ModuleFini(void) {
   GWEN_DB_Group_free(gwen__paths);
   gwen__paths=0;
   return 0;
@@ -117,7 +117,7 @@ int GWEN_PathManager_UndefinePath(const char *destLib,
 int GWEN_PathManager_AddPath(const char *callingLib,
                              const char *destLib,
                              const char *pathName,
-			     const char *pathValue) {
+                             const char *pathValue) {
   GWEN_DB_NODE *dbT;
   GWEN_BUFFER *buf;
 
@@ -146,8 +146,8 @@ int GWEN_PathManager_AddPath(const char *callingLib,
   GWEN_Directory_OsifyPath(pathValue, buf, 1);
 
   GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_DEFAULT,
-		       "path",
-		       GWEN_Buffer_GetStart(buf));
+                       "path",
+                       GWEN_Buffer_GetStart(buf));
   GWEN_Buffer_free(buf);
 
   return 0;
@@ -156,10 +156,10 @@ int GWEN_PathManager_AddPath(const char *callingLib,
 
 
 int GWEN_PathManager_AddRelPath(const char *callingLib,
-				const char *destLib,
-				const char *pathName,
-				const char *pathValue,
-				GWEN_PATHMANAGER_RELMODE rm) {
+                                const char *destLib,
+                                const char *pathName,
+                                const char *pathValue,
+                                GWEN_PATHMANAGER_RELMODE rm) {
   char cwd[256];
 
   switch(rm) {
@@ -174,10 +174,10 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendString(buf, cwd);
       if (*pathValue!=GWEN_DIR_SEPARATOR)
-	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+        GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(buf, pathValue);
       rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
-				  GWEN_Buffer_GetStart(buf));
+                                  GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
       return rv;
     }
@@ -202,13 +202,13 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendString(buf, cwd);
       if (*pathValue!=GWEN_DIR_SEPARATOR)
-	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+        GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(buf, pathValue);
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "Adding path [%s]",
-	       GWEN_Buffer_GetStart(buf));
+               "Adding path [%s]",
+               GWEN_Buffer_GetStart(buf));
       rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
-				  GWEN_Buffer_GetStart(buf));
+                                  GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
       return rv;
     }
@@ -221,8 +221,8 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
     rv=GWEN_Directory_GetHomeDirectory(cwd, sizeof(cwd)-1);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Could not determine HOME directory (%d)",
-		rv);
+                "Could not determine HOME directory (%d)",
+                rv);
       return rv;
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -231,7 +231,7 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
       GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
     GWEN_Buffer_AppendString(buf, pathValue);
     rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName,
-				GWEN_Buffer_GetStart(buf));
+                                GWEN_Buffer_GetStart(buf));
     GWEN_Buffer_free(buf);
     return rv;
   }
@@ -301,7 +301,7 @@ int GWEN_PathManager_InsertRelPath(const char *callingLib,
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendString(buf, cwd);
       if (*pathValue!=GWEN_DIR_SEPARATOR)
-	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+        GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(buf, pathValue);
       rv=GWEN_PathManager_InsertPath(callingLib, destLib, pathName,
                                      GWEN_Buffer_GetStart(buf));
@@ -329,11 +329,11 @@ int GWEN_PathManager_InsertRelPath(const char *callingLib,
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendString(buf, cwd);
       if (*pathValue!=GWEN_DIR_SEPARATOR)
-	GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+        GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(buf, pathValue);
       DBG_INFO(GWEN_LOGDOMAIN,
-	       "Adding path [%s]",
-	       GWEN_Buffer_GetStart(buf));
+               "Adding path [%s]",
+               GWEN_Buffer_GetStart(buf));
       rv=GWEN_PathManager_InsertPath(callingLib, destLib, pathName,
                                      GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
@@ -348,8 +348,8 @@ int GWEN_PathManager_InsertRelPath(const char *callingLib,
     rv=GWEN_Directory_GetHomeDirectory(cwd, sizeof(cwd)-1);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Could not determine HOME directory (%d)",
-		rv);
+                "Could not determine HOME directory (%d)",
+                rv);
       return rv;
     }
     buf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -396,12 +396,12 @@ int GWEN_PathManager_RemovePath(const char *callingLib,
     s=GWEN_DB_GetCharValue(dbT, "lib", 0, 0);
 
     if (
-        (
-         (!callingLib && !s) ||
-         (callingLib && s && strcasecmp(s, callingLib)==0)
-        ) &&
-        strcasecmp(p, pathValue)==0
-       )
+      (
+        (!callingLib && !s) ||
+        (callingLib && s && strcasecmp(s, callingLib)==0)
+      ) &&
+      strcasecmp(p, pathValue)==0
+    )
       break;
     dbT=GWEN_DB_FindNextGroup(dbT, "pair");
   }
@@ -481,7 +481,7 @@ int GWEN_PathManager_PathChanged(const char *destLib,
 
 
 GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
-                                           const char *pathName) {
+    const char *pathName) {
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -527,9 +527,9 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
 
 
 int GWEN_PathManager_FindFile(const char *destLib,
-			      const char *pathName,
-			      const char *fileName,
-			      GWEN_BUFFER *fbuf) {
+                              const char *pathName,
+                              const char *fileName,
+                              GWEN_BUFFER *fbuf) {
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -552,31 +552,31 @@ int GWEN_PathManager_FindFile(const char *destLib,
         for (i=0; ; i++) {
           s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
           if (!s)
-	    break;
-	  else {
-	    FILE *f;
-	
-	    GWEN_Buffer_AppendString(tbuf, s);
-	    GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-	    GWEN_Buffer_AppendString(tbuf, fileName);
-	    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
-		      GWEN_Buffer_GetStart(tbuf));
-	    f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
-	    if (f) {
-	      fclose(f);
-	      DBG_DEBUG(GWEN_LOGDOMAIN,
-			"File \"%s\" found in folder \"%s\"",
-			fileName,
-			s);
-	      GWEN_Buffer_AppendBuffer(fbuf, tbuf);
-	      GWEN_Buffer_free(tbuf);
-	      return 0;
-	    }
-	    GWEN_Buffer_Reset(tbuf);
-	  }
-	}
+            break;
+          else {
+            FILE *f;
 
-	dbN=GWEN_DB_FindNextGroup(dbN, "pair");
+            GWEN_Buffer_AppendString(tbuf, s);
+            GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+            GWEN_Buffer_AppendString(tbuf, fileName);
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+                      GWEN_Buffer_GetStart(tbuf));
+            f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
+            if (f) {
+              fclose(f);
+              DBG_DEBUG(GWEN_LOGDOMAIN,
+                        "File \"%s\" found in folder \"%s\"",
+                        fileName,
+                        s);
+              GWEN_Buffer_AppendBuffer(fbuf, tbuf);
+              GWEN_Buffer_free(tbuf);
+              return 0;
+            }
+            GWEN_Buffer_Reset(tbuf);
+          }
+        }
+
+        dbN=GWEN_DB_FindNextGroup(dbN, "pair");
       }
       GWEN_Buffer_free(tbuf);
     }
@@ -589,10 +589,10 @@ int GWEN_PathManager_FindFile(const char *destLib,
 
 
 int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
-						 const char *pathName,
-						 const char *subFolderName,
-						 GWEN_STRINGLIST *sl,
-						 const char *mask) {
+    const char *pathName,
+    const char *subFolderName,
+    GWEN_STRINGLIST *sl,
+    const char *mask) {
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -615,22 +615,22 @@ int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
         for (i=0; ; i++) {
           s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
           if (!s)
-	    break;
-	  else {
-	    GWEN_Buffer_AppendString(tbuf, s);
-	    if (subFolderName && *subFolderName) {
-	      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-	      GWEN_Buffer_AppendString(tbuf, subFolderName);
-	    }
+            break;
+          else {
+            GWEN_Buffer_AppendString(tbuf, s);
+            if (subFolderName && *subFolderName) {
+              GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+              GWEN_Buffer_AppendString(tbuf, subFolderName);
+            }
 
-	    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
-		      GWEN_Buffer_GetStart(tbuf));
-	    GWEN_Directory_GetMatchingFilesRecursively(GWEN_Buffer_GetStart(tbuf), sl, mask);
-	    GWEN_Buffer_Reset(tbuf);
-	  }
-	}
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+                      GWEN_Buffer_GetStart(tbuf));
+            GWEN_Directory_GetMatchingFilesRecursively(GWEN_Buffer_GetStart(tbuf), sl, mask);
+            GWEN_Buffer_Reset(tbuf);
+          }
+        }
 
-	dbN=GWEN_DB_FindNextGroup(dbN, "pair");
+        dbN=GWEN_DB_FindNextGroup(dbN, "pair");
       }
       GWEN_Buffer_free(tbuf);
     }
@@ -648,7 +648,7 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
                                        const char *destLib,
                                        const char *pathName,
                                        const char *keypath,
-                                       const char *varname){
+                                       const char *varname) {
   HKEY hkey;
   TCHAR nbuffer[MAX_PATH];
   BYTE vbuffer[MAX_PATH];
@@ -660,7 +660,7 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
   snprintf(nbuffer, sizeof(nbuffer), keypath);
 
   /* open the key */
-  if (RegOpenKey(HKEY_LOCAL_MACHINE, nbuffer, &hkey)){
+  if (RegOpenKey(HKEY_LOCAL_MACHINE, nbuffer, &hkey)) {
     DBG_INFO(GWEN_LOGDOMAIN, "RegOpenKey %s failed.", keypath);
     return 1;
   }
@@ -690,8 +690,8 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
 
   RegCloseKey(hkey);
   DBG_INFO(GWEN_LOGDOMAIN,
-	   "In RegKey \"%s\" the variable \"%s\" does not exist",
-	   keypath, varname);
+           "In RegKey \"%s\" the variable \"%s\" does not exist",
+           keypath, varname);
   return 1;
 }
 
@@ -699,10 +699,10 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
 
 
 int GWEN_PathManager_AddPathFromWinReg(GWEN_UNUSED const char *callingLib,
-				       GWEN_UNUSED const char *destLib,
+                                       GWEN_UNUSED const char *destLib,
                                        GWEN_UNUSED const char *pathName,
                                        GWEN_UNUSED const char *keypath,
-				       GWEN_UNUSED const char *varname){
+                                       GWEN_UNUSED const char *varname) {
   return 0;
 }
 

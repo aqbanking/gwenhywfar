@@ -30,8 +30,8 @@ GWEN_INHERIT(HTML_GROUP, GROUP_TABLEROW)
 
 
 HTML_GROUP *HtmlGroup_TableRow_new(const char *groupName,
-				   HTML_GROUP *parent,
-				   GWEN_XML_CONTEXT *ctx) {
+                                   HTML_GROUP *parent,
+                                   GWEN_XML_CONTEXT *ctx) {
   HTML_GROUP *g;
   GROUP_TABLEROW *xg;
 
@@ -94,9 +94,9 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt),
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt),
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -115,10 +115,10 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
 
       s=GWEN_DB_GetCharValue(dbAttribs, "align", 0, "left");
       if (s) {
-	if (strcasecmp(s, "right")==0)
-	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+        if (strcasecmp(s, "right")==0)
+          HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
         else if (strcasecmp(s, "center")==0)
-	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
+          HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
       }
     }
 
@@ -142,10 +142,10 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
 
       s=GWEN_DB_GetCharValue(dbAttribs, "align", 0, "left");
       if (s) {
-	if (strcasecmp(s, "right")==0)
-	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+        if (strcasecmp(s, "right")==0)
+          HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
         else if (strcasecmp(s, "center")==0)
-	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
+          HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
       }
     }
 
@@ -154,7 +154,7 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Unexpected group [%s]", tagName);
+              "Unexpected group [%s]", tagName);
     return GWEN_ERROR_BAD_DATA;
   }
 

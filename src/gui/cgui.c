@@ -79,7 +79,7 @@ GWEN_GUI *GWEN_Gui_CGui_new(void) {
   GWEN_NEW_OBJECT(GWEN_GUI_CGUI, cgui);
   cgui->progressList=GWEN_Gui_CProgress_List_new();
   GWEN_INHERIT_SETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui, cgui,
-		       GWEN_Gui_CGui_FreeData);
+                       GWEN_Gui_CGui_FreeData);
 
   GWEN_Gui_SetMessageBoxFn(gui, GWEN_Gui_CGui_MessageBox);
   GWEN_Gui_SetInputBoxFn(gui, GWEN_Gui_CGui_InputBox);
@@ -185,7 +185,7 @@ char GWEN_Gui_CGui__readCharFromStdin(int waitFor) {
   sigprocmask(SIG_BLOCK, &snew, &sold);
 #endif
 #ifdef HAVE_TERMIOS_H
-  if (0 == tcgetattr (fileno (stdin), &OldAttr)){
+  if (0 == tcgetattr (fileno (stdin), &OldAttr)) {
     NewAttr = OldAttr;
     NewAttr.c_lflag &= ~ICANON;
     NewAttr.c_lflag &= ~ECHO;
@@ -223,11 +223,11 @@ char GWEN_Gui_CGui__readCharFromStdin(int waitFor) {
 
 
 int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
-			 uint32_t flags,
-			 char *buffer,
-			 int minLen,
-			 int maxLen,
-			 uint32_t guiid){
+                         uint32_t flags,
+                         char *buffer,
+                         int minLen,
+                         int maxLen,
+                         uint32_t guiid) {
 #ifdef HAVE_TERMIOS_H
   struct termios OldInAttr, NewInAttr;
   struct termios OldOutAttr, NewOutAttr;
@@ -275,14 +275,14 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #endif
 
 #ifdef HAVE_TERMIOS_H
-  if (0 == tcgetattr (fileno (stdin), &OldInAttr)){
+  if (0 == tcgetattr (fileno (stdin), &OldInAttr)) {
     NewInAttr = OldInAttr;
     NewInAttr.c_lflag &= ~ECHO;
     NewInAttr.c_lflag &= ~ICANON;
     tcsetattr (fileno (stdin), TCSAFLUSH, &NewInAttr);
     AttrInChanged = !0;
   }
-  if (0 == tcgetattr (fileno (stderr), &OldOutAttr)){
+  if (0 == tcgetattr (fileno (stderr), &OldOutAttr)) {
     NewOutAttr = OldOutAttr;
     NewOutAttr.c_lflag &= ~ICANON;
     tcsetattr (fileno (stderr), TCSAFLUSH, &NewOutAttr);
@@ -305,8 +305,9 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
       *nextchr++=chr;
       inLeft++;
       done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
-    } while (done==(size_t)-1 && errno==EINVAL &&
-             nextchr-inbuf<INBUFSIZE);
+    }
+    while (done==(size_t)-1 && errno==EINVAL &&
+           nextchr-inbuf<INBUFSIZE);
 
     if (chr==EOF) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected EOF while reading from stdin");
@@ -346,30 +347,30 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
     }
     else if (chr==GWEN_GUI_CGUI_CHAR_ENTER) {
       if (minLen && pos<minLen) {
-	if (pos==0 && (flags & GWEN_GUI_INPUT_FLAGS_ALLOW_DEFAULT)) {
-	  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
-				 GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-				 GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-				 I18N("Empty Input"),
-				 I18N("Your input was empty.\n"
-				      "Do you want to use the default?"),
-				 I18N("Yes"),
-				 I18N("No"),
-				 I18N("Abort"), guiid);
-	  if (rv==1) {
-	    rv=GWEN_ERROR_DEFAULT_VALUE;
+        if (pos==0 && (flags & GWEN_GUI_INPUT_FLAGS_ALLOW_DEFAULT)) {
+          rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
+                                 GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                                 GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                 I18N("Empty Input"),
+                                 I18N("Your input was empty.\n"
+                                      "Do you want to use the default?"),
+                                 I18N("Yes"),
+                                 I18N("No"),
+                                 I18N("Abort"), guiid);
+          if (rv==1) {
+            rv=GWEN_ERROR_DEFAULT_VALUE;
             break;
           }
           else {
-	    rv=GWEN_ERROR_USER_ABORTED;
-	    break;
-	  }
-	}
-	else {
-	  /* too few characters */
-	  GWEN_Gui_StdPrintf(gui, stderr, "\007");
-	  pOutbuf=buffer+pos;
-	}
+            rv=GWEN_ERROR_USER_ABORTED;
+            break;
+          }
+        }
+        else {
+          /* too few characters */
+          GWEN_Gui_StdPrintf(gui, stderr, "\007");
+          pOutbuf=buffer+pos;
+        }
       }
       else {
         GWEN_Gui_StdPrintf(gui, stderr, "\n");
@@ -431,13 +432,13 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 
 
 int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
-			     uint32_t flags,
-			     const char *title,
-			     const char *text,
-			     const char *b1,
-			     const char *b2,
-			     const char *b3,
-			     GWEN_UNUSED uint32_t guiid) {
+                             uint32_t flags,
+                             const char *title,
+                             const char *text,
+                             const char *b1,
+                             const char *b2,
+                             const char *b3,
+                             GWEN_UNUSED uint32_t guiid) {
   GWEN_BUFFER *tbuf;
   int c;
 
@@ -510,13 +511,13 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
 
 
 int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
-			   uint32_t flags,
-			   const char *title,
-			   const char *text,
-			   char *buffer,
-			   int minLen,
-			   int maxLen,
-			   uint32_t guiid) {
+                           uint32_t flags,
+                           const char *title,
+                           const char *text,
+                           char *buffer,
+                           int minLen,
+                           int maxLen,
+                           uint32_t guiid) {
   int rv;
   GWEN_BUFFER *tbuf;
 
@@ -576,10 +577,10 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
 
 
 uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
-			       GWEN_UNUSED uint32_t flags,
-			       const char *title,
-			       const char *text,
-			       GWEN_UNUSED uint32_t guiid) {
+                               GWEN_UNUSED uint32_t flags,
+                               const char *title,
+                               const char *text,
+                               GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   GWEN_BUFFER *tbuf;
 
@@ -613,11 +614,11 @@ void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, GWEN_UNUSED uint32_t id) {
 
 
 uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
-				     uint32_t progressFlags,
-				     const char *title,
-				     const char *text,
-				     uint64_t total,
-				     GWEN_UNUSED uint32_t guiid) {
+                                     uint32_t progressFlags,
+                                     const char *title,
+                                     const char *text,
+                                     uint64_t total,
+                                     GWEN_UNUSED uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -626,11 +627,11 @@ uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
   assert(cgui);
 
   cp=GWEN_Gui_CProgress_new(gui,
-			    ++(cgui->nextProgressId),
-			    progressFlags,
-			    title,
-			    text,
-			    total);
+                            ++(cgui->nextProgressId),
+                            progressFlags,
+                            title,
+                            text,
+                            total);
   GWEN_Gui_CProgress_List_Insert(cp, cgui->progressList);
   return GWEN_Gui_CProgress_GetId(cp);
 }
@@ -660,8 +661,8 @@ GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id) {
 
 
 int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
-				  uint32_t id,
-				  uint64_t progress) {
+                                  uint32_t id,
+                                  uint64_t progress) {
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -701,9 +702,9 @@ int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total) {
 
 
 int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
-			      uint32_t id,
-			      GWEN_LOGGER_LEVEL level,
-			      const char *text) {
+                              uint32_t id,
+                              GWEN_LOGGER_LEVEL level,
+                              const char *text) {
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -749,19 +750,19 @@ int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui,uint32_t id) {
 
 
 int GWEN_Gui_CGui_Print(GWEN_UNUSED GWEN_GUI *gui,
-			GWEN_UNUSED const char *docTitle,
-			GWEN_UNUSED const char *docType,
-			GWEN_UNUSED const char *descr,
-			GWEN_UNUSED const char *text,
-			GWEN_UNUSED uint32_t guiid) {
+                        GWEN_UNUSED const char *docTitle,
+                        GWEN_UNUSED const char *docType,
+                        GWEN_UNUSED const char *descr,
+                        GWEN_UNUSED const char *text,
+                        GWEN_UNUSED uint32_t guiid) {
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 
 
 int GWEN_Gui_CGui__HashPair(const char *token,
-			    const char *pin,
-			    GWEN_BUFFER *buf) {
+                            const char *pin,
+                            GWEN_BUFFER *buf) {
   GWEN_MDIGEST *md;
   int rv;
 
@@ -781,9 +782,9 @@ int GWEN_Gui_CGui__HashPair(const char *token,
   }
 
   GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
-			GWEN_MDigest_GetDigestSize(md),
-			buf,
-			0, 0, 0);
+                        GWEN_MDigest_GetDigestSize(md),
+                        buf,
+                        0, 0, 0);
   GWEN_MDigest_free(md);
   return 0;
 }
@@ -791,8 +792,8 @@ int GWEN_Gui_CGui__HashPair(const char *token,
 
 
 int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
-                                          const GWEN_SSLCERTDESCR *cd,
-                                          GWEN_SYNCIO *sio, uint32_t guiid) {
+    const GWEN_SSLCERTDESCR *cd,
+    GWEN_SYNCIO *sio, uint32_t guiid) {
   GWEN_GUI_CGUI *cgui;
   const char *hash;
   const char *status;
@@ -812,8 +813,8 @@ int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
   i=GWEN_DB_GetIntValue(cgui->dbCerts, GWEN_Buffer_GetStart(hbuf), 0, 1);
   if (i==0) {
     DBG_NOTICE(GWEN_LOGDOMAIN,
-	       "Automatically accepting certificate [%s]",
-	       hash);
+               "Automatically accepting certificate [%s]",
+               hash);
     GWEN_Buffer_free(hbuf);
     return 0;
   }
@@ -824,15 +825,15 @@ int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
     fl=GWEN_SslCertDescr_GetStatusFlags(cd);
     if (fl==GWEN_SSL_CERT_FLAGS_OK && (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS)) {
       DBG_NOTICE(GWEN_LOGDOMAIN,
-		 "Automatically accepting valid new certificate [%s]",
-		 hash);
+                 "Automatically accepting valid new certificate [%s]",
+                 hash);
       GWEN_Buffer_free(hbuf);
       return 0;
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Automatically rejecting certificate [%s] (noninteractive)",
-		hash);
+                "Automatically rejecting certificate [%s] (noninteractive)",
+                hash);
       GWEN_Buffer_free(hbuf);
       return GWEN_ERROR_USER_ABORTED;
     }
@@ -842,7 +843,7 @@ int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
     i=cgui->checkCertFn(gui, cd, sio, guiid);
     if (i==0) {
       GWEN_DB_SetIntValue(cgui->dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  GWEN_Buffer_GetStart(hbuf), i);
+                          GWEN_Buffer_GetStart(hbuf), i);
     }
     GWEN_Buffer_free(hbuf);
 

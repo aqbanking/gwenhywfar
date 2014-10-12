@@ -45,7 +45,7 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
   GWEN_NEW_OBJECT(HTML_XMLCTX, xctx);
   assert(xctx);
   GWEN_INHERIT_SETDATA(GWEN_XML_CONTEXT, HTML_XMLCTX, ctx, xctx,
-		       HtmlCtx_FreeData);
+                       HtmlCtx_FreeData);
 
   /* set virtual functions */
   GWEN_XmlCtx_SetStartTagFn(ctx, HtmlCtx_StartTag);
@@ -189,7 +189,7 @@ HTML_GROUP *HtmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, HTML_GROUP *g){
+void HtmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, HTML_GROUP *g) {
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -280,8 +280,8 @@ HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx) {
 
 
 int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
-			 const char *data,
-			 GWEN_BUFFER *buf) {
+                         const char *data,
+                         GWEN_BUFFER *buf) {
   if (data && *data) {
     const uint8_t *p;
     uint8_t *dst;
@@ -291,7 +291,7 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
     int lastWasBlank;
     uint8_t *lastBlankPos;
     uint32_t bStart=0;
-  
+
     if (GWEN_Text_UnescapeXmlToBuffer(data, buf)) {
       DBG_INFO(GWEN_LOGDOMAIN, "here");
       return GWEN_ERROR_BAD_DATA;
@@ -300,48 +300,48 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
       DBG_INFO(GWEN_LOGDOMAIN, "Empty data.");
       return 0;
     }
-  
+
     dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
     src=dst;
-  
+
     /* skip leading blanks */
     while(*src && (*src<33 || *src==127))
       src++;
-  
+
     p=src;
     bStart=src-((uint8_t*)GWEN_Buffer_GetStart(buf));
     size=GWEN_Buffer_GetUsedBytes(buf)-bStart;
     lastWasBlank=0;
     lastBlankPos=0;
-  
+
     for (i=0; i<size; i++) {
       uint8_t c;
-  
+
       c=*p;
       if (c<32 || c==127)
-	c=32;
-  
+        c=32;
+
       /* remember next loop whether this char was a blank */
       if (c==32) {
-	if (!lastWasBlank) {
-	  /* store only one blank */
-	  lastWasBlank=1;
-	  lastBlankPos=dst;
-	  *(dst++)=c;
-	}
+        if (!lastWasBlank) {
+          /* store only one blank */
+          lastWasBlank=1;
+          lastBlankPos=dst;
+          *(dst++)=c;
+        }
       }
       else {
-	lastWasBlank=0;
-	lastBlankPos=0;
-	*(dst++)=c;
+        lastWasBlank=0;
+        lastBlankPos=0;
+        *(dst++)=c;
       }
       p++;
     }
-  
+
     /* remove trailing blanks */
     if (lastBlankPos!=0)
       dst=lastBlankPos;
-  
+
     size=dst-(uint8_t*)GWEN_Buffer_GetStart(buf);
     GWEN_Buffer_Crop(buf, 0, size);
   }
@@ -415,7 +415,7 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
   if (closing) {
     /* just ignore empty tags which are closed immediately */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Closing empty tag [%s]",
-	     (xctx->currentTagName)?xctx->currentTagName:"<noname>");
+              (xctx->currentTagName)?xctx->currentTagName:"<noname>");
     return 0;
   }
 
@@ -432,36 +432,36 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
       /* it is a closing tag, call EndTagFn */
       DBG_DEBUG(GWEN_LOGDOMAIN,
-	       "Calling %s->EndTag(%s)",
-	       HtmlGroup_GetGroupName(xctx->currentGroup),
-	       xctx->currentTagName);
+                "Calling %s->EndTag(%s)",
+                HtmlGroup_GetGroupName(xctx->currentGroup),
+                xctx->currentTagName);
       rv=HtmlGroup_EndTag(xctx->currentGroup, xctx->currentTagName+1);
       if (rv<0) {
-	if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Error in EndTag(%s) for [%s]",
-		   HtmlGroup_GetGroupName(xctx->currentGroup),
-		   xctx->currentTagName);
-	  return rv;
-	}
+        if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Error in EndTag(%s) for [%s]",
+                   HtmlGroup_GetGroupName(xctx->currentGroup),
+                   xctx->currentTagName);
+          return rv;
+        }
       }
       else if (rv==1) {
         HTML_GROUP *g;
-	HTML_GROUP *gParent;
+        HTML_GROUP *gParent;
 
-	/* pop current group from stack */
-	g=xctx->currentGroup;
-	gParent=HtmlGroup_GetParent(g);
-	xctx->currentGroup=gParent;
-	if (gParent) {
-	  DBG_DEBUG(GWEN_LOGDOMAIN,
-		   "Calling %s->EndSubGroup(%s)",
-		   HtmlGroup_GetGroupName(gParent),
-                   HtmlGroup_GetGroupName(g));
-	  HtmlGroup_EndSubGroup(gParent, g);
-	}
-	HtmlGroup_free(g);
-	GWEN_XmlCtx_DecDepth(ctx);
+        /* pop current group from stack */
+        g=xctx->currentGroup;
+        gParent=HtmlGroup_GetParent(g);
+        xctx->currentGroup=gParent;
+        if (gParent) {
+          DBG_DEBUG(GWEN_LOGDOMAIN,
+                    "Calling %s->EndSubGroup(%s)",
+                    HtmlGroup_GetGroupName(gParent),
+                    HtmlGroup_GetGroupName(g));
+          HtmlGroup_EndSubGroup(gParent, g);
+        }
+        HtmlGroup_free(g);
+        GWEN_XmlCtx_DecDepth(ctx);
       }
     }
     else {
@@ -469,18 +469,18 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
       /* it is an opening tag, call StartTagFn */
       DBG_DEBUG(GWEN_LOGDOMAIN,
-	       "Calling %s->StartTag(%s)",
-	       HtmlGroup_GetGroupName(xctx->currentGroup),
-	       xctx->currentTagName);
+                "Calling %s->StartTag(%s)",
+                HtmlGroup_GetGroupName(xctx->currentGroup),
+                xctx->currentTagName);
       rv=HtmlGroup_StartTag(xctx->currentGroup, xctx->currentTagName);
       if (rv<0) {
-	if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-	  DBG_INFO(GWEN_LOGDOMAIN,
-		   "Error in StartTag(%s) for [%s]",
-		   HtmlGroup_GetGroupName(xctx->currentGroup),
-		   xctx->currentTagName);
-	  return rv;
-	}
+        if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+          DBG_INFO(GWEN_LOGDOMAIN,
+                   "Error in StartTag(%s) for [%s]",
+                   HtmlGroup_GetGroupName(xctx->currentGroup),
+                   xctx->currentTagName);
+          return rv;
+        }
       }
     }
   }
@@ -504,15 +504,15 @@ int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
     int rv;
 
     DBG_DEBUG(GWEN_LOGDOMAIN,
-	      "Calling %s->AddData()",
-	      HtmlGroup_GetGroupName(xctx->currentGroup));
+              "Calling %s->AddData()",
+              HtmlGroup_GetGroupName(xctx->currentGroup));
     rv=HtmlGroup_AddData(xctx->currentGroup, data);
     if (rv<0) {
       if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-	DBG_INFO(GWEN_LOGDOMAIN,
-		 "Error in AddData(%s)",
-		 HtmlGroup_GetGroupName(xctx->currentGroup));
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "Error in AddData(%s)",
+                 HtmlGroup_GetGroupName(xctx->currentGroup));
+        return rv;
       }
     }
   }
@@ -536,8 +536,8 @@ int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
-		    const char *attrName,
-		    const char *attrData) {
+                    const char *attrName,
+                    const char *attrData) {
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -547,8 +547,8 @@ int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
   if (xctx->currentGroup) {
     assert(xctx->dbCurrentAttribs);
     GWEN_DB_SetCharValue(xctx->dbCurrentAttribs,
-			 GWEN_DB_FLAGS_DEFAULT,
-			 attrName, attrData);
+                         GWEN_DB_FLAGS_DEFAULT,
+                         attrName, attrData);
   }
 
   return 0;
@@ -557,8 +557,8 @@ int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
 
 
 int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
-			 HTML_FONT *fnt,
-			 const char *s) {
+                         HTML_FONT *fnt,
+                         const char *s) {
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -574,8 +574,8 @@ int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
 
 
 int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
-			  HTML_FONT *fnt,
-			  const char *s) {
+                          HTML_FONT *fnt,
+                          const char *s) {
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -591,7 +591,7 @@ int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
 
 
 uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
-				  const char *name) {
+                                  const char *name) {
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -607,9 +607,9 @@ uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
 
 
 HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
-			   const char *fontName,
-			   int fontSize,
-			   uint32_t fontFlags) {
+                           const char *fontName,
+                           int fontSize,
+                           uint32_t fontFlags) {
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -640,7 +640,7 @@ HTML_IMAGE *HtmlCtx_GetImage(GWEN_XML_CONTEXT *ctx, const char *imageName) {
 
 
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
-						    HTMLCTX_GET_TEXT_WIDTH_FN fn) {
+    HTMLCTX_GET_TEXT_WIDTH_FN fn) {
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_TEXT_WIDTH_FN of;
 
@@ -657,7 +657,7 @@ HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 
 
 HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
-						      HTMLCTX_GET_TEXT_HEIGHT_FN fn) {
+    HTMLCTX_GET_TEXT_HEIGHT_FN fn) {
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_TEXT_HEIGHT_FN of;
 
@@ -674,7 +674,7 @@ HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
 
 
 HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *ctx,
-							     HTMLCTX_GET_COLOR_FROM_NAME_FN fn) {
+    HTMLCTX_GET_COLOR_FROM_NAME_FN fn) {
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_COLOR_FROM_NAME_FN of;
 
@@ -790,8 +790,8 @@ void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
 
     xx=HtmlObject_GetText(o);
     fprintf(stderr, "Object(%d): [%s]\n",
-	    HtmlObject_GetObjectType(o),
-	    xx?xx:"(NULL)");
+            HtmlObject_GetObjectType(o),
+            xx?xx:"(NULL)");
     o=HtmlObject_Tree_GetBelow(o);
   }
 #endif

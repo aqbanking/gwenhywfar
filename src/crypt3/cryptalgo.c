@@ -36,7 +36,7 @@ GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_CryptAlgoId_fromString(const char *s) {
   else if (strcasecmp(s, "des")==0)
     return GWEN_Crypt_CryptAlgoId_Des;
   else if (strcasecmp(s, "des_3k")==0 ||
-	   strcasecmp(s, "des3k")==0)
+           strcasecmp(s, "des3k")==0)
     return GWEN_Crypt_CryptAlgoId_Des3K;
   else if (strcasecmp(s, "blowfish")==0)
     return GWEN_Crypt_CryptAlgoId_BlowFish;
@@ -107,7 +107,7 @@ const char *GWEN_Crypt_CryptMode_toString(GWEN_CRYPT_CRYPTMODE m) {
 
 
 GWEN_CRYPT_CRYPTALGO *GWEN_Crypt_CryptAlgo_new(GWEN_CRYPT_CRYPTALGOID id,
-					       GWEN_CRYPT_CRYPTMODE m) {
+    GWEN_CRYPT_CRYPTMODE m) {
   GWEN_CRYPT_CRYPTALGO *a;
 
   GWEN_NEW_OBJECT(GWEN_CRYPT_CRYPTALGO, a);
@@ -179,20 +179,20 @@ int GWEN_Crypt_CryptAlgo_toDb(const GWEN_CRYPT_CRYPTALGO *a, GWEN_DB_NODE *db) {
   assert(a->refCount);
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "id",
-		       GWEN_Crypt_CryptAlgoId_toString(a->id));
+                       "id",
+                       GWEN_Crypt_CryptAlgoId_toString(a->id));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "mode",
-		       GWEN_Crypt_CryptMode_toString(a->id));
+                       "mode",
+                       GWEN_Crypt_CryptMode_toString(a->id));
   if (a->pInitVector && a->lInitVector)
     GWEN_DB_SetBinValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"initVector",
-			a->pInitVector, a->lInitVector);
+                        "initVector",
+                        a->pInitVector, a->lInitVector);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "chunkSize",
+                      "chunkSize",
                       a->chunkSize);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "keySizeInBits",
+                      "keySizeInBits",
                       a->keySizeInBits);
 
   return 0;
@@ -227,8 +227,8 @@ void GWEN_Crypt_CryptAlgo_free(GWEN_CRYPT_CRYPTALGO *a) {
     assert(a->refCount);
     if (a->refCount==1) {
       if (a->pInitVector) {
-	free(a->pInitVector);
-	a->pInitVector=NULL;
+        free(a->pInitVector);
+        a->pInitVector=NULL;
       }
       a->refCount--;
       GWEN_FREE_OBJECT(a);
@@ -241,7 +241,7 @@ void GWEN_Crypt_CryptAlgo_free(GWEN_CRYPT_CRYPTALGO *a) {
 
 
 
-GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_CryptAlgo_GetId(const GWEN_CRYPT_CRYPTALGO *a){
+GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_CryptAlgo_GetId(const GWEN_CRYPT_CRYPTALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->id;
@@ -257,7 +257,7 @@ GWEN_CRYPT_CRYPTMODE GWEN_Crypt_CryptAlgo_GetMode(const GWEN_CRYPT_CRYPTALGO *a)
 
 
 
-uint8_t *GWEN_Crypt_CryptAlgo_GetInitVectorPtr(const GWEN_CRYPT_CRYPTALGO *a){
+uint8_t *GWEN_Crypt_CryptAlgo_GetInitVectorPtr(const GWEN_CRYPT_CRYPTALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->pInitVector;
@@ -265,7 +265,7 @@ uint8_t *GWEN_Crypt_CryptAlgo_GetInitVectorPtr(const GWEN_CRYPT_CRYPTALGO *a){
 
 
 
-uint32_t GWEN_Crypt_CryptAlgo_GetInitVectorLen(const GWEN_CRYPT_CRYPTALGO *a){
+uint32_t GWEN_Crypt_CryptAlgo_GetInitVectorLen(const GWEN_CRYPT_CRYPTALGO *a) {
   assert(a);
   assert(a->refCount);
   return a->lInitVector;
@@ -274,8 +274,8 @@ uint32_t GWEN_Crypt_CryptAlgo_GetInitVectorLen(const GWEN_CRYPT_CRYPTALGO *a){
 
 
 int GWEN_Crypt_CryptAlgo_SetInitVector(GWEN_CRYPT_CRYPTALGO *a,
-				       const uint8_t *pv,
-				       uint32_t lv) {
+                                       const uint8_t *pv,
+                                       uint32_t lv) {
   uint8_t *nv=NULL;
 
   assert(a);

@@ -32,10 +32,10 @@ GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGINPUT)
 
 
 GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
-			       const char *title,
-			       const char *text,
-			       int minLen,
-			       int maxLen) {
+                               const char *title,
+                               const char *text,
+                               int minLen,
+                               int maxLen) {
   GWEN_DIALOG *dlg;
   GWEN_DLGINPUT *xdlg;
   GWEN_BUFFER *fbuf;
@@ -54,11 +54,11 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
   n=0;
   if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) n|=1;
   if (
-      (gflags & GWEN_GUI_FLAGS_PERMPASSWORDS) &&
-      !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT) &&
-      !(flags & GWEN_GUI_INPUT_FLAGS_TAN) &&
-      !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT)
-     )
+    (gflags & GWEN_GUI_FLAGS_PERMPASSWORDS) &&
+    !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT) &&
+    !(flags & GWEN_GUI_INPUT_FLAGS_TAN) &&
+    !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT)
+  )
     n|=2;
 
   snprintf(dlgNameBuf, sizeof(dlgNameBuf)-1, "dlg_gwen_input%d", n);
@@ -68,15 +68,15 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
   GWEN_NEW_OBJECT(GWEN_DLGINPUT, xdlg);
 
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GWEN_DLGINPUT, dlg, xdlg,
-		       GWEN_DlgInput_FreeData);
+                       GWEN_DlgInput_FreeData);
 
   GWEN_Dialog_SetSignalHandler(dlg, GWEN_DlgInput_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "gwenhywfar/dialogs/dlg_input.dlg",
-			       fbuf);
+                               "gwenhywfar/dialogs/dlg_input.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -252,18 +252,18 @@ void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg) {
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
   GWEN_DB_SetIntValue(dbParams,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
   GWEN_DB_SetIntValue(dbParams,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 #endif
 }
 
@@ -284,7 +284,7 @@ int GWEN_DlgInput_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
     return GWEN_DialogEvent_ResultReject;
   }
   else if (strcasecmp(sender, "input1")==0 ||
-	   strcasecmp(sender, "input2")==0) {
+           strcasecmp(sender, "input2")==0) {
     if (GWEN_DlgInput_CheckInput(dlg)==0)
       return GWEN_DialogEvent_ResultAccept;
     return GWEN_DialogEvent_ResultHandled;
@@ -319,8 +319,8 @@ int GWEN_DlgInput_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
-					      GWEN_DIALOG_EVENTTYPE t,
-					      const char *sender) {
+    GWEN_DIALOG_EVENTTYPE t,
+    const char *sender) {
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);

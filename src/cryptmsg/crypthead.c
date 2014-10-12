@@ -66,47 +66,47 @@ GWEN_CRYPTHEAD *GWEN_CryptHead_fromBuffer(const uint8_t *p, uint32_t l) {
 
       subtag=GWEN_Tag16_fromBuffer2(sp, sl, 0);
       if (subtag==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Bad sub-tag");
-	GWEN_CryptHead_free(ch);
-	return NULL;
+        DBG_INFO(GWEN_LOGDOMAIN, "Bad sub-tag");
+        GWEN_CryptHead_free(ch);
+        return NULL;
       }
       subtagLen=GWEN_Tag16_GetTagLength(subtag);
       subtagPtr=(const char*)GWEN_Tag16_GetTagData(subtag);
 
       if (subtagLen && subtagPtr) {
-	switch(GWEN_Tag16_GetTagType(subtag)) {
+        switch(GWEN_Tag16_GetTagType(subtag)) {
 
-	case GWEN_CRYPTHEAD_TLV_KEYNAME:
-	  ch->keyName=(char*)malloc(subtagLen+1);
-	  memmove(ch->keyName, subtagPtr, subtagLen);
-	  ch->keyName[subtagLen]=0;
-	  break;
+        case GWEN_CRYPTHEAD_TLV_KEYNAME:
+          ch->keyName=(char*)malloc(subtagLen+1);
+          memmove(ch->keyName, subtagPtr, subtagLen);
+          ch->keyName[subtagLen]=0;
+          break;
 
-	case GWEN_CRYPTHEAD_TLV_KEYNUM:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    ch->keyNumber=i;
-	  break;
+        case GWEN_CRYPTHEAD_TLV_KEYNUM:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            ch->keyNumber=i;
+          break;
 
-	case GWEN_CRYPTHEAD_TLV_KEYVER:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    ch->keyVersion=i;
-	  break;
+        case GWEN_CRYPTHEAD_TLV_KEYVER:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            ch->keyVersion=i;
+          break;
 
-	case GWEN_CRYPTHEAD_TLV_KEY:
-	  ch->pKey=(uint8_t*)malloc(subtagLen);
-	  assert(ch->pKey);
-	  memmove(ch->pKey, subtagPtr, subtagLen);
-	  ch->lKey=subtagLen;
-	  break;
+        case GWEN_CRYPTHEAD_TLV_KEY:
+          ch->pKey=(uint8_t*)malloc(subtagLen);
+          assert(ch->pKey);
+          memmove(ch->pKey, subtagPtr, subtagLen);
+          ch->lKey=subtagLen;
+          break;
 
-	case GWEN_CRYPTHEAD_TLV_CRYPTPROFILE:
-	  if (sscanf(subtagPtr, "%d", &i)==1)
-	    ch->cryptProfile=i;
-	  break;
+        case GWEN_CRYPTHEAD_TLV_CRYPTPROFILE:
+          if (sscanf(subtagPtr, "%d", &i)==1)
+            ch->cryptProfile=i;
+          break;
 
-	default:
+        default:
           DBG_WARN(GWEN_LOGDOMAIN, "Unknown tag %02x", GWEN_Tag16_GetTagType(subtag));
-	}
+        }
       }
 
       sp+=GWEN_Tag16_GetTagSize(subtag);
@@ -142,9 +142,9 @@ int GWEN_CryptHead_toBuffer(const GWEN_CRYPTHEAD *ch, GWEN_BUFFER *buf, uint8_t 
   GWEN_Tag16_DirectlyToBuffer(GWEN_CRYPTHEAD_TLV_KEYVER, numbuf, -1, buf);
   if (ch->pKey && ch->lKey)
     GWEN_Tag16_DirectlyToBuffer(GWEN_CRYPTHEAD_TLV_KEY,
-				(const char*)ch->pKey,
-				ch->lKey,
-				buf);
+                                (const char*)ch->pKey,
+                                ch->lKey,
+                                buf);
 
   snprintf(numbuf, sizeof(numbuf), "%d", ch->cryptProfile);
   GWEN_Tag16_DirectlyToBuffer(GWEN_CRYPTHEAD_TLV_CRYPTPROFILE, numbuf, -1, buf);

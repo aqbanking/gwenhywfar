@@ -20,27 +20,26 @@
 
 
 
-FXDEFMAP(FOX16_GuiSortingList) FOX16_GuiSortingListMap[]={
+FXDEFMAP(FOX16_GuiSortingList) FOX16_GuiSortingListMap[]= {
   FXMAPFUNC(SEL_COMMAND, FXFoldingList::ID_HEADER_CHANGE, FOX16_GuiSortingList::onHeaderClicked)
 };
 
 
-            
+
 FXIMPLEMENT(FOX16_GuiSortingList, FXFoldingList,
             FOX16_GuiSortingListMap, ARRAYNUMBER(FOX16_GuiSortingListMap))
 
 
 FOX16_GuiSortingList::FOX16_GuiSortingList(FXComposite *p, FXObject* tgt, FXSelector sel, FXuint opts,
-			       FXint x, FXint y, FXint w, FXint h)
-:FXFoldingList(p, tgt, sel, opts, x, y, w, h)
-{
+    FXint x, FXint y, FXint w, FXint h)
+  :FXFoldingList(p, tgt, sel, opts, x, y, w, h) {
 
 }
 
 
 
 FOX16_GuiSortingList::FOX16_GuiSortingList()
-:FXFoldingList() {
+  :FXFoldingList() {
 }
 
 

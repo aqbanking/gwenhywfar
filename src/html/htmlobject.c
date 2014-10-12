@@ -279,7 +279,7 @@ int HtmlObject_Layout(HTML_OBJECT *o) {
 
 
 HTML_OBJECT_LAYOUT_FN HtmlObject_SetLayoutFn(HTML_OBJECT *o,
-					     HTML_OBJECT_LAYOUT_FN fn) {
+    HTML_OBJECT_LAYOUT_FN fn) {
   HTML_OBJECT_LAYOUT_FN of;
 
   of=o->layoutFn;

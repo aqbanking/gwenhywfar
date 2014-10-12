@@ -34,8 +34,8 @@
 
 
 HTML_GROUP *HtmlGroup_Box_new(const char *groupName,
-			      HTML_GROUP *parent,
-			      GWEN_XML_CONTEXT *ctx) {
+                              HTML_GROUP *parent,
+                              GWEN_XML_CONTEXT *ctx) {
   HTML_GROUP *g;
 
   /* create base group */
@@ -70,9 +70,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt),
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt),
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -90,9 +90,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt),
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_ITALIC);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt),
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_ITALIC);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -110,9 +110,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt),
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_UNDERLINE);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt),
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_UNDERLINE);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -128,17 +128,17 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
     o=HtmlObject_Box_new(ctx);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
     if (dbAttribs) {
       const char *s;
 
       s=GWEN_DB_GetCharValue(dbAttribs, "align", 0, "left");
       if (s) {
-	if (strcasecmp(s, "right")==0)
-	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+        if (strcasecmp(s, "right")==0)
+          HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
         else if (strcasecmp(s, "center")==0)
-	  HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
+          HtmlObject_AddFlags(o, HTML_OBJECT_FLAGS_JUSTIFY_HCENTER);
       }
     }
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
@@ -152,9 +152,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
     o=HtmlObject_Box_new(ctx);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE |
-			HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE |
+                        HTML_OBJECT_FLAGS_JUSTIFY_RIGHT);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
     HtmlGroup_SetObject(gNew, o);
@@ -174,8 +174,8 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 
     o=HtmlObject_Image_new(ctx);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
     dbAttribs=HtmlCtx_GetCurrentAttributes(ctx);
     if (dbAttribs) {
       const char *s;
@@ -187,29 +187,29 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 
       /* preset */
       if (w!=-1)
-	HtmlObject_Image_SetScaledWidth(o, w);
+        HtmlObject_Image_SetScaledWidth(o, w);
       if (h!=-1)
-	HtmlObject_Image_SetScaledHeight(o, w);
+        HtmlObject_Image_SetScaledHeight(o, w);
 
       s=GWEN_DB_GetCharValue(dbAttribs, "src", 0, NULL);
       if (s && *s) {
-	HTML_IMAGE *img;
+        HTML_IMAGE *img;
 
-	img=HtmlCtx_GetImage(ctx, s);
-	if (img) {
-	  HtmlObject_Image_SetImage(o, img);
-	  /* adjust scaled width and height if not set by attributes */
-	  if (w==-1)
-	    HtmlObject_Image_SetScaledWidth(o, HtmlImage_GetWidth(img));
+        img=HtmlCtx_GetImage(ctx, s);
+        if (img) {
+          HtmlObject_Image_SetImage(o, img);
+          /* adjust scaled width and height if not set by attributes */
+          if (w==-1)
+            HtmlObject_Image_SetScaledWidth(o, HtmlImage_GetWidth(img));
           if (h==-1)
-	    HtmlObject_Image_SetScaledHeight(o, HtmlImage_GetHeight(img));
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Image [%s] not found", s);
-	}
+            HtmlObject_Image_SetScaledHeight(o, HtmlImage_GetHeight(img));
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Image [%s] not found", s);
+        }
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Missing image name in IMG element");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Missing image name in IMG element");
       }
     }
 
@@ -256,33 +256,33 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
       fnt=HtmlProps_GetFont(pr);
       fontName=GWEN_DB_GetCharValue(dbAttribs, "face", 0, NULL);
       if (fontName==NULL)
-	fontName=HtmlFont_GetFontName(fnt);
+        fontName=HtmlFont_GetFontName(fnt);
       fontFlags=HtmlFont_GetFontFlags(fnt);
       fontSize=HtmlFont_GetFontSize(fnt);
       s=GWEN_DB_GetCharValue(dbAttribs, "size", 0, NULL);
       if (s && *s) {
-	if (*s=='+') {
-	  int i;
+        if (*s=='+') {
+          int i;
 
-	  sscanf(s, "%d", &i);
-	  fontSize+=i*4;
-	}
-	else if (*s=='-') {
-	  int i;
+          sscanf(s, "%d", &i);
+          fontSize+=i*4;
+        }
+        else if (*s=='-') {
+          int i;
 
-	  sscanf(s, "%d", &i);
-	  fontSize+=i*4;
-	}
-	else
-	  sscanf(s, "%d", &fontSize);
+          sscanf(s, "%d", &i);
+          fontSize+=i*4;
+        }
+        else
+          sscanf(s, "%d", &fontSize);
       }
 
       s=GWEN_DB_GetCharValue(dbAttribs, "color", 0, NULL);
       if (s && *s) {
-	uint32_t color;
+        uint32_t color;
 
-	color=HtmlCtx_GetColorFromName(ctx, s);
-	HtmlProps_SetForegroundColor(pr, color);
+        color=HtmlCtx_GetColorFromName(ctx, s);
+        HtmlProps_SetForegroundColor(pr, color);
       }
 
       fnt=HtmlCtx_GetFont(ctx, fontName, fontSize, fontFlags);
@@ -306,9 +306,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt)*1.8,
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt)*1.8,
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -318,8 +318,8 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     o=HtmlObject_Box_new(ctx);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
     HtmlObject_SetProperties(o, pr);
     HtmlGroup_SetObject(gNew, o);
     HtmlProps_free(pr);
@@ -334,9 +334,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt)*1.5,
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt)*1.5,
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -346,8 +346,8 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     o=HtmlObject_Box_new(ctx);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
     HtmlObject_SetProperties(o, pr);
     HtmlGroup_SetObject(gNew, o);
     HtmlProps_free(pr);
@@ -362,9 +362,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt),
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt),
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_STRONG);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -374,8 +374,8 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     o=HtmlObject_Box_new(ctx);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
     HtmlObject_SetProperties(o, pr);
     HtmlGroup_SetObject(gNew, o);
     HtmlProps_free(pr);
@@ -390,9 +390,9 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     pr=HtmlProps_dup(HtmlGroup_GetProperties(g));
     fnt=HtmlProps_GetFont(pr);
     fnt=HtmlCtx_GetFont(ctx,
-			HtmlFont_GetFontName(fnt),
-			HtmlFont_GetFontSize(fnt),
-			HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_ITALIC);
+                        HtmlFont_GetFontName(fnt),
+                        HtmlFont_GetFontSize(fnt),
+                        HtmlFont_GetFontFlags(fnt) | HTML_FONT_FLAGS_ITALIC);
     if (fnt) {
       HtmlProps_SetFont(pr, fnt);
       //HtmlFont_free(fnt);
@@ -402,18 +402,18 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
     o=HtmlObject_Box_new(ctx);
     HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
     HtmlObject_AddFlags(o,
-			HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-			HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                        HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                        HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
     HtmlObject_SetProperties(o, pr);
     HtmlGroup_SetObject(gNew, o);
     HtmlProps_free(pr);
   }
   else if (strcasecmp(tagName, "html")==0 ||
-	   strcasecmp(tagName, "body")==0) {
+           strcasecmp(tagName, "body")==0) {
   }
   else {
     DBG_WARN(GWEN_LOGDOMAIN,
-	     "Unknown group [%s], handling as normal box", tagName);
+             "Unknown group [%s], handling as normal box", tagName);
     gNew=HtmlGroup_Box_new(tagName, g, ctx);
     HtmlGroup_SetProperties(gNew, HtmlGroup_GetProperties(g));
     HtmlGroup_SetObject(gNew, HtmlGroup_GetObject(g));
@@ -451,24 +451,24 @@ int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data) {
       s=(uint8_t*)GWEN_Buffer_GetStart(buf);
 
       while(*s) {
-	uint8_t *t;
-	uint8_t c;
-    
-	/* find begin of word */
-	while(*s && isspace(*s))
-	  s++;
-    
-	/* find end of word */
-	t=s;
-	while(*t && !isspace(*t))
-	  t++;
-	c=*t;
-	*t=0;
-	o=HtmlObject_Word_new(ctx, (const char*) s);
-	HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
-	HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
-	*t=c;
-	s=t;
+        uint8_t *t;
+        uint8_t c;
+
+        /* find begin of word */
+        while(*s && isspace(*s))
+          s++;
+
+        /* find end of word */
+        t=s;
+        while(*t && !isspace(*t))
+          t++;
+        c=*t;
+        *t=0;
+        o=HtmlObject_Word_new(ctx, (const char*) s);
+        HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
+        HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
+        *t=c;
+        s=t;
       }
     }
     GWEN_Buffer_free(buf);

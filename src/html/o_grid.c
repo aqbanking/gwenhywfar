@@ -34,7 +34,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
   OBJECT_GRID *xo;
   HTML_OBJECT *c;
   int w;
-  int h;
+  //int h;
   int x;
   int y;
   int rv;
@@ -50,7 +50,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
   assert(xo);
 
   w=HtmlObject_GetWidth(o);
-  h=HtmlObject_GetHeight(o);
+  //h=HtmlObject_GetHeight(o);
 
   /* subtract spacing from available width */
   if (w!=-1)
@@ -93,63 +93,63 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 
       /* reset full width of every column */
       for (i=0; i<xo->columns; i++)
-	fullw[i]=0;
+        fullw[i]=0;
       /* calculate full width of every column */
       c=HtmlObject_Tree_GetFirstChild(o);
       while(c) {
-	i=HtmlObject_GridEntry_GetColumn(c);
-	k=HtmlObject_GetWidth(c);
-	if (k>fullw[i])
-	  fullw[i]=k;
-	c=HtmlObject_Tree_GetNext(c);
+        i=HtmlObject_GridEntry_GetColumn(c);
+        k=HtmlObject_GetWidth(c);
+        if (k>fullw[i])
+          fullw[i]=k;
+        c=HtmlObject_Tree_GetNext(c);
       }
 
       for (i=0; i<xo->columns; i++)
-	cw[i]=0;
+        cw[i]=0;
 
       /* set fixed widths to those columns which are smaller than fullWidth/columns */
       k=0;
       for (i=0; i<xo->columns; i++) {
-	int p;
+        int p;
 
-	p=fullw[i];
-	if (p<=meanColumnWidth) {
+        p=fullw[i];
+        if (p<=meanColumnWidth) {
           k+=p;
-	  cw[i]=p;
-	}
+          cw[i]=p;
+        }
       }
       /* now get the remaining width */
       j=0;
       k=w-k;
       for (i=0; i<xo->columns; i++) {
         if (cw[i]==0)
-	  j+=fullw[i];
+          j+=fullw[i];
       }
 
       if (j>0) {
-	/* calculate percentual width of each remaining column */
-	for (i=0; i<xo->columns; i++) {
-	  if (cw[i]==0) {
-	    int p;
+        /* calculate percentual width of each remaining column */
+        for (i=0; i<xo->columns; i++) {
+          if (cw[i]==0) {
+            int p;
 
-	    p=fullw[i]*100/j;
-	    cw[i]=p*k/100;
-	  }
-	}
+            p=fullw[i]*100/j;
+            cw[i]=p*k/100;
+          }
+        }
       }
 
       /* re-layout columns */
       c=HtmlObject_Tree_GetFirstChild(o);
       while(c) {
-	i=HtmlObject_GridEntry_GetColumn(c);
-	HtmlObject_SetHeight(c, -1);
-	HtmlObject_SetWidth(c, cw[i]);
-	rv=HtmlObject_Layout(c);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
-	c=HtmlObject_Tree_GetNext(c);
+        i=HtmlObject_GridEntry_GetColumn(c);
+        HtmlObject_SetHeight(c, -1);
+        HtmlObject_SetWidth(c, cw[i]);
+        rv=HtmlObject_Layout(c);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+        c=HtmlObject_Tree_GetNext(c);
       }
     }
   }
@@ -212,8 +212,8 @@ HTML_OBJECT *HtmlObject_Grid_new(GWEN_XML_CONTEXT *ctx) {
   GWEN_INHERIT_SETDATA(HTML_OBJECT, OBJECT_GRID, o, xo, HtmlObject_Grid_FreeData);
 
   HtmlObject_AddFlags(o,
-		      HTML_OBJECT_FLAGS_START_ON_NEWLINE |
-		      HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
+                      HTML_OBJECT_FLAGS_START_ON_NEWLINE |
+                      HTML_OBJECT_FLAGS_END_WITH_NEWLINE);
   HtmlObject_SetLayoutFn(o, HtmlObject_Grid_Layout);
 
   return o;

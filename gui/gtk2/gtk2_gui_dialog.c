@@ -86,7 +86,7 @@ void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg) {
 
 
 
-void Gtk2Gui_Dialog_Unextend(GWEN_DIALOG *dlg){
+void Gtk2Gui_Dialog_Unextend(GWEN_DIALOG *dlg) {
   GTK2_GUI_DIALOG *xdlg;
 
   assert(dlg);
@@ -130,42 +130,42 @@ GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg) {
 
 
 GWENHYWFAR_CB int Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
-                                  GWEN_WIDGET *w,
-				  GWEN_DIALOG_PROPERTY prop,
-				  int index,
-				  int value,
-				  int doSignal) {
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int value,
+    int doSignal) {
   return GWEN_Widget_SetIntProperty(w, prop, index, value, doSignal);
 }
 
 
 
 GWENHYWFAR_CB int Gtk2Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
-                                  GWEN_WIDGET *w,
-				  GWEN_DIALOG_PROPERTY prop,
-				  int index,
-				  int defaultValue) {
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    int defaultValue) {
   return GWEN_Widget_GetIntProperty(w, prop, index, defaultValue);
 }
 
 
 
 GWENHYWFAR_CB int Gtk2Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
-				   GWEN_WIDGET *w,
-				   GWEN_DIALOG_PROPERTY prop,
-				   int index,
-				   const char *value,
-				   int doSignal) {
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *value,
+    int doSignal) {
   return GWEN_Widget_SetCharProperty(w, prop, index, value, doSignal);
 }
 
 
 
 GWENHYWFAR_CB const char *Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
-					   GWEN_WIDGET *w,
-					   GWEN_DIALOG_PROPERTY prop,
-					   int index,
-					   const char *defaultValue) {
+    GWEN_WIDGET *w,
+    GWEN_DIALOG_PROPERTY prop,
+    int index,
+    const char *defaultValue) {
   return GWEN_Widget_GetCharProperty(w, prop, index, defaultValue);
 }
 
@@ -214,15 +214,15 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
     for (element = tll; element; element = g_list_next(element)) {
       GtkWindow* win = GTK_WINDOW(element->data);
       if (gtk_window_is_active(win)) {
-	topLevel=win;
-	break;
+        topLevel=win;
+        break;
       }
     }
     g_list_free(tll);
 
     if (topLevel) {
       DBG_NOTICE(GWEN_LOGDOMAIN, "Found active window [%s]",
-                gtk_window_get_title(topLevel));
+                 gtk_window_get_title(topLevel));
       gtk_window_set_transient_for(gw, topLevel);
     }
     else {
@@ -255,7 +255,7 @@ void Gtk2Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result) {
 
 
 static void
-run_unmap_handler (GtkWindow *window, gpointer data){
+run_unmap_handler (GtkWindow *window, gpointer data) {
   GWEN_DIALOG *dlg;
   GTK2_GUI_DIALOG *xdlg;
 
@@ -271,8 +271,8 @@ run_unmap_handler (GtkWindow *window, gpointer data){
 
 static gint
 run_delete_handler(GtkWindow *window,
-		   GdkEventAny *event,
-		   gpointer data){
+                   GdkEventAny *event,
+                   gpointer data) {
   GWEN_DIALOG *dlg;
   GTK2_GUI_DIALOG *xdlg;
 
@@ -319,21 +319,21 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
 
   xdlg->unmap_handler =
     g_signal_connect(g,
-		     "unmap",
-		     G_CALLBACK (run_unmap_handler),
-		     dlg);
+                     "unmap",
+                     G_CALLBACK (run_unmap_handler),
+                     dlg);
 
   xdlg->delete_handler =
     g_signal_connect(g,
-		     "delete-event",
-		     G_CALLBACK (run_delete_handler),
-		     dlg);
-  
+                     "delete-event",
+                     G_CALLBACK (run_delete_handler),
+                     dlg);
+
   xdlg->destroy_handler =
     g_signal_connect(g,
-		     "destroy",
-		     G_CALLBACK (run_destroy_handler),
-		     dlg);
+                     "destroy",
+                     G_CALLBACK (run_destroy_handler),
+                     dlg);
 
   xdlg->loop=g_main_loop_new(NULL, FALSE);
   if (untilEnd)
@@ -455,8 +455,8 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
       /* recursion */
       rv=Gtk2Gui_Dialog_SetupTree(wChild);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       wChild=GWEN_Widget_Tree_GetNext(wChild);
     }
@@ -489,11 +489,11 @@ int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf) {
         if (toupper(*t)=='M') {
           t++;
           if (toupper(*t)=='L') {
-	    t++;
-	    if (toupper(*t)=='>') {
-	      break;
-	    }
-	  }
+            t++;
+            if (toupper(*t)=='>') {
+              break;
+            }
+          }
         }
       }
     }
@@ -506,26 +506,26 @@ int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf) {
     p2+=6; /* skip "<html>" */
     while ((p2=strchr(p2, '<'))) {
       const char *t;
-  
+
       t=p2;
       t++;
       if (toupper(*t)=='/') {
-	t++;
-	if (toupper(*t)=='H') {
-	  t++;
-	  if (toupper(*t)=='T') {
-	    t++;
-	    if (toupper(*t)=='M') {
-	      t++;
-	      if (toupper(*t)=='L') {
-		t++;
-		if (toupper(*t)=='>') {
-		  break;
-		}
-	      }
-	    }
-	  }
-	}
+        t++;
+        if (toupper(*t)=='H') {
+          t++;
+          if (toupper(*t)=='T') {
+            t++;
+            if (toupper(*t)=='M') {
+              t++;
+              if (toupper(*t)=='L') {
+                t++;
+                if (toupper(*t)=='>') {
+                  break;
+                }
+              }
+            }
+          }
+        }
       }
       p2++;
     } /* while */

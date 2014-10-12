@@ -52,28 +52,28 @@ GWENHYWFAR_API int GWEN_Crypt_Key_GetKeyVersion(const GWEN_CRYPT_KEY *k);
 GWENHYWFAR_API void GWEN_Crypt_Key_SetKeyVersion(GWEN_CRYPT_KEY *k, int i);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Sign(GWEN_CRYPT_KEY *k,
-				       const uint8_t *pInData,
-				       uint32_t inLen,
-				       uint8_t *pSignatureData,
-				       uint32_t *pSignatureLen);
+                                       const uint8_t *pInData,
+                                       uint32_t inLen,
+                                       uint8_t *pSignatureData,
+                                       uint32_t *pSignatureLen);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Verify(GWEN_CRYPT_KEY *k,
-					 const uint8_t *pInData,
-					 uint32_t inLen,
-					 const uint8_t *pSignatureData,
-					 uint32_t signatureLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    const uint8_t *pSignatureData,
+    uint32_t signatureLen);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Encipher(GWEN_CRYPT_KEY *k,
-					   const uint8_t *pInData,
-					   uint32_t inLen,
-					   uint8_t *pOutData,
-					   uint32_t *pOutLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Decipher(GWEN_CRYPT_KEY *k,
-					   const uint8_t *pInData,
-					   uint32_t inLen,
-					   uint8_t *pOutData,
-					   uint32_t *pOutLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen);
 
 
 #ifdef __cplusplus

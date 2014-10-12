@@ -24,12 +24,11 @@
 
 
 QT4_DialogBox::QT4_DialogBox(QT4_GuiDialog *dialog,
-			     QWidget *parent,
-			     bool modal,
-			     Qt::WindowFlags f)
-:QDialog(parent, f)
-,_dialog(dialog)
-{
+                             QWidget *parent,
+                             bool modal,
+                             Qt::WindowFlags f)
+  :QDialog(parent, f)
+  ,_dialog(dialog) {
   setModal(modal);
 }
 
@@ -58,7 +57,7 @@ int QT4_DialogBox::cont() {
 
 
 
-void QT4_DialogBox::closeEvent(QCloseEvent *e){
+void QT4_DialogBox::closeEvent(QCloseEvent *e) {
   if (_dialog) {
     int rv;
 
@@ -97,8 +96,8 @@ void QT4_DialogBox::slotActivated() {
     wname=GWEN_Widget_GetName(w);
 
     DBG_INFO(GWEN_LOGDOMAIN, "Command for [%s] (type: %s)",
-	     wname?wname:"(unnamed)",
-	     GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+             wname?wname:"(unnamed)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
 
     switch(GWEN_Widget_GetType(w)) {
     case GWEN_Widget_TypeUnknown:
@@ -114,8 +113,8 @@ void QT4_DialogBox::slotActivated() {
     case GWEN_Widget_TypeTextEdit:
     case GWEN_Widget_TypeSpinBox:
       rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-				GWEN_DialogEvent_TypeActivated,
-				GWEN_Widget_GetName(w));
+                                GWEN_DialogEvent_TypeActivated,
+                                GWEN_Widget_GetName(w));
       break;
     case GWEN_Widget_TypeRadioButton:
     case GWEN_Widget_TypeProgressBar:
@@ -136,7 +135,7 @@ void QT4_DialogBox::slotActivated() {
       /* nothing to do for these types */
       ;
     }
-  
+
     if (rv==GWEN_DialogEvent_ResultAccept) {
       accept();
     }
@@ -165,8 +164,8 @@ void QT4_DialogBox::slotValueChanged() {
     wname=GWEN_Widget_GetName(w);
 
     DBG_INFO(GWEN_LOGDOMAIN, "ValueChanged for [%s] (type: %s)",
-	     wname?wname:"(unnamed)",
-	      GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
+             wname?wname:"(unnamed)",
+             GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
 
     switch(GWEN_Widget_GetType(w)) {
     case GWEN_Widget_TypeUnknown:
@@ -182,8 +181,8 @@ void QT4_DialogBox::slotValueChanged() {
     case GWEN_Widget_TypeTextEdit:
     case GWEN_Widget_TypeSpinBox:
       rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
-				GWEN_DialogEvent_TypeValueChanged,
-				GWEN_Widget_GetName(w));
+                                GWEN_DialogEvent_TypeValueChanged,
+                                GWEN_Widget_GetName(w));
       break;
 
     case GWEN_Widget_TypeRadioButton:
@@ -205,7 +204,7 @@ void QT4_DialogBox::slotValueChanged() {
       /* nothing to do for these types */
       ;
     }
-  
+
     if (rv==GWEN_DialogEvent_ResultAccept) {
       accept();
     }

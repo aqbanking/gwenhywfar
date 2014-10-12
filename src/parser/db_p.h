@@ -63,7 +63,7 @@ static void GWEN_DB_Node_free(GWEN_DB_NODE *n);
 
 
 static GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
-					  unsigned int datasize);
+    unsigned int datasize);
 
 
 static GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
@@ -80,10 +80,10 @@ static GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n);
 
 
 static void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
-				GWEN_DB_NODE *n);
+                                GWEN_DB_NODE *n);
 
 static void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
-				GWEN_DB_NODE *n);
+                                GWEN_DB_NODE *n);
 
 static void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n);
 
@@ -92,52 +92,52 @@ static void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n);
  */
 
 static void *GWEN_DB_HandlePath(const char *entry,
-				void *data,
-				int idx,
-				uint32_t flags);
+                                void *data,
+                                int idx,
+                                uint32_t flags);
 
 
 static GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
-				       const char *name,
-				       int idx);
+                                       const char *name,
+                                       int idx);
 
 static GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
-				     const char *name,
-				     int idx);
+                                     const char *name,
+                                     int idx);
 
 
 static GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
-				     const char *path,
-				     uint32_t flags);
+                                     const char *path,
+                                     uint32_t flags);
 
 static GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
-				      const char *path,
-				      int idx);
+                                      const char *path,
+                                      int idx);
 
 static void GWEN_DB_ClearNode(GWEN_DB_NODE *n);
 
 static void *GWEN_DB_count_cb(GWEN_DB_NODE *node, void *user_data);
 
 static void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
-					GWEN_DB_NODE *n);
+                                        GWEN_DB_NODE *n);
 static void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
-				       GWEN_DB_NODE *n);
+                                       GWEN_DB_NODE *n);
 static void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n);
 
 
 
 
 static int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
-			       uint32_t dbflags,
-			       const char *typeName,
-			       const char *varName,
-			       uint8_t *p);
+                               uint32_t dbflags,
+                               const char *typeName,
+                               const char *varName,
+                               uint8_t *p);
 
 
 static int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
-				       GWEN_FAST_BUFFER *fb,
-				       uint32_t dbflags,
-				       int insert);
+                                       GWEN_FAST_BUFFER *fb,
+                                       uint32_t dbflags,
+                                       int insert);
 
 static int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);
 static int GWEN_DB_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf);

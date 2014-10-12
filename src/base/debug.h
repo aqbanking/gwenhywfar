@@ -90,8 +90,8 @@ void GWEN_MemoryDebug_CleanUp(void);
 
 GWENHYWFAR_API
 uint32_t GWEN_Debug_Snprintf(char *buffer,
-                                     uint32_t size,
-                                     const char *fmt, ...);
+                             uint32_t size,
+                             const char *fmt, ...);
 
 #ifndef NO_VARIADIC_MACROS
 # define DBG_ERROR(dbg_logger, format, args...) if (1){\
@@ -101,7 +101,7 @@ uint32_t GWEN_Debug_Snprintf(char *buffer,
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevel_Error, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void DBG_ERROR(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
@@ -122,7 +122,7 @@ void DBG_ERROR(const char *logdomain, const char *format, ...);
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevel_Warning, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void DBG_WARN(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
@@ -145,7 +145,7 @@ void DBG_WARN(const char *logdomain, const char *format, ...);
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevel_Notice, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void DBG_NOTICE(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
@@ -169,7 +169,7 @@ void DBG_NOTICE(const char *logdomain, const char *format, ...);
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevel_Info, dbg_buffer);};
 #else /* #ifndef NO_VARIADIC_MACROS */
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void DBG_INFO(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
@@ -241,9 +241,9 @@ void DBG_INFO(const char *logdomain, const char *format, ...);
 #endif /* DISABLE_DEBUGLOG */
 
 #ifdef NO_VARIADIC_MACROS
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void DBG_DEBUG(const char *logdomain, const char *format, ...);
-GWENHYWFAR_API 
+GWENHYWFAR_API
 void DBG_VERBOUS(const char *logdomain, const char *format, ...);
 #endif /* #ifdef NO_VARIADIC_MACROS */
 

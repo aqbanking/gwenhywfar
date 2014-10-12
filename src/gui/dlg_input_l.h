@@ -17,10 +17,10 @@
 
 
 GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
-			       const char *title,
-			       const char *text,
-			       int minLen,
-			       int maxLen);
+                               const char *title,
+                               const char *text,
+                               int minLen,
+                               int maxLen);
 
 
 int GWEN_DlgInput_CopyInput(GWEN_DIALOG *dlg, char *buffer, int size);

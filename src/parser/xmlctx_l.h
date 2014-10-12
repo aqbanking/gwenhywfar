@@ -38,8 +38,8 @@ int GWEN_XmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing);
 int GWEN_XmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data);
 int GWEN_XmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data);
 int GWEN_XmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
-			const char *attrName,
-			const char *attrData);
+                        const char *attrName,
+                        const char *attrData);
 
 
 #endif
