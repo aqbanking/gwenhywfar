@@ -62,7 +62,7 @@
         <default>NULL</default>
         <preset>NULL</preset>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_getbymember</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
       </member>

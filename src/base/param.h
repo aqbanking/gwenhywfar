@@ -216,6 +216,10 @@ GWENHYWFAR_API void GWEN_Param_toXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p
 
 GWENHYWFAR_API GWEN_PARAM *GWEN_Param_fromXml(GWEN_XMLNODE *p_db);
 
+GWENHYWFAR_API GWEN_PARAM *GWEN_Param_List_GetByName(const GWEN_PARAM_LIST *p_list,  const char *p_cmp);
+
+GWENHYWFAR_API GWEN_PARAM *GWEN_Param_Tree_GetByName(const GWEN_PARAM_TREE *p_tree,  const char *p_cmp);
+
 #ifdef __cplusplus
 }
 #endif

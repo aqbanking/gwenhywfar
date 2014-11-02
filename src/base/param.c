@@ -763,6 +763,38 @@ GWEN_PARAM *GWEN_Param_fromXml(GWEN_XMLNODE *p_db) {
   return p_struct;
 }
 
+GWEN_PARAM *GWEN_Param_List_GetByName(const GWEN_PARAM_LIST *p_list,  const char *p_cmp) {
+  GWEN_PARAM *p_struct;
+
+  assert(p_list);
+  p_struct = GWEN_Param_List_First(p_list);
+  while(p_struct) {
+    int p_rv;
+
+    if (p_struct->name && p_cmp) p_rv=strcasecmp(p_cmp, p_struct->name); else if (p_cmp) p_rv=1; else if (p_struct->name) p_rv=-1; else p_rv=0;
+    if (p_rv == 0)
+      return p_struct;
+    p_struct = GWEN_Param_List_Next(p_struct);
+  }
+  return NULL;
+}
+
+GWEN_PARAM *GWEN_Param_Tree_GetByName(const GWEN_PARAM_TREE *p_tree,  const char *p_cmp) {
+  GWEN_PARAM *p_struct;
+
+  assert(p_tree);
+  p_struct = GWEN_Param_Tree_GetFirst(p_tree);
+  while(p_struct) {
+    int p_rv;
+
+    if (p_struct->name && p_cmp) p_rv=strcasecmp(p_cmp, p_struct->name); else if (p_cmp) p_rv=1; else if (p_struct->name) p_rv=-1; else p_rv=0;
+    if (p_rv == 0)
+      return p_struct;
+    p_struct = GWEN_Param_Tree_GetBelow(p_struct);
+  }
+  return NULL;
+}
+
 
 /* code headers */
 #include "param_fns.c"
