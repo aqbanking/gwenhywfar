@@ -752,7 +752,7 @@ if (cs) {
   ic=iconv_open(cs, "UTF-8");
   if (ic==((iconv_t)-1) && errno==EINVAL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" not available", cs);
-    iconv_close(ic);
+    // No iconv_close here because ic is -1 and not a valid descriptor
     free(cs);
     return;
   }
