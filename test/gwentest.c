@@ -1938,7 +1938,7 @@ int testMap2(int argc, char **argv) {
     res=GWEN_IdMap_Insert(map, i, (void*)s);
     if (res!=GWEN_IdMapResult_Ok) {
       fprintf(stderr, "FAILED: Could not set pointer %x (%d).\n",
-              id, res);
+              s, res);
       return 2;
     }
   }
