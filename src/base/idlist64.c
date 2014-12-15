@@ -143,7 +143,7 @@ static inline int GWEN_IdTable64_IsFull(const GWEN_IDTABLE64 *idt) {
 }
 
 
-
+#if 0
 static inline unsigned int GWEN_IdTable64_GetCount(const GWEN_IDTABLE64 *idt) {
   return GWEN_IDTABLE64_MAXENTRIES-idt->freeEntries;
 }
@@ -208,7 +208,7 @@ static inline uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
   } /* for */
   return 0;
 }
-
+#endif
 
 
 

@@ -3928,7 +3928,6 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
       if (s && loc && strcasecmp(s, loc)==0) {
 	int access=Typemaker2_VirtualFn_GetAccess(vf);
         TYPEMAKER2_VIRTUALFN_PARAM_LIST *plist;
-        GWEN_STRINGLISTENTRY *se;
 	int i;
   
 	GWEN_Buffer_AppendString(tbuf, "typedef ");

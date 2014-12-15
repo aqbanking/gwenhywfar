@@ -133,7 +133,7 @@ static inline int GWEN_PointerListTable_IsFull(const GWEN_POINTERLIST_TABLE *idt
 }
 
 
-
+#if 0
 static inline unsigned int GWEN_PointerListTable_GetCount(const GWEN_POINTERLIST_TABLE *idt) {
   return GWEN_POINTERLIST_TABLE_MAXENTRIES-idt->freeEntries;
 }
@@ -165,7 +165,7 @@ static inline void *GWEN_PointerListTable_GetNextPtr(const GWEN_POINTERLIST_TABL
   } /* for */
   return NULL;
 }
-
+#endif
 
 
 
