@@ -325,7 +325,7 @@ int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
     GWEN_Buffer_AppendByte(mbuf, (unsigned char)tagType);
 
     /* write tag length */
-    GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+    GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
 
     /* write tag data */
     if (tagLength)
@@ -539,7 +539,7 @@ int GWEN_TLV_WriteHeader(unsigned int tagType,
     GWEN_Buffer_AppendByte(mbuf, (unsigned char)tagType);
 
     /* write tag length */
-    GWEN_Buffer_AppendByte(mbuf, (tagLength && 0xff));
+    GWEN_Buffer_AppendByte(mbuf, (tagLength & 0xff));
   }
 
   return 0;
