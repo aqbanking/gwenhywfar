@@ -708,7 +708,7 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
   GWEN_BUFFER *hbuf;
   GWEN_BUFFER *xbuf;
   GWEN_MDIGEST *md;
-  uint64_t pos;
+  int64_t pos;
 
   assert(sr);
   assert(sr->refCount);
@@ -1103,7 +1103,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   uint64_t hsize;
   uint64_t hpos;
   uint64_t mpos;
-  uint64_t pos;
+  int64_t pos;
   GWEN_MDIGEST *md;
 
   assert(sr);
@@ -1361,7 +1361,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
   uint64_t hsize;
   uint64_t hpos;
   uint64_t mpos;
-  uint64_t pos;
+  int64_t pos;
   GWEN_MDIGEST *md;
 
   assert(sr);
@@ -1577,7 +1577,7 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   uint64_t hsize;
   uint64_t hpos;
   uint64_t mpos;
-  uint64_t pos;
+  int64_t pos;
   GWEN_MDIGEST *md;
   GWEN_BUFFER *mbuf;
   uint32_t perms;
