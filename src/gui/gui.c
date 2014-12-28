@@ -59,8 +59,8 @@
 
 #if defined (HAVE_LANGINFO_H)
 # include <langinfo.h>
-#elif defined (HAVE_LOCALE_H)
-# include <locale.h>
+#elif defined (HAVE_LOCALCHARSET_H)
+# include <localcharset.h>
 #endif
 #ifdef HAVE_ICONV_H
 # include <iconv.h>
@@ -706,61 +706,62 @@ const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui) {
 
 
 void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s) {
-  char *cs;
+  const char *cs;
 
   assert(gui);
 
-  if (!s || strcasecmp(s, "utf-8")==0)
-    cs=NULL;
-  else if (s[0]=='\0') {
+  if (s) {
+    if (!*s) {
+      /* determine charset according to current locale */
+#if defined(HAVE_LANGINFO_H)
+      cs=nl_langinfo(CODESET);
+#elif defined(HAVE_LOCALCHARSET_H)
+      cs=localecharset();
+#else
+      /* just pass "" on to libiconv and hope for the best */
+      cs=s;
+#endif
+    }
+    else
+      cs=s;
+
+    if (strcasecmp(cs, "UTF-8")==0)
+      cs=NULL;
+  }
+  else
+    cs=s;
+
+#ifndef HAVE_ICONV
+  if (cs) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Missing iconv, cannot convert between UTF-8 and \"%s\"", cs);
+  }
+#else
+  if (cs) {
+    iconv_t ic;
     size_t len;
     char *p;
-#if !defined(HAVE_LANGINFO_H) && !defined(HAVE_SETLOCALE)
-    cs=s;
-#else
-# if defined(HAVE_LANGINFO_H)
-    cs=nl_langinfo(CODESET);
-# elif defined(HAVE_SETLOCALE)
-    cs=setlocale(LC_CTYPE, NULL);
-    cs=strchr(cs, '.');
-# endif
-    if (strcasecmp(cs, "utf-8")==0)
-      cs=NULL;
-    else {
-#endif
+
     /* Let iconv apply transliteration where necessary */
-    len=strlen(cs)+11;
-    p=(char *)malloc(len);
+    len=strlen(cs);
+    p=(char *)malloc(len+11);
     assert(p);
     sprintf(p, "%s//TRANSLIT", cs);
+    ic=iconv_open(p, "UTF-8");
+    if (ic==(iconv_t)-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Charset conversion from \"UTF-8\" to \"%s\" failed: %s (%d)",
+                p, strerror(errno), errno);
+      free(p);
+      return;
+    }
+    iconv_close(ic);
     cs=p;
-#if defined(HAVE_LANGINFO_H) || defined(HAVE_SETLOCALE)
   }
-#endif
-}
-else
-  cs=strdup(s);
 
-if (cs) {
-#ifndef HAVE_ICONV
-  DBG_INFO(GWEN_LOGDOMAIN,
-           "iconv not available, can not convert to \"%s\"", cs);
-}
-#else
-  iconv_t ic;
-
-  ic=iconv_open(cs, "UTF-8");
-  if (ic==((iconv_t)-1) && errno==EINVAL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" not available", cs);
-    // No iconv_close here because ic is -1 and not a valid descriptor
-    free(cs);
-    return;
-  }
-  iconv_close(ic);
-}
-
-free(gui->charSet);
-gui->charSet=(char *)cs;
+  if (gui->charSet)
+    free(gui->charSet);
+  gui->charSet=(char *)cs;
 #endif
 }
 
