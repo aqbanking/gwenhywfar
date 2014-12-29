@@ -167,6 +167,7 @@ GWEN_GUI *GWEN_Gui_GetGui(void) {
 
 int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
                            const char *fromCs, const char *toCs) {
+#ifdef HAVE_ICONV
   int rv=0;
   iconv_t ic;
 
@@ -226,6 +227,9 @@ retry:
   }
 
   return rv;
+#else /* !HAVE_ICONV */
+  return GWEN_Buffer_AppendBytes(tbuf, text, len);
+#endif
 }
 
 
