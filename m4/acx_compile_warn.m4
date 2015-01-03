@@ -67,9 +67,9 @@ if test ${GCC}x = yesx; then
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-error-on-warning) ;;
      esac
   ], [ 
-     # Default value if the argument was not given
-     CXXFLAGS="${CXXFLAGS}" 
-     CFLAGS="${CFLAGS}" 
+     # Default value if the argument was not given: At least error out on implicit function declarations.
+     CXXFLAGS="${CXXFLAGS} -Werror=implicit-function-declaration"
+     CFLAGS="${CFLAGS} -Werror=implicit-function-declaration"
   ])
 fi
 
