@@ -720,7 +720,7 @@ void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s) {
 #if defined(HAVE_LANGINFO_H)
       cs=nl_langinfo(CODESET);
 #elif defined(HAVE_LOCALCHARSET_H)
-      cs=localecharset();
+      cs=locale_charset();
 #else
       /* just pass "" on to libiconv and hope for the best */
       cs=s;
