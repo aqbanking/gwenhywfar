@@ -116,3 +116,51 @@ void GWEN_Param_SetCurrentValueAsDouble(GWEN_PARAM *param, double v) {
 
 
 
+
+
+
+int GWEN_Param_List_GetCurrentValueAsInt(const GWEN_PARAM_LIST *pl, const char *name, int defVal) {
+  GWEN_PARAM *p;
+
+  p=GWEN_Param_List_GetByName(pl, name);
+  if (p)
+    return GWEN_Param_GetCurrentValueAsInt(p);
+  return defVal;
+}
+
+
+
+void GWEN_Param_List_SetCurrentValueAsInt(GWEN_PARAM_LIST *pl, const char *name, int v) {
+  GWEN_PARAM *p;
+
+  p=GWEN_Param_List_GetByName(pl, name);
+  if (p)
+    GWEN_Param_SetCurrentValueAsInt(p, v);
+}
+
+
+
+double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const char *name, double defVal) {
+  GWEN_PARAM *p;
+
+  p=GWEN_Param_List_GetByName(pl, name);
+  if (p)
+    return GWEN_Param_GetCurrentValueAsDouble(p);
+  return defVal;
+}
+
+
+
+void GWEN_Param_List_SetCurrentValueAsDouble(GWEN_PARAM_LIST *pl, const char *name, double v) {
+  GWEN_PARAM *p;
+
+  p=GWEN_Param_List_GetByName(pl, name);
+  if (p)
+    GWEN_Param_SetCurrentValueAsDouble(p, v);
+}
+
+
+
+
+
+

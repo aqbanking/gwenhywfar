@@ -34,5 +34,15 @@ GWENHYWFAR_API void GWEN_Param_SetCurrentValueAsDouble(GWEN_PARAM *param, double
 
 
 
+GWENHYWFAR_API int GWEN_Param_List_GetCurrentValueAsInt(const GWEN_PARAM_LIST *pl, const char *name, int defVal);
+GWENHYWFAR_API void GWEN_Param_List_SetCurrentValueAsInt(GWEN_PARAM_LIST *pl, const char *name, int v);
+
+GWENHYWFAR_API double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const char *name, double defVal);
+GWENHYWFAR_API void GWEN_Param_List_SetCurrentValueAsDouble(GWEN_PARAM_LIST *pl, const char *name, double v);
+
+
+
+
+
 #endif
 
