@@ -379,14 +379,36 @@ void GWEN_MultiCache_Type_SetFreeFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TY
 
 
 
+void GWEN_MultiCache_Type_SetAttachObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_OBJECT_FN fn) {
+  assert(ct);
+  assert(ct->_refCount);
+
+  ct->attachObjectFn=fn;
+}
+
+
+
+void GWEN_MultiCache_Type_SetFreeObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_FREE_OBJECT_FN fn) {
+  assert(ct);
+  assert(ct->_refCount);
+
+  ct->freeObjectFn=fn;
+}
+
+
+
 int GWEN_MultiCache_Type_AttachData(const GWEN_MULTICACHE_TYPE *ct, void *p) {
   assert(ct);
   assert(ct->_refCount);
 
+  /* try attachObjectFn first, because that has THIS object as first argument */
+  if (ct->attachObjectFn)
+    return ct->attachObjectFn(ct, p);
+
   if (ct->attachFn)
     return ct->attachFn(p);
-  else
-    return GWEN_ERROR_NOT_IMPLEMENTED;
+
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
@@ -395,10 +417,14 @@ int GWEN_MultiCache_Type_FreeData(const GWEN_MULTICACHE_TYPE *ct, void *p) {
   assert(ct);
   assert(ct->_refCount);
 
+  /* try freeObjectFn first, because that has THIS object as first argument */
+  if (ct->freeObjectFn)
+    return ct->freeObjectFn(ct, p);
+
   if (ct->freeFn)
     return ct->freeFn(p);
-  else
-    return GWEN_ERROR_NOT_IMPLEMENTED;
+
+  return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
