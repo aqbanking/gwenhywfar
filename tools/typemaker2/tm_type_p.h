@@ -45,6 +45,8 @@ struct TYPEMAKER2_TYPE {
   char *aqdb_type;
   char *baseFileName;
 
+  char *freeHook;
+
 
   TYPEMAKER2_HEADER_LIST *headers;
   TYPEMAKER2_ENUM_LIST *enums;

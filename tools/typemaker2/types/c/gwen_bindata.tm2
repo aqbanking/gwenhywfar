@@ -35,7 +35,6 @@
       <codedef id="dup">
         <code>
           if ($(src).length &amp;&amp; $(src).pointer) {
-            free($(dst).pointer);
             $(dst).pointer=(uint8_t*) malloc($(src).length);
             if ($(dst).pointer) {
               $(dst).length=$(src).length;
@@ -45,6 +44,10 @@
               $(dst).pointer=NULL;
               $(dst).length=0;
             }
+          }
+          else {
+            $(dst).pointer=NULL;
+            $(dst).length=0;
           }
         </code>
       </codedef>

@@ -76,6 +76,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       free(ty->aqdb_type);
       free(ty->baseFileName);
 
+      free(ty->freeHook);
+
       free(ty->descr);
 
       Typemaker2_Header_List_free(ty->headers);
@@ -210,6 +212,25 @@ void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s) {
   free(ty->baseFileName);
   if (s && *s) ty->baseFileName=strdup(s);
   else ty->baseFileName=NULL;
+}
+
+
+
+const char *Typemaker2_Type_GetFreeHook(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+
+  return ty->freeHook;
+}
+
+
+
+void Typemaker2_Type_SetFreeHook(TYPEMAKER2_TYPE *ty, const char *s) {
+  assert(ty);
+  assert(ty->refCount);
+  free(ty->freeHook);
+  if (s && *s) ty->freeHook=strdup(s);
+  else ty->freeHook=NULL;
 }
 
 
@@ -691,6 +712,9 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
   /* read base file name (used to derive other output filenames) */
   s=GWEN_XMLNode_GetCharValue(langNode, "basefilename", NULL);
   Typemaker2_Type_SetBaseFileName(ty, s);
+
+  s=GWEN_XMLNode_GetCharValue(langNode, "freeHook", NULL);
+  Typemaker2_Type_SetFreeHook(ty, s);
 
   /* read flags. this element exists for <type> elements.
    * For <typedef> elements the flags are stored in the <defaults> group. */

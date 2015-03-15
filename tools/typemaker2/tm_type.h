@@ -118,6 +118,9 @@ void Typemaker2_Type_SetAqDbType(TYPEMAKER2_TYPE *ty, const char *s);
 const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s);
 
+const char *Typemaker2_Type_GetFreeHook(const TYPEMAKER2_TYPE *ty);
+void Typemaker2_Type_SetFreeHook(TYPEMAKER2_TYPE *ty, const char *s);
+
 uint32_t Typemaker2_Type_GetFlags(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetFlags(TYPEMAKER2_TYPE *ty, uint32_t i);
 

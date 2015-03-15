@@ -479,9 +479,9 @@ static int _buildMacroFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   uint32_t flags;
-  TYPEMAKER2_TYPEMANAGER *tym;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendString(tbuf, "/* macro functions */\n");
@@ -831,6 +831,20 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
+  /* insert freeHook prototype, if needed */
+  s=Typemaker2_Type_GetFreeHook(ty);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(tbuf, "static void ");
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, "(");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
+    Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+  }
+
+
   /* implementation */
   GWEN_Buffer_AppendString(tbuf, "void ");
   s=Typemaker2_Type_GetPrefix(ty);
@@ -849,6 +863,14 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
   if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_SignalObject_free(p_struct->_signalObject);\n");
+  }
+
+  /* insert freeHook, if any */
+  s=Typemaker2_Type_GetFreeHook(ty);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(tbuf, "    ");
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, "(p_struct);\n");
   }
 
   if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
@@ -1134,12 +1156,12 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   tml=Typemaker2_Type_GetMembers(ty);
   if (tml) {
@@ -1438,14 +1460,16 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf, ") {\n");
   
 	GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
-	if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer &&
-	    (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_OWN)) {
-	  GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
-	  s=Typemaker2_Member_GetName(tm);
-	  GWEN_Buffer_AppendString(tbuf, s);
-	  GWEN_Buffer_AppendString(tbuf, ") {\n");
-  
-	  /* free */
+        if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_OWN) {
+
+          if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
+            GWEN_Buffer_AppendString(tbuf, "  if (p_struct->");
+            s=Typemaker2_Member_GetName(tm);
+            GWEN_Buffer_AppendString(tbuf, s);
+            GWEN_Buffer_AppendString(tbuf, ") {\n");
+          }
+
+          /* free */
 	  if (1) {
 	    GWEN_BUFFER *srcbuf;
 	    int rv;
@@ -1469,9 +1493,11 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	    GWEN_Buffer_AppendString(tbuf, "\n");
 	    GWEN_Buffer_free(srcbuf);
 	  }
-  
-	  GWEN_Buffer_AppendString(tbuf, "  }\n");
-	}
+
+          if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
+            GWEN_Buffer_AppendString(tbuf, "  }\n");
+          }
+        } /* if own */
   
 	if (Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_DUP) {
 	  if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer)
@@ -1685,13 +1711,13 @@ static int _buildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -1881,13 +1907,13 @@ static int _buildWriteDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -1994,13 +2020,13 @@ static int _buildWriteDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildToDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2044,13 +2070,13 @@ static int _buildToDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildFromDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2105,13 +2131,13 @@ static int _buildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2306,13 +2332,13 @@ static int _buildWriteXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2409,13 +2435,13 @@ static int _buildWriteXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildToXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2459,13 +2485,13 @@ static int _buildToXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildFromXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2520,13 +2546,13 @@ static int _buildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2692,13 +2718,13 @@ static int _buildWriteObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2806,13 +2832,13 @@ static int _buildWriteObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildToObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2856,13 +2882,13 @@ static int _buildToObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildFromObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -2930,13 +2956,13 @@ static int _buildCreateColumnList(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -3045,13 +3071,13 @@ static int _buildDup(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -3299,13 +3325,13 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
   TYPEMAKER2_MEMBER_LIST *tml;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -3587,13 +3613,13 @@ static int _buildCopy(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildList1Dup(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   GWEN_Buffer_AppendString(tbuf, "/* list1 functions */\n");
@@ -3686,13 +3712,13 @@ static int _buildList1Dup(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildCreateTable(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -3743,13 +3769,13 @@ static int _buildCreateTable(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildCreateObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -3793,12 +3819,12 @@ static int _buildCreateObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 static int _buildDefineEnums(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_ENUM_LIST *enums;
-  TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /* uint32_t flags; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   enums=Typemaker2_Type_GetEnums(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(enums);
   if (Typemaker2_Enum_List_GetCount(enums)) {
@@ -3897,12 +3923,12 @@ static int _buildDefineEnums(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const char *loc) {
   TYPEMAKER2_VIRTUALFN_LIST *fns;
-  TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /*uint32_t flags; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   fns=Typemaker2_Type_GetVirtualFns(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(fns);
   if (Typemaker2_VirtualFn_List_GetCount(fns)) {
@@ -4027,11 +4053,11 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
 int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_VIRTUALFN_LIST *fns;
   TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* uint32_t flags; */
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   fns=Typemaker2_Type_GetVirtualFns(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(fns);
   if (Typemaker2_VirtualFn_List_GetCount(fns)) {
@@ -4213,12 +4239,12 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_VIRTUALFN_LIST *fns;
-  TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /* uint32_t flags; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   fns=Typemaker2_Type_GetVirtualFns(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(fns);
   if (Typemaker2_VirtualFn_List_GetCount(fns)) {
@@ -4366,11 +4392,11 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 int _buildProtoSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_VIRTUALFN_LIST *fns;
   TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* uint32_t flags; */
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   fns=Typemaker2_Type_GetVirtualFns(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(fns);
   if (Typemaker2_VirtualFn_List_GetCount(fns)) {
@@ -4463,12 +4489,12 @@ int _buildProtoSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 int _buildSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_VIRTUALFN_LIST *fns;
-  TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /* uint32_t flags; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   fns=Typemaker2_Type_GetVirtualFns(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(fns);
   if (Typemaker2_VirtualFn_List_GetCount(fns)) {
@@ -4572,12 +4598,12 @@ int _buildSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 static int _setEnumStringFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_ENUM_LIST *enums;
-  TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /* uint32_t flags; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   enums=Typemaker2_Type_GetEnums(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(enums);
   if (Typemaker2_Enum_List_GetCount(enums)) {
@@ -4625,11 +4651,11 @@ static int _setEnumStringFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildEnumFromString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_ENUM_LIST *enums;
   TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* uint32_t flags; */
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   enums=Typemaker2_Type_GetEnums(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(enums);
   if (Typemaker2_Enum_List_GetCount(enums)) {
@@ -4757,11 +4783,11 @@ static int _buildEnumFromString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildEnumToString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_ENUM_LIST *enums;
   TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* uint32_t flags; */
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   enums=Typemaker2_Type_GetEnums(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(enums);
   if (Typemaker2_Enum_List_GetCount(enums)) {
@@ -4880,14 +4906,14 @@ static int _buildEnumToString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildList1GetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_TYPE *mty;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   mty=Typemaker2_Member_GetTypePtr(tm);
   assert(mty);
@@ -5031,14 +5057,14 @@ static int _buildList1GetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, T
 static int _buildTreeGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_TYPE *mty;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   mty=Typemaker2_Member_GetTypePtr(tm);
   assert(mty);
@@ -5183,9 +5209,9 @@ static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   TYPEMAKER2_MEMBER_LIST *tml;
   uint32_t flags;
-  TYPEMAKER2_TYPEMANAGER *tym;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   flags=Typemaker2_Type_GetFlags(ty);
@@ -5233,14 +5259,14 @@ static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildList1SortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_TYPE *mty;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   mty=Typemaker2_Member_GetTypePtr(tm);
   assert(mty);
@@ -5428,13 +5454,11 @@ static int _buildList1SortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, 
 
 
 static int _buildSortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
-  GWEN_BUFFER *tbuf;
   TYPEMAKER2_MEMBER_LIST *tml;
   uint32_t flags;
-  TYPEMAKER2_TYPEMANAGER *tym;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
 
   flags=Typemaker2_Type_GetFlags(ty);
 
@@ -5470,12 +5494,12 @@ static int _buildSortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 static int _buildDefineDefines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   TYPEMAKER2_DEFINE_LIST *defines;
-  TYPEMAKER2_TYPEMANAGER *tym;
-  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /* uint32_t flags; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   defines=Typemaker2_Type_GetDefines(ty);
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   assert(defines);
   if (Typemaker2_Define_List_GetCount(defines)) {
@@ -5574,14 +5598,14 @@ static int _buildDefineDefines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildToHashString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_MEMBER_LIST *tml;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -5684,9 +5708,9 @@ static int _buildToHashString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   uint32_t flags;
-  TYPEMAKER2_TYPEMANAGER *tym;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
 
-  tym=Typemaker2_Builder_GetTypeManager(tb);
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   flags=Typemaker2_Type_GetFlags(ty);
@@ -5757,13 +5781,13 @@ static int _buildInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildAttach(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   /* prototype */
   s=Typemaker2_TypeManager_GetApiDeclaration(tym);
@@ -5807,14 +5831,14 @@ static int _buildAttach(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 static int _buildSignalFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
-  uint32_t flags;
+  /* uint32_t flags; */
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_SIGNAL_LIST *sigList;
 
   tym=Typemaker2_Builder_GetTypeManager(tb);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  flags=Typemaker2_Type_GetFlags(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
 
   sigList=Typemaker2_Type_GetSignals(ty);
   if (sigList) {
