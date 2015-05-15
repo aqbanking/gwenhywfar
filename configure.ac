@@ -1009,7 +1009,7 @@ if test "$enable_visibility" = "yes"; then
        dnl parenteses are vitally important here!)
        gccversion=["` ${CC} -dumpversion `"]
        case $gccversion in
-         4.*)
+         4.*|5.*)
            # Activate -fvisibility=hidden only for explicit 4.x gcc
            # versions. We never now what future gcc's might do with
            # that argument, and we also can't be sure that other
