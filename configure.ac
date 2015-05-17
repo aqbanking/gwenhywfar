@@ -1055,25 +1055,6 @@ AC_SUBST(visibility_cflags)
 
 ###-------------------------------------------------------------------------
 #
-# enable export
-#
-AC_MSG_CHECKING(if symbol visibility is supported)
-AC_ARG_ENABLE(export,
-  [  --enable-export             enable export (default=yes)],
-  enable_export="$enableval",
-  enable_export="yes")
-AC_MSG_RESULT($enable_export)
-
-gwen_enable_export=0
-if test "$enable_export" = "yes"; then
-  gwen_enable_export=1
-fi
-AC_SUBST(gwen_enable_export)
-
-
-
-###-------------------------------------------------------------------------
-#
 # check for MEMTRACE
 #
 AC_MSG_CHECKING(if MEMTRACE is wanted)
