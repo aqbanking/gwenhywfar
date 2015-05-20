@@ -549,8 +549,8 @@ int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
 
 
 int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
-    GWEN_STRINGLIST *sl,
-    const char *mask) {
+                                               GWEN_STRINGLIST *sl,
+                                               const char *mask) {
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];
@@ -583,10 +583,11 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
       if (stat(GWEN_Buffer_GetStart(pbuf), &st)==0) {
         if (S_ISDIR(st.st_mode))
           /* add folders to the folder list */
-          GWEN_StringList_AppendString(folderList, GWEN_Buffer_GetStart(pbuf), 0, 1);
+          GWEN_StringList_AppendString(folderList, GWEN_Buffer_GetStart(pbuf), 0, 0);
         else {
           if (mask==NULL || GWEN_Text_ComparePattern(buffer, mask, 0)!=-1)
-            GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(pbuf), 0, 1);
+            /* don't check for duplicates here (i.e. last param =0) */
+            GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(pbuf), 0, 0);
         }
       }
       GWEN_Buffer_Crop(pbuf, 0, pos);
