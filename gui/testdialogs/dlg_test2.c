@@ -18,11 +18,6 @@
 #include <gwenhywfar/pathmanager.h>
 
 
-#ifdef OS_WIN32
-# include <windows.h>
-# define sleep(x) Sleep(x)
-#endif
-
 #include <unistd.h>
 
 

@@ -18,22 +18,22 @@
 
 
 
-typedef int (*GWEN_CRYPT_KEY_SIGN_FN)(GWEN_CRYPT_KEY *k,
+typedef GWENHYWFAR_CB int (*GWEN_CRYPT_KEY_SIGN_FN)(GWEN_CRYPT_KEY *k,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
                                       uint8_t *pSignatureData,
                                       uint32_t *pSignatureLen);
-typedef int (*GWEN_CRYPT_KEY_VERIFY_FN)(GWEN_CRYPT_KEY *k,
+typedef GWENHYWFAR_CB int (*GWEN_CRYPT_KEY_VERIFY_FN)(GWEN_CRYPT_KEY *k,
                                         const uint8_t *pInData,
                                         uint32_t inLen,
                                         const uint8_t *pSignatureData,
                                         uint32_t signatureLen);
-typedef int (*GWEN_CRYPT_KEY_ENCIPHER_FN)(GWEN_CRYPT_KEY *k,
+typedef GWENHYWFAR_CB int (*GWEN_CRYPT_KEY_ENCIPHER_FN)(GWEN_CRYPT_KEY *k,
     const uint8_t *pInData,
     uint32_t inLen,
     uint8_t *pOutData,
     uint32_t *pOutLen);
-typedef int (*GWEN_CRYPT_KEY_DECIPHER_FN)(GWEN_CRYPT_KEY *k,
+typedef GWENHYWFAR_CB int (*GWEN_CRYPT_KEY_DECIPHER_FN)(GWEN_CRYPT_KEY *k,
     const uint8_t *pInData,
     uint32_t inLen,
     uint8_t *pOutData,

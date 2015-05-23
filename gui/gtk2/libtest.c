@@ -19,12 +19,6 @@
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/debug.h>
 
-
-#ifdef OS_WIN32
-# include <windows.h>
-# define sleep(x) Sleep(x)
-#endif
-
 #include <unistd.h>
 
 

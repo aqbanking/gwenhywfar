@@ -29,12 +29,12 @@ struct GWEN_CRYPT_KEY_SYM {
 
 static GWENHYWFAR_CB void GWEN_Crypt_KeySym_freeData(void *bp, void *p);
 
-static int GWEN_Crypt_KeySym_Encipher(GWEN_CRYPT_KEY *k,
+static GWENHYWFAR_CB int GWEN_Crypt_KeySym_Encipher(GWEN_CRYPT_KEY *k,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
                                       uint8_t *pOutData,
                                       uint32_t *pOutLen);
-static int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
+static GWENHYWFAR_CB int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
                                       uint8_t *pOutData,
