@@ -613,7 +613,7 @@ int main(int argc, char **argv) {
             "You are using GWEN_LIST2 macros to manage list of some objects:\n"
             " GWEN_LIST2_FUNCTION_DEFS(TYPE_SOMETHING, TypeSomething);\n"
             "The list is now available but not documented by Doxygen.\n"
-            "This tool now creates outpur that can then be fed to doxygen\n"
+            "This tool now creates output that can then be fed to doxygen\n"
             "to create appropriate API documentation.\n"
             "\n"
             "Usage: %s [OPTIONS] file1 file2 ... fileN\n"
