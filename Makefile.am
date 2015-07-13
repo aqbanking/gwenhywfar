@@ -52,7 +52,7 @@ clean-local-check:
 	rm -rf apidoc gwenhywfar4
 
 listdoc.h: $(top_builddir)/admin/mklistdoc
-	admin/mklistdoc -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar4/gwenhywfar" -name "*.h"` >listdoc.h
+	admin/mklistdoc -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar4/gwenhywfar" -name "*.h" | LC_ALL=C sort` >listdoc.h
 
 $(top_builddir)/admin/mklistdoc:	
 	$(MAKE) -C "$(top_builddir)/admin" mklistdoc
