@@ -731,26 +731,37 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
                                       const char *defValue) {
   GWEN_XMLNODE *nn;
 
-  nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
-  while(nn) {
+  if (name && *name) {
+    nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
+
+    while(nn) {
+      GWEN_XMLNODE *dn;
+
+      dn=GWEN_XMLNode_GetFirstData(nn);
+      if (dn) {
+	if (dn->data)
+	  return dn->data;
+      }
+      nn=GWEN_XMLNode_FindNextTag(nn, name, 0, 0);
+    }
+  }
+  else {
     GWEN_XMLNODE *dn;
 
     dn=GWEN_XMLNode_GetFirstData(nn);
     if (dn) {
       if (dn->data)
-        return dn->data;
+	return dn->data;
     }
-    nn=GWEN_XMLNode_FindNextTag(nn, name, 0, 0);
   }
-
   return defValue;
 }
 
 
 
 const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
-    const char *name,
-    const char *defValue) {
+					       const char *name,
+					       const char *defValue) {
   GWEN_XMLNODE *nn=0;
   GWEN_STRINGLIST *langl;
 
@@ -801,16 +812,24 @@ const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
 void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
                                const char *name,
                                const char *value) {
-  GWEN_XMLNODE *nn;
+  if (name && *name) {
+    GWEN_XMLNODE *nn;
 
-  nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, name);
-  if (value) {
-    GWEN_XMLNODE *nnn;
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, name);
+    if (value) {
+      GWEN_XMLNODE *nnn;
 
-    nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, value);
-    GWEN_XMLNode_AddChild(nn, nnn);
+      nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, value);
+      GWEN_XMLNode_AddChild(nn, nnn);
+    }
+    GWEN_XMLNode_AddChild(n, nn);
   }
-  GWEN_XMLNode_AddChild(n, nn);
+  else {
+    GWEN_XMLNODE *nn;
+
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, value);
+    GWEN_XMLNode_AddChild(n, nn);
+  }
 }
 
 

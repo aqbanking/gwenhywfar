@@ -704,6 +704,10 @@ void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns
 /*@{*/
 
 /**
+ * Reads a char value. If no name is given (i.e. name is NULL or empty) then
+ * the data returned is that from the first data node below the given node.
+ * Otherwise a node with the given name is searched below the given node
+ * and its first data node's data is returned.
  * @param n Node which is expected to contain a node of the specified name
  * @param name name of the node below n to be looked up
  * @param defValue default value to return if the tag did not exist
