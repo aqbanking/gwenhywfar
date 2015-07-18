@@ -211,8 +211,8 @@ void GWEN_Param_List_WriteValuesToXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *x
       GWEN_XMLNODE *n;
 
       n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "param");
-      GWEN_XMLNode_SetCharValue(n, "name", sName);
-      GWEN_XMLNode_SetCharValue(n, "currentValue", sValue);
+      GWEN_XMLNode_SetProperty(n, "name", sName);
+      GWEN_XMLNode_SetCharValue(n, NULL, sValue);
       GWEN_XMLNode_AddChild(xn, n);
     }
 
@@ -231,8 +231,8 @@ void GWEN_Param_List_ReadValuesFromXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
     const char *sName;
     const char *sValue;
 
-    sName=GWEN_XMLNode_GetCharValue(n, "name", NULL);
-    sValue=GWEN_XMLNode_GetCharValue(n, "currentValue", NULL);
+    sName=GWEN_XMLNode_GetProperty(n, "name", NULL);
+    sValue=GWEN_XMLNode_GetCharValue(n, NULL, NULL);
 
     if (sName && *sName) {
       GWEN_PARAM *p;

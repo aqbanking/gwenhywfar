@@ -128,7 +128,14 @@ GWENHYWFAR_API void GWEN_Param_List_ReadXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *x
  * Write the current values of a list of parameters to XML.
  *
  * For every member of the given list an XML node "param" is created below the given XML node
- * which only contains the tags "name" (parameter name) and "currentValue" (the current value).
+ * which only contains the attribute "name" (parameter name) and the param's "currentValue" (the current value)
+ * as data node.
+ * Example:
+ * @code
+ *   <param name="var1">data1</param>
+ *   <param name="var2">data2</param>
+ * @endcode
+ *
  * @param pl list of parameters to write
  * @param xn XML node to store the parameters
  */
@@ -138,8 +145,8 @@ GWENHYWFAR_API void GWEN_Param_List_WriteValuesToXml(const GWEN_PARAM_LIST *pl, 
  * Read the current values for a list of parameters from XML.
  *
  * The XML tree is expected to have been created by @ref GWEN_Param_List_WriteValuesToXml.
- * Every "param" node below the given XML node is expected to have a tag "name" with the name of
- * the param and a tag "currentValue" which holds the current value to set.
+ * Every "param" node below the given XML node is expected to have an attribute "name" with the name of
+ * the param and a data node which holds the current value to set.
  * Entries for non-existing params are ignored.
  * @param pl list of parameters to read values for
  * @param xn XML node to read values for the parameters
