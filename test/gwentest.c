@@ -35,6 +35,7 @@
 #include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/sar.h>
+#include <gwenhywfar/param.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
@@ -5304,6 +5305,339 @@ int testParser4(int argc, char **argv) {
 
 
 
+int testParams1(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARAM_LIST *pl;
+  GWEN_PARAM_LIST *pl2;
+  GWEN_PARAM *prm;
+  GWEN_BUFFER *tbuf;
+  GWEN_XMLNODE *xn;
+  GWEN_XMLNODE *xn2;
+  int vInt;
+  double vDouble;
+  int errors=0;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  /* setup params */
+  pl=GWEN_Param_List_new();
+
+  /* var 1: int */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "intVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetCurrentValueAsInt(prm, 1);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 2: int */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "intVar2");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetCurrentValueAsInt(prm, 2);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 3: float */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "doubleVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetCurrentValueAsDouble(prm, 101.7);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 4: float */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "doubleVar2");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetCurrentValueAsDouble(prm, 102.4);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 5: string */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "stringVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_String);
+  GWEN_Param_SetCurrentValue(prm, "first string");
+  GWEN_Param_List_Add(prm, pl);
+
+  /* to XML */
+  xn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "params");
+  GWEN_Param_List_WriteXml(pl, xn);
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_XMLNode_toBuffer(xn, tbuf, GWEN_XML_FLAGS_DEFAULT);
+  if (rv<0) {
+    fprintf(stderr, "Error on GWEN_XMLNode_toBuffer(): %d\n", rv);
+    return 2;
+  }
+  fprintf(stdout, "Buffer:\n%s\n", GWEN_Buffer_GetStart(tbuf));
+
+  /* read into second list */
+  pl2=GWEN_Param_List_new();
+  xn2=GWEN_XMLNode_fromString(GWEN_Buffer_GetStart(tbuf),
+                              GWEN_Buffer_GetUsedBytes(tbuf),
+                              GWEN_XML_FLAGS_DEFAULT);
+  if (xn2==NULL) {
+    fprintf(stderr, "Error on GWEN_XMLNode_fromString(): %d\n", rv);
+    return 2;
+  }
+  GWEN_Param_List_ReadXml(pl2, xn2);
+
+  /* check values */
+  vInt=GWEN_Param_List_GetCurrentValueAsInt(pl2, "intVar1", -1);
+  if (vInt!=1) {
+    fprintf(stderr, "intVar1: Bad value (%d)\n", vInt);
+    errors++;
+  }
+
+  vInt=GWEN_Param_List_GetCurrentValueAsInt(pl2, "intVar2", -1);
+  if (vInt!=2) {
+    fprintf(stderr, "intVar2: Bad value (%d)\n", vInt);
+    errors++;
+  }
+
+  vDouble=GWEN_Param_List_GetCurrentValueAsDouble(pl2, "doubleVar1", -1.0);
+  if (vDouble!=101.7) {
+    fprintf(stderr, "intDouble1: Bad value (%f)\n", vDouble);
+    errors++;
+  }
+
+  vDouble=GWEN_Param_List_GetCurrentValueAsDouble(pl2, "doubleVar2", -1.0);
+  if (vDouble!=102.4) {
+    fprintf(stderr, "intDouble2: Bad value (%f)\n", vDouble);
+    errors++;
+  }
+
+  if (errors) {
+    fprintf(stderr, "%d errors occurred\n", errors);
+    return 2;
+  }
+  else {
+    fprintf(stdout, "no errors.\n");
+  }
+  return 0;
+}
+
+
+
+int testParams2(int argc, char **argv) {
+  GWEN_GUI *gui;
+  GWEN_PARAM_LIST *pl;
+  GWEN_PARAM *prm;
+  int vInt;
+  double vDouble;
+  int errors=0;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  /* setup params */
+  pl=GWEN_Param_List_new();
+
+  /* var 1: int */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "intVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetCurrentValueAsInt(prm, 99);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 2: int */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "intVar2");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetCurrentValueAsInt(prm, 88);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 3: float */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "doubleVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetCurrentValueAsDouble(prm, 77.5);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 4: float */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "doubleVar2");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetCurrentValueAsDouble(prm, 99.3);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 5: string */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "stringVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_String);
+  GWEN_Param_SetCurrentValue(prm, "first real string");
+  GWEN_Param_List_Add(prm, pl);
+
+
+  GWEN_Param_List_SetCurrentValueAsInt(pl, "intVar1", 1);
+  GWEN_Param_List_SetCurrentValueAsInt(pl, "intVar2", 2);
+  GWEN_Param_List_SetCurrentValueAsDouble(pl, "doubleVar1", 101.7);
+  GWEN_Param_List_SetCurrentValueAsDouble(pl, "doubleVar2", 102.4);
+
+  /* check values */
+  vInt=GWEN_Param_List_GetCurrentValueAsInt(pl, "intVar1", -1);
+  if (vInt!=1) {
+    fprintf(stderr, "intVar1: Bad value (%d)\n", vInt);
+    errors++;
+  }
+
+  vInt=GWEN_Param_List_GetCurrentValueAsInt(pl, "intVar2", -1);
+  if (vInt!=2) {
+    fprintf(stderr, "intVar2: Bad value (%d)\n", vInt);
+    errors++;
+  }
+
+  vDouble=GWEN_Param_List_GetCurrentValueAsDouble(pl, "doubleVar1", -1.0);
+  if (vDouble!=101.7) {
+    fprintf(stderr, "intDouble1: Bad value (%f)\n", vDouble);
+    errors++;
+  }
+
+  vDouble=GWEN_Param_List_GetCurrentValueAsDouble(pl, "doubleVar2", -1.0);
+  if (vDouble!=102.4) {
+    fprintf(stderr, "intDouble2: Bad value (%f)\n", vDouble);
+    errors++;
+  }
+
+  if (errors) {
+    fprintf(stderr, "%d errors occurred\n", errors);
+    return 2;
+  }
+  else {
+    fprintf(stdout, "no errors.\n");
+  }
+  return 0;
+}
+
+
+
+int testParams3(int argc, char **argv) {
+  int rv;
+  GWEN_GUI *gui;
+  GWEN_PARAM_LIST *pl;
+  GWEN_PARAM *prm;
+  GWEN_BUFFER *tbuf;
+  GWEN_XMLNODE *xn;
+  GWEN_XMLNODE *xn2;
+  int vInt;
+  double vDouble;
+  int errors=0;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  /* setup params */
+  pl=GWEN_Param_List_new();
+
+  /* var 1: int */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "intVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetCurrentValueAsInt(prm, 1);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 2: int */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "intVar2");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetCurrentValueAsInt(prm, 2);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 3: float */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "doubleVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetCurrentValueAsDouble(prm, 101.7);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 4: float */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "doubleVar2");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetCurrentValueAsDouble(prm, 102.4);
+  GWEN_Param_List_Add(prm, pl);
+
+  /* var 5: string */
+  prm=GWEN_Param_new();
+  GWEN_Param_SetName(prm, "stringVar1");
+  GWEN_Param_SetType(prm, GWEN_Param_DataType_String);
+  GWEN_Param_SetCurrentValue(prm, "first string");
+  GWEN_Param_List_Add(prm, pl);
+
+  /* to XML */
+  xn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "params");
+  GWEN_Param_List_WriteValuesToXml(pl, xn);
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_XMLNode_toBuffer(xn, tbuf, GWEN_XML_FLAGS_DEFAULT);
+  if (rv<0) {
+    fprintf(stderr, "Error on GWEN_XMLNode_toBuffer(): %d\n", rv);
+    return 2;
+  }
+  fprintf(stdout, "Buffer:\n%s\n", GWEN_Buffer_GetStart(tbuf));
+
+  /* overwrite values */
+  GWEN_Param_List_SetCurrentValueAsInt(pl, "intVar1", 77);
+  GWEN_Param_List_SetCurrentValueAsInt(pl, "intVar2", 88);
+  GWEN_Param_List_SetCurrentValueAsDouble(pl, "doubleVar1", 77.7);
+  GWEN_Param_List_SetCurrentValueAsDouble(pl, "doubleVar2", 99.9);
+
+  /* read into second list */
+  xn2=GWEN_XMLNode_fromString(GWEN_Buffer_GetStart(tbuf),
+                              GWEN_Buffer_GetUsedBytes(tbuf),
+                              GWEN_XML_FLAGS_DEFAULT);
+  if (xn2==NULL) {
+    fprintf(stderr, "Error on GWEN_XMLNode_fromString(): %d\n", rv);
+    return 2;
+  }
+  GWEN_Param_List_ReadValuesFromXml(pl, xn2);
+
+  /* check values */
+  vInt=GWEN_Param_List_GetCurrentValueAsInt(pl, "intVar1", -1);
+  if (vInt!=1) {
+    fprintf(stderr, "intVar1: Bad value (%d)\n", vInt);
+    errors++;
+  }
+
+  vInt=GWEN_Param_List_GetCurrentValueAsInt(pl, "intVar2", -1);
+  if (vInt!=2) {
+    fprintf(stderr, "intVar2: Bad value (%d)\n", vInt);
+    errors++;
+  }
+
+  vDouble=GWEN_Param_List_GetCurrentValueAsDouble(pl, "doubleVar1", -1.0);
+  if (vDouble!=101.7) {
+    fprintf(stderr, "intDouble1: Bad value (%f)\n", vDouble);
+    errors++;
+  }
+
+  vDouble=GWEN_Param_List_GetCurrentValueAsDouble(pl, "doubleVar2", -1.0);
+  if (vDouble!=102.4) {
+    fprintf(stderr, "intDouble2: Bad value (%f)\n", vDouble);
+    errors++;
+  }
+
+  if (errors) {
+    fprintf(stderr, "%d errors occurred\n", errors);
+    return 2;
+  }
+  else {
+    fprintf(stdout, "no errors.\n");
+  }
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
 
@@ -5510,6 +5844,16 @@ int main(int argc, char **argv) {
   else if (strcasecmp(argv[1], "csv")==0) {
     rv=testCSV(argc, argv);
   }
+  else if (strcasecmp(argv[1], "params1")==0) {
+    rv=testParams1(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "params2")==0) {
+    rv=testParams2(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "params3")==0) {
+    rv=testParams3(argc, argv);
+  }
+
 #ifdef TEST_GPARSER
   else if (strcasecmp(argv[1], "parser1")==0) {
     rv=testParser1(argc, argv);
