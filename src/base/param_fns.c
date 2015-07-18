@@ -161,6 +161,98 @@ void GWEN_Param_List_SetCurrentValueAsDouble(GWEN_PARAM_LIST *pl, const char *na
 
 
 
+void GWEN_Param_List_WriteXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+  const GWEN_PARAM *p;
+
+  p=GWEN_Param_List_First(pl);
+  while(p) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "param");
+    GWEN_Param_WriteXml(p, n);
+    GWEN_XMLNode_AddChild(xn, n);
+
+    /* next */
+    p=GWEN_Param_List_Next(p);
+  }
+}
+
+
+
+void GWEN_Param_List_ReadXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+  GWEN_XMLNODE *n;
+
+  n=GWEN_XMLNode_FindFirstTag(xn, "param", NULL, NULL);
+  while(n) {
+    GWEN_PARAM *p;
+
+    p=GWEN_Param_fromXml(n);
+    if (p)
+      GWEN_Param_List_Add(p, pl);
+
+    n=GWEN_XMLNode_FindNextTag(n, "param", NULL, NULL);
+  }
+}
+
+
+
+
+void GWEN_Param_List_WriteValuesToXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+  const GWEN_PARAM *p;
+
+  p=GWEN_Param_List_First(pl);
+  while(p) {
+    const char *sName;
+    const char *sValue;
+
+    sName=GWEN_Param_GetName(p);
+    sValue=GWEN_Param_GetCurrentValue(p);
+    if (sName && *sName && sValue && *sValue) {
+      GWEN_XMLNODE *n;
+
+      n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "param");
+      GWEN_XMLNode_SetCharValue(n, "name", sName);
+      GWEN_XMLNode_SetCharValue(n, "currentValue", sValue);
+      GWEN_XMLNode_AddChild(xn, n);
+    }
+
+    /* next */
+    p=GWEN_Param_List_Next(p);
+  }
+}
+
+
+
+void GWEN_Param_List_ReadValuesFromXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+  GWEN_XMLNODE *n;
+
+  n=GWEN_XMLNode_FindFirstTag(xn, "param", NULL, NULL);
+  while(n) {
+    const char *sName;
+    const char *sValue;
+
+    sName=GWEN_XMLNode_GetCharValue(n, "name", NULL);
+    sValue=GWEN_XMLNode_GetCharValue(n, "currentValue", NULL);
+
+    if (sName && *sName) {
+      GWEN_PARAM *p;
+
+      p=GWEN_Param_List_GetByName(pl, sName);
+      if (p) {
+	GWEN_Param_SetCurrentValue(p, sValue);
+      }
+      else {
+	DBG_WARN(GWEN_LOGDOMAIN, "Param \"%s\" not found, ignoring", sName);
+      }
+    }
+
+    n=GWEN_XMLNode_FindNextTag(n, "param", NULL, NULL);
+  }
+}
+
+
+
+
 
 
 
