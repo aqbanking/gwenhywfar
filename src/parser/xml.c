@@ -748,7 +748,7 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
   else {
     GWEN_XMLNODE *dn;
 
-    dn=GWEN_XMLNode_GetFirstData(nn);
+    dn=GWEN_XMLNode_GetFirstData(n);
     if (dn) {
       if (dn->data)
 	return dn->data;
