@@ -30,6 +30,7 @@
 
 /*#define GWEN_TLS_DEBUG*/
 
+/* #define GWEN_TLS_USE_OLD_CODE */
 
 #include "syncio_tls_p.h"
 #include "i18n_l.h"
@@ -350,7 +351,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   }
 
   /* set default priority */
-#if 1 /* old code */
+#ifdef GWEN_TLS_USE_OLD_CODE /* old code */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Using old SSL preparation code."));
   rv=gnutls_set_default_priority(xio->session);
   if (rv) {
