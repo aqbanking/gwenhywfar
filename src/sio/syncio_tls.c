@@ -365,7 +365,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     const int proto_prio[2] = { GNUTLS_SSL3, 0 };
 
     DBG_INFO(GWEN_LOGDOMAIN, "Forcing SSL v3");
-    rv=gnutls_protocol_set_priority(xio->session, proto_prio);
+    //rv=gnutls_protocol_set_priority(xio->session, proto_prio); /* as suggested by rakkesh */
+    rv=gnutls_priority_set(xio->session, proto_prio);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_protocol_set_priority: %d (%s)", rv, gnutls_strerror(rv));
       gnutls_deinit(xio->session);
