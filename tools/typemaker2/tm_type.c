@@ -53,6 +53,9 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
 
   ty->members=Typemaker2_Member_List_new();
 
+  ty->groupTree=Typemaker2_Group_Tree_new();
+
+
   return ty;
 }
 
@@ -96,6 +99,7 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
       GWEN_StringList_free(ty->codeIncludes);
 
       Typemaker2_Member_List_free(ty->members);
+      Typemaker2_Group_Tree_free(ty->groupTree);
 
       free(ty->fieldCountId);
 
@@ -633,6 +637,14 @@ TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty) {
 
 
 
+TYPEMAKER2_GROUP_TREE *Typemaker2_Type_GetGroupTree(const TYPEMAKER2_TYPE *ty) {
+  assert(ty);
+  assert(ty->refCount);
+  return ty->groupTree;
+}
+
+
+
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
   assert(ty);
   assert(ty->refCount);
@@ -667,10 +679,71 @@ void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s) {
 
 
 
+
+int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, TYPEMAKER2_GROUP *parentGroup) {
+  GWEN_XMLNODE *n;
+
+  /* read members */
+  n=GWEN_XMLNode_GetFirstTag(node);
+  while (n) {
+    const char *s;
+
+    /* get tag name */
+    s=GWEN_XMLNode_GetData(n);
+    if (s) {
+      if (strcasecmp(s, "member")==0) {
+	TYPEMAKER2_MEMBER *tm;
+	int rv;
+  
+	tm=Typemaker2_Member_new();
+	rv=Typemaker2_Member_readXml(tm, n);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  Typemaker2_Member_free(tm);
+	  return rv;
+	}
+	/* set current parentGroup as group */
+	Typemaker2_Member_SetGroupPtr(tm, parentGroup);
+
+	Typemaker2_Member_List_Add(tm, ty->members);
+      }
+      else if (strcasecmp(s, "group")==0) {
+	TYPEMAKER2_GROUP *group;
+	int rv;
+
+	/* create and read group */
+	group=Typemaker2_Group_new();
+	rv=Typemaker2_Group_readXml(group, n);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  Typemaker2_Group_free(group);
+	  return rv;
+	}
+	Typemaker2_Group_Tree_AddChild(parentGroup, group);
+
+	/* read sub-groups and -members */
+	rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, group);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  return rv;
+	}
+      }
+    }
+
+    n=GWEN_XMLNode_GetNextTag(n);
+  }
+
+  return 0;
+}
+
+
+
+
 int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang) {
   GWEN_XMLNODE *langNode=NULL;
   GWEN_XMLNODE *n;
   const char *s;
+  TYPEMAKER2_GROUP *rootGroup=NULL;
 
   /* parse type */
   s=GWEN_XMLNode_GetProperty(node, "type", "opaque");
@@ -744,25 +817,40 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     }
   }
 
+  /* read description */
+  n=GWEN_XMLNode_FindFirstTag(node, "descr", NULL, NULL);
+  if (n) {
+    GWEN_BUFFER *tbuf;
+    int rv;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_XMLNode_toBuffer(n, tbuf, GWEN_XML_FLAGS_SIMPLE | GWEN_XML_FLAGS_HANDLE_COMMENTS);
+    if (rv<0) {
+      DBG_ERROR(0, "here (%d)", rv);
+    }
+    else {
+      Typemaker2_Type_SetDescription(ty, GWEN_Buffer_GetStart(tbuf));
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* create and add root group */
+  Typemaker2_Group_Tree_Clear(ty->groupTree);
+  rootGroup=Typemaker2_Group_new();
+  Typemaker2_Group_SetTitle(rootGroup, Typemaker2_Type_GetName(ty));
+  Typemaker2_Group_SetDescription(rootGroup, Typemaker2_Type_GetDescription(ty));
+
+  Typemaker2_Group_Tree_Add(ty->groupTree, rootGroup);
+
   /* read members */
   n=GWEN_XMLNode_FindFirstTag(node, "members", NULL, NULL);
   if (n) {
-    GWEN_XMLNODE *nn;
+    int rv;
 
-    nn=GWEN_XMLNode_FindFirstTag(n, "member", NULL, NULL);
-    while(nn) {
-      TYPEMAKER2_MEMBER *tm;
-      int rv;
-
-      tm=Typemaker2_Member_new();
-      rv=Typemaker2_Member_readXml(tm, nn);
-      if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	Typemaker2_Member_free(tm);
-        return rv;
-      }
-      Typemaker2_Member_List_Add(tm, ty->members);
-      nn=GWEN_XMLNode_FindNextTag(nn, "member", NULL, NULL);
+    rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, rootGroup);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
     }
   }
 
@@ -1040,24 +1128,6 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
   s=GWEN_XMLNode_GetProperty(langNode, "usePrivateConstructor", "0");
   if (s && *s)
     Typemaker2_Type_SetUsePrivateConstructor(ty, atoi(s));
-
-
-  /* read description */
-  n=GWEN_XMLNode_FindFirstTag(node, "descr", NULL, NULL);
-  if (n) {
-    GWEN_BUFFER *tbuf;
-    int rv;
-
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=GWEN_XMLNode_toBuffer(n, tbuf, GWEN_XML_FLAGS_SIMPLE | GWEN_XML_FLAGS_HANDLE_COMMENTS);
-    if (rv<0) {
-      DBG_ERROR(0, "here (%d)", rv);
-    }
-    else {
-      Typemaker2_Type_SetDescription(ty, GWEN_Buffer_GetStart(tbuf));
-    }
-    GWEN_Buffer_free(tbuf);
-  }
 
   return 0;
 }

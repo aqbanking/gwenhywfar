@@ -57,6 +57,8 @@ struct TYPEMAKER2_TYPE {
   TYPEMAKER2_SIGNAL_LIST *signals;
   TYPEMAKER2_SLOT_LIST *slots;
 
+  TYPEMAKER2_GROUP_TREE *groupTree;
+
   GWEN_STRINGLIST *structIncludes;
   GWEN_STRINGLIST *privateIncludes;
   GWEN_STRINGLIST *libraryIncludes;

@@ -45,6 +45,9 @@ struct TYPEMAKER2_MEMBER {
   TYPEMAKER2_ENUM *enumPtr;
   TYPEMAKER2_DEFINE *definePtr;
 
+  TYPEMAKER2_GROUP *groupPtr;
+
+
   int refCount;
 
   int memberPosition;

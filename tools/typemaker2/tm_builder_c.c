@@ -1017,12 +1017,19 @@ static int _buildGetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	assert(mty);
   
 	/* prototype */
-	GWEN_Buffer_AppendString(tbuf,
-				 "/** Getter.\n"
-				 " * Use this function to get the member \"");
-	s=Typemaker2_Member_GetName(tm);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\"\n*/\n");
+        GWEN_Buffer_AppendString(tbuf,
+                                 "/** Getter.\n"
+                                 " * Use this function to get the member \"");
+        s=Typemaker2_Member_GetName(tm);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "\" (see @ref ");
+        s=Typemaker2_Type_GetIdentifier(ty);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "_");
+        s=Typemaker2_Member_GetName(tm);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, ")\n*/\n");
+
 	s=Typemaker2_TypeManager_GetApiDeclaration(tym);
 	if (s && Typemaker2_Member_GetAccess(tm)<=TypeMaker2_Access_Protected) {
 	  GWEN_Buffer_AppendString(tbuf, s);
@@ -1180,9 +1187,16 @@ static int _buildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	GWEN_Buffer_AppendString(tbuf,
 				 "/** Setter.\n"
 				 " * Use this function to set the member \"");
-	s=Typemaker2_Member_GetName(tm);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "\"\n*/\n");
+        s=Typemaker2_Member_GetName(tm);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "\" (see @ref ");
+        s=Typemaker2_Type_GetIdentifier(ty);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "_");
+        s=Typemaker2_Member_GetName(tm);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, ")\n*/\n");
+
 	s=Typemaker2_TypeManager_GetApiDeclaration(tym);
 	if (s && Typemaker2_Member_GetAccess(tm)<=TypeMaker2_Access_Protected) {
 	  GWEN_Buffer_AppendString(tbuf, s);
@@ -2283,11 +2297,11 @@ static int _buildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	    GWEN_BUFFER *dstbuf;
 	    int rv;
     
-	    /* volatile */
-	    GWEN_Buffer_AppendString(tbuf, "  /* member \"");
+	    /* preset */
+	    GWEN_Buffer_AppendString(tbuf, "  /* preset member \"");
 	    s=Typemaker2_Member_GetName(tm);
 	    GWEN_Buffer_AppendString(tbuf, s);
-	    GWEN_Buffer_AppendString(tbuf, "\" is volatile, just presetting */\n");
+	    GWEN_Buffer_AppendString(tbuf, "\" if empty */\n");
     
 	    dstbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	    GWEN_Buffer_AppendString(dstbuf, "p_struct->");
@@ -6397,6 +6411,164 @@ static int _buildCacheFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildGroupApiDoc(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty,
+                             TYPEMAKER2_GROUP *grp, int depth, GWEN_BUFFER *buf) {
+  char numbuf[32];
+  const char *s;
+  TYPEMAKER2_GROUP *childGrp;
+  TYPEMAKER2_MEMBER_LIST *members;
+  const char *sTypeIdentifier;
+  const char *sTypePrefix;
+
+  sTypeIdentifier=Typemaker2_Type_GetIdentifier(ty);
+  sTypePrefix=Typemaker2_Type_GetPrefix(ty);
+
+  /* write title */
+  GWEN_Buffer_AppendString(buf, "\n\n");
+  GWEN_Buffer_AppendString(buf, "<h");
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", depth);
+  numbuf[sizeof(numbuf)-1]=0;
+  GWEN_Buffer_AppendString(buf, numbuf);
+  GWEN_Buffer_AppendString(buf, ">");
+  s=Typemaker2_Group_GetTitle(grp);
+  if (s && *s)
+    GWEN_Buffer_AppendString(buf, s);
+  else
+    GWEN_Buffer_AppendString(buf, "Unnamed Group");
+  GWEN_Buffer_AppendString(buf, "</h");
+  GWEN_Buffer_AppendString(buf, numbuf);
+  GWEN_Buffer_AppendString(buf, ">\n");
+  GWEN_Buffer_AppendString(buf, "\n");
+
+  s=Typemaker2_Group_GetDescription(grp);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "\n");
+  }
+
+  /* write member docs */
+  members=Typemaker2_Type_GetMembers(ty);
+  if (members) {
+    TYPEMAKER2_MEMBER *tm;
+
+    tm=Typemaker2_Member_List_First(members);
+    while(tm) {
+
+      if (Typemaker2_Member_GetGroupPtr(tm)==grp) {
+        const char *sMemberName;
+
+        /* write APIDOC for member */
+        sMemberName=Typemaker2_Member_GetName(tm);
+
+        /* write anchor */
+        GWEN_Buffer_AppendString(buf, "\n\n@anchor ");
+        GWEN_Buffer_AppendString(buf, sTypeIdentifier);
+        GWEN_Buffer_AppendString(buf, "_");
+        GWEN_Buffer_AppendString(buf, sMemberName);
+        GWEN_Buffer_AppendString(buf, "\n");
+
+        /* write name */
+        GWEN_Buffer_AppendString(buf, "<h");
+        snprintf(numbuf, sizeof(numbuf)-1, "%d", depth+1);
+        numbuf[sizeof(numbuf)-1]=0;
+        GWEN_Buffer_AppendString(buf, numbuf);
+        GWEN_Buffer_AppendString(buf, ">");
+        s=Typemaker2_Member_GetName(tm);
+        GWEN_Buffer_AppendString(buf, s);
+        GWEN_Buffer_AppendString(buf, "</h");
+        GWEN_Buffer_AppendString(buf, numbuf);
+        GWEN_Buffer_AppendString(buf, ">\n");
+        GWEN_Buffer_AppendString(buf, "\n");
+
+        /* add description, if any */
+        s=Typemaker2_Member_GetDescription(tm);
+        if (s && *s) {
+          GWEN_Buffer_AppendString(buf, s);
+          GWEN_Buffer_AppendString(buf, "\n");
+        }
+
+        /* add setter/getter info */
+        GWEN_Buffer_AppendString(buf, "<p>");
+        GWEN_Buffer_AppendString(buf, "Set this property with @ref ");
+        GWEN_Buffer_AppendString(buf, sTypePrefix);
+        GWEN_Buffer_AppendString(buf, "_Set");
+        GWEN_Buffer_AppendByte(buf, toupper(*sMemberName));
+        GWEN_Buffer_AppendString(buf, sMemberName+1);
+        GWEN_Buffer_AppendString(buf, "(), get it with @ref ");
+        GWEN_Buffer_AppendString(buf, sTypePrefix);
+        GWEN_Buffer_AppendString(buf, "_Get");
+        GWEN_Buffer_AppendByte(buf, toupper(*sMemberName));
+        GWEN_Buffer_AppendString(buf, sMemberName+1);
+        GWEN_Buffer_AppendString(buf, "().");
+        GWEN_Buffer_AppendString(buf, "</p>\n");
+      }
+      tm=Typemaker2_Member_List_Next(tm);
+    }
+  }
+
+  /* write children groups */
+  childGrp=Typemaker2_Group_Tree_GetFirstChild(grp);
+  while(childGrp) {
+    int rv;
+
+    rv=_buildGroupApiDoc(tb, ty, childGrp, depth+1, buf);
+    if (rv<0) {
+      DBG_ERROR(0, "here (%d)", rv);
+      return rv;
+    }
+    childGrp=Typemaker2_Group_Tree_GetNext(childGrp);
+  }
+
+  return 0;
+}
+
+
+
+
+static int _buildApiDoc(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  TYPEMAKER2_GROUP_TREE *groupTree;
+  TYPEMAKER2_GROUP *grp;
+  GWEN_BUFFER *tbuf;
+  const char *sTypeIdentifier;
+
+  sTypeIdentifier=Typemaker2_Type_GetIdentifier(ty);
+
+  groupTree=Typemaker2_Type_GetGroupTree(ty);
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Buffer_AppendString(tbuf, "/** @page P_");
+  GWEN_Buffer_AppendString(tbuf, sTypeIdentifier);
+  GWEN_Buffer_AppendString(tbuf, " Structure ");
+  GWEN_Buffer_AppendString(tbuf, sTypeIdentifier);
+
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+  GWEN_Buffer_AppendString(tbuf, "<p>This page describes the properties of ");
+  GWEN_Buffer_AppendString(tbuf, sTypeIdentifier);
+  GWEN_Buffer_AppendString(tbuf, ".</p>\n");
+
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+
+  grp=Typemaker2_Group_Tree_GetFirst(groupTree);
+  while(grp) {
+    _buildGroupApiDoc(tb, ty, grp, 1, tbuf);
+    grp=Typemaker2_Group_Tree_GetNext(grp);
+  }
+  GWEN_Buffer_AppendString(tbuf, "\n");
+  GWEN_Buffer_AppendString(tbuf, "*/\n");
+
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
+
 static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -6528,6 +6700,12 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+  }
+
+  rv=_buildApiDoc(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   rv=_buildDefineDefines(tb, ty);

@@ -25,6 +25,7 @@ GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_MEMBER, Typemaker2_Member);
 #include "tm_type.h"
 #include "tm_enum.h"
 #include "tm_define.h"
+#include "tm_group.h"
 
 
 TYPEMAKER2_MEMBER *Typemaker2_Member_new();
@@ -73,6 +74,9 @@ void Typemaker2_Member_SetEnumPtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_ENUM *te);
 
 TYPEMAKER2_DEFINE *Typemaker2_Member_GetDefinePtr(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetDefinePtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_DEFINE *td);
+
+TYPEMAKER2_GROUP *Typemaker2_Member_GetGroupPtr(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetGroupPtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_GROUP *gr);
 
 int Typemaker2_Member_GetAccess(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetAccess(TYPEMAKER2_MEMBER *tm, int i);

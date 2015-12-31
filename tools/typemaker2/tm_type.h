@@ -90,6 +90,7 @@ enum {
 #include "tm_virtualfn.h"
 #include "tm_signal.h"
 #include "tm_slot.h"
+#include "tm_group.h"
 
 
 
@@ -176,7 +177,7 @@ TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_SIGNAL_LIST *Typemaker2_Type_GetSignals(const TYPEMAKER2_TYPE *ty);
 TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty);
-
+TYPEMAKER2_GROUP_TREE *Typemaker2_Type_GetGroupTree(const TYPEMAKER2_TYPE *ty);
 
 int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetNonVolatileMemberCount(TYPEMAKER2_TYPE *ty, int i);

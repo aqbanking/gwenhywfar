@@ -27,6 +27,7 @@ noinst_HEADERS=\
   tm_inline_p.h tm_inline.h \
   tm_signal_p.h tm_signal.h \
   tm_slot_p.h tm_slot.h \
+  tm_group_p.h tm_group.h \
   tm_util.h \
   typemaker2.h \
   tm_builder_c.h
@@ -47,6 +48,7 @@ typemaker2_SOURCES=\
   tm_virtualfn.c \
   tm_signal.c \
   tm_slot.c \
+  tm_group.c \
   build.c \
   builddefs.c \
   main.c

@@ -433,6 +433,22 @@ void Typemaker2_Member_SetDefinePtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_DEFINE *td
 
 
 
+TYPEMAKER2_GROUP *Typemaker2_Member_GetGroupPtr(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->groupPtr;
+}
+
+
+
+void Typemaker2_Member_SetGroupPtr(TYPEMAKER2_MEMBER *tm, TYPEMAKER2_GROUP *gr) {
+  assert(tm);
+  assert(tm->refCount);
+  tm->groupPtr=gr;
+}
+
+
+
 int Typemaker2_Member_GetMemberPosition(const TYPEMAKER2_MEMBER *tm) {
   assert(tm);
   assert(tm->refCount);
