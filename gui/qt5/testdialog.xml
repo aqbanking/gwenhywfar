@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog type="dialog" name="testdialog" flags="decorShrinkable decorStretchable" >
+  <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+    <widget type="tabbook" name="tabbook1" flags="fillX fillY" >
+
+      <widget type="tabpage" name="tabpage1" text="First Page" flags="fillX fillY" >
+
+        <widget type="gridLayout" name="grid1" columns="2" flags="fillX" >
+          <widget type="label" name="label1" text="Column 1" />
+          <widget name="lineedit1" type="lineEdit" flags="fillX" />
+    
+          <widget type="label" name="label2" text="Column 2" />
+          <widget name="lineedit2" type="lineEdit" flags="fillX" />
+    
+          <widget type="label" name="label2" text="Column 3" />
+          <widget name="combo1" type="comboBox" flags="fillX" />
+          
+          <widget type="vspacer" name="vspacer1" flags="fillY" />
+          
+        </widget>
+      </widget>
+      
+      <widget type="tabpage" name="tabpage2" text="Second Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget type="groupBox" text="GroupBox1" name="groupBox1" flags="fillX fillY">
+            <widget name="textedit1" type="textEdit" flags="fillX" />
+          </widget>
+          <widget type="groupBox" text="GroupBox2" name="groupBox2" flags="fillX fillY">
+            <widget name="textedit2" type="lineEdit" flags="fillX" />
+            <widget name="textedit3" type="lineEdit" flags="fillX" />
+          </widget>
+          <widget type="vspacer" name="vspacer2" flags="fillY" />
+        </widget>
+        
+      </widget>
+
+      <widget type="tabpage" name="tabpage3" text="Third Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget name="checkBox1" type="checkBox" text="CheckBox1" flags="fillX" />
+          <widget name="checkBox2" type="checkBox" text="CheckBox2" flags="fillX" />
+          <widget type="vspacer" name="vspacer2" flags="fillY" />
+        </widget>
+      </widget>
+
+      <widget type="tabpage" name="tabpage4" text="Fourth Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget name="textBrowser1" type="textBrowser" text="Content for TextBrowser1" flags="fillX" />
+          <widget name="checkBox2" type="checkBox" text="CheckBox2" flags="fillX" />
+          <widget name="progressBar1" type="progressBar" flags="fillX" />
+          <widget type="vspacer" name="vspacer2" flags="fillY" />
+        </widget>
+      </widget>
+
+      <widget type="tabpage" name="tabpage5" text="Fifth Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget type="scrollArea" name="scrollArea1" flags="fillX fillY" >
+            <widget name="checkBox5.1" type="checkBox" text="CheckBox5.1" flags="fillX" />
+            <widget name="checkBox5.2" type="checkBox" text="CheckBox5.2" flags="fillX" />
+            <widget name="checkBox5.3" type="checkBox" text="CheckBox5.3" flags="fillX" />
+            <widget name="checkBox5.4" type="checkBox" text="CheckBox5.4" flags="fillX" />
+            <widget name="checkBox5.5" type="checkBox" text="CheckBox5.5" flags="fillX" />
+            <widget name="checkBox5.6" type="checkBox" text="CheckBox5.6" flags="fillX" />
+            <widget name="checkBox5.7" type="checkBox" text="CheckBox5.7" flags="fillX" />
+            <widget name="checkBox5.8" type="checkBox" text="CheckBox5.8" flags="fillX" />
+            <widget name="checkBox5.9" type="checkBox" text="CheckBox5.9" flags="fillX" />
+            <widget name="checkBox5.10" type="checkBox" text="CheckBox5.10" flags="fillX" />
+            <widget name="checkBox5.11" type="checkBox" text="CheckBox5.11" flags="fillX" />
+            <widget name="checkBox5.12" type="checkBox" text="CheckBox5.12" flags="fillX" />
+            <widget name="checkBox5.13" type="checkBox" text="CheckBox5.13" flags="fillX" />
+            <widget name="checkBox5.14" type="checkBox" text="CheckBox5.14" flags="fillX" />
+            <widget name="checkBox5.15" type="checkBox" text="CheckBox5.15" flags="fillX" />
+          </widget>
+        </widget>
+      </widget>
+
+      <widget type="tabpage" name="tabpage6" text="Sixth Page" flags="fillX fillY" >
+        <widget type="listBox" name="listbox1" flags="fillX fillY" />
+        <widget type="label" name="label3" text="Label With an Icon" icon="disk.png" />
+        <widget name="radio1" type="radioButton" text="Radio 1" flags="fillX" />
+        <widget name="radio2" type="radioButton" text="Radio 2" flags="fillX" />
+        <widget name="radio3" type="radioButton" text="Radio 3" flags="fillX" />
+      </widget>
+
+    </widget>
+
+<!--
+    <widget name="listbox1" type="listBox" flags="fillX fillY" />
+-->
+
+    <widget name="hline1" type="hLine" flags="fillX" />
+
+    <widget type="hlayout" name="hlayout1" flags="fillX" >
+      <widget type="hspacer" name="hspacer1" flags="fillX" />
+      <widget type="pushButton" text="Ok" name="okButton" flags="default" />
+      <widget type="pushButton" text="Abort" name="abortButton" />
+    </widget>
+
+  </widget>
+
+</dialog>

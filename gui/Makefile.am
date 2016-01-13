@@ -1,5 +1,5 @@
 SUBDIRS=testdialogs cpp @gwenhywfar_guis@
-DIST_SUBDIRS=testdialogs cpp qt4 fox16 gtk2 cocoa
+DIST_SUBDIRS=testdialogs cpp qt4 qt5 fox16 gtk2 cocoa
 
 sources:
 	for d in $(SUBDIRS); do \

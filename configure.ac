@@ -81,7 +81,7 @@ case "$GWENHYWFAR_VERSION_TAG" in
      ;;
   *)
      GWENHYWFAR_VERSION_RELEASE_STRING="$GWENHYWFAR_VERSION_MAJOR.$GWENHYWFAR_VERSION_MINOR.$GWENHYWFAR_VERSION_PATCHLEVEL"
-     
+
      # add TAG
      GWENHYWFAR_VERSION_RELEASE_STRING="${GWENHYWFAR_VERSION_RELEASE_STRING}${GWENHYWFAR_VERSION_TAG}"
      ;;
@@ -98,14 +98,14 @@ AC_SUBST(GWENHYWFAR_VERSION_STRING)
 AC_SUBST(GWENHYWFAR_VERSION_RELEASE_STRING)
 AC_SUBST(OHBCI_VERSION_STRING)
 
-AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_MAJOR,$GWENHYWFAR_VERSION_MAJOR, 
+AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_MAJOR,$GWENHYWFAR_VERSION_MAJOR,
                    [major version])
-AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_MINOR,$GWENHYWFAR_VERSION_MINOR, 
+AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_MINOR,$GWENHYWFAR_VERSION_MINOR,
                    [minor version])
-AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_PATCHLEVEL,$GWENHYWFAR_VERSION_PATCHLEVEL, 
+AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_PATCHLEVEL,$GWENHYWFAR_VERSION_PATCHLEVEL,
                    [patchlevel])
 AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_BUILD,$GWENHYWFAR_VERSION_BUILD, [build])
-AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_STRING,"$GWENHYWFAR_VERSION_STRING", 
+AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_STRING,"$GWENHYWFAR_VERSION_STRING",
                    [version string])
 AC_DEFINE_UNQUOTED(GWENHYWFAR_VERSION_FULL_STRING,"$GWENHYWFAR_VERSION_FULL_STRING",
                    [full version string])
@@ -222,8 +222,8 @@ AC_CHECK_PROG(SED,sed,sed)
 AC_CHECK_LIB(dl, dlopen)
 # note: this AC_CHECK_LIB will also add -ldl to LIBS.
 
-AC_CHECK_LIB(rt, sem_init, 
-  [ 
+AC_CHECK_LIB(rt, sem_init,
+  [
     rt_libs="-lrt -pthread"
     AC_DEFINE(HAVE_LIBRT, "1", [whether librt is available])
   ], [], [-pthread])
@@ -372,21 +372,21 @@ case "$OS_TYPE" in
         gwenhywfar_sys_is_windows=0
         gwenhywfar_os_lib="os/posix/libos.la"
         GWEN_OS="posix"
-        
+
         # add special libraries for solaris
         if test "$OSYSTEM" = "solaris"; then
           all_libraries="${all_libraries} -lresolv -lsocket"
           PROG_LIBRARIES="${PROG_LIBRARIES} -lresolv -lsocket"
         fi
-        
+
         # add special libraries for darwin
         if test "$OSYSTEM" = "osx"; then
           # hmm, this should be detected by the GETTEXT macro...
           #PROG_LIBRARIES="${PROG_LIBRARIES} -lintl"
-          # for local install mode on Mac OS X link with the CoreFoundation framework 
-          if test "$enable_local_install" != "no"; then 
+          # for local install mode on Mac OS X link with the CoreFoundation framework
+          if test "$enable_local_install" != "no"; then
             all_libraries="${all_libraries} -framework CoreFoundation"
-          fi  
+          fi
         fi
     	;;
     windows)
@@ -658,14 +658,14 @@ case "$OS_TYPE" in
     AC_SUBST(LIBGNUTLS_CFLAGS)
     AC_SUBST(LIBGNUTLS_LIBS)
     ;;
-    
+
   *)
     PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
     # check for 1.6 or higher
     oldlibs="$LIBS"
     LIBS="${LIBGNUTLS_LIBS}"
-    AC_CHECK_LIB(gnutls,gnutls_transport_set_errno, 
-      [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"], 
+    AC_CHECK_LIB(gnutls,gnutls_transport_set_errno,
+      [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"],
       [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="no"])
     LIBS="$oldlibs"
   ;;
@@ -808,7 +808,7 @@ AC_SUBST(ICONV_LIBS)
 # guis
 #
 
-AC_ARG_WITH(guis, 
+AC_ARG_WITH(guis,
   [  --with-guis=list      space separated list of GUI implementations (default:all)],
   [gwenhywfar_guis="$withval"],
   [gwenhywfar_guis="qt4 gtk2"]
@@ -829,7 +829,7 @@ AC_SUBST(gwenhywfar_guis)
 #
 
 
-case "$gwenhywfar_guis" in 
+case "$gwenhywfar_guis" in
   *fox16*)
      AQ_CHECK_FOX
      if test "$have_fox" != "yes"; then
@@ -856,7 +856,7 @@ AM_CONDITIONAL(WITH_GUI_FOX16, [test "$with_gui_fox16" = "yes"])
 #
 
 
-case "$gwenhywfar_guis" in 
+case "$gwenhywfar_guis" in
   *gtk2*)
      # We need at least GTK 2.17.5 because we use functions like
      # gtk_widget_get_sensitive() and gtk_widget_has_focus()
@@ -881,7 +881,7 @@ AM_CONDITIONAL(WITH_GUI_GTK2, [test "$with_gui_gtk2" = "yes"])
 UIC4="NO"
 QT4_BINDIR=""
 
-case "$gwenhywfar_guis" in 
+case "$gwenhywfar_guis" in
   *qt4*)
     AQ_CHECK_QT4
     if test "$have_qt4" = "yes"; then
@@ -889,10 +889,10 @@ case "$gwenhywfar_guis" in
       # which implicitly uses latin1()!
       AC_DEFINE(QT_NO_ASCII_CAST,[1],[Disable the cast from QString to const char.])
     fi
-    
+
     dnl windows/mingw doesnt have the yes program, so add this emulation
     AC_CHECK_PROG(YES, yes, yes, [[echo -e 'y\ny\ny\ny\n']])
-    
+
     dnl Store the bin dir for the windows dlls
     QT4_BINDIR="` echo ${qt4_moc} | ${SED} 's-/moc--' | ${SED} 's-/c/-c:\\\\-' | ${SED} 's-/-\\\\-g' `"
     UIC4="${qt4_uic}"
@@ -909,8 +909,15 @@ AC_SUBST(QT4_BINDIR)
 AC_SUBST(with_gui_qt4)
 AM_CONDITIONAL(WITH_GUI_QT4, [test "$with_gui_qt4" = "yes"])
 
+###-------------------------------------------------------------------------
+#
+# QT5
+#
 
-
+case "$gwenhywfar_guis" in
+  *qt5*)
+  AX_HAVE_QT
+esac
 ###-------------------------------------------------------------------------
 #
 # check docpath
@@ -1306,6 +1313,10 @@ AC_CONFIG_FILES([Doxyfile
                  gui/qt4/gwengui-qt4.pc
                  gui/qt4/gwengui-qt4-config.cmake
                  gui/qt4/gwengui-qt4-config-version.cmake
+                 gui/qt5/Makefile
+                 gui/qt5/gwengui-qt5.pc
+                 gui/qt5/gwengui-qt5-config.cmake
+                 gui/qt5/gwengui-qt5-config-version.cmake
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile
@@ -1376,6 +1387,23 @@ for d in gui/qt4; do
       	 ;;
       *)
     	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-qt4/${f}"
+         ;;
+    esac
+  done
+done
+
+# qt5
+#
+rm -Rf gwenhywfar4/gwen-gui-qt5 2>/dev/null
+mkdir -p gwenhywfar4/gwen-gui-qt5
+for d in gui/qt5; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.hpp | *_p.hpp | qt5_gui_*.hpp)
+         ;;
+      *)
+       ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-qt5/${f}"
          ;;
     esac
   done
