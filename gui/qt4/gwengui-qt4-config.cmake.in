@@ -1,30 +1,60 @@
-
 # Macros cmake's CONFIGURE_PACKAGE_CONFIG_FILE() would create
 
 macro(set_and_check _var _file)
 set(${_var} "${_file}")
-if(NOT EXISTS "${_file}")
-  message(FATAL_ERROR "File or directory ${_file} referenced by variable ${_var} does not exist !")
+  if(NOT EXISTS "${_file}")
+    message(FATAL_ERROR "File or directory ${_file} referenced by variable ${_var} does not exist !")
   endif()
-  endmacro()
+endmacro()
 
-  macro(check_required_components _NAME)
+macro(check_required_components _NAME)
   foreach(comp ${${_NAME}_FIND_COMPONENTS})
-  if(NOT ${_NAME}_${comp}_FOUND)
-    if(${_NAME}_FIND_REQUIRED_${comp})
-      set(${_NAME}_FOUND FALSE)
+    if(NOT ${_NAME}_${comp}_FOUND)
+      if(${_NAME}_FIND_REQUIRED_${comp})
+        set(${_NAME}_FOUND FALSE)
       endif()
-      endif()
-      endforeach()
-      endmacro()
+    endif()
+  endforeach()
+endmacro()
 
-      set_and_check(prefix "@prefix@")
-      set_and_check(exec_prefix "@exec_prefix@")
-      set_and_check(includedir "@includedir@")
-      set_and_check(GWENGUI_QT4_INCLUDE_DIRS "@gwenhywfar_headerdir@")
-      set_and_check(GWENGUI_QT4_LIBRARIES "@libdir@/libgwengui-qt4.so")
-      set_and_check(GWENHYWFAR_CPP_LIBRARIES "@libdir@/libgwengui-cpp.so")
 
-      set(GWENGUI_QT4_LIBRARIES ${GWENGUI_QT4_LIBRARIES} ${GWENHYWFAR_CPP_LIBRARIES})
+include(CMakeFindDependencyMacro)
+find_dependency(gwengui-cpp "@GWENHYWFAR_VERSION_STRING@")
 
-      mark_as_advanced( GWENGUI_QT4_INCLUDE_DIRS GWENGUI_QT4_LIBRARIES GWENHYWFAR_CPP_LIBRARIES)
+# Find Qt4 (a bit longer as it uses components)
+set(__qt_quiet_arg)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+  set(__qt_quiet_arg QUIET)
+endif()
+set(__qt_required_arg)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
+  set(__qt_required_arg REQUIRED)
+endif()
+find_package(Qt4 ${__qt_required_arg} ${__qt_quiet_arg} COMPONENTS QtCore QtGui)
+set(__qt_quiet_arg)
+set(__qt_required_arg)
+
+if (NOT QT4_FOUND)
+  set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "${CMAKE_FIND_PACKAGE_NAME} could not be found because dependency Qt4 could not be found.")
+  set(${CMAKE_FIND_PACKAGE_NAME}_FOUND False)
+  return()
+endif()
+
+set_and_check(prefix "@prefix@")
+set_and_check(exec_prefix "@exec_prefix@")
+set_and_check(includedir "@includedir@")
+set_and_check(${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS "@gwenhywfar_headerdir@")
+set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt4.so")
+set(${CMAKE_FIND_PACKAGE_NAME}_FOUND true)
+
+if(${CMAKE_FIND_PACKAGE_NAME}_FOUND AND NOT TARGET gwenhywfar::gui-qt4)
+  add_library(gwenhywfar::gui-qt4 UNKNOWN IMPORTED)
+  set_target_properties(gwenhywfar::gui-qt4 PROPERTIES
+    IMPORTED_LOCATION "${${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS}"
+    INTERFACE_LINK_LIBRARIES "gwenhywfar::gui-cpp;Qt4::Core;Qt4::QtGui"
+  )
+endif()
+
+set(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES ${${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES} gwenhywfar::gui-cpp)
+mark_as_advanced( ${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS ${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES )

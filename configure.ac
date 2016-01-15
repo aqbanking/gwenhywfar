@@ -1309,6 +1309,8 @@ AC_CONFIG_FILES([Doxyfile
                  test/Makefile
                  gui/Makefile
                  gui/cpp/Makefile
+                 gui/cpp/gwengui-cpp-config.cmake
+                 gui/cpp/gwengui-cpp-config-version.cmake
                  gui/qt4/Makefile
                  gui/qt4/gwengui-qt4.pc
                  gui/qt4/gwengui-qt4-config.cmake

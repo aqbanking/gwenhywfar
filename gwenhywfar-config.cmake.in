@@ -24,22 +24,42 @@ set_and_check(exec_prefix "@exec_prefix@")
 set_and_check(includedir "@includedir@")
 set_and_check(GWENHYWFAR_INCLUDE_DIRS "@gwenhywfar_headerdir@")
 set_and_check(GWENHYWFAR_LIBRARIES "@libdir@/libgwenhywfar.so.@GWENHYWFAR_SO_EFFECTIVE@")
+set(GWENHYWFAR_FOUND TRUE)
 
 # find components
+# Only for backwards compatibility. It is recommended to use
+# find_package(gwengui-cpp) or
+# find_package(gwengui-qt4)
 
-# find QT4 or cpp
-list(FIND GWENHYWFAR_FIND_COMPONENTS "qt4" FIND_GWEN_COMPONENT_QT4)
 list(FIND GWENHYWFAR_FIND_COMPONENTS "cpp" FIND_GWEN_COMPONENT_CPP)
+if ( NOT ${FIND_GWEN_COMPONENT_CPP} EQUAL -1 )
+  find_package(gwengui-cpp "@GWENHYWFAR_VERSION_STRING@" EXACT)
+  if (gwengui-cpp_FOUND)
+    set( GWENHYWFAR_INCLUDE_DIRS ${GWENHYWFAR_INCLUDE_DIRS} ${GWENGUI_CPP_INCLUDE_DIRS} )
+    set( GWENHYWFAR_LIBRARIES ${GWENHYWFAR_LIBRARIES} ${GWENGUI_CPP_LIBRARIES} )
+    set( GWENHYWFAR_cpp_FOUND true )
+  endif()
+endif()
 
-if ( NOT ${FIND_GWEN_COMPONENT_QT4} EQUAL -1 OR NOT ${FIND_GWEN_COMPONENT_CPP} EQUAL -1 )
-  find_package(gwengui-qt4)
+list(FIND GWENHYWFAR_FIND_COMPONENTS "qt4" FIND_GWEN_COMPONENT_QT4)
+if ( NOT ${FIND_GWEN_COMPONENT_QT4} EQUAL -1 )
+  find_package(gwengui-qt4 "@GWENHYWFAR_VERSION_STRING@" EXACT)
   if ( gwengui-qt4_FOUND )
-    set( GWENHYWFAR_INCLUDE_DIRS ${GWENHYWFAR_INCLUDE_DIRS} ${GWENGUI_QT4_INCLUDE_DIRS} )
-    set( GWENHYWFAR_LIBRARIES ${GWENHYWFAR_LIBRARIES} ${GWENGUI_QT4_LIBRARIES} )
+    set( GWENHYWFAR_INCLUDE_DIRS ${GWENHYWFAR_INCLUDE_DIRS} ${gwengui-qt4_INCLUDE_DIRS} )
+    set( GWENHYWFAR_LIBRARIES ${GWENHYWFAR_LIBRARIES} ${gwengui-qt4_LIBRARIES} )
     set( GWENHYWFAR_qt4_FOUND true )
-    set( GWENHYWFAR_cpp_FOUND true ) # this is included into qt4 as has no own configuration file
   endif()
 endif()
 
 check_required_components(GWENHYWFAR)
+
+# The target is available since gwenhywfar 4.15.3
+if(GWENHYWFAR_FOUND AND NOT TARGET gwenhywfar::core)
+  add_library(gwenhywfar::core UNKNOWN IMPORTED)
+  set_target_properties(gwenhywfar::core PROPERTIES
+    IMPORTED_LOCATION "${GWENHYWFAR_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${GWENHYWFAR_INCLUDE_DIRS}"
+  )
+endif()
+
 mark_as_advanced( GWENHYWFAR_INCLUDE_DIRS GWENHYWFAR_LIBRARIES )
