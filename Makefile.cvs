@@ -81,7 +81,13 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O0 -ggdb -Wall" ./configure INSTALL="/usr/bin/install -p" --with-guis="gtk2 fox16 qt4" --disable-static --enable-full-doc --prefix=/usr/local
+	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O0 -ggdb -Wall" ./configure \
+	  INSTALL="/usr/bin/install -p" \
+	  --with-guis="gtk2 fox16 qt4 qt5" \
+	  --disable-static \
+	  --enable-full-doc \
+	  --prefix=/usr/local \
+	  --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
 
 clang:
 	libtoolize -f --automake
