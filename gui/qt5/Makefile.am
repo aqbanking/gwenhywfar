@@ -1,4 +1,4 @@
-AM_CPPFLAGS= @visibility_cflags@ @QT_CXXFLAGS@ -I$(gwenhywfar_symlinkdir) $(qt_includes)
+AM_CPPFLAGS= @visibility_cflags@ @QT_CXXFLAGS@ -I$(gwenhywfar_symlinkdir) $(QT_CXXFLAGS)
 DEFS=-DBUILDING_QT5_GUI
 
 qt5_moc      = @QT_MOC@
