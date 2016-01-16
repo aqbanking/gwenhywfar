@@ -1,0 +1,35 @@
+
+
+The Mozilla CA bundle extracted and converted to PEM . See the PEM file itself for the actual date of the latest Mozilla 
+source change that is included in the converted file.
+
+The converted file is licensed under the same license as the Mozilla source file: MPL 2.0.
+
+
+We use mk-ca-bundle.pl from curl:
+  https://github.com/bagder/curl/blob/master/lib/mk-ca-bundle.pl
+Copyright notice from CURL follows:
+
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright (c) 1996 - 2016, Daniel Stenberg, <daniel@haxx.se>.
+
+All rights reserved.
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall not
+be used in advertising or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization of the copyright holder.
+
