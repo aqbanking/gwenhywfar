@@ -909,6 +909,8 @@ AC_SUBST(QT4_BINDIR)
 AC_SUBST(with_gui_qt4)
 AM_CONDITIONAL(WITH_GUI_QT4, [test "$with_gui_qt4" = "yes"])
 
+
+
 ###-------------------------------------------------------------------------
 #
 # QT5
@@ -918,6 +920,9 @@ case "$gwenhywfar_guis" in
   *qt5*)
   AX_HAVE_QT
 esac
+
+
+
 ###-------------------------------------------------------------------------
 #
 # check docpath
