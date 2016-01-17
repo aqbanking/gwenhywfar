@@ -72,7 +72,7 @@ static int check_syncio_tls1() {
     if (rv==0)
       break;
     else if (rv<1) {
-      if (rv==GWEN_ERROR_TIMEOUT || rv==GWEN_ERROR_EOF)
+      if (rv==GWEN_ERROR_TIMEOUT || rv==GWEN_ERROR_EOF || rv==GWEN_ERROR_SSL_PREMATURE_CLOSE)
 	break;
       fprintf(stderr,
 	      "ERROR in check_io_tls1: Could not read (%d)\n", rv);

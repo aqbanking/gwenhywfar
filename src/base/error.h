@@ -130,6 +130,8 @@ extern "C" {
 
 #define GWEN_ERROR_LOCK                 (-109)
 
+#define GWEN_ERROR_SSL_PREMATURE_CLOSE  (-110)
+
 
 #define GWEN_ERROR_USEROFFSET           (-1000)
 
