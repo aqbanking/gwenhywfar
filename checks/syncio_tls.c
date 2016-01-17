@@ -50,7 +50,6 @@ static int check_syncio_tls1() {
 	    "ERROR in check_io_tls1: Could not create TLS io layer.\n");
     return 2;
   }
-  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
   //GWEN_SyncIo_Tls_SetLocalTrustFile(sio, "test.crt");
 
   rv=GWEN_SyncIo_Connect(sio);

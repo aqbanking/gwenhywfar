@@ -227,19 +227,6 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
     GWEN_SyncIo_AddFlags(sioTls,
                          GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT|
                          GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
-
-    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3)
-      GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
-
-    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Only safe ciphers requested");
-      GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS);
-    }
-
-    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_TLS_FORCE_UNSAFE_CIPHERS) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Only unsafe ciphers requested");
-      GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_UNSAFE_CIPHERS);
-    }
   }
 
 
@@ -296,42 +283,11 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
                        GWEN_LoggerLevel_Debug,
                        I18N("Connecting to server..."));
   rv=GWEN_SyncIo_Connect(sess->syncIo);
-  if (rv==GWEN_ERROR_SSL) {
-    GWEN_SYNCIO *sioTls;
-
-    /* try again with alternated SSLv3 flag */
-    DBG_NOTICE(GWEN_LOGDOMAIN,
-               "SSL-Error connecting (%d), retrying", rv);
-    GWEN_SyncIo_Disconnect(sess->syncIo);
-
-    sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sess->syncIo, GWEN_SYNCIO_TLS_TYPE);
-    if (sioTls) {
-      if (sess->flags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
-        GWEN_Gui_ProgressLog(0,
-                             GWEN_LoggerLevel_Info,
-                             I18N("Retrying to connect (non-SSLv3)"));
-        GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
-        rv=GWEN_SyncIo_Connect(sess->syncIo);
-        if (rv==0) {
-          GWEN_HttpSession_SubFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
-        }
-      }
-      else {
-        DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (SSLv3)");
-        GWEN_Gui_ProgressLog(0,
-                             GWEN_LoggerLevel_Info,
-                             I18N("Retrying to connect (SSLv3)"));
-        GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
-        rv=GWEN_SyncIo_Connect(sess->syncIo);
-        if (rv==0) {
-          GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
-        }
-      }
-    }
-  }
-
   if (rv<0) {
+    if (rv==GWEN_ERROR_SSL) {
+      DBG_NOTICE(GWEN_LOGDOMAIN,
+                 "SSL-Error connecting (%d)", rv);
+    }
     DBG_INFO(GWEN_LOGDOMAIN, "Could not connect to server (%d)", rv);
     GWEN_Gui_ProgressLog(0,
                          GWEN_LoggerLevel_Error,
@@ -630,47 +586,15 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
   assert(sess);
   assert(sess->usage);
 
-  /* first connect to server */
+  /* connect to server */
   GWEN_Gui_ProgressLog(0,
                        GWEN_LoggerLevel_Notice,
                        I18N("Connecting to server..."));
   rv=GWEN_SyncIo_Connect(sess->syncIo);
-  if (rv==GWEN_ERROR_SSL) {
-    GWEN_SYNCIO *sioTls;
-
-    /* try again with alternated SSLv3 flag */
-    DBG_NOTICE(GWEN_LOGDOMAIN,
-               "SSL-Error connecting (%d), retrying", rv);
-    GWEN_SyncIo_Disconnect(sess->syncIo);
-
-    sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sess->syncIo, GWEN_SYNCIO_TLS_TYPE);
-    if (sioTls) {
-      if (sess->flags & GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (non-SSLv3)");
-        GWEN_Gui_ProgressLog(0,
-                             GWEN_LoggerLevel_Warning,
-                             I18N("Retrying to connect (non-SSLv3)"));
-        GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
-        rv=GWEN_SyncIo_Connect(sess->syncIo);
-        if (rv==0) {
-          GWEN_HttpSession_SubFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
-        }
-      }
-      else {
-        DBG_INFO(GWEN_LOGDOMAIN, "Retrying to connect (SSLv3)");
-        GWEN_Gui_ProgressLog(0,
-                             GWEN_LoggerLevel_Warning,
-                             I18N("Retrying to connect (SSLv3)"));
-        GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
-        rv=GWEN_SyncIo_Connect(sess->syncIo);
-        if (rv==0) {
-          GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
-        }
-      }
-    }
-  }
-
   if (rv<0) {
+    if (rv==GWEN_ERROR_SSL) {
+      DBG_NOTICE(GWEN_LOGDOMAIN, "SSL-Error connecting (%d)", rv);
+    }
     DBG_INFO(GWEN_LOGDOMAIN, "Could not connect to server (%d)", rv);
     GWEN_Gui_ProgressLog(0,
                          GWEN_LoggerLevel_Error,

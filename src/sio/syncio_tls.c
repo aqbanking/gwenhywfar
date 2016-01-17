@@ -328,6 +328,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   GWEN_SYNCIO_TLS *xio;
   int rv;
   uint32_t lflags;
+  const char *custom_ciphers;
+  const char *errPos=NULL;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
@@ -350,112 +352,27 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     return GWEN_ERROR_GENERIC;
   }
 
-  /* set default priority */
-#ifdef GWEN_TLS_USE_OLD_CODE /* old code */
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Using old SSL preparation code."));
-  rv=gnutls_set_default_priority(xio->session);
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_set_default_priority: %d (%s)", rv, gnutls_strerror(rv));
-    gnutls_deinit(xio->session);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* possibly force protocol priority */
-  if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3) {
-    const int proto_prio[2] = { GNUTLS_SSL3, 0 };
-
-    DBG_INFO(GWEN_LOGDOMAIN, "Forcing SSL v3");
-    //rv=gnutls_protocol_set_priority(xio->session, proto_prio); /* as suggested by rakkesh */
-    rv=gnutls_priority_set(xio->session, proto_prio);
-    if (rv) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_protocol_set_priority: %d (%s)", rv, gnutls_strerror(rv));
-      gnutls_deinit(xio->session);
-      return GWEN_ERROR_GENERIC;
-    }
-  }
-#else /* new code */
-  {
-    /* TODO: The following does not work with all servers, disabled for now  */
-    const char *errPos=NULL;
-    const char *ciphers_default;
-    GWEN_BUFFER *ciphers = NULL;
-
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Using new SSL preparation code."));
-    ciphers=GWEN_Buffer_new(0, 256, 0, 1);
-    assert(ciphers!=NULL);
-
-    ciphers_default=getenv("GWEN_TLS_CIPHER_PRIORITIES");
-    if (ciphers_default && *ciphers_default) { /* use cipher list from env var */
-      rv=GWEN_Buffer_AppendString(ciphers, ciphers_default);
-      if (rv!=0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-        GWEN_Buffer_free(ciphers);
-        gnutls_deinit(xio->session);
-        return GWEN_ERROR_GENERIC;
-      }
-    }
-    else { /* use hardcoded default ciphers */
-
-      /* this might get removed later, because it is no longer needed */
-      if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3) {
-        rv=GWEN_Buffer_AppendString(ciphers, "+VERS-SSL3.0:");
-        if (rv!=0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "failed to append SSLv3 prefix to cipher list: %d", rv);
-          GWEN_Buffer_free(ciphers);
-          gnutls_deinit(xio->session);
-          return GWEN_ERROR_GENERIC;
-        }
-      }
-
-      if (lflags & GWEN_SYNCIO_TLS_FLAGS_FORCE_UNSAFE_CIPHERS) {
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("TLS: Warning - Forcing unsafe SSL-Ciphers per user request."));
-        /* add hardcoded 128-Bit-ciphers ciphers */
-        rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_UNSAFE);
-        if (rv!=0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-          GWEN_Buffer_free(ciphers);
-          gnutls_deinit(xio->session);
-          return GWEN_ERROR_GENERIC;
-        }
-      }
-      else {
-        /* add hardcoded default ciphers */
-        rv=GWEN_Buffer_AppendString(ciphers, GWEN_TLS_CIPHER_PRIORITIES_DEFAULT);
-        if (rv!=0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "failed to append default ciphers to cipher list: %d", rv);
-          GWEN_Buffer_free(ciphers);
-          gnutls_deinit(xio->session);
-          return GWEN_ERROR_GENERIC;
-        }
-
-        /* add list of disabled ciphers */
-        if (lflags & GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Removing unsafe ciphers");
-          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("TLS: Disabling unsafe ciphers per user request."));
-          rv=GWEN_Buffer_AppendString(ciphers, ":"GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE);
-          if (rv!=0) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "failed to append unsafe ciphers to cipher list: %d", rv);
-            GWEN_Buffer_free(ciphers);
-            gnutls_deinit(xio->session);
-            return GWEN_ERROR_GENERIC;
-          }
-        }
-      }
-    }
-
-    DBG_INFO(GWEN_LOGDOMAIN, "Setting cipher priority to [%s]", GWEN_Buffer_GetStart(ciphers));
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("TLS: SSL-Cipher priority list: %s"), GWEN_Buffer_GetStart(ciphers));
-    rv=gnutls_priority_set_direct(xio->session, GWEN_Buffer_GetStart(ciphers), &errPos);
+  /* set cipher priorities */
+  custom_ciphers=getenv("GWEN_TLS_CIPHER_PRIORITIES");
+  /* TODO: make custom ciphers configurable as priority string? */
+  if (custom_ciphers && *custom_ciphers) { /* use cipher list from env var */
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("TLS: SSL cipher priority list: %s"), custom_ciphers);
+    rv=gnutls_priority_set_direct(xio->session, custom_ciphers, &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %d (%s) [%s]",
-                GWEN_Buffer_GetStart(ciphers), rv, gnutls_strerror(rv), errPos?errPos:"");
-      GWEN_Buffer_free(ciphers);
+      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %s (%d) [%s]",
+                custom_ciphers, gnutls_strerror(rv), rv, errPos?errPos:"");
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
     }
-    GWEN_Buffer_free(ciphers);
+  } else { /* use default ciphers from GnuTLS */
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Using GnuTLS default ciphers."));
+    rv=gnutls_set_default_priority(xio->session);
+    if (rv!=GNUTLS_E_SUCCESS) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_set_default_priority failed: %s (%d)", gnutls_strerror(rv), rv);
+      gnutls_deinit(xio->session);
+      return GWEN_ERROR_GENERIC;
+    }
   }
-#endif
 
   /* protect against too-many-known-ca problem */
   gnutls_handshake_set_max_packet_length(xio->session, 64*1024);

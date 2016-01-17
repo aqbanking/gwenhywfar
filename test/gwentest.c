@@ -4211,7 +4211,6 @@ int testHttp1(int argc, char **argv) {
 
   sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
   if (sioTls) {
-    GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
     GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT);
     GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
     fprintf(stderr, "Remote host: %s\n", GWEN_SyncIo_Tls_GetRemoteHostName(sioTls));
@@ -4351,7 +4350,6 @@ int testHttp2(int argc, char **argv) {
 
   sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
   if (sioTls) {
-    GWEN_SyncIo_SubFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3);
     GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT);
     GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
     fprintf(stderr, "Remote host: %s\n", GWEN_SyncIo_Tls_GetRemoteHostName(sioTls));
