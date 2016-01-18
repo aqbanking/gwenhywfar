@@ -20,25 +20,9 @@ endmacro()
 
 include(CMakeFindDependencyMacro)
 find_dependency(gwengui-cpp "@GWENHYWFAR_VERSION_STRING@")
+find_dependency(Qt5Core)
+find_dependency(Qt5Widgets)
 
-# Find Qt5 (a bit longer as it uses components)
-set(__qt_quiet_arg)
-if(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
-  set(__qt_quiet_arg QUIET)
-endif()
-set(__qt_required_arg)
-if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
-  set(__qt_required_arg REQUIRED)
-endif()
-find_dependency(Qt5 ${__qt_required_arg} ${__qt_quiet_arg} COMPONENTS Core Widgets)
-set(__qt_quiet_arg)
-set(__qt_required_arg)
-
-if (NOT QT5_FOUND)
-  set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "${CMAKE_FIND_PACKAGE_NAME} could not be found because dependency Qt5 could not be found.")
-  set(${CMAKE_FIND_PACKAGE_NAME}_FOUND False)
-  return()
-endif()
 
 set_and_check(prefix "@prefix@")
 set_and_check(exec_prefix "@exec_prefix@")
@@ -50,11 +34,11 @@ set(${CMAKE_FIND_PACKAGE_NAME}_FOUND true)
 if(NOT TARGET gwenhywfar::gui-qt5)
   add_library(gwenhywfar::gui-qt5 UNKNOWN IMPORTED)
   set_target_properties(gwenhywfar::gui-qt5 PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS"
+    IMPORTED_LOCATION "${${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS}"
     INTERFACE_LINK_LIBRARIES "gwenhywfar::core;gwenhywfar::gui-cpp;Qt5::Core;Qt5::Widgets"
   )
 endif()
 
-set(GWENGUI_QT5_LIBRARIES ${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES ${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS)
-mark_as_advanced( GWENGUI_QT5_INCLUDE_DIRS ${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES ${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS)
+set(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "${${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES};gwenhywfar::core;gwenhywfar::gui-cpp")
+mark_as_advanced( ${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS ${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES ${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS)
