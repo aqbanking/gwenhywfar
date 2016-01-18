@@ -62,72 +62,15 @@ void QT5_Gui::popParentWidget() {
 
 
 QString QT5_Gui::extractHtml(const char *text) {
-  const char *p=0;
-  const char *p2=0;
-
-  if (text==NULL)
-    return QString("");
-
-  /* find begin of HTML area */
-  p=text;
-  while ((p=strchr(p, '<'))) {
-    const char *t;
-
-    t=p;
-    t++;
-    if (toupper(*t)=='H') {
-      t++;
-      if (toupper(*t)=='T') {
-        t++;
-        if (toupper(*t)=='M') {
-          t++;
-          if (toupper(*t)=='L') {
-            t++;
-            if (toupper(*t)=='>') {
-              break;
-            }
-          }
-        }
-      }
+  QString str = QString::fromUtf8(text);
+  const int start = str.indexOf(QStringLiteral("<html>"), 0, Qt::CaseInsensitive);
+  if (start != -1) {
+    const int end = str.indexOf(QStringLiteral("</html>"), start, Qt::CaseInsensitive);
+    if (end != -1) {
+      return str.mid(start, end+7);
     }
-    p++;
-  } /* while */
-
-  /* find end of HTML area */
-  if (p) {
-    p+=6; /* skip "<html>" */
-    p2=p;
-    while ((p2=strchr(p2, '<'))) {
-      const char *t;
-
-      t=p2;
-      t++;
-      if (toupper(*t)=='/') {
-        t++;
-        if (toupper(*t)=='H') {
-          t++;
-          if (toupper(*t)=='T') {
-            t++;
-            if (toupper(*t)=='M') {
-              t++;
-              if (toupper(*t)=='L') {
-                t++;
-                if (toupper(*t)=='>') {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
-      p2++;
-    } /* while */
   }
-
-  if (p && p2)
-    return QString("<qt>")+QString::fromUtf8(p, p2-p)+QString("</qt>");
-
-  return QString::fromUtf8(text);
+  return str;
 }
 
 

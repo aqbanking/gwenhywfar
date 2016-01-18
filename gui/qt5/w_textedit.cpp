@@ -50,13 +50,19 @@ public:
 
     GWEN_Widget_SetImplData(_widget, QT5_DIALOG_WIDGET_REAL, (void*) qw);
 
+#if 0
+    /**
+     * @todo This does not work because QTextEdit has no signal "returnPressed" (by default).
+     * It never had it in Qt4 so deactivting this does not change the behaviour. Maybe it should be
+     * enabled in future?
+     */
     qtDialog=dynamic_cast<QT5_GuiDialog*>(getDialog());
     assert(qtDialog);
 
     qw->connect(qw, SIGNAL(returnPressed()),
                 qtDialog->getMainWindow(),
                 SLOT(slotActivated()));
-
+#endif
 
     if (wParent)
       GWEN_Widget_AddChildGuiWidget(wParent, _widget);

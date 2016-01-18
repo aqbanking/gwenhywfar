@@ -125,7 +125,7 @@ QString QT4_Gui::extractHtml(const char *text) {
   }
 
   if (p && p2)
-    return QString("<qt>")+QString::fromUtf8(p, p2-p)+QString("</qt>");
+    return QLatin1String("<qt>")+QString::fromUtf8(p, p2-p)+QLatin1String("</qt>");
 
   return QString::fromUtf8(text);
 }

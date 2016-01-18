@@ -49,7 +49,7 @@
  * The GWEN_GUI object contains callbacks for message display, user
  * input, progress reports, SSL certificate checking etc.
  *
- * There are implementations of GWEN_GUI based on console, QT3, QT4 and FOX.
+ * There are implementations of GWEN_GUI based on console, QT4, QT5 and FOX.
  *
  * GWEN_GUI uses flags to tell implementations what the caller needs of the GUI
  * implementation.
