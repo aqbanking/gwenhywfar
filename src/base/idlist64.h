@@ -110,6 +110,7 @@ int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id);
 GWENHYWFAR_API
 int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id);
 
+#ifndef NO_DEPRECATED_SYMBOLS
 /**
  * @deprecated
  * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
@@ -141,6 +142,7 @@ uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
  */
 GWENHYWFAR_API DEPRECATED
 uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 
 /**

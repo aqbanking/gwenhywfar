@@ -30,13 +30,17 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 #include <gwenhywfar/buffer.h>
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 /**
  * This flag forces SSLv3 connections when in HTTPS mode.
  */
-/* was used for GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3       0x00000001 */
+#define GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3               0x00000001	/* deprecated, will be removed in a future release */
+#endif // ifndef NO_DEPRECATED_SYMBOLS
 #define GWEN_HTTP_SESSION_FLAGS_NO_CACHE                 0x00000002
-/* was used for GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS 0x00000004
- * and GWEN_HTTP_SESSION_FLAGS_TLS_FORCE_UNSAFE_CIPHERS  0x00000008 */
+#ifndef NO_DEPRECATED_SYMBOLS
+#define GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS    0x00000004	/* deprecated, will be removed in a future release */
+#define GWEN_HTTP_SESSION_FLAGS_TLS_FORCE_UNSAFE_CIPHERS 0x00000008	/* deprecated, will be removed in a future release */
+#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 
 #ifdef __cplusplus

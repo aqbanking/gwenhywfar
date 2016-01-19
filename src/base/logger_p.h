@@ -92,6 +92,7 @@ GWENHYWFAR_API
 void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 /**
  * DEPRECATED. Only sets the new default logger if it not already is
  * set or if the new default logger is NULL.  You must call
@@ -99,6 +100,7 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
  */
 GWENHYWFAR_API
 void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) DEPRECATED ;
+#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 
 #ifdef __cplusplus

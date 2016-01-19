@@ -131,6 +131,7 @@ void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
 
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 /**
  * <p>
  * Seeks for a long description with the given format and the currently
@@ -154,6 +155,7 @@ int
 GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
     const char *s,
     GWEN_BUFFER *buf);
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 GWENHYWFAR_API
 int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);

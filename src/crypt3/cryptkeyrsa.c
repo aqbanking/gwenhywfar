@@ -251,6 +251,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
 
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
                                     GWEN_CRYPT_KEY **pPubKey,
                                     GWEN_CRYPT_KEY **pSecretKey) {
@@ -261,6 +262,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
   }
   return GWEN_Crypt_KeyRsa_GeneratePair(nbits/8, use65537e, pPubKey, pSecretKey);
 }
+#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 
 

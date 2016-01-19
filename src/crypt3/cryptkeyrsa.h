@@ -42,7 +42,7 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
     GWEN_CRYPT_KEY **pPubKey,
     GWEN_CRYPT_KEY **pSecretKey);
 
-
+#ifndef NO_DEPRECATED_SYMBOLS
 /**
  * Creates a key pair and returns a pointer to it.
  * This function allows for more precise control over the size of the created key because it
@@ -58,6 +58,7 @@ GWENHYWFAR_API DEPRECATED
 int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
                                     GWEN_CRYPT_KEY **pPubKey,
                                     GWEN_CRYPT_KEY **pSecretKey);
+#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 GWENHYWFAR_API GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k);
 

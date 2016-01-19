@@ -201,9 +201,11 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger) {
 
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 void GWEN_Logger_SetDefaultLogger(GWEN_UNUSED GWEN_LOGGER *lg) {
   fprintf(stderr, "GWEN_Logger_SetDefaultLogger: Deprecated function\n");
 }
+#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 
 

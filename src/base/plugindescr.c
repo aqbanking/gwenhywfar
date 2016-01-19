@@ -326,6 +326,7 @@ GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPT
 
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 int
 GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
     const char *s,
@@ -365,6 +366,7 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
 
   return 0;
 }
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 
 const char*

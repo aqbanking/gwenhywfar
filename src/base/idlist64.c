@@ -603,6 +603,7 @@ uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos) {
 
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl) {
   return GWEN_IdList64__GetFirstId(idl, &(idl->nextIdx));
 }
@@ -624,6 +625,7 @@ uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *pos) {
 uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *pos) {
   return GWEN_IdList64__GetNextId(idl, pos);
 }
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 
 

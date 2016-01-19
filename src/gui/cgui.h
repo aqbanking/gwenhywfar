@@ -39,6 +39,7 @@ GWENHYWFAR_API
 GWEN_GUI *GWEN_Gui_CGui_new(void);
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 /** @name Character Set
  *
  * All messages and texts can be converted from UTF8 automatically.
@@ -112,6 +113,7 @@ void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui,
 GWENHYWFAR_API DEPRECATED
 GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui);
 /*@}*/
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 
 /** @name TLS Certificate Cache
@@ -139,6 +141,7 @@ void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts);
 GWENHYWFAR_API
 GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui);
 
+#ifndef NO_DEPRECATED_SYMBOLS
 /**
  * In non-interactive mode only known certificates are accepted.
  * If the parameter i unequals zero new certs are also accepted if they
@@ -154,6 +157,7 @@ void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i);
  */
 GWENHYWFAR_API DEPRECATED
 int GWEN_Gui_CGui_GetAcceptAllValidCerts(const GWEN_GUI *gui);
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 /*@}*/
 

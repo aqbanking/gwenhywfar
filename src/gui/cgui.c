@@ -111,6 +111,7 @@ void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
 const char *GWEN_Gui_CGui_GetCharSet(const GWEN_GUI *gui) {
   return GWEN_Gui_GetCharSet(gui);
 }
@@ -162,6 +163,7 @@ void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui, GWEN_DB_NODE *dbPasswords, int p
 GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui) {
   return GWEN_Gui_GetPasswordDb(gui);
 }
+#endif	// ifndef NO_DEPRECATED_SYMBOLS
 
 
 
