@@ -1313,9 +1313,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
     GWEN_SyncIo_Disconnect(baseIo);
+#ifdef GNUTLS_E_PREMATURE_TERMINATION
     if (rv==GNUTLS_E_PREMATURE_TERMINATION) {
       return GWEN_ERROR_SSL_PREMATURE_CLOSE;
     }
+#endif
     return GWEN_ERROR_SSL;
   }
 
