@@ -101,10 +101,6 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/db.h>\n");
   if (flags & TYPEMAKER2_FLAGS_WITH_XML)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/xml.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
-    GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb.h>\n");
-    GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb_db.h>\n");
-  }
   if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS))
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/gwensignal.h>\n");
   GWEN_Buffer_AppendString(tbuf, "\n");
@@ -137,6 +133,10 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       }
       GWEN_Buffer_AppendString(tbuf, "\n");
     }
+  }
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
+    GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb.h>\n");
   }
 
   GWEN_Buffer_AppendString(tbuf, "typedef struct ");
@@ -258,6 +258,12 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, s);
       GWEN_Buffer_AppendString(tbuf, ")\n");
     }
+  }
+  GWEN_Buffer_AppendString(tbuf, "\n");
+
+
+  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
+    GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb_db.h>\n");
   }
   GWEN_Buffer_AppendString(tbuf, "\n");
 
