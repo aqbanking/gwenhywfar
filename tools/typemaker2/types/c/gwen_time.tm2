@@ -148,7 +148,7 @@
         <code>
           if ($(src)){
             GWEN_BUFFER *xbuf=GWEN_Buffer_new(0, 64, 0, 1);
-            $(retval)=GWEN_Time_toString($(src), "YYYYMMDD", xbuf);
+            $(retval)=GWEN_Time_toUtcString($(src), "YYYYMMDD-hhmmss", xbuf);
             if ($(retval)&gt;=0)
               $(retval)=AQDB_Object_SetFieldString($(db), $(fieldid), GWEN_Buffer_GetStart(xbuf));
             GWEN_Buffer_free(xbuf);
@@ -167,7 +167,7 @@
             
             $(retval)=AQDB_Object_GetFieldString($(db), $(fieldid), &s);
             if ($(retval)&gt;=0 && s && *s) {
-              $(dst)=GWEN_Time_fromString(s, "YYYYMMDD");
+              $(dst)=GWEN_Time_fromUtcString(s, "YYYYMMDD-hhmmss");
               if ($(dst)==NULL)
                 $(retval)=GWEN_ERROR_BAD_DATA;
             }
@@ -182,7 +182,7 @@
       <codedef id="toHashString">
         <code>
           if ($(src))
-            GWEN_Time_toString($(src), "YYYY/MM/DD-hh:mm", $(buffer));
+            GWEN_Time_toUtcString($(src), "YYYY/MM/DD-hh:mm", $(buffer));
         </code>
       </codedef>
 
