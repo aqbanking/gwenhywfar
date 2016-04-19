@@ -1161,7 +1161,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
   do {
     rv=gnutls_handshake(xio->session);
   }
-  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  while (rv==GNUTLS_E_AGAIN || rv==GNUTLS_E_INTERRUPTED);
 
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_handshake: %d (%s) [%s]",
@@ -1252,7 +1252,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio) {
   do {
     rv=gnutls_bye(xio->session, GNUTLS_SHUT_RDWR);
   }
-  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  while (rv==GNUTLS_E_AGAIN || rv==GNUTLS_E_INTERRUPTED);
 
   if (rv) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_bye: %d (%s)", rv, gnutls_strerror(rv));
@@ -1299,7 +1299,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
   do {
     rv=gnutls_record_recv(xio->session, buffer, size);
   }
-  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  while (rv==GNUTLS_E_AGAIN || rv==GNUTLS_E_INTERRUPTED);
 
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_recv: %d (%s)", rv, gnutls_strerror(rv));
@@ -1360,7 +1360,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
   do {
     rv=gnutls_record_send(xio->session, buffer, size);
   }
-  while (rv==GNUTLS_E_AGAIN && rv==GNUTLS_E_INTERRUPTED);
+  while (rv==GNUTLS_E_AGAIN || rv==GNUTLS_E_INTERRUPTED);
 
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_record_send: %d (%s)", rv, gnutls_strerror(rv));
