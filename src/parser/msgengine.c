@@ -3218,6 +3218,36 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
             if (delimiter) {
               if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
                 GWEN_Buffer_IncrementPos(msgbuf,1);
+                if (abortLoop && maxnum) {
+                  uint32_t loopOpt=loopNr+1;
+
+                  if (maxnum-loopOpt>GWEN_Buffer_GetBytesLeft(msgbuf))
+                    /* Suspicious but not necessarily invalid, let's see */
+                    maxnum=loopOpt+GWEN_Buffer_GetBytesLeft(msgbuf);
+                  for (; loopOpt<maxnum; loopOpt++) {
+                    if (GWEN_Buffer_PeekByte(msgbuf)!=delimiter)
+                      break;
+                    GWEN_Buffer_IncrementPos(msgbuf, 1);
+                  }
+                  if (loopOpt+1==maxnum && terminator) {
+                    if (GWEN_Buffer_PeekByte(msgbuf)==terminator) {
+                      GWEN_Buffer_IncrementPos(msgbuf, 1);
+                      loopOpt++;
+                    }
+                  }
+                  if (loopOpt<maxnum) {
+                    DBG_ERROR(GWEN_LOGDOMAIN,
+                              "Delimiting character missing (pos=%d [%x]) "
+                              "expecting \"%c\", got \"%c\")",
+                              GWEN_Buffer_GetPos(msgbuf),
+                              GWEN_Buffer_GetPos(msgbuf),
+                              delimiter,
+                              GWEN_Buffer_PeekByte(msgbuf));
+                    GWEN_XMLNode_Dump(n, 2);
+                    GWEN_Buffer_free(delimBuffer);
+                    return -1;
+                  }
+                }
               }
             }
           }
@@ -3315,6 +3345,36 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
             if (delimiter) {
               if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
                 GWEN_Buffer_IncrementPos(msgbuf, 1);
+                if (abortLoop && maxnum) {
+                  uint32_t loopOpt=loopNr+1;
+
+                  if (maxnum-loopOpt>GWEN_Buffer_GetBytesLeft(msgbuf))
+                    /* Suspicious but not necessarily invalid, let's see */
+                    maxnum=loopOpt+GWEN_Buffer_GetBytesLeft(msgbuf);
+                  for (; loopOpt<maxnum; loopOpt++) {
+                    if (GWEN_Buffer_PeekByte(msgbuf)!=delimiter)
+                      break;
+                    GWEN_Buffer_IncrementPos(msgbuf, 1);
+                  }
+                  if (loopOpt+1==maxnum && terminator) {
+                    if (GWEN_Buffer_PeekByte(msgbuf)==terminator) {
+                      GWEN_Buffer_IncrementPos(msgbuf, 1);
+                      loopOpt++;
+                    }
+                  }
+                  if (loopOpt<maxnum) {
+                    DBG_ERROR(GWEN_LOGDOMAIN,
+                              "Delimiting character missing (pos=%d [%x]) "
+                              "expecting \"%c\", got \"%c\")",
+                              GWEN_Buffer_GetPos(msgbuf),
+                              GWEN_Buffer_GetPos(msgbuf),
+                              delimiter,
+                              GWEN_Buffer_PeekByte(msgbuf));
+                    GWEN_XMLNode_Dump(n, 2);
+                    GWEN_Buffer_free(delimBuffer);
+                    return -1;
+                  }
+                }
               }
             }
           }
