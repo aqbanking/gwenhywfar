@@ -98,7 +98,8 @@ iheader_HEADERS=\
  multicache.h \
  bindata.h \
  param.h \
- param_fns.h
+ param_fns.h \
+ endianfns.h
 
 
 libbase_la_SOURCES=\
