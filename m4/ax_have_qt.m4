@@ -119,8 +119,8 @@ percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
 EOF
     $QT_QMAKE $am_have_qt_pro -o $am_have_qt_makefile
-    QT_CXXFLAGS=`make -f $am_have_qt_makefile CXXFLAGS INCPATH`
-    QT_LIBS=`make -f $am_have_qt_makefile LIBS`
+    QT_CXXFLAGS=`make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
+    QT_LIBS=`make -s -f $am_have_qt_makefile LIBS`
     rm $am_have_qt_pro $am_have_qt_makefile
 
     # Look for specific tools in $PATH
