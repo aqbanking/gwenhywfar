@@ -294,8 +294,8 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
         s=GWEN_StringListEntry_Data(se);
         if (s && *s) {
           rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-              s,
-              GNUTLS_X509_FMT_PEM);
+						    s,
+                                                    GNUTLS_X509_FMT_PEM);
           if (rv<=0) {
             DBG_WARN(GWEN_LOGDOMAIN,
                      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
@@ -408,9 +408,18 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
   /* find default trust file if none is selected */
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
+#if GWEN_TLS_USE_BUILTIN_CERTIFICATES
+    /* disable setting of default trust file as discussed on aqbanking-users.
+     * The rationale is that without this file being set gnutls should behave
+     * correctly on each system.
+     * On Linux systems it should use the standard mechanism of the underlying
+     * distribution. On Windows the default CA store should be used (if given
+     * "--with-default-trust-store-file" to "./configure" of GNUTLS).
+     */
     int trustFileSet=0;
-#if 0
-# ifndef OS_WIN32
+
+# if 0
+#  ifndef OS_WIN32
     /* try to find OpenSSL certificates */
     if (trustFileSet==0) {
       GWEN_STRINGLIST *paths;
@@ -445,10 +454,10 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
       GWEN_Buffer_free(nbuf);
     }
-# endif
+#  endif
 
 
-# ifndef OS_WIN32
+#  ifndef OS_WIN32
     /* try to find ca-certificates (at least available on Debian systems) */
     if (trustFileSet==0) {
       rv=GWEN_Directory_GetPath("/usr/share/ca-certificates", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
@@ -463,8 +472,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
     }
 
+#  endif
 # endif
-#endif
 
 
     if (trustFileSet==0) {
@@ -505,6 +514,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     if (trustFileSet==0) {
       DBG_WARN(GWEN_LOGDOMAIN, "No default bundle file found");
     }
+#endif
   }
 
   /* possibly set trust file */

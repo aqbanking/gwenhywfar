@@ -317,6 +317,24 @@ fi
 
 ###-------------------------------------------------------------------------
 #
+# check whether accompanying certificates should be used
+#
+
+AC_MSG_CHECKING(whether builtin trusted certificates should be set)
+AC_ARG_ENABLE(builtin-certs,
+  [  --enable-builtin-certs         use built-in certificates (default=no)],
+  enable_builtin_certs="$enableval",
+  enable_builtin_certs="no")
+AC_MSG_RESULT($enable_builtin_certs)
+
+if test "$enable_builtin_certs" != "no"; then
+  AC_DEFINE(GWEN_TLS_USE_BUILTIN_CERTIFICATES, 1, [whether builtin trusted certificates should be set])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # check whether 'make check' should run checks that depend on network connectivity
 #
 
