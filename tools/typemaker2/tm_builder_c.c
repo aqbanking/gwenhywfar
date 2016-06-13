@@ -321,6 +321,52 @@ static int _buildPostHeaders(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildEndHeaders(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  TYPEMAKER2_TYPEMANAGER *tym GWEN_UNUSED;
+  TYPEMAKER2_HEADER_LIST *hl;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* handle post-headers */
+  hl=Typemaker2_Type_GetHeaders(ty);
+  if (hl) {
+    TYPEMAKER2_HEADER *h;
+
+    h=Typemaker2_Header_List_First(hl);
+    if (h) {
+      GWEN_Buffer_AppendString(tbuf, "/* end-headers */\n");
+      while(h) {
+	if (Typemaker2_Header_GetLocation(h)==Typemaker2_HeaderLocation_HeaderEnd) {
+	  GWEN_Buffer_AppendString(tbuf, "#include ");
+
+	  if (Typemaker2_Header_GetType(h)==Typemaker2_HeaderType_System) {
+	    GWEN_Buffer_AppendString(tbuf, "<");
+	    GWEN_Buffer_AppendString(tbuf, Typemaker2_Header_GetFileName(h));
+	    GWEN_Buffer_AppendString(tbuf, ">");
+	  }
+	  else {
+	    GWEN_Buffer_AppendString(tbuf, "\"");
+	    GWEN_Buffer_AppendString(tbuf, Typemaker2_Header_GetFileName(h));
+	    GWEN_Buffer_AppendString(tbuf, "\"");
+	  }
+	  GWEN_Buffer_AppendString(tbuf, "\n");
+	}
+	h=Typemaker2_Header_List_Next(h);
+      }
+    }
+    GWEN_Buffer_AppendString(tbuf, "\n");
+  }
+
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
 static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -7005,6 +7051,11 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     return rv;
   }
 
+  rv=_buildEndHeaders(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
   return 0;
 }

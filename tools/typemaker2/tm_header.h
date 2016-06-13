@@ -31,7 +31,8 @@ enum {
   Typemaker2_HeaderLocation_Pre=0,
   Typemaker2_HeaderLocation_Post,
   Typemaker2_HeaderLocation_Code,
-  Typemaker2_HeaderLocation_CodeEnd
+  Typemaker2_HeaderLocation_CodeEnd,
+  Typemaker2_HeaderLocation_HeaderEnd
 };
 
 
