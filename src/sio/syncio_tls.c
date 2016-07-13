@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 28 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2010, 2016 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -1327,7 +1327,14 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
     GWEN_SyncIo_Disconnect(baseIo);
 #ifdef GNUTLS_E_PREMATURE_TERMINATION
     if (rv==GNUTLS_E_PREMATURE_TERMINATION) {
-      return GWEN_ERROR_SSL_PREMATURE_CLOSE;
+      if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!), ignoring.");
+	return 0; /* report EOF */
+      }
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!)");
+	return GWEN_ERROR_SSL_PREMATURE_CLOSE;
+      }
     }
 #endif
     return GWEN_ERROR_SSL;
