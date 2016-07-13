@@ -227,6 +227,11 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
     GWEN_SyncIo_AddFlags(sioTls,
                          GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT|
                          GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
+
+    if (sess->flags & GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE) {
+      /* make TLS layer ignore problem of premature connection termination */
+      GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE);
+    }
   }
 
 
