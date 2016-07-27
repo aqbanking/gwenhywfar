@@ -17,3 +17,19 @@ Callgraphs
   C++: genfull -g cppdepn
 - Show callgraph for s specific function:
   gengraph -f FUNCTION_NAME -o OUTFILENAME --output-type=png
+
+
+
+
+# read openssl certs
+d = opendir("/etc/ssl/certs");
+gnutls_certificate_allocate_credentials(&ca_list);
+while ((dent = readdir(d)) != NULL) {
+  sprintf(ca_file, "/etc/ssl/certs/%s", dent->d_name);
+  stat(ca_file, &s);
+  if (!S_ISREG(s.st_mode)) continue;
+  gnutls_certificate_set_x509_trust_file(ca_list, ca_file,
+       GNUTLS_X509_FMT_PEM);
+}
+closedir(d);
+
