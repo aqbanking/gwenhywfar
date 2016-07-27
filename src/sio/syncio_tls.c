@@ -474,7 +474,6 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
     }
 
 # endif
-#endif
 
 
     if (trustFileSet==0) {
