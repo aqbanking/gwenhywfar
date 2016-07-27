@@ -264,7 +264,8 @@ int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf) {
 
 
 
-#if 0
+#if GWEN_TLS_USE_SYSTEM_CERTIFICATES
+# ifndef OS_WIN32
 static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder) {
   GWEN_SYNCIO_TLS *xio;
   int rv;
@@ -320,6 +321,7 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
 
   return successfullTustFileCount;
 }
+# endif
 #endif
 
 
@@ -408,7 +410,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
   /* find default trust file if none is selected */
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
-#if GWEN_TLS_USE_BUILTIN_CERTIFICATES
+#if GWEN_TLS_USE_SYSTEM_CERTIFICATES
     /* disable setting of default trust file as discussed on aqbanking-users.
      * The rationale is that without this file being set gnutls should behave
      * correctly on each system.
@@ -418,8 +420,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
      */
     int trustFileSet=0;
 
-# if 0
-#  ifndef OS_WIN32
+# ifndef OS_WIN32
     /* try to find OpenSSL certificates */
     if (trustFileSet==0) {
       GWEN_STRINGLIST *paths;
@@ -454,10 +455,10 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
       GWEN_Buffer_free(nbuf);
     }
-#  endif
+# endif
 
 
-#  ifndef OS_WIN32
+# ifndef OS_WIN32
     /* try to find ca-certificates (at least available on Debian systems) */
     if (trustFileSet==0) {
       rv=GWEN_Directory_GetPath("/usr/share/ca-certificates", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
@@ -472,44 +473,17 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
     }
 
-#  endif
 # endif
+#endif
 
 
     if (trustFileSet==0) {
-      GWEN_STRINGLIST *paths;
 
-      /* try to find our trust file */
-      paths=GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_DATADIR);
-      if (paths) {
-        GWEN_BUFFER *nbuf;
-
-        nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-        rv=GWEN_Directory_FindFileInPaths(paths,
-                                          "ca-bundle.crt",
-                                          nbuf);
-        GWEN_StringList_free(paths);
-        if (rv==0) {
-          DBG_INFO(GWEN_LOGDOMAIN,
-                   "Using default ca-bundle from [%s]",
-                   GWEN_Buffer_GetStart(nbuf));
-          rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-              GWEN_Buffer_GetStart(nbuf),
-              GNUTLS_X509_FMT_PEM);
-          if (rv<=0) {
-            DBG_ERROR(GWEN_LOGDOMAIN,
-                      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
-                      GWEN_Buffer_GetStart(nbuf), rv, gnutls_strerror(rv));
-          }
-          else {
-            DBG_INFO(GWEN_LOGDOMAIN,
-                     "Added %d trusted certs", rv);
-            trustFileSet=1;
-          }
-        }
-        GWEN_Buffer_free(nbuf);
-      }
+        /* TODO: use gnutls_certificate_set_x509_system_trust() */
+        trustFileSet=1;
     }
+
+
 
     if (trustFileSet==0) {
       DBG_WARN(GWEN_LOGDOMAIN, "No default bundle file found");

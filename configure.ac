@@ -320,15 +320,15 @@ fi
 # check whether accompanying certificates should be used
 #
 
-AC_MSG_CHECKING(whether builtin trusted certificates should be set)
-AC_ARG_ENABLE(builtin-certs,
-  [  --enable-builtin-certs         use built-in certificates (default=no)],
-  enable_builtin_certs="$enableval",
-  enable_builtin_certs="no")
-AC_MSG_RESULT($enable_builtin_certs)
+AC_MSG_CHECKING(whether system-wide trusted certificates should be set)
+AC_ARG_ENABLE(system-certs,
+  [  --enable-system-certs         use system-wide certificates (default=no)],
+  enable_system_certs="$enableval",
+  enable_system_certs="no")
+AC_MSG_RESULT($enable_system_certs)
 
-if test "$enable_builtin_certs" != "no"; then
-  AC_DEFINE(GWEN_TLS_USE_BUILTIN_CERTIFICATES, 1, [whether builtin trusted certificates should be set])
+if test "$enable_system_certs" != "no"; then
+  AC_DEFINE(GWEN_TLS_USE_SYSTEM_CERTIFICATES, 1, [whether system-wide trusted certificates should be set])
 fi
 
 
@@ -1515,6 +1515,7 @@ echo "Buffer Default Hard Limit     : $gwenhywfar_buffer_hardlimit"
 echo "Symbol Visibility             : $visibility_supported"
 echo "OpenSSL Support for gct-tool  : $ssl_available"
 echo "GUI Support                   : $gwenhywfar_guis"
+echo "Use system-wide certificates  : $enable_system_certs"
 
 if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
   echo "GNUTLS                        : 1.6.1 or higher"
