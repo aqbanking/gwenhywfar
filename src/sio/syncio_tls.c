@@ -303,8 +303,7 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
                      s, rv, gnutls_strerror(rv));
           }
           else {
-            DBG_INFO(GWEN_LOGDOMAIN,
-                     "Added %d trusted certs from [%s]", rv, s);
+            DBG_INFO(GWEN_LOGDOMAIN, "Added %d trusted certs from [%s]", rv, s);
             successfullTustFileCount++;
           }
         }
@@ -430,9 +429,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       GWEN_StringList_AppendString(paths, "/etc/ssl/certs", 0, 0);
 
       nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=GWEN_Directory_FindFileInPaths(paths,
-                                        "ca-certificates.crt",
-                                        nbuf);
+      rv=GWEN_Directory_FindFileInPaths(paths, "ca-certificates.crt", nbuf);
       GWEN_StringList_free(paths);
       if (rv==0) {
         DBG_INFO(GWEN_LOGDOMAIN,
