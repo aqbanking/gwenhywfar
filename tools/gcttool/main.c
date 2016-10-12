@@ -224,6 +224,9 @@ int main(int argc, char **argv) {
 			     I18N("  update:\n"
 				  "    Update Crypt Token to newer version (e.g. OpenHBCI key"
 				  "files)\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
+			     I18N("  showpasswords:\n"
+				  "    Display passwords store in a GWEN_PASSWD_STORE file\n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
@@ -272,6 +275,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "checkTree")==0) {
     rv=checkTree(db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "showpasswords")==0) {
+    rv=showPasswords(db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

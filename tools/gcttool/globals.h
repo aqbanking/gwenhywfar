@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: globals.h 923 2005-11-19 03:35:10Z aquamaniac $
  begin       : Mon Mar 01 2004
  copyright   : (C) 2004 by Martin Preuss
  email       : martin@libchipcard.de
@@ -56,6 +53,8 @@ int changePin(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 int checkTree(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+int showPasswords(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 
 #endif /* GCTTOOL_GLOBALS_H */

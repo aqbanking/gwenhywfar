@@ -19,6 +19,7 @@ gct_tool_SOURCES=\
   setkey.c \
   hashtree.c \
   checktree.c \
+  showpasswords.c \
   main.c
 
 gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
