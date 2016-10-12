@@ -723,4 +723,81 @@ int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, ch
 
 
 
+int GWEN_PasswordStore_GetTokenList(GWEN_PASSWD_STORE *sto, GWEN_STRINGLIST *sl) {
+  int rv;
+  GWEN_FSLOCK *lck;
+  GWEN_FSLOCK_RESULT rs;
+  int pwErrors;
+  GWEN_DB_NODE *dbVar;
+
+  /* make sure path exists */
+  rv=GWEN_Directory_GetPath(sto->fileName, GWEN_PATH_FLAGS_VARIABLE);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* lock file */
+  lck=GWEN_FSLock_new(sto->fileName, GWEN_FSLock_TypeFile);
+  rs=GWEN_FSLock_Lock(lck, 60*1000, 0);
+  if (rs!=GWEN_FSLock_ResultOk) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rs);
+    return GWEN_ERROR_IO;
+  }
+
+  /* read and decode file */
+  rv=GWEN_PasswordStore_ReadFile(sto);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_FSLock_Unlock(lck);
+    GWEN_FSLock_free(lck);
+    return rv;
+  }
+
+  /* unlock file */
+  GWEN_FSLock_Unlock(lck);
+  GWEN_FSLock_free(lck);
+
+
+  /* read list of tokens from the file */
+  pwErrors=0;
+  dbVar=GWEN_DB_GetFirstVar(sto->dbPasswords);
+  while(dbVar) {
+    const char *s;
+
+    s=GWEN_DB_VariableName(dbVar);
+    if (s && *s) {
+      GWEN_BUFFER *buf;
+      int rv;
+
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=GWEN_Text_UnescapeToBufferTolerant(s, buf);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error unescaping token name (%d), ignoring", rv);
+	pwErrors++;
+      }
+      else {
+	GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(buf), 0, 0);
+      }
+      GWEN_Buffer_free(buf);
+    }
+    else
+      pwErrors++;
+
+    dbVar=GWEN_DB_GetNextVar(dbVar);
+  }
+
+  /* release passwords */
+  GWEN_PasswordStore_SafeFreeDb(sto);
+
+  if (pwErrors) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Got %d errors.", pwErrors);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
+
+
+
 

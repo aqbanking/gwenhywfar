@@ -27,6 +27,7 @@
 
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/stringlist.h>
 
 
 #ifdef __cplusplus
@@ -51,6 +52,8 @@ int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, co
 GWENHYWFAR_API
 int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, char *buffer, int minLen, int maxLen);
 
+GWENHYWFAR_API
+int GWEN_PasswordStore_GetTokenList(GWEN_PASSWD_STORE *sto, GWEN_STRINGLIST *sl);
 
 
 #ifdef __cplusplus
