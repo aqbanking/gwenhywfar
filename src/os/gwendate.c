@@ -50,7 +50,7 @@ GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d) {
   GWEN_DATE *gd;
 
   if (m<1 || m>12 || d<1 || d>31) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date format");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date values (erroneous year=%d, month=%d, day=%d)", y, m, d);
     return NULL;
   }
 
@@ -153,10 +153,13 @@ GWEN_DATE *GWEN_Date_fromString(const char *s) {
   int y, m, d;
 
   if (3==sscanf(s, "%04d%02d%02d", &y, &m, &d)) {
-    return GWEN_Date_fromGregorian(y, m, d);
+    GWEN_DATE *result = GWEN_Date_fromGregorian(y, m, d);
+    if (!result)
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
+    return result;
   }
   else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date [%s]", s);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
     return NULL;
   }
 }
@@ -380,7 +383,7 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
   /* get time in local time */
   gwt=GWEN_Date_fromGregorian(year, month, day);
   if (!gwt) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
     return 0;
   }
   return gwt;
