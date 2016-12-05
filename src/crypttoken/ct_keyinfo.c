@@ -17,6 +17,7 @@
 #include "ct_keyinfo_p.h"
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -313,16 +314,119 @@ void GWEN_Crypt_Token_KeyInfo_SetKeyDescr(GWEN_CRYPT_TOKEN_KEYINFO *ki, const ch
     ki->keyDescr=NULL;
 }
 
+void GWEN_Crypt_Token_KeyInfo_Dump(GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+  const char * s;
+  uint32_t flags=0;
 
+  assert(ki);
 
+  fprintf(stdout, "-------------------------------------------------\n");
+  fprintf(stdout, "Key %08x\n",
+	  (unsigned int)GWEN_Crypt_Token_KeyInfo_GetKeyId(ki));
 
-
-
-
-
-
-
-
-
-
-
+  s=GWEN_Crypt_Token_KeyInfo_GetKeyDescr(ki);
+  if (s)
+    fprintf(stdout, "Key Descr  : %s\n", s);
+	
+  fprintf(stdout, "Crypt Algo : %s\n",
+	  GWEN_Crypt_CryptAlgoId_toString(GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(ki)));
+  fprintf(stdout, "Key Size   : %d\n", GWEN_Crypt_Token_KeyInfo_GetKeySize(ki));
+  
+  fprintf(stdout, "Key Flags  :");
+  flags=GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSTATUS)
+    fprintf(stdout, " STATUS");
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS)
+    fprintf(stdout, " MODULUS");
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)
+    fprintf(stdout, " EXPONENT");
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
+    fprintf(stdout, " KEYVERSION");
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
+    fprintf(stdout, " KEYNUMBER");
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
+    fprintf(stdout, " SIGNCOUNTER");
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS) {
+    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN)
+      fprintf(stdout, " SIGN");
+    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY)
+      fprintf(stdout, " VERIFY");
+    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER)
+      fprintf(stdout, " ENCIPHER");
+    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER)
+      fprintf(stdout, " DECIPHER");
+  }
+  fprintf(stdout, "\n");
+  
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
+    fprintf(stdout, "Key Number : %d\n", GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
+    fprintf(stdout, "Key Version: %d\n", GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
+    fprintf(stdout, "Sign Cnt   : %d\n", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) {
+    GWEN_BUFFER *tbuf;
+    const uint8_t *p;
+    uint32_t len;
+    int nbits;
+    
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    p=(const uint8_t*)GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+    len=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+    
+    nbits=len*8;
+    while(len && *p==0) {
+      p++;
+      len--;
+      nbits-=8;
+    }
+    if (len) {
+      int i;
+      uint8_t mask=0x80;
+      uint8_t b=*p;
+      
+      for (i=0; i<8; i++) {
+	if (b & mask)
+	  break;
+	nbits--;
+	mask>>=1;
+      }
+    }
+    
+    fprintf(stdout, "Modulus    : (%d bits)\n", nbits);
+    
+    while(len) {
+      uint32_t rl;
+      
+      rl=(len>16)?16:len;
+      GWEN_Text_ToHexBuffer((const char*)p, rl, tbuf, 2, ' ', 0);
+      fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+      p+=rl;
+      len-=rl;
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+  
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT) {
+    GWEN_BUFFER *tbuf;
+    const char *p;
+    uint32_t len;
+    
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    fprintf(stdout, "Exponent   : \n");
+    p=(const char*)GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
+    len=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
+    while(len) {
+      uint32_t rl;
+      
+      rl=(len>16)?16:len;
+      GWEN_Text_ToHexBuffer(p, rl, tbuf, 2, ' ', 0);
+      fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+      p+=rl;
+      len-=rl;
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+}

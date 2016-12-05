@@ -99,6 +99,9 @@ const char *GWEN_Crypt_Token_KeyInfo_GetKeyDescr(const GWEN_CRYPT_TOKEN_KEYINFO 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetKeyDescr(GWEN_CRYPT_TOKEN_KEYINFO *ki, const char *s);
 
+GWENHYWFAR_API
+void GWEN_Crypt_Token_KeyInfo_Dump(GWEN_CRYPT_TOKEN_KEYINFO *ki);
+
 
 GWENHYWFAR_API
 GWEN_CRYPT_CRYPTALGOID GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
