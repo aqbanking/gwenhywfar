@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: cbanking_p.h 409 2005-08-05 18:13:06Z aquamaniac $
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2017 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************

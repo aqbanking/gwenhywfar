@@ -2014,10 +2014,10 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
 
 
 int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
-    const char *url,
-    const char *defaultProto,
-    int defaultPort,
-    GWEN_SYNCIO **pSio) {
+                                              const char *url,
+                                              const char *defaultProto,
+                                              int defaultPort,
+                                              GWEN_SYNCIO **pSio) {
   GWEN_URL *u;
   const char *s;
   int port;
@@ -2335,11 +2335,12 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
 
 
 static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
-    const char *token,
-    const char *pin,
-    GWEN_GUI_PASSWORD_STATUS status,
-    GWEN_UNUSED uint32_t guiid) {
+                                                             const char *token,
+                                                             const char *pin,
+                                                             GWEN_GUI_PASSWORD_STATUS status,
+                                                             GWEN_UNUSED uint32_t guiid) {
   if (token==NULL && pin==NULL && status==GWEN_Gui_PasswordStatus_Remove) {
+    /* complete cleaning is requested */
     if (gui->passwdStore)
       GWEN_PasswordStore_ClearStoragePasswd(gui->passwdStore);
     if (gui->persistentPasswords==0)
@@ -2348,6 +2349,7 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
   else {
     GWEN_BUFFER *hbuf;
 
+    /* setting ststus of a specific password/pin */
     hbuf=GWEN_Buffer_new(0, 64, 0, 1);
     GWEN_Gui__HashPair(token, pin, hbuf);
     if (status==GWEN_Gui_PasswordStatus_Bad) {

@@ -415,6 +415,7 @@ int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
  * </p>
  */
 /*@{*/
+
 /**
  * <p>
  * Show a message box with optional buttons.
@@ -518,7 +519,6 @@ int GWEN_Gui_InputBox(uint32_t flags,
  * This function MUST return immediately (non-blocking).
  * </p>
  * @return returns an id to be presented to @ref GWEN_Gui_HideBox.
- * @param ab banking interface
  * @param flags flags, see @ref GWEN_GUI_SHOWBOX_FLAGS_BEEP ff
  * @param title title of the box
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
@@ -535,7 +535,6 @@ uint32_t GWEN_Gui_ShowBox(uint32_t flags,
  * <p>
  * This function MUST return immediately (non-blocking).
  * </p>
- * @param ab banking interface
  * @param id id returned by @ref GWEN_Gui_ShowBox. If @b 0 then the last
  * message shown is referred to.
  */
@@ -738,7 +737,8 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
  */
 GWENHYWFAR_API
 int GWEN_Gui_LogHook(const char *logDomain,
-                     GWEN_LOGGER_LEVEL priority, const char *s);
+                     GWEN_LOGGER_LEVEL priority,
+		     const char *s);
 
 
 /**
@@ -754,6 +754,22 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
                             GWEN_SOCKET_LIST2 *writeSockets,
                             uint32_t guiid,
                             int msecs);
+
+/**
+ * This function creates a base layer GWEN_SYNCIO.
+ * The idea is to allow applications to implement their own PROXY handling.
+ * @param url url to which the caller wants to connect to. You should call @ref GWEN_Url_fromString()
+ *   to get the information required to determine the protocol and destination.
+ * @param defaultProto default protocol name if not specified by the url (e.g. "http", "https", "hbci")
+ * @param defaultPort default port if not specified by the url
+ * @param pSio pointer to a variable to receive the created GWEN_SYNCIO.
+ */
+GWENHYWFAR_API
+int GWEN_Gui_GetSyncIo(const char *url,
+                       const char *defaultProto,
+                       int defaultPort,
+                       GWEN_SYNCIO **pSio);
+
 
 /**
  * This function checks the given certificate.
@@ -784,24 +800,67 @@ int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
                                      unsigned char *buffer,
                                      unsigned int bufLength);
 
+
+/*@}*/
+
+
+/** @name Dialogs
+ *
+ * Providing dialog functionality is optional for the implementation.
+ * The internal implementations of the password and message box functions
+ * internally use dialog functions, so if your implementation of GWEN_GUI
+ * also implements the dialogs API then you're already set for most of the
+ * interactive callbacks.
+ */
+/*@{*/
+
 /**
  * This function shows and executes the given dialog and returns the result.
  * See @ref MOD_GUI_DIALOG for a description of the dialog framework.
+ *
+ * @return <0: error code, 0: aborted, 1: accepted (e.g. "Ok" pressed)
+ * @param dlg pointer to the dialog object
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart, @ref GWEN_Gui_ShowBox or as can be found
  * via @ref GWEN_Dialog_GetGuiId())
- * @return <0: error code, 0: aborted, 1: accepted (e.g. "Ok" pressed)
  */
 GWENHYWFAR_API
 int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
 
-
+/**
+ * Open a dialog.
+ * This function should create all the necessary dialog resources (=windows) and return.
+ *
+ * @return <0: error code
+ * @param dlg pointer to the dialog object
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart, @ref GWEN_Gui_ShowBox or as can be found
+ * via @ref GWEN_Dialog_GetGuiId())
+ */
 GWENHYWFAR_API
 int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid);
 
+
+/**
+ * Close a dialog.
+ * This function should hide the given dialog and release all its resources.
+ *
+ * @return <0: error code
+ * @param dlg pointer to the dialog object
+ * @param guiid id as returned by @ref GWEN_Gui_ProgressStart, @ref GWEN_Gui_ShowBox or as can be found
+ * via @ref GWEN_Dialog_GetGuiId())
+ */
 GWENHYWFAR_API
 int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg);
 
+
+/**
+ * Run a dialog.
+ * This function should run the given dialog and return when the user is done with it.
+ *
+ * @return <0: error code, 0: aborted, 1: accepted (e.g. "Ok" pressed)
+ * @param dlg pointer to the dialog object
+ * @param untilEnd if not zero, the dialog should run until completely finished (e.g. "OK" pressed)
+ */
 GWENHYWFAR_API
 int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int untilEnd);
 
@@ -813,19 +872,14 @@ typedef enum {
 
 } GWEN_GUI_FILENAME_TYPE;
 
-
 /**
  * This function is used to get the path and name of a single file or folder.
  *
  * @param caption title for the dialog
- *
  * @param fnt type of the operation (see @ref GWEN_Gui_FileNameType_OpenFileName and following)
- *
  * @param flags currently reserved, use 0
- *
  * @param patterns multiple tab-separated entries like in:
  *   "All Files (*)\tC++ Sources (*.cpp,*.cc)\tC++ Headers (*.hpp,*.hh,*.h)"
- *
  * @param pathBuffer upon call this may contain a preselected path/filename, upon return
  *   this will contain the selected name
  *
@@ -839,23 +893,10 @@ int GWEN_Gui_GetFileName(const char *caption,
                          GWEN_BUFFER *pathBuffer,
                          uint32_t guiid);
 
-/**
- * This function creates a base layer GWEN_SYNCIO.
- * The idea is to allow applications to implement their own PROXY handling.
- * @param url url to which the caller wants to connect to. You should call @ref GWEN_Url_fromString()
- *   to get the information required to determine the protocol and destination.
- * @param defaultProto default protocol name if not specified by the url (e.g. "http", "https", "hbci")
- * @param defaultPort default port if not specified by the url
- * @param pSio pointer to a variable to receive the created GWEN_SYNCIO.
- */
-GWENHYWFAR_API
-int GWEN_Gui_GetSyncIo(const char *url,
-                       const char *defaultProto,
-                       int defaultPort,
-                       GWEN_SYNCIO **pSio);
-
-
 /*@}*/
+
+
+
 
 
 
@@ -886,6 +927,7 @@ GWENHYWFAR_API void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl);
 
 
 GWENHYWFAR_API const char *GWEN_Gui_GetName(void);
+
 
 
 /** @name Password Cache
@@ -919,8 +961,19 @@ GWEN_DB_NODE *GWEN_Gui_GetPasswordDb(const GWEN_GUI *gui);
 /*@}*/
 
 
+
+/** @name Password Store
+ * This is the second level password storage. It can be used to safely store passwords
+ * in an encrypted file. This is used when a pin/password is requested which is not already
+ * in the password db (see Password Cache). This store is consulted if a given password is
+ * not found in the current pasword db (see @ref GWEN_Gui_SetPasswordDb).
+ */
+/**@{*/
+
 GWENHYWFAR_API GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui);
 GWENHYWFAR_API void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto);
+/*@}*/
+
 
 
 /** Returns the minimum log level needed to show progress logs */
