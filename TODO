@@ -9,6 +9,17 @@ http://curl.haxx.se/docs/caextract.html
 
 
 
+# get a list of exported functions:
+nm libgwenhywfar.so | grep ' T ' | awk '{ print $3 }' | less
+# or
+nm libgwenhywfar.so | grep ' T ' | cut -c20- | sort
+
+# get a list of functions imported from other libraries
+nm libgwenhywfar.so | grep ' U ' | awk '{ print $2 }' | less
+# or 
+nm libgwenhywfar.so | grep ' U ' | cut -c20- | sort | uniq
+
+
 Callgraphs
 
 - Generate callgraphs:
