@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2002-2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -91,10 +91,6 @@ GWEN_GUI *GWEN_Gui_CGui_new(void) {
   GWEN_Gui_SetProgressLogFn(gui, GWEN_Gui_CGui_ProgressLog);
   GWEN_Gui_SetProgressEndFn(gui, GWEN_Gui_CGui_ProgressEnd);
 
-  cgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, GWEN_Gui_CGui_CheckCert);
-
-  cgui->dbCerts=GWEN_DB_Group_new("certs");
-
   return gui;
 }
 
@@ -105,67 +101,8 @@ void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
 
   cgui=(GWEN_GUI_CGUI*)p;
   GWEN_Gui_CProgress_List_free(cgui->progressList);
-  GWEN_DB_Group_free(cgui->dbCerts);
   GWEN_FREE_OBJECT(cgui);
 }
-
-
-
-#ifndef NO_DEPRECATED_SYMBOLS
-const char *GWEN_Gui_CGui_GetCharSet(const GWEN_GUI *gui) {
-  return GWEN_Gui_GetCharSet(gui);
-}
-
-
-
-void GWEN_Gui_CGui_SetCharSet(GWEN_GUI *gui, const char *s) {
-  GWEN_Gui_SetCharSet(gui, s);
-}
-
-
-
-int GWEN_Gui_CGui_GetIsNonInteractive(const GWEN_GUI *gui) {
-  return GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE;
-}
-
-
-
-void GWEN_Gui_CGui_SetIsNonInteractive(GWEN_GUI *gui, int i) {
-  if (i)
-    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
-  else
-    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_NONINTERACTIVE);
-}
-
-
-
-int GWEN_Gui_CGui_GetAcceptAllValidCerts(const GWEN_GUI *gui) {
-  return GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS;
-}
-
-
-
-void GWEN_Gui_CGui_SetAcceptAllValidCerts(GWEN_GUI *gui, int i) {
-  if (i)
-    GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
-  else
-    GWEN_Gui_SubFlags(gui, GWEN_GUI_FLAGS_ACCEPTVALIDCERTS);
-}
-
-
-
-void GWEN_Gui_CGui_SetPasswordDb(GWEN_GUI *gui, GWEN_DB_NODE *dbPasswords, int persistent) {
-  GWEN_Gui_SetPasswordDb(gui, dbPasswords, persistent);
-}
-
-
-
-GWEN_DB_NODE *GWEN_Gui_CGui_GetPasswordDb(const GWEN_GUI *gui) {
-  return GWEN_Gui_GetPasswordDb(gui);
-}
-#endif	// ifndef NO_DEPRECATED_SYMBOLS
-
-
 
 
 
@@ -571,8 +508,12 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
     rv=GWEN_Gui_CGui__input(gui, flags, buffer, minLen, maxLen, guiid);
   }
 
-  if ((rv==0) && (GWEN_Gui_GetFlags(gui) & GWEN_CGUI_FLAGS_PERMPASSWORDS))
+  if ((rv==0) && (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_PERMPASSWORDS)) {
+    /* if the user allows it (by setting flag GWEN_GUI_FLAGS_PERMPASSWORDS)
+     * return 1, meaning the input may be stored in a permanent password store */
     return 1;
+  }
+
   return rv;
 }
 
@@ -749,137 +690,5 @@ int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui,uint32_t id) {
   }
 }
 
-
-
-int GWEN_Gui_CGui_Print(GWEN_UNUSED GWEN_GUI *gui,
-                        GWEN_UNUSED const char *docTitle,
-                        GWEN_UNUSED const char *docType,
-                        GWEN_UNUSED const char *descr,
-                        GWEN_UNUSED const char *text,
-                        GWEN_UNUSED uint32_t guiid) {
-  return GWEN_ERROR_NOT_SUPPORTED;
-}
-
-
-
-int GWEN_Gui_CGui__HashPair(const char *token,
-                            const char *pin,
-                            GWEN_BUFFER *buf) {
-  GWEN_MDIGEST *md;
-  int rv;
-
-  /* hash token and pin */
-  md=GWEN_MDigest_Md5_new();
-  rv=GWEN_MDigest_Begin(md);
-  if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)token, strlen(token));
-  if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)pin, strlen(pin));
-  if (rv==0)
-    rv=GWEN_MDigest_End(md);
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Hash error (%d)", rv);
-    GWEN_MDigest_free(md);
-    return rv;
-  }
-
-  GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
-                        GWEN_MDigest_GetDigestSize(md),
-                        buf,
-                        0, 0, 0);
-  GWEN_MDigest_free(md);
-  return 0;
-}
-
-
-
-int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
-    const GWEN_SSLCERTDESCR *cd,
-    GWEN_SYNCIO *sio, uint32_t guiid) {
-  GWEN_GUI_CGUI *cgui;
-  const char *hash;
-  const char *status;
-  GWEN_BUFFER *hbuf;
-  int i;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  hash=GWEN_SslCertDescr_GetFingerPrint(cd);
-  status=GWEN_SslCertDescr_GetStatusText(cd);
-
-  hbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  GWEN_Gui_CGui__HashPair(hash, status, hbuf);
-
-  i=GWEN_DB_GetIntValue(cgui->dbCerts, GWEN_Buffer_GetStart(hbuf), 0, 1);
-  if (i==0) {
-    DBG_NOTICE(GWEN_LOGDOMAIN,
-               "Automatically accepting certificate [%s]",
-               hash);
-    GWEN_Buffer_free(hbuf);
-    return 0;
-  }
-
-  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
-    uint32_t fl;
-
-    fl=GWEN_SslCertDescr_GetStatusFlags(cd);
-    if (fl==GWEN_SSL_CERT_FLAGS_OK && (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS)) {
-      DBG_NOTICE(GWEN_LOGDOMAIN,
-                 "Automatically accepting valid new certificate [%s]",
-                 hash);
-      GWEN_Buffer_free(hbuf);
-      return 0;
-    }
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Automatically rejecting certificate [%s] (noninteractive)",
-                hash);
-      GWEN_Buffer_free(hbuf);
-      return GWEN_ERROR_USER_ABORTED;
-    }
-  }
-
-  if (cgui->checkCertFn) {
-    i=cgui->checkCertFn(gui, cd, sio, guiid);
-    if (i==0) {
-      GWEN_DB_SetIntValue(cgui->dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          GWEN_Buffer_GetStart(hbuf), i);
-    }
-    GWEN_Buffer_free(hbuf);
-
-    return i;
-  }
-  else {
-    GWEN_Buffer_free(hbuf);
-    return GWEN_ERROR_NOT_SUPPORTED;
-  }
-}
-
-
-
-void GWEN_Gui_CGui_SetCertDb(GWEN_GUI *gui, GWEN_DB_NODE *dbCerts) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  GWEN_DB_Group_free(cgui->dbCerts);
-  cgui->dbCerts=dbCerts;
-}
-
-
-
-GWEN_DB_NODE *GWEN_Gui_CGui_GetCertDb(const GWEN_GUI *gui) {
-  GWEN_GUI_CGUI *cgui;
-
-  assert(gui);
-  cgui=GWEN_INHERIT_GETDATA(GWEN_GUI, GWEN_GUI_CGUI, gui);
-  assert(cgui);
-
-  return cgui->dbCerts;
-}
 
 

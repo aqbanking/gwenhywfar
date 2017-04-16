@@ -1938,7 +1938,7 @@ int testMap2(int argc, char **argv) {
     s=(i & 1)?s2:s1;
     res=GWEN_IdMap_Insert(map, i, (void*)s);
     if (res!=GWEN_IdMapResult_Ok) {
-      fprintf(stderr, "FAILED: Could not set pointer %x (%d).\n",
+      fprintf(stderr, "FAILED: Could not set pointer %p (%d).\n",
               s, res);
       return 2;
     }
@@ -5005,7 +5005,7 @@ int testPasswordStore4(int argc, char **argv) {
   epw=argv[3];
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_AddFlags(gui, GWEN_CGUI_FLAGS_PERMPASSWORDS);
+  GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_PERMPASSWORDS);
   GWEN_Gui_SetGui(gui);
 
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
@@ -5048,7 +5048,7 @@ int testPasswordStore5(int argc, char **argv) {
   epw=argv[3];
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_AddFlags(gui, GWEN_CGUI_FLAGS_PERMPASSWORDS);
+  GWEN_Gui_AddFlags(gui, GWEN_GUI_FLAGS_PERMPASSWORDS);
   GWEN_Gui_SetGui(gui);
 
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);

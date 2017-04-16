@@ -32,9 +32,6 @@ struct GWEN_GUI_CGUI {
 
   uint32_t nextBoxId;
   uint32_t nextProgressId;
-
-  GWEN_GUI_CHECKCERT_FN checkCertFn;
-  GWEN_DB_NODE *dbCerts;
 };
 
 
@@ -100,23 +97,6 @@ int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
                               const char *text);
 
 int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui, uint32_t id);
-
-int GWEN_Gui_CGui_Print(GWEN_GUI *gui,
-                        const char *docTitle,
-                        const char *docType,
-                        const char *descr,
-                        const char *text,
-                        uint32_t guiid);
-
-int GWEN_Gui_CGui__HashPassword(const char *token,
-                                const char *pin,
-                                GWEN_BUFFER *buf);
-
-
-static int GWENHYWFAR_CB GWEN_Gui_CGui_CheckCert(GWEN_GUI *gui,
-    const GWEN_SSLCERTDESCR *cd,
-    GWEN_SYNCIO *sio, uint32_t guiid);
-
 
 #endif
 
