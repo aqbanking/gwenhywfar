@@ -786,6 +786,8 @@ void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto) {
     gui->passwdStore=sto;
     if (sto)
       gui->flags|=GWEN_GUI_FLAGS_PERMPASSWORDS;
+    else
+      gui->flags&=~GWEN_GUI_FLAGS_PERMPASSWORDS;
   }
 }
 
@@ -1483,6 +1485,10 @@ int GWEN_Gui_GetSyncIo(const char *url,
 
 
 
+
+
+
+
 int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
   GWEN_PROGRESS_DATA *highest=NULL;
   GWEN_PROGRESS_DATA *t;
@@ -1572,11 +1578,11 @@ void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd) {
 
 
 uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
-    uint32_t progressFlags,
-    const char *title,
-    const char *text,
-    uint64_t total,
-    uint32_t guiid) {
+                                         uint32_t progressFlags,
+                                         const char *title,
+                                         const char *text,
+                                         uint64_t total,
+                                         uint32_t guiid) {
   GWEN_PROGRESS_DATA *pdParent=NULL;
   GWEN_PROGRESS_DATA *pd;
   uint32_t id;
