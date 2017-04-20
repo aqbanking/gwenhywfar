@@ -87,6 +87,8 @@ protected:
                           char *buffer,
                           int minLen,
                           int maxLen,
+                          GWEN_GUI_PASSWORD_METHOD methodId,
+                          GWEN_DB_NODE *methodParams,
                           uint32_t guiid);
 
   virtual int setPasswordStatus(const char *token,

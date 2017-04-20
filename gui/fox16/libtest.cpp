@@ -144,7 +144,6 @@ int test2(int argc, char **argv) {
 
 int test3(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
-  FOX16_HtmlLabel *label;
   FOX16_Gui *gui;
   FXDialogBox *dbox;
   FXVerticalFrame *vf;
@@ -181,7 +180,7 @@ int test3(int argc, char **argv) {
   dbox=new FXDialogBox(&a, "Test", DECOR_ALL);
   vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
                          0, 0, 0, 0, 1, 1, 1, 1);
-  label=new FOX16_HtmlLabel(vf, FXString(testString), LAYOUT_FILL_X|LAYOUT_FILL_Y);
+  new FOX16_HtmlLabel(vf, FXString(testString), LAYOUT_FILL_X|LAYOUT_FILL_Y);
   new FXSpring(vf, LAYOUT_FILL_X | LAYOUT_FILL_Y);
   new FXLabel(vf, "Normal Testlabel");
 
@@ -259,7 +258,6 @@ int test4(int argc, char **argv) {
 
 int test5(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
-  FOX16_HtmlText *label;
   FOX16_Gui *gui;
   FXDialogBox *dbox;
   FXVerticalFrame *vf;
@@ -296,9 +294,9 @@ int test5(int argc, char **argv) {
   dbox=new FXDialogBox(&a, "Test", DECOR_ALL);
   vf=new FXVerticalFrame(dbox, LAYOUT_FILL_X | LAYOUT_FILL_Y,
                          0, 0, 0, 0, 1, 1, 1, 1);
-  label=new FOX16_HtmlText(vf, FXString(testString),
-                           LAYOUT_FILL_X|LAYOUT_FILL_Y |
-                           HSCROLLING_OFF | VSCROLLER_ALWAYS);
+  new FOX16_HtmlText(vf, FXString(testString),
+                     LAYOUT_FILL_X|LAYOUT_FILL_Y |
+                     HSCROLLING_OFF | VSCROLLER_ALWAYS);
   new FXSpring(vf, LAYOUT_FILL_X | LAYOUT_FILL_Y);
   new FXLabel(vf, "Normal Testlabel");
 
@@ -497,7 +495,8 @@ int test10(int argc, char **argv) {
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
 
-  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1,
+                          GWEN_Gui_PasswordMethod_Text, NULL, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error getting password: %d", rv);
     return 2;

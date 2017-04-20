@@ -1000,6 +1000,8 @@ int GWEN_Gui_GetPassword(uint32_t flags,
                          char *buffer,
                          int minLen,
                          int maxLen,
+                         GWEN_GUI_PASSWORD_METHOD methodId,
+                         GWEN_DB_NODE *methodParams,
                          uint32_t guiid) {
   if (gwenhywfar_gui) {
     if (gwenhywfar_gui->getPasswordFn)
@@ -1011,6 +1013,8 @@ int GWEN_Gui_GetPassword(uint32_t flags,
                                            buffer,
                                            minLen,
                                            maxLen,
+                                           methodId,
+                                           methodParams,
                                            guiid);
     else if (gwenhywfar_gui->inputBoxFn)
       return gwenhywfar_gui->inputBoxFn(gwenhywfar_gui,
@@ -2188,14 +2192,16 @@ static int GWEN_Gui__HashPair(const char *token, const char *pin, GWEN_BUFFER *b
 
 
 static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
-    uint32_t flags,
-    const char *token,
-    const char *title,
-    const char *text,
-    char *buffer,
-    int minLen,
-    int maxLen,
-    uint32_t guiid) {
+                                                       uint32_t flags,
+                                                       const char *token,
+                                                       const char *title,
+                                                       const char *text,
+                                                       char *buffer,
+                                                       int minLen,
+                                                       int maxLen,
+                                                       GWEN_GUI_PASSWORD_METHOD methodId,
+                                                       GWEN_DB_NODE *methodParams,
+                                                       uint32_t guiid) {
   if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
       (flags & GWEN_GUI_INPUT_FLAGS_DIRECT) ||
       (gui->dbPasswords==NULL)

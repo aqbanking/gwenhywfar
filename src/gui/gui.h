@@ -38,6 +38,14 @@
 #include <inttypes.h>
 
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
+
 /** @defgroup MOD_GUI Graphical User Interface
  *
  * @brief This module contains the definition of GWEN_GUI.
@@ -105,9 +113,64 @@
  */
 /*@{*/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
+
+/** @defgroup MOD_GUI_PASSWORD_METHOD Password Methods
+ *
+ * The pasword entry function is used by homebanking apps/libraries for input of passwords for keyfiles,
+ * for pin input and for tan input.
+ * FinTS in Germany uses several methods to get a tan; some just ask for transaction number (TAN) from a previously
+ * mailed list.  Others ask you to hold a special tan generator device to the monitor to let it read a special
+ * flicker graphic. Some show an image to the user from which he must derive the tan in some way.
+ * Therefore the password entry function needed to be extended to allow for a more generic way to ask the user
+ * for a password. Previously, some specific data was included in the text parameter, from which the GUI implementation
+ * needed to extract that data (i.e. "$OBEGIN" and "$OEND" for optical data.
+ *
+ * Therefore we define methods of pin/tan/password entry here with the matching methos parameters.
+ */
+/*@{*/
+
+/** @defgroup MOD_GUI_PASSWORD_METHOD_TEXT Textual Input
+ *
+ * This method doesn't need any parameters except those which are already defined by the function
+ * prototype (i.e. min/max length etc.)
+ *
+ */
+
+/** @defgroup MOD_GUI_PASSWORD_METHOD_OPTICALHHD Optical Input (i.e. flicker code)
+ *
+ * This method uses a so-called "challenge" which is chiefly a row of digits which are encoded in a
+ * flicker graphic which is then read by a specific card reader device which is held to the monitor to read
+ * that code.
+ * The possible contents of the methodParams are:
+ * <ul>
+ *   <li>char challenge: Hex code in ASCII form with a row of bytes to be converted to a flicker code (e.g. "123456789ABC" </li>
+ *   <li>char methodName: Name of the method (optional)</li>
+ *   <li>char methodDescription: Description of the method (optional)</li>
+ * </ul>
+ *
+ */
+
+
+/**
+ * Password/pin/tan entry method.
+ * The method id uses the higher 16 bits of a 32 bit word to define the method.
+ * The lower 16 bits are used to define the version of the method. E.g. the method for
+ * input using optical data (i.e. flicker code) knows multiple versions, currently 1.3 and 1.4.
+ * So the complete method id for optical input method HHD version 1.4 would be 0x20104.
+ * Use @ref GWEN_Gui_PasswordMethod_Mask to get the basic method id.
+ */
+typedef enum {
+  GWEN_Gui_PasswordMethod_Unknown   =0,
+  GWEN_Gui_PasswordMethod_Mask      =0xffff0000,
+  GWEN_Gui_PasswordMethod_Text      =0x10000,
+  GWEN_Gui_PasswordMethod_OpticalHHD=0x20000,
+} GWEN_GUI_PASSWORD_METHOD;
+
+
+/*@}*/
+
+
 
 
 typedef struct GWEN_GUI GWEN_GUI;
@@ -703,6 +766,9 @@ int GWEN_Gui_Print(const char *docTitle,
  * This means that if you want to ask the user for a PIN of at most 4
  * characters you need to supply a buffer of at least @b 5 bytes and provide
  * a 5 as maxLen.
+ * @param methodId Id of the pin/password/tan entry
+ * @param methodParams additional parameters for the pin/password/tan entry, content depends on
+ * the methodId (my be NULL for simple text input)
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
 GWENHYWFAR_API
@@ -713,6 +779,8 @@ int GWEN_Gui_GetPassword(uint32_t flags,
                          char *buffer,
                          int minLen,
                          int maxLen,
+                         GWEN_GUI_PASSWORD_METHOD methodId,
+                         GWEN_DB_NODE *methodParams,
                          uint32_t guiid);
 
 /**

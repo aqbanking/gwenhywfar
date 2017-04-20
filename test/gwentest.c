@@ -4973,7 +4973,8 @@ int testPasswordStore3(int argc, char **argv) {
   GWEN_Gui_SetPasswdStore(gui, sto);
   GWEN_Gui_SetPasswordDb(gui, dbPasswords, 0);
 
-  rv=GWEN_Gui_GetPassword(0, "TestVar1", "Get Password 1", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  rv=GWEN_Gui_GetPassword(0, "TestVar1", "Get Password 1", "Please enter password 1", pw, 4, sizeof(pw)-1,
+                          GWEN_Gui_PasswordMethod_Text, NULL, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error getting password: %d", rv);
     return 2;
@@ -5016,7 +5017,8 @@ int testPasswordStore4(int argc, char **argv) {
   GWEN_Gui_SetPasswdStore(gui, sto);
   GWEN_Gui_SetPasswordDb(gui, dbPasswords, 0);
 
-  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1,
+                          GWEN_Gui_PasswordMethod_Text, NULL, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error getting password: %d", rv);
     return 2;
@@ -5059,7 +5061,8 @@ int testPasswordStore5(int argc, char **argv) {
   GWEN_Gui_SetPasswdStore(gui, sto);
   GWEN_Gui_SetPasswordDb(gui, dbPasswords, 0);
 
-  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1,
+                          GWEN_Gui_PasswordMethod_Text, NULL, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error getting password: %d", rv);
     return 2;
@@ -5071,7 +5074,8 @@ int testPasswordStore5(int argc, char **argv) {
 
   /* 2nd time: Should read password from temporary storage */
   memset(pw, 0, sizeof(pw)-1);
-  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1, 0);
+  rv=GWEN_Gui_GetPassword(0, token, "Get Password", "Please enter password 1", pw, 4, sizeof(pw)-1,
+                          GWEN_Gui_PasswordMethod_Text, NULL, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error getting password: %d", rv);
     return 2;

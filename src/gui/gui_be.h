@@ -155,7 +155,9 @@ typedef int GWENHYWFAR_CB (*GWEN_GUI_GETPASSWORD_FN)(GWEN_GUI *gui,
 						     const char *text,
 						     char *buffer,
 						     int minLen,
-						     int maxLen,
+                                                     int maxLen,
+                                                     GWEN_GUI_PASSWORD_METHOD methodId,
+                                                     GWEN_DB_NODE *methodParams,
 						     uint32_t guiid);
 
 /**
