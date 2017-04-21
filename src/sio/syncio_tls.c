@@ -114,7 +114,7 @@ int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
   assert(xio);
 
   if (xio->checkCertFn) {
-    /* try myown checkCert function first */
+    /* try my own checkCert function first */
     return xio->checkCertFn(sio, cert);
   }
   else {
@@ -556,8 +556,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       return rv;
     }
     else {
-      gnutls_datum d;
-      gnutls_dh_params dh_params=NULL;
+      gnutls_datum_t d;
+      gnutls_dh_params_t dh_params=NULL;
 
       rv=gnutls_dh_params_init(&dh_params);
       if (rv<0) {
