@@ -144,7 +144,7 @@ extern "C" {
  * that code.
  * The possible contents of the methodParams are:
  * <ul>
- *   <li>char challenge: Hex code in ASCII form with a row of bytes to be converted to a flicker code (e.g. "123456789ABC" </li>
+ *   <li>bin challenge: Binary code to be sent to a flicker graphic generator </li>
  *   <li>char methodName: Name of the method (optional)</li>
  *   <li>char methodDescription: Description of the method (optional)</li>
  * </ul>
