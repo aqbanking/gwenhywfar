@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008-2011 by Martin Preuss
+    copyright   : (C) 2008-2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -77,6 +77,16 @@ void GWEN_HttpSession_free(GWEN_HTTP_SESSION *sess) {
       sess->usage--;
     }
   }
+}
+
+
+
+GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSION *sess, GWEN_HTTPSESSION_INITSYNCIO_FN f) {
+  GWEN_HTTPSESSION_INITSYNCIO_FN oldFn;
+
+  oldFn=sess->initSyncIoFn;
+  sess->initSyncIoFn=f;
+  return oldFn;
 }
 
 
@@ -219,6 +229,14 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
     DBG_ERROR(GWEN_LOGDOMAIN, "URL does not lead to a HTTP layer");
     GWEN_SyncIo_free(sio);
     return GWEN_ERROR_INVALID;
+  }
+
+  /* allow derived classes to modify the given GWEN_SIO */
+  rv=GWEN_HttpSession_InitSyncIo(sess, sio);
+  if (rv<0 && rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
   }
 
   /* prepare TLS layer */
@@ -619,6 +637,18 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
     return 0;
   }
 }
+
+
+
+int GWEN_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio) {
+  if (sess->initSyncIoFn)
+    return sess->initSyncIoFn(sess, sio);
+  DBG_INFO(GWEN_LOGDOMAIN, "initSyncIoFn not set");
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 
 
 
