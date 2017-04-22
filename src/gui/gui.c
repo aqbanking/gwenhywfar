@@ -1211,8 +1211,8 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t g
 
 
 int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
-    const GWEN_SSLCERTDESCR *cd,
-    GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
+                                            const GWEN_SSLCERTDESCR *cd,
+                                            GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
   int rv;
   int isError;
   const char *hash;
