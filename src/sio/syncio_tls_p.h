@@ -79,6 +79,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
                                         const uint8_t *buffer,
                                         uint32_t size);
 
+static GWENHYWFAR_CB int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
+
 
 static int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf);
 
