@@ -88,6 +88,24 @@ int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
                                char *buffer,
                                uint32_t bufferLen);
 
+/**
+ * Create an id which is unique inside the given group derived from
+ * the given id.
+ * @return 0 if okay, error code otherwise
+ * @param mgr pointer to config mgr object
+ * @param groupName name of the group within the id is unique
+ * @param doCheck if !=0 the derived unique id MUST NOT exist
+ * @param buffer buffer to receive the generated unique id
+ * @param bufferLen size of the buffer pointed to by "buffer" above
+ */
+GWENHYWFAR_API
+int GWEN_ConfigMgr_MkUniqueIdFromId(GWEN_CONFIGMGR *mgr,
+                                    const char *groupName,
+                                    uint32_t uid,
+                                    int doCheck,
+                                    char *buffer,
+                                    uint32_t bufferLen);
+
 GWENHYWFAR_API
 int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
                                const char *groupName,

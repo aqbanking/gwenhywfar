@@ -76,6 +76,14 @@ int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *mgr,
 				  char *buffer,
 				  uint32_t bufferLen);
 
+int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
+                                       const char *groupName,
+                                       uint32_t uid,
+                                       int doCheck,
+                                       char *buffer,
+                                       uint32_t bufferLen);
+
+
 int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *mgr,
 				  const char *groupName,
 				  const char *subGroupName);
@@ -98,9 +106,13 @@ void GWEN_ConfigMgrDir_AddGroupFileName(GWEN_CONFIGMGR *cfg,
 GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname);
 
 
-int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
-				   const char *groupName,
-				   uint32_t *pUniqueId);
+static int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
+                                          const char *groupName,
+                                          uint32_t *pUniqueId);
+
+static int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
+                                                 const char *groupName,
+                                                 uint32_t uid);
 
 
 #endif

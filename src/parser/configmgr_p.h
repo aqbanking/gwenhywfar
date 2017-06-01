@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Aug 11 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008,2017 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -39,6 +39,7 @@ struct GWEN_CONFIGMGR {
   GWEN_CONFIGMGR_UNLOCKGROUP_FN unlockGroupFn;
 
   GWEN_CONFIGMGR_GETUNIQUEID_FN getUniqueIdFn;
+  GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN mkUniqueIdFromIdFn;
   GWEN_CONFIGMGR_DELETEGROUP_FN deleteGroupFn;
 
   GWEN_CONFIGMGR_LISTGROUPS_FN listGroupsFn;
