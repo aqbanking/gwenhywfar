@@ -90,6 +90,78 @@
 
 
 
+    <inlines>
+
+      <inline loc="end" access="public">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(api) $(member_basetype_type) $(struct_prefix)_Get$(nameWithCapital)At(const $(struct_type) *p_struct, int idx);
+        </content>
+      </inline>
+   
+      <inline loc="code">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(member_basetype_type) $(struct_prefix)_Get$(nameWithCapital)At(const $(struct_type) *p_struct, int idx) {
+             if (p_struct &amp;&amp; (idx &lt; $(maxlen)))
+               return p_struct->$(name)[idx];
+
+             return 0;
+           }
+        </content>
+      </inline>
+
+
+      <inline loc="end" access="public">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(api) int $(struct_prefix)_Set$(nameWithCapital)At($(struct_type) *p_struct, int idx, $(member_basetype_type) v);
+        </content>
+      </inline>
+   
+      <inline loc="code">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           int $(struct_prefix)_Set$(nameWithCapital)At($(struct_type) *p_struct, int idx, $(member_basetype_type) v) {
+             if (p_struct &amp;&amp; (idx &lt; $(maxlen))) {
+                p_struct->$(name)[idx]=v;
+               return 0;
+             }
+             return GWEN_ERROR_INVALID;
+           }
+        </content>
+      </inline>
+
+
+      <inline loc="end" access="public">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(api) void $(struct_prefix)_Preset$(nameWithCapital)($(struct_type) *p_struct, $(member_basetype_type) v);
+        </content>
+      </inline>
+   
+      <inline loc="code">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           void $(struct_prefix)_Preset$(nameWithCapital)($(struct_type) *p_struct, $(member_basetype_type) v) {
+             int i;
+             
+             for(i=0; i &lt; $(maxlen); i++)
+               p_struct->$(name)[i]=v;
+           }
+        </content>
+      </inline>
+
+    </inlines>
+
+
+
     <defaults>
       <!-- defaults flags etc for member declarations of this type -->
       <default>NULL</default>

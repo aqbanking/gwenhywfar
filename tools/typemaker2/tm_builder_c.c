@@ -5844,6 +5844,99 @@ static int _buildInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
 
 
+static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
+  GWEN_BUFFER *tbuf;
+  uint32_t flags;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  flags=Typemaker2_Type_GetFlags(ty);
+
+  while(ty) {
+    TYPEMAKER2_MEMBER_LIST *tml;
+
+    tml=Typemaker2_Type_GetMembers(ty);
+    if (tml) {
+      TYPEMAKER2_MEMBER *tm;
+
+      tm=Typemaker2_Member_List_First(tml);
+      while(tm) {
+	TYPEMAKER2_TYPE *mty;
+
+	mty=Typemaker2_Member_GetTypePtr(tm);
+	if (mty) {
+	  TYPEMAKER2_INLINE *ti;
+
+	  /* get inlines from member type */
+	  ti=Typemaker2_Inline_List_First(Typemaker2_Type_GetInlines(mty));
+	  while(ti) {
+	    if ((flags & Typemaker2_Inline_GetTypeFlagsMask(ti))==Typemaker2_Inline_GetTypeFlagsValue(ti)) {
+	      const char *content;
+      
+	      content=Typemaker2_Inline_GetContent(ti);
+	      if (content && *content) {
+		GWEN_DB_NODE *db;
+		int rv;
+
+		/* replace vars in context of the struct type, not the particular member type */
+		db=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, NULL, NULL);
+		assert(db);
+		rv=Typemaker2_Builder_ReplaceVars(content, db, tbuf);
+		if (rv<0) {
+		  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+		  GWEN_Buffer_free(tbuf);
+		  return rv;
+		}
+      
+		/* include code */
+		switch(Typemaker2_Inline_GetLocation(ti)) {
+		case Typemaker2_InlineLocation_Header:
+		  switch(Typemaker2_Inline_GetAccess(ti)) {
+		  case TypeMaker2_Access_Public:
+		    Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+		    break;
+		  case TypeMaker2_Access_Library:
+		    Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+		    break;
+		  case TypeMaker2_Access_Protected:
+		    Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+		    break;
+		  case TypeMaker2_Access_Private:
+		    Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+		    break;
+		  default:
+		    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+		    GWEN_Buffer_free(tbuf);
+		    return GWEN_ERROR_BAD_DATA;
+		  }
+		  break;
+      
+		case Typemaker2_InlineLocation_Code:
+		  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+		  break;
+		}
+	      }
+	      GWEN_Buffer_Reset(tbuf);
+	    }
+
+	    ti=Typemaker2_Inline_List_Next(ti);
+	  }
+	} /* if mty */
+
+	tm=Typemaker2_Member_List_Next(tm);
+      } /* while tm */
+    } /* if tml */
+
+    ty=Typemaker2_Type_GetExtendsPtr(ty);
+  }
+
+  return 0;
+}
+
+
+
 static int _buildAttach(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -7011,6 +7104,12 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+  }
+
+  rv=_buildMemberInlines(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
 
