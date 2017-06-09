@@ -489,6 +489,26 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 	  p++;
 	}
       }
+      else if (*p=='\\') {
+	/* check for recognized control escapes */
+	if (tolower(p[1])=='n') {
+	  GWEN_Buffer_AppendByte(dbuf, '\n');
+	  p+=2; /* skip introducing backslash and control character */
+	}
+	else if (tolower(p[1])=='t') {
+	  GWEN_Buffer_AppendByte(dbuf, '\t');
+	  p+=2; /* skip introducing backslash and control character */
+	}
+	else if (tolower(p[1])=='\\') {
+	  GWEN_Buffer_AppendByte(dbuf, '\\');
+	  p+=2; /* skip introducing backslash and control character */
+	}
+	else {
+	  /* no known escape character, just add literally */
+	  GWEN_Buffer_AppendByte(dbuf, *p);
+	  p++;
+	}
+      }
       else {
 	GWEN_Buffer_AppendByte(dbuf, *p);
 	p++;

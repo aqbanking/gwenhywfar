@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,6 +21,13 @@
 #include <assert.h>
 #include <ctype.h>
 
+
+
+#define TM_TYPEMANAGER_XMLFLAGS (\
+    GWEN_XML_FLAGS_DEFAULT | \
+    GWEN_XML_FLAGS_HANDLE_HEADERS | \
+    GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS \
+    )
 
 
 
@@ -145,10 +152,7 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   /* read XML file */
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xml");
 
-  rv=GWEN_XML_ReadFile(root, GWEN_Buffer_GetStart(nbuf),
-		       GWEN_XML_FLAGS_DEFAULT |
-		       GWEN_XML_FLAGS_HANDLE_HEADERS |
-		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  rv=GWEN_XML_ReadFile(root, GWEN_Buffer_GetStart(nbuf), TM_TYPEMANAGER_XMLFLAGS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_XMLNode_free(root);
@@ -282,10 +286,7 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   /* read XML file */
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xml");
 
-  rv=GWEN_XML_ReadFile(root, fileName,
-		       GWEN_XML_FLAGS_DEFAULT |
-		       GWEN_XML_FLAGS_HANDLE_HEADERS |
-		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  rv=GWEN_XML_ReadFile(root, fileName, TM_TYPEMANAGER_XMLFLAGS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", fileName, rv);
     GWEN_XMLNode_free(root);
@@ -382,10 +383,7 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
   /* read XML file */
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xml");
 
-  rv=GWEN_XML_ReadFile(root, fileName,
-		       GWEN_XML_FLAGS_DEFAULT |
-		       GWEN_XML_FLAGS_HANDLE_HEADERS |
-		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  rv=GWEN_XML_ReadFile(root, fileName, TM_TYPEMANAGER_XMLFLAGS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", fileName, rv);
     GWEN_XMLNode_free(root);
@@ -515,10 +513,7 @@ int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, con
   /* read XML file */
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xml");
 
-  rv=GWEN_XML_ReadFile(root, fileName,
-		       GWEN_XML_FLAGS_DEFAULT |
-		       GWEN_XML_FLAGS_HANDLE_HEADERS |
-		       GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS);
+  rv=GWEN_XML_ReadFile(root, fileName, TM_TYPEMANAGER_XMLFLAGS);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not load typefile [%s] (%d)", fileName, rv);
     GWEN_XMLNode_free(root);
