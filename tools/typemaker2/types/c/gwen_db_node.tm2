@@ -1,0 +1,148 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="gwen_db_node" type="pointer" lang="c" >
+    <identifier>GWEN_DB_NODE</identifier>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
+
+
+    <codedefs>
+
+      <codedef id="construct">
+        <code>
+          $(dst)=$(preset);
+        </code>
+      </codedef>
+
+      <codedef id="destruct">
+        <code>
+          GWEN_DB_Group_free($(src));
+        </code>
+      </codedef>
+
+      <codedef id="assign">
+        <code>
+          $(dst)=$(src);
+        </code>
+      </codedef>
+
+      <codedef id="dup">
+        <code>
+        $(dst)=GWEN_DB_Group_dup($(src));
+        </code>
+      </codedef>
+
+      <codedef id="compare">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="toXml">
+        <!-- !attribute -->
+        <memberFlagsMask>  attribute</memberFlagsMask>
+        <memberFlagsValue>          </memberFlagsValue>
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="toXml">
+        <!-- attribute -->
+        <memberFlagsMask>  attribute</memberFlagsMask>
+        <memberFlagsValue> attribute</memberFlagsValue>
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="fromXml">
+        <!-- !attribute -->
+        <memberFlagsMask>  attribute</memberFlagsMask>
+        <memberFlagsValue>          </memberFlagsValue>
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="fromXml">
+        <!-- enum | attribute -->
+        <memberFlagsMask>  attribute</memberFlagsMask>
+        <memberFlagsValue> attribute</memberFlagsValue>
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toDb">
+        <code>
+          if ($(src)){
+            GWEN_DB_NODE *dbCopy;
+
+            dbCopy=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_DEFAULT, "$(name)");
+            assert(dbCopy);
+            $(retval)=GWEN_DB_AddGroupChildren(dbCopy, $(src));
+          }
+          else {
+            GWEN_DB_DeleteGroup($(db), "$(name)");
+            $(retval)=0;
+          }
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromDb">
+        <code>
+          {
+            GWEN_DB_NODE *dbSrc;
+
+            dbSrc=GWEN_DB_GetGroup($(db), GWEN_PATH_FLAGS_NAMEMUSTEXIST, "$(name)");
+            if (dbSrc)  {
+              $(dst)=GWEN_DB_Group_dup(dbSrc);
+            }
+            else
+              $(dst)=NULL;
+          }
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toHashString">
+        <code>
+          if ($(src)) {
+            GWEN_Buffer_AppendString($(buffer), GWEN_Date_GetString($(src)));
+            GWEN_DB_WriteToBuffer($(src), $(buffer),  GWEN_DB_FLAGS_DEFAULT);
+          }
+        </code>
+      </codedef>
+
+    </codedefs>
+
+
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <preset>NULL</preset>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>
