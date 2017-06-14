@@ -6587,7 +6587,19 @@ static int _buildGroupApiDoc(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty,
 
   s=Typemaker2_Group_GetDescription(grp);
   if (s && *s) {
-    GWEN_Buffer_AppendString(buf, s);
+    GWEN_DB_NODE *dbCall;
+    int rv;
+  
+    dbCall=Typemaker2_Builder_CreateDbForCall(tb, ty, NULL, NULL, NULL);
+    assert(dbCall);
+    rv=Typemaker2_Builder_ReplaceVars(s, dbCall, buf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbCall);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    GWEN_DB_Group_free(dbCall);
     GWEN_Buffer_AppendString(buf, "\n");
   }
 
@@ -6628,9 +6640,21 @@ static int _buildGroupApiDoc(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty,
         /* add description, if any */
         s=Typemaker2_Member_GetDescription(tm);
         if (s && *s) {
-          GWEN_Buffer_AppendString(buf, s);
-          GWEN_Buffer_AppendString(buf, "\n");
-        }
+	  GWEN_DB_NODE *dbCall;
+	  int rv;
+
+	  dbCall=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, NULL, NULL);
+	  assert(dbCall);
+	  rv=Typemaker2_Builder_ReplaceVars(s, dbCall, buf);
+	  if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    GWEN_DB_Group_free(dbCall);
+	    GWEN_Buffer_free(buf);
+	    return rv;
+	  }
+	  GWEN_DB_Group_free(dbCall);
+	  GWEN_Buffer_AppendString(buf, "\n");
+	}
 
         /* add setter/getter info */
         GWEN_Buffer_AppendString(buf, "<p>");
