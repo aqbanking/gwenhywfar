@@ -324,7 +324,7 @@ AC_MSG_CHECKING(whether system-wide trusted certificates should be set)
 AC_ARG_ENABLE(system-certs,
   [  --enable-system-certs         use system-wide certificates (default=no)],
   enable_system_certs="$enableval",
-  enable_system_certs="no")
+  enable_system_certs="yes")
 AC_MSG_RESULT($enable_system_certs)
 
 if test "$enable_system_certs" != "no"; then
