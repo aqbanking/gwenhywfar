@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Aug 11 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008,2017 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -59,6 +59,13 @@ typedef int (*GWEN_CONFIGMGR_GETUNIQUEID_FN)(GWEN_CONFIGMGR *mgr,
     char *buffer,
     uint32_t bufferLen);
 
+typedef int (*GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN)(GWEN_CONFIGMGR *mgr,
+                                                  const char *groupName,
+                                                  uint32_t uid,
+                                                  int doCheck,
+                                                  char *buffer,
+                                                  uint32_t bufferLen);
+
 typedef int (*GWEN_CONFIGMGR_DELETEGROUP_FN)(GWEN_CONFIGMGR *mgr,
     const char *groupName,
     const char *subGroupName);
@@ -91,6 +98,10 @@ GWEN_CONFIGMGR_UNLOCKGROUP_FN GWEN_ConfigMgr_SetUnlockGroupFn(GWEN_CONFIGMGR *mg
 GWENHYWFAR_API
 GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mgr,
     GWEN_CONFIGMGR_GETUNIQUEID_FN f);
+
+GWENHYWFAR_API
+GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(GWEN_CONFIGMGR *mgr,
+                                                                        GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mgr,

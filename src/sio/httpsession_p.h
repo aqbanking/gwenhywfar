@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008-2010 by Martin Preuss
+    copyright   : (C) 2008-2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,12 +30,17 @@ struct GWEN_HTTP_SESSION {
   char *httpUserAgent;
   char *httpContentType;
 
+  GWEN_HTTPSESSION_INITSYNCIO_FN initSyncIoFn;
+
   uint32_t usage;
 };
 
 
 static int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf);
 static int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
+
+
+static int GWEN_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
 
 
 

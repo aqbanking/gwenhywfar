@@ -67,6 +67,10 @@ GWEN_SYNCIO *GWEN_SyncIo_Tls_new(GWEN_SYNCIO *baseIo) {
   GWEN_NEW_OBJECT(GWEN_SYNCIO_TLS, xio);
   GWEN_INHERIT_SETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio, xio, GWEN_SyncIo_Tls_FreeData);
 
+  /* preset data */
+  xio->checkCertFn=GWEN_SyncIo_Tls_Internal_CheckCert;
+
+  /* set virtual functions */
   GWEN_SyncIo_SetConnectFn(sio, GWEN_SyncIo_Tls_Connect);
   GWEN_SyncIo_SetDisconnectFn(sio, GWEN_SyncIo_Tls_Disconnect);
   GWEN_SyncIo_SetReadFn(sio, GWEN_SyncIo_Tls_Read);
@@ -87,6 +91,54 @@ void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p) {
   free(xio->dhParamFile);
   free(xio->hostName);
   GWEN_FREE_OBJECT(xio);
+}
+
+
+
+GWEN_SIO_TLS_CHECKCERT_FN GWEN_SyncIo_Tls_SetCheckCertFn(GWEN_SYNCIO *sio, GWEN_SIO_TLS_CHECKCERT_FN f) {
+  GWEN_SYNCIO_TLS *xio;
+  GWEN_SIO_TLS_CHECKCERT_FN oldF;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  oldF=xio->checkCertFn;
+  xio->checkCertFn=f;
+  return oldF;
+}
+
+
+
+int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
+  GWEN_SYNCIO_TLS *xio;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  DBG_WARN(GWEN_LOGDOMAIN, "No checkCertFn set, using GWEN_GUI");
+  return GWEN_Gui_CheckCert(cert, sio, 0);
+}
+
+
+
+int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
+  GWEN_SYNCIO_TLS *xio;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  if (xio->checkCertFn) {
+    /* try my own checkCert function first */
+    return xio->checkCertFn(sio, cert);
+  }
+  else {
+    /* none set, call the check cert function of GWEN_GUI (for older code) */
+    DBG_ERROR(GWEN_LOGDOMAIN, "No checkCertFn set, falling back to GUI (SNH!)");
+    return GWEN_SyncIo_Tls_Internal_CheckCert(sio, cert);
+  }
 }
 
 
@@ -1241,7 +1293,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
     }
     else {
       /* present cert to the user */
-      rv=GWEN_Gui_CheckCert(xio->peerCertDescr, sio, 0);
+      rv=GWEN_SyncIo_Tls_CheckCert(sio, xio->peerCertDescr);
       if (rv<0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Peer cert not accepted (%d), aborting", rv);
         GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);

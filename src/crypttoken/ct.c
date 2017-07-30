@@ -869,7 +869,9 @@ int GWEN_Crypt_Token_GetPin(GWEN_CRYPT_TOKEN *ct,
                           buffer,
                           (char*)pwbuffer,
                           minLength,
-                          maxLength, gid);
+                          maxLength,
+                          GWEN_Gui_PasswordMethod_Text, NULL,
+                          gid);
   GWEN_Buffer_free(nameBuffer);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

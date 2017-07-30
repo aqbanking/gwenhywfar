@@ -34,20 +34,12 @@
 
 
 #define GWEN_SYNCIO_TLS_FLAGS_REQUEST_CERT          0x00000001
-#ifndef NO_DEPRECATED_SYMBOLS
-# define GWEN_SYNCIO_TLS_FLAGS_FORCE_SSL_V3         0x00000002	/* deprecated, will be removed in a future release */
-#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 #define GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT       0x00000004
 #define GWEN_SYNCIO_TLS_FLAGS_NEED_PEER_CERT        0x00000008
 #define GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS       0x00000010
 #define GWEN_SYNCIO_TLS_FLAGS_SET_PASSV_HOST_NAME   0x00000020
 #define GWEN_SYNCIO_TLS_FLAGS_SET_PASSV_HOST_IP     0x00000020
-
-#ifndef NO_DEPRECATED_SYMBOLS
-# define GWEN_SYNCIO_TLS_FLAGS_ONLY_SAFE_CIPHERS    0x00000080	/* deprecated, will be removed in a future release */
-# define GWEN_SYNCIO_TLS_FLAGS_FORCE_UNSAFE_CIPHERS 0x00000100	/* deprecated, will be removed in a future release */
-#endif // ifndef NO_DEPRECATED_SYMBOLS
 
 /** ignore error "GNUTLS_E_PREMATURE_TERMINATION" */
 #define GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE   0x00000200
@@ -59,6 +51,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 
 GWENHYWFAR_API
@@ -86,6 +79,10 @@ GWENHYWFAR_API void GWEN_SyncIo_Tls_SetRemoteHostName(GWEN_SYNCIO *sio, const ch
 
 GWENHYWFAR_API GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_GetPeerCertDescr(const GWEN_SYNCIO *sio);
 
+
+
+typedef int GWENHYWFAR_CB (*GWEN_SIO_TLS_CHECKCERT_FN)(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
+GWENHYWFAR_API GWEN_SIO_TLS_CHECKCERT_FN GWEN_SyncIo_Tls_SetCheckCertFn(GWEN_SYNCIO *sio, GWEN_SIO_TLS_CHECKCERT_FN f);
 
 
 #ifdef __cplusplus

@@ -55,6 +55,7 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_UNUSED GWEN_PLUGIN *pl, const cha
   GWEN_ConfigMgr_SetLockGroupFn(cfg, GWEN_ConfigMgrDir_LockGroup);
   GWEN_ConfigMgr_SetUnlockGroupFn(cfg, GWEN_ConfigMgrDir_UnlockGroup);
   GWEN_ConfigMgr_SetGetUniqueIdFn(cfg, GWEN_ConfigMgrDir_GetUniqueId);
+  GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(cfg, GWEN_ConfigMgrDir_MkUniqueIdFromId);
   GWEN_ConfigMgr_SetDeleteGroupFn(cfg, GWEN_ConfigMgrDir_DeleteGroup);
   GWEN_ConfigMgr_SetListGroupsFn(cfg, GWEN_ConfigMgrDir_ListGroups);
   GWEN_ConfigMgr_SetListSubGroupsFn(cfg, GWEN_ConfigMgrDir_ListSubGroups);
@@ -238,6 +239,94 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   GWEN_Buffer_free(nbuf);
 
   *pUniqueId=uniqueId;
+  return 0;
+}
+
+
+
+int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
+                                          const char *groupName,
+                                          uint32_t uid){
+  GWEN_CONFIGMGR_DIR *xcfg;
+  GWEN_BUFFER *nbuf;
+  uint32_t uniqueId=0;
+  GWEN_FSLOCK *lck;
+  GWEN_FSLOCK_RESULT res;
+  FILE *f;
+  int rv;
+
+  assert(cfg);
+  xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
+  assert(xcfg);
+
+  assert(xcfg->folder);
+  assert(groupName);
+
+  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(nbuf, xcfg->folder);
+  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Text_EscapeToBuffer(groupName, nbuf);
+  GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(nbuf, "uniqueid");
+
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+			    GWEN_PATH_FLAGS_CHECKROOT |
+			    GWEN_PATH_FLAGS_VARIABLE);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  lck=GWEN_FSLock_new(GWEN_Buffer_GetStart(nbuf), GWEN_FSLock_TypeFile);
+  res=GWEN_FSLock_Lock(lck, 60000, 0);
+  if (res!=GWEN_FSLock_ResultOk) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Could not lock group [%s]: %d",
+	      groupName, res);
+    GWEN_FSLock_free(lck);
+    GWEN_Buffer_free(nbuf);
+    return GWEN_ERROR_LOCK;
+  }
+
+  /* read last id */
+  f=fopen(GWEN_Buffer_GetStart(nbuf), "r");
+  if (f) {
+    int i;
+
+    if (1!=fscanf(f, "%d", &i))
+      i=0;
+    uniqueId=i;
+    fclose(f);
+  }
+
+  if (uid>uniqueId) {
+    uniqueId=uid;
+
+    f=fopen(GWEN_Buffer_GetStart(nbuf), "w");
+    if (f==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
+		GWEN_Buffer_GetStart(nbuf),
+		strerror(errno));
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+      GWEN_Buffer_free(nbuf);
+      return GWEN_ERROR_LOCK;
+    }
+    fprintf(f, "%d", (int)uniqueId);
+    if (fclose(f)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
+		GWEN_Buffer_GetStart(nbuf),
+		strerror(errno));
+      GWEN_FSLock_Unlock(lck);
+      GWEN_FSLock_free(lck);
+      GWEN_Buffer_free(nbuf);
+      return GWEN_ERROR_LOCK;
+    }
+  }
+  GWEN_FSLock_Unlock(lck);
+  GWEN_FSLock_free(lck);
+  GWEN_Buffer_free(nbuf);
+
   return 0;
 }
 
@@ -543,6 +632,59 @@ int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
   }
   snprintf(ubuf, sizeof(ubuf)-1, "uid::%08x", uid);
   ubuf[sizeof(ubuf)-1]=0;
+
+  /* return new id */
+  strncpy(buffer, ubuf, bufferLen-1);
+  buffer[bufferLen-1]=0;
+
+  return 0;
+}
+
+
+
+int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
+                                       const char *groupName,
+                                       uint32_t uid,
+                                       int doCheck,
+                                       char *buffer,
+                                       uint32_t bufferLen) {
+  GWEN_CONFIGMGR_DIR *xcfg;
+  int rv;
+  char ubuf[64];
+
+  assert(cfg);
+  xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
+  assert(xcfg);
+
+  snprintf(ubuf, sizeof(ubuf)-1, "uid::%08x", uid);
+  ubuf[sizeof(ubuf)-1]=0;
+
+  if (doCheck) {
+    GWEN_BUFFER *nbuf;
+
+    /* check whether that group already exists */
+    nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_ConfigMgrDir_AddGroupFileName(cfg, groupName, ubuf, nbuf);
+
+    rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+                              GWEN_PATH_FLAGS_CHECKROOT |
+                              GWEN_PATH_FLAGS_NAMEMUSTEXIST |
+                              GWEN_PATH_FLAGS_VARIABLE);
+    if (rv>=0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Path already exists [%s]: %d",
+               GWEN_Buffer_GetStart(nbuf), rv);
+      GWEN_Buffer_free(nbuf);
+      return rv;
+    }
+    GWEN_Buffer_free(nbuf);
+
+    /* update lastId if necessary */
+    rv=GWEN_ConfigMgrDir__UpdateLastUniqueId(cfg, groupName, uid);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Could not update unique id (%d)", rv);
+      return rv;
+    }
+  }
 
   /* return new id */
   strncpy(buffer, ubuf, bufferLen-1);

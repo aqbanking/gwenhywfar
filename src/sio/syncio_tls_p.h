@@ -58,6 +58,7 @@ struct GWEN_SYNCIO_TLS {
 
   GWEN_SSLCERTDESCR *peerCertDescr;
   uint32_t peerCertFlags;
+  GWEN_SIO_TLS_CHECKCERT_FN checkCertFn;
 };
 
 
@@ -78,6 +79,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
                                         const uint8_t *buffer,
                                         uint32_t size);
 
+static GWENHYWFAR_CB int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
+
 
 static int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf);
 
@@ -89,6 +92,9 @@ void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio);
 int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio);
 
 static void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio);
+
+
+static int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
 
 
 #endif

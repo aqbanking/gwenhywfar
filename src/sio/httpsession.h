@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008-2010 by Martin Preuss
+    copyright   : (C) 2008-2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -28,6 +28,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 
 #include <gwenhywfar/url.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/syncio.h>
 
 
 #ifndef NO_DEPRECATED_SYMBOLS
@@ -130,6 +131,8 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess);
 GWENHYWFAR_API
 int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess);
 
+/*@}*/
+
 
 
 /** @name Sending and Receiving
@@ -174,7 +177,25 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess);
 /*@}*/
 
 
+
+/** @name SyncIO Initialisation
+ *
+ * After creating a connection layer (consisting of a chain of GWEN_SYNCIO's) this callback is called.
+ * AqBanking uses it to set the TLS-cert-checking callback for the TLS syncio part (@ref GWEN_SyncIo_Tls_SetCheckCertFn),
+ * so whenever a TLS connection is established and a certificate received, that function is called.
+ */
+/*@{*/
+
+typedef int GWENHYWFAR_CB (*GWEN_HTTPSESSION_INITSYNCIO_FN)(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
+GWENHYWFAR_API GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSION *sess,
+                                                                               GWEN_HTTPSESSION_INITSYNCIO_FN f);
+
+/*@}*/
+
+
+
 /*@}*/ /* defgroup */
+
 
 
 #ifdef __cplusplus

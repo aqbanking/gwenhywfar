@@ -56,6 +56,8 @@ int CppGuiLinker::GetPassword(GWEN_GUI *gui,
                               char *buffer,
                               int minLen,
                               int maxLen,
+                              GWEN_GUI_PASSWORD_METHOD methodId,
+                              GWEN_DB_NODE *methodParams,
                               uint32_t guiid) {
   CppGui *xgui;
 
@@ -63,7 +65,7 @@ int CppGuiLinker::GetPassword(GWEN_GUI *gui,
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, CppGui, gui);
   assert(xgui);
 
-  return xgui->getPassword(flags, token, title, text, buffer, minLen, maxLen, guiid);
+  return xgui->getPassword(flags, token, title, text, buffer, minLen, maxLen, methodId, methodParams, guiid);
 }
 
 
@@ -331,9 +333,11 @@ int CppGui::getPassword(uint32_t flags,
                         char *buffer,
                         int minLen,
                         int maxLen,
+                        GWEN_GUI_PASSWORD_METHOD methodId,
+                        GWEN_DB_NODE *methodParams,
                         uint32_t guiid) {
   if (_getPasswordFn)
-    return _getPasswordFn(_gui, flags, token, title, text, buffer, minLen, maxLen, guiid);
+    return _getPasswordFn(_gui, flags, token, title, text, buffer, minLen, maxLen, methodId, methodParams, guiid);
   else
     return GWEN_ERROR_NOT_SUPPORTED;
 }

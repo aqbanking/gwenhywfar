@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Aug 11 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008,2017 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -204,6 +204,19 @@ GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mg
 
 
 
+GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(GWEN_CONFIGMGR *mgr,
+                                                                        GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN f) {
+  GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN of;
+
+  assert(mgr);
+  of=mgr->mkUniqueIdFromIdFn;
+  mgr->mkUniqueIdFromIdFn=f;
+
+  return of;
+}
+
+
+
 GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mgr,
     GWEN_CONFIGMGR_DELETEGROUP_FN f) {
   GWEN_CONFIGMGR_DELETEGROUP_FN of;
@@ -300,6 +313,21 @@ int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
   assert(mgr);
   if (mgr->getUniqueIdFn)
     return mgr->getUniqueIdFn(mgr, groupName, buffer, bufferLen);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_ConfigMgr_MkUniqueIdFromId(GWEN_CONFIGMGR *mgr,
+				    const char *groupName,
+				    uint32_t uid,
+                                    int doCheck,
+				    char *buffer,
+				    uint32_t bufferLen) {
+  assert(mgr);
+  if (mgr->mkUniqueIdFromIdFn)
+    return mgr->mkUniqueIdFromIdFn(mgr, groupName, uid, doCheck, buffer, bufferLen);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }

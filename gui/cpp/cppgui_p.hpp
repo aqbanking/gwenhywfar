@@ -32,6 +32,8 @@ class CppGuiLinker {
                                        char *buffer,
                                        int minLen,
                                        int maxLen,
+                                       GWEN_GUI_PASSWORD_METHOD methodId,
+                                       GWEN_DB_NODE *methodParams,
                                        uint32_t guiid);
 
   static int GWENHYWFAR_CB SetPasswordStatus(GWEN_GUI *gui,
