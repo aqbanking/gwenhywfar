@@ -521,8 +521,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       return rv;
     }
     else {
-      gnutls_datum d;
-      gnutls_dh_params dh_params=NULL;
+      gnutls_datum_t d;
+      gnutls_dh_params_t dh_params=NULL;
 
       rv=gnutls_dh_params_init(&dh_params);
       if (rv<0) {
