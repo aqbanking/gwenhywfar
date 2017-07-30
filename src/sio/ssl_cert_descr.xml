@@ -38,6 +38,8 @@
 	  
     <elem name="ipAddress" type="char" ptr="1" />
     <elem name="fingerPrint" type="char" ptr="1" />
+    <elem name="fingerPrintSha1" type="char" ptr="1" />
+    <elem name="fingerPrintSha512" type="char" ptr="1" />
 
     <elem name="pubKeyModulus" type="char" ptr="1" />
     <elem name="pubKeyExponent" type="char" ptr="1" />

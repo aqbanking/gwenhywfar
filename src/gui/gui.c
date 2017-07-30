@@ -1211,7 +1211,9 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
     GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
   int rv;
   int isError;
-  const char *hash;
+  const char *hashMd5;
+  const char *hashSha1;
+  const char *hashSha512;
   const char *status;
   //const char *ipAddr;
   const char *statusOn;
@@ -1231,16 +1233,18 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
 
   char *msg=I18S(
               "The following certificate has been received:\n"
-              "Name        : %s\n"
-              "Organisation: %s\n"
-              "Department  : %s\n"
-              "Country     : %s\n"
-              "City        : %s\n"
-              "State       : %s\n"
-              "Valid after : %s\n"
-              "Valid until : %s\n"
-              "Hash        : %s\n"
-              "Status      : %s\n"
+              "Name         : %s\n"
+              "Organisation : %s\n"
+              "Department   : %s\n"
+              "Country      : %s\n"
+              "City         : %s\n"
+              "State        : %s\n"
+              "Valid after  : %s\n"
+              "Valid until  : %s\n"
+              "Hash (MD5)   : %s\n"
+              "Hash (SHA1)  : %s\n"
+              "Hash (SHA512): %s\n"
+              "Status       : %s\n"
               "Do you wish to accept this certificate?"
 
               "<html>"
@@ -1256,7 +1260,9 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
               "  <tr><td>State</td><td>%s</td></tr>"
               "  <tr><td>Valid after</td><td>%s</td></tr>"
               "  <tr><td>Valid until</td><td>%s</td></tr>"
-              "  <tr><td>Hash</td><td>%s</td></tr>"
+              "  <tr><td>Hash (MD5)</td><td>%s</td></tr>"
+              "  <tr><td>Hash (SHA1)</td><td>%s</td></tr>"
+              "  <tr><td>Hash (SHA512)</td><td>%s</td></tr>"
               "  <tr><td>Status</td><td>%s%s%s</td></tr>"
               " </table>"
               " <p>"
@@ -1271,7 +1277,9 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
 
   isError=GWEN_SslCertDescr_GetIsError(cd);
 
-  hash=GWEN_SslCertDescr_GetFingerPrint(cd);
+  hashMd5=GWEN_SslCertDescr_GetFingerPrint(cd);
+  hashSha1=GWEN_SslCertDescr_GetFingerPrintSha1(cd);
+  hashSha512=GWEN_SslCertDescr_GetFingerPrintSha512(cd);
   status=GWEN_SslCertDescr_GetStatusText(cd);
   //ipAddr=GWEN_SslCertDescr_GetIpAddress(cd);
 
@@ -1349,7 +1357,9 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
            localityName,
            stateOrProvinceName,
            dbuffer1, dbuffer2,
-           hash,
+           hashMd5,
+           hashSha1,
+           hashSha512,
            status,
            /* the same again for HTML */
            commonName,
@@ -1359,7 +1369,9 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
            localityName,
            stateOrProvinceName,
            dbuffer1, dbuffer2,
-           hash,
+           hashMd5,
+           hashSha1,
+           hashSha512,
            statusOn,
            status,
            statusOff
