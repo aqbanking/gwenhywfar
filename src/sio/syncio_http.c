@@ -594,6 +594,14 @@ int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
     return GWEN_ERROR_EOF;
   }
 
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Received HTTP status:");
+    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
+			GWEN_Buffer_GetUsedBytes(tbuf),
+			GWEN_LOGDOMAIN,
+			GWEN_LoggerLevel_Debug);
+  }
+
   rv=GWEN_SyncIo_Http_ParseStatus(sio, GWEN_Buffer_GetStart(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -800,6 +808,14 @@ int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio) {
     return GWEN_ERROR_EOF;
   }
 
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Received HTTP header:");
+    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
+			GWEN_Buffer_GetUsedBytes(tbuf),
+			GWEN_LOGDOMAIN,
+			GWEN_LoggerLevel_Debug);
+  }
+
   rv=GWEN_SyncIo_Http_ParseHeader(sio, GWEN_Buffer_GetStart(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -990,6 +1006,14 @@ int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio) {
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\r\n");
 
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Sending HTTP command:");
+    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
+			GWEN_Buffer_GetUsedBytes(tbuf),
+			GWEN_LOGDOMAIN,
+			GWEN_LoggerLevel_Debug);
+  }
+
   /* write */
   rv=GWEN_SyncIo_WriteForced(baseIo,
                              (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
@@ -1138,6 +1162,14 @@ int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio) {
 
   /* finalize header */
   GWEN_Buffer_AppendString(tbuf, "\r\n");
+
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Sending HTTP header:");
+    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
+			GWEN_Buffer_GetUsedBytes(tbuf),
+			GWEN_LOGDOMAIN,
+			GWEN_LoggerLevel_Debug);
+  }
 
   /* write */
   rv=GWEN_SyncIo_WriteForced(baseIo,
