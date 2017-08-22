@@ -16,52 +16,52 @@ extern "C" {
 #endif
 
 /** Getter.
- * Use this function to get the member "headerStartPos"
+ * Use this function to get the member "headerStartPos" (see @ref GWEN_SAR_FILEHEADER_headerStartPos)
 */
 uint64_t GWEN_SarFileHeader_GetHeaderStartPos(const GWEN_SAR_FILEHEADER *p_struct);
 
 /** Getter.
- * Use this function to get the member "headerSize"
+ * Use this function to get the member "headerSize" (see @ref GWEN_SAR_FILEHEADER_headerSize)
 */
 uint64_t GWEN_SarFileHeader_GetHeaderSize(const GWEN_SAR_FILEHEADER *p_struct);
 
 /** Getter.
- * Use this function to get the member "dataPos"
+ * Use this function to get the member "dataPos" (see @ref GWEN_SAR_FILEHEADER_dataPos)
 */
 uint64_t GWEN_SarFileHeader_GetDataPos(const GWEN_SAR_FILEHEADER *p_struct);
 
 /** Getter.
- * Use this function to get the member "dataSize"
+ * Use this function to get the member "dataSize" (see @ref GWEN_SAR_FILEHEADER_dataSize)
 */
 uint64_t GWEN_SarFileHeader_GetDataSize(const GWEN_SAR_FILEHEADER *p_struct);
 
 /** Getter.
- * Use this function to get the member "hashPos"
+ * Use this function to get the member "hashPos" (see @ref GWEN_SAR_FILEHEADER_hashPos)
 */
 uint64_t GWEN_SarFileHeader_GetHashPos(const GWEN_SAR_FILEHEADER *p_struct);
 
 /** Setter.
- * Use this function to set the member "headerStartPos"
+ * Use this function to set the member "headerStartPos" (see @ref GWEN_SAR_FILEHEADER_headerStartPos)
 */
 void GWEN_SarFileHeader_SetHeaderStartPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src);
 
 /** Setter.
- * Use this function to set the member "headerSize"
+ * Use this function to set the member "headerSize" (see @ref GWEN_SAR_FILEHEADER_headerSize)
 */
 void GWEN_SarFileHeader_SetHeaderSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src);
 
 /** Setter.
- * Use this function to set the member "dataPos"
+ * Use this function to set the member "dataPos" (see @ref GWEN_SAR_FILEHEADER_dataPos)
 */
 void GWEN_SarFileHeader_SetDataPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src);
 
 /** Setter.
- * Use this function to set the member "dataSize"
+ * Use this function to set the member "dataSize" (see @ref GWEN_SAR_FILEHEADER_dataSize)
 */
 void GWEN_SarFileHeader_SetDataSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src);
 
 /** Setter.
- * Use this function to set the member "hashPos"
+ * Use this function to set the member "hashPos" (see @ref GWEN_SAR_FILEHEADER_hashPos)
 */
 void GWEN_SarFileHeader_SetHashPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src);
 

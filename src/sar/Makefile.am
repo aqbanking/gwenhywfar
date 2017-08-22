@@ -71,11 +71,11 @@ format_build_files:
 
 %.c: %.xml
 	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $<
-	astyle -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $@
+	astyle -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
 
 %.h: %.xml
 	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $<
-	astyle -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $@
+	astyle -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
 
 
 SUFFIXES = .xml .c
