@@ -891,6 +891,26 @@ esac
 AC_SUBST(with_gui_gtk2)
 AM_CONDITIONAL(WITH_GUI_GTK2, [test "$with_gui_gtk2" = "yes"])
 
+###-------------------------------------------------------------------------
+# Check for GTK+
+#
+
+
+case "$gwenhywfar_guis" in
+  *gtk3*)
+     # We need at least GTK 2.17.5 because we use functions like
+     # gtk_widget_get_sensitive() and gtk_widget_has_focus()
+     pkg_modules="gtk+-3.0 >= 3.14.0"
+     dnl $4=true => don't die in case of failure.
+     PKG_CHECK_MODULES(GTK3, [$pkg_modules], [], true)
+     AC_DEFINE(BUILD_GUI_GTK3, 1, [if gwen gui for gtk3 is built])
+     with_gui_gtk3="yes"
+     ;;
+esac
+
+AC_SUBST(with_gui_gtk3)
+AM_CONDITIONAL(WITH_GUI_GTK3, [test "$with_gui_gtk3" = "yes"])
+
 
 
 ###-------------------------------------------------------------------------
@@ -1348,6 +1368,8 @@ AC_CONFIG_FILES([Doxyfile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile
                  gui/gtk2/gwengui-gtk2.pc
+                 gui/gtk3/Makefile
+                 gui/gtk3/gwengui-gtk3.pc
                  gui/cocoa/Makefile
                  gui/testdialogs/Makefile
 		])
@@ -1472,6 +1494,23 @@ for d in gui/gtk2; do
   done
 done
 
+
+# gtk3
+#
+rm -Rf gwenhywfar4/gwen-gui-gtk3 2>/dev/null
+mkdir -p gwenhywfar4/gwen-gui-gtk3
+for d in gui/gtk3; do
+  hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
+  for f in ${hfiles}; do
+    case ${f} in
+      *_l.h | *_p.h | gtk3_gui_*.h)
+      	 ;;
+      *)
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-gtk3/${f}"
+         ;;
+    esac
+  done
+done
 
 
 # cocoa
