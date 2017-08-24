@@ -82,7 +82,7 @@ int Gtk3Gui_WVSpacer_Setup(GWEN_WIDGET *w) {
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
 
-  g=gtk_vbox_new(FALSE, 0);
+  g=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   GWEN_Widget_AddFlags(w, GWEN_WIDGET_FLAGS_FILLY);
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
@@ -96,5 +96,3 @@ int Gtk3Gui_WVSpacer_Setup(GWEN_WIDGET *w) {
 
   return 0;
 }
-
-

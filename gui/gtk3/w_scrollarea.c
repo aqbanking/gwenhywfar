@@ -171,8 +171,8 @@ int Gtk3Gui_WScrollArea_Setup(GWEN_WIDGET *w) {
 
   /* create widget */
   g=gtk_scrolled_window_new(NULL, NULL);
-  gContent=gtk_vbox_new(TRUE, GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
-  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(g), gContent);
+  gContent=gtk_box_new(GTK_ORIENTATION_VERTICAL,
+                       GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) gContent);

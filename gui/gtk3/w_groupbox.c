@@ -173,7 +173,8 @@ int Gtk3Gui_WGroupBox_Setup(GWEN_WIDGET *w) {
 
   g=gtk_frame_new(s);
 
-  gContent=gtk_vbox_new(TRUE, GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
+  gContent=gtk_box_new(GTK_ORIENTATION_VERTICAL,
+                       GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
   gtk_container_add(GTK_CONTAINER(g), gContent);
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);

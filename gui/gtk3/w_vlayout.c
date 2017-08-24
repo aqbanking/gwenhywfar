@@ -143,7 +143,7 @@ int Gtk3Gui_WVLayout_Setup(GWEN_WIDGET *w) {
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
 
-  g=gtk_vbox_new((flags & GWEN_WIDGET_FLAGS_EQUAL_HEIGHT)?TRUE:FALSE,
+  g=gtk_box_new(GTK_ORIENTATION_VERTICAL,
                  GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
@@ -159,5 +159,3 @@ int Gtk3Gui_WVLayout_Setup(GWEN_WIDGET *w) {
 
   return 0;
 }
-
-

@@ -143,16 +143,9 @@ int Gtk3Gui_WHLayout_Setup(GWEN_WIDGET *w) {
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
 
-#if 0
-  /* using equal width here doesn't seem to be working as expected:
-   * I would expect al children be of equal width, but instead all children are
-   * equally distant to each other while still being of different width...
-   */
-  g=gtk_hbox_new((flags & GWEN_WIDGET_FLAGS_EQUAL_WIDTH)?TRUE:FALSE,
+  g=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
                  GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
-#else
-  g=gtk_hbox_new(FALSE, GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
-#endif
+
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
 
