@@ -22,7 +22,7 @@ GWEN_INHERIT(GWEN_WIDGET, W_PROGRESSBAR)
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
                                         int value,
@@ -34,7 +34,7 @@ int Gtk2Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
   xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_PROGRESSBAR, w);
   assert(xw);
 
-  g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -123,7 +123,7 @@ int Gtk2Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
                                         int defaultValue) {
@@ -134,7 +134,7 @@ int Gtk2Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
   xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_PROGRESSBAR, w);
   assert(xw);
 
-  g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -172,7 +172,7 @@ int Gtk2Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
     GWEN_DIALOG_PROPERTY prop,
     int index,
     const char *value,
@@ -186,7 +186,7 @@ int Gtk2Gui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
+const char* Gtk3Gui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
     GWEN_DIALOG_PROPERTY prop,
     int index,
     const char *defaultValue) {
@@ -198,7 +198,7 @@ const char* Gtk2Gui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void GWENHYWFAR_CB Gtk2Gui_WProgressBar_FreeData(void *bp, void *p) {
+static void GWENHYWFAR_CB Gtk3Gui_WProgressBar_FreeData(void *bp, void *p) {
   W_PROGRESSBAR *xw;
 
   xw=(W_PROGRESSBAR*) p;
@@ -207,7 +207,7 @@ static void GWENHYWFAR_CB Gtk2Gui_WProgressBar_FreeData(void *bp, void *p) {
 
 
 
-int Gtk2Gui_WProgressBar_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WProgressBar_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -215,20 +215,20 @@ int Gtk2Gui_WProgressBar_Setup(GWEN_WIDGET *w) {
   W_PROGRESSBAR *xw;
 
   GWEN_NEW_OBJECT(W_PROGRESSBAR, xw);
-  GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_PROGRESSBAR, w, xw, Gtk2Gui_WProgressBar_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_PROGRESSBAR, w, xw, Gtk3Gui_WProgressBar_FreeData);
 
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
   g=gtk_progress_bar_new();
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WProgressBar_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WProgressBar_GetIntProperty);
-  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WProgressBar_SetCharProperty);
-  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WProgressBar_GetCharProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WProgressBar_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WProgressBar_GetIntProperty);
+  GWEN_Widget_SetSetCharPropertyFn(w, Gtk3Gui_WProgressBar_SetCharProperty);
+  GWEN_Widget_SetGetCharPropertyFn(w, Gtk3Gui_WProgressBar_GetCharProperty);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

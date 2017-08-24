@@ -12,14 +12,14 @@
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WHSpacer_SetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WHSpacer_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
                                     int doSignal) {
   GtkWidget *g;
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -45,13 +45,13 @@ int Gtk2Gui_WHSpacer_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WHSpacer_GetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WHSpacer_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int defaultValue) {
   GtkWidget *g;
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -74,7 +74,7 @@ int Gtk2Gui_WHSpacer_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-int Gtk2Gui_WHSpacer_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WHSpacer_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   uint32_t flags;
   GWEN_WIDGET *wParent;
@@ -85,11 +85,11 @@ int Gtk2Gui_WHSpacer_Setup(GWEN_WIDGET *w) {
   g=gtk_hbox_new(FALSE, 0);
   GWEN_Widget_AddFlags(w, GWEN_WIDGET_FLAGS_FILLX);
 
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WHSpacer_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WHSpacer_GetIntProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WHSpacer_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WHSpacer_GetIntProperty);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

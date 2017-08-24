@@ -20,7 +20,7 @@ GWEN_INHERIT(GWEN_WIDGET, W_SPINBOX)
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
@@ -32,7 +32,7 @@ int Gtk2Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
   xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_SPINBOX, w);
   assert(xw);
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -75,7 +75,7 @@ int Gtk2Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int defaultValue) {
@@ -86,7 +86,7 @@ int Gtk2Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
   xw=GWEN_INHERIT_GETDATA(GWEN_WIDGET, W_SPINBOX, w);
   assert(xw);
 
-  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -124,7 +124,7 @@ int Gtk2Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      const char *value,
@@ -138,7 +138,7 @@ int Gtk2Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
+const char* Gtk3Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
     GWEN_DIALOG_PROPERTY prop,
     int index,
     const char *defaultValue) {
@@ -150,7 +150,7 @@ const char* Gtk2Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void GWENHYWFAR_CB Gtk2Gui_WSpinBox_FreeData(void *bp, void *p) {
+static void GWENHYWFAR_CB Gtk3Gui_WSpinBox_FreeData(void *bp, void *p) {
   W_SPINBOX *xw;
 
   xw=(W_SPINBOX*) p;
@@ -159,7 +159,7 @@ static void GWENHYWFAR_CB Gtk2Gui_WSpinBox_FreeData(void *bp, void *p) {
 
 
 
-static void Gtk2Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer data) {
+static void Gtk3Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer data) {
   GWEN_WIDGET *w;
   int rv;
 
@@ -169,14 +169,14 @@ static void Gtk2Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer
                             GWEN_DialogEvent_TypeValueChanged,
                             GWEN_Widget_GetName(w));
   if (rv==GWEN_DialogEvent_ResultAccept)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
+    Gtk3Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 1);
   else if (rv==GWEN_DialogEvent_ResultReject)
-    Gtk2Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
+    Gtk3Gui_Dialog_Leave(GWEN_Widget_GetTopDialog(w), 0);
 }
 
 
 
-int Gtk2Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -185,7 +185,7 @@ int Gtk2Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
   gulong changed_handler_id;
 
   GWEN_NEW_OBJECT(W_SPINBOX, xw);
-  GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_SPINBOX, w, xw, Gtk2Gui_WSpinBox_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_SPINBOX, w, xw, Gtk3Gui_WSpinBox_FreeData);
 
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
@@ -193,17 +193,17 @@ int Gtk2Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
 
   xw->adjustment=GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 100.0, 1.0, 5.0, 5.0));
   g=gtk_spin_button_new(xw->adjustment, 1.0, 0);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WSpinBox_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WSpinBox_GetIntProperty);
-  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WSpinBox_SetCharProperty);
-  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WSpinBox_GetCharProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WSpinBox_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WSpinBox_GetIntProperty);
+  GWEN_Widget_SetSetCharPropertyFn(w, Gtk3Gui_WSpinBox_SetCharProperty);
+  GWEN_Widget_SetGetCharPropertyFn(w, Gtk3Gui_WSpinBox_GetCharProperty);
 
   changed_handler_id=g_signal_connect(g,
                                       "value-changed",
-                                      G_CALLBACK (Gtk2Gui_WSpinBox_Changed_handler),
+                                      G_CALLBACK (Gtk3Gui_WSpinBox_Changed_handler),
                                       w);
 
   if (wParent)

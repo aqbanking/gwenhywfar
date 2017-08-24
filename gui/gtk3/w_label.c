@@ -12,14 +12,14 @@
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
                                   GWEN_DIALOG_PROPERTY prop,
                                   int index,
                                   int value,
                                   int doSignal) {
   GtkLabel *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -50,13 +50,13 @@ int Gtk2Gui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
                                   GWEN_DIALOG_PROPERTY prop,
                                   int index,
                                   int defaultValue) {
   GtkLabel *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -85,7 +85,7 @@ int Gtk2Gui_WLabel_GetIntProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
+int Gtk3Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
                                    GWEN_DIALOG_PROPERTY prop,
                                    int index,
                                    const char *value,
@@ -93,12 +93,12 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
   GtkLabel *g;
   GWEN_BUFFER *tbuf;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   tbuf=GWEN_Buffer_new(0, 128, 0, 1);
   if (value && *value)
-    Gtk2Gui_GetRawText(value, tbuf);
+    Gtk3Gui_GetRawText(value, tbuf);
 
   switch(prop) {
   case GWEN_DialogProperty_Title:
@@ -119,13 +119,13 @@ int Gtk2Gui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
+const char* Gtk3Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
     GWEN_DIALOG_PROPERTY prop,
     int index,
     const char *defaultValue) {
   GtkLabel *g;
 
-  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
+  g=GTK_LABEL(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
   switch(prop) {
@@ -143,7 +143,7 @@ const char* Gtk2Gui_WLabel_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-int Gtk2Gui_WLabel_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WLabel_Setup(GWEN_WIDGET *w) {
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -156,17 +156,17 @@ int Gtk2Gui_WLabel_Setup(GWEN_WIDGET *w) {
 
   tbuf=GWEN_Buffer_new(0, 128, 0, 1);
   if (s && *s)
-    Gtk2Gui_GetRawText(s, tbuf);
+    Gtk3Gui_GetRawText(s, tbuf);
 
   g=gtk_label_new(GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
 
-  GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WLabel_SetIntProperty);
-  GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WLabel_GetIntProperty);
-  GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLabel_SetCharProperty);
-  GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLabel_GetCharProperty);
+  GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WLabel_SetIntProperty);
+  GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WLabel_GetIntProperty);
+  GWEN_Widget_SetSetCharPropertyFn(w, Gtk3Gui_WLabel_SetCharProperty);
+  GWEN_Widget_SetGetCharPropertyFn(w, Gtk3Gui_WLabel_GetCharProperty);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);
