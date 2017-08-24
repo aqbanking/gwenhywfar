@@ -140,7 +140,7 @@ GWENHYWFAR_CB int GTK3_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg) {
   }
 
   /* hide dialog */
-  gtk_widget_hide_all(g);
+  gtk_widget_hide(g);
 
   /* send fini signal to dialog */
   rv=GWEN_Dialog_EmitSignalToAll(dlg, GWEN_DialogEvent_TypeFini, "");

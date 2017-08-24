@@ -20,6 +20,7 @@
 #include <gwenhywfar/debug.h>
 
 #include <unistd.h>
+#include <locale.h>
 
 
 
@@ -38,7 +39,7 @@ int test1(int argc, char **argv) {
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 
-  gtk_set_locale ();
+  setlocale (LC_ALL, "");
   gtk_init (&argc, &argv);
 
   /* create GUI */
@@ -69,7 +70,7 @@ int test2(int argc, char **argv) {
   uint64_t i2;
   GWEN_GUI *gui;
 
-  gtk_set_locale ();
+  setlocale(LC_ALL, "");
   gtk_init (&argc, &argv);
 
   gui=Gtk3_Gui_new();
@@ -136,7 +137,7 @@ int test3(int argc, char **argv) {
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 
-  gtk_set_locale ();
+  setlocale(LC_ALL, "");
   gtk_init (&argc, &argv);
 
   /* create GUI */
