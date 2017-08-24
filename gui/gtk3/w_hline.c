@@ -82,7 +82,7 @@ int Gtk3Gui_WHLine_Setup(GWEN_WIDGET *w) {
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
 
-  g=gtk_hseparator_new();
+  g=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
 

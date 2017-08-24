@@ -200,8 +200,8 @@ GWENHYWFAR_CB int GTK3_Gui_GetFileName(GWEN_GUI *gui,
     dialog=gtk_file_chooser_dialog_new (caption,
                                         NULL,
                                         GTK_FILE_CHOOSER_ACTION_OPEN,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        "_Cancel", GTK_RESPONSE_CANCEL,
+                                        "_Open", GTK_RESPONSE_ACCEPT,
                                         NULL);
     if (folder && *folder)
       gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), folder);
@@ -232,8 +232,8 @@ GWENHYWFAR_CB int GTK3_Gui_GetFileName(GWEN_GUI *gui,
     dialog=gtk_file_chooser_dialog_new (caption,
                                         NULL,
                                         GTK_FILE_CHOOSER_ACTION_SAVE,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        "_Cancel", GTK_RESPONSE_CANCEL,
+                                        "_Open", GTK_RESPONSE_ACCEPT,
                                         NULL);
     gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
     if (folder && *folder)
@@ -265,8 +265,8 @@ GWENHYWFAR_CB int GTK3_Gui_GetFileName(GWEN_GUI *gui,
     dialog=gtk_file_chooser_dialog_new (caption,
                                         NULL,
                                         GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        "_Cancel", GTK_RESPONSE_CANCEL,
+                                        "_Open", GTK_RESPONSE_ACCEPT,
                                         NULL);
     if (gtk_dialog_run(GTK_DIALOG(dialog))==GTK_RESPONSE_ACCEPT) {
       char *filename;
