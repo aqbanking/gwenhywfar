@@ -83,7 +83,7 @@ mp:
 	autoconf
 	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O0 -ggdb -Wall" ./configure \
 	  INSTALL="/usr/bin/install -p" \
-	  --with-guis="gtk2 fox16" \
+	  --with-guis="gtk2 gtk3 fox16" \
 	  --disable-static \
 	  --enable-full-doc \
 	  --prefix=/usr/local \
