@@ -49,6 +49,15 @@ GWENHYWFAR_API GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db);
 
 GWENHYWFAR_API GWEN_TIME *GWEN_CurrentTime(void);
 
+/**
+ * Create a time using year, month, day, hour, min, sec.
+ * @param year year (e.g. 2009)
+ * @param month month (0-11)
+ * @param day day of month (1-31)
+ * @param min minute (0-59)
+ * @param sec second (0-59)
+ * @param inUtc time is given in UTC if !=0
+ */
 GWENHYWFAR_API GWEN_TIME *GWEN_Time_new(int year,
                                         int month,
                                         int day,
