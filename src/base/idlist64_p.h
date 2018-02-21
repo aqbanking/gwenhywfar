@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: idlist_p.h 1102 2006-12-30 19:39:37Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -33,8 +30,8 @@
 #include <gwenhywfar/idlist64.h>
 
 
-#define GWEN_IDTABLE64_MAXENTRIES 32
-#define GWEN_IDLIST64_STEP 64
+#define GWEN_IDTABLE64_MAXENTRIES 64
+#define GWEN_IDLIST64_STEP        64
 
 
 typedef struct GWEN_IDTABLE64 GWEN_IDTABLE64;
