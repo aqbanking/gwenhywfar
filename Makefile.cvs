@@ -89,6 +89,20 @@ mp:
 	  --prefix=/usr/local \
 	  --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
 
+mp-opt:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	automake --add-missing
+	autoconf
+	CXXFLAGS="-O3 -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O3 -ggdb -Wall" ./configure \
+	  INSTALL="/usr/bin/install -p" \
+	  --with-guis="gtk2 gtk3 fox16" \
+	  --disable-static \
+	  --enable-full-doc \
+	  --prefix=/usr/local \
+	  --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
+
 clang:
 	libtoolize -f --automake
 	aclocal -I ./m4
@@ -142,5 +156,5 @@ mp-w32:
 	  --with-fox-libs="-L$(WIN32_INSTALL_DIR)/lib -lFOX-1.6" \
 
 git-log:
-	git-log --pretty="format:%ad %an%n%s%n%b" --since="2008-08-16" >git.log
+	git log --pretty="format:%ad %an%n%s%n%b" --since="2008-08-16" >git.log
 
