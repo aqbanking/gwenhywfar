@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,7 +30,6 @@
 
 #define DISABLE_DEBUGLOG
 
-
 #include "idlist64_p.h"
 #include <gwenhywfar/debug.h>
 
@@ -39,6 +38,13 @@
 #include <assert.h>
 #include <string.h>
 
+/* Uncomment this to use the old compact mode of entry storage
+ * compact means that empty entries within tables are filled from begin on when
+ * adding new entries (this was the old mode of id allocation).
+ * The new mode is to add entries to the last table. If the last table is full
+ * a new table is created and the new id added to that table.
+ */
+/*#define GWEN_IDLIST64_COMPACT */
 
 
 GWEN_IDTABLE64 *GWEN_IdTable64_new(void) {
@@ -285,6 +291,7 @@ void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt) {
 
 
 int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id) {
+#ifdef GWEN_IDLIST64_COMPACT
   GWEN_IDTABLE64 *idt=NULL;
   GWEN_IDTABLE64 **tablePtr;
   int idx;
@@ -309,10 +316,32 @@ int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id) {
     idt=GWEN_IdTable64_new();
     GWEN_IdList64_AddTable(idl, idt);
   }
-
   GWEN_IdTable64_AddId(idt, id);
   idl->entryCount++;
   return 0;
+#else
+  GWEN_IDTABLE64 *idt=NULL;
+  int idx;
+
+  assert(idl);
+
+  if (idl->pIdTablePointers==NULL) {
+    /* create an initial pointer table which can take up to GWEN_IDLIST64_STEP pointers */
+    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    assert(idl->pIdTablePointers);
+    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    idl->idTableCount=GWEN_IDLIST64_STEP;
+  }
+  idx=idl->lastTableIdx;
+  idt=idl->pIdTablePointers[idx];
+  if (idt==NULL || GWEN_IdTable64_IsFull(idt)) {
+    idt=GWEN_IdTable64_new();
+    GWEN_IdList64_AddTable(idl, idt);
+  }
+  GWEN_IdTable64_AddId(idt, id);
+  idl->entryCount++;
+  return 0;
+#endif
 }
 
 
