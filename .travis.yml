@@ -4,7 +4,7 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install libgnutls-dev
+  - sudo apt-get install libgnutls-dev libgtk-3-dev libgtk2.0-dev
 script:
   - make -f Makefile.cvs
   - ./configure --with-guis="qt4 gtk2"
