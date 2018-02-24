@@ -45,7 +45,7 @@ GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
   bf->_refCount=1;
   if (!buffer) {
     /* allocate buffer */
-    bf->realPtr=(char*)GWEN_Memory_malloc(size+1);
+      bf->realPtr=(char*)GWEN_Memory_malloc(size?(size+1):0);
     assert(bf->realPtr);
     bf->ptr=bf->realPtr;
     bf->realBufferSize=size+1;
@@ -107,7 +107,7 @@ GWEN_BUFFER *GWEN_Buffer_dup(GWEN_BUFFER *bf) {
   newbf->_refCount=1;
 
   if (bf->realPtr && bf->realBufferSize) {
-    newbf->realPtr=(char*)GWEN_Memory_malloc(bf->realBufferSize);
+      newbf->realPtr=(char*)GWEN_Memory_malloc((bf->realBufferSize)?(bf->realBufferSize+1):0);
     newbf->ptr=newbf->realPtr+(bf->ptr-bf->realPtr);
     newbf->realBufferSize=bf->realBufferSize;
     newbf->bufferSize=bf->bufferSize;
@@ -320,10 +320,10 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
                 bf->bufferSize, nsize);
     if (bf->realPtr==NULL) {
-      p=GWEN_Memory_malloc(nsize);
+        p=GWEN_Memory_malloc(nsize?(nsize+1):0);
     }
     else {
-      p=GWEN_Memory_realloc(bf->realPtr, nsize);
+        p=GWEN_Memory_realloc(bf->realPtr, nsize?(nsize+1):0);
     }
     if (!p) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Realloc failed.");
@@ -360,7 +360,7 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
     return GWEN_ERROR_PERMISSIONS;
   }
 
-  rv=GWEN_Buffer_AllocRoom(bf, size);
+  rv=GWEN_Buffer_AllocRoom(bf, size+1);
   if (rv<0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
     return rv;
@@ -519,7 +519,7 @@ int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf) {
       bf->bytesUsed=bf->pos;
     }
     /* append a NULL to allow using the buffer as ASCIIZ string */
-    bf->ptr[bf->bytesUsed]=0;
+    bf->ptr[bf->bytesUsed]=0; /* TODO: This has to be checked (is it okay to add a byte here?)! */
     return 0;
   }
   else {
@@ -569,7 +569,7 @@ int GWEN_Buffer_AppendBuffer(GWEN_BUFFER *bf, GWEN_BUFFER *sf) {
 uint32_t GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf) {
   assert(bf);
 
-  return (bf->bufferSize-bf->bytesUsed);
+  return (bf->bufferSize-(bf->bytesUsed+1));
 }
 
 
