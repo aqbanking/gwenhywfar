@@ -30,15 +30,15 @@ struct GWEN_CRYPT_KEY_SYM {
 static GWENHYWFAR_CB void GWEN_Crypt_KeySym_freeData(void *bp, void *p);
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeySym_Encipher(GWEN_CRYPT_KEY *k,
-                                      const uint8_t *pInData,
-                                      uint32_t inLen,
-                                      uint8_t *pOutData,
-                                      uint32_t *pOutLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen);
 static GWENHYWFAR_CB int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
-                                      const uint8_t *pInData,
-                                      uint32_t inLen,
-                                      uint8_t *pOutData,
-                                      uint32_t *pOutLen);
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen);
 
 static enum gcry_cipher_modes GWEN_Crypt_KeySym__MyMode2GMode(GWEN_CRYPT_CRYPTMODE mode);
 

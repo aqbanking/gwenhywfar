@@ -510,12 +510,12 @@ int Gtk3Gui_WListBox_Setup(GWEN_WIDGET *w) {
                                  GTK_POLICY_AUTOMATIC);
   g=gtk_tree_view_new();
   gtk_tree_view_set_headers_clickable(GTK_TREE_VIEW(g), TRUE);
-/* gtk_tree_view_set_rules_hint is deprecated in gtk-3.14 on the
- * grounds that it's really up to the theme and the user whether the
- * treeview should be drawn with alternating background colors. */
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+  /* gtk_tree_view_set_rules_hint is deprecated in gtk-3.14 on the
+   * grounds that it's really up to the theme and the user whether the
+   * treeview should be drawn with alternating background colors. */
+  G_GNUC_BEGIN_IGNORE_DEPRECATIONS
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(g), TRUE);
-G_GNUC_END_IGNORE_DEPRECATIONS
+  G_GNUC_END_IGNORE_DEPRECATIONS
   gtk_container_add(GTK_CONTAINER(gScroll), GTK_WIDGET(g));
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) gScroll);

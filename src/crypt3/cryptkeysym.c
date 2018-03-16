@@ -30,10 +30,10 @@ GWEN_INHERIT(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM)
 
 
 GWENHYWFAR_CB int GWEN_Crypt_KeySym_Encipher(GWEN_CRYPT_KEY *k,
-                               const uint8_t *pInData,
-                               uint32_t inLen,
-                               uint8_t *pOutData,
-                               uint32_t *pOutLen) {
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen) {
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
@@ -54,10 +54,10 @@ GWENHYWFAR_CB int GWEN_Crypt_KeySym_Encipher(GWEN_CRYPT_KEY *k,
 
 
 GWENHYWFAR_CB int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
-                               const uint8_t *pInData,
-                               uint32_t inLen,
-                               uint8_t *pOutData,
-                               uint32_t *pOutLen) {
+    const uint8_t *pInData,
+    uint32_t inLen,
+    uint8_t *pOutData,
+    uint32_t *pOutLen) {
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 

@@ -773,11 +773,11 @@ int GWEN_PasswordStore_GetTokenList(GWEN_PASSWD_STORE *sto, GWEN_STRINGLIST *sl)
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=GWEN_Text_UnescapeToBufferTolerant(s, buf);
       if (rv<0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Error unescaping token name (%d), ignoring", rv);
-	pwErrors++;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error unescaping token name (%d), ignoring", rv);
+        pwErrors++;
       }
       else {
-	GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(buf), 0, 0);
+        GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(buf), 0, 0);
       }
       GWEN_Buffer_free(buf);
     }
