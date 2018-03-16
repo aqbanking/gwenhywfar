@@ -1594,11 +1594,11 @@ void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd) {
 
 
 uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
-                                         uint32_t progressFlags,
-                                         const char *title,
-                                         const char *text,
-                                         uint64_t total,
-                                         uint32_t guiid) {
+    uint32_t progressFlags,
+    const char *title,
+    const char *text,
+    uint64_t total,
+    uint32_t guiid) {
   GWEN_PROGRESS_DATA *pdParent=NULL;
   GWEN_PROGRESS_DATA *pd;
   uint32_t id;
@@ -2036,10 +2036,10 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
 
 
 int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
-                                              const char *url,
-                                              const char *defaultProto,
-                                              int defaultPort,
-                                              GWEN_SYNCIO **pSio) {
+    const char *url,
+    const char *defaultProto,
+    int defaultPort,
+    GWEN_SYNCIO **pSio) {
   GWEN_URL *u;
   const char *s;
   int port;
@@ -2359,10 +2359,10 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
 
 
 static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
-                                                             const char *token,
-                                                             const char *pin,
-                                                             GWEN_GUI_PASSWORD_STATUS status,
-                                                             GWEN_UNUSED uint32_t guiid) {
+    const char *token,
+    const char *pin,
+    GWEN_GUI_PASSWORD_STATUS status,
+    GWEN_UNUSED uint32_t guiid) {
   if (token==NULL && pin==NULL && status==GWEN_Gui_PasswordStatus_Remove) {
     /* complete cleaning is requested */
     if (gui->passwdStore)

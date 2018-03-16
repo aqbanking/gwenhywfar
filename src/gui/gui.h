@@ -806,7 +806,7 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
 GWENHYWFAR_API
 int GWEN_Gui_LogHook(const char *logDomain,
                      GWEN_LOGGER_LEVEL priority,
-		     const char *s);
+                     const char *s);
 
 
 /**

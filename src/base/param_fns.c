@@ -239,10 +239,10 @@ void GWEN_Param_List_ReadValuesFromXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
 
       p=GWEN_Param_List_GetByName(pl, sName);
       if (p) {
-	GWEN_Param_SetCurrentValue(p, sValue);
+        GWEN_Param_SetCurrentValue(p, sValue);
       }
       else {
-	DBG_WARN(GWEN_LOGDOMAIN, "Param \"%s\" not found, ignoring", sName);
+        DBG_WARN(GWEN_LOGDOMAIN, "Param \"%s\" not found, ignoring", sName);
       }
     }
 

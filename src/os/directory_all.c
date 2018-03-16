@@ -549,8 +549,8 @@ int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
 
 
 int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
-                                               GWEN_STRINGLIST *sl,
-                                               const char *mask) {
+    GWEN_STRINGLIST *sl,
+    const char *mask) {
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];

@@ -347,8 +347,8 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
         s=GWEN_StringListEntry_Data(se);
         if (s && *s) {
           rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-						    s,
-                                                    GNUTLS_X509_FMT_PEM);
+              s,
+              GNUTLS_X509_FMT_PEM);
           if (rv<=0) {
             DBG_WARN(GWEN_LOGDOMAIN,
                      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
@@ -417,7 +417,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
     }
-  } else { /* use default ciphers from GnuTLS */
+  }
+  else {   /* use default ciphers from GnuTLS */
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Using GnuTLS default ciphers."));
     rv=gnutls_set_default_priority(xio->session);
     if (rv!=GNUTLS_E_SUCCESS) {
@@ -527,8 +528,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
     if (trustFileSet==0) {
 
-        /* TODO: use gnutls_certificate_set_x509_system_trust() */
-        trustFileSet=1;
+      /* TODO: use gnutls_certificate_set_x509_system_trust() */
+      trustFileSet=1;
     }
 
 
@@ -1399,12 +1400,12 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
 #ifdef GNUTLS_E_PREMATURE_TERMINATION
     if (rv==GNUTLS_E_PREMATURE_TERMINATION) {
       if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!), ignoring.");
-	return 0; /* report EOF */
+        DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!), ignoring.");
+        return 0; /* report EOF */
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!)");
-	return GWEN_ERROR_SSL_PREMATURE_CLOSE;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!)");
+        return GWEN_ERROR_SSL_PREMATURE_CLOSE;
       }
     }
 #endif

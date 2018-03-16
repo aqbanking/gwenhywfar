@@ -739,8 +739,8 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
 
       dn=GWEN_XMLNode_GetFirstData(nn);
       if (dn) {
-	if (dn->data)
-	  return dn->data;
+        if (dn->data)
+          return dn->data;
       }
       nn=GWEN_XMLNode_FindNextTag(nn, name, 0, 0);
     }
@@ -751,7 +751,7 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
     dn=GWEN_XMLNode_GetFirstData(n);
     if (dn) {
       if (dn->data)
-	return dn->data;
+        return dn->data;
     }
   }
   return defValue;
@@ -760,8 +760,8 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
 
 
 const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
-					       const char *name,
-					       const char *defValue) {
+    const char *name,
+    const char *defValue) {
   GWEN_XMLNODE *nn=0;
   GWEN_STRINGLIST *langl;
 

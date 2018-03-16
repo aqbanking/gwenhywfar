@@ -898,11 +898,9 @@ AM_CONDITIONAL(WITH_GUI_GTK2, [test "$with_gui_gtk2" = "yes"])
 
 case "$gwenhywfar_guis" in
   *gtk3*)
-     # We need at least GTK 2.17.5 because we use functions like
-     # gtk_widget_get_sensitive() and gtk_widget_has_focus()
-     pkg_modules="gtk+-3.0 >= 3.14.0"
-     dnl $4=true => don't die in case of failure.
-     PKG_CHECK_MODULES(GTK3, [$pkg_modules], [], true)
+     # Minimum required gtk3 version
+     pkg_modules="gtk+-3.0 >= 3.10.8"
+     PKG_CHECK_MODULES(GTK3, [$pkg_modules])
      AC_DEFINE(BUILD_GUI_GTK3, 1, [if gwen gui for gtk3 is built])
      with_gui_gtk3="yes"
      ;;
