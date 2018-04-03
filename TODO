@@ -1,4 +1,13 @@
 
+tm2:
+  - inline loc="struct" -> insert fields into the struct definition
+
+  - inline loc="constructor": -> insert code into constructor
+  - inline loc="destructor": -> insert code into constructor
+  -> or maybe: make the field definition also a part of the tm2 mechanisms
+     already in place (i.e. defined in tm2 files?)
+
+
 xml:
   - read encodings from XML header and convert text accordingly
   - add argument to file reader/writer code which contains the target
