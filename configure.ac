@@ -978,24 +978,24 @@ AC_MSG_RESULT($docpath)
 #
 # search for tag files
 #
-AC_MSG_CHECKING(doxygen tag files)
-DOXYGEN_TAGFILES=""
-if test -d "${docpath}"; then
-  DOXYGEN_TAGFILES="`cd ${docpath} && ls *.tag`"
-  if test -n "${DOXYGEN_TAGFILES}"; then
-   DOXYGEN_TAGFILES="`echo ${DOXYGEN_TAGFILES} | ${SED} -e s/${PACKAGE}.tag//`"
-  fi
-  realfiles=""
-  for ff in ${DOXYGEN_TAGFILES}; do
-    realfiles="${realfiles} ${docpath}/${ff}"
-  done
-  DOXYGEN_TAGFILES="${realfiles}"
-fi
-if test -z "${DOXYGEN_TAGFILES}"; then
-  AC_MSG_RESULT(none)
-else
-  AC_MSG_RESULT(found)
-fi
+#AC_MSG_CHECKING(doxygen tag files)
+#DOXYGEN_TAGFILES=""
+#if test -d "${docpath}"; then
+#  DOXYGEN_TAGFILES="`cd ${docpath} && ls *.tag`"
+#  if test -n "${DOXYGEN_TAGFILES}"; then
+#   DOXYGEN_TAGFILES="`echo ${DOXYGEN_TAGFILES} | ${SED} -e s/${PACKAGE}.tag//`"
+#  fi
+#  realfiles=""
+#  for ff in ${DOXYGEN_TAGFILES}; do
+#    realfiles="${realfiles} ${docpath}/${ff}"
+#  done
+#  DOXYGEN_TAGFILES="${realfiles}"
+#fi
+#if test -z "${DOXYGEN_TAGFILES}"; then
+#  AC_MSG_RESULT(none)
+#else
+#  AC_MSG_RESULT(found)
+#fi
 AC_SUBST(DOXYGEN_TAGFILES)
 
 
@@ -1134,7 +1134,7 @@ AC_ARG_ENABLE(full-doc,
   enable_fulldoc="no")
 
 if test "$enable_fulldoc" = "yes"; then
-	DOXYGEN_INPUT="listdoc.h src gui"
+	DOXYGEN_INPUT="listdoc.h src gui plugins tools"
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
