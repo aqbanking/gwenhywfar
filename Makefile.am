@@ -67,7 +67,7 @@ install-srcdoc: $(PACKAGE).tag
 	test -d "$(DESTDIR)@docpath@/$(PACKAGE)" || \
 	  mkdir -p "$(DESTDIR)@docpath@/$(PACKAGE)"
 	for f in apidoc/*; do \
-	  cp $$f "$(DESTDIR)@docpath@/$(PACKAGE)/"; \
+	  cp -dR $$f "$(DESTDIR)@docpath@/$(PACKAGE)/"; \
 	done
 	cp "$(PACKAGE).tag" "$(DESTDIR)@docpath@/"
 	if test -x "$(DESTDIR)@docpath@/$(PACKAGE)/installdox"; then \
