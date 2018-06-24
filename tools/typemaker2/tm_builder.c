@@ -338,6 +338,13 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
       GWEN_Buffer_free(tbuf);
     }
 
+    s=Typemaker2_Member_GetElementName(tm);
+    if (s && *s)
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "element_name", s);
+    else
+      /* default behaviour is to use the name "element" for list members in GWEN_DBs */
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "element_name", "element");
+
     s=Typemaker2_Member_GetDefaultValue(tm);
     if (s && *s)
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "default", s);

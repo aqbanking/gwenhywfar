@@ -46,7 +46,7 @@
             while(elem) {
               GWEN_XMLNODE *dbElem;
               
-              dbElem=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "element");
+              dbElem=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(element_name)");
               assert(dbElem);
               $(member_basetype_prefix)_toXml(elem, dbElem);
               GWEN_XMLNode_AddChild(dbDest, dbElem);
@@ -69,14 +69,14 @@
               GWEN_XMLNODE *dbT;
               
               t=$(member_prefix)_new();
-              dbT=GWEN_XMLNode_FindFirstTag(dbSource, "element", NULL, NULL);
+              dbT=GWEN_XMLNode_FindFirstTag(dbSource, "$(element_name)", NULL, NULL);
               while(dbT) {
                 $(member_basetype_type) *elem;
                 
                 elem=$(member_basetype_prefix)_fromXml(dbT);
                 if (elem)
                   $(member_prefix)_Add(elem, t);
-                dbT=GWEN_XMLNode_FindNextTag(dbT, "element", NULL, NULL);
+                dbT=GWEN_XMLNode_FindNextTag(dbT, "$(element_name)", NULL, NULL);
               }
               $(dst)=t;
             }

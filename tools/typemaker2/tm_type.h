@@ -109,7 +109,6 @@ void Typemaker2_Type_SetExtends(TYPEMAKER2_TYPE *ty, const char *s);
 const char *Typemaker2_Type_GetBaseType(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetBaseType(TYPEMAKER2_TYPE *ty, const char *s);
 
-
 int Typemaker2_Type_GetType(const TYPEMAKER2_TYPE *ty);
 void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i);
 
