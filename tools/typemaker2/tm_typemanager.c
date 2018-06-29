@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2017 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -340,11 +340,11 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   Typemaker2_Type_List_Add(ty, tym->typeList);
 
 
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST1)
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
     Typemaker2_TypeManager_MakeTypeList1(tym, ty);
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST2)
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
     Typemaker2_TypeManager_MakeTypeList2(tym, ty);
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_TREE)
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
     Typemaker2_TypeManager_MakeTypeTree(tym, ty);
 
   //Typemaker2_TypeManager_Dump(tym, stderr, 2);
@@ -439,11 +439,11 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
      Typemaker2_Type_List_Add(ty, tym->typeList);
      Typemaker2_Type_List2_PushBack(tl, ty);
    
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST1)
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
        Typemaker2_TypeManager_MakeTypeList1(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST2)
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
        Typemaker2_TypeManager_MakeTypeList2(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_TREE)
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
        Typemaker2_TypeManager_MakeTypeTree(tym, ty);
 
      node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
@@ -567,11 +567,11 @@ int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, con
      Typemaker2_Type_List_Add(ty, tym->typeList);
      Typemaker2_Type_List2_PushBack(tlist2, ty);
 
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST1)
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
        Typemaker2_TypeManager_MakeTypeList1(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST2)
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
        Typemaker2_TypeManager_MakeTypeList2(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_TREE)
+     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
        Typemaker2_TypeManager_MakeTypeTree(tym, ty);
 
      node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);

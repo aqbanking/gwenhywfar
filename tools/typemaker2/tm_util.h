@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,6 +16,9 @@
 
 
 uint32_t Typemaker2_FlagsFromString(const char *s);
+
+uint32_t Typemaker2_TypeFlagsFromString(const char *t);
+
 
 int Typemaker2_AccessFromString(const char *s);
 

@@ -1261,7 +1261,7 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, i
 
 
   /* write typedef file for list1 */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST1) {
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
     const char *s;
     char *t;
     GWEN_BUFFER *tbuf;
@@ -1293,7 +1293,7 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, i
   }
 
   /* write typedef file for list2 */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_LIST2) {
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2) {
     const char *s;
     char *t;
     GWEN_BUFFER *tbuf;
@@ -1325,7 +1325,7 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, i
   }
 
   /* write typedef file for tree */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_TREE) {
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
     const char *s;
     char *t;
     GWEN_BUFFER *tbuf;
@@ -1357,7 +1357,7 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, i
   }
 
   /* write typedef file for idmap */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_FLAGS_WITH_IDMAP) {
+  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_IDMAP) {
     const char *s;
     char *t;
     GWEN_BUFFER *tbuf;

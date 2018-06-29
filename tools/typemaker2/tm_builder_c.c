@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -87,21 +87,21 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   /* add some system headers */
   GWEN_Buffer_AppendString(tbuf, "/* needed system headers */\n");
   GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/types.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/list1.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST2)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/list2.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_TREE)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/tree.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_INHERIT)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/inherit.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_IDMAP)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_IDMAP)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/idmap.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_DB)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_DB)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/db.h>\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_XML)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_XML)
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/xml.h>\n");
-  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS))
+  if ((flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS))
     GWEN_Buffer_AppendString(tbuf, "#include <gwenhywfar/gwensignal.h>\n");
   GWEN_Buffer_AppendString(tbuf, "\n");
 
@@ -135,7 +135,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_OBJECT) {
     GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb.h>\n");
   }
 
@@ -146,7 +146,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, ";\n");
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
     if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
       GWEN_Buffer_AppendString(tbuf, "GWEN_LIST_FUNCTION_LIB_DEFS(");
       s=Typemaker2_Type_GetIdentifier(ty);
@@ -170,7 +170,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST2) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST2) {
     if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
       GWEN_Buffer_AppendString(tbuf, "GWEN_LIST2_FUNCTION_LIB_DEFS(");
       s=Typemaker2_Type_GetIdentifier(ty);
@@ -194,7 +194,31 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_CONSTLIST2) {
+    if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
+      GWEN_Buffer_AppendString(tbuf, "GWEN_CONSTLIST2_FUNCTION_LIB_DEFS(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ", ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ", ");
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ")\n");
+    }
+    else {
+      GWEN_Buffer_AppendString(tbuf, "GWEN_CONSTLIST2_FUNCTION_DEFS(");
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ", ");
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, ")\n");
+    }
+  }
+
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
     if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
       GWEN_Buffer_AppendString(tbuf, "GWEN_TREE_FUNCTION_LIB_DEFS(");
       s=Typemaker2_Type_GetIdentifier(ty);
@@ -218,7 +242,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_INHERIT) {
     if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
       GWEN_Buffer_AppendString(tbuf, "GWEN_INHERIT_FUNCTION_LIB_DEFS(");
       s=Typemaker2_Type_GetIdentifier(ty);
@@ -236,7 +260,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_IDMAP) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_IDMAP) {
     if (Typemaker2_TypeManager_GetApiDeclaration(tym)) {
       GWEN_Buffer_AppendString(tbuf, "GWEN_IDMAP_FUNCTION_LIB_DEFS(");
       s=Typemaker2_Type_GetIdentifier(ty);
@@ -262,7 +286,7 @@ static int _buildTypedef(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "\n");
 
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_OBJECT) {
     GWEN_Buffer_AppendString(tbuf, "#include <aqdatabase/aqdb_db.h>\n");
   }
   GWEN_Buffer_AppendString(tbuf, "\n");
@@ -383,33 +407,33 @@ static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, " {\n");
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_INHERIT) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_INHERIT_ELEMENT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_LIST_ELEMENT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_TREE_ELEMENT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
+  if ((flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS)) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_SIGNALOBJECT *_signalObject;");
     GWEN_Buffer_AppendString(tbuf, "\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_REFCOUNT)
     GWEN_Buffer_AppendString(tbuf, "  int _refCount;\n");
 
 
@@ -539,7 +563,7 @@ static int _buildMacroFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "/* macro functions */\n");
  
   flags=Typemaker2_Type_GetFlags(ty);
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
     GWEN_Buffer_AppendString(tbuf, "GWEN_LIST_FUNCTIONS(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
@@ -549,7 +573,7 @@ static int _buildMacroFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST2) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST2) {
     GWEN_Buffer_AppendString(tbuf, "GWEN_LIST2_FUNCTIONS(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
@@ -559,7 +583,17 @@ static int _buildMacroFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_CONSTLIST2) {
+    GWEN_Buffer_AppendString(tbuf, "GWEN_CONSTLIST2_FUNCTIONS(");
+    s=Typemaker2_Type_GetIdentifier(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ", ");
+    s=Typemaker2_Type_GetPrefix(ty);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, ")\n");
+  }
+
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
     GWEN_Buffer_AppendString(tbuf, "GWEN_TREE_FUNCTIONS(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
@@ -569,14 +603,14 @@ static int _buildMacroFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_INHERIT) {
     GWEN_Buffer_AppendString(tbuf, "GWEN_INHERIT_FUNCTIONS(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ")\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_IDMAP) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_IDMAP) {
     GWEN_Buffer_AppendString(tbuf, "GWEN_IDMAP_FUNCTIONS(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
@@ -659,35 +693,35 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT)
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_REFCOUNT)
     GWEN_Buffer_AppendString(tbuf, "  p_struct->_refCount=1;\n");
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_INHERIT) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_INHERIT_INIT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_LIST_INIT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
     GWEN_Buffer_AppendString(tbuf, "  GWEN_TREE_INIT(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
-  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
+  if ((flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS)) {
     GWEN_Buffer_AppendString(tbuf, "  p_struct->_signalObject=GWEN_SignalObject_new();\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) {
     TYPEMAKER2_SIGNAL_LIST *slist;
 
     GWEN_Buffer_AppendString(tbuf, "  /* generate pre-defined signals */\n");
@@ -726,7 +760,7 @@ static int _buildConstructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   }
 
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS) {
     TYPEMAKER2_SLOT_LIST *slist;
 
     GWEN_Buffer_AppendString(tbuf, "  /* generate pre-defined slots */\n");
@@ -908,12 +942,12 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 
   GWEN_Buffer_AppendString(tbuf, "  if (p_struct) {\n");
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_REFCOUNT) {
     GWEN_Buffer_AppendString(tbuf, "  assert(p_struct->_refCount);\n");
     GWEN_Buffer_AppendString(tbuf, "  if (p_struct->_refCount==1) {\n");
   }
 
-  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
+  if ((flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS)) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_SignalObject_free(p_struct->_signalObject);\n");
   }
 
@@ -925,21 +959,21 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     GWEN_Buffer_AppendString(tbuf, "(p_struct);\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_INHERIT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_INHERIT) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_INHERIT_FINI(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_LIST_FINI(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Buffer_AppendString(tbuf, ", p_struct)\n");
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
     GWEN_Buffer_AppendString(tbuf, "    GWEN_TREE_FINI(");
     s=Typemaker2_Type_GetIdentifier(ty);
     GWEN_Buffer_AppendString(tbuf, s);
@@ -984,12 +1018,12 @@ static int _buildDestructor(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_REFCOUNT) {
     GWEN_Buffer_AppendString(tbuf, "    p_struct->_refCount=0;\n");
   }
 
   GWEN_Buffer_AppendString(tbuf, "    GWEN_FREE_OBJECT(p_struct);\n");
-  if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_REFCOUNT) {
     GWEN_Buffer_AppendString(tbuf, "  }\n");
     GWEN_Buffer_AppendString(tbuf, "  else\n");
     GWEN_Buffer_AppendString(tbuf, "    p_struct->_refCount--;\n");
@@ -1017,7 +1051,7 @@ static int _buildGetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   flags=Typemaker2_Type_GetFlags(ty);
 
   /* probably add getter for signalObject */
-  if ((flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_FLAGS_WITH_SLOTS)) {
+  if ((flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) || (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS)) {
     /* prototype */
     s=Typemaker2_TypeManager_GetApiDeclaration(tym);
     if (s && *s) {
@@ -5295,7 +5329,7 @@ static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       assert(mty);
 
       if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_WITH_GETBYMEMBER) {
-	if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+	if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
 	  rv=_buildList1GetByMember(tb, ty, tm);
 	  if (rv<0) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -5303,7 +5337,7 @@ static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
 	  }
 	}
 
-	if (flags & TYPEMAKER2_FLAGS_WITH_TREE) {
+	if (flags & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
 	  rv=_buildTreeGetByMember(tb, ty, tm);
 	  if (rv<0) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -5541,7 +5575,7 @@ static int _buildSortByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       assert(mty);
 
       if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_SORTBYMEMBER) {
-	if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
+	if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
 	  rv=_buildList1SortByMember(tb, ty, tm);
 	  if (rv<0) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -6847,7 +6881,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
 
   flags=Typemaker2_Type_GetFlags(ty);
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS) {
     _delVirtualFnsFromSlots(tb, ty);
     rv=_addVirtualFnsFromSlots(tb,ty);
     if (rv<0) {
@@ -6863,7 +6897,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     return rv;
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_OBJECT) {
     rv=_buildFieldIds(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -6949,7 +6983,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     return rv;
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_REFCOUNT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_REFCOUNT) {
     rv=_buildAttach(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -6957,7 +6991,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  if (!(flags & TYPEMAKER2_FLAGS_NODUP)) {
+  if (!(flags & TYPEMAKER2_TYPEFLAGS_NODUP)) {
     rv=_buildDup(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -6965,7 +6999,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  if (!(flags & TYPEMAKER2_FLAGS_NOCOPY)) {
+  if (!(flags & TYPEMAKER2_TYPEFLAGS_NOCOPY)) {
     rv=_buildCopy(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7009,8 +7043,8 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     return rv;
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_LIST1) {
-    if (!(flags & TYPEMAKER2_FLAGS_NODUP)) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
+    if (!(flags & TYPEMAKER2_TYPEFLAGS_NODUP)) {
       rv=_buildList1Dup(tb, ty);
       if (rv<0) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7019,7 +7053,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_DB) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_DB) {
     rv=_buildReadDb(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7046,7 +7080,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
 
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_XML) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_XML) {
     rv=_buildReadXml(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7072,7 +7106,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_OBJECT) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_OBJECT) {
     rv=_buildReadObject(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7122,7 +7156,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     return rv;
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_HASH) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_HASH) {
     rv=_buildToHashString(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7144,7 +7178,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
   }
 
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SIGNALS) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_SIGNALS) {
     rv=_buildSignalFunctions(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7152,7 +7186,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_SLOTS) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_SLOTS) {
     rv=_buildSlotFunctions(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -7160,7 +7194,7 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
     }
   }
 
-  if (flags & TYPEMAKER2_FLAGS_WITH_CACHEFNS) {
+  if (flags & TYPEMAKER2_TYPEFLAGS_WITH_CACHEFNS) {
     rv=_buildCacheFunctions(tb, ty);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
