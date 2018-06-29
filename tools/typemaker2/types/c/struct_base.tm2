@@ -38,11 +38,13 @@
       <codedef id="toXml">
         <code>
           {
-            GWEN_XMLNODE *dbDest;
-            
-            dbDest=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(name)");
-            $(member_prefix)_toXml($(src), dbDest);
-            GWEN_XMLNode_AddChild($(db), dbDest);
+            if ($(src)) {
+              GWEN_XMLNODE *dbDest;
+              
+              dbDest=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "$(name)");
+              $(member_prefix)_toXml($(src), dbDest);
+              GWEN_XMLNode_AddChild($(db), dbDest);
+            }
           }
         </code>
       </codedef>
@@ -80,11 +82,13 @@
       <codedef id="toDb">
         <code>
           {
-            GWEN_DB_NODE *dbDest;
-            
-            dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
-            assert(dbDest);
-            $(retval)=$(member_prefix)_toDb($(src), dbDest);
+            if ($(src)) {
+              GWEN_DB_NODE *dbDest;
+              
+              dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
+              assert(dbDest);
+              $(retval)=$(member_prefix)_toDb($(src), dbDest);
+            }
           }
         </code>
       </codedef>
