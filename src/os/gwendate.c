@@ -155,11 +155,11 @@ GWEN_DATE *GWEN_Date_fromString(const char *s) {
   if (3==sscanf(s, "%04d%02d%02d", &y, &m, &d)) {
     GWEN_DATE *result = GWEN_Date_fromGregorian(y, m, d);
     if (!result)
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
+      DBG_INFO(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
     return result;
   }
   else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
     return NULL;
   }
 }
