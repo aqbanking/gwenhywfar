@@ -792,8 +792,8 @@ void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
  */
 GWENHYWFAR_API
 const char *GWEN_XMLNode_GetCharValueByPath(GWEN_XMLNODE *n,
-    const char *path,
-    const char *defValue);
+                                            const char *path,
+                                            const char *defValue);
 
 GWENHYWFAR_API
 int GWEN_XMLNode_SetCharValueByPath(GWEN_XMLNODE *n, uint32_t flags,
