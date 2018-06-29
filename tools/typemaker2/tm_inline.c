@@ -140,11 +140,11 @@ TYPEMAKER2_INLINE *Typemaker2_Inline_fromXml(GWEN_XMLNODE *node) {
 
   s=GWEN_XMLNode_GetCharValue(node, "typeFlagsMask", NULL);
   if (s && *s)
-    th->typeFlagsMask=Typemaker2_FlagsFromString(s);
+    th->typeFlagsMask=Typemaker2_TypeFlagsFromString(s);
 
   s=GWEN_XMLNode_GetCharValue(node, "typeFlagsValue", NULL);
   if (s && *s)
-    th->typeFlagsValue=Typemaker2_FlagsFromString(s);
+    th->typeFlagsValue=Typemaker2_TypeFlagsFromString(s);
 
   /* read header location */
   s=GWEN_XMLNode_GetProperty(node, "loc", "post");
