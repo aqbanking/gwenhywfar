@@ -157,8 +157,7 @@ int main(int argc, char **argv) {
 
 #ifdef HAVE_OPENSSL
   /* for conversion purposes */
-  SSL_load_error_strings();
-  SSL_library_init();
+  OPENSSL_init_ssl(0, NULL);
   GWEN_Gui_SetKeyDataFromTextOpenSslFn(gui, getKeyDataFromTextOpenSSL);
 #endif
 
