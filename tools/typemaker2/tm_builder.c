@@ -676,6 +676,9 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
     const char *s;
 
     xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    s=Typemaker2_Type_GetName(ty);
+    GWEN_Buffer_AppendString(xbuf, s);
+    GWEN_Buffer_AppendString(xbuf, "_");
     GWEN_Buffer_AppendString(xbuf, fileName);
     p=GWEN_Buffer_GetStart(xbuf);
     while(*p) {
