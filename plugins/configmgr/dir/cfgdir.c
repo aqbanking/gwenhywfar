@@ -656,7 +656,7 @@ int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
   xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
   assert(xcfg);
 
-  snprintf(ubuf, sizeof(ubuf)-1, "uid::%08x", uid);
+  snprintf(ubuf, sizeof(ubuf)-1, "%08x", uid);
   ubuf[sizeof(ubuf)-1]=0;
 
   if (doCheck) {
