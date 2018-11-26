@@ -1237,7 +1237,7 @@ void GWEN_Text_DumpString(const char *s, unsigned int l,
   unsigned int i;
   unsigned int j;
   unsigned int pos;
-  unsigned k;
+  unsigned int k;
 
   pos=0;
   for (k=0; k<insert; k++)
