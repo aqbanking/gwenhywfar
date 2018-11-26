@@ -4079,7 +4079,10 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
 	  s++;
 	}
 	GWEN_Buffer_AppendString(tbuf, "_FN)(");
-  
+
+	if (Typemaker2_VirtualFn_GetFlags(vf) & TYPEMAKER2_FLAGS_CONST)
+	  GWEN_Buffer_AppendString(tbuf, "const ");
+
 	s=Typemaker2_Type_GetIdentifier(ty);
 	GWEN_Buffer_AppendString(tbuf, s);
 	/* created structs are always pointers */
@@ -4266,6 +4269,9 @@ int _buildProtoVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendString(tbuf, s+1);
       GWEN_Buffer_AppendString(tbuf, "(");
 
+      if (Typemaker2_VirtualFn_GetFlags(vf) & TYPEMAKER2_FLAGS_CONST)
+	GWEN_Buffer_AppendString(tbuf, "const ");
+
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
       /* created structs are always pointers */
@@ -4379,6 +4385,9 @@ int _buildCodeVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
       GWEN_Buffer_AppendByte(tbuf, toupper(*s));
       GWEN_Buffer_AppendString(tbuf, s+1);
       GWEN_Buffer_AppendString(tbuf, "(");
+
+      if (Typemaker2_VirtualFn_GetFlags(vf) & TYPEMAKER2_FLAGS_CONST)
+	GWEN_Buffer_AppendString(tbuf, "const ");
 
       s=Typemaker2_Type_GetIdentifier(ty);
       GWEN_Buffer_AppendString(tbuf, s);
