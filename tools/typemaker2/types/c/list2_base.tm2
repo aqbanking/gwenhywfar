@@ -26,6 +26,7 @@
 
       <codedef id="dup">
         <code>
+          $(dst)=$(member_prefix)_dup($(src));
         </code>
       </codedef>
 
