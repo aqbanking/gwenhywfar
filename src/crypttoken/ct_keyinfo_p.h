@@ -39,6 +39,9 @@ struct GWEN_CRYPT_TOKEN_KEYINFO {
   uint32_t keyVersion;
   uint32_t signCounter;
 
+  uint8_t  *certificateData;
+  uint32_t  certificateLen;
+
   int refCount;
 };
 

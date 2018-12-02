@@ -56,6 +56,9 @@ void GWEN_Crypt_Token_KeyInfo_free(GWEN_CRYPT_TOKEN_KEYINFO *ki) {
       if (ki->exponentData)
         free(ki->exponentData);
       ki->exponentData=NULL;
+      if (ki->certificateData)
+        free(ki->certificateData);
+      ki->certificateData=NULL;
 
       ki->refCount=0;
       GWEN_LIST_FINI(GWEN_CRYPT_TOKEN_KEYINFO, ki);
@@ -89,6 +92,13 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_dup(const GWEN_CRYPT_TOKEN_KE
     assert(nki->exponentData);
     memmove(nki->exponentData, ki->exponentData, ki->exponentLen);
     nki->exponentLen=ki->exponentLen;
+  }
+
+  if (ki->certificateData && ki->certificateLen) {
+    nki->certificateData=(uint8_t*)malloc(ki->certificateLen);
+    assert(nki->certificateData);
+    memmove(nki->certificateData, ki->certificateData, ki->certificateLen);
+    nki->certificateLen=ki->certificateLen;
   }
 
   if (ki->keyDescr)
@@ -235,7 +245,38 @@ void GWEN_Crypt_Token_KeyInfo_SetExponent(GWEN_CRYPT_TOKEN_KEYINFO *ki,
   ki->exponentLen=len;
 }
 
+const uint8_t *GWEN_Crypt_Token_KeyInfo_GetCertificateData(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+  assert(ki);
+  assert(ki->refCount);
+  return ki->certificateData;
+}
 
+
+
+uint32_t GWEN_Crypt_Token_KeyInfo_GetCertificateLen(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+  assert(ki);
+  assert(ki->refCount);
+  return ki->certificateLen;
+}
+
+
+
+void GWEN_Crypt_Token_KeyInfo_SetCertificate(GWEN_CRYPT_TOKEN_KEYINFO *ki,
+    const uint8_t *p,
+    uint32_t len) {
+  assert(ki);
+  assert(ki->refCount);
+
+  assert(p);
+  assert(len);
+
+  if (ki->certificateData)
+    free(ki->certificateData);
+  ki->certificateData=(uint8_t*) malloc(len);
+  assert(ki->certificateData);
+  memmove(ki->certificateData, p, len);
+  ki->certificateLen=len;
+}
 
 uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyVersion(const GWEN_CRYPT_TOKEN_KEYINFO *ki) {
   assert(ki);
@@ -429,4 +470,27 @@ void GWEN_Crypt_Token_KeyInfo_Dump(GWEN_CRYPT_TOKEN_KEYINFO *ki) {
     }
     GWEN_Buffer_free(tbuf);
   }
+
+  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASCERTIFICATE) {
+    GWEN_BUFFER *tbuf;
+    const char *p;
+    uint32_t len;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    fprintf(stdout, "Certificate   : \n");
+    p=(const char*)GWEN_Crypt_Token_KeyInfo_GetCertificateData(ki);
+    len=GWEN_Crypt_Token_KeyInfo_GetCertificateLen(ki);
+    while(len) {
+      uint32_t rl;
+
+      rl=(len>16)?16:len;
+      GWEN_Text_ToHexBuffer(p, rl, tbuf, 2, ' ', 0);
+      fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+      p+=rl;
+      len-=rl;
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+
 }

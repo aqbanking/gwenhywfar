@@ -60,6 +60,7 @@ typedef enum {
 #define GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION  0x00100000
 #define GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER 0x00200000
 #define GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER   0x00400000
+#define GWEN_CRYPT_TOKEN_KEYFLAGS_HASCERTIFICATE 0x00800000
 
 #define GWEN_CRYPT_TOKEN_KEYFLAGS_ACTIONMASK     0x0000000f
 #define GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN        0x00000001
@@ -143,6 +144,17 @@ uint32_t GWEN_Crypt_Token_KeyInfo_GetExponentLen(const GWEN_CRYPT_TOKEN_KEYINFO 
 
 GWENHYWFAR_API
 void GWEN_Crypt_Token_KeyInfo_SetExponent(GWEN_CRYPT_TOKEN_KEYINFO *ki,
+    const uint8_t *p,
+    uint32_t len);
+
+GWENHYWFAR_API
+const uint8_t *GWEN_Crypt_Token_KeyInfo_GetCertificateData(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
+uint32_t GWEN_Crypt_Token_KeyInfo_GetCertificateLen(const GWEN_CRYPT_TOKEN_KEYINFO *ki);
+
+GWENHYWFAR_API
+void GWEN_Crypt_Token_KeyInfo_SetCertificate(GWEN_CRYPT_TOKEN_KEYINFO *ki,
     const uint8_t *p,
     uint32_t len);
 

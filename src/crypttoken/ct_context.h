@@ -128,6 +128,52 @@ GWENHYWFAR_API int GWEN_Crypt_Token_Context_GetPort(const GWEN_CRYPT_TOKEN_CONTE
 */
 GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetSystemId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
+/**** RDH7 Block Start******/
+
+/** Getter.
+ * Use this function to get the member "cid"
+*/
+GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetCid(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+
+/** Getter.
+ * Use this function to get the member "keyHash"
+*/
+GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetKeyHash(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "keyHashLen"
+*/
+GWENHYWFAR_API const uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "keyHashNum"
+*/
+GWENHYWFAR_API const uint32_t GWEN_Crypt_Token_Context_GetKeyHashNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "keyHashVer"
+*/
+GWENHYWFAR_API const uint32_t GWEN_Crypt_Token_Context_GetKeyHashVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "keyStatus"
+*/
+GWENHYWFAR_API const int GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "keyHashAlgo"
+*/
+GWENHYWFAR_API const uint32_t GWEN_Crypt_Token_Context_GetKeyHashAlgo(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "rdhVersion"
+*/
+GWENHYWFAR_API const uint32_t GWEN_Crypt_Token_Context_GetRdhVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+
+/**** RDH7 Block End******/
+
 /** Setter.
  * Use this function to set the member "id"
 */
@@ -212,6 +258,51 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetPort(GWEN_CRYPT_TOKEN_CONTEXT *p
  * Use this function to set the member "systemId"
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetSystemId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
+
+
+/**** RDH7 Block Start******/
+/** Setter.
+ * Use this function to set the member "keyHashNum"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHashNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "keyHashVer"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHashVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "keyHashAlgo"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHashAlgo(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "keyHashLen"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHashLen(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "keyHash"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
+
+/** Setter.
+ * Use this function to set the member "cid"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
+
+/** Setter.
+ * Use this function to set the member "keyStatus"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char p_src);
+
+/** Setter.
+ * Use this function to set the member "rdhVersion"
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetRdhVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src);
+
+
+/**** RDH7 Block END******/
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_src);
 

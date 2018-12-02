@@ -48,6 +48,16 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void) {
   p_struct->port=0;
   p_struct->systemId=NULL;
 
+  /**** RDH7 Block Start******/
+  p_struct->keyHashNum=0;
+  p_struct->keyHashVer=0;
+  p_struct->keyHashAlgo=0x0;
+  p_struct->keyHashLen=0;
+  p_struct->keyHash=NULL;
+  p_struct->rdhVersion=0;
+  p_struct->keyStatus=0x0;
+  /**** RDH7 Block End******/
+
   return p_struct;
 }
 
@@ -66,6 +76,9 @@ void GWEN_Crypt_Token_Context_free(GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
       free(p_struct->peerName);
       free(p_struct->address);
       free(p_struct->systemId);
+      /**** RDH7 Block Start******/
+      free(p_struct->keyHash);
+      /**** RDH7 Block End******/
       p_struct->_refCount=0;
       GWEN_FREE_OBJECT(p_struct);
     }
@@ -184,6 +197,35 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
     p_struct->systemId=strdup(p_src->systemId);
   }
 
+  /**** RDH7 Block Start******/
+  /* member "keyHashNum" */
+  p_struct->keyHashNum=p_src->keyHashNum;
+
+  /* member "keyHashVer" */
+  p_struct->keyHashVer=p_src->keyHashVer;
+
+  /* member "keyHashNum" */
+  p_struct->keyHashAlgo=p_src->keyHashAlgo;
+
+  /* member "keyHashNum" */
+  p_struct->keyHashLen=p_src->keyHashLen;
+
+  /* member "keyHashNum" */
+  p_struct->keyStatus=p_src->keyStatus;
+
+  /* member "keyHash" */
+  if (p_struct->keyHash) {
+    free(p_struct->keyHash);
+    p_struct->keyHash=NULL;
+  }
+  if (p_src->keyHash) {
+	  p_struct->keyHash=strdup(p_src->keyHash);
+  }
+
+  /* member "rdhVersion" */
+  p_struct->rdhVersion = p_src->rdhVersion;
+  /**** RDH7 Block End******/
+
   return p_struct;
 }
 
@@ -271,6 +313,81 @@ const char *GWEN_Crypt_Token_Context_GetSystemId(const GWEN_CRYPT_TOKEN_CONTEXT 
   assert(p_struct);
   return p_struct->systemId;
 }
+
+/**** RDH7 Block Start******/
+
+/** Getter.
+ * Use this function to get the member "keyHash"
+*/
+const char *GWEN_Crypt_Token_Context_GetCid(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+      assert(p_struct);
+      return p_struct->cid;
+}
+
+/** Getter.
+ * Use this function to get the member "keyHash"
+*/
+const char *GWEN_Crypt_Token_Context_GetKeyHash(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+	  assert(p_struct);
+	  return p_struct->keyHash;
+}
+/** Getter.
+ * Use this function to get the member "keyHashLen"
+*/
+const uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+	  assert(p_struct);
+	  return p_struct->keyHashLen;
+}
+
+/** Getter.
+ * Use this function to get the member "keyHashNum"
+*/
+const uint32_t GWEN_Crypt_Token_Context_GetKeyHashNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+	  assert(p_struct);
+	  return p_struct->keyHashNum;
+}
+
+/** Getter.
+ * Use this function to get the member "keyHashVer"
+*/
+const uint32_t GWEN_Crypt_Token_Context_GetKeyHashVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+	  assert(p_struct);
+	  return p_struct->keyHashVer;
+}
+
+/** Getter.
+ * Use this function to get the member "keyHashAlgo"
+*/
+const uint32_t GWEN_Crypt_Token_Context_GetKeyHashAlgo(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+	  assert(p_struct);
+	  return p_struct->keyHashAlgo;
+}
+
+/** Getter.
+ * Use this function to get the member "keyStatus"
+*/
+const int GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+      assert(p_struct);
+      return p_struct->keyStatus;
+}
+
+/** Getter.
+ * Use this function to get the member "rdhVersion"
+*/
+const uint32_t GWEN_Crypt_Token_Context_GetRdhVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
+	  assert(p_struct);
+	  return p_struct->rdhVersion;
+}
+
+/**** RDH7 Block End******/
 
 void GWEN_Crypt_Token_Context_SetId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
   assert(p_struct);
@@ -421,6 +538,95 @@ void GWEN_Crypt_Token_Context_SetSystemId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, co
   }
 }
 
+/**** RDH7 Block Start******/
+/** Setter.
+ * Use this function to set the member "keyHashNum"
+*/
+void GWEN_Crypt_Token_Context_SetKeyHashNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src)
+{
+  assert(p_struct);
+  p_struct->keyHashNum=p_src;
+}
+/** Setter.
+ * Use this function to set the member "keyHashVer"
+*/
+void GWEN_Crypt_Token_Context_SetKeyHashVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src)
+{
+  assert(p_struct);
+  p_struct->keyHashVer=p_src;
+}
+/** Setter.
+ * Use this function to set the member "keyHashAlgo"
+*/
+void GWEN_Crypt_Token_Context_SetKeyHashAlgo(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src)
+{
+  assert(p_struct);
+  p_struct->keyHashAlgo=p_src;
+}
+/** Setter.
+ * Use this function to set the member "keyHashLen"
+*/
+void GWEN_Crypt_Token_Context_SetKeyHashLen(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src)
+{
+  assert(p_struct);
+  p_struct->keyHashLen=p_src;
+}
+
+/** Setter.
+ * Use this function to set the member "keyStatus"
+*/
+void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char p_src)
+{
+  assert(p_struct);
+  p_struct->keyStatus=p_src;
+}
+
+
+/** Setter.
+ * Use this function to set the member "keyHash"
+*/
+void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
+  assert(p_struct);
+  if (p_struct->keyHash) {
+    free(p_struct->keyHash);
+  }
+  if (p_src) {
+    p_struct->keyHash=strdup(p_src);
+  }
+  else {
+    p_struct->keyHash=NULL;
+  }
+}
+
+/** Setter.
+ * Use this function to set the member "CID"
+*/
+void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
+  assert(p_struct);
+  if (p_struct->cid) {
+    free(p_struct->cid);
+  }
+  if (p_src) {
+    p_struct->cid=strdup(p_src);
+  }
+  else {
+    p_struct->cid=NULL;
+  }
+}
+
+/** Setter.
+ * Use this function to set the member "rdhVersion"
+*/
+void GWEN_Crypt_Token_Context_SetRdhVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const uint32_t p_src)
+{
+  assert(p_struct);
+  p_struct->rdhVersion=p_src;
+}
+
+/**** RDH7 Block End******/
+
 GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_src) {
   GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_dest;
   GWEN_CRYPT_TOKEN_CONTEXT *p_elem;
@@ -539,6 +745,46 @@ void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB
   if (p_struct->systemId==NULL) {
     p_struct->systemId=NULL;
   }
+
+  /**** RDH7 Block Start******/
+  /* member "keyHashNum" */
+  p_struct->keyHashNum=GWEN_DB_GetIntValue(p_db, "keyHashNum", 0, 0);
+
+  /* member "keyHashVer" */
+  p_struct->keyHashNum=GWEN_DB_GetIntValue(p_db, "keyHashVer", 0, 0);
+
+  /* member "keyHashAlgo" */
+  p_struct->keyHashAlgo=GWEN_DB_GetIntValue(p_db, "keyHashAlgo", 0, 0);
+
+  /* member "keyHashLen" */
+  p_struct->keyHashNum=GWEN_DB_GetIntValue(p_db, "keyHashLen", 0, 0);
+
+  /* member "keyHashLen" */
+  p_struct->keyStatus=GWEN_DB_GetIntValue(p_db, "keyStatus", 0, 0);
+
+  /* member "keyHash" */
+  if (p_struct->keyHash) {
+    free(p_struct->keyHash);
+  }
+  { const char *s; s=GWEN_DB_GetCharValue(p_db, "keyHash", 0, NULL); if (s) p_struct->keyHash=strdup(s); }
+  if (p_struct->keyHash==NULL) {
+    p_struct->keyHash=NULL;
+  }
+
+  /* member "cid" */
+  if (p_struct->cid) {
+    free(p_struct->cid);
+  }
+  { const char *s; s=GWEN_DB_GetCharValue(p_db, "cid", 0, NULL); if (s) p_struct->cid=strdup(s); }
+  if (p_struct->cid==NULL) {
+    p_struct->cid=NULL;
+  }
+
+  /* member "rdhVersion" */
+  p_struct->rdhVersion=GWEN_DB_GetIntValue(p_db, "rdhVersion", 0, 0);
+
+  /**** RDH7 Block End******/
+
 
 }
 
@@ -673,6 +919,70 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
     return p_rv;
   }
 
+  /**** RDH7 Block Start******/
+  /* member "keyHashNum" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHashNum", p_struct->keyHashNum);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+  /* member "keyHashVer" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHashVer", p_struct->keyHashVer);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /* member "keyHashAlgo" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHashAlgo", p_struct->keyHashAlgo);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /* member "keyHashLen" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHashLen", p_struct->keyHashLen);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /* member "keyHash" */
+  {
+      if (p_struct->keyHash) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHash", p_struct->keyHash);
+        else { GWEN_DB_DeleteVar(p_db, "keyHash"); p_rv=0; }
+        if (p_rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+          return p_rv;
+      }
+  }
+
+  /* member "keyHashLen" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyStatus", p_struct->keyStatus);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /* member "cid" */
+  {
+      if (p_struct->cid) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "cid", p_struct->cid);
+        else { GWEN_DB_DeleteVar(p_db, "cid"); p_rv=0; }
+        if (p_rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+          return p_rv;
+      }
+  }
+
+  /* member "rdhVersion" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "rdhVersion", p_struct->rdhVersion);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /**** RDH7 Block End******/
+
   return 0;
 }
 
@@ -788,6 +1098,45 @@ void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_X
     p_struct->systemId=NULL;
   }
 
+  /**** RDH7 Block Start******/
+  /* member "keyHashNum" */
+  p_struct->keyHashNum=GWEN_XMLNode_GetIntValue(p_db, "keyHashNum", 0);
+
+  /* member "keyHashVer" */
+  p_struct->keyHashNum=GWEN_XMLNode_GetIntValue(p_db, "keyHashVer", 0);
+
+  /* member "keyHashLen" */
+  p_struct->keyHashNum=GWEN_XMLNode_GetIntValue(p_db, "keyHashLen", 0);
+
+  /* member "keyHashLen" */
+  p_struct->keyHashAlgo=GWEN_XMLNode_GetIntValue(p_db, "keyHashAlgo", 0);
+
+  /* member "keyStatus" */
+  p_struct->keyStatus=GWEN_XMLNode_GetIntValue(p_db, "keyStatus", 0);
+
+  /* member "keyHash" */
+  if (p_struct->keyHash) {
+    free(p_struct->keyHash);
+  }
+  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "keyHash", NULL); if (s) p_struct->keyHash=strdup(s); }
+  if (p_struct->keyHash==NULL) {  /* member "keyHash" is volatile, just presetting */
+    p_struct->keyHash=NULL;
+  }
+
+  /* member "keyHashLen" */
+  p_struct->rdhVersion=GWEN_XMLNode_GetIntValue(p_db, "rdhVersion", 0);
+
+  /* member "cid" */
+  if (p_struct->cid) {
+    free(p_struct->cid);
+  }
+  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "cid", NULL); if (s) p_struct->cid=strdup(s); }
+  if (p_struct->cid==NULL) {  /* member "keyHash" is volatile, just presetting */
+    p_struct->cid=NULL;
+  }
+
+  /**** RDH7 Block End******/
+
 }
 
 void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db) {
@@ -842,6 +1191,33 @@ void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
 
   /* member "systemId" */
   GWEN_XMLNode_SetCharValue(p_db, "systemId", p_struct->systemId);
+
+  /**** RDH7 Block Start******/
+  /* member "keyHashNum" */
+  GWEN_XMLNode_SetIntValue(p_db, "keyHashNum", p_struct->keyHashNum);
+
+  /* member "keyHashNum" */
+  GWEN_XMLNode_SetIntValue(p_db, "keyHashVer", p_struct->keyHashVer);
+
+  /* member "keyHashNum" */
+  GWEN_XMLNode_SetIntValue(p_db, "keyHashLen", p_struct->keyHashLen);
+
+  /* member "keyHashAlgo" */
+  GWEN_XMLNode_SetIntValue(p_db, "keyHashAlgo", p_struct->keyHashAlgo);
+
+  /* member "keyHashAlgo" */
+  GWEN_XMLNode_SetIntValue(p_db, "keyStatus", p_struct->keyStatus);
+
+  /* member "keyHash" */
+  GWEN_XMLNode_SetCharValue(p_db, "keyHash", p_struct->keyHash);
+
+  /* member "cid" */
+  GWEN_XMLNode_SetCharValue(p_db, "cid", p_struct->cid);
+
+  /* member "keyHashAlgo" */
+  GWEN_XMLNode_SetIntValue(p_db, "rdhVersion", p_struct->rdhVersion);
+
+  /**** RDH7 Block End******/
 
 }
 

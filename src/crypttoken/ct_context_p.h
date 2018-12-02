@@ -36,6 +36,16 @@ struct GWEN_CRYPT_TOKEN_CONTEXT {
   char *address;
   int port;
   char *systemId;
+  /**** RDH7 Block Start******/
+  uint32_t keyHashNum;
+  uint32_t keyHashVer;
+  uint32_t keyHashAlgo;
+  uint32_t keyHashLen;
+  int      keyStatus;
+  char*    keyHash;
+  uint32_t rdhVersion;
+  char*    cid;
+  /**** RDH7 Block End******/
 };
 
 #ifdef __cplusplus
