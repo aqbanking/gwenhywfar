@@ -116,6 +116,30 @@ GWEN_DATE *GWEN_Date_fromLocalTime(time_t t) {
 
 
 
+time_t GWEN_Date_toLocalTime(const GWEN_DATE *gd) {
+  struct tm ti;
+  struct tm *tp;
+  time_t tt;
+
+  tt=time(0);
+  tp=localtime(&tt);
+  assert(tp);
+  memmove(&ti, tp, sizeof(ti));
+  ti.tm_sec=0;
+  ti.tm_min=0;
+  ti.tm_hour=0;
+  ti.tm_year=gd->year-1900;
+  ti.tm_mon=gd->month-1;
+  ti.tm_mday=gd->day;
+  ti.tm_yday=0;
+  ti.tm_wday=0;
+  tt=mktime(&ti);
+  assert(tt!=(time_t)-1);
+  return tt;
+}
+
+
+
 GWEN_DATE *GWEN_Date_fromGmTime(time_t t) {
   struct tm *ltm;
 

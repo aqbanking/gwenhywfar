@@ -70,6 +70,7 @@ GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromString(const char *s);
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti);
+GWENHYWFAR_API time_t GWEN_Date_toLocalTime(const GWEN_DATE *gd);
 
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromLocalTime(time_t t);
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromGmTime(time_t t);

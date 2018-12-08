@@ -8,6 +8,7 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/list.h>
 #include <gwenhywfar/pathmanager.h>
+#include <gwenhywfar/gwendate.h>
 #include <errno.h>
 #include "gwenhywfar.h"
 
@@ -319,6 +320,30 @@ int check2() {
 }
 
 
+int test_date() {
+  GWEN_DATE *dt1;
+  GWEN_DATE *dt2;
+  time_t tt;
+
+  dt1=GWEN_Date_CurrentDate();
+  assert(dt1);
+  tt=GWEN_Date_toLocalTime(dt1);
+
+  dt2=GWEN_Date_fromLocalTime(tt);
+  if (GWEN_Date_Compare(dt1, dt2)!=0) {
+    fprintf(stderr, "Error: Date doesn't match: dt1: %s dt2: %s\n",
+            GWEN_Date_GetString(dt1), GWEN_Date_GetString(dt2));
+    return 3;
+  }
+  else {
+    fprintf(stderr, "Date is okay (%s)\n", GWEN_Date_GetString(dt2));
+  }
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv) {
   int rv;
   const char *cmd;
@@ -340,6 +365,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "gui")==0) {
     rv=test_gui(1);
+  }
+  else if (strcasecmp(cmd, "date")==0) {
+    rv=test_date();
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", cmd);
