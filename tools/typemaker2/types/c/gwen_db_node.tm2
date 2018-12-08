@@ -18,6 +18,7 @@
       <codedef id="destruct">
         <code>
           GWEN_DB_Group_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 

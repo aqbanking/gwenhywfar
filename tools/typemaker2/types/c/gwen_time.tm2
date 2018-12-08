@@ -18,6 +18,7 @@
       <codedef id="destruct">
         <code>
           GWEN_Time_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 

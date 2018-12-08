@@ -18,6 +18,7 @@
       <codedef id="destruct">
         <code>
           free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 

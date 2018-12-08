@@ -17,6 +17,7 @@
       <codedef id="destruct">
         <code>
           GWEN_IdList64_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 
