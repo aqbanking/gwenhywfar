@@ -379,10 +379,10 @@ gwenhywfar_bindir="\${bindir}"
 gwenhywfar_libs="-lgwenhywfar"
 gwenhywfar_ldflags="-L\${libdir}"
 gwenhywfar_internal_libname="libgwenhywfar.la"
-gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar4"
-gwenhywfar_headerdir="\${includedir}/gwenhywfar4"
+gwenhywfar_headerdir_am="\$(includedir)/gwenhywfar5"
+gwenhywfar_headerdir="\${includedir}/gwenhywfar5"
 gwenhywfar_plugindir="\${libdir}/gwenhywfar/plugins/${GWENHYWFAR_SO_EFFECTIVE}"
-gwenhywfar_symlinkdir="\$(top_builddir)/gwenhywfar4"
+gwenhywfar_symlinkdir="\$(top_builddir)/gwenhywfar5"
 gwenhywfar_datadir="\${datadir}/gwenhywfar"
 gwenhywfar_sysdatadir="\${datadir}"
 
@@ -1138,7 +1138,7 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_DEFINE=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h gwenhywfar4"
+	DOXYGEN_INPUT="listdoc.h gwenhywfar5"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
@@ -1385,8 +1385,8 @@ HEADER_DIRS="${HEADER_DIRS} src/parser src/gparser src/sar"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
-rm -Rf gwenhywfar4 2>/dev/null
-mkdir -p gwenhywfar4/gwenhywfar
+rm -Rf gwenhywfar5 2>/dev/null
+mkdir -p gwenhywfar5/gwenhywfar
 for d in ${HEADER_DIRS}; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1394,19 +1394,19 @@ for d in ${HEADER_DIRS}; do
       *_l.h | *_p.h)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwenhywfar/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwenhywfar/${f}"
          ;;
     esac
   done
 done
-#ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar4/gwenhywfar/system.h" 2>/dev/null
+#ln -s "${lprefix}/src/os/$OS_TYPE/system.h" "gwenhywfar5/gwenhywfar/system.h" 2>/dev/null
 
 
 
 # cpp
 #
-rm -Rf gwenhywfar4/gwen-gui-cpp 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-cpp
+rm -Rf gwenhywfar5/gwen-gui-cpp 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-cpp
 for d in gui/cpp; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1414,7 +1414,7 @@ for d in gui/cpp; do
       *_l.hpp | *_p.hpp)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-cpp/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-cpp/${f}"
          ;;
     esac
   done
@@ -1424,8 +1424,8 @@ done
 
 # qt4
 #
-rm -Rf gwenhywfar4/gwen-gui-qt4 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-qt4
+rm -Rf gwenhywfar5/gwen-gui-qt4 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-qt4
 for d in gui/qt4; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1433,7 +1433,7 @@ for d in gui/qt4; do
       *_l.hpp | *_p.hpp | qt4_gui_*.hpp)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-qt4/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-qt4/${f}"
          ;;
     esac
   done
@@ -1441,8 +1441,8 @@ done
 
 # qt5
 #
-rm -Rf gwenhywfar4/gwen-gui-qt5 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-qt5
+rm -Rf gwenhywfar5/gwen-gui-qt5 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-qt5
 for d in gui/qt5; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1450,7 +1450,7 @@ for d in gui/qt5; do
       *_l.hpp | *_p.hpp | qt5_gui_*.hpp)
          ;;
       *)
-       ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-qt5/${f}"
+       ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-qt5/${f}"
          ;;
     esac
   done
@@ -1459,8 +1459,8 @@ done
 
 # fox16
 #
-rm -Rf gwenhywfar4/gwen-gui-fox16 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-fox16
+rm -Rf gwenhywfar5/gwen-gui-fox16 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-fox16
 for d in gui/fox16; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.hpp *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1468,7 +1468,7 @@ for d in gui/fox16; do
       *_l.hpp | *_p.hpp | fox16_gui_*.hpp)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-fox16/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-fox16/${f}"
          ;;
     esac
   done
@@ -1477,8 +1477,8 @@ done
 
 # gtk2
 #
-rm -Rf gwenhywfar4/gwen-gui-gtk2 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-gtk2
+rm -Rf gwenhywfar5/gwen-gui-gtk2 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-gtk2
 for d in gui/gtk2; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1486,7 +1486,7 @@ for d in gui/gtk2; do
       *_l.h | *_p.h | gtk2_gui_*.h)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-gtk2/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-gtk2/${f}"
          ;;
     esac
   done
@@ -1495,8 +1495,8 @@ done
 
 # gtk3
 #
-rm -Rf gwenhywfar4/gwen-gui-gtk3 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-gtk3
+rm -Rf gwenhywfar5/gwen-gui-gtk3 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-gtk3
 for d in gui/gtk3; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1504,7 +1504,7 @@ for d in gui/gtk3; do
       *_l.h | *_p.h | gtk3_gui_*.h)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-gtk3/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-gtk3/${f}"
          ;;
     esac
   done
@@ -1513,8 +1513,8 @@ done
 
 # cocoa
 #
-rm -Rf gwenhywfar4/gwen-gui-cocoa 2>/dev/null
-mkdir -p gwenhywfar4/gwen-gui-cocoa
+rm -Rf gwenhywfar5/gwen-gui-cocoa 2>/dev/null
+mkdir -p gwenhywfar5/gwen-gui-cocoa
 for d in gui/cocoa; do
   hfiles=`( cd "${srcdir}/${d}" && ls *.h 2>/dev/null )`
   for f in ${hfiles}; do
@@ -1522,7 +1522,7 @@ for d in gui/cocoa; do
       *_l.h | *_p.h | gtk2_gui_*.h)
       	 ;;
       *)
-    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar4/gwen-gui-cocoa/${f}"
+    	 ln -s "${lprefix}/${d}/${f}" "gwenhywfar5/gwen-gui-cocoa/${f}"
          ;;
     esac
   done

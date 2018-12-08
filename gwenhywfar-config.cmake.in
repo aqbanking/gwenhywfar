@@ -51,6 +51,16 @@ if ( NOT ${FIND_GWEN_COMPONENT_QT4} EQUAL -1 )
   endif()
 endif()
 
+list(FIND GWENHYWFAR_FIND_COMPONENTS "qt5" FIND_GWEN_COMPONENT_QT4)
+if ( NOT ${FIND_GWEN_COMPONENT_QT5} EQUAL -1 )
+  find_package(gwengui-qt5 "@GWENHYWFAR_VERSION_STRING@" EXACT)
+  if ( gwengui-qt5_FOUND )
+    set( GWENHYWFAR_INCLUDE_DIRS ${GWENHYWFAR_INCLUDE_DIRS} ${gwengui-qt5_INCLUDE_DIRS} )
+    set( GWENHYWFAR_LIBRARIES ${GWENHYWFAR_LIBRARIES} ${gwengui-qt5_LIBRARIES} )
+    set( GWENHYWFAR_qt5_FOUND true )
+  endif()
+endif()
+
 check_required_components(GWENHYWFAR)
 
 # The target is available since gwenhywfar 4.15.3
