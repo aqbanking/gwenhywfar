@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -267,6 +264,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
 #define GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
   typedef GWEN_LIST1 t##_LIST; \
   typedef int GWENHYWFAR_CB (*t##_LIST_SORT_FN)(const t *a, const t *b, int ascending); \
+  typedef t* (t##_LIST_FOREACH)(t *element, void *user_data); \
                                                                                         \
   \
   decl t* pr##_List_First(const t##_LIST *l); \
@@ -276,7 +274,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
   decl uint32_t pr##_List_GetCount(const t##_LIST *l); \
   decl int pr##_List_HasElement(const t##_LIST *l, const t *element); \
   decl t##_LIST_SORT_FN pr##_List_SetSortFn(t##_LIST *l, t##_LIST_SORT_FN fn); \
-  decl void pr##_List_Sort(t##_LIST *l, int ascending);
+  decl void pr##_List_Sort(t##_LIST *l, int ascending); \
+  decl t* pr##_List_ForEach(t##_LIST *l, t##_LIST_FOREACH fn, void *user_data);
 
 
 #define GWEN_LIST_FUNCTION_LIB_DEFS_NOCONST(t, pr, decl) \
@@ -288,7 +287,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
   decl int pr##_List_AddList(t##_LIST *dst, t##_LIST *l); \
   decl int pr##_List_Add(t *element, t##_LIST *list); \
   decl int pr##_List_Insert(t *element, t##_LIST *list); \
-  decl int pr##_List_Del(t *element); \
+  decl int pr##_List_Del(t *element);
  
 
 #define GWEN_LIST_FUNCTION_DEFS_CONST(t, pr) \
@@ -440,6 +439,22 @@ GWEN_LIST1_ELEMENT *_list1_element;
   \
   void pr##_List_Sort(t##_LIST *l, int ascending){\
     GWEN_List1_Sort(l, ascending);\
+  }\
+  \
+  t* pr##_List_ForEach(t##_LIST *l, t##_LIST_FOREACH fn, void *user_data){ \
+    t *el; \
+    if (!l) return 0; \
+    \
+    el=pr##_List_First(l); \
+    while(el) { \
+      t *elReturned; \
+      elReturned=fn(el, user_data); \
+      if (elReturned) { \
+        return elReturned; \
+      } \
+      el=pr##_List_Next(el); \
+    } \
+    return 0; \
   }
 
 /**
