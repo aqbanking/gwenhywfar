@@ -462,13 +462,15 @@ int Typemaker2_Builder_ReplaceVars(const char *s,
 	  if (v) {
 	    free(name);
 	    GWEN_Buffer_AppendString(dbuf, v);
-	  }
+          }
+#if 0 /* just replace with empty value */
 	  else {
 	    GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
             GWEN_Buffer_AppendString(dbuf, name);
 	    GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
 	    free(name);
-	  }
+          }
+#endif
 	}
       }
       else {
