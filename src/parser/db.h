@@ -960,7 +960,7 @@ unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node);
  */
 GWENHYWFAR_API
 GWEN_DB_NODE_TYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
-    const char *p);
+                                          const char *p);
 
 /**
  * Deletes the given variable by removing it and its values from the DB.
