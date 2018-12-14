@@ -113,10 +113,10 @@
               GWEN_DB_NODE *dbDest;
               $(member_basetype_type) *elem;
               
-              $(retval)=0;
-              
               dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
               assert(dbDest);
+
+              $(retval)=0;
               
               elem=$(member_prefix)_First($(src));
               while(elem) {
@@ -132,6 +132,8 @@
                 elem=$(member_prefix)_Next(elem);
               }
             }
+            else
+              $(retval)=0;
           }
         </code>
       </codedef>

@@ -119,14 +119,15 @@
               GWEN_DB_NODE *dbDest;
               $(member_basetype_type)_LIST2_ITERATOR *it;
               
-              $(retval)=0;
-              
+             
               dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
               assert(dbDest);
               
               it=$(member_prefix)_First($(src));
               if (it) {
                 $(member_basetype_type) *elem;
+
+                $(retval)=0;
                 
                 elem=$(member_prefix)Iterator_Data(it);
                 while(elem) {
@@ -144,6 +145,8 @@
                 $(member_prefix)Iterator_free(it);
               }
             }
+            else
+              $(retval)=0;
           }
         </code>
       </codedef>

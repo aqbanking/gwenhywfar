@@ -90,6 +90,8 @@
               assert(dbDest);
               $(retval)=$(member_prefix)_toDb($(src), dbDest);
             }
+            else
+              $(retval)=0;
           }
         </code>
       </codedef>
