@@ -73,11 +73,9 @@ GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d) {
 
 
 
-GWEN_DATE *GWEN_Date_fromJulian(int julian) {
-  GWEN_DATE *gd;
+void GWEN_Date_setJulian(GWEN_DATE *gd, int julian) {
   int l, n, i, j;
 
-  GWEN_NEW_OBJECT(GWEN_DATE, gd);
   l=julian+68569;
   n=(4*l)/146097;
   l=l-(146097*n+3)/4;
@@ -94,7 +92,27 @@ GWEN_DATE *GWEN_Date_fromJulian(int julian) {
            "%04d%02d%02d",
            gd->year, gd->month, gd->day);
   gd->asString[sizeof(gd->asString)-1]=0;
+}
 
+
+
+void GWEN_Date_AddDays(GWEN_DATE *gd, int days) {
+  GWEN_Date_setJulian(gd, gd->julian+days);
+}
+
+
+
+void GWEN_Date_SubDays(GWEN_DATE *gd, int days) {
+  GWEN_Date_setJulian(gd, gd->julian-days);
+}
+
+
+
+GWEN_DATE *GWEN_Date_fromJulian(int julian) {
+  GWEN_DATE *gd;
+
+  GWEN_NEW_OBJECT(GWEN_DATE, gd);
+  GWEN_Date_setJulian(gd, julian);
   return gd;
 }
 

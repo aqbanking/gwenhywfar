@@ -62,6 +62,7 @@ static void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const cha
 static void GWEN_Date__fillTmplChars(const GWEN_DATE *t,
                                      GWEN_DATE_TMPLCHAR_LIST *ll);
 
+static void GWEN_Date_setJulian(GWEN_DATE *gd, int julian);
 
 
 

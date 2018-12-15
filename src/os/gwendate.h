@@ -92,6 +92,18 @@ GWENHYWFAR_API void GWEN_Date_free(GWEN_DATE *gd);
 GWENHYWFAR_API const char *GWEN_Date_GetString(const GWEN_DATE *gd);
 
 
+/**
+ * Add days to the given date.
+ */
+GWENHYWFAR_API void GWEN_Date_AddDays(GWEN_DATE *gd, int days);
+
+/**
+ * Subtract days from the given date.
+ */
+GWENHYWFAR_API void GWEN_Date_SubDays(GWEN_DATE *gd, int days);
+
+
+
 GWENHYWFAR_API int GWEN_Date_DaysInMonth(const GWEN_DATE *gd);
 
 /**
