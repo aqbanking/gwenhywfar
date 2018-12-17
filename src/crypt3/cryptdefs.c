@@ -536,7 +536,6 @@ int GWEN_Crypt_KeyDataFromText(const char *text,
 
 
 void GWEN_Crypt_Random(int quality, uint8_t *buffer, uint32_t len) {
-  uint8_t *data;
   enum gcry_random_level q;
 
   switch(quality) {
@@ -552,11 +551,7 @@ void GWEN_Crypt_Random(int quality, uint8_t *buffer, uint32_t len) {
     break;
   }
 
-  data=gcry_random_bytes(len,  q);
-  assert(data);
-  memmove(buffer, data, len);
-  memset(data, 0, len);
-  free(data);
+  gcry_randomize(buffer, len, q);
 }
 
 
