@@ -1165,6 +1165,23 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert);
 /*@}*/
 
 
+/** @name Higher Level Utility Functions
+ *
+ * These functions make use of GWEN_DB groups.
+ */
+/*@{*/
+
+
+/**
+ * Read the given string and replace every variable in that string ( noted as "$(varname)") with the
+ * value of the mentioned variable.
+ */
+GWENHYWFAR_API
+int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf);
+/*@}*/
+
+
+
 /*@}*/
 
 

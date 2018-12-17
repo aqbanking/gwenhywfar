@@ -1796,6 +1796,128 @@ void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname) {
 
 
 
+int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf) {
+  const char *p;
+
+  p=s;
+  while(*p) {
+    if (*p=='$') {
+      p++;
+      if (*p=='$')
+	GWEN_Buffer_AppendByte(dbuf, '$');
+      else if (*p=='(') {
+	const char *pStart;
+
+	p++;
+	pStart=p;
+	while(*p && *p!=')')
+	  p++;
+	if (*p!=')') {
+	  DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
+	  return GWEN_ERROR_BAD_DATA;
+	}
+	else {
+          int len;
+	  char *name;
+	  const char *valueString;
+	  int valueInt;
+	  char numbuf[32];
+	  int rv;
+
+	  len=p-pStart;
+	  if (len<1) {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+	    return GWEN_ERROR_BAD_DATA;
+	  }
+	  name=(char*) malloc(len+1);
+	  assert(name);
+	  memmove(name, pStart, len);
+          name[len]=0;
+
+	  switch(GWEN_DB_GetVariableType(db, name)) {
+	  case GWEN_DB_NodeType_ValueInt:
+	    valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
+	    rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
+	    if (rv>=0)
+	      GWEN_Buffer_AppendString(dbuf, numbuf);
+	    break;
+	  case GWEN_DB_NodeType_ValueChar:
+	    valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
+	    if (valueString)
+	      GWEN_Buffer_AppendString(dbuf, valueString);
+#if 0 /* just replace with empty value */
+	    else {
+	      GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
+	      GWEN_Buffer_AppendString(dbuf, name);
+	      GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
+	    }
+#endif
+	    break;
+
+	  default:
+	    break;
+	  }
+	  free(name);
+	}
+      }
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
+        return GWEN_ERROR_BAD_DATA;
+      }
+      p++;
+    }
+    else {
+      if (*p=='#') {
+	/* let # lines begin on a new line */
+	GWEN_Buffer_AppendByte(dbuf, '\n');
+	GWEN_Buffer_AppendByte(dbuf, *p);
+
+	/* skip introducing cross and copy all stuff until the next cross
+	 * upon which wa inject a newline (to make the preprocessor happy)
+	 */
+	p++;
+	while(*p && *p!='#') {
+	  GWEN_Buffer_AppendByte(dbuf, *p);
+	  p++;
+	}
+	if (*p=='#') {
+	  GWEN_Buffer_AppendByte(dbuf, '\n');
+	  p++;
+	}
+      }
+      else if (*p=='\\') {
+	/* check for recognized control escapes */
+	if (tolower(p[1])=='n') {
+	  GWEN_Buffer_AppendByte(dbuf, '\n');
+	  p+=2; /* skip introducing backslash and control character */
+	}
+	else if (tolower(p[1])=='t') {
+	  GWEN_Buffer_AppendByte(dbuf, '\t');
+	  p+=2; /* skip introducing backslash and control character */
+	}
+	else if (tolower(p[1])=='\\') {
+	  GWEN_Buffer_AppendByte(dbuf, '\\');
+	  p+=2; /* skip introducing backslash and control character */
+	}
+	else {
+	  /* no known escape character, just add literally */
+	  GWEN_Buffer_AppendByte(dbuf, *p);
+	  p++;
+	}
+      }
+      else {
+	GWEN_Buffer_AppendByte(dbuf, *p);
+	p++;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+
 
 #include "dbrw.c"
 
