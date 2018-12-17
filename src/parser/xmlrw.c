@@ -480,6 +480,9 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
     }
     if (uc!='>') {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected character");
+      DBG_ERROR(GWEN_LOGDOMAIN, "Data so far:");
+      GWEN_Buffer_Dump(dbuf, 2);
+
       return GWEN_ERROR_BAD_DATA;
     }
 
