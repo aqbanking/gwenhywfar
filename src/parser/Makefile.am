@@ -8,7 +8,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
 typefiles=url.xml
-EXTRA_DIST=$(typefiles) dbrw.c xmlrw.c xmlglobalize.c
+EXTRA_DIST=$(typefiles) dbrw.c xmlrw.c xmlglobalize.c README.xml2db
 
 noinst_LTLIBRARIES=libparser.la
 

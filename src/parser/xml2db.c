@@ -139,31 +139,42 @@ const char *GWEN_Xml2Db_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const char *pa
 }
 
 
-
+/* TODO: optimize later */
 int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent, const char *value) {
   if (value && *value) {
     const char *name;
     const char *typ;
+    const char *mode;
     int doTrim=0;
     GWEN_BUFFER *vbuf;
+    GWEN_BUFFER *resultBuf;
+
+    doTrim=GWEN_XMLNode_GetIntProperty(xmlNode, "trim", 0);
+    vbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    resultBuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    /* trim input if requested */
+    GWEN_Buffer_AppendString(vbuf, value);
+    if (doTrim)
+      GWEN_Text_CondenseBuffer(vbuf);
 
     name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
     if (!(name && *name)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"SetCharValue\"");
+      GWEN_Buffer_free(resultBuf);
+      GWEN_Buffer_free(vbuf);
       return GWEN_ERROR_INVALID;
     }
 
     typ=GWEN_XMLNode_GetProperty(xmlNode, "type", "string");
     if (!(typ && *typ)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Empty type in \"SetCharValue\"");
+      GWEN_Buffer_free(resultBuf);
+      GWEN_Buffer_free(vbuf);
       return GWEN_ERROR_INVALID;
     }
 
-    doTrim=GWEN_XMLNode_GetIntProperty(xmlNode, "trim", 0);
-    vbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(vbuf, value);
-    if (doTrim)
-      GWEN_Text_CondenseBuffer(vbuf);
+    mode=GWEN_XMLNode_GetProperty(xmlNode, "mode", "add");
 
     if (strcasecmp(typ, "string")==0)
       GWEN_DB_SetCharValue(dbCurrent, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(vbuf));
@@ -174,6 +185,8 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
       tmpl=GWEN_XMLNode_GetProperty(xmlNode, "template", "YYYYMMDD");
       if (!(tmpl && *tmpl)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Empty template in \"SetCharValue\"");
+        GWEN_Buffer_free(resultBuf);
+        GWEN_Buffer_free(vbuf);
         return GWEN_ERROR_INVALID;
       }
 
@@ -183,6 +196,44 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
       GWEN_Date_free(dt);
     }
 
+    if (strcasecmp(mode, "add")==0) {
+      /* just write data into result buffer */
+      GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
+    }
+    else if (strcasecmp(mode, "append")==0) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbCurrent, name, 0, NULL);
+      if (s && *s) {
+        const char *delimiter;
+
+        /* write previous data into resultBuffer */
+        GWEN_Buffer_AppendString(resultBuf, s);
+
+        /* possibly write delimiter into resultBuffer */
+        delimiter=GWEN_XMLNode_GetProperty(xmlNode, "delimiter", NULL);
+        if (delimiter && *delimiter) {
+          if (strcasecmp(delimiter, "\\n")==0)
+            GWEN_Buffer_AppendByte(resultBuf, '\n');
+          else if (strcasecmp(delimiter, "\\t")==0)
+            GWEN_Buffer_AppendByte(resultBuf, '\t');
+          else
+            GWEN_Buffer_AppendString(resultBuf, delimiter);
+        }
+        /* write value into resultBuffer */
+        GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
+
+        GWEN_DB_DeleteVar(dbCurrent, name);
+      }
+    }
+    else if (strcasecmp(mode, "replace")==0) {
+      /* just write current value into resultBuffer */
+      GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
+      GWEN_DB_DeleteVar(dbCurrent, name);
+    }
+
+    GWEN_DB_SetCharValue(dbCurrent, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(resultBuf));
+    GWEN_Buffer_free(resultBuf);
     GWEN_Buffer_free(vbuf);
   }
   return 0;
@@ -240,7 +291,7 @@ int GWEN_Xml2Db_Handle_ForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
   n=GWEN_XMLNode_FindFirstTag(ctx->currentDocNode, path, NULL, NULL);
   if (n==NULL) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Path \"%s\" not found", path);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Path \"%s\" not found", path);
     GWEN_XMLNode_Dump(ctx->currentDocNode, 2);
   }
   while (n){
@@ -337,7 +388,6 @@ int GWEN_Xml2Db_Handle_CreateAndEnterTempDbGroup(GWEN_XML2DB_CONTEXT *ctx, GWEN_
 }
 
 
-
 int GWEN_Xml2Db_Handle_SetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent) {
   const char *name;
   const char *value;
@@ -383,7 +433,7 @@ int GWEN_Xml2Db_Handle_SetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLN
 
       GWEN_XMLNode_GetXPath(NULL, ctx->currentDocNode, tbuf);
 
-      DBG_INFO(GWEN_LOGDOMAIN, "No value in path \"%s\" (%s)", path, GWEN_Buffer_GetStart(tbuf));
+      DBG_ERROR(GWEN_LOGDOMAIN, "No value in path \"%s\" (%s)", path, GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
 
       GWEN_XMLNode_Dump(ctx->currentDocNode, 2);
