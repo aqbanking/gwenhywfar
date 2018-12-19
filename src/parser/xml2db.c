@@ -188,10 +188,11 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
         return GWEN_ERROR_INVALID;
       }
 
-      dt=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(vbuf), tmpl);
-      if (dt)
-        GWEN_DB_SetCharValue(dbCurrent, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Date_GetString(dt));
-      GWEN_Date_free(dt);
+      dt=GWEN_Date_fromStringWithTemplate(value, tmpl);
+      if (dt) {
+        GWEN_Buffer_AppendString(vbuf, GWEN_Date_GetString(dt));
+        GWEN_Date_free(dt);
+      }
     }
 
     if (strcasecmp(mode, "add")==0) {
@@ -438,7 +439,7 @@ int GWEN_Xml2Db_Handle_SetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLN
       DBG_ERROR(GWEN_LOGDOMAIN, "No value in path \"%s\" (%s)", path, GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
 
-      GWEN_XMLNode_Dump(ctx->currentDocNode, 2);
+      /* GWEN_XMLNode_Dump(ctx->currentDocNode, 2); */
     }
   }
 
