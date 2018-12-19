@@ -153,11 +153,6 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
     vbuf=GWEN_Buffer_new(0, 256, 0, 1);
     resultBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-    /* trim input if requested */
-    GWEN_Buffer_AppendString(vbuf, value);
-    if (doTrim)
-      GWEN_Text_CondenseBuffer(vbuf);
-
     name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
     if (!(name && *name)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"SetCharValue\"");
@@ -176,8 +171,11 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
 
     mode=GWEN_XMLNode_GetProperty(xmlNode, "mode", "add");
 
-    if (strcasecmp(typ, "string")==0)
-      GWEN_DB_SetCharValue(dbCurrent, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(vbuf));
+    if (strcasecmp(typ, "string")==0) {
+      GWEN_Buffer_AppendString(vbuf, value);
+      if (doTrim)
+	GWEN_Text_CondenseBuffer(vbuf);
+    }
     else if (strcasecmp(typ, "date")==0) {
       const char *tmpl;
       GWEN_DATE *dt=NULL;
@@ -197,8 +195,10 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
     }
 
     if (strcasecmp(mode, "add")==0) {
-      /* just write data into result buffer */
-      GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
+      /* just exchange the buffer */
+      GWEN_Buffer_free(resultBuf);
+      resultBuf=vbuf;
+      vbuf=NULL;
     }
     else if (strcasecmp(mode, "append")==0) {
       const char *s;
@@ -219,16 +219,18 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
             GWEN_Buffer_AppendByte(resultBuf, '\t');
           else
             GWEN_Buffer_AppendString(resultBuf, delimiter);
-        }
-        /* write value into resultBuffer */
-        GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
+	}
+      } /* if previous value */
+      /* write value into resultBuffer */
+      GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
 
-        GWEN_DB_DeleteVar(dbCurrent, name);
-      }
+      GWEN_DB_DeleteVar(dbCurrent, name);
     }
     else if (strcasecmp(mode, "replace")==0) {
-      /* just write current value into resultBuffer */
-      GWEN_Buffer_AppendString(resultBuf, GWEN_Buffer_GetStart(vbuf));
+      /* just exchange the buffer */
+      GWEN_Buffer_free(resultBuf);
+      resultBuf=vbuf;
+      vbuf=NULL;
       GWEN_DB_DeleteVar(dbCurrent, name);
     }
 
