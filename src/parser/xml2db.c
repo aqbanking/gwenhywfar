@@ -295,7 +295,7 @@ int GWEN_Xml2Db_Handle_ForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
   n=GWEN_XMLNode_FindFirstTag(ctx->currentDocNode, path, NULL, NULL);
   if (n==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Path \"%s\" not found", path);
-    GWEN_XMLNode_Dump(ctx->currentDocNode, 2);
+    /* GWEN_XMLNode_Dump(ctx->currentDocNode, 2); */
   }
   while (n){
 
