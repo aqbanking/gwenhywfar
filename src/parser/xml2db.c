@@ -128,6 +128,7 @@ const char *GWEN_Xml2Db_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const char *pa
       const char *result;
 
       result=GWEN_XMLNode_GetProperty(n, property, defValue);
+      DBG_INFO(GWEN_LOGDOMAIN, "Got XML property: %s = %s (%s)", property, result, path);
       free(cpyOfPath);
       return result;
     }
@@ -234,6 +235,8 @@ int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *x
       vbuf=NULL;
       GWEN_DB_DeleteVar(dbCurrent, name);
     }
+
+    DBG_INFO(GWEN_LOGDOMAIN, "Setting value: %s = %s", name, GWEN_Buffer_GetStart(resultBuf));
 
     GWEN_DB_SetCharValue(dbCurrent, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(resultBuf));
     GWEN_Buffer_free(resultBuf);
