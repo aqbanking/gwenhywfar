@@ -2209,6 +2209,9 @@ static int _buildFromDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "  p_struct=");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty)) {
+    GWEN_Buffer_AppendByte(tbuf, '_');
+  }
   GWEN_Buffer_AppendString(tbuf, "_new();\n");
 
   GWEN_Buffer_AppendString(tbuf, "  ");
@@ -2624,6 +2627,9 @@ static int _buildFromXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "  p_struct=");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty)) {
+    GWEN_Buffer_AppendByte(tbuf, '_');
+  }
   GWEN_Buffer_AppendString(tbuf, "_new();\n");
 
   GWEN_Buffer_AppendString(tbuf, "  ");
@@ -3024,6 +3030,9 @@ static int _buildFromObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "  p_struct=");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty)) {
+    GWEN_Buffer_AppendByte(tbuf, '_');
+  }
   GWEN_Buffer_AppendString(tbuf, "_new();\n");
 
   GWEN_Buffer_AppendString(tbuf, "  p_rv=");
@@ -3218,6 +3227,9 @@ static int _buildDup(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty) {
   GWEN_Buffer_AppendString(tbuf, "  p_struct=");
   s=Typemaker2_Type_GetPrefix(ty);
   GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty)) {
+    GWEN_Buffer_AppendByte(tbuf, '_');
+  }
   GWEN_Buffer_AppendString(tbuf, "_new();\n");
 
   tml=Typemaker2_Type_GetMembers(ty);
