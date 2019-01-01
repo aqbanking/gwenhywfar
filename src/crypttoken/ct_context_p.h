@@ -5,8 +5,8 @@
  * Better edit the mentioned source file instead.
  **********************************************************/
 
-#ifndef CT_CONTEXT_P_H
-#define CT_CONTEXT_P_H
+#ifndef GWEN_CRYPT_TOKEN_CONTEXT_CT_CONTEXT_P_H
+#define GWEN_CRYPT_TOKEN_CONTEXT_CT_CONTEXT_P_H
 
 #include "ct_context.h"
 
@@ -27,6 +27,11 @@ struct GWEN_CRYPT_TOKEN_CONTEXT {
   uint32_t authSignKeyId;
   uint32_t authVerifyKeyId;
   uint32_t tempSignKeyId;
+  uint32_t keyHashNum;
+  uint32_t keyHashVer;
+  uint32_t keyHashAlgo;
+  GWEN_BINDATA keyHash;
+  uint32_t protocolVersion;
   char *serviceId;
   char *userId;
   char *customerId;

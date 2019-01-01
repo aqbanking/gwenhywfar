@@ -8,8 +8,9 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
 
 
-typefiles=ct_context.xml 
-#ct_keyinfo.xml
+typefiles=\
+  ct_context.xml \
+  ct_keyinfo.xml
 
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar

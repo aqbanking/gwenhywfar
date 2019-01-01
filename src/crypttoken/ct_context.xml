@@ -20,6 +20,8 @@
       
       <headers>
         <header type="sys" loc="pre">gwenhywfar/types.h</header>
+        <header type="sys" loc="pre">gwenhywfar/bindata.h</header>
+        <header type="sys" loc="pre">gwenhywfar/base64.h</header>
       </headers>
 
     </lang>
@@ -77,6 +79,46 @@
       </member>
 
       <member name="tempSignKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="keyHashNum" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="keyHashVer" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="keyHashAlgo" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="keyHash" type="gwen_bindata" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
+      </member>
+
+      <member name="protocolVersion" type="uint32_t" maxlen="8">
+        <descr>
+          For RDH cards this is the RDH version supported.
+        </descr>
         <default>0</default>
         <preset>0</preset>
         <flags>none</flags>

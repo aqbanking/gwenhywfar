@@ -4,10 +4,10 @@
   <type id="GWEN_CRYPT_TOKEN_KEYINFO" type="pointer">
     <descr>
     </descr>
-    <lang id="c">
+    <lang id="c" usePrivateConstructor="1" >
       <identifier>GWEN_CRYPT_TOKEN_KEYINFO</identifier>
       <prefix>GWEN_Crypt_Token_KeyInfo</prefix>
-      <baseFileName>ct_keyinfotest</baseFileName>
+      <baseFileName>ct_keyinfo</baseFileName>
       
       <flags>
         with_inherit
@@ -26,6 +26,34 @@
       </headers>
 
       <inlines>
+
+        <!-- Constructor -->
+        <inline loc="end" access="public">
+          <content>
+             $(api) $(struct_type) *$(struct_prefix)_new(uint32_t kid,              \n
+                                                         GWEN_CRYPT_CRYPTALGOID a,  \n
+                                                         int keySize);              
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             $(struct_type) *$(struct_prefix)_new(uint32_t kid,
+                                                  GWEN_CRYPT_CRYPTALGOID a,
+                                                  int keySize) {
+               GWEN_CRYPT_TOKEN_KEYINFO *ki;
+               
+               ki=$(struct_prefix)__new();
+               ki->id=kid;
+               ki->cryptAlgoId=a;
+               ki->keySize=keySize;
+             
+               return ki;
+             }
+          </content>
+        </inline>
+
+
 
         <!-- Modulus functions -->
         <inline loc="end" access="public">
@@ -156,6 +184,75 @@
              }
           </content>
         </inline>
+
+
+
+        <!-- Certificate functions -->
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_SetCertificate($(struct_type) *st, const uint8_t *p, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_SetCertificate($(struct_type) *st, const uint8_t *p, uint32_t len) {
+               assert(st);
+               
+               if (st->certificate)
+                 GWEN_Buffer_free(st->certificate);
+               if (p && len) {
+                 st->certificate=GWEN_Buffer_new(0, len, 0, 1);
+                 GWEN_Buffer_AppendBytes(st->certificate, (const char*) p, len);
+               }
+               else
+                 st->certificate=NULL;
+             }
+          </content>
+        </inline>
+
+        
+        <inline loc="end" access="public">
+          <content>
+             $(api) const uint8_t* $(struct_prefix)_GetCertificateData(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             const uint8_t* $(struct_prefix)_GetCertificateData(const $(struct_type) *st) {
+               assert(st);
+               
+               if (st->certificate)
+                 return GWEN_Buffer_GetStart(st->certificate);
+               else
+                 return NULL;
+             }
+          </content>
+        </inline>
+        
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetCertificateLen(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             uint32_t $(struct_prefix)_GetCertificateLen(const $(struct_type) *st) {
+               assert(st);
+               
+               if (st->certificate)
+                 return GWEN_Buffer_GetUsedBytes(st->certificate);
+               else
+                 return 0;
+             }
+          </content>
+        </inline>
+
+
+
         
       </inlines>
 
@@ -172,6 +269,7 @@
         <item name="HASKEYVERSION"  value="0x00100000" />
         <item name="HASSIGNCOUNTER" value="0x00200000" />
         <item name="HASKEYNUMBER"   value="0x00400000" />
+        <item name="HASCERTIFICATE" value="0x00800000" />
         
         <item name="ACTIONMASK"     value="0x0000000f" />
         <item name="CANSIGN"        value="0x00000001" />
@@ -277,6 +375,14 @@
         <access>public</access>
       </member>
 
+      <member name="certificate" type="gwen_buffer" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const omit dup</setflags>
+        <getflags>const omit</getflags>
+      </member>
 
     </members>
     
