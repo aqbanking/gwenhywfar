@@ -58,9 +58,9 @@ public:
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-                      int index,
+                      GWEN_UNUSED int index,
                       const char *value,
-                      int doSignal) {
+                      GWEN_UNUSED int doSignal) {
     QTextBrowser *qw;
     QString text;
 

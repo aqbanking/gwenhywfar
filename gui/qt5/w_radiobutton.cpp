@@ -105,9 +105,9 @@ public:
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-                      int index,
+                      GWEN_UNUSED int index,
                       const char *value,
-                      int doSignal) {
+                      GWEN_UNUSED int doSignal) {
     QRadioButton *qw;
     QString text;
 
@@ -134,7 +134,7 @@ public:
 
 
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-                              int index,
+                              GWEN_UNUSED int index,
                               const char *defaultValue) {
     QRadioButton *qw;
     QString str;

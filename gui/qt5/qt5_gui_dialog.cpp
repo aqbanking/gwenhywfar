@@ -344,7 +344,7 @@ int QT5_GuiDialog::setupTree(GWEN_WIDGET *w) {
 }
 
 
-bool QT5_GuiDialog::setup(QWidget *parentWindow) {
+bool QT5_GuiDialog::setup(GWEN_UNUSED QWidget *parentWindow) {
   GWEN_WIDGET_TREE *wtree;
   GWEN_WIDGET *w;
   int rv;

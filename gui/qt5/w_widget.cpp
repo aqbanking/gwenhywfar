@@ -63,9 +63,9 @@ public:
 
 
   int setIntProperty(GWEN_DIALOG_PROPERTY prop,
-                     int index,
+                     GWEN_UNUSED int index,
                      int value,
-                     int doSignal) {
+                     GWEN_UNUSED int doSignal) {
     QWidget *qw;
 
     qw=(QWidget*) GWEN_Widget_GetImplData(_widget, QT5_DIALOG_WIDGET_REAL);
@@ -108,7 +108,7 @@ public:
 
 
   int getIntProperty(GWEN_DIALOG_PROPERTY prop,
-                     int index,
+                     GWEN_UNUSED int index,
                      int defaultValue) {
     QWidget *qw;
 
@@ -140,10 +140,10 @@ public:
 
 
 
-  int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-                      int index,
-                      const char *value,
-                      int doSignal) {
+  int setCharProperty(GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                      GWEN_UNUSED int index,
+                      GWEN_UNUSED const char *value,
+                      GWEN_UNUSED int doSignal) {
     DBG_WARN(GWEN_LOGDOMAIN,
              "Function is not appropriate for this type of widget (%s)",
              GWEN_Widget_Type_toString(GWEN_Widget_GetType(_widget)));
@@ -152,8 +152,8 @@ public:
 
 
 
-  const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-                              int index,
+  const char *getCharProperty(GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                              GWEN_UNUSED int index,
                               const char *defaultValue) {
     DBG_WARN(GWEN_LOGDOMAIN,
              "Function is not appropriate for this type of widget (%s)",

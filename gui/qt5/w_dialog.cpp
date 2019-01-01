@@ -75,9 +75,9 @@ public:
 
 
   int setCharProperty(GWEN_DIALOG_PROPERTY prop,
-                      int index,
+                      GWEN_UNUSED int index,
                       const char *value,
-                      int doSignal) {
+                      GWEN_UNUSED int doSignal) {
     QWidget *qw;
 
     qw=(QWidget*) GWEN_Widget_GetImplData(_widget, QT5_DIALOG_WIDGET_REAL);
@@ -100,7 +100,7 @@ public:
 
 
   const char *getCharProperty(GWEN_DIALOG_PROPERTY prop,
-                              int index,
+                              GWEN_UNUSED int index,
                               const char *defaultValue) {
     QWidget *qw;
     QString str;

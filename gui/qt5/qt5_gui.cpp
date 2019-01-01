@@ -75,7 +75,7 @@ QString QT5_Gui::extractHtml(const char *text) {
 
 
 
-int QT5_Gui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
+int QT5_Gui::execDialog(GWEN_DIALOG *dlg, GWEN_UNUSED uint32_t guiid) {
   QT5_GuiDialog qt5Dlg(this, dlg);
   QWidget *owner = qApp->activeWindow();
 
@@ -89,7 +89,7 @@ int QT5_Gui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 
-int QT5_Gui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
+int QT5_Gui::openDialog(GWEN_DIALOG *dlg, GWEN_UNUSED uint32_t guiid) {
   QT5_GuiDialog *qtDlg = new QT5_GuiDialog(this, dlg);
   QWidget *owner = qApp->activeWindow();
 
@@ -126,10 +126,10 @@ int QT5_Gui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
 
 int QT5_Gui::getFileName(const char *caption,
                          GWEN_GUI_FILENAME_TYPE fnt,
-                         uint32_t flags,
+                         GWEN_UNUSED uint32_t flags,
                          const char *patterns,
                          GWEN_BUFFER *pathBuffer,
-                         uint32_t guiid) {
+                         GWEN_UNUSED uint32_t guiid) {
   QString sCaption;
   QString sPatterns;
   QString sPath;
