@@ -146,7 +146,7 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	if (ki) {
 	  fprintf(stdout, "-------------------------------------------------\n");
 	  fprintf(stdout, "Key %08x\n",
-		  (unsigned int)GWEN_Crypt_Token_KeyInfo_GetKeyId(ki));
+		  (unsigned int)GWEN_Crypt_Token_KeyInfo_GetId(ki));
 
 	  s=GWEN_Crypt_Token_KeyInfo_GetKeyDescr(ki);
 	  if (s)
