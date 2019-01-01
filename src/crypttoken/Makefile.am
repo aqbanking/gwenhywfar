@@ -28,7 +28,6 @@ iheader_HEADERS=\
 noinst_LTLIBRARIES=libcrypttoken.la
 noinst_HEADERS=\
   ct_p.h \
-  ct_context_l.h \
   ct_context_p.h \
   ctf_context_p.h \
   ctfile_p.h \
