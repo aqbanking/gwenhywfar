@@ -92,7 +92,7 @@
                assert(st);
                
                if (st->modulus)
-                 return GWEN_Buffer_GetStart(st->modulus);
+                 return (const uint8_t*) GWEN_Buffer_GetStart(st->modulus);
                else
                  return NULL;
              }
@@ -158,7 +158,7 @@
                assert(st);
                
                if (st->exponent)
-                 return GWEN_Buffer_GetStart(st->exponent);
+                 return (const uint8_t*) GWEN_Buffer_GetStart(st->exponent);
                else
                  return NULL;
              }
@@ -224,7 +224,7 @@
                assert(st);
                
                if (st->certificate)
-                 return GWEN_Buffer_GetStart(st->certificate);
+                 return (const uint8_t*) GWEN_Buffer_GetStart(st->certificate);
                else
                  return NULL;
              }
