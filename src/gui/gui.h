@@ -124,9 +124,9 @@ extern "C" {
  * flicker graphic. Some show an image to the user from which he must derive the tan in some way.
  * Therefore the password entry function needed to be extended to allow for a more generic way to ask the user
  * for a password. Previously, some specific data was included in the text parameter, from which the GUI implementation
- * needed to extract that data (i.e. "$OBEGIN" and "$OEND" for optical data.
+ * needed to extract that data (i.e. "$OBEGIN" and "$OEND" for optical data).
  *
- * Therefore we define methods of pin/tan/password entry here with the matching methos parameters.
+ * Therefore we define methods of pin/tan/password entry here with the matching method parameters.
  */
 /*@{*/
 
