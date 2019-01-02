@@ -26,6 +26,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
 
 #include <assert.h>
 #include <unistd.h>
@@ -396,6 +397,28 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
       GWEN_DB_NODE *dbHeaderIn;
 
       dbHeaderIn=GWEN_SyncIo_Http_GetDbHeaderIn(sess->syncIo);
+
+      if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Detailed Error Log For Packet:");
+
+	if (dbHeaderIn) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Recevied this HTTP header:");
+	  GWEN_DB_Dump(dbHeaderIn, 2);
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "-- No HTTP header recevied --");
+	}
+
+	if (GWEN_Buffer_GetUsedBytes(buf)) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Recevied this body:");
+	  GWEN_Text_LogString(GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf),
+			      GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "-- No body recevied --");
+	}
+
+      }
 
       if (rv==301 || rv==303 || rv==305 || rv==307) {
         /* moved */
