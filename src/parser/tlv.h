@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/db.h>
 
 
 typedef struct GWEN_TLV GWEN_TLV;
@@ -95,6 +96,17 @@ int GWEN_TLV_WriteHeader(unsigned int tagType,
                          int isBerTlv,
                          GWEN_BUFFER *mbuf);
 
+
+/**
+ * Directly parses a BER-TLV structure do a DB.
+ * @return number of bytes parsed
+ * @param dbRecord GWEN_DB database with the parsed TLV structure
+ * @param mbuf buffer holding the TLV data
+ * @param len length of the data in the buffer
+ */
+
+GWENHYWFAR_API
+int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len);
 
 #endif /* GWENHYWFAR_TLV_H */
 
