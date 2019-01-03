@@ -24,6 +24,92 @@
         <header type="sys" loc="pre">gwenhywfar/base64.h</header>
       </headers>
 
+
+      <inlines>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetKeyHash($(struct_type) *st, const uint8_t *p, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             void $(struct_prefix)_SetKeyHash($(struct_type) *st, const uint8_t *p, uint32_t len) {
+               assert(st);
+               if (st->keyHash.length &amp;&amp; st->keyHash.pointer)
+                 free(st->keyHash.pointer);
+               if (p &amp;&amp; len) {
+                 st->keyHash.pointer=(uint8_t*) malloc(len); 
+                 if (st->keyHash.pointer) { 
+                   st->keyHash.length=len;
+                   memmove(st->keyHash.pointer, p, len); 
+                 } 
+                 else {
+                   st->keyHash.pointer=NULL;
+                   st->keyHash.length=0; 
+                 } 
+               }
+               else {
+                 st->keyHash.length=0;
+                 st->keyHash.pointer=NULL;
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const uint8_t* $(struct_prefix)_GetKeyHashPtr(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             const uint8_t* $(struct_prefix)_GetKeyHashPtr(const $(struct_type) *st) {
+               assert(st);
+               return st->keyHash.pointer;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetKeyHashLen(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetKeyHashLen(const $(struct_type) *st) {
+               assert(st);
+               return st->keyHash.length;
+             }
+          </content>
+        </inline>
+
+ 
+      </inlines>
+
     </lang>
 
 
