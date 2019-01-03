@@ -94,11 +94,23 @@ extern "C" {
 <p>Set this property with @ref GWEN_Crypt_Token_Context_SetKeyHash(), get it with @ref GWEN_Crypt_Token_Context_GetKeyHash().</p>
 
 
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_keyStatus
+<h2>keyStatus</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetKeyStatus(), get it with @ref GWEN_Crypt_Token_Context_GetKeyStatus().</p>
+
+
 @anchor GWEN_CRYPT_TOKEN_CONTEXT_protocolVersion
 <h2>protocolVersion</h2>
 
 For RDH cards this is the RDH version supported.
 <p>Set this property with @ref GWEN_Crypt_Token_Context_SetProtocolVersion(), get it with @ref GWEN_Crypt_Token_Context_GetProtocolVersion().</p>
+
+
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_cid
+<h2>cid</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetCid(), get it with @ref GWEN_Crypt_Token_Context_GetCid().</p>
 
 
 @anchor GWEN_CRYPT_TOKEN_CONTEXT_serviceId
@@ -248,9 +260,19 @@ GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyHashVer(const GWEN_CRYPT_
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyHashAlgo(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
+ * Use this function to get the member "keyStatus" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_keyStatus)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
  * Use this function to get the member "protocolVersion" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_protocolVersion)
 */
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetProtocolVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "cid" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_cid)
+*/
+GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetCid(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
  * Use this function to get the member "serviceId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_serviceId)
@@ -353,9 +375,19 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHashVer(GWEN_CRYPT_TOKEN_CONT
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHashAlgo(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
 
 /** Setter.
+ * Use this function to set the member "keyStatus" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_keyStatus)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
  * Use this function to set the member "protocolVersion" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_protocolVersion)
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetProtocolVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "cid" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_cid)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
 
 /** Setter.
  * Use this function to set the member "serviceId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_serviceId)

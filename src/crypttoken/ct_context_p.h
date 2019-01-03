@@ -31,7 +31,9 @@ struct GWEN_CRYPT_TOKEN_CONTEXT {
   uint32_t keyHashVer;
   uint32_t keyHashAlgo;
   GWEN_BINDATA keyHash;
+  uint32_t keyStatus;
   uint32_t protocolVersion;
+  char *cid;
   char *serviceId;
   char *userId;
   char *customerId;

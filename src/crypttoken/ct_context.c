@@ -42,7 +42,9 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void) {
   p_struct->keyHashVer=0;
   p_struct->keyHashAlgo=0;
   p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0;
+  p_struct->keyStatus=0;
   p_struct->protocolVersion=0;
+  p_struct->cid=NULL;
   p_struct->serviceId=NULL;
   p_struct->userId=NULL;
   p_struct->customerId=NULL;
@@ -65,6 +67,7 @@ void GWEN_Crypt_Token_Context_free(GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
     GWEN_LIST_FINI(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
   /* members */
     if (p_struct->keyHash.length && p_struct->keyHash.pointer) { free(p_struct->keyHash.pointer); } p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0;
+    free(p_struct->cid); p_struct->cid=NULL;
     free(p_struct->serviceId); p_struct->serviceId=NULL;
     free(p_struct->userId); p_struct->userId=NULL;
     free(p_struct->customerId); p_struct->customerId=NULL;
@@ -128,8 +131,20 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
   /* member "keyHash" */
   if (p_src->keyHash.length && p_src->keyHash.pointer) { p_struct->keyHash.pointer=(uint8_t*) malloc(p_src->keyHash.length); if (p_struct->keyHash.pointer) { p_struct->keyHash.length=p_src->keyHash.length; memmove(p_struct->keyHash.pointer, p_src->keyHash.pointer, p_src->keyHash.length); } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; } } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; }
 
+  /* member "keyStatus" */
+  p_struct->keyStatus=p_src->keyStatus;
+
   /* member "protocolVersion" */
   p_struct->protocolVersion=p_src->protocolVersion;
+
+  /* member "cid" */
+  if (p_struct->cid) {
+    free(p_struct->cid); p_struct->cid=NULL;
+    p_struct->cid=NULL;
+  }
+  if (p_src->cid) {
+    p_struct->cid=strdup(p_src->cid);
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
@@ -248,8 +263,20 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
   /* member "keyHash" */
   if (p_src->keyHash.length && p_src->keyHash.pointer) { p_struct->keyHash.pointer=(uint8_t*) malloc(p_src->keyHash.length); if (p_struct->keyHash.pointer) { p_struct->keyHash.length=p_src->keyHash.length; memmove(p_struct->keyHash.pointer, p_src->keyHash.pointer, p_src->keyHash.length); } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; } } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; }
 
+  /* member "keyStatus" */
+  p_struct->keyStatus=p_src->keyStatus;
+
   /* member "protocolVersion" */
   p_struct->protocolVersion=p_src->protocolVersion;
+
+  /* member "cid" */
+  if (p_struct->cid) {
+    free(p_struct->cid); p_struct->cid=NULL;
+    p_struct->cid=NULL;
+  }
+  if (p_src->cid) {
+    p_struct->cid=strdup(p_src->cid);
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
@@ -384,9 +411,19 @@ uint32_t GWEN_Crypt_Token_Context_GetKeyHashAlgo(const GWEN_CRYPT_TOKEN_CONTEXT 
   return p_struct->keyHashAlgo;
 }
 
+uint32_t GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+  assert(p_struct);
+  return p_struct->keyStatus;
+}
+
 uint32_t GWEN_Crypt_Token_Context_GetProtocolVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
   assert(p_struct);
   return p_struct->protocolVersion;
+}
+
+const char *GWEN_Crypt_Token_Context_GetCid(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+  assert(p_struct);
+  return p_struct->cid;
 }
 
 const char *GWEN_Crypt_Token_Context_GetServiceId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
@@ -489,9 +526,27 @@ void GWEN_Crypt_Token_Context_SetKeyHashAlgo(GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
   p_struct->keyHashAlgo=p_src;
 }
 
+void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+  assert(p_struct);
+  p_struct->keyStatus=p_src;
+}
+
 void GWEN_Crypt_Token_Context_SetProtocolVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
   assert(p_struct);
   p_struct->protocolVersion=p_src;
+}
+
+void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+  assert(p_struct);
+  if (p_struct->cid) {
+    free(p_struct->cid); p_struct->cid=NULL;
+  }
+  if (p_src) {
+    p_struct->cid=strdup(p_src);
+  }
+  else {
+    p_struct->cid=NULL;
+  }
 }
 
 void GWEN_Crypt_Token_Context_SetServiceId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
@@ -660,8 +715,19 @@ void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB
   /* member "keyHash" */
   { const void *v; unsigned int vlen; v=GWEN_DB_GetBinValue(p_db, "keyHash", 0, NULL, 0, &vlen); if (v && vlen) { uint8_t *dest; dest=(uint8_t*) malloc(vlen); memmove(dest, v, vlen); p_struct->keyHash.pointer=dest; p_struct->keyHash.length=vlen; } }
 
+  /* member "keyStatus" */
+  p_struct->keyStatus=GWEN_DB_GetIntValue(p_db, "keyStatus", 0, 0);
+
   /* member "protocolVersion" */
   p_struct->protocolVersion=GWEN_DB_GetIntValue(p_db, "protocolVersion", 0, 0);
+
+  /* member "cid" */
+  if (p_struct->cid) {
+    free(p_struct->cid); p_struct->cid=NULL;
+  }
+  { const char *s; s=GWEN_DB_GetCharValue(p_db, "cid", 0, NULL); if (s) p_struct->cid=strdup(s); }
+  if (p_struct->cid==NULL) {  p_struct->cid=NULL;
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
@@ -820,8 +886,22 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
     return p_rv;
   }
 
+  /* member "keyStatus" */
+  p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyStatus", p_struct->keyStatus);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
   /* member "protocolVersion" */
   p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocolVersion", p_struct->protocolVersion);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /* member "cid" */
+  if (p_struct->cid) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "cid", p_struct->cid); else { GWEN_DB_DeleteVar(p_db, "cid"); p_rv=0; }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -942,8 +1022,20 @@ void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_X
   /* member "keyHash" */
   { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "keyHash", NULL); if (s) { GWEN_BUFFER *tbuf; int rv; tbuf=GWEN_Buffer_new(0, 1024, 0, 1); rv=GWEN_Base64_Decode((const unsigned char*)s, strlen(s), tbuf); if (rv < 0) { DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv); } else { char *t; uint32_t len; len=GWEN_Buffer_GetUsedBytes(tbuf); t=GWEN_Buffer_GetStart(tbuf); if (GWEN_Buffer_Relinquish(tbuf) < 0) { uint8_t *dest; dest=(uint8_t*) malloc(len); memmove(dest, t, len); p_struct->keyHash.pointer=dest; p_struct->keyHash.length=len; } else { p_struct->keyHash.pointer=(uint8_t*) t; p_struct->keyHash.length=len; } } GWEN_Buffer_free(tbuf); } }
 
+  /* member "keyStatus" */
+  p_struct->keyStatus=GWEN_XMLNode_GetIntValue(p_db, "keyStatus", 0);
+
   /* member "protocolVersion" */
   p_struct->protocolVersion=GWEN_XMLNode_GetIntValue(p_db, "protocolVersion", 0);
+
+  /* member "cid" */
+  if (p_struct->cid) {
+    free(p_struct->cid); p_struct->cid=NULL;
+  }
+  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "cid", NULL); if (s) p_struct->cid=strdup(s); }
+  if (p_struct->cid==NULL) {  /* preset member "cid" if empty */
+  p_struct->cid=NULL;
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
@@ -1060,8 +1152,14 @@ void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
   /* member "keyHash" */
   { if (p_struct->keyHash.length && p_struct->keyHash.pointer) { GWEN_BUFFER *tbuf; int rv; tbuf=GWEN_Buffer_new(0, 1024, 0, 1); rv=GWEN_Base64_Encode((const unsigned char*) p_struct->keyHash.pointer, p_struct->keyHash.length, tbuf, 80); if (rv < 0) { DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv); } else { GWEN_XMLNode_SetCharValue(p_db, "keyHash", GWEN_Buffer_GetStart(tbuf)); GWEN_Buffer_free(tbuf); } } }
 
+  /* member "keyStatus" */
+  GWEN_XMLNode_SetIntValue(p_db, "keyStatus", p_struct->keyStatus);
+
   /* member "protocolVersion" */
   GWEN_XMLNode_SetIntValue(p_db, "protocolVersion", p_struct->protocolVersion);
+
+  /* member "cid" */
+  GWEN_XMLNode_SetCharValue(p_db, "cid", p_struct->cid);
 
   /* member "serviceId" */
   GWEN_XMLNode_SetCharValue(p_db, "serviceId", p_struct->serviceId);
