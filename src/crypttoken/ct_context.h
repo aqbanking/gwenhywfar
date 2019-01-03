@@ -455,6 +455,9 @@ GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_fromXml(GWEN_X
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_list, uint32_t p_cmp);
 
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len);
+GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_Context_GetKeyHashPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 /* end-headers */
 
 

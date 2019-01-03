@@ -261,9 +261,9 @@ GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_fromXml(GWEN_X
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_List_GetById(const GWEN_CRYPT_TOKEN_KEYINFO_LIST *p_list, uint32_t p_cmp);
 
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_new(uint32_t kid, 
- GWEN_CRYPT_CRYPTALGOID a, 
- int keySize);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_new(uint32_t kid,
+    GWEN_CRYPT_CRYPTALGOID a,
+    int keySize);
 GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetModulus(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len);
 GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_KeyInfo_GetModulusData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_KeyInfo_GetModulusLen(const GWEN_CRYPT_TOKEN_KEYINFO *st);
