@@ -61,21 +61,21 @@ static int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx,
                                               GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent,
                                               const char *value);
 
-static int GWEN_Xml2Db_Handle_SetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent);
+static int GWEN_Xml2Db_Handle_DbSetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent);
 
 
-static int GWEN_Xml2Db_Handle_Enter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_ForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_CreateAndEnterDbGroup(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_CreateAndEnterTempDbGroup(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_SetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_SetTempCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_IfCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_IfNotCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_IfHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_IfNotHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_IfPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int GWEN_Xml2Db_Handle_IfNotPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlEnter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_DbCreateAndEnterGroup(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_DbCreateAndEnterTempGroup(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_DbSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_DbSetTempCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlIfCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlIfNotCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlIfHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlIfNotHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlIfPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int GWEN_Xml2Db_Handle_XmlIfNotPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
 
 static int GWEN_Xml2Db_HandleChildren(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
 
