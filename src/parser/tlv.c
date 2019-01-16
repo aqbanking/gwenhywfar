@@ -25,7 +25,7 @@
 #include <assert.h>
 #include <string.h>
 
-#define BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS 0b00010000
+#define BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS 0b00011111
 #define BER_TLV_TAG_SECOND_BYTE_BYTE_FOLLOWS 0b10000000
 #define BER_TLV_TAG_IS_CONSTRUCTED 0b00100000
 
@@ -614,13 +614,14 @@ static void hex2char(char byte, char* character)
 int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
 {
     int tlv_len=0;
-    unsigned int tag_len;
+    unsigned int tag_len=0;
     unsigned int data_len;
     char byte;
     int isConstructed;
     int anotherByte;
     char tag[7]="\0\0\0\0\0\0\0";
     GWEN_DB_NODE *dbTLV;
+
 
     /* get first byte */
     while (tlv_len < len)
@@ -629,20 +630,14 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
         byte = GWEN_Buffer_ReadByte(mbuf);
         isConstructed = byte & BER_TLV_TAG_IS_CONSTRUCTED;
         tlv_len++;
-        hex2char(byte,&tag[0]);
-        anotherByte=byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS;
-        if (anotherByte)
+        hex2char(byte,&tag[tag_len++]);
+        anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
+        while (anotherByte)
         {
             byte = GWEN_Buffer_ReadByte(mbuf);
             tlv_len++;
-            hex2char(byte,&tag[2]);
+            hex2char(byte,&tag[tag_len++]);
             anotherByte= byte > 127;
-            if (anotherByte)
-            {
-                byte = GWEN_Buffer_ReadByte(mbuf);
-                tlv_len++;
-                hex2char(byte,&tag[4]);
-            }
         }
         dbTLV=GWEN_DB_Group_new(tag);
         byte = GWEN_Buffer_ReadByte(mbuf);
