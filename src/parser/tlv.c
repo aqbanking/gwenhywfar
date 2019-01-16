@@ -619,7 +619,7 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
     char byte;
     int isConstructed;
     int anotherByte;
-    char tag[7]="\0\0\0\0\0\0\0";
+    char tag[128];
     GWEN_DB_NODE *dbTLV;
 
 
@@ -627,6 +627,8 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
     while (tlv_len < len)
     {
 
+        tag_len=0;
+        memset(tag,'\0',128);
         byte = GWEN_Buffer_ReadByte(mbuf);
         isConstructed = byte & BER_TLV_TAG_IS_CONSTRUCTED;
         tlv_len++;
