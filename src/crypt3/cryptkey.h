@@ -1,7 +1,4 @@
 /*************************************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: crypttoken.h 1113 2007-01-10 09:14:16Z martin $
     begin       : Wed Mar 16 2005
     copyright   : (C) 2005 by Martin Preuss
     email       : martin@libchipcard.de
@@ -58,22 +55,22 @@ GWENHYWFAR_API int GWEN_Crypt_Key_Sign(GWEN_CRYPT_KEY *k,
                                        uint32_t *pSignatureLen);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Verify(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    const uint8_t *pSignatureData,
-    uint32_t signatureLen);
+                                         const uint8_t *pInData,
+                                         uint32_t inLen,
+                                         const uint8_t *pSignatureData,
+                                         uint32_t signatureLen);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Encipher(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pOutData,
-    uint32_t *pOutLen);
+                                           const uint8_t *pInData,
+                                           uint32_t inLen,
+                                           uint8_t *pOutData,
+                                           uint32_t *pOutLen);
 
 GWENHYWFAR_API int GWEN_Crypt_Key_Decipher(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pOutData,
-    uint32_t *pOutLen);
+                                           const uint8_t *pInData,
+                                           uint32_t inLen,
+                                           uint8_t *pOutData,
+                                           uint32_t *pOutLen);
 
 
 #ifdef __cplusplus

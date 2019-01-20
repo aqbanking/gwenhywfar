@@ -134,34 +134,34 @@ GWENHYWFAR_API int GWEN_Crypt_Token_IsOpen(const GWEN_CRYPT_TOKEN *ct);
  */
 /*@{*/
 GWENHYWFAR_API int GWEN_Crypt_Token_GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
-    uint32_t *pIdList,
-    uint32_t *pCount,
-    uint32_t gid);
+                                                 uint32_t *pIdList,
+                                                 uint32_t *pCount,
+                                                 uint32_t gid);
 
 GWENHYWFAR_API const GWEN_CRYPT_TOKEN_KEYINFO* GWEN_Crypt_Token_GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-    uint32_t id,
-    uint32_t flags,
-    uint32_t gid);
+                                                                           uint32_t id,
+                                                                           uint32_t flags,
+                                                                           uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-    uint32_t id,
-    const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-    uint32_t gid);
+                                               uint32_t id,
+                                               const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                                               uint32_t gid);
 
 
 GWENHYWFAR_API int GWEN_Crypt_Token_GetContextIdList(GWEN_CRYPT_TOKEN *ct,
-    uint32_t *pIdList,
-    uint32_t *pCount,
-    uint32_t gid);
+                                                     uint32_t *pIdList,
+                                                     uint32_t *pCount,
+                                                     uint32_t gid);
 
 GWENHYWFAR_API const GWEN_CRYPT_TOKEN_CONTEXT* GWEN_Crypt_Token_GetContext(GWEN_CRYPT_TOKEN *ct,
-    uint32_t id,
-    uint32_t gid);
+                                                                           uint32_t id,
+                                                                           uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_SetContext(GWEN_CRYPT_TOKEN *ct,
-    uint32_t id,
-    const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
-    uint32_t gid);
+                                               uint32_t id,
+                                               const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
+                                               uint32_t gid);
 /*@}*/
 
 
@@ -171,42 +171,42 @@ GWENHYWFAR_API int GWEN_Crypt_Token_SetContext(GWEN_CRYPT_TOKEN *ct,
  */
 /*@{*/
 GWENHYWFAR_API int GWEN_Crypt_Token_Sign(GWEN_CRYPT_TOKEN *ct,
-    uint32_t keyId,
-    GWEN_CRYPT_PADDALGO *a,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pSignatureData,
-    uint32_t *pSignatureLen,
-    uint32_t *pSeqCounter,
-    uint32_t gid);
+                                         uint32_t keyId,
+                                         GWEN_CRYPT_PADDALGO *a,
+                                         const uint8_t *pInData,
+                                         uint32_t inLen,
+                                         uint8_t *pSignatureData,
+                                         uint32_t *pSignatureLen,
+                                         uint32_t *pSeqCounter,
+                                         uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_Verify(GWEN_CRYPT_TOKEN *ct,
-    uint32_t keyId,
-    GWEN_CRYPT_PADDALGO *a,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    const uint8_t *pSignatureData,
-    uint32_t signatureLen,
-    uint32_t seqCounter,
-    uint32_t gid);
+                                           uint32_t keyId,
+                                           GWEN_CRYPT_PADDALGO *a,
+                                           const uint8_t *pInData,
+                                           uint32_t inLen,
+                                           const uint8_t *pSignatureData,
+                                           uint32_t signatureLen,
+                                           uint32_t seqCounter,
+                                           uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_Encipher(GWEN_CRYPT_TOKEN *ct,
-    uint32_t keyId,
-    GWEN_CRYPT_PADDALGO *a,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pOutData,
-    uint32_t *pOutLen,
-    uint32_t gid);
+                                             uint32_t keyId,
+                                             GWEN_CRYPT_PADDALGO *a,
+                                             const uint8_t *pInData,
+                                             uint32_t inLen,
+                                             uint8_t *pOutData,
+                                             uint32_t *pOutLen,
+                                             uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_Decipher(GWEN_CRYPT_TOKEN *ct,
-    uint32_t keyId,
-    GWEN_CRYPT_PADDALGO *a,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pOutData,
-    uint32_t *pOutLen,
-    uint32_t gid);
+                                             uint32_t keyId,
+                                             GWEN_CRYPT_PADDALGO *a,
+                                             const uint8_t *pInData,
+                                             uint32_t inLen,
+                                             uint8_t *pOutData,
+                                             uint32_t *pOutLen,
+                                             uint32_t gid);
 /*@}*/
 
 
@@ -216,9 +216,9 @@ GWENHYWFAR_API int GWEN_Crypt_Token_Decipher(GWEN_CRYPT_TOKEN *ct,
  */
 /*@{*/
 GWENHYWFAR_API int GWEN_Crypt_Token_GenerateKey(GWEN_CRYPT_TOKEN *ct,
-    uint32_t keyId,
-    const GWEN_CRYPT_CRYPTALGO *a,
-    uint32_t gid);
+                                                uint32_t keyId,
+                                                const GWEN_CRYPT_CRYPTALGO *a,
+                                                uint32_t gid);
 
 GWENHYWFAR_API int GWEN_Crypt_Token_ChangePin(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid);
 

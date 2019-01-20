@@ -2196,7 +2196,7 @@ void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenFile_new(const char *typeName,
-    const char *tokenName) {
+                                           const char *tokenName) {
   GWEN_CRYPT_TOKEN *ct;
   GWEN_CRYPT_TOKEN_FILE *lct;
 
