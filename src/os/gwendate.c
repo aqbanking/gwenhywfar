@@ -185,8 +185,21 @@ GWEN_DATE *GWEN_Date_CurrentDate(void) {
 
 
 GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd) {
+  GWEN_DATE *gd;
+
   assert(ogd);
-  return GWEN_Date_fromGregorian(ogd->year, ogd->month, ogd->day);
+
+  GWEN_NEW_OBJECT(GWEN_DATE, gd);
+#if 0
+  gd->year=ogd->year;
+  gd->month=ogd->month;
+  gd->day=ogd->day;
+  gd->julian=ogd->julian;
+  memmove(gd->asString, ogd->asString, sizeof(gd->asString));
+#else
+  memmove(gd, ogd, sizeof(GWEN_DATE));
+#endif
+  return gd;
 }
 
 
