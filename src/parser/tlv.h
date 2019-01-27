@@ -108,5 +108,15 @@ int GWEN_TLV_WriteHeader(unsigned int tagType,
 GWENHYWFAR_API
 int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len);
 
+/**
+ * Parses length of a BER-TLV structure.
+ * @return number of bytes including the tag itself
+ * @param mbuf buffer holding the TLV data
+ * @param tag_len_len number of bytes used for tag identifier octets and length octets
+ */
+
+GWENHYWFAR_API
+uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len);
+
 #endif /* GWENHYWFAR_TLV_H */
 

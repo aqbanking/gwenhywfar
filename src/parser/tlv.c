@@ -615,7 +615,7 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
 {
     int tlv_len=0;
     unsigned int tag_len=0;
-    unsigned int data_len;
+    uint32_t data_len;
     char byte;
     int isConstructed;
     int anotherByte;
@@ -644,23 +644,18 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
         dbTLV=GWEN_DB_Group_new(tag);
         byte = GWEN_Buffer_ReadByte(mbuf);
         tlv_len++;
-        if ( byte == 0x81)
+        if ( byte >= 0x81)
         {
-            data_len=127;
-            byte = GWEN_Buffer_ReadByte(mbuf);
-            tlv_len++;
-            if ( byte == 0x82 )
+            uint8_t numLengthBytes= byte-128;
+            assert(byte!=0xFF);
+            data_len=0;
+            while( numLengthBytes--)
             {
-                data_len=255;
                 byte = GWEN_Buffer_ReadByte(mbuf);
                 tlv_len++;
-                data_len+= (uint8_t) byte;
+                data_len<<=8;
+                data_len+=(uint32_t)byte;
             }
-            else
-            {
-                data_len+= (uint8_t) byte;
-            }
-
         }
         else
         {
@@ -694,8 +689,47 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
     return tlv_len;
 }
 
+uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len)
+{
+    uint32_t data_len=0;
+    uint32_t tlv_len=0;
+    char byte;
+    int anotherByte;
 
 
 
+    /* get first byte */
 
+        byte = GWEN_Buffer_ReadByte(mbuf);
+        tlv_len++;
+        anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
+        while (anotherByte)
+        {
+            byte = GWEN_Buffer_ReadByte(mbuf);
+            tlv_len++;
+            anotherByte= byte > 127;
+        }
+        byte = GWEN_Buffer_ReadByte(mbuf);
+        tlv_len++;
+        if ( byte & 0x80)
+        {
+            uint8_t numLengthBytes= byte-128;
+            assert(byte!=0xFF);
+            data_len=0;
+            while( numLengthBytes--)
+            {
+                byte = GWEN_Buffer_ReadByte(mbuf);
+                tlv_len++;
+                data_len<<=8;
+                data_len+=(uint32_t)byte;
+            }
+        }
+        else
+        {
+            data_len= (uint8_t) byte;
+        }
+        *tag_len_len=tlv_len;
+
+        return data_len;
+}
 
