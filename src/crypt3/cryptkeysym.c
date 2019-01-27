@@ -782,9 +782,80 @@ int GWEN_Crypt_KeyAes128_SetIV(GWEN_CRYPT_KEY *k,
 }
 
 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_Generate(GWEN_CRYPT_CRYPTMODE mode,
+    int keySize,
+    int quality) {
+  return GWEN_Crypt_KeySym_Generate(GWEN_Crypt_CryptAlgoId_Aes256, keySize, mode,
+                                    GCRY_CIPHER_AES256, GCRY_CIPHER_SECURE, quality);
+}
 
 
 
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
+    const uint8_t *kd, uint32_t kl) {
+  return GWEN_Crypt_KeySym_fromData(GWEN_Crypt_CryptAlgoId_Aes256, keySize, mode,
+                                    GCRY_CIPHER_AES256, GCRY_CIPHER_SECURE,
+                                    kd, kl);
+}
+
+
+
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_fromDb(GWEN_CRYPT_CRYPTMODE mode,
+    GWEN_DB_NODE *db) {
+  return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_Aes256, mode,
+                                   GCRY_CIPHER_AES256, GCRY_CIPHER_SECURE, "aes256", db);
+}
+
+
+
+int GWEN_Crypt_KeyAes256_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+  return GWEN_Crypt_KeySym__toDb(k, db, "aes256");
+}
+
+
+
+int GWEN_Crypt_KeyAes256_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+  return GWEN_Crypt_KeySym_SetKeyData(k, kd, kl);
+}
+
+
+
+uint8_t *GWEN_Crypt_KeyAes256_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+  return GWEN_Crypt_KeySym_GetKeyDataPtr(k);
+}
+
+
+
+uint32_t GWEN_Crypt_KeyAes256_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+  return GWEN_Crypt_KeySym_GetKeyDataLen(k);
+}
+
+int GWEN_Crypt_KeyAes256_SetIV(GWEN_CRYPT_KEY *k,
+                               const uint8_t *kd,
+                               uint32_t kl) {
+  GWEN_CRYPT_KEY_SYM *xk;
+  gcry_error_t err;
+
+  assert(k);
+  xk=GWEN_INHERIT_GETDATA(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_SYM, k);
+  assert(xk);
+
+  if (kd==NULL || kl==0) {
+    const uint8_t iv[]= {
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+    err=gcry_cipher_setiv(xk->algoHandle, iv, sizeof(iv));
+  }
+  else
+    err=gcry_cipher_setiv(xk->algoHandle, kd, kl);
+  if (err) {
+    DBG_INFO(GWEN_LOGDOMAIN, "gcry_cipher_setiv(): %s", gcry_strerror(err));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
 
 
 

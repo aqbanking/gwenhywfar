@@ -882,7 +882,68 @@ int GWEN_Padd_UnapplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
 }
 
 
+int GWEN_Padd_PaddWithZka(GWEN_BUFFER *src) {
+  return GWEN_Padd_PaddWithZkaToMultipleOf(src, 16);
+}
+
+
+int GWEN_Padd_PaddWithZkaToMultipleOf(GWEN_BUFFER *src, int y) {
+  unsigned char paddLength;
+  unsigned int i;
+
+  paddLength=y-(GWEN_Buffer_GetUsedBytes(src) % y);
+  if (paddLength > 0 )
+  {
+      GWEN_Buffer_AppendByte(src, 0x80);
+      for (i=1; i<paddLength; i++)
+          GWEN_Buffer_AppendByte(src, 0x0);
+  }
+  return 0;
+}
+
+int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y) {
+  const uint8_t *p;
+  unsigned int lastpos;
+  unsigned char paddLength;
+  paddLength=0;
+
+  lastpos=GWEN_Buffer_GetUsedBytes(buf);
+  if (lastpos<y) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+    return -1;
+  }
+  lastpos--;
+  p=GWEN_Buffer_GetStart(buf)+lastpos;
+
+  while(*p==0x00) {
+    paddLength++;
+    p--;
+  }
+
+  /* first pad byte must be 0x80 */
+  if (*p==0x80)
+  {
+      paddLength++;
+      p--;
+  }
+  else if ( paddLength > 0)
+  {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid padding, first pad byte has wrong value %xd (%d bytes ?)", *p,paddLength);
+      return -1;
+  }
 
 
 
+  if (paddLength<0 || paddLength>y) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid padding (%d bytes ?)", paddLength);
+    return -1;
+  }
+  GWEN_Buffer_Crop(buf, 0, GWEN_Buffer_GetUsedBytes(buf)-paddLength);
+  GWEN_Buffer_SetPos(buf, lastpos-paddLength);
+  return 0;
 
+}
+
+int GWEN_Padd_UnpaddWithZka(GWEN_BUFFER *buf) {
+    return GWEN_Padd_UnpaddWithZkaFromMultipleOf(buf, 16);
+}

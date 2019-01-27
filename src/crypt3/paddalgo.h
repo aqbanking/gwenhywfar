@@ -54,7 +54,9 @@ typedef enum {
   /** ANSI X9.23 */
   GWEN_Crypt_PaddAlgoId_AnsiX9_23,
   /** PKCS#1 PSS with SHA-256 */
-  GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256
+  GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256,
+  /** ZKA Padding */
+  GWEN_Crypt_PaddAlgoId_ZKA
 } GWEN_CRYPT_PADDALGOID;
 
 

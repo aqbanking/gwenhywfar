@@ -125,6 +125,17 @@ int GWEN_Padd_MGF1(uint8_t *pDestBuffer,
                    uint32_t lSeed,
                    GWEN_MDIGEST *md);
 
+GWENHYWFAR_API
+int GWEN_Padd_PaddWithZka(GWEN_BUFFER *src);
+
+GWENHYWFAR_API
+int GWEN_Padd_PaddWithZkaToMultipleOf(GWEN_BUFFER *src, int y);
+
+GWENHYWFAR_API
+int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y);
+
+GWENHYWFAR_API
+int GWEN_Padd_UnpaddWithZka(GWEN_BUFFER *buf);
 /**
  * @param nbits number of actual bits of the modulus
  */

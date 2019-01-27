@@ -47,6 +47,8 @@ typedef enum {
   GWEN_Crypt_CryptAlgoId_BlowFish,
   /* AES-128 */
   GWEN_Crypt_CryptAlgoId_Aes128,
+  /* AES-246 */
+  GWEN_Crypt_CryptAlgoId_Aes256,
 } GWEN_CRYPT_CRYPTALGOID;
 
 
