@@ -611,125 +611,110 @@ static void hex2char(char byte, char* character)
     }
 }
 
-int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
-{
-    int tlv_len=0;
-    unsigned int tag_len=0;
-    uint32_t data_len;
-    char byte;
-    int isConstructed;
-    int anotherByte;
-    char tag[128];
-    GWEN_DB_NODE *dbTLV;
+int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len) {
+  int tlv_len=0;
+  unsigned int tag_len=0;
+  uint32_t data_len;
+  char byte;
+  int isConstructed;
+  int anotherByte;
+  char tag[128];
+  GWEN_DB_NODE *dbTLV;
 
 
-    /* get first byte */
-    while (tlv_len < len)
-    {
-
-        tag_len=0;
-        memset(tag,'\0',128);
-        byte = GWEN_Buffer_ReadByte(mbuf);
-        isConstructed = byte & BER_TLV_TAG_IS_CONSTRUCTED;
-        tlv_len++;
-        hex2char(byte,&tag[tag_len++]);
-        anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
-        while (anotherByte)
-        {
-            byte = GWEN_Buffer_ReadByte(mbuf);
-            tlv_len++;
-            hex2char(byte,&tag[tag_len++]);
-            anotherByte= byte > 127;
-        }
-        dbTLV=GWEN_DB_Group_new(tag);
-        byte = GWEN_Buffer_ReadByte(mbuf);
-        tlv_len++;
-        if ( byte >= 0x81)
-        {
-            uint8_t numLengthBytes= byte-128;
-            assert(byte!=0xFF);
-            data_len=0;
-            while( numLengthBytes--)
-            {
-                byte = GWEN_Buffer_ReadByte(mbuf);
-                tlv_len++;
-                data_len<<=8;
-                data_len+=(uint32_t)byte;
-            }
-        }
-        else
-        {
-            data_len= (uint8_t) byte;
-        }
-        GWEN_DB_SetIntValue(dbTLV,0,"length",data_len);
-        if (isConstructed)
-        {
-            tlv_len+=GWEN_TLV_Buffer_To_DB(dbTLV,mbuf,data_len);
-        }
-
-
-        else
-        {
-            char *buffer;
-
-            buffer=(char*)GWEN_Memory_malloc((data_len*2)+1);
-            assert(buffer);
-            GWEN_Text_ToHex(GWEN_Buffer_GetPosPointer(mbuf), data_len,
-                    buffer, data_len*2+1);
-            GWEN_DB_SetCharValue(dbTLV,0,"data",buffer);
-            GWEN_DB_SetBinValue(dbTLV,0,"dataBin",GWEN_Buffer_GetPosPointer(mbuf),data_len);
-            GWEN_Memory_dealloc(buffer);
-            GWEN_Buffer_IncrementPos(mbuf,data_len);
-            tlv_len+=data_len;
-
-        }
-        GWEN_DB_AddGroup(dbRecord,dbTLV);
+  /* get first byte */
+  while (tlv_len < len) {
+    tag_len=0;
+    memset(tag,'\0',128);
+    byte = GWEN_Buffer_ReadByte(mbuf);
+    isConstructed = byte & BER_TLV_TAG_IS_CONSTRUCTED;
+    tlv_len++;
+    hex2char(byte,&tag[tag_len++]);
+    anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
+    while (anotherByte) {
+      byte = GWEN_Buffer_ReadByte(mbuf);
+      tlv_len++;
+      hex2char(byte,&tag[tag_len++]);
+      anotherByte= byte > 127;
     }
-    assert(len==tlv_len);
-    return tlv_len;
+    dbTLV=GWEN_DB_Group_new(tag);
+    byte = GWEN_Buffer_ReadByte(mbuf);
+    tlv_len++;
+    if ( byte >= 0x81) {
+      uint8_t numLengthBytes= byte-128;
+      assert(byte!=0xFF);
+      data_len=0;
+      while( numLengthBytes--) {
+        byte = GWEN_Buffer_ReadByte(mbuf);
+        tlv_len++;
+        data_len<<=8;
+        data_len+=(uint32_t)byte;
+      }
+    }
+    else {
+      data_len= (uint8_t) byte;
+    }
+    GWEN_DB_SetIntValue(dbTLV,0,"length",data_len);
+    if (isConstructed) {
+      tlv_len+=GWEN_TLV_Buffer_To_DB(dbTLV,mbuf,data_len);
+    }
+    else {
+      char *buffer;
+
+      buffer=(char*)GWEN_Memory_malloc((data_len*2)+1);
+      assert(buffer);
+      GWEN_Text_ToHex(GWEN_Buffer_GetPosPointer(mbuf), data_len,
+                      buffer, data_len*2+1);
+      GWEN_DB_SetCharValue(dbTLV,0,"data",buffer);
+      GWEN_DB_SetBinValue(dbTLV,0,"dataBin",GWEN_Buffer_GetPosPointer(mbuf),data_len);
+      GWEN_Memory_dealloc(buffer);
+      GWEN_Buffer_IncrementPos(mbuf,data_len);
+      tlv_len+=data_len;
+
+    }
+    GWEN_DB_AddGroup(dbRecord,dbTLV);
+  }
+  assert(len==tlv_len);
+  return tlv_len;
 }
 
-uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len)
-{
-    uint32_t data_len=0;
-    uint32_t tlv_len=0;
-    char byte;
-    int anotherByte;
 
 
+uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len) {
+  uint32_t data_len=0;
+  uint32_t tlv_len=0;
+  char byte;
+  int anotherByte;
 
     /* get first byte */
+  byte = GWEN_Buffer_ReadByte(mbuf);
+  tlv_len++;
+  anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
+  while (anotherByte) {
+    byte = GWEN_Buffer_ReadByte(mbuf);
+    tlv_len++;
+    anotherByte= byte > 127;
+  }
+  byte = GWEN_Buffer_ReadByte(mbuf);
+  tlv_len++;
+  if ( byte & 0x80) {
+    uint8_t numLengthBytes= byte-128;
+    assert(byte!=0xFF);
+    data_len=0;
+    while( numLengthBytes--) {
+      byte = GWEN_Buffer_ReadByte(mbuf);
+      tlv_len++;
+      data_len<<=8;
+      data_len+=(uint32_t)byte;
+    }
+  }
+  else {
+    data_len= (uint8_t) byte;
+  }
+  *tag_len_len=tlv_len;
 
-        byte = GWEN_Buffer_ReadByte(mbuf);
-        tlv_len++;
-        anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
-        while (anotherByte)
-        {
-            byte = GWEN_Buffer_ReadByte(mbuf);
-            tlv_len++;
-            anotherByte= byte > 127;
-        }
-        byte = GWEN_Buffer_ReadByte(mbuf);
-        tlv_len++;
-        if ( byte & 0x80)
-        {
-            uint8_t numLengthBytes= byte-128;
-            assert(byte!=0xFF);
-            data_len=0;
-            while( numLengthBytes--)
-            {
-                byte = GWEN_Buffer_ReadByte(mbuf);
-                tlv_len++;
-                data_len<<=8;
-                data_len+=(uint32_t)byte;
-            }
-        }
-        else
-        {
-            data_len= (uint8_t) byte;
-        }
-        *tag_len_len=tlv_len;
-
-        return data_len;
+  return data_len;
 }
+
+
 
