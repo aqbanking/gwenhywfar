@@ -74,9 +74,9 @@ GWENHYWFAR_API void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,
     int take);
 GWENHYWFAR_API void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl);
 GWENHYWFAR_API void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
-    GWEN_STRINGLISTENTRY *se);
+                                                GWEN_STRINGLISTENTRY *se);
 GWENHYWFAR_API void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
-    GWEN_STRINGLISTENTRY *se);
+                                                GWEN_STRINGLISTENTRY *se);
 GWENHYWFAR_API
 GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(const GWEN_STRINGLIST *sl);
 GWENHYWFAR_API
@@ -116,9 +116,9 @@ void GWEN_StringList_SetIgnoreRefCount(GWEN_STRINGLIST *sl, int i);
  * does not already exist
  */
 GWENHYWFAR_API int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
-    const char *s,
-    int take,
-    int checkDouble);
+                                                const char *s,
+                                                int take,
+                                                int checkDouble);
 
 /**
  * Inserts a string.
