@@ -270,11 +270,6 @@ GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_T
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetProtocolVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
- * Use this function to get the member "cid" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_cid)
-*/
-GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetCid(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
-
-/** Getter.
  * Use this function to get the member "serviceId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_serviceId)
 */
 GWENHYWFAR_API const char *GWEN_Crypt_Token_Context_GetServiceId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
@@ -385,11 +380,6 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTE
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetProtocolVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
 
 /** Setter.
- * Use this function to set the member "cid" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_cid)
-*/
-GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
-
-/** Setter.
  * Use this function to set the member "serviceId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_serviceId)
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetServiceId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
@@ -458,6 +448,9 @@ GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(c
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len);
 GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_Context_GetKeyHashPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *st);
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len);
+GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_Context_GetCidPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetCidLen(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 /* end-headers */
 
 

@@ -33,7 +33,7 @@ struct GWEN_CRYPT_TOKEN_CONTEXT {
   GWEN_BINDATA keyHash;
   uint32_t keyStatus;
   uint32_t protocolVersion;
-  char *cid;
+  GWEN_BINDATA cid;
   char *serviceId;
   char *userId;
   char *customerId;

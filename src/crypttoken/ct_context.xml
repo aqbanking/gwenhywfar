@@ -106,6 +106,86 @@
              }
           </content>
         </inline>
+        
+        
+         <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetCid($(struct_type) *st, const uint8_t *p, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             void $(struct_prefix)_SetCid($(struct_type) *st, const uint8_t *p, uint32_t len) {
+               assert(st);
+               if (st->cid.length &amp;&amp; st->cid.pointer)
+                 free(st->cid.pointer);
+               if (p &amp;&amp; len) {
+                 st->cid.pointer=(uint8_t*) malloc(len); 
+                 if (st->cid.pointer) { 
+                   st->cid.length=len;
+                   memmove(st->cid.pointer, p, len); 
+                 } 
+                 else {
+                   st->cid.pointer=NULL;
+                   st->cid.length=0; 
+                 } 
+               }
+               else {
+                 st->cid.length=0;
+                 st->cid.pointer=NULL;
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const uint8_t* $(struct_prefix)_GetCidPtr(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             const uint8_t* $(struct_prefix)_GetCidPtr(const $(struct_type) *st) {
+               assert(st);
+               return st->cid.pointer;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetCidLen(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetCidLen(const $(struct_type) *st) {
+               assert(st);
+               return st->cid.length;
+             }
+          </content>
+        </inline>
 
  
       </inlines>
@@ -218,13 +298,13 @@
         <access>public</access>
       </member>
 
-      <member name="cid" type="char_ptr" maxlen="256" >
+      <member name="cid" type="gwen_bindata" maxlen="256" >
         <default>NULL</default>
         <preset>NULL</preset>
         <access>public</access>
         <flags>own</flags>
-        <setflags>const dup</setflags>
-        <getflags>const</getflags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
       </member>
 
       <member name="serviceId" type="char_ptr" maxlen="64" >
