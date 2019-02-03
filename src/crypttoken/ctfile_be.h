@@ -46,14 +46,14 @@ extern "C" {
 
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenFile_new(const char *typeName,
-    const char *tokenName);
+                                           const char *tokenName);
 
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_FILE_READ_FN GWEN_Crypt_TokenFile_SetReadFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_FILE_READ_FN f);
+                                                             GWEN_CRYPT_TOKEN_FILE_READ_FN f);
 GWENHYWFAR_API
 GWEN_CRYPT_TOKEN_FILE_WRITE_FN GWEN_Crypt_TokenFile_SetWriteFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_FILE_WRITE_FN f);
+                                                               GWEN_CRYPT_TOKEN_FILE_WRITE_FN f);
 
 GWENHYWFAR_API
 void GWEN_Crypt_TokenFile_AddContext(GWEN_CRYPT_TOKEN *ct, GWEN_CRYPT_TOKEN_CONTEXT *ctx);

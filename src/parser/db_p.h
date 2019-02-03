@@ -63,7 +63,7 @@ static void GWEN_DB_Node_free(GWEN_DB_NODE *n);
 
 
 static GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
-    unsigned int datasize);
+                                          unsigned int datasize);
 
 
 static GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);

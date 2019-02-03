@@ -25,11 +25,11 @@ GWEN_TREE_FUNCTION_DEFS(GWEN_PROGRESS_DATA, GWEN_ProgressData)
 
 
 GWEN_PROGRESS_DATA *GWEN_ProgressData_new(GWEN_GUI *gui,
-    uint32_t id,
-    uint32_t progressFlags,
-    const char *title,
-    const char *text,
-    uint64_t total);
+                                          uint32_t id,
+                                          uint32_t progressFlags,
+                                          const char *title,
+                                          const char *text,
+                                          uint64_t total);
 
 void GWEN_ProgressData_free(GWEN_PROGRESS_DATA *pd);
 

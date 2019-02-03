@@ -32,7 +32,8 @@
 GWEN_LIST_FUNCTIONS(GWEN_TLV, GWEN_TLV)
 
 
-GWEN_TLV *GWEN_TLV_new(void) {
+GWEN_TLV *GWEN_TLV_new(void)
+{
   GWEN_TLV *tlv;
 
   GWEN_NEW_OBJECT(GWEN_TLV, tlv);
@@ -43,7 +44,8 @@ GWEN_TLV *GWEN_TLV_new(void) {
 
 
 
-void GWEN_TLV_free(GWEN_TLV *tlv) {
+void GWEN_TLV_free(GWEN_TLV *tlv)
+{
   if (tlv) {
     free(tlv->tagData);
     GWEN_LIST_FINI(GWEN_TLV, tlv);
@@ -57,7 +59,8 @@ GWEN_TLV *GWEN_TLV_create(unsigned int tagType,
                           unsigned int tagMode,
                           const void *p,
                           unsigned int dlen,
-                          int isBerTlv) {
+                          int isBerTlv)
+{
   GWEN_TLV *tlv;
 
   /* some checks first */
@@ -96,42 +99,48 @@ GWEN_TLV *GWEN_TLV_create(unsigned int tagType,
 
 
 
-int GWEN_TLV_IsBerTlv(const GWEN_TLV *tlv) {
+int GWEN_TLV_IsBerTlv(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return tlv->isBerTlv;
 }
 
 
 
-unsigned int GWEN_TLV_GetTagType(const GWEN_TLV *tlv) {
+unsigned int GWEN_TLV_GetTagType(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return tlv->tagType;
 }
 
 
 
-unsigned int GWEN_TLV_GetTagLength(const GWEN_TLV *tlv) {
+unsigned int GWEN_TLV_GetTagLength(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return tlv->tagLength;
 }
 
 
 
-unsigned int GWEN_TLV_GetTagSize(const GWEN_TLV *tlv) {
+unsigned int GWEN_TLV_GetTagSize(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return tlv->tagSize;
 }
 
 
 
-const void *GWEN_TLV_GetTagData(const GWEN_TLV *tlv) {
+const void *GWEN_TLV_GetTagData(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return tlv->tagData;
 }
 
 
 
-GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
+GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv)
+{
   const char *p;
   unsigned int tagMode;
   unsigned int tagType;
@@ -242,7 +251,7 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
   tlv->tagType=tagType;
   tlv->tagLength=tagLength;
   if (tagLength) {
-    tlv->tagData=(void*)malloc(tagLength);
+    tlv->tagData=(void *)malloc(tagLength);
     memmove(tlv->tagData, tagData, tagLength);
   }
 
@@ -253,21 +262,24 @@ GWEN_TLV *GWEN_TLV_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv) {
 
 
 
-int GWEN_TLV_IsContructed(const GWEN_TLV *tlv) {
+int GWEN_TLV_IsContructed(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return (tlv->tagMode & 0x20);
 }
 
 
 
-unsigned int GWEN_TLV_GetClass(const GWEN_TLV *tlv) {
+unsigned int GWEN_TLV_GetClass(const GWEN_TLV *tlv)
+{
   assert(tlv);
   return (tlv->tagMode & 0xc0);
 }
 
 
 
-int GWEN_TLV_toBuffer(GWEN_TLV *tlv, GWEN_BUFFER *mbuf) {
+int GWEN_TLV_toBuffer(GWEN_TLV *tlv, GWEN_BUFFER *mbuf)
+{
   assert(tlv);
   return GWEN_TLV_DirectlyToBuffer(tlv->tagType,
                                    tlv->tagMode,
@@ -284,7 +296,8 @@ int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
                               const void *tagData,
                               int tagLength,
                               int isBerTlv,
-                              GWEN_BUFFER *mbuf) {
+                              GWEN_BUFFER *mbuf)
+{
   if (tagLength==-1)
     tagLength=strlen(tagData);
 
@@ -340,7 +353,8 @@ int GWEN_TLV_DirectlyToBuffer(unsigned int tagType,
 
 
 
-int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBerTlv) {
+int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBerTlv)
+{
   uint64_t tagMode;
   uint64_t tagType;
   uint64_t tagLength;
@@ -433,13 +447,13 @@ int GWEN_TLV_ReadHeader(GWEN_TLV *tlv, const uint8_t *p, uint32_t size, int isBe
           return GWEN_ERROR_BAD_DATA;
         }
         pos++;
-        j=((uint64_t) ((unsigned char)(p[pos])))<<32;
+        j=((uint64_t)((unsigned char)(p[pos])))<<32;
         pos++;
-        j+=((uint64_t) ((unsigned char)(p[pos])))<<24;
+        j+=((uint64_t)((unsigned char)(p[pos])))<<24;
         pos++;
-        j+=((uint64_t) ((unsigned char)(p[pos])))<<16;
+        j+=((uint64_t)((unsigned char)(p[pos])))<<16;
         pos++;
-        j+=((uint64_t) ((unsigned char)(p[pos])))<<8;
+        j+=((uint64_t)((unsigned char)(p[pos])))<<8;
         pos++;
         j+=(unsigned char)(p[pos]);
       } /* 0x85 */
@@ -481,7 +495,8 @@ int GWEN_TLV_WriteHeader(unsigned int tagType,
                          unsigned int tagMode,
                          uint64_t tagLength,
                          int isBerTlv,
-                         GWEN_BUFFER *mbuf) {
+                         GWEN_BUFFER *mbuf)
+{
   if (isBerTlv) {
     unsigned char j;
 
@@ -548,70 +563,69 @@ int GWEN_TLV_WriteHeader(unsigned int tagType,
   return 0;
 }
 
-static void hex2char(char byte, char* character)
+static void hex2char(char byte, char *character)
 {
-    uint8_t nibbles[2];
-    int i;
-    nibbles[0]=(byte>>4) &0x0f;
-    nibbles[1]=byte & 0x0f;
+  uint8_t nibbles[2];
+  int i;
+  nibbles[0]=(byte>>4) &0x0f;
+  nibbles[1]=byte & 0x0f;
 
-    for ( i = 0 ; i < 2 ; i++ )
-    {
-        switch (nibbles[i])
-        {
-        case 0:
-            character[i]='0';
-            break;
-        case 1:
-            character[i]='1';
-            break;
-        case 2:
-            character[i]='2';
-            break;
-        case 3:
-            character[i]='3';
-            break;
-        case 4:
-            character[i]='4';
-            break;
-        case 5:
-            character[i]='5';
-            break;
-        case 6:
-            character[i]='6';
-            break;
-        case 7:
-            character[i]='7';
-            break;
-        case 8:
-            character[i]='8';
-            break;
-        case 9:
-            character[i]='9';
-            break;
-        case 10:
-            character[i]='A';
-            break;
-        case 11:
-            character[i]='B';
-            break;
-        case 12:
-            character[i]='C';
-            break;
-        case 13:
-            character[i]='D';
-            break;
-        case 14:
-            character[i]='E';
-            break;
-        case 15:
-            character[i]='F';
-            break;
-        }
+  for (i = 0 ; i < 2 ; i++) {
+    switch (nibbles[i]) {
+    case 0:
+      character[i]='0';
+      break;
+    case 1:
+      character[i]='1';
+      break;
+    case 2:
+      character[i]='2';
+      break;
+    case 3:
+      character[i]='3';
+      break;
+    case 4:
+      character[i]='4';
+      break;
+    case 5:
+      character[i]='5';
+      break;
+    case 6:
+      character[i]='6';
+      break;
+    case 7:
+      character[i]='7';
+      break;
+    case 8:
+      character[i]='8';
+      break;
+    case 9:
+      character[i]='9';
+      break;
+    case 10:
+      character[i]='A';
+      break;
+    case 11:
+      character[i]='B';
+      break;
+    case 12:
+      character[i]='C';
+      break;
+    case 13:
+      character[i]='D';
+      break;
+    case 14:
+      character[i]='E';
+      break;
+    case 15:
+      character[i]='F';
+      break;
     }
+  }
 }
 
-int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len) {
+int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
+{
   int tlv_len=0;
   unsigned int tag_len=0;
   uint32_t data_len;
@@ -625,26 +639,26 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len) {
   /* get first byte */
   while (tlv_len < len) {
     tag_len=0;
-    memset(tag,'\0',128);
+    memset(tag, '\0', 128);
     byte = GWEN_Buffer_ReadByte(mbuf);
     isConstructed = byte & BER_TLV_TAG_IS_CONSTRUCTED;
     tlv_len++;
-    hex2char(byte,&tag[tag_len++]);
+    hex2char(byte, &tag[tag_len++]);
     anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
     while (anotherByte) {
       byte = GWEN_Buffer_ReadByte(mbuf);
       tlv_len++;
-      hex2char(byte,&tag[tag_len++]);
+      hex2char(byte, &tag[tag_len++]);
       anotherByte= byte > 127;
     }
     dbTLV=GWEN_DB_Group_new(tag);
     byte = GWEN_Buffer_ReadByte(mbuf);
     tlv_len++;
-    if ( byte >= 0x81) {
+    if (byte >= 0x81) {
       uint8_t numLengthBytes= byte-128;
       assert(byte!=0xFF);
       data_len=0;
-      while( numLengthBytes--) {
+      while (numLengthBytes--) {
         byte = GWEN_Buffer_ReadByte(mbuf);
         tlv_len++;
         data_len<<=8;
@@ -654,25 +668,25 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len) {
     else {
       data_len= (uint8_t) byte;
     }
-    GWEN_DB_SetIntValue(dbTLV,0,"length",data_len);
+    GWEN_DB_SetIntValue(dbTLV, 0, "length", data_len);
     if (isConstructed) {
-      tlv_len+=GWEN_TLV_Buffer_To_DB(dbTLV,mbuf,data_len);
+      tlv_len+=GWEN_TLV_Buffer_To_DB(dbTLV, mbuf, data_len);
     }
     else {
       char *buffer;
 
-      buffer=(char*)GWEN_Memory_malloc((data_len*2)+1);
+      buffer=(char *)GWEN_Memory_malloc((data_len*2)+1);
       assert(buffer);
       GWEN_Text_ToHex(GWEN_Buffer_GetPosPointer(mbuf), data_len,
                       buffer, data_len*2+1);
-      GWEN_DB_SetCharValue(dbTLV,0,"data",buffer);
-      GWEN_DB_SetBinValue(dbTLV,0,"dataBin",GWEN_Buffer_GetPosPointer(mbuf),data_len);
+      GWEN_DB_SetCharValue(dbTLV, 0, "data", buffer);
+      GWEN_DB_SetBinValue(dbTLV, 0, "dataBin", GWEN_Buffer_GetPosPointer(mbuf), data_len);
       GWEN_Memory_dealloc(buffer);
-      GWEN_Buffer_IncrementPos(mbuf,data_len);
+      GWEN_Buffer_IncrementPos(mbuf, data_len);
       tlv_len+=data_len;
 
     }
-    GWEN_DB_AddGroup(dbRecord,dbTLV);
+    GWEN_DB_AddGroup(dbRecord, dbTLV);
   }
   assert(len==tlv_len);
   return tlv_len;
@@ -680,13 +694,14 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len) {
 
 
 
-uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len) {
+uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len)
+{
   uint32_t data_len=0;
   uint32_t tlv_len=0;
   char byte;
   int anotherByte;
 
-    /* get first byte */
+  /* get first byte */
   byte = GWEN_Buffer_ReadByte(mbuf);
   tlv_len++;
   anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
@@ -697,11 +712,11 @@ uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len) {
   }
   byte = GWEN_Buffer_ReadByte(mbuf);
   tlv_len++;
-  if ( byte & 0x80) {
+  if (byte & 0x80) {
     uint8_t numLengthBytes= byte-128;
     assert(byte!=0xFF);
     data_len=0;
-    while( numLengthBytes--) {
+    while (numLengthBytes--) {
       byte = GWEN_Buffer_ReadByte(mbuf);
       tlv_len++;
       data_len<<=8;

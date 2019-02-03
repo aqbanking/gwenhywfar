@@ -36,7 +36,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_MDIGEST, GWEN_MDigest)
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_new(GWEN_CRYPT_HASHALGOID a) {
+GWEN_MDIGEST *GWEN_MDigest_new(GWEN_CRYPT_HASHALGOID a)
+{
   GWEN_MDIGEST *md;
 
   GWEN_NEW_OBJECT(GWEN_MDIGEST, md)
@@ -50,7 +51,8 @@ GWEN_MDIGEST *GWEN_MDigest_new(GWEN_CRYPT_HASHALGOID a) {
 
 
 
-void GWEN_MDigest_free(GWEN_MDIGEST *md) {
+void GWEN_MDigest_free(GWEN_MDIGEST *md)
+{
   if (md) {
     assert(md->refCount);
     if (md->refCount==1) {
@@ -67,7 +69,8 @@ void GWEN_MDigest_free(GWEN_MDIGEST *md) {
 
 
 
-GWEN_CRYPT_HASHALGOID GWEN_MDigest_GetHashAlgoId(const GWEN_MDIGEST *md) {
+GWEN_CRYPT_HASHALGOID GWEN_MDigest_GetHashAlgoId(const GWEN_MDIGEST *md)
+{
   assert(md);
   assert(md->refCount);
   return md->hashAlgoId;
@@ -75,7 +78,8 @@ GWEN_CRYPT_HASHALGOID GWEN_MDigest_GetHashAlgoId(const GWEN_MDIGEST *md) {
 
 
 
-uint8_t *GWEN_MDigest_GetDigestPtr(GWEN_MDIGEST *md) {
+uint8_t *GWEN_MDigest_GetDigestPtr(GWEN_MDIGEST *md)
+{
   assert(md);
   assert(md->refCount);
   return md->pDigest;
@@ -83,7 +87,8 @@ uint8_t *GWEN_MDigest_GetDigestPtr(GWEN_MDIGEST *md) {
 
 
 
-unsigned int GWEN_MDigest_GetDigestSize(GWEN_MDIGEST *md) {
+unsigned int GWEN_MDigest_GetDigestSize(GWEN_MDIGEST *md)
+{
   assert(md);
   assert(md->refCount);
   return md->lDigest;
@@ -91,7 +96,8 @@ unsigned int GWEN_MDigest_GetDigestSize(GWEN_MDIGEST *md) {
 
 
 
-void GWEN_MDigest_SetDigestBuffer(GWEN_MDIGEST *md, uint8_t *buf, unsigned int l) {
+void GWEN_MDigest_SetDigestBuffer(GWEN_MDIGEST *md, uint8_t *buf, unsigned int l)
+{
   assert(md);
   assert(md->refCount);
 
@@ -107,7 +113,8 @@ void GWEN_MDigest_SetDigestBuffer(GWEN_MDIGEST *md, uint8_t *buf, unsigned int l
 
 
 
-void GWEN_MDigest_SetDigestLen(GWEN_MDIGEST *md, unsigned int l) {
+void GWEN_MDigest_SetDigestLen(GWEN_MDIGEST *md, unsigned int l)
+{
   assert(md);
   assert(md->refCount);
 
@@ -119,7 +126,8 @@ void GWEN_MDigest_SetDigestLen(GWEN_MDIGEST *md, unsigned int l) {
 
 
 
-int GWEN_MDigest_Begin(GWEN_MDIGEST *md) {
+int GWEN_MDigest_Begin(GWEN_MDIGEST *md)
+{
   assert(md);
   assert(md->refCount);
   if (md->beginFn)
@@ -130,7 +138,8 @@ int GWEN_MDigest_Begin(GWEN_MDIGEST *md) {
 
 
 
-int GWEN_MDigest_End(GWEN_MDIGEST *md) {
+int GWEN_MDigest_End(GWEN_MDIGEST *md)
+{
   assert(md);
   assert(md->refCount);
   if (md->endFn)
@@ -141,7 +150,8 @@ int GWEN_MDigest_End(GWEN_MDIGEST *md) {
 
 
 
-int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l) {
+int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l)
+{
   assert(md);
   assert(md->refCount);
   if (md->updateFn)
@@ -152,7 +162,8 @@ int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l) {
 
 
 
-GWEN_MDIGEST_BEGIN_FN GWEN_MDigest_SetBeginFn(GWEN_MDIGEST *md, GWEN_MDIGEST_BEGIN_FN f) {
+GWEN_MDIGEST_BEGIN_FN GWEN_MDigest_SetBeginFn(GWEN_MDIGEST *md, GWEN_MDIGEST_BEGIN_FN f)
+{
   GWEN_MDIGEST_BEGIN_FN of;
 
   assert(md);
@@ -165,7 +176,8 @@ GWEN_MDIGEST_BEGIN_FN GWEN_MDigest_SetBeginFn(GWEN_MDIGEST *md, GWEN_MDIGEST_BEG
 
 
 
-GWEN_MDIGEST_END_FN GWEN_MDigest_SetEndFn(GWEN_MDIGEST *md, GWEN_MDIGEST_END_FN f) {
+GWEN_MDIGEST_END_FN GWEN_MDigest_SetEndFn(GWEN_MDIGEST *md, GWEN_MDIGEST_END_FN f)
+{
   GWEN_MDIGEST_END_FN of;
 
   assert(md);
@@ -178,7 +190,8 @@ GWEN_MDIGEST_END_FN GWEN_MDigest_SetEndFn(GWEN_MDIGEST *md, GWEN_MDIGEST_END_FN 
 
 
 
-GWEN_MDIGEST_UPDATE_FN GWEN_MDigest_SetUpdateFn(GWEN_MDIGEST *md, GWEN_MDIGEST_UPDATE_FN f) {
+GWEN_MDIGEST_UPDATE_FN GWEN_MDigest_SetUpdateFn(GWEN_MDIGEST *md, GWEN_MDIGEST_UPDATE_FN f)
+{
   GWEN_MDIGEST_UPDATE_FN of;
 
   assert(md);
@@ -197,7 +210,8 @@ int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
                         uint32_t lSalt,
                         uint8_t *pKey,
                         uint32_t lKey,
-                        uint32_t iterations) {
+                        uint32_t iterations)
+{
   int rv;
   uint8_t hash[128];
   uint32_t hsize;
@@ -217,7 +231,7 @@ int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
   }
 
   /* hash password */
-  rv=GWEN_MDigest_Update(md, (const uint8_t*) password, strlen(password));
+  rv=GWEN_MDigest_Update(md, (const uint8_t *) password, strlen(password));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_End(md);
@@ -278,7 +292,8 @@ int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
 
 static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
                                   const char *fname,
-                                  GWEN_BUFFER *hbuf) {
+                                  GWEN_BUFFER *hbuf)
+{
   GWEN_SYNCIO *sio;
   int rv;
   uint8_t buffer[1024];
@@ -300,7 +315,7 @@ static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
     return rv;
   }
 
-  while(1) {
+  while (1) {
     rv=GWEN_SyncIo_Read(sio, buffer, sizeof(buffer));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -311,7 +326,7 @@ static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
     else if (rv==0)
       break;
     else {
-      rv=GWEN_MDigest_Update(md, (const uint8_t*) buffer, rv);
+      rv=GWEN_MDigest_Update(md, (const uint8_t *) buffer, rv);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_SyncIo_Disconnect(sio);
@@ -332,7 +347,7 @@ static int GWEN_MDigest__HashFile(GWEN_MDIGEST *md,
   GWEN_SyncIo_Disconnect(sio);
   GWEN_SyncIo_free(sio);
 
-  rv=GWEN_Text_ToHexBuffer((const char*) GWEN_MDigest_GetDigestPtr(md),
+  rv=GWEN_Text_ToHexBuffer((const char *) GWEN_MDigest_GetDigestPtr(md),
                            GWEN_MDigest_GetDigestSize(md),
                            hbuf, 0, 0, 0);
   if (rv<0) {
@@ -349,7 +364,8 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
                                       const char *baseFolder,
                                       const char *relFolder,
                                       const char *ignoreFile,
-                                      GWEN_STRINGLIST *sl) {
+                                      GWEN_STRINGLIST *sl)
+{
   GWEN_STRINGLIST *files;
   GWEN_STRINGLISTENTRY *se;
   GWEN_BUFFER *pbuf;
@@ -377,7 +393,7 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
   }
 
   se=GWEN_StringList_FirstEntry(files);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);
@@ -407,7 +423,7 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
           xbuf=GWEN_Buffer_new(0, 256, 0, 1);
           GWEN_Buffer_AppendString(xbuf, GWEN_Buffer_GetStart(pbuf)+rpos);
           p=GWEN_Buffer_GetStart(xbuf);
-          while(*p) {
+          while (*p) {
             if (*p=='\\')
               *p='/';
             p++;
@@ -461,7 +477,8 @@ static int GWEN_MDigest__HashFileTree(GWEN_MDIGEST *md,
 int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
                               const char *folder,
                               const char *ignoreFile,
-                              GWEN_STRINGLIST *sl) {
+                              GWEN_STRINGLIST *sl)
+{
   int rv;
 
   rv=GWEN_MDigest__HashFileTree(md, folder, NULL, ignoreFile, sl);
@@ -479,7 +496,8 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
                                const char *folder,
                                const char *checksumFile,
                                int strictCheck,
-                               uint32_t pid) {
+                               uint32_t pid)
+{
   GWEN_STRINGLIST *sl;
   GWEN_STRINGLIST *savedList;
   GWEN_BUFFER *tbuf;
@@ -507,8 +525,8 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
   GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Buffer_AppendString(tbuf, checksumFile);
   rv=GWEN_SyncIo_Helper_ReadFileToStringList(GWEN_Buffer_GetStart(tbuf),
-      -1,
-      savedList);
+                                             -1,
+                                             savedList);
   if (rv<0) {
     GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
                           I18N("Error loading checksum file (%d)"), rv);
@@ -521,7 +539,7 @@ int GWEN_MDigest_CheckFileTree(GWEN_MDIGEST *md,
 
   /* check checksums */
   se=GWEN_StringList_FirstEntry(savedList);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);

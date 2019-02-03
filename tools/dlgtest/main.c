@@ -36,7 +36,8 @@
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_XMLNODE *n;
   GWEN_XMLNODE *nn;
   GWEN_DB_NODE *dbData;
@@ -51,7 +52,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Usage: %s FILENAME DIALOGNAME.\n", argv[0]);
     return 1;
   }
-  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag,"root");
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   if (GWEN_XML_ReadFile(n, argv[1], GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
     return 2;
@@ -82,11 +83,19 @@ int main(int argc, char **argv) {
   }
 
   fprintf(stdout, "Result of dialog was: ");
-  switch(res) {
-  case 1: fprintf(stdout, "Accepted.\n"); break;
-  case 2: fprintf(stdout, "Aborted.\n"); break;
-  case -1: fprintf(stdout, "Error.\n"); break;
-  default: fprintf(stdout, "Unknown.\n"); break;
+  switch (res) {
+  case 1:
+    fprintf(stdout, "Accepted.\n");
+    break;
+  case 2:
+    fprintf(stdout, "Aborted.\n");
+    break;
+  case -1:
+    fprintf(stdout, "Error.\n");
+    break;
+  default:
+    fprintf(stdout, "Unknown.\n");
+    break;
   }
 
   return 0;

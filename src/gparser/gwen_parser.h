@@ -35,13 +35,15 @@
 /**
  * Checks all elements of the parser element tree against the definition tree.
  */
-GWENHYWFAR_API int GWEN_Parser_CheckTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, const GWEN_PARSER_ELEMENT_TREE *tData);
+GWENHYWFAR_API int GWEN_Parser_CheckTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions,
+                                         const GWEN_PARSER_ELEMENT_TREE *tData);
 
 /**
  * Updates all elements of the parser element tree with info from the definition tree. That is, all elements from the
  * data tree get their DbName from their matching definition elements.
  */
-GWENHYWFAR_API int GWEN_Parser_UpdateTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, GWEN_PARSER_ELEMENT_TREE *tData);
+GWENHYWFAR_API int GWEN_Parser_UpdateTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions,
+                                          GWEN_PARSER_ELEMENT_TREE *tData);
 
 
 /**

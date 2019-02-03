@@ -20,28 +20,34 @@ int g_testSuccess = 0;
 // Convenience function to check the interesting fields in one single
 // GWEN_URL, which is also free'd here in this function already.
 int verify_url(GWEN_URL *url,
-	       const char* path, int port,
-	       const char* protocol, const char* server)
+               const char *path, int port,
+               const char *protocol, const char *server)
 {
   int prev_g_testSuccess = g_testSuccess;
   g_testSuccess = 0;
 
-  if (path)
-    { test_strcmp(GWEN_Url_GetPath(url), path); }
-  else
-    { test_assert(GWEN_Url_GetPath(url) == NULL); }
+  if (path) {
+    test_strcmp(GWEN_Url_GetPath(url), path);
+  }
+  else {
+    test_assert(GWEN_Url_GetPath(url) == NULL);
+  }
 
   test_assert(GWEN_Url_GetPort(url) == port);
 
-  if (protocol)
-    { test_strcmp(GWEN_Url_GetProtocol(url), protocol); }
-  else
-    { test_assert(GWEN_Url_GetProtocol(url) == NULL); }
+  if (protocol) {
+    test_strcmp(GWEN_Url_GetProtocol(url), protocol);
+  }
+  else {
+    test_assert(GWEN_Url_GetProtocol(url) == NULL);
+  }
 
-  if (server)
-    { test_strcmp(GWEN_Url_GetServer(url), server); }
-  else
-    { test_assert(GWEN_Url_GetServer(url) == NULL); }
+  if (server) {
+    test_strcmp(GWEN_Url_GetServer(url), server);
+  }
+  else {
+    test_assert(GWEN_Url_GetServer(url) == NULL);
+  }
 
   GWEN_Url_free(url);
 
@@ -52,7 +58,7 @@ int verify_url(GWEN_URL *url,
   }
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   GWEN_URL *url = GWEN_Url_fromString("http://www.aqbanking.de/foo/bar");
   test_assert(GWEN_Url_GetPassword(url) == NULL);
@@ -89,49 +95,49 @@ int main(int argc, char** argv)
   GWEN_Url_free(url);
 
   test_assert((verify_url(GWEN_Url_fromString("file:///home/aquamaniac"),
-			  /*GetPath*/ "/home/aquamaniac",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ "file", // now the protocol it is here
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "/home/aquamaniac",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ "file", // now the protocol it is here
+                          /*GetServer*/   NULL)));
 
   test_assert((verify_url(GWEN_Url_fromString("/home/aquamaniac"),
-			  /*GetPath*/ "/home/aquamaniac",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ NULL,
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "/home/aquamaniac",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ NULL,
+                          /*GetServer*/   NULL)));
 
   test_assert((verify_url(GWEN_Url_fromString("dir:///home/aquamaniac/.aqbanking/settings"),
-			  /*GetPath*/ "/home/aquamaniac/.aqbanking/settings",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ "dir",
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "/home/aquamaniac/.aqbanking/settings",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ "dir",
+                          /*GetServer*/   NULL)));
 
   // Also some windows paths
   test_assert((verify_url(GWEN_Url_fromString("c:/home/aquamaniac"),
-			  /*GetPath*/ "c:/home/aquamaniac",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ NULL,
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "c:/home/aquamaniac",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ NULL,
+                          /*GetServer*/   NULL)));
 
   test_assert((verify_url(GWEN_Url_fromString("c:\\home\\aquamaniac"),
-			  /*GetPath*/ "c:\\home\\aquamaniac",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ NULL,
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "c:\\home\\aquamaniac",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ NULL,
+                          /*GetServer*/   NULL)));
 
   // This path caused the crash in the windows gnucash binary; is
   // fixed now.
   test_assert((verify_url(GWEN_Url_fromString("dir://c:\\home\\aquamaniac"),
-			  /*GetPath*/ "c:\\home\\aquamaniac",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ "dir",
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "c:\\home\\aquamaniac",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ "dir",
+                          /*GetServer*/   NULL)));
 
   test_assert((verify_url(GWEN_Url_fromString("file://c:\\home\\aquamaniac"),
-			  /*GetPath*/ "c:\\home\\aquamaniac",
-			  /*GetPort*/ 0,
-			  /*GetProtocol*/ "file",
-			  /*GetServer*/   NULL)));
+                          /*GetPath*/ "c:\\home\\aquamaniac",
+                          /*GetPort*/ 0,
+                          /*GetProtocol*/ "file",
+                          /*GetServer*/   NULL)));
 
   return g_testSuccess;
 }

@@ -22,7 +22,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_TOKEN_CONTEXT, GWEN_Crypt_Token_Context)
 GWEN_INHERIT_FUNCTIONS(GWEN_CRYPT_TOKEN_CONTEXT)
 
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void) {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void)
+{
   GWEN_CRYPT_TOKEN_CONTEXT *p_struct;
 
   GWEN_NEW_OBJECT(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
@@ -47,10 +48,12 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void) {
   p_struct->keyHashNum=0;
   p_struct->keyHashVer=0;
   p_struct->keyHashAlgo=0;
-  p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0;
+  p_struct->keyHash.pointer=NULL;
+  p_struct->keyHash.length=0;
   p_struct->keyStatus=0;
   p_struct->protocolVersion=0;
-  p_struct->cid.pointer=NULL; p_struct->cid.length=0;
+  p_struct->cid.pointer=NULL;
+  p_struct->cid.length=0;
   p_struct->serviceId=NULL;
   p_struct->userId=NULL;
   p_struct->customerId=NULL;
@@ -65,38 +68,57 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_new(void) {
   return p_struct;
 }
 
-void GWEN_Crypt_Token_Context_free(GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+void GWEN_Crypt_Token_Context_free(GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   if (p_struct) {
-  assert(p_struct->_refCount);
-  if (p_struct->_refCount==1) {
-    GWEN_INHERIT_FINI(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
-    GWEN_LIST_FINI(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
-  /* members */
-    if (p_struct->keyHash.length && p_struct->keyHash.pointer) { free(p_struct->keyHash.pointer); } p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0;
-    if (p_struct->cid.length && p_struct->cid.pointer) { free(p_struct->cid.pointer); } p_struct->cid.pointer=NULL; p_struct->cid.length=0;
-    free(p_struct->serviceId); p_struct->serviceId=NULL;
-    free(p_struct->userId); p_struct->userId=NULL;
-    free(p_struct->customerId); p_struct->customerId=NULL;
-    free(p_struct->userName); p_struct->userName=NULL;
-    free(p_struct->peerId); p_struct->peerId=NULL;
-    free(p_struct->peerName); p_struct->peerName=NULL;
-    free(p_struct->address); p_struct->address=NULL;
-    free(p_struct->systemId); p_struct->systemId=NULL;
-    p_struct->_refCount=0;
-    GWEN_FREE_OBJECT(p_struct);
-  }
-  else
-    p_struct->_refCount--;
+    assert(p_struct->_refCount);
+    if (p_struct->_refCount==1) {
+      GWEN_INHERIT_FINI(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
+      GWEN_LIST_FINI(GWEN_CRYPT_TOKEN_CONTEXT, p_struct)
+      /* members */
+      if (p_struct->keyHash.length && p_struct->keyHash.pointer) {
+        free(p_struct->keyHash.pointer);
+      }
+      p_struct->keyHash.pointer=NULL;
+      p_struct->keyHash.length=0;
+      if (p_struct->cid.length && p_struct->cid.pointer) {
+        free(p_struct->cid.pointer);
+      }
+      p_struct->cid.pointer=NULL;
+      p_struct->cid.length=0;
+      free(p_struct->serviceId);
+      p_struct->serviceId=NULL;
+      free(p_struct->userId);
+      p_struct->userId=NULL;
+      free(p_struct->customerId);
+      p_struct->customerId=NULL;
+      free(p_struct->userName);
+      p_struct->userName=NULL;
+      free(p_struct->peerId);
+      p_struct->peerId=NULL;
+      free(p_struct->peerName);
+      p_struct->peerName=NULL;
+      free(p_struct->address);
+      p_struct->address=NULL;
+      free(p_struct->systemId);
+      p_struct->systemId=NULL;
+      p_struct->_refCount=0;
+      GWEN_FREE_OBJECT(p_struct);
+    }
+    else
+      p_struct->_refCount--;
   }
 }
 
-void GWEN_Crypt_Token_Context_Attach(GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+void GWEN_Crypt_Token_Context_Attach(GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   assert(p_struct->_refCount);
   p_struct->_refCount++;
 }
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CONTEXT *p_src) {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CONTEXT *p_src)
+{
   GWEN_CRYPT_TOKEN_CONTEXT *p_struct;
 
   assert(p_src);
@@ -153,7 +175,21 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
   p_struct->keyHashAlgo=p_src->keyHashAlgo;
 
   /* member "keyHash" */
-  if (p_src->keyHash.length && p_src->keyHash.pointer) { p_struct->keyHash.pointer=(uint8_t*) malloc(p_src->keyHash.length); if (p_struct->keyHash.pointer) { p_struct->keyHash.length=p_src->keyHash.length; memmove(p_struct->keyHash.pointer, p_src->keyHash.pointer, p_src->keyHash.length); } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; } } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; }
+  if (p_src->keyHash.length && p_src->keyHash.pointer) {
+    p_struct->keyHash.pointer=(uint8_t *) malloc(p_src->keyHash.length);
+    if (p_struct->keyHash.pointer) {
+      p_struct->keyHash.length=p_src->keyHash.length;
+      memmove(p_struct->keyHash.pointer, p_src->keyHash.pointer, p_src->keyHash.length);
+    }
+    else {
+      p_struct->keyHash.pointer=NULL;
+      p_struct->keyHash.length=0;
+    }
+  }
+  else {
+    p_struct->keyHash.pointer=NULL;
+    p_struct->keyHash.length=0;
+  }
 
   /* member "keyStatus" */
   p_struct->keyStatus=p_src->keyStatus;
@@ -162,11 +198,26 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
   p_struct->protocolVersion=p_src->protocolVersion;
 
   /* member "cid" */
-  if (p_src->cid.length && p_src->cid.pointer) { p_struct->cid.pointer=(uint8_t*) malloc(p_src->cid.length); if (p_struct->cid.pointer) { p_struct->cid.length=p_src->cid.length; memmove(p_struct->cid.pointer, p_src->cid.pointer, p_src->cid.length); } else { p_struct->cid.pointer=NULL; p_struct->cid.length=0; } } else { p_struct->cid.pointer=NULL; p_struct->cid.length=0; }
+  if (p_src->cid.length && p_src->cid.pointer) {
+    p_struct->cid.pointer=(uint8_t *) malloc(p_src->cid.length);
+    if (p_struct->cid.pointer) {
+      p_struct->cid.length=p_src->cid.length;
+      memmove(p_struct->cid.pointer, p_src->cid.pointer, p_src->cid.length);
+    }
+    else {
+      p_struct->cid.pointer=NULL;
+      p_struct->cid.length=0;
+    }
+  }
+  else {
+    p_struct->cid.pointer=NULL;
+    p_struct->cid.length=0;
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
-    free(p_struct->serviceId); p_struct->serviceId=NULL;
+    free(p_struct->serviceId);
+    p_struct->serviceId=NULL;
     p_struct->serviceId=NULL;
   }
   if (p_src->serviceId) {
@@ -175,7 +226,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "userId" */
   if (p_struct->userId) {
-    free(p_struct->userId); p_struct->userId=NULL;
+    free(p_struct->userId);
+    p_struct->userId=NULL;
     p_struct->userId=NULL;
   }
   if (p_src->userId) {
@@ -184,7 +236,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "customerId" */
   if (p_struct->customerId) {
-    free(p_struct->customerId); p_struct->customerId=NULL;
+    free(p_struct->customerId);
+    p_struct->customerId=NULL;
     p_struct->customerId=NULL;
   }
   if (p_src->customerId) {
@@ -193,7 +246,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "userName" */
   if (p_struct->userName) {
-    free(p_struct->userName); p_struct->userName=NULL;
+    free(p_struct->userName);
+    p_struct->userName=NULL;
     p_struct->userName=NULL;
   }
   if (p_src->userName) {
@@ -202,7 +256,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "peerId" */
   if (p_struct->peerId) {
-    free(p_struct->peerId); p_struct->peerId=NULL;
+    free(p_struct->peerId);
+    p_struct->peerId=NULL;
     p_struct->peerId=NULL;
   }
   if (p_src->peerId) {
@@ -211,7 +266,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "peerName" */
   if (p_struct->peerName) {
-    free(p_struct->peerName); p_struct->peerName=NULL;
+    free(p_struct->peerName);
+    p_struct->peerName=NULL;
     p_struct->peerName=NULL;
   }
   if (p_src->peerName) {
@@ -220,7 +276,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "address" */
   if (p_struct->address) {
-    free(p_struct->address); p_struct->address=NULL;
+    free(p_struct->address);
+    p_struct->address=NULL;
     p_struct->address=NULL;
   }
   if (p_src->address) {
@@ -232,7 +289,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
 
   /* member "systemId" */
   if (p_struct->systemId) {
-    free(p_struct->systemId); p_struct->systemId=NULL;
+    free(p_struct->systemId);
+    p_struct->systemId=NULL;
     p_struct->systemId=NULL;
   }
   if (p_src->systemId) {
@@ -242,8 +300,10 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CO
   return p_struct;
 }
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const GWEN_CRYPT_TOKEN_CONTEXT *p_src) {
-    assert(p_struct);
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
+                                                        const GWEN_CRYPT_TOKEN_CONTEXT *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "id" */
   p_struct->id=p_src->id;
@@ -297,7 +357,21 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
   p_struct->keyHashAlgo=p_src->keyHashAlgo;
 
   /* member "keyHash" */
-  if (p_src->keyHash.length && p_src->keyHash.pointer) { p_struct->keyHash.pointer=(uint8_t*) malloc(p_src->keyHash.length); if (p_struct->keyHash.pointer) { p_struct->keyHash.length=p_src->keyHash.length; memmove(p_struct->keyHash.pointer, p_src->keyHash.pointer, p_src->keyHash.length); } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; } } else { p_struct->keyHash.pointer=NULL; p_struct->keyHash.length=0; }
+  if (p_src->keyHash.length && p_src->keyHash.pointer) {
+    p_struct->keyHash.pointer=(uint8_t *) malloc(p_src->keyHash.length);
+    if (p_struct->keyHash.pointer) {
+      p_struct->keyHash.length=p_src->keyHash.length;
+      memmove(p_struct->keyHash.pointer, p_src->keyHash.pointer, p_src->keyHash.length);
+    }
+    else {
+      p_struct->keyHash.pointer=NULL;
+      p_struct->keyHash.length=0;
+    }
+  }
+  else {
+    p_struct->keyHash.pointer=NULL;
+    p_struct->keyHash.length=0;
+  }
 
   /* member "keyStatus" */
   p_struct->keyStatus=p_src->keyStatus;
@@ -306,11 +380,26 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
   p_struct->protocolVersion=p_src->protocolVersion;
 
   /* member "cid" */
-  if (p_src->cid.length && p_src->cid.pointer) { p_struct->cid.pointer=(uint8_t*) malloc(p_src->cid.length); if (p_struct->cid.pointer) { p_struct->cid.length=p_src->cid.length; memmove(p_struct->cid.pointer, p_src->cid.pointer, p_src->cid.length); } else { p_struct->cid.pointer=NULL; p_struct->cid.length=0; } } else { p_struct->cid.pointer=NULL; p_struct->cid.length=0; }
+  if (p_src->cid.length && p_src->cid.pointer) {
+    p_struct->cid.pointer=(uint8_t *) malloc(p_src->cid.length);
+    if (p_struct->cid.pointer) {
+      p_struct->cid.length=p_src->cid.length;
+      memmove(p_struct->cid.pointer, p_src->cid.pointer, p_src->cid.length);
+    }
+    else {
+      p_struct->cid.pointer=NULL;
+      p_struct->cid.length=0;
+    }
+  }
+  else {
+    p_struct->cid.pointer=NULL;
+    p_struct->cid.length=0;
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
-    free(p_struct->serviceId); p_struct->serviceId=NULL;
+    free(p_struct->serviceId);
+    p_struct->serviceId=NULL;
     p_struct->serviceId=NULL;
   }
   if (p_src->serviceId) {
@@ -319,7 +408,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "userId" */
   if (p_struct->userId) {
-    free(p_struct->userId); p_struct->userId=NULL;
+    free(p_struct->userId);
+    p_struct->userId=NULL;
     p_struct->userId=NULL;
   }
   if (p_src->userId) {
@@ -328,7 +418,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "customerId" */
   if (p_struct->customerId) {
-    free(p_struct->customerId); p_struct->customerId=NULL;
+    free(p_struct->customerId);
+    p_struct->customerId=NULL;
     p_struct->customerId=NULL;
   }
   if (p_src->customerId) {
@@ -337,7 +428,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "userName" */
   if (p_struct->userName) {
-    free(p_struct->userName); p_struct->userName=NULL;
+    free(p_struct->userName);
+    p_struct->userName=NULL;
     p_struct->userName=NULL;
   }
   if (p_src->userName) {
@@ -346,7 +438,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "peerId" */
   if (p_struct->peerId) {
-    free(p_struct->peerId); p_struct->peerId=NULL;
+    free(p_struct->peerId);
+    p_struct->peerId=NULL;
     p_struct->peerId=NULL;
   }
   if (p_src->peerId) {
@@ -355,7 +448,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "peerName" */
   if (p_struct->peerName) {
-    free(p_struct->peerName); p_struct->peerName=NULL;
+    free(p_struct->peerName);
+    p_struct->peerName=NULL;
     p_struct->peerName=NULL;
   }
   if (p_src->peerName) {
@@ -364,7 +458,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "address" */
   if (p_struct->address) {
-    free(p_struct->address); p_struct->address=NULL;
+    free(p_struct->address);
+    p_struct->address=NULL;
     p_struct->address=NULL;
   }
   if (p_src->address) {
@@ -376,7 +471,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
 
   /* member "systemId" */
   if (p_struct->systemId) {
-    free(p_struct->systemId); p_struct->systemId=NULL;
+    free(p_struct->systemId);
+    p_struct->systemId=NULL;
     p_struct->systemId=NULL;
   }
   if (p_src->systemId) {
@@ -386,245 +482,294 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT
   return p_struct;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->id;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->signKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetSignKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetSignKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->signKeyNum;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetSignKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetSignKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->signKeyVer;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetVerifyKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetVerifyKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->verifyKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetEncipherKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetEncipherKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->encipherKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->decipherKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->decipherKeyNum;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->decipherKeyVer;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->authSignKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->authSignKeyNum;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->authSignKeyVer;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetAuthVerifyKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetAuthVerifyKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->authVerifyKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetTempSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetTempSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->tempSignKeyId;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetKeyHashNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetKeyHashNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->keyHashNum;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetKeyHashVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetKeyHashVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->keyHashVer;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetKeyHashAlgo(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetKeyHashAlgo(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->keyHashAlgo;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetKeyStatus(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->keyStatus;
 }
 
-uint32_t GWEN_Crypt_Token_Context_GetProtocolVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+uint32_t GWEN_Crypt_Token_Context_GetProtocolVersion(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->protocolVersion;
 }
 
-const char *GWEN_Crypt_Token_Context_GetServiceId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetServiceId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->serviceId;
 }
 
-const char *GWEN_Crypt_Token_Context_GetUserId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetUserId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->userId;
 }
 
-const char *GWEN_Crypt_Token_Context_GetCustomerId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetCustomerId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->customerId;
 }
 
-const char *GWEN_Crypt_Token_Context_GetUserName(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetUserName(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->userName;
 }
 
-const char *GWEN_Crypt_Token_Context_GetPeerId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetPeerId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->peerId;
 }
 
-const char *GWEN_Crypt_Token_Context_GetPeerName(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetPeerName(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->peerName;
 }
 
-const char *GWEN_Crypt_Token_Context_GetAddress(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetAddress(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->address;
 }
 
-int GWEN_Crypt_Token_Context_GetPort(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+int GWEN_Crypt_Token_Context_GetPort(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->port;
 }
 
-const char *GWEN_Crypt_Token_Context_GetSystemId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct) {
+const char *GWEN_Crypt_Token_Context_GetSystemId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct)
+{
   assert(p_struct);
   return p_struct->systemId;
 }
 
-void GWEN_Crypt_Token_Context_SetId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->id=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->signKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetSignKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetSignKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->signKeyNum=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetSignKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetSignKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->signKeyVer=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetVerifyKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetVerifyKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->verifyKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetEncipherKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetEncipherKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->encipherKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetDecipherKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetDecipherKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->decipherKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetDecipherKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetDecipherKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->decipherKeyNum=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetDecipherKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetDecipherKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->decipherKeyVer=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetAuthSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetAuthSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->authSignKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetAuthSignKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetAuthSignKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->authSignKeyNum=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetAuthSignKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetAuthSignKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->authSignKeyVer=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetAuthVerifyKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetAuthVerifyKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->authVerifyKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetTempSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetTempSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->tempSignKeyId=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetKeyHashNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetKeyHashNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->keyHashNum=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetKeyHashVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetKeyHashVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->keyHashVer=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetKeyHashAlgo(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetKeyHashAlgo(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->keyHashAlgo=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetKeyStatus(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->keyStatus=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetProtocolVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src) {
+void GWEN_Crypt_Token_Context_SetProtocolVersion(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->protocolVersion=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetServiceId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetServiceId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->serviceId) {
-    free(p_struct->serviceId); p_struct->serviceId=NULL;
+    free(p_struct->serviceId);
+    p_struct->serviceId=NULL;
   }
   if (p_src) {
     p_struct->serviceId=strdup(p_src);
@@ -634,10 +779,12 @@ void GWEN_Crypt_Token_Context_SetServiceId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, c
   }
 }
 
-void GWEN_Crypt_Token_Context_SetUserId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetUserId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->userId) {
-    free(p_struct->userId); p_struct->userId=NULL;
+    free(p_struct->userId);
+    p_struct->userId=NULL;
   }
   if (p_src) {
     p_struct->userId=strdup(p_src);
@@ -647,10 +794,12 @@ void GWEN_Crypt_Token_Context_SetUserId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, cons
   }
 }
 
-void GWEN_Crypt_Token_Context_SetCustomerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetCustomerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->customerId) {
-    free(p_struct->customerId); p_struct->customerId=NULL;
+    free(p_struct->customerId);
+    p_struct->customerId=NULL;
   }
   if (p_src) {
     p_struct->customerId=strdup(p_src);
@@ -660,10 +809,12 @@ void GWEN_Crypt_Token_Context_SetCustomerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, 
   }
 }
 
-void GWEN_Crypt_Token_Context_SetUserName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetUserName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->userName) {
-    free(p_struct->userName); p_struct->userName=NULL;
+    free(p_struct->userName);
+    p_struct->userName=NULL;
   }
   if (p_src) {
     p_struct->userName=strdup(p_src);
@@ -673,10 +824,12 @@ void GWEN_Crypt_Token_Context_SetUserName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, co
   }
 }
 
-void GWEN_Crypt_Token_Context_SetPeerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetPeerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->peerId) {
-    free(p_struct->peerId); p_struct->peerId=NULL;
+    free(p_struct->peerId);
+    p_struct->peerId=NULL;
   }
   if (p_src) {
     p_struct->peerId=strdup(p_src);
@@ -686,10 +839,12 @@ void GWEN_Crypt_Token_Context_SetPeerId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, cons
   }
 }
 
-void GWEN_Crypt_Token_Context_SetPeerName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetPeerName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->peerName) {
-    free(p_struct->peerName); p_struct->peerName=NULL;
+    free(p_struct->peerName);
+    p_struct->peerName=NULL;
   }
   if (p_src) {
     p_struct->peerName=strdup(p_src);
@@ -699,10 +854,12 @@ void GWEN_Crypt_Token_Context_SetPeerName(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, co
   }
 }
 
-void GWEN_Crypt_Token_Context_SetAddress(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetAddress(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->address) {
-    free(p_struct->address); p_struct->address=NULL;
+    free(p_struct->address);
+    p_struct->address=NULL;
   }
   if (p_src) {
     p_struct->address=strdup(p_src);
@@ -712,15 +869,18 @@ void GWEN_Crypt_Token_Context_SetAddress(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, con
   }
 }
 
-void GWEN_Crypt_Token_Context_SetPort(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, int p_src) {
+void GWEN_Crypt_Token_Context_SetPort(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->port=p_src;
 }
 
-void GWEN_Crypt_Token_Context_SetSystemId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src) {
+void GWEN_Crypt_Token_Context_SetSystemId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->systemId) {
-    free(p_struct->systemId); p_struct->systemId=NULL;
+    free(p_struct->systemId);
+    p_struct->systemId=NULL;
   }
   if (p_src) {
     p_struct->systemId=strdup(p_src);
@@ -731,14 +891,15 @@ void GWEN_Crypt_Token_Context_SetSystemId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, co
 }
 
 /* list1 functions */
-GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_src) {
+GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_src)
+{
   GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_dest;
   GWEN_CRYPT_TOKEN_CONTEXT *p_elem;
 
   assert(p_src);
   p_dest=GWEN_Crypt_Token_Context_List_new();
   p_elem=GWEN_Crypt_Token_Context_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     GWEN_CRYPT_TOKEN_CONTEXT *p_cpy;
 
     p_cpy=GWEN_Crypt_Token_Context_dup(p_elem);
@@ -749,7 +910,8 @@ GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYP
   return p_dest;
 }
 
-void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db) {
+void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   p_struct->id=GWEN_DB_GetIntValue(p_db, "id", 0, 0);
@@ -803,7 +965,18 @@ void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB
   p_struct->keyHashAlgo=GWEN_DB_GetIntValue(p_db, "keyHashAlgo", 0, 0);
 
   /* member "keyHash" */
-  { const void *v; unsigned int vlen; v=GWEN_DB_GetBinValue(p_db, "keyHash", 0, NULL, 0, &vlen); if (v && vlen) { uint8_t *dest; dest=(uint8_t*) malloc(vlen); memmove(dest, v, vlen); p_struct->keyHash.pointer=dest; p_struct->keyHash.length=vlen; } }
+  {
+    const void *v;
+    unsigned int vlen;
+    v=GWEN_DB_GetBinValue(p_db, "keyHash", 0, NULL, 0, &vlen);
+    if (v && vlen) {
+      uint8_t *dest;
+      dest=(uint8_t *) malloc(vlen);
+      memmove(dest, v, vlen);
+      p_struct->keyHash.pointer=dest;
+      p_struct->keyHash.length=vlen;
+    }
+  }
 
   /* member "keyStatus" */
   p_struct->keyStatus=GWEN_DB_GetIntValue(p_db, "keyStatus", 0, 0);
@@ -812,62 +985,122 @@ void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB
   p_struct->protocolVersion=GWEN_DB_GetIntValue(p_db, "protocolVersion", 0, 0);
 
   /* member "cid" */
-  { const void *v; unsigned int vlen; v=GWEN_DB_GetBinValue(p_db, "cid", 0, NULL, 0, &vlen); if (v && vlen) { uint8_t *dest; dest=(uint8_t*) malloc(vlen); memmove(dest, v, vlen); p_struct->cid.pointer=dest; p_struct->cid.length=vlen; } }
+  {
+    const void *v;
+    unsigned int vlen;
+    v=GWEN_DB_GetBinValue(p_db, "cid", 0, NULL, 0, &vlen);
+    if (v && vlen) {
+      uint8_t *dest;
+      dest=(uint8_t *) malloc(vlen);
+      memmove(dest, v, vlen);
+      p_struct->cid.pointer=dest;
+      p_struct->cid.length=vlen;
+    }
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
-    free(p_struct->serviceId); p_struct->serviceId=NULL;
+    free(p_struct->serviceId);
+    p_struct->serviceId=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "serviceId", 0, NULL); if (s) p_struct->serviceId=strdup(s); }
-  if (p_struct->serviceId==NULL) {  p_struct->serviceId=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "serviceId", 0, NULL);
+    if (s)
+      p_struct->serviceId=strdup(s);
+  }
+  if (p_struct->serviceId==NULL) {
+    p_struct->serviceId=NULL;
   }
 
   /* member "userId" */
   if (p_struct->userId) {
-    free(p_struct->userId); p_struct->userId=NULL;
+    free(p_struct->userId);
+    p_struct->userId=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "userId", 0, NULL); if (s) p_struct->userId=strdup(s); }
-  if (p_struct->userId==NULL) {  p_struct->userId=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "userId", 0, NULL);
+    if (s)
+      p_struct->userId=strdup(s);
+  }
+  if (p_struct->userId==NULL) {
+    p_struct->userId=NULL;
   }
 
   /* member "customerId" */
   if (p_struct->customerId) {
-    free(p_struct->customerId); p_struct->customerId=NULL;
+    free(p_struct->customerId);
+    p_struct->customerId=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "customerId", 0, NULL); if (s) p_struct->customerId=strdup(s); }
-  if (p_struct->customerId==NULL) {  p_struct->customerId=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "customerId", 0, NULL);
+    if (s)
+      p_struct->customerId=strdup(s);
+  }
+  if (p_struct->customerId==NULL) {
+    p_struct->customerId=NULL;
   }
 
   /* member "userName" */
   if (p_struct->userName) {
-    free(p_struct->userName); p_struct->userName=NULL;
+    free(p_struct->userName);
+    p_struct->userName=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "userName", 0, NULL); if (s) p_struct->userName=strdup(s); }
-  if (p_struct->userName==NULL) {  p_struct->userName=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "userName", 0, NULL);
+    if (s)
+      p_struct->userName=strdup(s);
+  }
+  if (p_struct->userName==NULL) {
+    p_struct->userName=NULL;
   }
 
   /* member "peerId" */
   if (p_struct->peerId) {
-    free(p_struct->peerId); p_struct->peerId=NULL;
+    free(p_struct->peerId);
+    p_struct->peerId=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "peerId", 0, NULL); if (s) p_struct->peerId=strdup(s); }
-  if (p_struct->peerId==NULL) {  p_struct->peerId=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "peerId", 0, NULL);
+    if (s)
+      p_struct->peerId=strdup(s);
+  }
+  if (p_struct->peerId==NULL) {
+    p_struct->peerId=NULL;
   }
 
   /* member "peerName" */
   if (p_struct->peerName) {
-    free(p_struct->peerName); p_struct->peerName=NULL;
+    free(p_struct->peerName);
+    p_struct->peerName=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "peerName", 0, NULL); if (s) p_struct->peerName=strdup(s); }
-  if (p_struct->peerName==NULL) {  p_struct->peerName=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "peerName", 0, NULL);
+    if (s)
+      p_struct->peerName=strdup(s);
+  }
+  if (p_struct->peerName==NULL) {
+    p_struct->peerName=NULL;
   }
 
   /* member "address" */
   if (p_struct->address) {
-    free(p_struct->address); p_struct->address=NULL;
+    free(p_struct->address);
+    p_struct->address=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "address", 0, NULL); if (s) p_struct->address=strdup(s); }
-  if (p_struct->address==NULL) {  p_struct->address=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "address", 0, NULL);
+    if (s)
+      p_struct->address=strdup(s);
+  }
+  if (p_struct->address==NULL) {
+    p_struct->address=NULL;
   }
 
   /* member "port" */
@@ -875,15 +1108,23 @@ void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB
 
   /* member "systemId" */
   if (p_struct->systemId) {
-    free(p_struct->systemId); p_struct->systemId=NULL;
+    free(p_struct->systemId);
+    p_struct->systemId=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "systemId", 0, NULL); if (s) p_struct->systemId=strdup(s); }
-  if (p_struct->systemId==NULL) {  p_struct->systemId=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "systemId", 0, NULL);
+    if (s)
+      p_struct->systemId=strdup(s);
+  }
+  if (p_struct->systemId==NULL) {
+    p_struct->systemId=NULL;
   }
 
 }
 
-int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db) {
+int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db)
+{
   int p_rv;
 
   assert(p_struct);
@@ -1007,7 +1248,16 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
   }
 
   /* member "keyHash" */
-  { if (p_struct->keyHash.length && p_struct->keyHash.pointer) { GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHash", p_struct->keyHash.pointer, p_struct->keyHash.length); } else { GWEN_DB_DeleteVar(p_db, "keyHash"); p_rv=0; } }
+  {
+    if (p_struct->keyHash.length && p_struct->keyHash.pointer) {
+      GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyHash", p_struct->keyHash.pointer,
+                          p_struct->keyHash.length);
+    }
+    else {
+      GWEN_DB_DeleteVar(p_db, "keyHash");
+      p_rv=0;
+    }
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -1028,56 +1278,99 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
   }
 
   /* member "cid" */
-  { if (p_struct->cid.length && p_struct->cid.pointer) { GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "cid", p_struct->cid.pointer, p_struct->cid.length); } else { GWEN_DB_DeleteVar(p_db, "cid"); p_rv=0; } }
+  {
+    if (p_struct->cid.length && p_struct->cid.pointer) {
+      GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "cid", p_struct->cid.pointer, p_struct->cid.length);
+    }
+    else {
+      GWEN_DB_DeleteVar(p_db, "cid");
+      p_rv=0;
+    }
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "serviceId" */
-  if (p_struct->serviceId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "serviceId", p_struct->serviceId); else { GWEN_DB_DeleteVar(p_db, "serviceId"); p_rv=0; }
+  if (p_struct->serviceId)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "serviceId", p_struct->serviceId);
+  else {
+    GWEN_DB_DeleteVar(p_db, "serviceId");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "userId" */
-  if (p_struct->userId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userId", p_struct->userId); else { GWEN_DB_DeleteVar(p_db, "userId"); p_rv=0; }
+  if (p_struct->userId)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userId", p_struct->userId);
+  else {
+    GWEN_DB_DeleteVar(p_db, "userId");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "customerId" */
-  if (p_struct->customerId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "customerId", p_struct->customerId); else { GWEN_DB_DeleteVar(p_db, "customerId"); p_rv=0; }
+  if (p_struct->customerId)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "customerId", p_struct->customerId);
+  else {
+    GWEN_DB_DeleteVar(p_db, "customerId");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "userName" */
-  if (p_struct->userName) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userName", p_struct->userName); else { GWEN_DB_DeleteVar(p_db, "userName"); p_rv=0; }
+  if (p_struct->userName)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userName", p_struct->userName);
+  else {
+    GWEN_DB_DeleteVar(p_db, "userName");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "peerId" */
-  if (p_struct->peerId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "peerId", p_struct->peerId); else { GWEN_DB_DeleteVar(p_db, "peerId"); p_rv=0; }
+  if (p_struct->peerId)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "peerId", p_struct->peerId);
+  else {
+    GWEN_DB_DeleteVar(p_db, "peerId");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "peerName" */
-  if (p_struct->peerName) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "peerName", p_struct->peerName); else { GWEN_DB_DeleteVar(p_db, "peerName"); p_rv=0; }
+  if (p_struct->peerName)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "peerName", p_struct->peerName);
+  else {
+    GWEN_DB_DeleteVar(p_db, "peerName");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "address" */
-  if (p_struct->address) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "address", p_struct->address); else { GWEN_DB_DeleteVar(p_db, "address"); p_rv=0; }
+  if (p_struct->address)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "address", p_struct->address);
+  else {
+    GWEN_DB_DeleteVar(p_db, "address");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -1091,7 +1384,12 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
   }
 
   /* member "systemId" */
-  if (p_struct->systemId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "systemId", p_struct->systemId); else { GWEN_DB_DeleteVar(p_db, "systemId"); p_rv=0; }
+  if (p_struct->systemId)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "systemId", p_struct->systemId);
+  else {
+    GWEN_DB_DeleteVar(p_db, "systemId");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -1100,18 +1398,21 @@ int GWEN_Crypt_Token_Context_WriteDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, G
   return 0;
 }
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_fromDb(GWEN_DB_NODE *p_db) {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_fromDb(GWEN_DB_NODE *p_db)
+{
   GWEN_CRYPT_TOKEN_CONTEXT *p_struct;
   p_struct=GWEN_Crypt_Token_Context_new();
   GWEN_Crypt_Token_Context_ReadDb(p_struct, p_db);
   return p_struct;
 }
 
-int GWEN_Crypt_Token_Context_toDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db) {
+int GWEN_Crypt_Token_Context_toDb(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db)
+{
   return GWEN_Crypt_Token_Context_WriteDb(p_struct, p_db);
 }
 
-void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db) {
+void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   p_struct->id=GWEN_XMLNode_GetIntValue(p_db, "id", 0);
@@ -1165,7 +1466,37 @@ void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_X
   p_struct->keyHashAlgo=GWEN_XMLNode_GetIntValue(p_db, "keyHashAlgo", 0);
 
   /* member "keyHash" */
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "keyHash", NULL); if (s) { GWEN_BUFFER *tbuf; int rv; tbuf=GWEN_Buffer_new(0, 1024, 0, 1); rv=GWEN_Base64_Decode((const unsigned char*)s, strlen(s), tbuf); if (rv < 0) { DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv); } else { char *t; uint32_t len; len=GWEN_Buffer_GetUsedBytes(tbuf); t=GWEN_Buffer_GetStart(tbuf); if (GWEN_Buffer_Relinquish(tbuf) < 0) { uint8_t *dest; dest=(uint8_t*) malloc(len); memmove(dest, t, len); p_struct->keyHash.pointer=dest; p_struct->keyHash.length=len; } else { p_struct->keyHash.pointer=(uint8_t*) t; p_struct->keyHash.length=len; } } GWEN_Buffer_free(tbuf); } }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "keyHash", NULL);
+    if (s) {
+      GWEN_BUFFER *tbuf;
+      int rv;
+      tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+      rv=GWEN_Base64_Decode((const unsigned char *)s, strlen(s), tbuf);
+      if (rv < 0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      }
+      else {
+        char *t;
+        uint32_t len;
+        len=GWEN_Buffer_GetUsedBytes(tbuf);
+        t=GWEN_Buffer_GetStart(tbuf);
+        if (GWEN_Buffer_Relinquish(tbuf) < 0) {
+          uint8_t *dest;
+          dest=(uint8_t *) malloc(len);
+          memmove(dest, t, len);
+          p_struct->keyHash.pointer=dest;
+          p_struct->keyHash.length=len;
+        }
+        else {
+          p_struct->keyHash.pointer=(uint8_t *) t;
+          p_struct->keyHash.length=len;
+        }
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+  }
 
   /* member "keyStatus" */
   p_struct->keyStatus=GWEN_XMLNode_GetIntValue(p_db, "keyStatus", 0);
@@ -1174,69 +1505,141 @@ void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_X
   p_struct->protocolVersion=GWEN_XMLNode_GetIntValue(p_db, "protocolVersion", 0);
 
   /* member "cid" */
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "cid", NULL); if (s) { GWEN_BUFFER *tbuf; int rv; tbuf=GWEN_Buffer_new(0, 1024, 0, 1); rv=GWEN_Base64_Decode((const unsigned char*)s, strlen(s), tbuf); if (rv < 0) { DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv); } else { char *t; uint32_t len; len=GWEN_Buffer_GetUsedBytes(tbuf); t=GWEN_Buffer_GetStart(tbuf); if (GWEN_Buffer_Relinquish(tbuf) < 0) { uint8_t *dest; dest=(uint8_t*) malloc(len); memmove(dest, t, len); p_struct->cid.pointer=dest; p_struct->cid.length=len; } else { p_struct->cid.pointer=(uint8_t*) t; p_struct->cid.length=len; } } GWEN_Buffer_free(tbuf); } }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "cid", NULL);
+    if (s) {
+      GWEN_BUFFER *tbuf;
+      int rv;
+      tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+      rv=GWEN_Base64_Decode((const unsigned char *)s, strlen(s), tbuf);
+      if (rv < 0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      }
+      else {
+        char *t;
+        uint32_t len;
+        len=GWEN_Buffer_GetUsedBytes(tbuf);
+        t=GWEN_Buffer_GetStart(tbuf);
+        if (GWEN_Buffer_Relinquish(tbuf) < 0) {
+          uint8_t *dest;
+          dest=(uint8_t *) malloc(len);
+          memmove(dest, t, len);
+          p_struct->cid.pointer=dest;
+          p_struct->cid.length=len;
+        }
+        else {
+          p_struct->cid.pointer=(uint8_t *) t;
+          p_struct->cid.length=len;
+        }
+      }
+      GWEN_Buffer_free(tbuf);
+    }
+  }
 
   /* member "serviceId" */
   if (p_struct->serviceId) {
-    free(p_struct->serviceId); p_struct->serviceId=NULL;
+    free(p_struct->serviceId);
+    p_struct->serviceId=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "serviceId", NULL); if (s) p_struct->serviceId=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "serviceId", NULL);
+    if (s)
+      p_struct->serviceId=strdup(s);
+  }
   if (p_struct->serviceId==NULL) {  /* preset member "serviceId" if empty */
-  p_struct->serviceId=NULL;
+    p_struct->serviceId=NULL;
   }
 
   /* member "userId" */
   if (p_struct->userId) {
-    free(p_struct->userId); p_struct->userId=NULL;
+    free(p_struct->userId);
+    p_struct->userId=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "userId", NULL); if (s) p_struct->userId=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "userId", NULL);
+    if (s)
+      p_struct->userId=strdup(s);
+  }
   if (p_struct->userId==NULL) {  /* preset member "userId" if empty */
-  p_struct->userId=NULL;
+    p_struct->userId=NULL;
   }
 
   /* member "customerId" */
   if (p_struct->customerId) {
-    free(p_struct->customerId); p_struct->customerId=NULL;
+    free(p_struct->customerId);
+    p_struct->customerId=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "customerId", NULL); if (s) p_struct->customerId=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "customerId", NULL);
+    if (s)
+      p_struct->customerId=strdup(s);
+  }
   if (p_struct->customerId==NULL) {  /* preset member "customerId" if empty */
-  p_struct->customerId=NULL;
+    p_struct->customerId=NULL;
   }
 
   /* member "userName" */
   if (p_struct->userName) {
-    free(p_struct->userName); p_struct->userName=NULL;
+    free(p_struct->userName);
+    p_struct->userName=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "userName", NULL); if (s) p_struct->userName=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "userName", NULL);
+    if (s)
+      p_struct->userName=strdup(s);
+  }
   if (p_struct->userName==NULL) {  /* preset member "userName" if empty */
-  p_struct->userName=NULL;
+    p_struct->userName=NULL;
   }
 
   /* member "peerId" */
   if (p_struct->peerId) {
-    free(p_struct->peerId); p_struct->peerId=NULL;
+    free(p_struct->peerId);
+    p_struct->peerId=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "peerId", NULL); if (s) p_struct->peerId=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "peerId", NULL);
+    if (s)
+      p_struct->peerId=strdup(s);
+  }
   if (p_struct->peerId==NULL) {  /* preset member "peerId" if empty */
-  p_struct->peerId=NULL;
+    p_struct->peerId=NULL;
   }
 
   /* member "peerName" */
   if (p_struct->peerName) {
-    free(p_struct->peerName); p_struct->peerName=NULL;
+    free(p_struct->peerName);
+    p_struct->peerName=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "peerName", NULL); if (s) p_struct->peerName=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "peerName", NULL);
+    if (s)
+      p_struct->peerName=strdup(s);
+  }
   if (p_struct->peerName==NULL) {  /* preset member "peerName" if empty */
-  p_struct->peerName=NULL;
+    p_struct->peerName=NULL;
   }
 
   /* member "address" */
   if (p_struct->address) {
-    free(p_struct->address); p_struct->address=NULL;
+    free(p_struct->address);
+    p_struct->address=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "address", NULL); if (s) p_struct->address=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "address", NULL);
+    if (s)
+      p_struct->address=strdup(s);
+  }
   if (p_struct->address==NULL) {  /* preset member "address" if empty */
-  p_struct->address=NULL;
+    p_struct->address=NULL;
   }
 
   /* member "port" */
@@ -1244,16 +1647,23 @@ void GWEN_Crypt_Token_Context_ReadXml(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_X
 
   /* member "systemId" */
   if (p_struct->systemId) {
-    free(p_struct->systemId); p_struct->systemId=NULL;
+    free(p_struct->systemId);
+    p_struct->systemId=NULL;
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "systemId", NULL); if (s) p_struct->systemId=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "systemId", NULL);
+    if (s)
+      p_struct->systemId=strdup(s);
+  }
   if (p_struct->systemId==NULL) {  /* preset member "systemId" if empty */
-  p_struct->systemId=NULL;
+    p_struct->systemId=NULL;
   }
 
 }
 
-void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db) {
+void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   GWEN_XMLNode_SetIntValue(p_db, "id", p_struct->id);
@@ -1307,7 +1717,21 @@ void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
   GWEN_XMLNode_SetIntValue(p_db, "keyHashAlgo", p_struct->keyHashAlgo);
 
   /* member "keyHash" */
-  { if (p_struct->keyHash.length && p_struct->keyHash.pointer) { GWEN_BUFFER *tbuf; int rv; tbuf=GWEN_Buffer_new(0, 1024, 0, 1); rv=GWEN_Base64_Encode((const unsigned char*) p_struct->keyHash.pointer, p_struct->keyHash.length, tbuf, 80); if (rv < 0) { DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv); } else { GWEN_XMLNode_SetCharValue(p_db, "keyHash", GWEN_Buffer_GetStart(tbuf)); GWEN_Buffer_free(tbuf); } } }
+  {
+    if (p_struct->keyHash.length && p_struct->keyHash.pointer) {
+      GWEN_BUFFER *tbuf;
+      int rv;
+      tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+      rv=GWEN_Base64_Encode((const unsigned char *) p_struct->keyHash.pointer, p_struct->keyHash.length, tbuf, 80);
+      if (rv < 0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      }
+      else {
+        GWEN_XMLNode_SetCharValue(p_db, "keyHash", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
+      }
+    }
+  }
 
   /* member "keyStatus" */
   GWEN_XMLNode_SetIntValue(p_db, "keyStatus", p_struct->keyStatus);
@@ -1316,7 +1740,21 @@ void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
   GWEN_XMLNode_SetIntValue(p_db, "protocolVersion", p_struct->protocolVersion);
 
   /* member "cid" */
-  { if (p_struct->cid.length && p_struct->cid.pointer) { GWEN_BUFFER *tbuf; int rv; tbuf=GWEN_Buffer_new(0, 1024, 0, 1); rv=GWEN_Base64_Encode((const unsigned char*) p_struct->cid.pointer, p_struct->cid.length, tbuf, 80); if (rv < 0) { DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv); } else { GWEN_XMLNode_SetCharValue(p_db, "cid", GWEN_Buffer_GetStart(tbuf)); GWEN_Buffer_free(tbuf); } } }
+  {
+    if (p_struct->cid.length && p_struct->cid.pointer) {
+      GWEN_BUFFER *tbuf;
+      int rv;
+      tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+      rv=GWEN_Base64_Encode((const unsigned char *) p_struct->cid.pointer, p_struct->cid.length, tbuf, 80);
+      if (rv < 0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      }
+      else {
+        GWEN_XMLNode_SetCharValue(p_db, "cid", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
+      }
+    }
+  }
 
   /* member "serviceId" */
   GWEN_XMLNode_SetCharValue(p_db, "serviceId", p_struct->serviceId);
@@ -1347,26 +1785,35 @@ void GWEN_Crypt_Token_Context_WriteXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
 
 }
 
-void GWEN_Crypt_Token_Context_toXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db) {
+void GWEN_Crypt_Token_Context_toXml(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_XMLNODE *p_db)
+{
   GWEN_Crypt_Token_Context_WriteXml(p_struct, p_db);
 }
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_fromXml(GWEN_XMLNODE *p_db) {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_fromXml(GWEN_XMLNODE *p_db)
+{
   GWEN_CRYPT_TOKEN_CONTEXT *p_struct;
   p_struct=GWEN_Crypt_Token_Context_new();
   GWEN_Crypt_Token_Context_ReadXml(p_struct, p_db);
   return p_struct;
 }
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_list, uint32_t p_cmp) {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_list,
+                                                                uint32_t p_cmp)
+{
   GWEN_CRYPT_TOKEN_CONTEXT *p_struct;
 
   assert(p_list);
   p_struct = GWEN_Crypt_Token_Context_List_First(p_list);
-  while(p_struct) {
+  while (p_struct) {
     int p_rv;
 
-    if (p_struct->id==p_cmp) p_rv=0; else if (p_cmp<p_struct->id) p_rv=-1; else p_rv=1;
+    if (p_struct->id==p_cmp)
+      p_rv=0;
+    else if (p_cmp<p_struct->id)
+      p_rv=-1;
+    else
+      p_rv=1;
     if (p_rv == 0)
       return p_struct;
     p_struct = GWEN_Crypt_Token_Context_List_Next(p_struct);
@@ -1374,12 +1821,68 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(const GWEN_CRYPT
   return NULL;
 }
 
-void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len) { assert(st); if (st->keyHash.length && st->keyHash.pointer) free(st->keyHash.pointer); if (p && len) { st->keyHash.pointer=(uint8_t*) malloc(len); if (st->keyHash.pointer) { st->keyHash.length=len; memmove(st->keyHash.pointer, p, len); } else { st->keyHash.pointer=NULL; st->keyHash.length=0; } } else { st->keyHash.length=0; st->keyHash.pointer=NULL; } }
-const uint8_t* GWEN_Crypt_Token_Context_GetKeyHashPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st) { assert(st); return st->keyHash.pointer; }
-uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *st) { assert(st); return st->keyHash.length; }
-void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len) { assert(st); if (st->cid.length && st->cid.pointer) free(st->cid.pointer); if (p && len) { st->cid.pointer=(uint8_t*) malloc(len); if (st->cid.pointer) { st->cid.length=len; memmove(st->cid.pointer, p, len); } else { st->cid.pointer=NULL; st->cid.length=0; } } else { st->cid.length=0; st->cid.pointer=NULL; } }
-const uint8_t* GWEN_Crypt_Token_Context_GetCidPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st) { assert(st); return st->cid.pointer; }
-uint32_t GWEN_Crypt_Token_Context_GetCidLen(const GWEN_CRYPT_TOKEN_CONTEXT *st) { assert(st); return st->cid.length; }
+void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len)
+{
+  assert(st);
+  if (st->keyHash.length && st->keyHash.pointer)
+    free(st->keyHash.pointer);
+  if (p && len) {
+    st->keyHash.pointer=(uint8_t *) malloc(len);
+    if (st->keyHash.pointer) {
+      st->keyHash.length=len;
+      memmove(st->keyHash.pointer, p, len);
+    }
+    else {
+      st->keyHash.pointer=NULL;
+      st->keyHash.length=0;
+    }
+  }
+  else {
+    st->keyHash.length=0;
+    st->keyHash.pointer=NULL;
+  }
+}
+const uint8_t *GWEN_Crypt_Token_Context_GetKeyHashPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st)
+{
+  assert(st);
+  return st->keyHash.pointer;
+}
+uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *st)
+{
+  assert(st);
+  return st->keyHash.length;
+}
+void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len)
+{
+  assert(st);
+  if (st->cid.length && st->cid.pointer)
+    free(st->cid.pointer);
+  if (p && len) {
+    st->cid.pointer=(uint8_t *) malloc(len);
+    if (st->cid.pointer) {
+      st->cid.length=len;
+      memmove(st->cid.pointer, p, len);
+    }
+    else {
+      st->cid.pointer=NULL;
+      st->cid.length=0;
+    }
+  }
+  else {
+    st->cid.length=0;
+    st->cid.pointer=NULL;
+  }
+}
+const uint8_t *GWEN_Crypt_Token_Context_GetCidPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st)
+{
+  assert(st);
+  return st->cid.pointer;
+}
+uint32_t GWEN_Crypt_Token_Context_GetCidLen(const GWEN_CRYPT_TOKEN_CONTEXT *st)
+{
+  assert(st);
+  return st->cid.length;
+}
 
 /* code headers */
 

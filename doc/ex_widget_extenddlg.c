@@ -1,4 +1,5 @@
-void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg) {
+void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg)
+{
   GTK2_GUI_DIALOG *xdlg;
 
   GWEN_NEW_OBJECT(GTK2_GUI_DIALOG, xdlg);

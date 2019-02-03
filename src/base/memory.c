@@ -61,7 +61,8 @@ static size_t gwen_memory__released_since_collect=0;
 
 
 
-int GWEN_Memory_ModuleInit(void) {
+int GWEN_Memory_ModuleInit(void)
+{
   const char *s;
 
   s=getenv(GWEN_MEMORY_ENV_DEBUG);
@@ -76,11 +77,12 @@ int GWEN_Memory_ModuleInit(void) {
 
 
 
-int GWEN_Memory_ModuleFini(void) {
+int GWEN_Memory_ModuleFini(void)
+{
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;
-  while(mt) {
+  while (mt) {
     GWEN_MEMORY_TABLE *next;
 
     next=mt->next;
@@ -123,7 +125,8 @@ int GWEN_Memory_ModuleFini(void) {
 
 
 
-void GWEN_Memory_Report(void) {
+void GWEN_Memory_Report(void)
+{
   return;
 }
 
@@ -131,14 +134,15 @@ void GWEN_Memory_Report(void) {
 
 
 
-GWEN_MEMORY_TABLE *GWEN_Memory_Table_new(void) {
+GWEN_MEMORY_TABLE *GWEN_Memory_Table_new(void)
+{
   GWEN_MEMORY_TABLE *mt;
   unsigned char *p;
   unsigned short dsize;
 
   if (gwen_memory__verbous)
     fprintf(stderr, "GWEN info: allocating memory table\n");
-  mt=(GWEN_MEMORY_TABLE*)malloc(sizeof(GWEN_MEMORY_TABLE));
+  mt=(GWEN_MEMORY_TABLE *)malloc(sizeof(GWEN_MEMORY_TABLE));
   assert(mt);
   memset(mt, 0, sizeof(GWEN_MEMORY_TABLE));
   dsize=GWEN_MEMORY_MAXBLOCK;
@@ -150,7 +154,8 @@ GWEN_MEMORY_TABLE *GWEN_Memory_Table_new(void) {
 
 
 
-void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt) {
+void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt)
+{
   if (mt) {
     if (gwen_memory__debug) {
       unsigned char *p;
@@ -158,7 +163,7 @@ void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt) {
 
       p=mt->data;
       end=p+GWEN_MEMORY_TABLE_LEN;
-      while(p<end) {
+      while (p<end) {
         unsigned short bsize;
         unsigned short rsize;
 
@@ -179,21 +184,23 @@ void GWEN_Memory_Table_free(GWEN_MEMORY_TABLE *mt) {
 
 
 
-void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head, GWEN_MEMORY_TABLE *mt) {
+void GWEN_Memory_Table_Append(GWEN_MEMORY_TABLE *head, GWEN_MEMORY_TABLE *mt)
+{
   GWEN_MEMORY_TABLE *last;
 
   assert(head);
   assert(mt);
 
   last=head;
-  while(last->next)
+  while (last->next)
     last=last->next;
   last->next=mt;
 }
 
 
 
-void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt) {
+void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt)
+{
   mt->next=gwen_memory__first_table;
   gwen_memory__first_table=mt;
 }
@@ -201,13 +208,14 @@ void GWEN_Memory_Table_Insert(GWEN_MEMORY_TABLE *mt) {
 
 
 unsigned char *GWEN_Memory_Table__FindFreeBlock(GWEN_MEMORY_TABLE *mt,
-    unsigned short dsize) {
+                                                unsigned short dsize)
+{
   unsigned char *end;
   unsigned char *p;
 
   end=mt->data+GWEN_MEMORY_TABLE_LEN;
   p=mt->data;
-  while(p<end) {
+  while (p<end) {
     unsigned short bsize;
     unsigned short rsize;
 
@@ -233,7 +241,8 @@ unsigned char *GWEN_Memory_Table__FindFreeBlock(GWEN_MEMORY_TABLE *mt,
 
 
 void GWEN_Memory_Table__CollectAt(GWEN_MEMORY_TABLE *mt,
-                                  unsigned char *p) {
+                                  unsigned char *p)
+{
   unsigned char *end;
   unsigned short nsize=0;
   unsigned char *np;
@@ -242,7 +251,7 @@ void GWEN_Memory_Table__CollectAt(GWEN_MEMORY_TABLE *mt,
   np=p;
   end=mt->data+GWEN_MEMORY_TABLE_LEN;
 
-  while(np<end) {
+  while (np<end) {
     unsigned short bsize;
     unsigned short rsize;
 
@@ -270,13 +279,14 @@ void GWEN_Memory_Table__CollectAt(GWEN_MEMORY_TABLE *mt,
 
 
 
-void GWEN_Memory_Table__Collect(GWEN_MEMORY_TABLE *mt) {
+void GWEN_Memory_Table__Collect(GWEN_MEMORY_TABLE *mt)
+{
   unsigned char *p;
   unsigned char *end;
 
   end=mt->data+GWEN_MEMORY_TABLE_LEN;
   p=mt->data;
-  while(p<end) {
+  while (p<end) {
     unsigned short bsize;
     unsigned short rsize;
 
@@ -289,13 +299,14 @@ void GWEN_Memory_Table__Collect(GWEN_MEMORY_TABLE *mt) {
 
 
 
-void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt) {
+void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt)
+{
   unsigned char *p;
   unsigned char *end;
 
   p=mt->data;
   end=p+GWEN_MEMORY_TABLE_LEN;
-  while(p<end) {
+  while (p<end) {
     unsigned short bsize;
     unsigned short rsize;
 
@@ -313,7 +324,8 @@ void GWEN_Memory_Table__Dump(GWEN_MEMORY_TABLE *mt) {
 
 
 
-unsigned char *GWEN_Memory__FindFreeBlock(unsigned short dsize) {
+unsigned char *GWEN_Memory__FindFreeBlock(unsigned short dsize)
+{
   GWEN_MEMORY_TABLE *mt;
   unsigned char *p=0;
 
@@ -328,7 +340,7 @@ unsigned char *GWEN_Memory__FindFreeBlock(unsigned short dsize) {
   mt=gwen_memory__first_table;
   assert(mt);
 
-  while(mt) {
+  while (mt) {
     p=GWEN_Memory_Table__FindFreeBlock(mt, dsize);
     if (p)
       return p;
@@ -346,7 +358,8 @@ unsigned char *GWEN_Memory__FindFreeBlock(unsigned short dsize) {
 
 
 
-void *GWEN_Memory__Malloc(unsigned short dsize) {
+void *GWEN_Memory__Malloc(unsigned short dsize)
+{
   unsigned char *p;
   unsigned short bsize;
   unsigned short rsize;
@@ -377,12 +390,13 @@ void *GWEN_Memory__Malloc(unsigned short dsize) {
                             GWEN_MEMORY_MASK_MALLOCED));
   /* fprintf(stderr, "GWEN debug: allocated block internally (%p).\n", p); */
 
-  return (void*)GWEN_MEMORY_GETDATA(p);
+  return (void *)GWEN_MEMORY_GETDATA(p);
 }
 
 
 
-void *GWEN_Memory_malloc(size_t wsize) {
+void *GWEN_Memory_malloc(size_t wsize)
+{
   void *p;
 #ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   size_t dsize;
@@ -411,7 +425,7 @@ void *GWEN_Memory_malloc(size_t wsize) {
     if (gwen_memory__verbous)
       fprintf(stderr, "GWEN info: Allocating %u bytes externally\n",
               dsize);
-    pc=(unsigned char*)malloc(dsize+GWEN_MEMORY_SIZELEN);
+    pc=(unsigned char *)malloc(dsize+GWEN_MEMORY_SIZELEN);
     assert(pc);
     GWEN_MEMORY_WRITESIZE(pc, GWEN_MEMORY_EXTERNAL);
     p=GWEN_MEMORY_GETDATA(pc);
@@ -430,7 +444,8 @@ void *GWEN_Memory_malloc(size_t wsize) {
 
 
 
-void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
+void *GWEN_Memory_realloc(void *oldp, size_t nsize)
+{
 #ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   void *p;
   unsigned char *pc;
@@ -469,7 +484,8 @@ void *GWEN_Memory_realloc(void *oldp, size_t nsize) {
 
 
 
-void GWEN_Memory_dealloc(void *p) {
+void GWEN_Memory_dealloc(void *p)
+{
 #ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   if (p) {
     unsigned char *pc;
@@ -505,7 +521,7 @@ void GWEN_Memory_dealloc(void *p) {
               "GWEN debug: deallocating block at %p externally\n", p); */
 
       if (gwen_memory__nofree==0)
-        free((void*)pc);
+        free((void *)pc);
     }
     else {
       /*fprintf(stderr,
@@ -527,7 +543,8 @@ void GWEN_Memory_dealloc(void *p) {
 
 
 
-char *GWEN_Memory_strdup(const char *s) {
+char *GWEN_Memory_strdup(const char *s)
+{
 #ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   unsigned int dsize;
   char *p;
@@ -537,7 +554,7 @@ char *GWEN_Memory_strdup(const char *s) {
 #ifdef ENABLE_MY_SMALL_BLOCK_ALLOC
   dsize=strlen(s);
 
-  p=(char*)GWEN_Memory_malloc(dsize+1);
+  p=(char *)GWEN_Memory_malloc(dsize+1);
   assert(p);
   memmove(p, s, dsize+1);
   return p;
@@ -548,11 +565,12 @@ char *GWEN_Memory_strdup(const char *s) {
 
 
 
-void GWEN_Memory_Dump(void) {
+void GWEN_Memory_Dump(void)
+{
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;
-  while(mt) {
+  while (mt) {
     GWEN_Memory_Table__Dump(mt);
     mt=mt->next;
   }
@@ -560,11 +578,12 @@ void GWEN_Memory_Dump(void) {
 
 
 
-void GWEN_Memory_Collect(void) {
+void GWEN_Memory_Collect(void)
+{
   GWEN_MEMORY_TABLE *mt;
 
   mt=gwen_memory__first_table;
-  while(mt) {
+  while (mt) {
     GWEN_Memory_Table__Collect(mt);
     mt=mt->next;
   }

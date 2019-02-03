@@ -21,7 +21,8 @@ GWEN_LIST_FUNCTIONS(TYPEMAKER2_SLOT, Typemaker2_Slot)
 GWEN_LIST2_FUNCTIONS(TYPEMAKER2_SLOT, Typemaker2_Slot)
 
 
-TYPEMAKER2_SLOT *Typemaker2_Slot_new(void) {
+TYPEMAKER2_SLOT *Typemaker2_Slot_new(void)
+{
   TYPEMAKER2_SLOT *p_struct;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_SLOT, p_struct)
@@ -36,10 +37,11 @@ TYPEMAKER2_SLOT *Typemaker2_Slot_new(void) {
   return p_struct;
 }
 
-void Typemaker2_Slot_free(TYPEMAKER2_SLOT *p_struct) {
+void Typemaker2_Slot_free(TYPEMAKER2_SLOT *p_struct)
+{
   if (p_struct) {
     GWEN_LIST_FINI(TYPEMAKER2_SLOT, p_struct)
-  /* members */
+    /* members */
     free(p_struct->name);
     free(p_struct->paramType1);
     free(p_struct->paramType2);
@@ -47,7 +49,8 @@ void Typemaker2_Slot_free(TYPEMAKER2_SLOT *p_struct) {
   }
 }
 
-TYPEMAKER2_SLOT *Typemaker2_Slot_dup(const TYPEMAKER2_SLOT *p_src) {
+TYPEMAKER2_SLOT *Typemaker2_Slot_dup(const TYPEMAKER2_SLOT *p_src)
+{
   TYPEMAKER2_SLOT *p_struct;
 
   assert(p_src);
@@ -85,8 +88,9 @@ TYPEMAKER2_SLOT *Typemaker2_Slot_dup(const TYPEMAKER2_SLOT *p_src) {
   return p_struct;
 }
 
-TYPEMAKER2_SLOT *Typemaker2_Slot_copy(TYPEMAKER2_SLOT *p_struct, const TYPEMAKER2_SLOT *p_src) {
-    assert(p_struct);
+TYPEMAKER2_SLOT *Typemaker2_Slot_copy(TYPEMAKER2_SLOT *p_struct, const TYPEMAKER2_SLOT *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "name" */
   if (p_struct->name) {
@@ -121,27 +125,32 @@ TYPEMAKER2_SLOT *Typemaker2_Slot_copy(TYPEMAKER2_SLOT *p_struct, const TYPEMAKER
   return p_struct;
 }
 
-const char *Typemaker2_Slot_GetName(const TYPEMAKER2_SLOT *p_struct) {
+const char *Typemaker2_Slot_GetName(const TYPEMAKER2_SLOT *p_struct)
+{
   assert(p_struct);
   return p_struct->name;
 }
 
-const char *Typemaker2_Slot_GetParamType1(const TYPEMAKER2_SLOT *p_struct) {
+const char *Typemaker2_Slot_GetParamType1(const TYPEMAKER2_SLOT *p_struct)
+{
   assert(p_struct);
   return p_struct->paramType1;
 }
 
-const char *Typemaker2_Slot_GetParamType2(const TYPEMAKER2_SLOT *p_struct) {
+const char *Typemaker2_Slot_GetParamType2(const TYPEMAKER2_SLOT *p_struct)
+{
   assert(p_struct);
   return p_struct->paramType2;
 }
 
-uint32_t Typemaker2_Slot_GetFlags(const TYPEMAKER2_SLOT *p_struct) {
+uint32_t Typemaker2_Slot_GetFlags(const TYPEMAKER2_SLOT *p_struct)
+{
   assert(p_struct);
   return p_struct->flags;
 }
 
-void Typemaker2_Slot_SetName(TYPEMAKER2_SLOT *p_struct, const char *p_src) {
+void Typemaker2_Slot_SetName(TYPEMAKER2_SLOT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->name) {
     free(p_struct->name);
@@ -154,7 +163,8 @@ void Typemaker2_Slot_SetName(TYPEMAKER2_SLOT *p_struct, const char *p_src) {
   }
 }
 
-void Typemaker2_Slot_SetParamType1(TYPEMAKER2_SLOT *p_struct, const char *p_src) {
+void Typemaker2_Slot_SetParamType1(TYPEMAKER2_SLOT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->paramType1) {
     free(p_struct->paramType1);
@@ -167,7 +177,8 @@ void Typemaker2_Slot_SetParamType1(TYPEMAKER2_SLOT *p_struct, const char *p_src)
   }
 }
 
-void Typemaker2_Slot_SetParamType2(TYPEMAKER2_SLOT *p_struct, const char *p_src) {
+void Typemaker2_Slot_SetParamType2(TYPEMAKER2_SLOT *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->paramType2) {
     free(p_struct->paramType2);
@@ -180,29 +191,33 @@ void Typemaker2_Slot_SetParamType2(TYPEMAKER2_SLOT *p_struct, const char *p_src)
   }
 }
 
-void Typemaker2_Slot_SetFlags(TYPEMAKER2_SLOT *p_struct, uint32_t p_src) {
+void Typemaker2_Slot_SetFlags(TYPEMAKER2_SLOT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags=p_src;
 }
 
-void Typemaker2_Slot_AddFlags(TYPEMAKER2_SLOT *p_struct, uint32_t p_src) {
+void Typemaker2_Slot_AddFlags(TYPEMAKER2_SLOT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags|=p_src;
 }
 
-void Typemaker2_Slot_SubFlags(TYPEMAKER2_SLOT *p_struct, uint32_t p_src) {
+void Typemaker2_Slot_SubFlags(TYPEMAKER2_SLOT *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags&=~p_src;
 }
 
-TYPEMAKER2_SLOT_LIST *Typemaker2_Slot_List_dup(const TYPEMAKER2_SLOT_LIST *p_src) {
+TYPEMAKER2_SLOT_LIST *Typemaker2_Slot_List_dup(const TYPEMAKER2_SLOT_LIST *p_src)
+{
   TYPEMAKER2_SLOT_LIST *p_dest;
   TYPEMAKER2_SLOT *p_elem;
 
   assert(p_src);
   p_dest=Typemaker2_Slot_List_new();
   p_elem=Typemaker2_Slot_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     TYPEMAKER2_SLOT *p_cpy;
 
     p_cpy=Typemaker2_Slot_dup(p_elem);
@@ -213,33 +228,49 @@ TYPEMAKER2_SLOT_LIST *Typemaker2_Slot_List_dup(const TYPEMAKER2_SLOT_LIST *p_src
   return p_dest;
 }
 
-void Typemaker2_Slot_ReadXml(TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Slot_ReadXml(TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "name" */
   if (p_struct->name) {
     free(p_struct->name);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "name", NULL); if (s) p_struct->name=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "name", NULL);
+    if (s)
+      p_struct->name=strdup(s);
+  }
   if (p_struct->name==NULL) {  /* member "name" is volatile, just presetting */
-  p_struct->name=NULL;
+    p_struct->name=NULL;
   }
 
   /* member "paramType1" */
   if (p_struct->paramType1) {
     free(p_struct->paramType1);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "paramType1", NULL); if (s) p_struct->paramType1=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "paramType1", NULL);
+    if (s)
+      p_struct->paramType1=strdup(s);
+  }
   if (p_struct->paramType1==NULL) {  /* member "paramType1" is volatile, just presetting */
-  p_struct->paramType1=NULL;
+    p_struct->paramType1=NULL;
   }
 
   /* member "paramType2" */
   if (p_struct->paramType2) {
     free(p_struct->paramType2);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "paramType2", NULL); if (s) p_struct->paramType2=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "paramType2", NULL);
+    if (s)
+      p_struct->paramType2=strdup(s);
+  }
   if (p_struct->paramType2==NULL) {  /* member "paramType2" is volatile, just presetting */
-  p_struct->paramType2=NULL;
+    p_struct->paramType2=NULL;
   }
 
   /* member "flags" */
@@ -247,7 +278,8 @@ void Typemaker2_Slot_ReadXml(TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db) {
 
 }
 
-void Typemaker2_Slot_WriteXml(const TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Slot_WriteXml(const TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "name" */
   GWEN_XMLNode_SetProperty(p_db, "name", p_struct->name);
@@ -263,11 +295,13 @@ void Typemaker2_Slot_WriteXml(const TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_d
 
 }
 
-void Typemaker2_Slot_toXml(const TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Slot_toXml(const TYPEMAKER2_SLOT *p_struct, GWEN_XMLNODE *p_db)
+{
   Typemaker2_Slot_WriteXml(p_struct, p_db);
 }
 
-TYPEMAKER2_SLOT *Typemaker2_Slot_fromXml(GWEN_XMLNODE *p_db) {
+TYPEMAKER2_SLOT *Typemaker2_Slot_fromXml(GWEN_XMLNODE *p_db)
+{
   TYPEMAKER2_SLOT *p_struct;
   p_struct=Typemaker2_Slot_new();
   Typemaker2_Slot_ReadXml(p_struct, p_db);

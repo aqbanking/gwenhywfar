@@ -21,7 +21,8 @@
 
 
 
-int doBuildDefs(GWEN_DB_NODE *dbArgs, const char *fname) {
+int doBuildDefs(GWEN_DB_NODE *dbArgs, const char *fname)
+{
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_BUILDER *tb=NULL;
   TYPEMAKER2_TYPE *ty;
@@ -70,18 +71,18 @@ int doBuildDefs(GWEN_DB_NODE *dbArgs, const char *fname) {
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       s=GWEN_StringListEntry_Data(se);
       if (s) {
-	GWEN_BUFFER *xbuf;
+        GWEN_BUFFER *xbuf;
 
-	xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	GWEN_Buffer_AppendString(xbuf, s);
-	GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
+        xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Buffer_AppendString(xbuf, s);
+        GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
         s=Typemaker2_TypeManager_GetLanguage(tym);
-	if (s && *s)
-	  GWEN_Buffer_AppendString(xbuf, s);
-	Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
+        if (s && *s)
+          GWEN_Buffer_AppendString(xbuf, s);
+        Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
         GWEN_Buffer_free(xbuf);
       }
       se=GWEN_StringListEntry_Next(se);
@@ -97,9 +98,9 @@ int doBuildDefs(GWEN_DB_NODE *dbArgs, const char *fname) {
   }
 
   it=Typemaker2_Type_List2_First(tlist);
-  if(it) {
+  if (it) {
     ty=Typemaker2_Type_List2Iterator_Data(it);
-    while(ty) {
+    while (ty) {
       /* DEBUG */
 #if 0
       Typemaker2_TypeManager_Dump(tym, stderr, 2);
@@ -127,7 +128,8 @@ int doBuildDefs(GWEN_DB_NODE *dbArgs, const char *fname) {
 
 
 
-int buildDefs(GWEN_DB_NODE *dbArgs) {
+int buildDefs(GWEN_DB_NODE *dbArgs)
+{
   int i;
 
   for (i=0; i<99; i++) {
@@ -137,14 +139,14 @@ int buildDefs(GWEN_DB_NODE *dbArgs) {
     if (fileName) {
       int rv=doBuildDefs(dbArgs, fileName);
       if (rv != 0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Error building type from [%s]", fileName);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error building type from [%s]", fileName);
         return 2;
       }
     }
     else {
       if (i==0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "No input");
-	return 1;
+        DBG_ERROR(GWEN_LOGDOMAIN, "No input");
+        return 1;
       }
     }
   }

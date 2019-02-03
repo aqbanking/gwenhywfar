@@ -23,7 +23,8 @@
 
 
 
-HTML_PROPS *HtmlProps_new(void) {
+HTML_PROPS *HtmlProps_new(void)
+{
   HTML_PROPS *pr;
 
   GWEN_NEW_OBJECT(HTML_PROPS, pr);
@@ -36,7 +37,8 @@ HTML_PROPS *HtmlProps_new(void) {
 
 
 
-void HtmlProps_free(HTML_PROPS *pr) {
+void HtmlProps_free(HTML_PROPS *pr)
+{
   if (pr) {
     assert(pr->refCount);
     if (pr->refCount>1) {
@@ -52,7 +54,8 @@ void HtmlProps_free(HTML_PROPS *pr) {
 
 
 
-HTML_PROPS *HtmlProps_dup(const HTML_PROPS *pro) {
+HTML_PROPS *HtmlProps_dup(const HTML_PROPS *pro)
+{
   HTML_PROPS *pr;
 
   pr=HtmlProps_new();
@@ -67,7 +70,8 @@ HTML_PROPS *HtmlProps_dup(const HTML_PROPS *pro) {
 
 
 
-void HtmlProps_Attach(HTML_PROPS *pr) {
+void HtmlProps_Attach(HTML_PROPS *pr)
+{
   assert(pr);
   assert(pr->refCount);
   pr->refCount++;
@@ -75,7 +79,8 @@ void HtmlProps_Attach(HTML_PROPS *pr) {
 
 
 
-HTML_FONT *HtmlProps_GetFont(const HTML_PROPS *pr) {
+HTML_FONT *HtmlProps_GetFont(const HTML_PROPS *pr)
+{
   assert(pr);
   assert(pr->refCount);
   return pr->font;
@@ -83,7 +88,8 @@ HTML_FONT *HtmlProps_GetFont(const HTML_PROPS *pr) {
 
 
 
-void HtmlProps_SetFont(HTML_PROPS *pr, HTML_FONT *fnt) {
+void HtmlProps_SetFont(HTML_PROPS *pr, HTML_FONT *fnt)
+{
   assert(pr);
   assert(pr->refCount);
   HtmlFont_Attach(fnt);
@@ -93,7 +99,8 @@ void HtmlProps_SetFont(HTML_PROPS *pr, HTML_FONT *fnt) {
 
 
 
-uint32_t HtmlProps_GetForegroundColor(const HTML_PROPS *pr) {
+uint32_t HtmlProps_GetForegroundColor(const HTML_PROPS *pr)
+{
   assert(pr);
   assert(pr->refCount);
   return pr->foregroundColor;
@@ -101,7 +108,8 @@ uint32_t HtmlProps_GetForegroundColor(const HTML_PROPS *pr) {
 
 
 
-void HtmlProps_SetForegroundColor(HTML_PROPS *pr, uint32_t c) {
+void HtmlProps_SetForegroundColor(HTML_PROPS *pr, uint32_t c)
+{
   assert(pr);
   assert(pr->refCount);
   pr->foregroundColor=c;
@@ -109,7 +117,8 @@ void HtmlProps_SetForegroundColor(HTML_PROPS *pr, uint32_t c) {
 
 
 
-uint32_t HtmlProps_GetBackgroundColor(const HTML_PROPS *pr) {
+uint32_t HtmlProps_GetBackgroundColor(const HTML_PROPS *pr)
+{
   assert(pr);
   assert(pr->refCount);
   return pr->backgroundColor;
@@ -117,7 +126,8 @@ uint32_t HtmlProps_GetBackgroundColor(const HTML_PROPS *pr) {
 
 
 
-void HtmlProps_SetBackgroundColor(HTML_PROPS *pr, uint32_t c) {
+void HtmlProps_SetBackgroundColor(HTML_PROPS *pr, uint32_t c)
+{
   assert(pr);
   assert(pr->refCount);
   pr->backgroundColor=c;

@@ -21,7 +21,8 @@
 GWEN_INHERIT(HTML_OBJECT, OBJECT_IMAGE);
 
 
-static int HtmlObject_Image_Layout(HTML_OBJECT *o) {
+static int HtmlObject_Image_Layout(HTML_OBJECT *o)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);
@@ -36,7 +37,8 @@ static int HtmlObject_Image_Layout(HTML_OBJECT *o) {
 
 
 
-HTML_OBJECT *HtmlObject_Image_new(GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT *HtmlObject_Image_new(GWEN_XML_CONTEXT *ctx)
+{
   HTML_OBJECT *o;
   OBJECT_IMAGE *xo;
 
@@ -50,10 +52,11 @@ HTML_OBJECT *HtmlObject_Image_new(GWEN_XML_CONTEXT *ctx) {
 
 
 
-void GWENHYWFAR_CB HtmlObject_Image_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlObject_Image_FreeData(void *bp, void *p)
+{
   OBJECT_IMAGE *xo;
 
-  xo=(OBJECT_IMAGE*) p;
+  xo=(OBJECT_IMAGE *) p;
   HtmlImage_free(xo->image);
 
   GWEN_FREE_OBJECT(xo);
@@ -61,7 +64,8 @@ void GWENHYWFAR_CB HtmlObject_Image_FreeData(void *bp, void *p) {
 
 
 
-int HtmlObject_Image_GetScaledWidth(const HTML_OBJECT *o) {
+int HtmlObject_Image_GetScaledWidth(const HTML_OBJECT *o)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);
@@ -73,7 +77,8 @@ int HtmlObject_Image_GetScaledWidth(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_Image_SetScaledWidth(HTML_OBJECT *o, int i) {
+void HtmlObject_Image_SetScaledWidth(HTML_OBJECT *o, int i)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);
@@ -85,7 +90,8 @@ void HtmlObject_Image_SetScaledWidth(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_Image_GetScaledHeight(const HTML_OBJECT *o) {
+int HtmlObject_Image_GetScaledHeight(const HTML_OBJECT *o)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);
@@ -97,7 +103,8 @@ int HtmlObject_Image_GetScaledHeight(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_Image_SetScaledHeight(HTML_OBJECT *o, int i) {
+void HtmlObject_Image_SetScaledHeight(HTML_OBJECT *o, int i)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);
@@ -109,7 +116,8 @@ void HtmlObject_Image_SetScaledHeight(HTML_OBJECT *o, int i) {
 
 
 
-HTML_IMAGE *HtmlObject_Image_GetImage(const HTML_OBJECT *o) {
+HTML_IMAGE *HtmlObject_Image_GetImage(const HTML_OBJECT *o)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);
@@ -121,7 +129,8 @@ HTML_IMAGE *HtmlObject_Image_GetImage(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_Image_SetImage(HTML_OBJECT *o, HTML_IMAGE *img) {
+void HtmlObject_Image_SetImage(HTML_OBJECT *o, HTML_IMAGE *img)
+{
   OBJECT_IMAGE *xo;
 
   assert(o);

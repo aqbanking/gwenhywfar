@@ -53,15 +53,16 @@
 
 
 int GWEN_DBIO__XmlDb_ImportGroup(GWEN_DBIO *dbio,
-				 uint32_t flags,
-				 GWEN_DB_NODE *data,
-				 GWEN_DB_NODE *cfg,
-				 GWEN_XMLNODE *node) {
+                                 uint32_t flags,
+                                 GWEN_DB_NODE *data,
+                                 GWEN_DB_NODE *cfg,
+                                 GWEN_XMLNODE *node)
+{
   GWEN_XMLNODE *n;
 
   assert(node);
   n=GWEN_XMLNode_GetFirstTag(node);
-  while(n) {
+  while (n) {
     const char *tname;
     const char *s;
 
@@ -70,31 +71,31 @@ int GWEN_DBIO__XmlDb_ImportGroup(GWEN_DBIO *dbio,
     s=GWEN_XMLNode_GetProperty(n, "type", 0);
     if (s) {
       if (strcasecmp(s, "group")==0) {
-	GWEN_DB_NODE *db;
+        GWEN_DB_NODE *db;
         int rv;
 
-	db=GWEN_DB_GetGroup(data, flags, tname);
-	if (db==0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here");
-	  return GWEN_ERROR_INVALID;
-	}
-	rv=GWEN_DBIO__XmlDb_ImportGroup(dbio, flags, db, cfg, n);
-	if (rv) {
+        db=GWEN_DB_GetGroup(data, flags, tname);
+        if (db==0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
+          return GWEN_ERROR_INVALID;
+        }
+        rv=GWEN_DBIO__XmlDb_ImportGroup(dbio, flags, db, cfg, n);
+        if (rv) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+          return rv;
+        }
       }
       else if (strcasecmp(s, "var")==0) {
-	int rv;
+        int rv;
 
-	rv=GWEN_DBIO__XmlDb_ImportVar(dbio, flags, data, cfg, n);
-	if (rv) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+        rv=GWEN_DBIO__XmlDb_ImportVar(dbio, flags, data, cfg, n);
+        if (rv) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected type \"%s\"", s);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected type \"%s\"", s);
         return GWEN_ERROR_INVALID;
       }
     }
@@ -107,20 +108,21 @@ int GWEN_DBIO__XmlDb_ImportGroup(GWEN_DBIO *dbio,
 
 
 
-void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf) {
+void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf)
+{
   GWEN_XMLNODE *ndata;
   GWEN_BUFFER *tbuf;
   int rv;
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   ndata=GWEN_XMLNode_GetFirstData(node);
-  while(ndata) {
+  while (ndata) {
     const char *s;
 
     s=GWEN_XMLNode_GetData(ndata);
     if (s) {
       if (GWEN_Buffer_GetUsedBytes(tbuf))
-	GWEN_Buffer_AppendByte(tbuf, ' ');
+        GWEN_Buffer_AppendByte(tbuf, ' ');
       GWEN_Buffer_AppendString(tbuf, s);
     }
     ndata=GWEN_XMLNode_GetNextData(node);
@@ -135,10 +137,11 @@ void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf) {
 
 
 int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
-			       uint32_t flags,
-			       GWEN_DB_NODE *data,
-			       GWEN_DB_NODE *cfg,
-			       GWEN_XMLNODE *node) {
+                               uint32_t flags,
+                               GWEN_DB_NODE *data,
+                               GWEN_DB_NODE *cfg,
+                               GWEN_XMLNODE *node)
+{
   GWEN_XMLNODE *n;
   const char *vname;
   GWEN_BUFFER *tbuf;
@@ -148,7 +151,7 @@ int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
   assert(vname && *vname);
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   n=GWEN_XMLNode_FindFirstTag(node, "value", 0, 0);
-  while(n) {
+  while (n) {
     const char *s;
     const char *d;
     int rv;
@@ -160,57 +163,57 @@ int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
       assert(s && *s);
       s=GWEN_XMLNode_GetProperty(n, "type", 0);
       if (s) {
-	if (strcasecmp(s, "char")==0) {
-	  rv=GWEN_DB_SetCharValue(data, flags, vname, d);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(tbuf);
+        if (strcasecmp(s, "char")==0) {
+          rv=GWEN_DB_SetCharValue(data, flags, vname, d);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(tbuf);
             return rv;
-	  }
-	}
-	else if (strcasecmp(s, "int")==0) {
-	  int val;
+          }
+        }
+        else if (strcasecmp(s, "int")==0) {
+          int val;
 
-	  if (1!=sscanf(d, "%i", &val)) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Non-integer value [%s]", d);
-	    GWEN_Buffer_free(tbuf);
-	    return GWEN_ERROR_INVALID;
-	  }
-	  rv=GWEN_DB_SetIntValue(data, flags, vname, val);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(tbuf);
-	    return rv;
-	  }
-	}
-	else if (strcasecmp(s, "bin")==0) {
-	  GWEN_BUFFER *xbuf;
+          if (1!=sscanf(d, "%i", &val)) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Non-integer value [%s]", d);
+            GWEN_Buffer_free(tbuf);
+            return GWEN_ERROR_INVALID;
+          }
+          rv=GWEN_DB_SetIntValue(data, flags, vname, val);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(tbuf);
+            return rv;
+          }
+        }
+        else if (strcasecmp(s, "bin")==0) {
+          GWEN_BUFFER *xbuf;
 
-	  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  rv=GWEN_Text_FromHexBuffer(d, xbuf);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(xbuf);
-	    GWEN_Buffer_free(tbuf);
-	    return rv;
-	  }
+          xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          rv=GWEN_Text_FromHexBuffer(d, xbuf);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(xbuf);
+            GWEN_Buffer_free(tbuf);
+            return rv;
+          }
 
-	  rv=GWEN_DB_SetBinValue(data, flags, vname,
-				 GWEN_Buffer_GetStart(xbuf),
-				 GWEN_Buffer_GetUsedBytes(xbuf));
-	  GWEN_Buffer_free(xbuf);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(tbuf);
-	    return rv;
-	  }
-	}
-	else {
-	  DBG_ERROR(GWEN_LOGDOMAIN,
-		    "Unhandled value type \"%s\"", s);
-	  GWEN_Buffer_free(tbuf);
-	  return GWEN_ERROR_INVALID;
-	}
+          rv=GWEN_DB_SetBinValue(data, flags, vname,
+                                 GWEN_Buffer_GetStart(xbuf),
+                                 GWEN_Buffer_GetUsedBytes(xbuf));
+          GWEN_Buffer_free(xbuf);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(tbuf);
+            return rv;
+          }
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN,
+                    "Unhandled value type \"%s\"", s);
+          GWEN_Buffer_free(tbuf);
+          return GWEN_ERROR_INVALID;
+        }
       }
     }
     else {
@@ -229,10 +232,11 @@ int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
-			   GWEN_SYNCIO *sio,
-			   GWEN_DB_NODE *data,
-			   GWEN_DB_NODE *cfg,
-			   uint32_t flags) {
+                           GWEN_SYNCIO *sio,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg,
+                           uint32_t flags)
+{
   int rv;
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *n;
@@ -246,8 +250,8 @@ int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
 
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   ctx=GWEN_XmlCtxStore_new(root,
-			   GWEN_XML_FLAGS_DEFAULT |
-			   GWEN_XML_FLAGS_HANDLE_HEADERS);
+                           GWEN_XML_FLAGS_DEFAULT |
+                           GWEN_XML_FLAGS_HANDLE_HEADERS);
   rv=GWEN_XMLContext_ReadFromIo(ctx, sio);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -261,7 +265,7 @@ int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
     n=GWEN_XMLNode_FindFirstTag(root, rootName, 0, 0);
     if (!n) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Root node in XML file is not \"%s\"", rootName);
+                "Root node in XML file is not \"%s\"", rootName);
       GWEN_XMLNode_free(root);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -270,7 +274,7 @@ int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
     n=GWEN_XMLNode_GetFirstTag(root);
     if (!n) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"No root node in XML file");
+                "No root node in XML file");
       GWEN_XMLNode_free(root);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -290,9 +294,10 @@ int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb__ExportGroup(GWEN_DBIO *dbio,
-				 GWEN_DB_NODE *data,
-				 GWEN_XMLNODE *node,
-				 const char *newName) {
+                                 GWEN_DB_NODE *data,
+                                 GWEN_XMLNODE *node,
+                                 const char *newName)
+{
   const char *s;
   GWEN_XMLNODE *n;
   GWEN_DB_NODE *dbT;
@@ -310,12 +315,12 @@ int GWEN_DBIO_XmlDb__ExportGroup(GWEN_DBIO *dbio,
 
   /* store variables */
   dbT=GWEN_DB_GetFirstVar(data);
-  while(dbT) {
+  while (dbT) {
     if (!(GWEN_DB_GetNodeFlags(dbT) & GWEN_DB_NODE_FLAGS_VOLATILE)) {
       rv=GWEN_DBIO_XmlDb__ExportVar(dbio, dbT, n);
       if (rv) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     dbT=GWEN_DB_GetNextVar(dbT);
@@ -323,12 +328,12 @@ int GWEN_DBIO_XmlDb__ExportGroup(GWEN_DBIO *dbio,
 
   /* store groups */
   dbT=GWEN_DB_GetFirstGroup(data);
-  while(dbT) {
+  while (dbT) {
     if (!(GWEN_DB_GetNodeFlags(dbT) & GWEN_DB_NODE_FLAGS_VOLATILE)) {
       rv=GWEN_DBIO_XmlDb__ExportGroup(dbio, dbT, n, 0);
       if (rv) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     dbT=GWEN_DB_GetNextGroup(dbT);
@@ -340,8 +345,9 @@ int GWEN_DBIO_XmlDb__ExportGroup(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
-			       GWEN_DB_NODE *data,
-			       GWEN_XMLNODE *node) {
+                               GWEN_DB_NODE *data,
+                               GWEN_XMLNODE *node)
+{
   const char *s;
   GWEN_XMLNODE *n;
   GWEN_DB_NODE *dbT;
@@ -356,95 +362,95 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 
   /* store variables */
   dbT=GWEN_DB_GetFirstValue(data);
-  while(dbT) {
+  while (dbT) {
     if (!(GWEN_DB_GetNodeFlags(dbT) & GWEN_DB_NODE_FLAGS_VOLATILE)) {
       GWEN_DB_NODE_TYPE vt;
       GWEN_XMLNODE *vn;
-  
+
       vt=GWEN_DB_GetValueType(dbT);
-      switch(vt) {
-  
+      switch (vt) {
+
       case GWEN_DB_NodeType_ValueChar:
-	s=GWEN_DB_GetCharValueFromNode(dbT);
-	if (s && *s) {
-	  GWEN_XMLNODE *dn;
+        s=GWEN_DB_GetCharValueFromNode(dbT);
+        if (s && *s) {
+          GWEN_XMLNODE *dn;
           GWEN_BUFFER *tbuf;
 
-	  vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
-	  GWEN_XMLNode_SetProperty(vn, "type", "char");
-	  GWEN_XMLNode_AddChild(n, vn);
+          vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
+          GWEN_XMLNode_SetProperty(vn, "type", "char");
+          GWEN_XMLNode_AddChild(n, vn);
 
-	  tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-	  rv=GWEN_Text_EscapeXmlToBuffer(s, tbuf);
-	  if (rv<0) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(tbuf);
+          tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+          rv=GWEN_Text_EscapeXmlToBuffer(s, tbuf);
+          if (rv<0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(tbuf);
             return rv;
-	  }
-	  dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(tbuf));
+          }
+          dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(tbuf));
           GWEN_Buffer_free(tbuf);
-	  GWEN_XMLNode_AddChild(vn, dn);
-	}
-	break;
-  
+          GWEN_XMLNode_AddChild(vn, dn);
+        }
+        break;
+
       case GWEN_DB_NodeType_ValueInt: {
-	char nbuf[32];
-	GWEN_XMLNODE *dn;
+        char nbuf[32];
+        GWEN_XMLNODE *dn;
 
-	snprintf(nbuf, sizeof(nbuf), "%i", GWEN_DB_GetIntValueFromNode(dbT));
+        snprintf(nbuf, sizeof(nbuf), "%i", GWEN_DB_GetIntValueFromNode(dbT));
 
-	vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
-	GWEN_XMLNode_SetProperty(vn, "type", "int");
-	GWEN_XMLNode_AddChild(n, vn);
+        vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
+        GWEN_XMLNode_SetProperty(vn, "type", "int");
+        GWEN_XMLNode_AddChild(n, vn);
 
-	dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, nbuf);
-	GWEN_XMLNode_AddChild(vn, dn);
+        dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, nbuf);
+        GWEN_XMLNode_AddChild(vn, dn);
 
-	break;
+        break;
       }
-  
+
       case GWEN_DB_NodeType_ValueBin: {
-	const void *vp;
-	unsigned int vsize;
-  
-	vp=GWEN_DB_GetBinValueFromNode(dbT, &vsize);
-	if (vp && vsize) {
-	  GWEN_BUFFER *bbuf;
-	  GWEN_XMLNODE *dn;
-  
-	  bbuf=GWEN_Buffer_new(0, vsize*2, 0, 1);
-	  rv=GWEN_Text_ToHexBuffer((const char*)vp,
-				   vsize,
-				   bbuf,
-				   0, 0, 0);
-	  if (rv) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_Buffer_free(bbuf);
-	    return rv;
-	  }
-  
-	  vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
-	  GWEN_XMLNode_SetProperty(vn, "type", "bin");
-	  GWEN_XMLNode_AddChild(n, vn);
-  
-	  dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData,
-			      GWEN_Buffer_GetStart(bbuf));
-	  GWEN_Buffer_free(bbuf);
-	  GWEN_XMLNode_AddChild(vn, dn);
-	}
-  
-	break;
+        const void *vp;
+        unsigned int vsize;
+
+        vp=GWEN_DB_GetBinValueFromNode(dbT, &vsize);
+        if (vp && vsize) {
+          GWEN_BUFFER *bbuf;
+          GWEN_XMLNODE *dn;
+
+          bbuf=GWEN_Buffer_new(0, vsize*2, 0, 1);
+          rv=GWEN_Text_ToHexBuffer((const char *)vp,
+                                   vsize,
+                                   bbuf,
+                                   0, 0, 0);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            GWEN_Buffer_free(bbuf);
+            return rv;
+          }
+
+          vn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "value");
+          GWEN_XMLNode_SetProperty(vn, "type", "bin");
+          GWEN_XMLNode_AddChild(n, vn);
+
+          dn=GWEN_XMLNode_new(GWEN_XMLNodeTypeData,
+                              GWEN_Buffer_GetStart(bbuf));
+          GWEN_Buffer_free(bbuf);
+          GWEN_XMLNode_AddChild(vn, dn);
+        }
+
+        break;
       }
-  
+
       case GWEN_DB_NodeType_ValuePtr:
-	DBG_DEBUG(GWEN_LOGDOMAIN, "Not storing pointer value");
-	break;
-  
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Not storing pointer value");
+        break;
+
       default:
-	DBG_ERROR(GWEN_LOGDOMAIN,
-		  "Unsupported variable type %d",
-		  vt);
-	return GWEN_ERROR_INVALID;
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Unsupported variable type %d",
+                  vt);
+        return GWEN_ERROR_INVALID;
       }
     } /* if non-volatile */
 
@@ -457,10 +463,11 @@ int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
-			   GWEN_SYNCIO *sio,
-			   GWEN_DB_NODE *data,
-			   GWEN_DB_NODE *cfg,
-			   uint32_t flags) {
+                           GWEN_SYNCIO *sio,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg,
+                           uint32_t flags)
+{
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *nh;
   int rv;
@@ -485,9 +492,9 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
 
 
   ctx=GWEN_XmlCtxStore_new(root,
-			   GWEN_XML_FLAGS_DEFAULT |
-			   GWEN_XML_FLAGS_SIMPLE |
-			   GWEN_XML_FLAGS_HANDLE_HEADERS);
+                           GWEN_XML_FLAGS_DEFAULT |
+                           GWEN_XML_FLAGS_SIMPLE |
+                           GWEN_XML_FLAGS_HANDLE_HEADERS);
 
   rv=GWEN_XMLNode_WriteToStream(root, ctx, sio);
   if (rv) {
@@ -505,7 +512,8 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
 
 
 GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
-						     const char *fname){
+                                                     const char *fname)
+{
   GWEN_SYNCIO *sio;
   int rv;
   uint8_t tbuf[256];
@@ -526,18 +534,18 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
   rv=GWEN_SyncIo_Read(sio, tbuf, sizeof(tbuf)-1);
   if (rv<1) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "File \"%s\" is not supported by this plugin",
-	     fname);
+             "File \"%s\" is not supported by this plugin",
+             fname);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
   tbuf[rv-1]=0;
-  if (-1!=GWEN_Text_ComparePattern((const char*) tbuf, "*<?xml*", 0)) {
+  if (-1!=GWEN_Text_ComparePattern((const char *) tbuf, "*<?xml*", 0)) {
     /* match */
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "File \"%s\" is supported by this plugin",
-	     fname);
+             "File \"%s\" is supported by this plugin",
+             fname);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     /* don't be too sure about this, we *may* support the file,
@@ -551,7 +559,8 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
 
 
 
-GWEN_DBIO *GWEN_DBIO_XmlDb_Factory(GWEN_PLUGIN *pl) {
+GWEN_DBIO *GWEN_DBIO_XmlDb_Factory(GWEN_PLUGIN *pl)
+{
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("XmlDb", "Imports and exports XML data");
@@ -565,7 +574,8 @@ GWEN_DBIO *GWEN_DBIO_XmlDb_Factory(GWEN_PLUGIN *pl) {
 
 GWEN_PLUGIN *dbio_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
                                 const char *modName,
-                                const char *fileName) {
+                                const char *fileName)
+{
   GWEN_PLUGIN *pl;
 
   pl=GWEN_DBIO_Plugin_new(pm, modName, fileName);

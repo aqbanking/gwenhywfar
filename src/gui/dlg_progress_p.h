@@ -37,8 +37,8 @@ typedef struct GWEN_DLGPROGRESS GWEN_DLGPROGRESS;
 
 
 static int GWENHYWFAR_CB GWEN_DlgProgress_SignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender);
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender);
 
 static void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(void *bp, void *p);
 

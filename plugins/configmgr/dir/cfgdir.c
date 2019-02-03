@@ -46,7 +46,8 @@ GWEN_INHERIT(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR)
 
 
 
-GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_UNUSED GWEN_PLUGIN *pl, const char *url) {
+GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_UNUSED GWEN_PLUGIN *pl, const char *url)
+{
   GWEN_CONFIGMGR *cfg;
 
   cfg=GWEN_ConfigMgrDir_new(url);
@@ -66,8 +67,9 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_UNUSED GWEN_PLUGIN *pl, const cha
 
 
 GWEN_PLUGIN *configmgr_dir_factory(GWEN_PLUGIN_MANAGER *pm,
-				   const char *modName,
-				   const char *fileName) {
+                                   const char *modName,
+                                   const char *fileName)
+{
   GWEN_PLUGIN *pl;
 
   pl=GWEN_ConfigMgr_Plugin_new(pm, modName, fileName);
@@ -81,7 +83,8 @@ GWEN_PLUGIN *configmgr_dir_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url) {
+GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url)
+{
   GWEN_CONFIGMGR *cfg;
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_URL *gurl;
@@ -104,11 +107,11 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url) {
     s=GWEN_Url_GetPath(gurl);
     if (s) {
       /* Does this begin with a slash? If not, we add one, but only if
-	 this isn't a drive letter (for windows!) */
+      this isn't a drive letter (for windows!) */
       if (*s!='/' && *s!='\\'
-	  && !(isalpha(s[0]) && s[1] == ':'
-	       && (s[2] == '/' || s[2] == '\\'))) {
-	GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+          && !(isalpha(s[0]) && s[1] == ':'
+               && (s[2] == '/' || s[2] == '\\'))) {
+        GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
       }
       GWEN_Buffer_AppendString(nbuf, s);
     }
@@ -127,22 +130,23 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url) {
 
 
 
-GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p) {
+GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
 
-  xcfg=(GWEN_CONFIGMGR_DIR*) p;
+  xcfg=(GWEN_CONFIGMGR_DIR *) p;
 
   if (GWEN_FSLock_List_GetCount(xcfg->fileLocks)) {
     GWEN_FSLOCK *lck;
 
     DBG_WARN(GWEN_LOGDOMAIN, "Some groups are still locked, unlocking");
     lck=GWEN_FSLock_List_First(xcfg->fileLocks);
-    while(lck) {
+    while (lck) {
       GWEN_FSLOCK_RESULT res;
 
       res=GWEN_FSLock_Unlock(lck);
       if (res!=GWEN_FSLock_ResultOk) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Unable to unlock file [%s]: %d",
+        DBG_INFO(GWEN_LOGDOMAIN, "Unable to unlock file [%s]: %d",
                  GWEN_FSLock_GetName(lck), res);
       }
       lck=GWEN_FSLock_List_Next(lck);
@@ -157,8 +161,9 @@ GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p) {
 
 
 int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
-				   const char *groupName,
-				   uint32_t *pUniqueId){
+                                   const char *groupName,
+                                   uint32_t *pUniqueId)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_BUFFER *nbuf;
   uint32_t uniqueId=0;
@@ -182,8 +187,8 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   GWEN_Buffer_AppendString(nbuf, "uniqueid");
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
-			    GWEN_PATH_FLAGS_VARIABLE);
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -193,8 +198,8 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not lock group [%s]: %d",
-	      groupName, res);
+              "Could not lock group [%s]: %d",
+              groupName, res);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
@@ -216,8 +221,8 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   f=fopen(GWEN_Buffer_GetStart(nbuf), "w");
   if (f==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
-	      GWEN_Buffer_GetStart(nbuf),
-	      strerror(errno));
+              GWEN_Buffer_GetStart(nbuf),
+              strerror(errno));
     GWEN_FSLock_Unlock(lck);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
@@ -226,8 +231,8 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
   fprintf(f, "%d", (int)uniqueId);
   if (fclose(f)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
-	      GWEN_Buffer_GetStart(nbuf),
-	      strerror(errno));
+              GWEN_Buffer_GetStart(nbuf),
+              strerror(errno));
     GWEN_FSLock_Unlock(lck);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
@@ -246,7 +251,8 @@ int GWEN_ConfigMgrDir__GetUniqueId(GWEN_CONFIGMGR *cfg,
 
 int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
                                           const char *groupName,
-                                          uint32_t uid){
+                                          uint32_t uid)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_BUFFER *nbuf;
   uint32_t uniqueId=0;
@@ -270,8 +276,8 @@ int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
   GWEN_Buffer_AppendString(nbuf, "uniqueid");
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
-			    GWEN_PATH_FLAGS_VARIABLE);
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -281,8 +287,8 @@ int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
   res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not lock group [%s]: %d",
-	      groupName, res);
+              "Could not lock group [%s]: %d",
+              groupName, res);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
@@ -305,8 +311,8 @@ int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
     f=fopen(GWEN_Buffer_GetStart(nbuf), "w");
     if (f==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
-		GWEN_Buffer_GetStart(nbuf),
-		strerror(errno));
+                GWEN_Buffer_GetStart(nbuf),
+                strerror(errno));
       GWEN_FSLock_Unlock(lck);
       GWEN_FSLock_free(lck);
       GWEN_Buffer_free(nbuf);
@@ -315,8 +321,8 @@ int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
     fprintf(f, "%d", (int)uniqueId);
     if (fclose(f)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "fopen(%s, \"w\"): %s",
-		GWEN_Buffer_GetStart(nbuf),
-		strerror(errno));
+                GWEN_Buffer_GetStart(nbuf),
+                strerror(errno));
       GWEN_FSLock_Unlock(lck);
       GWEN_FSLock_free(lck);
       GWEN_Buffer_free(nbuf);
@@ -333,8 +339,9 @@ int GWEN_ConfigMgrDir__UpdateLastUniqueId(GWEN_CONFIGMGR *cfg,
 
 
 void GWEN_ConfigMgrDir_AddGroupDirName(GWEN_CONFIGMGR *cfg,
-				       const char *groupName,
-				       GWEN_BUFFER *nbuf) {
+                                       const char *groupName,
+                                       GWEN_BUFFER *nbuf)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   uint32_t pos;
   char *p;
@@ -351,7 +358,7 @@ void GWEN_ConfigMgrDir_AddGroupDirName(GWEN_CONFIGMGR *cfg,
   pos=GWEN_Buffer_GetPos(nbuf);
   GWEN_Text_EscapeToBuffer(groupName, nbuf);
   p=GWEN_Buffer_GetStart(nbuf)+pos;
-  while(*p) {
+  while (*p) {
     *p=tolower(*p);
     p++;
   }
@@ -361,9 +368,10 @@ void GWEN_ConfigMgrDir_AddGroupDirName(GWEN_CONFIGMGR *cfg,
 
 
 void GWEN_ConfigMgrDir_AddGroupFileName(GWEN_CONFIGMGR *cfg,
-					const char *groupName,
-					const char *subGroupName,
-					GWEN_BUFFER *nbuf) {
+                                        const char *groupName,
+                                        const char *subGroupName,
+                                        GWEN_BUFFER *nbuf)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   uint32_t pos;
   char *p;
@@ -386,7 +394,7 @@ void GWEN_ConfigMgrDir_AddGroupFileName(GWEN_CONFIGMGR *cfg,
   GWEN_Buffer_AppendString(nbuf, ".conf");
 
   p=GWEN_Buffer_GetStart(nbuf)+pos;
-  while(*p) {
+  while (*p) {
     *p=tolower(*p);
     p++;
   }
@@ -394,7 +402,8 @@ void GWEN_ConfigMgrDir_AddGroupFileName(GWEN_CONFIGMGR *cfg,
 
 
 
-GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname) {
+GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
 
   assert(cfg);
@@ -405,7 +414,7 @@ GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname) 
     GWEN_FSLOCK *lck;
 
     lck=GWEN_FSLock_List_First(xcfg->fileLocks);
-    while(lck) {
+    while (lck) {
       if (strcasecmp(GWEN_FSLock_GetName(lck), fname)==0)
         return lck;
       lck=GWEN_FSLock_List_Next(lck);
@@ -418,9 +427,10 @@ GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname) 
 
 
 int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
-			       const char *groupName,
-			       const char *subGroupName,
-			       GWEN_DB_NODE **pDb) {
+                               const char *groupName,
+                               const char *subGroupName,
+                               GWEN_DB_NODE **pDb)
+{
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -434,24 +444,24 @@ int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
   GWEN_ConfigMgrDir_AddGroupFileName(cfg, groupName, subGroupName, nbuf);
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
-			    GWEN_PATH_FLAGS_VARIABLE);
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not access [%s]: %d",
-	     GWEN_Buffer_GetStart(nbuf), rv);
+             GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_Buffer_free(nbuf);
     return rv;
   }
 
   db=GWEN_DB_Group_new(subGroupName);
   rv=GWEN_DB_ReadFile(db,
-		      GWEN_Buffer_GetStart(nbuf),
-		      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_Buffer_GetStart(nbuf),
+                      GWEN_DB_FLAGS_DEFAULT |
                       GWEN_PATH_FLAGS_CREATE_GROUP |
-		      GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM);
+                      GWEN_DB_FLAGS_ALLOW_EMPTY_STREAM);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not read [%s]: %d",
-	     GWEN_Buffer_GetStart(nbuf), rv);
+             GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_DB_Group_free(db);
     GWEN_Buffer_free(nbuf);
     return rv;
@@ -465,9 +475,10 @@ int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
-			       const char *groupName,
-			       const char *subGroupName,
-			       GWEN_DB_NODE *db) {
+                               const char *groupName,
+                               const char *subGroupName,
+                               GWEN_DB_NODE *db)
+{
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -481,11 +492,11 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
   GWEN_ConfigMgrDir_AddGroupFileName(cfg, groupName, subGroupName, nbuf);
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
-			    GWEN_PATH_FLAGS_VARIABLE);
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not access [%s]: %d",
-	     GWEN_Buffer_GetStart(nbuf), rv);
+             GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_Buffer_free(nbuf);
     return rv;
   }
@@ -493,18 +504,18 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
   lck=GWEN_ConfigMgrDir_FindLock(cfg, GWEN_Buffer_GetStart(nbuf));
   if (lck==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Group [%s/%s] is not locked",
-	      groupName, subGroupName);
+              "Group [%s/%s] is not locked",
+              groupName, subGroupName);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
   }
 
   rv=GWEN_DB_WriteFile(db,
-		       GWEN_Buffer_GetStart(nbuf),
-		       GWEN_DB_FLAGS_DEFAULT);
+                       GWEN_Buffer_GetStart(nbuf),
+                       GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not write [%s]: %d",
-	     GWEN_Buffer_GetStart(nbuf), rv);
+             GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_Buffer_free(nbuf);
     return rv;
   }
@@ -516,8 +527,9 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
-				const char *groupName,
-				const char *subGroupName) {
+                                const char *groupName,
+                                const char *subGroupName)
+{
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -532,11 +544,11 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
   GWEN_ConfigMgrDir_AddGroupFileName(cfg, groupName, subGroupName, nbuf);
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
-			    GWEN_PATH_FLAGS_VARIABLE);
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not access [%s]: %d",
-	     GWEN_Buffer_GetStart(nbuf), rv);
+             GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_Buffer_free(nbuf);
     return rv;
   }
@@ -544,8 +556,8 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
   lck=GWEN_ConfigMgrDir_FindLock(cfg, GWEN_Buffer_GetStart(nbuf));
   if (lck) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Group [%s/%s] is already locked",
-	      groupName, subGroupName);
+              "Group [%s/%s] is already locked",
+              groupName, subGroupName);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
   }
@@ -554,8 +566,8 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
   res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not lock group [%s/%s]: %d",
-	      groupName, subGroupName, res);
+              "Could not lock group [%s/%s]: %d",
+              groupName, subGroupName, res);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
@@ -569,8 +581,9 @@ int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
-				  const char *groupName,
-				  const char *subGroupName) {
+                                  const char *groupName,
+                                  const char *subGroupName)
+{
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   GWEN_FSLOCK *lck;
@@ -586,8 +599,8 @@ int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
   lck=GWEN_ConfigMgrDir_FindLock(cfg, GWEN_Buffer_GetStart(nbuf));
   if (lck==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Group [%s/%s] is not locked",
-	      groupName, subGroupName);
+              "Group [%s/%s] is not locked",
+              groupName, subGroupName);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
   }
@@ -595,8 +608,8 @@ int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
   res=GWEN_FSLock_Unlock(lck);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not unlock group [%s/%s]: %d",
-	      groupName, subGroupName, res);
+              "Could not unlock group [%s/%s]: %d",
+              groupName, subGroupName, res);
     GWEN_FSLock_List_Del(lck);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
@@ -613,9 +626,10 @@ int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
-				  const char *groupName,
-				  char *buffer,
-				  uint32_t bufferLen) {
+                                  const char *groupName,
+                                  char *buffer,
+                                  uint32_t bufferLen)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
   uint32_t uid;
@@ -647,7 +661,8 @@ int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
                                        uint32_t uid,
                                        int doCheck,
                                        char *buffer,
-                                       uint32_t bufferLen) {
+                                       uint32_t bufferLen)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
   char ubuf[64];
@@ -696,8 +711,9 @@ int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
-				  const char *groupName,
-				  const char *subGroupName) {
+                                  const char *groupName,
+                                  const char *subGroupName)
+{
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -712,11 +728,11 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
   GWEN_ConfigMgrDir_AddGroupFileName(cfg, groupName, subGroupName, nbuf);
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
-			    GWEN_PATH_FLAGS_VARIABLE);
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_VARIABLE);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Could not access [%s]: %d",
-	     GWEN_Buffer_GetStart(nbuf), rv);
+             GWEN_Buffer_GetStart(nbuf), rv);
     GWEN_Buffer_free(nbuf);
     return rv;
   }
@@ -724,8 +740,8 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
   lck=GWEN_ConfigMgrDir_FindLock(cfg, GWEN_Buffer_GetStart(nbuf));
   if (lck) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Group [%s/%s] is still locked",
-	      groupName, subGroupName);
+              "Group [%s/%s] is still locked",
+              groupName, subGroupName);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
   }
@@ -734,8 +750,8 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
   res=GWEN_FSLock_Lock(lck, 60000, 0);
   if (res!=GWEN_FSLock_ResultOk) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Could not lock group [%s/%s]: %d",
-	      groupName, subGroupName, res);
+              "Could not lock group [%s/%s]: %d",
+              groupName, subGroupName, res);
     GWEN_FSLock_free(lck);
     GWEN_Buffer_free(nbuf);
     return GWEN_ERROR_LOCK;
@@ -753,7 +769,8 @@ int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
-				 GWEN_STRINGLIST *sl) {
+                                 GWEN_STRINGLIST *sl)
+{
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
 
@@ -775,8 +792,9 @@ int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
 
 
 int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
-				    const char *groupName,
-				    GWEN_STRINGLIST *sl) {
+                                    const char *groupName,
+                                    GWEN_STRINGLIST *sl)
+{
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -790,9 +808,9 @@ int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
   GWEN_ConfigMgrDir_AddGroupDirName(cfg, groupName, nbuf);
 
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
-			    GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_CHECKROOT |
                             GWEN_PATH_FLAGS_PATHMUSTEXIST |
-			    GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                            GWEN_PATH_FLAGS_NAMEMUSTEXIST);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Path not found (%d)", rv);
     GWEN_Buffer_free(nbuf);
@@ -813,7 +831,7 @@ int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     se=GWEN_StringList_FirstEntry(rawsl);
-    while(se) {
+    while (se) {
       char buffer[256];
       char *p;
 
@@ -821,9 +839,9 @@ int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
       buffer[sizeof(buffer)-1]=0;
       p=strrchr(buffer, '.');
       if (p) {
-	*p=0;
-	GWEN_Text_UnescapeToBuffer(buffer, tbuf);
-	GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
+        *p=0;
+        GWEN_Text_UnescapeToBuffer(buffer, tbuf);
+        GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
         GWEN_Buffer_Reset(tbuf);
       }
 

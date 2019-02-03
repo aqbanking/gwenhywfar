@@ -50,60 +50,61 @@
 
 
 
-int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN *ct;
-  unsigned int cid;
+  /* unsigned int cid; */
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "contextId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "i",                          /* short option */
-    "id",                         /* long option */
-    "Context id (0 for any)",     /* short description */
-    "Context id (0 for any)"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                    /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "contextId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "i",                          /* short option */
+      "id",                         /* long option */
+      "Context id (0 for any)",     /* short description */
+      "Context id (0 for any)"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                    /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -128,7 +129,7 @@ int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 0;
   }
 
-  cid=GWEN_DB_GetIntValue(db, "contextId", 0, 0);
+  /* cid=GWEN_DB_GetIntValue(db, "contextId", 0, 0); */
 
   ttype=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
   assert(ttype);
@@ -165,7 +166,7 @@ int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
   else {
-    uint8_t clearText[20]={
+    uint8_t clearText[20]= {
       0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
       0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
       0x11, 0x12, 0x13, 0x14
@@ -177,30 +178,30 @@ int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Iso9796_1A4);
     signLen=sizeof(signature);
     rv=GWEN_Crypt_Token_Sign(ct,
-			     0x81, /* local sign key */
-			     algo,
-			     clearText,
-			     20,
-			     signature,
-			     &signLen,
-			     NULL,
-			     0);
+                             0x81, /* local sign key */
+                             algo,
+                             clearText,
+                             20,
+                             signature,
+                             &signLen,
+                             NULL,
+                             0);
     if (rv) {
       DBG_ERROR(0, "Could not sign data (%d)", rv);
       return 3;
     }
 
     fprintf(stderr, "Signature is:\n");
-    GWEN_Text_DumpString((const char*) signature, signLen, 2);
+    GWEN_Text_DumpString((const char *) signature, signLen, 2);
 
     rv=GWEN_Crypt_Token_Verify(ct, 0x81,
-			       algo,
-			       clearText,
-			       20,
-			       signature,
-			       signLen,
-			       0,
-			       0);
+                               algo,
+                               clearText,
+                               20,
+                               signature,
+                               signLen,
+                               0,
+                               0);
     if (rv) {
       DBG_ERROR(0, "Could not verify data (%d)", rv);
       return 3;
@@ -221,60 +222,61 @@ int signWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
 
 
-int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN *ct;
-  unsigned int cid;
+  /* unsigned int cid; */
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "contextId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "i",                          /* short option */
-    "id",                         /* long option */
-    "Context id (0 for any)",     /* short description */
-    "Context id (0 for any)"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                    /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "contextId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "i",                          /* short option */
+      "id",                         /* long option */
+      "Context id (0 for any)",     /* short description */
+      "Context id (0 for any)"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                    /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -299,7 +301,7 @@ int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 0;
   }
 
-  cid=GWEN_DB_GetIntValue(db, "contextId", 0, 0);
+  /* cid=GWEN_DB_GetIntValue(db, "contextId", 0, 0); */
 
   ttype=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
   assert(ttype);
@@ -336,7 +338,7 @@ int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 3;
   }
   else {
-    uint8_t clearText[16]={
+    uint8_t clearText[16]= {
       0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
       0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10
     };
@@ -349,30 +351,30 @@ int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_LeftZero);
     elen=sizeof(encrypted);
     rv=GWEN_Crypt_Token_Encipher(ct,
-				 0x86,
-				 algo,
-				 clearText,
-				 16,
-				 encrypted,
-				 &elen,
-				 0);
+                                 0x86,
+                                 algo,
+                                 clearText,
+                                 16,
+                                 encrypted,
+                                 &elen,
+                                 0);
     if (rv) {
       DBG_ERROR(0, "Could not encipher data (%d)", rv);
       return 3;
     }
 
     fprintf(stderr, "Encrypted data is:\n");
-    GWEN_Text_DumpString((const char*) encrypted, elen, 2);
+    GWEN_Text_DumpString((const char *) encrypted, elen, 2);
 
     dlen=sizeof(decrypted);
     rv=GWEN_Crypt_Token_Decipher(ct,
-				 0x86,
-				 algo,
-				 encrypted,
-				 elen,
-				 decrypted,
-				 &dlen,
-				 0);
+                                 0x86,
+                                 algo,
+                                 encrypted,
+                                 elen,
+                                 decrypted,
+                                 &dlen,
+                                 0);
     if (rv) {
       DBG_ERROR(0, "Could not decipher data (%d)", rv);
       return 3;
@@ -403,7 +405,8 @@ int cryptWithNew(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *cmd;
   int rv;
@@ -411,40 +414,40 @@ int main(int argc, char **argv) {
   GWEN_GUI *gui;
   const char *localedir;
   GWEN_STRINGLIST *slist;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "cfgfile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "C",                          /* short option */
-    "cfgfile",                    /* long option */
-    "Specify the configuration file",     /* short description */
-    "Specify the configuration file"      /* long description */
-  },
-  {
-    0, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "forcePin",                   /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "forcepin",                   /* long option */
-    "force pin entry",     /* short description */
-    "force pin entry even if the error counter is not zero"
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "cfgfile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "C",                          /* short option */
+      "cfgfile",                    /* long option */
+      "Specify the configuration file",     /* short description */
+      "Specify the configuration file"      /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "forcePin",                   /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "forcepin",                   /* long option */
+      "force pin entry",     /* short description */
+      "force pin entry even if the error counter is not zero"
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   err=GWEN_Init();
@@ -462,15 +465,15 @@ int main(int argc, char **argv) {
   assert(GWEN_StringList_Count(slist) > 0);
   localedir = GWEN_StringList_FirstString(slist);
 #ifdef HAVE_I18N
-  setlocale(LC_ALL,"");
+  setlocale(LC_ALL, "");
   if (bindtextdomain(PACKAGE, localedir)==0)
     fprintf(stderr, "Error binding locale\n");
 #endif
   GWEN_StringList_free(slist);
 
   GWEN_Logger_Open(GCT_LOGDOMAIN, "gct-tool", 0,
-		   GWEN_LoggerType_Console,
-		   GWEN_LoggerFacility_User);
+                   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
 
 #ifdef DEBUG_GCT_TOOL
   GWEN_Logger_SetLevel(GCT_LOGDOMAIN, GWEN_LoggerLevel_Info);
@@ -495,10 +498,10 @@ int main(int argc, char **argv) {
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
-		     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
-		     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
-		     args,
-		     db);
+                     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
+                     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
+                     args,
+                     db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
     return -1;
@@ -526,9 +529,9 @@ int main(int argc, char **argv) {
                                   "    This command creates a crypt token"
                                   "\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  showuser:\n"
-				  "    Display user data stored on the "
-				  "token\n\n"));
+                             I18N("  showuser:\n"
+                                  "    Display user data stored on the "
+                                  "token\n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);

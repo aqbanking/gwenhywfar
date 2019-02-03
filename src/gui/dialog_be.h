@@ -39,48 +39,48 @@ extern "C" {
 #endif
 
 
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    int value,
-    int doSignal);
+typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
+                                                          GWEN_WIDGET *w,
+                                                          GWEN_DIALOG_PROPERTY prop,
+                                                          int index,
+                                                          int value,
+                                                          int doSignal);
 
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_GETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    int defaultValue);
+typedef int GWENHYWFAR_CB(*GWEN_DIALOG_GETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
+                                                          GWEN_WIDGET *w,
+                                                          GWEN_DIALOG_PROPERTY prop,
+                                                          int index,
+                                                          int defaultValue);
 
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *value,
-    int doSignal);
+typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
+                                                           GWEN_WIDGET *w,
+                                                           GWEN_DIALOG_PROPERTY prop,
+                                                           int index,
+                                                           const char *value,
+                                                           int doSignal);
 
-typedef const char* GWENHYWFAR_CB (*GWEN_DIALOG_GETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue);
+typedef const char *GWENHYWFAR_CB(*GWEN_DIALOG_GETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
+                                                                   GWEN_WIDGET *w,
+                                                                   GWEN_DIALOG_PROPERTY prop,
+                                                                   int index,
+                                                                   const char *defaultValue);
 
 
 GWENHYWFAR_API
 GWEN_DIALOG_SETINTPROPERTY_FN GWEN_Dialog_SetSetIntPropertyFn(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_SETINTPROPERTY_FN fn);
+                                                              GWEN_DIALOG_SETINTPROPERTY_FN fn);
 
 GWENHYWFAR_API
 GWEN_DIALOG_GETINTPROPERTY_FN GWEN_Dialog_SetGetIntPropertyFn(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_GETINTPROPERTY_FN fn);
+                                                              GWEN_DIALOG_GETINTPROPERTY_FN fn);
 
 GWENHYWFAR_API
 GWEN_DIALOG_SETCHARPROPERTY_FN GWEN_Dialog_SetSetCharPropertyFn(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_SETCHARPROPERTY_FN fn);
+                                                                GWEN_DIALOG_SETCHARPROPERTY_FN fn);
 
 GWENHYWFAR_API
 GWEN_DIALOG_GETCHARPROPERTY_FN GWEN_Dialog_SetGetCharPropertyFn(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_GETCHARPROPERTY_FN fn);
+                                                                GWEN_DIALOG_GETCHARPROPERTY_FN fn);
 
 
 GWENHYWFAR_API

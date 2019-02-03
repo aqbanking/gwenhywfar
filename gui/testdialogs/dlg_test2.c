@@ -25,12 +25,13 @@
 
 
 static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender) {
+                                               GWEN_DIALOG_EVENTTYPE t,
+                                               const char *sender)
+{
   fprintf(stderr,
           "Received event %d from widget [%s]\n", t, sender);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     fprintf(stderr, "Init\n");
     GWEN_Dialog_SetCharProperty(dlg, "button1",
@@ -86,7 +87,8 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
 
 
 
-GWEN_DIALOG *Dlg_Test2_new() {
+GWEN_DIALOG *Dlg_Test2_new()
+{
   GWEN_DIALOG *dlg;
   int rv;
   const char *s;

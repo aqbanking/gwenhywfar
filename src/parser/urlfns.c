@@ -21,7 +21,8 @@
 #include <ctype.h> // for isalpha()
 
 
-GWEN_URL *GWEN_Url_fromString(const char *str) {
+GWEN_URL *GWEN_Url_fromString(const char *str)
+{
   GWEN_URL *url;
   GWEN_DB_NODE *dbVars;
   const char *s;
@@ -51,7 +52,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
       char *buf;
 
       /* got protocol settings */
-      buf=(char*)malloc(p-s+1);
+      buf=(char *)malloc(p-s+1);
       assert(buf);
       memmove(buf, s, p-s+1);
       buf[p-s]=0;
@@ -74,7 +75,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     char *pw;
     char *pat;
 
-    upw=(char*)malloc(p-s+1);
+    upw=(char *)malloc(p-s+1);
     assert(upw);
     memmove(upw, s, p-s);
     upw[p-s]=0;
@@ -108,13 +109,13 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     return 0;
   }
   p=s;
-  while(!starts_with_drive_letter && *p && *p!=':' && *p!='/' && *p!='?')
+  while (!starts_with_drive_letter && *p && *p!=':' && *p!='/' && *p!='?')
     p++;
   if (p!=s) {
     char *buf;
 
     /* got server */
-    buf=(char*)malloc(p-s+1);
+    buf=(char *)malloc(p-s+1);
     assert(buf);
     memmove(buf, s, p-s+1);
     buf[p-s]=0;
@@ -127,14 +128,14 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   /* get port */
   if (*s==':') {
     p=++s;
-    while(*p && *p!='?' && *p!='/')
+    while (*p && *p!='?' && *p!='/')
       p++;
     if (p!=s) {
       char *buf;
       int port;
 
       /* got port */
-      buf=(char*)malloc(p-s+1);
+      buf=(char *)malloc(p-s+1);
       assert(buf);
       memmove(buf, s, p-s+1);
       buf[p-s]=0;
@@ -161,13 +162,13 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   /* get path */
   if (starts_with_drive_letter || *s=='/') {
     p=s;
-    while(*p && *p!='?')
+    while (*p && *p!='?')
       p++;
     if (p!=s) {
       char *buf;
 
       /* got path */
-      buf=(char*)malloc(p-s+1);
+      buf=(char *)malloc(p-s+1);
       assert(buf);
       memmove(buf, s, p-s+1);
       buf[p-s]=0;
@@ -184,7 +185,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
   }
 
   /* read vars */
-  while(*s && *s=='?') {
+  while (*s && *s=='?') {
     GWEN_BUFFER *bName;
     GWEN_BUFFER *bValue;
 
@@ -192,7 +193,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     bValue=GWEN_Buffer_new(0, 256, 0, 1);
     s++;
     p=s;
-    while(*p && *p!='?' && *p!='=')
+    while (*p && *p!='?' && *p!='=')
       p++;
     if (p!=s)
       GWEN_Buffer_AppendBytes(bName, s, (p-s));
@@ -200,7 +201,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
     if (*p=='=') {
       s++;
       p=s;
-      while(*p && *p!='?')
+      while (*p && *p!='?')
         p++;
       if (p!=s)
         GWEN_Buffer_AppendBytes(bValue, s, (p-s));
@@ -223,7 +224,8 @@ GWEN_URL *GWEN_Url_fromString(const char *str) {
 
 
 
-int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
+int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf)
+{
   assert(url);
   if (!url->_modified && !(url->url==0 || url->url[0]==0)) {
     GWEN_Buffer_AppendString(buf, url->url);
@@ -250,7 +252,7 @@ int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
     }
     if (url->vars) {
       dbV=GWEN_DB_GetFirstVar(url->vars);
-      while(dbV) {
+      while (dbV) {
         const char *s;
 
         s=GWEN_DB_VariableName(dbV);
@@ -277,7 +279,8 @@ int GWEN_Url_toString(const GWEN_URL *url, GWEN_BUFFER *buf) {
 
 
 
-void GWEN_Url_toUiShortString(const GWEN_URL *url, GWEN_BUFFER *buf) {
+void GWEN_Url_toUiShortString(const GWEN_URL *url, GWEN_BUFFER *buf)
+{
 
   assert(url);
 
@@ -302,7 +305,8 @@ void GWEN_Url_toUiShortString(const GWEN_URL *url, GWEN_BUFFER *buf) {
 
 
 
-GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
+GWEN_URL *GWEN_Url_fromCommandString(const char *str)
+{
   GWEN_URL *url;
   GWEN_DB_NODE *dbVars;
   const char *s;
@@ -319,13 +323,13 @@ GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
   /* get path */
   if (*s=='/') {
     p=s;
-    while(*p && *p!='?')
+    while (*p && *p!='?')
       p++;
     if (p!=s) {
       char *buf;
 
       /* got path */
-      buf=(char*)malloc(p-s+1);
+      buf=(char *)malloc(p-s+1);
       assert(buf);
       memmove(buf, s, p-s+1);
       buf[p-s]=0;
@@ -341,7 +345,7 @@ GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
   }
 
   /* read vars */
-  while(*s && *s=='?') {
+  while (*s && *s=='?') {
     GWEN_BUFFER *bName;
     GWEN_BUFFER *bValue;
 
@@ -349,7 +353,7 @@ GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
     bValue=GWEN_Buffer_new(0, 256, 0, 1);
     s++;
     p=s;
-    while(*p && *p!='?' && *p!='=')
+    while (*p && *p!='?' && *p!='=')
       p++;
     if (p!=s)
       GWEN_Buffer_AppendBytes(bName, s, (p-s));
@@ -357,7 +361,7 @@ GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
     if (*p=='=') {
       s++;
       p=s;
-      while(*p && *p!='?')
+      while (*p && *p!='?')
         p++;
       if (p!=s)
         GWEN_Buffer_AppendBytes(bValue, s, (p-s));
@@ -380,7 +384,8 @@ GWEN_URL *GWEN_Url_fromCommandString(const char *str) {
 
 
 
-int GWEN_Url_toCommandString(const GWEN_URL *url, GWEN_BUFFER *buf) {
+int GWEN_Url_toCommandString(const GWEN_URL *url, GWEN_BUFFER *buf)
+{
   GWEN_DB_NODE *dbV;
 
   assert(url);
@@ -390,7 +395,7 @@ int GWEN_Url_toCommandString(const GWEN_URL *url, GWEN_BUFFER *buf) {
   }
   if (url->vars) {
     dbV=GWEN_DB_GetFirstVar(url->vars);
-    while(dbV) {
+    while (dbV) {
       const char *s;
 
       s=GWEN_DB_VariableName(dbV);

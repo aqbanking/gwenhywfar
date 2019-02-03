@@ -14,7 +14,8 @@
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_GUI *gui;
   GWEN_DIALOG *dlg;
   int rv;

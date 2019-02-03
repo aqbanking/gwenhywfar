@@ -28,7 +28,8 @@ GWEN_INHERIT_FUNCTIONS(HTML_OBJECT)
 
 
 
-HTML_OBJECT *HtmlObject_new(GWEN_XML_CONTEXT *ctx, HTML_OBJECT_TYPE t) {
+HTML_OBJECT *HtmlObject_new(GWEN_XML_CONTEXT *ctx, HTML_OBJECT_TYPE t)
+{
   HTML_OBJECT *o;
 
   GWEN_NEW_OBJECT(HTML_OBJECT, o);
@@ -43,7 +44,8 @@ HTML_OBJECT *HtmlObject_new(GWEN_XML_CONTEXT *ctx, HTML_OBJECT_TYPE t) {
 
 
 
-void HtmlObject_free(HTML_OBJECT *o) {
+void HtmlObject_free(HTML_OBJECT *o)
+{
   if (o) {
     assert(o->refCount);
     if (o->refCount>1)
@@ -63,7 +65,8 @@ void HtmlObject_free(HTML_OBJECT *o) {
 
 
 
-void HtmlObject_Attach(HTML_OBJECT *o) {
+void HtmlObject_Attach(HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   o->refCount++;
@@ -71,7 +74,8 @@ void HtmlObject_Attach(HTML_OBJECT *o) {
 
 
 
-GWEN_XML_CONTEXT *HtmlObject_GetXmlCtx(const HTML_OBJECT *o) {
+GWEN_XML_CONTEXT *HtmlObject_GetXmlCtx(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->xmlCtx;
@@ -79,7 +83,8 @@ GWEN_XML_CONTEXT *HtmlObject_GetXmlCtx(const HTML_OBJECT *o) {
 
 
 
-HTML_OBJECT_TYPE HtmlObject_GetObjectType(const HTML_OBJECT *o) {
+HTML_OBJECT_TYPE HtmlObject_GetObjectType(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->objectType;
@@ -87,7 +92,8 @@ HTML_OBJECT_TYPE HtmlObject_GetObjectType(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetObjectType(HTML_OBJECT *o, HTML_OBJECT_TYPE t) {
+void HtmlObject_SetObjectType(HTML_OBJECT *o, HTML_OBJECT_TYPE t)
+{
   assert(o);
   assert(o->refCount);
   o->objectType=t;
@@ -95,7 +101,8 @@ void HtmlObject_SetObjectType(HTML_OBJECT *o, HTML_OBJECT_TYPE t) {
 
 
 
-HTML_PROPS *HtmlObject_GetProperties(const HTML_OBJECT *o) {
+HTML_PROPS *HtmlObject_GetProperties(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->properties;
@@ -103,7 +110,8 @@ HTML_PROPS *HtmlObject_GetProperties(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetProperties(HTML_OBJECT *o, HTML_PROPS *pr) {
+void HtmlObject_SetProperties(HTML_OBJECT *o, HTML_PROPS *pr)
+{
   assert(o);
   assert(o->refCount);
 
@@ -114,7 +122,8 @@ void HtmlObject_SetProperties(HTML_OBJECT *o, HTML_PROPS *pr) {
 
 
 
-int HtmlObject_GetX(const HTML_OBJECT *o) {
+int HtmlObject_GetX(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->x;
@@ -122,7 +131,8 @@ int HtmlObject_GetX(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetX(HTML_OBJECT *o, int i) {
+void HtmlObject_SetX(HTML_OBJECT *o, int i)
+{
   assert(o);
   assert(o->refCount);
   o->x=i;
@@ -130,7 +140,8 @@ void HtmlObject_SetX(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GetY(const HTML_OBJECT *o) {
+int HtmlObject_GetY(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->y;
@@ -138,7 +149,8 @@ int HtmlObject_GetY(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetY(HTML_OBJECT *o, int i) {
+void HtmlObject_SetY(HTML_OBJECT *o, int i)
+{
   assert(o);
   assert(o->refCount);
   o->y=i;
@@ -146,7 +158,8 @@ void HtmlObject_SetY(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GetWidth(const HTML_OBJECT *o) {
+int HtmlObject_GetWidth(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->width;
@@ -154,7 +167,8 @@ int HtmlObject_GetWidth(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetWidth(HTML_OBJECT *o, int i) {
+void HtmlObject_SetWidth(HTML_OBJECT *o, int i)
+{
   assert(o);
   assert(o->refCount);
   o->width=i;
@@ -162,7 +176,8 @@ void HtmlObject_SetWidth(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GetHeight(const HTML_OBJECT *o) {
+int HtmlObject_GetHeight(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->height;
@@ -170,7 +185,8 @@ int HtmlObject_GetHeight(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetHeight(HTML_OBJECT *o, int i) {
+void HtmlObject_SetHeight(HTML_OBJECT *o, int i)
+{
   assert(o);
   assert(o->refCount);
   o->height=i;
@@ -178,7 +194,8 @@ void HtmlObject_SetHeight(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GetConfiguredWidth(const HTML_OBJECT *o) {
+int HtmlObject_GetConfiguredWidth(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->configuredWidth;
@@ -186,7 +203,8 @@ int HtmlObject_GetConfiguredWidth(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetConfiguredWidth(HTML_OBJECT *o, int i) {
+void HtmlObject_SetConfiguredWidth(HTML_OBJECT *o, int i)
+{
   assert(o);
   assert(o->refCount);
   o->configuredWidth=i;
@@ -194,7 +212,8 @@ void HtmlObject_SetConfiguredWidth(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GetConfiguredHeight(const HTML_OBJECT *o) {
+int HtmlObject_GetConfiguredHeight(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->configuredHeight;
@@ -202,7 +221,8 @@ int HtmlObject_GetConfiguredHeight(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetConfiguredHeight(HTML_OBJECT *o, int i) {
+void HtmlObject_SetConfiguredHeight(HTML_OBJECT *o, int i)
+{
   assert(o);
   assert(o->refCount);
   o->configuredHeight=i;
@@ -210,7 +230,8 @@ void HtmlObject_SetConfiguredHeight(HTML_OBJECT *o, int i) {
 
 
 
-const char *HtmlObject_GetText(const HTML_OBJECT *o) {
+const char *HtmlObject_GetText(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   return o->text;
@@ -218,17 +239,21 @@ const char *HtmlObject_GetText(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetText(HTML_OBJECT *o, const char *s) {
+void HtmlObject_SetText(HTML_OBJECT *o, const char *s)
+{
   assert(o);
   assert(o->refCount);
   free(o->text);
-  if (s) o->text=strdup(s);
-  else o->text=NULL;
+  if (s)
+    o->text=strdup(s);
+  else
+    o->text=NULL;
 }
 
 
 
-uint32_t HtmlObject_GetFlags(const HTML_OBJECT *o) {
+uint32_t HtmlObject_GetFlags(const HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
 
@@ -237,7 +262,8 @@ uint32_t HtmlObject_GetFlags(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_SetFlags(HTML_OBJECT *o, uint32_t fl) {
+void HtmlObject_SetFlags(HTML_OBJECT *o, uint32_t fl)
+{
   assert(o);
   assert(o->refCount);
 
@@ -246,7 +272,8 @@ void HtmlObject_SetFlags(HTML_OBJECT *o, uint32_t fl) {
 
 
 
-void HtmlObject_AddFlags(HTML_OBJECT *o, uint32_t fl) {
+void HtmlObject_AddFlags(HTML_OBJECT *o, uint32_t fl)
+{
   assert(o);
   assert(o->refCount);
 
@@ -255,7 +282,8 @@ void HtmlObject_AddFlags(HTML_OBJECT *o, uint32_t fl) {
 
 
 
-void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl) {
+void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl)
+{
   assert(o);
   assert(o->refCount);
 
@@ -264,7 +292,8 @@ void HtmlObject_SubFlags(HTML_OBJECT *o, uint32_t fl) {
 
 
 
-int HtmlObject_Layout(HTML_OBJECT *o) {
+int HtmlObject_Layout(HTML_OBJECT *o)
+{
   assert(o);
   assert(o->refCount);
   if (o->layoutFn)
@@ -279,7 +308,8 @@ int HtmlObject_Layout(HTML_OBJECT *o) {
 
 
 HTML_OBJECT_LAYOUT_FN HtmlObject_SetLayoutFn(HTML_OBJECT *o,
-    HTML_OBJECT_LAYOUT_FN fn) {
+                                             HTML_OBJECT_LAYOUT_FN fn)
+{
   HTML_OBJECT_LAYOUT_FN of;
 
   of=o->layoutFn;

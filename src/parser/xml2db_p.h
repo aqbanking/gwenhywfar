@@ -61,7 +61,8 @@ static int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx,
                                               GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent,
                                               const char *value);
 
-static int GWEN_Xml2Db_Handle_DbSetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent);
+static int GWEN_Xml2Db_Handle_DbSetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode,
+                                                      GWEN_DB_NODE *dbCurrent);
 
 
 static int GWEN_Xml2Db_Handle_XmlEnter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);

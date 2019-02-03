@@ -179,7 +179,7 @@ GWENHYWFAR_API int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia);
  * @param port port to set (0-65535)
  */
 GWENHYWFAR_API int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia,
-    int port);
+                                         int port);
 /*@}*/
 
 

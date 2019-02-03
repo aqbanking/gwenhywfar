@@ -118,8 +118,8 @@ void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f);
  *  the name of the program)
  */
 GWENHYWFAR_API GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
-    const char *prg,
-    const char *args);
+                                                     const char *prg,
+                                                     const char *args);
 
 /**
  * Checks for the current state of the given process.

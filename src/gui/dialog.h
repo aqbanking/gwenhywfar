@@ -119,9 +119,9 @@ enum {
  * (see @ref GWEN_DialogEvent_ResultHandled and following) or a GWEN_ERROR
  * code.
  */
-typedef int GWENHYWFAR_CB (*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender);
+typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
+                                                      GWEN_DIALOG_EVENTTYPE t,
+                                                      const char *sender);
 
 
 
@@ -150,7 +150,7 @@ int GWEN_Dialog_ReadXmlFile(GWEN_DIALOG *dlg, const char *fname);
  * read/write dialog preferences.
  */
 GWENHYWFAR_API
-const char*GWEN_Dialog_GetId(const GWEN_DIALOG *dlg);
+const char *GWEN_Dialog_GetId(const GWEN_DIALOG *dlg);
 
 
 GWENHYWFAR_API
@@ -178,9 +178,9 @@ void GWEN_Dialog_AddMediaPath(GWEN_DIALOG *dlg, const char *s);
  */
 GWENHYWFAR_API
 void GWEN_Dialog_AddMediaPathsFromPathManager(GWEN_DIALOG *dlg,
-    const char *destlib,
-    const char *pathName,
-    const char *relPath);
+                                              const char *destlib,
+                                              const char *pathName,
+                                              const char *relPath);
 
 
 /**
@@ -206,7 +206,7 @@ int GWEN_Dialog_RemoveWidget(GWEN_DIALOG *dlg, const char *name);
  */
 GWENHYWFAR_API
 GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_SIGNALHANDLER fn);
+                                                       GWEN_DIALOG_SIGNALHANDLER fn);
 
 
 

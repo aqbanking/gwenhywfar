@@ -21,7 +21,8 @@
 
 
 
-static int HtmlObject_Word_Layout(HTML_OBJECT *o) {
+static int HtmlObject_Word_Layout(HTML_OBJECT *o)
+{
   const char *s;
   int w=0;
   int h=0;
@@ -45,7 +46,8 @@ static int HtmlObject_Word_Layout(HTML_OBJECT *o) {
 
 
 
-HTML_OBJECT *HtmlObject_Word_new(GWEN_XML_CONTEXT *ctx, const char *s) {
+HTML_OBJECT *HtmlObject_Word_new(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   HTML_OBJECT *o;
 
   o=HtmlObject_new(ctx, HtmlObjectType_Word);

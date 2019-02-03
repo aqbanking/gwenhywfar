@@ -148,7 +148,8 @@ GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_Attach(GWEN_CRYPT_TOKEN_KEYINFO *p_
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_dup(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct);
 
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_copy(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, const GWEN_CRYPT_TOKEN_KEYINFO *p_src);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_copy(GWEN_CRYPT_TOKEN_KEYINFO *p_struct,
+                                                                       const GWEN_CRYPT_TOKEN_KEYINFO *p_src);
 
 /** Getter.
  * Use this function to get the member "id" (see @ref GWEN_CRYPT_TOKEN_KEYINFO_id)
@@ -241,7 +242,8 @@ GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetKeyVersion(GWEN_CRYPT_TOKEN_KEYI
 GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetSignCounter(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, uint32_t p_src);
 
 /* list1 functions */
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO_LIST *GWEN_Crypt_Token_KeyInfo_List_dup(const GWEN_CRYPT_TOKEN_KEYINFO_LIST *p_src);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO_LIST *GWEN_Crypt_Token_KeyInfo_List_dup(const GWEN_CRYPT_TOKEN_KEYINFO_LIST
+                                                                                *p_src);
 
 GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_ReadDb(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, GWEN_DB_NODE *p_db);
 
@@ -259,19 +261,21 @@ GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_toXml(const GWEN_CRYPT_TOKEN_KEYINF
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_fromXml(GWEN_XMLNODE *p_db);
 
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_List_GetById(const GWEN_CRYPT_TOKEN_KEYINFO_LIST *p_list, uint32_t p_cmp);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_List_GetById(const GWEN_CRYPT_TOKEN_KEYINFO_LIST
+                                                                               *p_list, uint32_t p_cmp);
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_new(uint32_t kid,
-    GWEN_CRYPT_CRYPTALGOID a,
-    int keySize);
+                                                                      GWEN_CRYPT_CRYPTALGOID a,
+                                                                      int keySize);
 GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetModulus(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len);
-GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_KeyInfo_GetModulusData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
+GWENHYWFAR_API const uint8_t *GWEN_Crypt_Token_KeyInfo_GetModulusData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_KeyInfo_GetModulusLen(const GWEN_CRYPT_TOKEN_KEYINFO *st);
 GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetExponent(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len);
-GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_KeyInfo_GetExponentData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
+GWENHYWFAR_API const uint8_t *GWEN_Crypt_Token_KeyInfo_GetExponentData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_KeyInfo_GetExponentLen(const GWEN_CRYPT_TOKEN_KEYINFO *st);
-GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetCertificate(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len);
-GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_KeyInfo_GetCertificateData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
+GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetCertificate(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p,
+                                                            uint32_t len);
+GWENHYWFAR_API const uint8_t *GWEN_Crypt_Token_KeyInfo_GetCertificateData(const GWEN_CRYPT_TOKEN_KEYINFO *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_KeyInfo_GetCertificateLen(const GWEN_CRYPT_TOKEN_KEYINFO *st);
 /* end-headers */
 

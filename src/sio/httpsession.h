@@ -35,12 +35,12 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 /**
  * This flag forces SSLv3 connections when in HTTPS mode.
  */
-# define GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3               0x00000001	/* deprecated, will be removed in a future release */
+# define GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3               0x00000001  /* deprecated, will be removed in a future release */
 #endif // ifndef NO_DEPRECATED_SYMBOLS
 #define GWEN_HTTP_SESSION_FLAGS_NO_CACHE                  0x00000002
 #ifndef NO_DEPRECATED_SYMBOLS
-# define GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS    0x00000004	/* deprecated, will be removed in a future release */
-# define GWEN_HTTP_SESSION_FLAGS_TLS_FORCE_UNSAFE_CIPHERS 0x00000008	/* deprecated, will be removed in a future release */
+# define GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS    0x00000004  /* deprecated, will be removed in a future release */
+# define GWEN_HTTP_SESSION_FLAGS_TLS_FORCE_UNSAFE_CIPHERS 0x00000008  /* deprecated, will be removed in a future release */
 #endif // ifndef NO_DEPRECATED_SYMBOLS
 
 #define GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE   0x00000010
@@ -186,7 +186,7 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess);
  */
 /*@{*/
 
-typedef int GWENHYWFAR_CB (*GWEN_HTTPSESSION_INITSYNCIO_FN)(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
+typedef int GWENHYWFAR_CB(*GWEN_HTTPSESSION_INITSYNCIO_FN)(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
 GWENHYWFAR_API GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSION *sess,
                                                                                GWEN_HTTPSESSION_INITSYNCIO_FN f);
 

@@ -28,7 +28,8 @@ GWEN_INHERIT(GWEN_CRYPT_KEY, GWEN_CRYPT_KEY_RSA)
 
 
 #if 0
-static void dumpKeyData(gcry_ac_data_t data) {
+static void dumpKeyData(gcry_ac_data_t data)
+{
   int i;
   unsigned int l;
 
@@ -49,7 +50,7 @@ static void dumpKeyData(gcry_ac_data_t data) {
       DBG_INFO(GWEN_LOGDOMAIN, "gcry_mpi_aprint(): %d", err);
     }
     else {
-      GWEN_Text_DumpString((const char*)buf, nbytes, stderr, 6);
+      GWEN_Text_DumpString((const char *)buf, nbytes, stderr, 6);
       gcry_free(buf);
     }
   }
@@ -58,7 +59,8 @@ static void dumpKeyData(gcry_ac_data_t data) {
 
 
 
-static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name, gcry_mpi_t *pMpi) {
+static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name, gcry_mpi_t *pMpi)
+{
   gcry_sexp_t list;
   gcry_mpi_t mpi;
 
@@ -86,7 +88,8 @@ static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name
 
 int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
                                    GWEN_CRYPT_KEY **pPubKey,
-                                   GWEN_CRYPT_KEY **pSecretKey) {
+                                   GWEN_CRYPT_KEY **pSecretKey)
+{
   gcry_sexp_t keyparm, key;
   int rc;
   char buffer[256];
@@ -125,14 +128,14 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
   rc=gcry_sexp_new(&keyparm, buffer, 0, 1);
   if (rc) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-              "Error creating S-expression: %s", gpg_strerror (rc));
+              "Error creating S-expression: %s", gpg_strerror(rc));
     return GWEN_ERROR_GENERIC;
   }
 
   rc=gcry_pk_genkey(&key, keyparm);
   gcry_sexp_release(keyparm);
   if (rc) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error generating RSA key: %s", gpg_strerror (rc));
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error generating RSA key: %s", gpg_strerror(rc));
     return GWEN_ERROR_GENERIC;
   }
 
@@ -254,7 +257,8 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
 #ifndef NO_DEPRECATED_SYMBOLS
 int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
                                     GWEN_CRYPT_KEY **pPubKey,
-                                    GWEN_CRYPT_KEY **pSecretKey) {
+                                    GWEN_CRYPT_KEY **pSecretKey)
+{
   if (nbits%8) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "nbits is required to be a multiple of 8 (%d)", nbits);
@@ -268,10 +272,11 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
 
 
 GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pSignatureData,
-    uint32_t *pSignatureLen) {
+                                         const uint8_t *pInData,
+                                         uint32_t inLen,
+                                         uint8_t *pSignatureData,
+                                         uint32_t *pSignatureLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -338,10 +343,11 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
 
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    const uint8_t *pSignatureData,
-    uint32_t signatureLen) {
+                                                  const uint8_t *pInData,
+                                                  uint32_t inLen,
+                                                  const uint8_t *pSignatureData,
+                                                  uint32_t signatureLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -416,10 +422,11 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pOutData,
-    uint32_t *pOutLen) {
+                                                    const uint8_t *pInData,
+                                                    uint32_t inLen,
+                                                    uint8_t *pOutData,
+                                                    uint32_t *pOutLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -474,10 +481,11 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
 
 
 static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
-    const uint8_t *pInData,
-    uint32_t inLen,
-    uint8_t *pOutData,
-    uint32_t *pOutLen) {
+                                                    const uint8_t *pInData,
+                                                    uint32_t inLen,
+                                                    uint8_t *pOutData,
+                                                    uint32_t *pOutLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   gcry_error_t err;
   size_t nscanned;
@@ -531,7 +539,8 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
 
 
 
-static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t *pMpi) {
+static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry_mpi_t *pMpi)
+{
   gcry_error_t err;
   const void *p;
   unsigned int len;
@@ -565,7 +574,8 @@ static int GWEN_Crypt_KeyRsa__ReadMpi(GWEN_DB_NODE *db, const char *dbName, gcry
 
 
 
-static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, const gcry_mpi_t mpi) {
+static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, const gcry_mpi_t mpi)
+{
   gcry_error_t err;
   unsigned char *buf;
   size_t nbytes;
@@ -586,7 +596,8 @@ static int GWEN_Crypt_KeyRsa__WriteMpi(GWEN_DB_NODE *db, const char *dbName, con
 
 
 
-static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, size_t nbytes) {
+static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *buf, size_t nbytes)
+{
   gcry_error_t err;
   size_t nwritten=0;
 
@@ -603,10 +614,11 @@ static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *b
 
 
 static GWENHYWFAR_CB
-void GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p) {
+void GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CRYPT_KEY_RSA *xk;
 
-  xk=(GWEN_CRYPT_KEY_RSA*) p;
+  xk=(GWEN_CRYPT_KEY_RSA *) p;
   if (xk->modulus)
     gcry_mpi_release(xk->modulus);
   if (xk->pubExponent)
@@ -619,7 +631,8 @@ void GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromDb(GWEN_DB_NODE *db) {
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromDb(GWEN_DB_NODE *db)
+{
   int rv;
   int isPublic;
   GWEN_CRYPT_KEY *k;
@@ -686,7 +699,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromDb(GWEN_DB_NODE *db) {
 
 
 
-int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub) {
+int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   GWEN_DB_NODE *dbR;
   int rv;
@@ -749,7 +763,8 @@ int GWEN_Crypt_KeyRsa_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, int pub) {
 
 
 
-int GWEN_Crypt_KeyRsa_GetModulus(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen) {
+int GWEN_Crypt_KeyRsa_GetModulus(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   int rv;
 
@@ -771,7 +786,8 @@ int GWEN_Crypt_KeyRsa_GetModulus(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint3
 
 
 
-int GWEN_Crypt_KeyRsa_GetExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen) {
+int GWEN_Crypt_KeyRsa_GetExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   int rv;
 
@@ -793,7 +809,8 @@ int GWEN_Crypt_KeyRsa_GetExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint
 
 
 
-int GWEN_Crypt_KeyRsa_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen) {
+int GWEN_Crypt_KeyRsa_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer, uint32_t *pBufLen)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   int rv;
 
@@ -816,10 +833,11 @@ int GWEN_Crypt_KeyRsa_GetSecretExponent(const GWEN_CRYPT_KEY *k, uint8_t *buffer
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
-    const uint8_t *pModulus,
-    uint32_t lModulus,
-    const uint8_t *pExponent,
-    uint32_t lExponent) {
+                                             const uint8_t *pModulus,
+                                             uint32_t lModulus,
+                                             const uint8_t *pExponent,
+                                             uint32_t lExponent)
+{
   GWEN_DB_NODE *dbKey;
   GWEN_DB_NODE *dbR;
   GWEN_CRYPT_KEY *key;
@@ -867,12 +885,13 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModExp(unsigned int nbytes,
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModPrivExp(unsigned int nbytes,
-    const uint8_t *pModulus,
-    uint32_t lModulus,
-    const uint8_t *pExponent,
-    uint32_t lExponent,
-    const uint8_t *pPrivExponent,
-    uint32_t lPrivExponent) {
+                                                 const uint8_t *pModulus,
+                                                 uint32_t lModulus,
+                                                 const uint8_t *pExponent,
+                                                 uint32_t lExponent,
+                                                 const uint8_t *pPrivExponent,
+                                                 uint32_t lPrivExponent)
+{
   GWEN_DB_NODE *dbKey;
   GWEN_DB_NODE *dbR;
   GWEN_CRYPT_KEY *key;
@@ -924,7 +943,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_fromModPrivExp(unsigned int nbytes,
 
 
 
-GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k) {
+GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k)
+{
   GWEN_CRYPT_KEY_RSA *xk;
   GWEN_DB_NODE *dbKey;
   GWEN_CRYPT_KEY *nk;
@@ -955,7 +975,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyRsa_dup(const GWEN_CRYPT_KEY *k) {
 
 
 
-uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k) {
+uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k)
+{
   GWEN_CRYPT_KEY_RSA *xk;
 
   assert(k);
@@ -967,7 +988,8 @@ uint32_t GWEN_Crypt_KeyRsa_GetFlags(const GWEN_CRYPT_KEY *k) {
 
 
 
-void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
+void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k, uint32_t fl)
+{
   GWEN_CRYPT_KEY_RSA *xk;
 
   assert(k);
@@ -979,7 +1001,8 @@ void GWEN_Crypt_KeyRsa_SetFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
 
 
 
-void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
+void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k, uint32_t fl)
+{
   GWEN_CRYPT_KEY_RSA *xk;
 
   assert(k);
@@ -991,7 +1014,8 @@ void GWEN_Crypt_KeyRsa_AddFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
 
 
 
-void GWEN_Crypt_KeyRsa_SubFlags(GWEN_CRYPT_KEY *k, uint32_t fl) {
+void GWEN_Crypt_KeyRsa_SubFlags(GWEN_CRYPT_KEY *k, uint32_t fl)
+{
   GWEN_CRYPT_KEY_RSA *xk;
 
   assert(k);

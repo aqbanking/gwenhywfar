@@ -98,17 +98,17 @@ typedef enum {
   void pr##_IdMap_freeAll(t##_IDMAP *l) {                            \
     GWEN_IDMAP_RESULT res;                                           \
     uint32_t id;                                             \
-					      		             \
+                                 \
     res=pr##_IdMap_GetFirst(l, &id);                                 \
     while(res==GWEN_IdMapResult_Ok) {                                \
       uint32_t nextId;                                       \
       t *ptr;                                                        \
-								     \
-      nextId=id;						     \
+                     \
+      nextId=id;                 \
       res=pr##_IdMap_GetNext(l, &nextId);                            \
       ptr=pr##_IdMap_Find(l, id);                                    \
       if (ptr)                                                       \
-	pr##_free(ptr);                                              \
+  pr##_free(ptr);                                              \
       id=nextId;                                                     \
     }                                                                \
     pr##_IdMap_free(l);                                              \
@@ -117,7 +117,7 @@ typedef enum {
   void pr##_IdMap_FreeItems(t##_IDMAP *l) {                          \
     GWEN_IDMAP_RESULT res;                                           \
     uint32_t id;                                             \
-					      		             \
+                                 \
     res=pr##_IdMap_GetFirst(l, &id);                                 \
     while(res==GWEN_IdMapResult_Ok) {                                \
       uint32_t nextId;                                       \
@@ -127,8 +127,8 @@ typedef enum {
       res=pr##_IdMap_GetNext(l, &nextId);                            \
       ptr=pr##_IdMap_Find(l, id);                                    \
       if (ptr)                                                       \
-	pr##_free(ptr);                                              \
-      pr##_IdMap_Remove(l, id);          			     \
+  pr##_free(ptr);                                              \
+      pr##_IdMap_Remove(l, id);                    \
       id=nextId;                                                     \
     }                                                                \
   }                                                                  \

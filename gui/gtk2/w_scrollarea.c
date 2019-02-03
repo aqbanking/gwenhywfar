@@ -16,7 +16,8 @@ int Gtk2Gui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
                                        GWEN_DIALOG_PROPERTY prop,
                                        int index,
                                        int value,
-                                       int doSignal) {
+                                       int doSignal)
+{
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
 
@@ -25,7 +26,7 @@ int Gtk2Gui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
   gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(gs);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(gs), (value==0)?FALSE:TRUE);
     return 0;
@@ -56,7 +57,8 @@ static GWENHYWFAR_CB
 int Gtk2Gui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
                                        GWEN_DIALOG_PROPERTY prop,
                                        int index,
-                                       int defaultValue) {
+                                       int defaultValue)
+{
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
 
@@ -68,7 +70,7 @@ int Gtk2Gui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(gs))==TRUE)?1:0;
 
@@ -98,7 +100,8 @@ int Gtk2Gui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
                                         const char *value,
-                                        int doSignal) {
+                                        int doSignal)
+{
   GtkWidget *g;         /* scrollable window */
   GtkWidget *gContent;  /* vbox */
 
@@ -116,10 +119,11 @@ int Gtk2Gui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk2Gui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
+                                                GWEN_DIALOG_PROPERTY prop,
+                                                int index,
+                                                const char *defaultValue)
+{
   GtkWidget *gs; /* scrollable window */
   GtkWidget *g;  /* vbox */
 
@@ -137,7 +141,8 @@ const char* Gtk2Gui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+int Gtk2Gui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
+{
   GtkWidget *g;
   GtkWidget *gChild;
   uint32_t cflags;
@@ -160,7 +165,8 @@ int Gtk2Gui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 
 
 
-int Gtk2Gui_WScrollArea_Setup(GWEN_WIDGET *w) {
+int Gtk2Gui_WScrollArea_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   GtkWidget *gContent;
   uint32_t flags;
@@ -174,8 +180,8 @@ int Gtk2Gui_WScrollArea_Setup(GWEN_WIDGET *w) {
   gContent=gtk_vbox_new(TRUE, GTK2_GUI_DIALOG_DEFAULT_BOX_SPACING);
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(g), gContent);
 
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) gContent);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void *) gContent);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WScrollArea_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WScrollArea_GetIntProperty);

@@ -20,7 +20,8 @@
 GWEN_LIST_FUNCTIONS(TYPEMAKER2_CODE, Typemaker2_Code)
 
 
-TYPEMAKER2_CODE *Typemaker2_Code_new(void) {
+TYPEMAKER2_CODE *Typemaker2_Code_new(void)
+{
   TYPEMAKER2_CODE *p_struct;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_CODE, p_struct)
@@ -37,10 +38,11 @@ TYPEMAKER2_CODE *Typemaker2_Code_new(void) {
   return p_struct;
 }
 
-void Typemaker2_Code_free(TYPEMAKER2_CODE *p_struct) {
+void Typemaker2_Code_free(TYPEMAKER2_CODE *p_struct)
+{
   if (p_struct) {
     GWEN_LIST_FINI(TYPEMAKER2_CODE, p_struct)
-  /* members */
+    /* members */
     free(p_struct->id);
     free(p_struct->memberFlagsMask);
     free(p_struct->memberFlagsValue);
@@ -49,7 +51,8 @@ void Typemaker2_Code_free(TYPEMAKER2_CODE *p_struct) {
   }
 }
 
-TYPEMAKER2_CODE *Typemaker2_Code_dup(const TYPEMAKER2_CODE *p_src) {
+TYPEMAKER2_CODE *Typemaker2_Code_dup(const TYPEMAKER2_CODE *p_src)
+{
   TYPEMAKER2_CODE *p_struct;
 
   assert(p_src);
@@ -99,8 +102,9 @@ TYPEMAKER2_CODE *Typemaker2_Code_dup(const TYPEMAKER2_CODE *p_src) {
   return p_struct;
 }
 
-TYPEMAKER2_CODE *Typemaker2_Code_copy(TYPEMAKER2_CODE *p_struct, const TYPEMAKER2_CODE *p_src) {
-    assert(p_struct);
+TYPEMAKER2_CODE *Typemaker2_Code_copy(TYPEMAKER2_CODE *p_struct, const TYPEMAKER2_CODE *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "id" */
   if (p_struct->id) {
@@ -147,37 +151,44 @@ TYPEMAKER2_CODE *Typemaker2_Code_copy(TYPEMAKER2_CODE *p_struct, const TYPEMAKER
   return p_struct;
 }
 
-const char *Typemaker2_Code_GetId(const TYPEMAKER2_CODE *p_struct) {
+const char *Typemaker2_Code_GetId(const TYPEMAKER2_CODE *p_struct)
+{
   assert(p_struct);
   return p_struct->id;
 }
 
-const char *Typemaker2_Code_GetMemberFlagsMask(const TYPEMAKER2_CODE *p_struct) {
+const char *Typemaker2_Code_GetMemberFlagsMask(const TYPEMAKER2_CODE *p_struct)
+{
   assert(p_struct);
   return p_struct->memberFlagsMask;
 }
 
-const char *Typemaker2_Code_GetMemberFlagsValue(const TYPEMAKER2_CODE *p_struct) {
+const char *Typemaker2_Code_GetMemberFlagsValue(const TYPEMAKER2_CODE *p_struct)
+{
   assert(p_struct);
   return p_struct->memberFlagsValue;
 }
 
-const char *Typemaker2_Code_GetCode(const TYPEMAKER2_CODE *p_struct) {
+const char *Typemaker2_Code_GetCode(const TYPEMAKER2_CODE *p_struct)
+{
   assert(p_struct);
   return p_struct->code;
 }
 
-uint32_t Typemaker2_Code_GetMemberFlagsMaskInt(const TYPEMAKER2_CODE *p_struct) {
+uint32_t Typemaker2_Code_GetMemberFlagsMaskInt(const TYPEMAKER2_CODE *p_struct)
+{
   assert(p_struct);
   return p_struct->memberFlagsMaskInt;
 }
 
-uint32_t Typemaker2_Code_GetMemberFlagsValueInt(const TYPEMAKER2_CODE *p_struct) {
+uint32_t Typemaker2_Code_GetMemberFlagsValueInt(const TYPEMAKER2_CODE *p_struct)
+{
   assert(p_struct);
   return p_struct->memberFlagsValueInt;
 }
 
-void Typemaker2_Code_SetId(TYPEMAKER2_CODE *p_struct, const char *p_src) {
+void Typemaker2_Code_SetId(TYPEMAKER2_CODE *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->id) {
     free(p_struct->id);
@@ -190,7 +201,8 @@ void Typemaker2_Code_SetId(TYPEMAKER2_CODE *p_struct, const char *p_src) {
   }
 }
 
-void Typemaker2_Code_SetMemberFlagsMask(TYPEMAKER2_CODE *p_struct, const char *p_src) {
+void Typemaker2_Code_SetMemberFlagsMask(TYPEMAKER2_CODE *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->memberFlagsMask) {
     free(p_struct->memberFlagsMask);
@@ -203,7 +215,8 @@ void Typemaker2_Code_SetMemberFlagsMask(TYPEMAKER2_CODE *p_struct, const char *p
   }
 }
 
-void Typemaker2_Code_SetMemberFlagsValue(TYPEMAKER2_CODE *p_struct, const char *p_src) {
+void Typemaker2_Code_SetMemberFlagsValue(TYPEMAKER2_CODE *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->memberFlagsValue) {
     free(p_struct->memberFlagsValue);
@@ -216,7 +229,8 @@ void Typemaker2_Code_SetMemberFlagsValue(TYPEMAKER2_CODE *p_struct, const char *
   }
 }
 
-void Typemaker2_Code_SetCode(TYPEMAKER2_CODE *p_struct, const char *p_src) {
+void Typemaker2_Code_SetCode(TYPEMAKER2_CODE *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->code) {
     free(p_struct->code);
@@ -229,24 +243,27 @@ void Typemaker2_Code_SetCode(TYPEMAKER2_CODE *p_struct, const char *p_src) {
   }
 }
 
-void Typemaker2_Code_SetMemberFlagsMaskInt(TYPEMAKER2_CODE *p_struct, uint32_t p_src) {
+void Typemaker2_Code_SetMemberFlagsMaskInt(TYPEMAKER2_CODE *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->memberFlagsMaskInt=p_src;
 }
 
-void Typemaker2_Code_SetMemberFlagsValueInt(TYPEMAKER2_CODE *p_struct, uint32_t p_src) {
+void Typemaker2_Code_SetMemberFlagsValueInt(TYPEMAKER2_CODE *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->memberFlagsValueInt=p_src;
 }
 
-TYPEMAKER2_CODE_LIST *Typemaker2_Code_List_dup(const TYPEMAKER2_CODE_LIST *p_src) {
+TYPEMAKER2_CODE_LIST *Typemaker2_Code_List_dup(const TYPEMAKER2_CODE_LIST *p_src)
+{
   TYPEMAKER2_CODE_LIST *p_dest;
   TYPEMAKER2_CODE *p_elem;
 
   assert(p_src);
   p_dest=Typemaker2_Code_List_new();
   p_elem=Typemaker2_Code_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     TYPEMAKER2_CODE *p_cpy;
 
     p_cpy=Typemaker2_Code_dup(p_elem);
@@ -257,42 +274,63 @@ TYPEMAKER2_CODE_LIST *Typemaker2_Code_List_dup(const TYPEMAKER2_CODE_LIST *p_src
   return p_dest;
 }
 
-void Typemaker2_Code_ReadXml(TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Code_ReadXml(TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   if (p_struct->id) {
     free(p_struct->id);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "id", NULL); if (s) p_struct->id=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "id", NULL);
+    if (s)
+      p_struct->id=strdup(s);
+  }
   if (p_struct->id==NULL) {  /* member "id" is volatile, just presetting */
-  p_struct->id=NULL;
+    p_struct->id=NULL;
   }
 
   /* member "memberFlagsMask" */
   if (p_struct->memberFlagsMask) {
     free(p_struct->memberFlagsMask);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "memberFlagsMask", NULL); if (s) p_struct->memberFlagsMask=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "memberFlagsMask", NULL);
+    if (s)
+      p_struct->memberFlagsMask=strdup(s);
+  }
   if (p_struct->memberFlagsMask==NULL) {  /* member "memberFlagsMask" is volatile, just presetting */
-  p_struct->memberFlagsMask=NULL;
+    p_struct->memberFlagsMask=NULL;
   }
 
   /* member "memberFlagsValue" */
   if (p_struct->memberFlagsValue) {
     free(p_struct->memberFlagsValue);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "memberFlagsValue", NULL); if (s) p_struct->memberFlagsValue=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "memberFlagsValue", NULL);
+    if (s)
+      p_struct->memberFlagsValue=strdup(s);
+  }
   if (p_struct->memberFlagsValue==NULL) {  /* member "memberFlagsValue" is volatile, just presetting */
-  p_struct->memberFlagsValue=NULL;
+    p_struct->memberFlagsValue=NULL;
   }
 
   /* member "code" */
   if (p_struct->code) {
     free(p_struct->code);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "code", NULL); if (s) p_struct->code=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "code", NULL);
+    if (s)
+      p_struct->code=strdup(s);
+  }
   if (p_struct->code==NULL) {  /* member "code" is volatile, just presetting */
-  p_struct->code=NULL;
+    p_struct->code=NULL;
   }
 
   /* member "memberFlagsMaskInt" */
@@ -305,7 +343,8 @@ void Typemaker2_Code_ReadXml(TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db) {
 
 }
 
-void Typemaker2_Code_WriteXml(const TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Code_WriteXml(const TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   GWEN_XMLNode_SetProperty(p_db, "id", p_struct->id);
@@ -325,11 +364,13 @@ void Typemaker2_Code_WriteXml(const TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_d
 
 }
 
-void Typemaker2_Code_toXml(const TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Code_toXml(const TYPEMAKER2_CODE *p_struct, GWEN_XMLNODE *p_db)
+{
   Typemaker2_Code_WriteXml(p_struct, p_db);
 }
 
-TYPEMAKER2_CODE *Typemaker2_Code_fromXml(GWEN_XMLNODE *p_db) {
+TYPEMAKER2_CODE *Typemaker2_Code_fromXml(GWEN_XMLNODE *p_db)
+{
   TYPEMAKER2_CODE *p_struct;
   p_struct=Typemaker2_Code_new();
   Typemaker2_Code_ReadXml(p_struct, p_db);

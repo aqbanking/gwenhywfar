@@ -39,7 +39,7 @@ typedef struct GWEN__XMLPROPERTY GWEN_XMLPROPERTY;
 
 GWEN_XMLPROPERTY *GWEN_XMLNode_GetFirstProperty(const GWEN_XMLNODE *n);
 GWEN_XMLPROPERTY *GWEN_XMLNode_GetNextProperty(const GWEN_XMLNODE *n,
-    const GWEN_XMLPROPERTY *pr);
+                                               const GWEN_XMLPROPERTY *pr);
 
 const char *GWEN_XMLProperty_GetName(const GWEN_XMLPROPERTY *pr);
 const char *GWEN_XMLProperty_GetValue(const GWEN_XMLPROPERTY *pr);
@@ -49,9 +49,9 @@ int GWEN_XML_AddNameSpace(GWEN_STRINGLIST2 *sl,
                           const char *prefix,
                           const char *name);
 const char *GWEN_XML_FindNameSpaceByPrefix(GWEN_STRINGLIST2 *sl,
-    const char *s);
+                                           const char *s);
 const char *GWEN_XML_FindNameSpaceByName(GWEN_STRINGLIST2 *sl,
-    const char *s);
+                                         const char *s);
 const char *GWEN_XML_FindNameSpace(GWEN_STRINGLIST2 *sl,
                                    const char *prefix,
                                    const char *name);

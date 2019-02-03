@@ -48,19 +48,22 @@
 
 
 
-int GWEN_LibLoader_ModuleInit(void) {
+int GWEN_LibLoader_ModuleInit(void)
+{
   return 0;
 }
 
 
 
-int GWEN_LibLoader_ModuleFini(void) {
+int GWEN_LibLoader_ModuleFini(void)
+{
   return 0;
 }
 
 
 
-GWEN_LIBLOADER *GWEN_LibLoader_new(void) {
+GWEN_LIBLOADER *GWEN_LibLoader_new(void)
+{
   GWEN_LIBLOADER *h;
 
   GWEN_NEW_OBJECT(GWEN_LIBLOADER, h);
@@ -69,7 +72,8 @@ GWEN_LIBLOADER *GWEN_LibLoader_new(void) {
 
 
 
-void GWEN_LibLoader_free(GWEN_LIBLOADER *h) {
+void GWEN_LibLoader_free(GWEN_LIBLOADER *h)
+{
   if (h) {
     GWEN_FREE_OBJECT(h);
   }
@@ -78,7 +82,8 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h) {
 
 
 int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                               const char *name) {
+                               const char *name)
+{
   const char *errorstring;
 
   assert(h);
@@ -89,9 +94,9 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
   if (!h->handle) {
 
 #ifdef ENABLE_NLS
-    const char *orig_locale = setlocale(LC_MESSAGES,NULL);
+    const char *orig_locale = setlocale(LC_MESSAGES, NULL);
     char *currentLocale = strdup(orig_locale ? orig_locale : "C");
-    setlocale(LC_MESSAGES,"C");
+    setlocale(LC_MESSAGES, "C");
 #endif
 
     /* The string is checked against the known "C" locale strings
@@ -100,7 +105,7 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
     errorstring = dlerror();
 
 #ifdef ENABLE_NLS
-    setlocale(LC_MESSAGES,currentLocale);
+    setlocale(LC_MESSAGES, currentLocale);
     free(currentLocale);
 #endif
 
@@ -130,7 +135,8 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 
 
 
-int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h) {
+int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h)
+{
 
   assert(h);
 
@@ -149,14 +155,15 @@ int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h) {
 
 
 int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
-                           const char *name, void **p) {
+                           const char *name, void **p)
+{
   assert(h);
   assert(name);
   assert(p);
 
   if (!h->handle)
     return GWEN_ERROR_NOT_OPEN;
-  *p=dlsym(h->handle,name);
+  *p=dlsym(h->handle, name);
   if (!*p) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error resolving symbol \"%s\": %s\n",
              name, dlerror());
@@ -171,7 +178,8 @@ int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
 
 int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
                                        const char *path,
-                                       const char *name) {
+                                       const char *name)
+{
   GWEN_BUFFER *buffer;
   unsigned int pos;
   unsigned int pos2;
@@ -296,7 +304,8 @@ int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
 
 
 int GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
-                               const char *name) {
+                               const char *name)
+{
   return GWEN_LibLoader_OpenLibraryWithPath(h, 0, name);
 }
 

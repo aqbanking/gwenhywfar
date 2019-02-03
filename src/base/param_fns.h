@@ -93,7 +93,8 @@ GWENHYWFAR_API void GWEN_Param_List_SetCurrentValueAsInt(GWEN_PARAM_LIST *pl, co
  * @param defVal default value (returned if param has no value or no valid value).
  *
  */
-GWENHYWFAR_API double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const char *name, double defVal);
+GWENHYWFAR_API double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const char *name,
+                                                              double defVal);
 
 /**
  * Find param with the given name and change its current value. If there is no param of that name is

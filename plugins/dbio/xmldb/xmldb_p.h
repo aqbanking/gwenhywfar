@@ -36,48 +36,48 @@
 
 GWENHYWFAR_EXPORT
 GWEN_PLUGIN *dbio_xmldb_factory(GWEN_PLUGIN_MANAGER *pm,
-				const char *modName,
-				const char *fileName);
+                                const char *modName,
+                                const char *fileName);
 
 
 static int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
-				  GWEN_SYNCIO *sio,
-				  GWEN_DB_NODE *data,
-				  GWEN_DB_NODE *cfg,
-				  uint32_t flags);
+                                  GWEN_SYNCIO *sio,
+                                  GWEN_DB_NODE *data,
+                                  GWEN_DB_NODE *cfg,
+                                  uint32_t flags);
 
 static int GWEN_DBIO_XmlDb_Import(GWEN_DBIO *dbio,
-				  GWEN_SYNCIO *sio,
-				  GWEN_DB_NODE *data,
-				  GWEN_DB_NODE *cfg,
-				  uint32_t flags);
+                                  GWEN_SYNCIO *sio,
+                                  GWEN_DB_NODE *data,
+                                  GWEN_DB_NODE *cfg,
+                                  uint32_t flags);
 
 static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
-							    const char *fname);
+                                                            const char *fname);
 
 
 
 static int GWEN_DBIO__XmlDb_ImportGroup(GWEN_DBIO *dbio,
-					uint32_t flags,
-					GWEN_DB_NODE *data,
-					GWEN_DB_NODE *cfg,
-					GWEN_XMLNODE *node);
+                                        uint32_t flags,
+                                        GWEN_DB_NODE *data,
+                                        GWEN_DB_NODE *cfg,
+                                        GWEN_XMLNODE *node);
 static void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf);
 static int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
-				      uint32_t flags,
-				      GWEN_DB_NODE *data,
-				      GWEN_DB_NODE *cfg,
-				      GWEN_XMLNODE *node);
+                                      uint32_t flags,
+                                      GWEN_DB_NODE *data,
+                                      GWEN_DB_NODE *cfg,
+                                      GWEN_XMLNODE *node);
 
 
 static int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
-				      GWEN_DB_NODE *data,
-				      GWEN_XMLNODE *node);
+                                      GWEN_DB_NODE *data,
+                                      GWEN_XMLNODE *node);
 
 static int GWEN_DBIO_XmlDb__ExportGroup(GWEN_DBIO *dbio,
-					GWEN_DB_NODE *data,
-					GWEN_XMLNODE *node,
-					const char *newName);
+                                        GWEN_DB_NODE *data,
+                                        GWEN_XMLNODE *node,
+                                        const char *newName);
 
 
 #endif

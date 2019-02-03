@@ -46,49 +46,49 @@ struct MACRO_STRUCT {
 
 
 MACRO_DEF macroDefs[]= {
-{
-  "GWEN_LIST2_FUNCTION_DEFS",
-  "list2.tmpl",
-  "_list2p"
-},
-{
-  "GWEN_LIST2_FUNCTION_LIB_DEFS",
-  "list2.tmpl",
-  "_list2"
-},
-{
-  "GWEN_CONSTLIST2_FUNCTION_DEFS",
-  "list2.tmpl",
-  "_constlist2p"
-},
-{
-  "GWEN_CONSTLIST2_FUNCTION_LIB_DEFS",
-  "list2.tmpl",
-  "_constlist2"
-},
-{
-  "GWEN_LIST_FUNCTION_DEFS",
-  "list1.tmpl",
-  "_listp"
-},
-{
-  "GWEN_LIST_FUNCTION_LIB_DEFS",
-  "list1.tmpl",
-  "_list"
-},
-{
-  "GWEN_CONSTLIST_FUNCTION_DEFS",
-  "list1.tmpl",
-  "_constlistp"
-},
-{
-  "GWEN_CONSTLIST_FUNCTION_LIB_DEFS",
-  "list1.tmpl",
-  "_constlist"
-},
-{
-  0, 0, 0
-}
+  {
+    "GWEN_LIST2_FUNCTION_DEFS",
+    "list2.tmpl",
+    "_list2p"
+  },
+  {
+    "GWEN_LIST2_FUNCTION_LIB_DEFS",
+    "list2.tmpl",
+    "_list2"
+  },
+  {
+    "GWEN_CONSTLIST2_FUNCTION_DEFS",
+    "list2.tmpl",
+    "_constlist2p"
+  },
+  {
+    "GWEN_CONSTLIST2_FUNCTION_LIB_DEFS",
+    "list2.tmpl",
+    "_constlist2"
+  },
+  {
+    "GWEN_LIST_FUNCTION_DEFS",
+    "list1.tmpl",
+    "_listp"
+  },
+  {
+    "GWEN_LIST_FUNCTION_LIB_DEFS",
+    "list1.tmpl",
+    "_list"
+  },
+  {
+    "GWEN_CONSTLIST_FUNCTION_DEFS",
+    "list1.tmpl",
+    "_constlistp"
+  },
+  {
+    "GWEN_CONSTLIST_FUNCTION_LIB_DEFS",
+    "list1.tmpl",
+    "_constlist"
+  },
+  {
+    0, 0, 0
+  }
 };
 
 
@@ -106,10 +106,11 @@ int verbosity=0;
 
 MACRO_STRUCT *MacroStruct_new(MACRO_DEF *macroDef,
                               const char *typeName,
-                              const char *typePrefix) {
+                              const char *typePrefix)
+{
   MACRO_STRUCT *m;
 
-  m=(MACRO_STRUCT*)malloc(sizeof(MACRO_STRUCT));
+  m=(MACRO_STRUCT *)malloc(sizeof(MACRO_STRUCT));
   memset(m, 0, sizeof(MACRO_STRUCT));
   m->macroDef=macroDef;
   if (typeName)
@@ -122,7 +123,8 @@ MACRO_STRUCT *MacroStruct_new(MACRO_DEF *macroDef,
 
 
 
-void MacroStruct_free(MACRO_STRUCT *m) {
+void MacroStruct_free(MACRO_STRUCT *m)
+{
   if (m) {
     free(m->typeName);
     free(m->typePrefix);
@@ -135,7 +137,8 @@ void MacroStruct_free(MACRO_STRUCT *m) {
 
 int scanLine(MACRO_DEF *macroDef,
              char *buffer,
-             MACRO_STRUCT **m) {
+             MACRO_STRUCT **m)
+{
   char *p;
   char *macroBegin;
 
@@ -144,11 +147,12 @@ int scanLine(MACRO_DEF *macroDef,
     /* found something, search for opening bracket */
     macroBegin=p;
     p+=strlen(macroDef->macroName);
-    while(*p && isspace((int)*p)) p++;
+    while (*p && isspace((int)*p))
+      p++;
     if (*p && *p!='(')
       return -1;
 
-    while(*p) {
+    while (*p) {
       if (*p=='(') {
         char *typeName;
         char *typeNameEnd;
@@ -160,21 +164,23 @@ int scanLine(MACRO_DEF *macroDef,
 
         /* found it, now read the typename */
         p++;
-        while(*p && isspace((int)*p)) p++;
+        while (*p && isspace((int)*p))
+          p++;
         typeName=p;
 
         /* find comma */
-        while(*p) {
+        while (*p) {
           if (*p==',') {
             /* found it, name ends here */
             if (!typeNameEnd)
               typeNameEnd=p;
             p++;
-            while(*p && isspace((int)*p)) p++;
+            while (*p && isspace((int)*p))
+              p++;
             typePrefix=p;
 
             /* find closing bracket */
-            while(*p) {
+            while (*p) {
               if (*p==')' || *p==',') {
                 MACRO_STRUCT *lm;
                 MACRO_STRUCT *sm;
@@ -187,16 +193,19 @@ int scanLine(MACRO_DEF *macroDef,
 
                 /* check whether this is a definition */
                 s=buffer;
-                while(*s && isspace((int)*s)) s++;
+                while (*s && isspace((int)*s))
+                  s++;
                 if (*s=='#') {
                   s++;
                   /* preprocessor command, check for define */
-                  while(*s && isspace((int)*s)) s++;
+                  while (*s && isspace((int)*s))
+                    s++;
                   if (strncasecmp(s, "define ", 7)==0) {
                     s+=7;
                     /* it is a define, now check if the next nonblank is
                      * the beginning of this macro */
-                    while(*s && isspace((int)*s)) s++;
+                    while (*s && isspace((int)*s))
+                      s++;
                     if (s==macroBegin) {
                       if (verbosity>1)
                         fprintf(stderr, "Found definition for macro \"%s\".\n",
@@ -211,7 +220,7 @@ int scanLine(MACRO_DEF *macroDef,
                 *typePrefixEnd=0;
                 *typeNameEnd=0;
                 sm=*m;
-                while(sm) {
+                while (sm) {
                   if (strcmp(sm->macroDef->macroName, macroDef->macroName)==0)
                     if (strcmp(sm->typeName, typeName)==0)
                       /* already exists */
@@ -276,7 +285,8 @@ int scanLine(MACRO_DEF *macroDef,
 
 
 int scanLineForAllMacros(char *buffer,
-                         MACRO_STRUCT **m) {
+                         MACRO_STRUCT **m)
+{
   int i;
 
 
@@ -292,7 +302,8 @@ int scanLineForAllMacros(char *buffer,
 
 
 
-MACRO_STRUCT *scanForMacros(const char *fname) {
+MACRO_STRUCT *scanForMacros(const char *fname)
+{
   FILE *f;
   MACRO_STRUCT *mst;
   char buffer[MAX_LINESIZE];
@@ -311,7 +322,7 @@ MACRO_STRUCT *scanForMacros(const char *fname) {
 
   buffer[0]=0;
   buffer[sizeof(buffer)-1]=0;
-  while(!feof(f)) {
+  while (!feof(f)) {
     int sl;
     int rv;
 
@@ -375,12 +386,13 @@ MACRO_STRUCT *scanForMacros(const char *fname) {
 int transformF(FILE *inFile,
                FILE *outFile,
                const char *outFileName,
-               MACRO_STRUCT *m) {
+               MACRO_STRUCT *m)
+{
   char *p;
   char buffer[MAX_LINESIZE];
   int didIt;
 
-  while(!feof(inFile)) {
+  while (!feof(inFile)) {
     char *vname;
     int sl;
 
@@ -402,8 +414,8 @@ int transformF(FILE *inFile,
 
     vname=0;
     p=buffer;
-    while(*p) {
-      while(*p && *p!='@') {
+    while (*p) {
+      while (*p && *p!='@') {
         if (EOF==fputc(*p, outFile)) {
           fprintf(stderr, "fputc(): %s (1)\n", strerror(errno));
           return 2;
@@ -413,16 +425,17 @@ int transformF(FILE *inFile,
       didIt=0;
       if (*p=='@') {
         char *psave;
-  
+
         /* got a var... */
         psave=p;
         p++;
         vname=p;
-        while(*p && *p!='@') p++;
+        while (*p && *p!='@')
+          p++;
         if (*p=='@') {
           char c;
           const char *replacement;
-  
+
           /* got it */
           c=*p;
           *p=0;
@@ -438,7 +451,7 @@ int transformF(FILE *inFile,
           }
           *p=c;
           p++;
-  
+
           if (replacement) {
             if (fprintf(outFile, "%s", replacement)<1) {
               fprintf(stderr, "fprintf(): %s\n", strerror(errno));
@@ -475,7 +488,8 @@ int transformF(FILE *inFile,
 
 int transform(const char *inFile,
               const char *outFile,
-              MACRO_STRUCT *m) {
+              MACRO_STRUCT *m)
+{
   FILE *f1;
   FILE *f2;
   int rv;
@@ -516,7 +530,8 @@ int transform(const char *inFile,
 
 
 
-int processFile(const char *fname) {
+int processFile(const char *fname)
+{
   MACRO_STRUCT *m;
 
   m=scanForMacros(fname);
@@ -526,7 +541,7 @@ int processFile(const char *fname) {
       MACRO_STRUCT *cm;
 
       cm=m;
-      while(cm) {
+      while (cm) {
         int rv;
         char tmplBuffer[256];
 
@@ -560,7 +575,8 @@ int processFile(const char *fname) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int i = 1;
   int wantHelp;
 
@@ -570,7 +586,7 @@ int main(int argc, char **argv) {
   }
   else {
     i=1;
-    while(i<argc) {
+    while (i<argc) {
       if (strcmp(argv[i], "-I")==0) {
         i++;
         if (i>=argc) {
@@ -631,7 +647,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  while(i<argc) {
+  while (i<argc) {
     int rv;
 
     /* process all files */

@@ -73,7 +73,8 @@ typedef struct GWEN_SLOT GWEN_SLOT;
  * This is the prototype for the slot function. If there is a problem in the
  * function it should return 1, otherwise 0.
  */
-typedef int GWENHYWFAR_CB (*GWEN_SLOT_FUNCTION)(GWEN_SLOT *slot, void *userData, void *pArg1, void *pArg2, int iArg3, int iArg4);
+typedef int GWENHYWFAR_CB(*GWEN_SLOT_FUNCTION)(GWEN_SLOT *slot, void *userData, void *pArg1, void *pArg2, int iArg3,
+                                               int iArg4);
 
 
 /** @name SignalObject
@@ -88,9 +89,9 @@ void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so);
 
 GWENHYWFAR_API
 GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
-    const char *name,
-    const char *typeOfArg1,
-    const char *typeOfArg2);
+                                          const char *name,
+                                          const char *typeOfArg1,
+                                          const char *typeOfArg2);
 
 GWENHYWFAR_API
 GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
@@ -105,7 +106,7 @@ GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
  */
 GWENHYWFAR_API
 void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
-    const char *derivedType);
+                                            const char *derivedType);
 
 
 /**

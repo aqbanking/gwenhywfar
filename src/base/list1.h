@@ -155,7 +155,7 @@ extern "C" {
 typedef struct GWEN_LIST1 GWEN_LIST1;
 typedef struct GWEN_LIST1_ELEMENT GWEN_LIST1_ELEMENT;
 
-typedef int GWENHYWFAR_CB (*GWEN_LIST1_SORT_FN)(const void *a, const void *b, int ascending);
+typedef int GWENHYWFAR_CB(*GWEN_LIST1_SORT_FN)(const void *a, const void *b, int ascending);
 
 
 /** Allocate (create) a new empty list. */
@@ -288,7 +288,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
   decl int pr##_List_Add(t *element, t##_LIST *list); \
   decl int pr##_List_Insert(t *element, t##_LIST *list); \
   decl int pr##_List_Del(t *element);
- 
+
 
 #define GWEN_LIST_FUNCTION_DEFS_CONST(t, pr) \
   GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, GWEN_DUMMY_EMPTY_ARG)

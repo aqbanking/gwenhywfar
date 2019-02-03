@@ -44,16 +44,17 @@
 /* The idea of this function is taken from a posting by Anders Carlsson on the mailing list
  * bug-gnu-chess (http://mail.gnu.org/archive/html/bug-gnu-chess/2004-01/msg00020.html)
 */
-int GWEN_Time__GetCurrentTime(GWEN_TIME *ti) {
+int GWEN_Time__GetCurrentTime(GWEN_TIME *ti)
+{
   long sec, msec;
   union {
     uint64_t ns100; /* time since 1 Jan 1601 in 100ns units */
     FILETIME ft;
   } current_date;
 
-  GetSystemTimeAsFileTime( &(current_date.ft));
+  GetSystemTimeAsFileTime(&(current_date.ft));
 
-  msec=(long)((current_date.ns100 / 10000LL) % 1000LL );
+  msec=(long)((current_date.ns100 / 10000LL) % 1000LL);
   sec=(long)((current_date.ns100-(116444736000000000LL))/10000000LL);
   GWEN_Time__SetSecsAndMSecs(ti, sec, msec);
   return 0;

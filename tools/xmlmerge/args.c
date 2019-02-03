@@ -33,10 +33,11 @@
 
 
 
-ARGUMENTS *Arguments_new() {
+ARGUMENTS *Arguments_new()
+{
   ARGUMENTS *ar;
 
-  ar=(ARGUMENTS*)malloc(sizeof(ARGUMENTS));
+  ar=(ARGUMENTS *)malloc(sizeof(ARGUMENTS));
   assert(ar);
   memset(ar, 0, sizeof(ARGUMENTS));
   ar->verbous=0;
@@ -49,10 +50,11 @@ ARGUMENTS *Arguments_new() {
 
 
 
-FREEPARAM *FreeParam_new(const char *s) {
+FREEPARAM *FreeParam_new(const char *s)
+{
   FREEPARAM *fr;
 
-  fr=(FREEPARAM*)malloc(sizeof(FREEPARAM));
+  fr=(FREEPARAM *)malloc(sizeof(FREEPARAM));
   assert(fr);
   memset(fr, 0, sizeof(FREEPARAM));
   fr->param=s;
@@ -60,14 +62,16 @@ FREEPARAM *FreeParam_new(const char *s) {
 }
 
 
-void FreeParam_free(FREEPARAM *fr) {
+void FreeParam_free(FREEPARAM *fr)
+{
   if (fr)
     free(fr);
 }
 
 
 
-void Arguments_AddParam(ARGUMENTS *ar, const char *pr) {
+void Arguments_AddParam(ARGUMENTS *ar, const char *pr)
+{
   FREEPARAM *curr;
   FREEPARAM *nfp;
 
@@ -83,7 +87,7 @@ void Arguments_AddParam(ARGUMENTS *ar, const char *pr) {
   }
   else {
     /* find last */
-    while(curr->next) {
+    while (curr->next) {
       curr=curr->next;
     } /* while */
     curr->next=nfp;
@@ -93,13 +97,14 @@ void Arguments_AddParam(ARGUMENTS *ar, const char *pr) {
 
 
 
-void Arguments_free(ARGUMENTS *ar) {
+void Arguments_free(ARGUMENTS *ar)
+{
   if (ar) {
     FREEPARAM *fr;
     FREEPARAM *next;
 
     fr=ar->params;
-    while(fr) {
+    while (fr) {
       next=fr->next;
       FreeParam_free(fr);
       fr=next;
@@ -110,34 +115,36 @@ void Arguments_free(ARGUMENTS *ar) {
 
 
 
-void usage(const char *prgname) {
+void usage(const char *prgname)
+{
   fprintf(stdout, "%s%s",
           k_PRG_VERSION_INFO "\n",
           I18N(
-               "-v               verbous\n"
-               "--logfile ARG    name of the logfile\n"
-               "--logtype ARG    log type\n"
-               "--loglevel ARG   log level\n"
-               "-o ARG           name of output file (stdout if omitted)\n"
-               "--compact        write a more compact file\n"
-              )
+            "-v               verbous\n"
+            "--logfile ARG    name of the logfile\n"
+            "--logtype ARG    log type\n"
+            "--loglevel ARG   log level\n"
+            "-o ARG           name of output file (stdout if omitted)\n"
+            "--compact        write a more compact file\n"
+          )
          );
 }
 
 
 
-int checkArgs(ARGUMENTS *args, int argc, char **argv) {
+int checkArgs(ARGUMENTS *args, int argc, char **argv)
+{
   int i;
 
   i=1;
-  while (i<argc){
-    if (strcmp(argv[i],"--logfile")==0) {
+  while (i<argc) {
+    if (strcmp(argv[i], "--logfile")==0) {
       i++;
       if (i>=argc)
-	return RETURNVALUE_PARAM;
+        return RETURNVALUE_PARAM;
       args->logFile=argv[i];
     }
-    else if (strcmp(argv[i],"--logtype")==0) {
+    else if (strcmp(argv[i], "--logtype")==0) {
       i++;
       if (i>=argc)
         return RETURNVALUE_PARAM;
@@ -149,7 +156,7 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
         return RETURNVALUE_PARAM;
       }
     }
-    else if (strcmp(argv[i],"--loglevel")==0) {
+    else if (strcmp(argv[i], "--loglevel")==0) {
       i++;
       if (i>=argc)
         return RETURNVALUE_PARAM;
@@ -161,33 +168,33 @@ int checkArgs(ARGUMENTS *args, int argc, char **argv) {
         return RETURNVALUE_PARAM;
       }
     }
-    else if (strcmp(argv[i],"-o")==0) {
+    else if (strcmp(argv[i], "-o")==0) {
       i++;
       if (i>=argc)
         return RETURNVALUE_PARAM;
       args->outputFile=argv[i];
     }
-    else if (strcmp(argv[i],"--compact")==0) {
+    else if (strcmp(argv[i], "--compact")==0) {
       args->compact=1;
     }
-    else if (strcmp(argv[i],"--header")==0) {
+    else if (strcmp(argv[i], "--header")==0) {
       args->header=1;
     }
-    else if (strcmp(argv[i],"-h")==0 || strcmp(argv[i],"--help")==0) {
+    else if (strcmp(argv[i], "-h")==0 || strcmp(argv[i], "--help")==0) {
       usage(argv[0]);
       return -2;
     }
-    else if (strcmp(argv[i],"-V")==0 || strcmp(argv[i],"--version")==0) {
+    else if (strcmp(argv[i], "-V")==0 || strcmp(argv[i], "--version")==0) {
       fprintf(stdout, k_PRG_VERSION_INFO);
       return -2;
     }
-    else if (strcmp(argv[i],"-v")==0) {
+    else if (strcmp(argv[i], "-v")==0) {
       args->verbous=1;
     }
     else {
       /* otherwise add param */
       if (argv[i][0]=='-') {
-        fprintf(stderr,I18N("Unknown option \"%s\"\n"),argv[i]);
+        fprintf(stderr, I18N("Unknown option \"%s\"\n"), argv[i]);
         return RETURNVALUE_PARAM;
       }
       else

@@ -43,7 +43,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_SIGNAL, GWEN_Signal)
 GWEN_LIST2_FUNCTIONS(GWEN_SLOT, GWEN_Slot)
 
 
-GWEN_SIGNALOBJECT *GWEN_SignalObject_new(void) {
+GWEN_SIGNALOBJECT *GWEN_SignalObject_new(void)
+{
   GWEN_SIGNALOBJECT *so;
 
   GWEN_NEW_OBJECT(GWEN_SIGNALOBJECT, so);
@@ -55,7 +56,8 @@ GWEN_SIGNALOBJECT *GWEN_SignalObject_new(void) {
 
 
 
-void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so) {
+void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so)
+{
   if (so) {
     GWEN_Slot_List2_freeAll(so->slotList);
     GWEN_Signal_List2_freeAll(so->signalList);
@@ -65,16 +67,18 @@ void GWEN_SignalObject_free(GWEN_SIGNALOBJECT *so) {
 
 
 
-uint32_t GWEN_SignalObject_MkTypeId(const char *typeName) {
+uint32_t GWEN_SignalObject_MkTypeId(const char *typeName)
+{
   return GWEN_Inherit_MakeId(typeName);
 }
 
 
 
 GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
-    const char *name,
-    uint32_t typeId1,
-    uint32_t typeId2) {
+                                           const char *name,
+                                           uint32_t typeId1,
+                                           uint32_t typeId2)
+{
   GWEN_SIGNAL_LIST2_ITERATOR *sit;
 
   assert(so);
@@ -86,7 +90,7 @@ GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
 
     sig=GWEN_Signal_List2Iterator_Data(sit);
     assert(sig);
-    while(sig) {
+    while (sig) {
       const char *s;
 
       s=sig->name;
@@ -108,9 +112,10 @@ GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
 
 
 GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
-    const char *name,
-    const char *typeOfArg1,
-    const char *typeOfArg2) {
+                                          const char *name,
+                                          const char *typeOfArg1,
+                                          const char *typeOfArg2)
+{
   uint32_t typeId1=0;
   uint32_t typeId2=0;
 
@@ -126,7 +131,8 @@ GWEN_SIGNAL *GWEN_SignalObject_FindSignal(const GWEN_SIGNALOBJECT *so,
 GWEN_SLOT *GWEN_SignalObject__findSlot(const GWEN_SIGNALOBJECT *so,
                                        const char *name,
                                        uint32_t typeId1,
-                                       uint32_t typeId2) {
+                                       uint32_t typeId2)
+{
   GWEN_SLOT_LIST2_ITERATOR *sit;
 
   assert(so);
@@ -138,7 +144,7 @@ GWEN_SLOT *GWEN_SignalObject__findSlot(const GWEN_SIGNALOBJECT *so,
 
     slot=GWEN_Slot_List2Iterator_Data(sit);
     assert(slot);
-    while(slot) {
+    while (slot) {
       const char *s;
 
       s=slot->name;
@@ -162,7 +168,8 @@ GWEN_SLOT *GWEN_SignalObject__findSlot(const GWEN_SIGNALOBJECT *so,
 GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
                                       const char *name,
                                       const char *typeOfArg1,
-                                      const char *typeOfArg2) {
+                                      const char *typeOfArg2)
+{
   uint32_t typeId1=0;
   uint32_t typeId2=0;
 
@@ -175,7 +182,8 @@ GWEN_SLOT *GWEN_SignalObject_FindSlot(const GWEN_SIGNALOBJECT *so,
 
 
 
-int GWEN_SignalObject_AddSignal(GWEN_SIGNALOBJECT *so, GWEN_SIGNAL *sig) {
+int GWEN_SignalObject_AddSignal(GWEN_SIGNALOBJECT *so, GWEN_SIGNAL *sig)
+{
   if (GWEN_SignalObject__findSignal(so, sig->name,
                                     sig->typeOfArg1,
                                     sig->typeOfArg2)) {
@@ -193,7 +201,8 @@ int GWEN_SignalObject_AddSignal(GWEN_SIGNALOBJECT *so, GWEN_SIGNAL *sig) {
 
 
 
-int GWEN_SignalObject_AddSlot(GWEN_SIGNALOBJECT *so, GWEN_SLOT *slot) {
+int GWEN_SignalObject_AddSlot(GWEN_SIGNALOBJECT *so, GWEN_SLOT *slot)
+{
   if (GWEN_SignalObject__findSlot(so, slot->name,
                                   slot->typeOfArg1,
                                   slot->typeOfArg2)) {
@@ -211,7 +220,8 @@ int GWEN_SignalObject_AddSlot(GWEN_SIGNALOBJECT *so, GWEN_SLOT *slot) {
 
 
 void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
-    const char *derivedType) {
+                                            const char *derivedType)
+{
   uint32_t typeId=0;
   GWEN_SLOT_LIST2_ITERATOR *slotIt;
   GWEN_SIGNAL_LIST2_ITERATOR *sigIt;
@@ -226,7 +236,7 @@ void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
 
     slot=GWEN_Slot_List2Iterator_Data(slotIt);
     assert(slot);
-    while(slot) {
+    while (slot) {
       const char *s;
 
       s=slot->name;
@@ -249,7 +259,7 @@ void GWEN_SignalObject_RemoveForDerivedType(GWEN_SIGNALOBJECT *so,
 
     sig=GWEN_Signal_List2Iterator_Data(sigIt);
     assert(sig);
-    while(sig) {
+    while (sig) {
       const char *s;
 
       s=sig->name;
@@ -275,7 +285,8 @@ GWEN_SIGNAL *GWEN_Signal_new(GWEN_SIGNALOBJECT *so,
                              const char *derivedType,
                              const char *name,
                              const char *typeOfArg1,
-                             const char *typeOfArg2) {
+                             const char *typeOfArg2)
+{
   GWEN_SIGNAL *sig;
 
   assert(so);
@@ -301,7 +312,8 @@ GWEN_SIGNAL *GWEN_Signal_new(GWEN_SIGNALOBJECT *so,
 
 
 
-void GWEN_Signal_free(GWEN_SIGNAL *sig) {
+void GWEN_Signal_free(GWEN_SIGNAL *sig)
+{
   if (sig) {
     assert(sig->_refCount);
     if (sig->_refCount==1) {
@@ -314,7 +326,7 @@ void GWEN_Signal_free(GWEN_SIGNAL *sig) {
 
         slot=GWEN_Slot_List2Iterator_Data(sit);
         assert(slot);
-        while(slot) {
+        while (slot) {
           GWEN_SLOT *next;
 
           next=GWEN_Slot_List2Iterator_Next(sit);
@@ -339,7 +351,8 @@ void GWEN_Signal_free(GWEN_SIGNAL *sig) {
 
 
 
-void GWEN_Signal_Attach(GWEN_SIGNAL *sig) {
+void GWEN_Signal_Attach(GWEN_SIGNAL *sig)
+{
   assert(sig);
   assert(sig->_refCount);
   sig->_refCount++;
@@ -347,14 +360,16 @@ void GWEN_Signal_Attach(GWEN_SIGNAL *sig) {
 
 
 
-GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, GWEN_UNUSED void *user_data) {
+GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, GWEN_UNUSED void *user_data)
+{
   GWEN_Signal_free(sig);
   return 0;
 }
 
 
 
-void GWEN_Signal_List2_freeAll(GWEN_SIGNAL_LIST2 *slist) {
+void GWEN_Signal_List2_freeAll(GWEN_SIGNAL_LIST2 *slist)
+{
   GWEN_Signal_List2_ForEach(slist, GWEN_Signal__List2_freeAll_cb, 0);
   GWEN_Signal_List2_free(slist);
 }
@@ -362,8 +377,9 @@ void GWEN_Signal_List2_freeAll(GWEN_SIGNAL_LIST2 *slist) {
 
 
 GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
-    void *user_data) {
-  if ((void*)sig==user_data)
+                                             void *user_data)
+{
+  if ((void *)sig==user_data)
     return sig;
   return 0;
 }
@@ -371,23 +387,26 @@ GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
 
 
 int GWEN_Signal_List2_HasSignal(GWEN_SIGNAL_LIST2 *slist,
-                                const GWEN_SIGNAL *sig) {
+                                const GWEN_SIGNAL *sig)
+{
   if (GWEN_Signal_List2_ForEach(slist, GWEN_Signal__List2_hasSignal_cb,
-                                (void*)sig))
+                                (void *)sig))
     return 1;
   return 0;
 }
 
 
 
-GWEN_SIGNALOBJECT *GWEN_Signal_GetSignalObject(const GWEN_SIGNAL *sig) {
+GWEN_SIGNALOBJECT *GWEN_Signal_GetSignalObject(const GWEN_SIGNAL *sig)
+{
   assert(sig);
   return sig->signalObject;
 }
 
 
 
-int GWEN_Signal_Connect(GWEN_SIGNAL *sig, GWEN_SLOT *slot) {
+int GWEN_Signal_Connect(GWEN_SIGNAL *sig, GWEN_SLOT *slot)
+{
   assert(sig);
   assert(slot);
   if (sig->typeOfArg1!=slot->typeOfArg1) {
@@ -426,7 +445,8 @@ int GWEN_Signal_Connect(GWEN_SIGNAL *sig, GWEN_SLOT *slot) {
 
 
 
-int GWEN_Signal_Disconnect(GWEN_SIGNAL *sig, GWEN_SLOT *slot) {
+int GWEN_Signal_Disconnect(GWEN_SIGNAL *sig, GWEN_SLOT *slot)
+{
   assert(sig);
   assert(slot);
   if (GWEN_Signal_List2_HasSignal(slot->connectedSignals, sig)==0) {
@@ -452,7 +472,8 @@ int GWEN_Signal_Disconnect(GWEN_SIGNAL *sig, GWEN_SLOT *slot) {
 
 
 int GWEN_Signal_Emit(GWEN_SIGNAL *sig,
-                     void *pArg1, void *pArg2, int iArg3, int iArg4) {
+                     void *pArg1, void *pArg2, int iArg3, int iArg4)
+{
   GWEN_SLOT_LIST2_ITERATOR *sit;
   int result=0;
 
@@ -463,7 +484,7 @@ int GWEN_Signal_Emit(GWEN_SIGNAL *sig,
 
     slot=GWEN_Slot_List2Iterator_Data(sit);
     assert(slot);
-    while(slot) {
+    while (slot) {
       if (slot->func) {
         int rv;
 
@@ -497,7 +518,8 @@ GWEN_SLOT *GWEN_Slot_new(GWEN_SIGNALOBJECT *so,
                          const char *typeOfArg1,
                          const char *typeOfArg2,
                          GWEN_SLOT_FUNCTION fn,
-                         void *userData) {
+                         void *userData)
+{
   GWEN_SLOT *slot;
 
   assert(name);
@@ -524,7 +546,8 @@ GWEN_SLOT *GWEN_Slot_new(GWEN_SIGNALOBJECT *so,
 
 
 
-void GWEN_Slot_free(GWEN_SLOT *slot) {
+void GWEN_Slot_free(GWEN_SLOT *slot)
+{
   if (slot) {
     assert(slot->_refCount);
     if (slot->_refCount==1) {
@@ -537,7 +560,7 @@ void GWEN_Slot_free(GWEN_SLOT *slot) {
 
         sig=GWEN_Signal_List2Iterator_Data(sit);
         assert(sig);
-        while(sig) {
+        while (sig) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Disconnecting slot \"%s\" from signal \"%s\"",
                     slot->name, sig->name);
@@ -559,7 +582,8 @@ void GWEN_Slot_free(GWEN_SLOT *slot) {
 
 
 
-void GWEN_Slot_Attach(GWEN_SLOT *slot) {
+void GWEN_Slot_Attach(GWEN_SLOT *slot)
+{
   assert(slot);
   assert(slot->_refCount);
   slot->_refCount++;
@@ -567,14 +591,16 @@ void GWEN_Slot_Attach(GWEN_SLOT *slot) {
 
 
 
-GWEN_SLOT *GWEN_Slot__List2_freeAll_cb(GWEN_SLOT *slot, GWEN_UNUSED void *user_data) {
+GWEN_SLOT *GWEN_Slot__List2_freeAll_cb(GWEN_SLOT *slot, GWEN_UNUSED void *user_data)
+{
   GWEN_Slot_free(slot);
   return 0;
 }
 
 
 
-void GWEN_Slot_List2_freeAll(GWEN_SLOT_LIST2 *slist) {
+void GWEN_Slot_List2_freeAll(GWEN_SLOT_LIST2 *slist)
+{
   GWEN_Slot_List2_ForEach(slist, GWEN_Slot__List2_freeAll_cb, 0);
   GWEN_Slot_List2_free(slist);
 }
@@ -582,8 +608,9 @@ void GWEN_Slot_List2_freeAll(GWEN_SLOT_LIST2 *slist) {
 
 
 GWEN_SLOT *GWEN_Slot__List2_hasSlot_cb(GWEN_SLOT *slot,
-                                       void *user_data) {
-  if ((void*)slot==user_data)
+                                       void *user_data)
+{
+  if ((void *)slot==user_data)
     return slot;
   return 0;
 }
@@ -591,16 +618,18 @@ GWEN_SLOT *GWEN_Slot__List2_hasSlot_cb(GWEN_SLOT *slot,
 
 
 int GWEN_Slot_List2_HasSlot(GWEN_SLOT_LIST2 *slist,
-                            const GWEN_SLOT *slot) {
+                            const GWEN_SLOT *slot)
+{
   if (GWEN_Slot_List2_ForEach(slist, GWEN_Slot__List2_hasSlot_cb,
-                              (void*)slot))
+                              (void *)slot))
     return 1;
   return 0;
 }
 
 
 
-GWEN_SIGNALOBJECT *GWEN_Slot_GetSignalObject(const GWEN_SLOT *slot) {
+GWEN_SIGNALOBJECT *GWEN_Slot_GetSignalObject(const GWEN_SLOT *slot)
+{
   assert(slot);
   return slot->signalObject;
 }

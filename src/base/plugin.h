@@ -59,9 +59,9 @@ extern "C" {
 
 
 
-typedef GWEN_PLUGIN* (*GWEN_PLUGIN_FACTORYFN)(GWEN_PLUGIN_MANAGER *pm,
-    const char *name,
-    const char *fileName);
+typedef GWEN_PLUGIN *(*GWEN_PLUGIN_FACTORYFN)(GWEN_PLUGIN_MANAGER *pm,
+                                              const char *name,
+                                              const char *fileName);
 
 
 GWENHYWFAR_API
@@ -95,7 +95,7 @@ GWEN_LIBLOADER *GWEN_Plugin_GetLibLoader(const GWEN_PLUGIN *p);
  */
 GWENHYWFAR_API
 GWEN_PLUGIN_MANAGER *GWEN_PluginManager_new(const char *name,
-    const char *destLib);
+                                            const char *destLib);
 
 GWENHYWFAR_API
 void GWEN_PluginManager_free(GWEN_PLUGIN_MANAGER *pm);
@@ -172,9 +172,9 @@ int GWEN_PluginManager_RemovePath(GWEN_PLUGIN_MANAGER *pm,
 */
 GWENHYWFAR_API
 int GWEN_PluginManager_AddPathFromWinReg(GWEN_PLUGIN_MANAGER *pm,
-    const char *callingLib,
-    const char *keypath,
-    const char *varname);
+                                         const char *callingLib,
+                                         const char *keypath,
+                                         const char *varname);
 
 /** Returns the list of all search paths of the given
  * PluginManager. */
@@ -183,17 +183,17 @@ GWEN_STRINGLIST *GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm);
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPlugin(GWEN_PLUGIN_MANAGER *pm,
-    const char *modName);
+                                           const char *modName);
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_LoadPluginFile(GWEN_PLUGIN_MANAGER *pm,
-    const char *modName,
-    const char *fname);
+                                               const char *modName,
+                                               const char *fname);
 
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_PluginManager_GetPlugin(GWEN_PLUGIN_MANAGER *pm,
-    const char *s);
+                                          const char *s);
 
 /**
  * Add a plugin to this plugin manager. Normally plugins are loaded upon
@@ -215,12 +215,12 @@ GWEN_PLUGIN_MANAGER *GWEN_PluginManager_FindPluginManager(const char *s);
 
 
 GWENHYWFAR_API
-GWEN_PLUGIN_DESCRIPTION_LIST2*
+GWEN_PLUGIN_DESCRIPTION_LIST2 *
 GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm);
 
 
 GWENHYWFAR_API
-GWEN_PLUGIN_DESCRIPTION*
+GWEN_PLUGIN_DESCRIPTION *
 GWEN_PluginManager_GetPluginDescr(GWEN_PLUGIN_MANAGER *pm,
                                   const char *modName);
 

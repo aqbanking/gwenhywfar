@@ -265,8 +265,8 @@ int GWEN_Directory_GetAllEntries(const char *folder,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetFileEntriesWithType(const char *folder,
-    GWEN_STRINGLIST *sl,
-    const char *mask);
+                                          GWEN_STRINGLIST *sl,
+                                          const char *mask);
 
 /**
  * This function does the same as @ref GWEN_Directory_GetAllEntries, but
@@ -307,8 +307,8 @@ int GWEN_Directory_GetDirEntries(const char *folder,
  */
 GWENHYWFAR_API
 int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
-    GWEN_STRINGLIST *sl,
-    const char *mask);
+                                               GWEN_STRINGLIST *sl,
+                                               const char *mask);
 
 
 /**

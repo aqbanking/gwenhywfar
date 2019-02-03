@@ -37,7 +37,8 @@ GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGSHOWBOX)
 
 GWEN_DIALOG *GWEN_DlgShowBox_new(uint32_t flags,
                                  const char *title,
-                                 const char *text) {
+                                 const char *text)
+{
   GWEN_DIALOG *dlg;
   GWEN_DLGSHOWBOX *xdlg;
   GWEN_BUFFER *fbuf;
@@ -84,10 +85,11 @@ GWEN_DIALOG *GWEN_DlgShowBox_new(uint32_t flags,
 
 
 
-void GWENHYWFAR_CB GWEN_DlgShowBox_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgShowBox_FreeData(void *bp, void *p)
+{
   GWEN_DLGSHOWBOX *xdlg;
 
-  xdlg=(GWEN_DLGSHOWBOX*) p;
+  xdlg=(GWEN_DLGSHOWBOX *) p;
 
   free(xdlg->title);
   free(xdlg->text);
@@ -97,7 +99,8 @@ void GWENHYWFAR_CB GWEN_DlgShowBox_FreeData(void *bp, void *p) {
 
 
 
-void GWEN_DlgShowBox_Init(GWEN_DIALOG *dlg) {
+void GWEN_DlgShowBox_Init(GWEN_DIALOG *dlg)
+{
   GWEN_DLGSHOWBOX *xdlg;
   int i;
   GWEN_DB_NODE *dbParams;
@@ -132,7 +135,8 @@ void GWEN_DlgShowBox_Init(GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgShowBox_Fini(GWEN_DIALOG *dlg) {
+void GWEN_DlgShowBox_Fini(GWEN_DIALOG *dlg)
+{
   GWEN_DLGSHOWBOX *xdlg;
   int i;
   GWEN_DB_NODE *dbParams;
@@ -167,15 +171,16 @@ void GWEN_DlgShowBox_Fini(GWEN_DIALOG *dlg) {
 
 
 int GWENHYWFAR_CB GWEN_DlgShowBox_SignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender) {
+                                                GWEN_DIALOG_EVENTTYPE t,
+                                                const char *sender)
+{
   GWEN_DLGSHOWBOX *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGSHOWBOX, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     GWEN_DlgShowBox_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

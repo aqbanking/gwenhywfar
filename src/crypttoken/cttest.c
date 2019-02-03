@@ -19,7 +19,8 @@
 
 
 
-GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenTest_new(int maximumContexts, int maximumKeys) {
+GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenTest_new(int maximumContexts, int maximumKeys)
+{
   GWEN_CRYPT_TOKEN *ct;
   GWEN_CRYPT_TOKEN_TEST *lct;
 
@@ -56,17 +57,19 @@ GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenTest_new(int maximumContexts, int maximumKeys)
 
 
 
-void GWEN_Crypt_TokenTest_freeData(void *bp, void *p) {
+void GWEN_Crypt_TokenTest_freeData(void *bp, void *p)
+{
   GWEN_CRYPT_TOKEN_TEST *lct;
 
-  lct=(GWEN_CRYPT_TOKEN_TEST*) p;
+  lct=(GWEN_CRYPT_TOKEN_TEST *) p;
   GWEN_CryptKey_List_free(lct->keyList);
   GWEN_Crypt_Token_Context_List_free(lct->contextList);
 }
 
 
 
-int GWEN_Crypt_TokenTest_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_TokenTest_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   int i;
 
   for (i=0; i<lct->maximumContexts; i++) {
@@ -90,12 +93,14 @@ int GWEN_Crypt_TokenTest_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 }
 
 
-int GWEN_Crypt_TokenTest_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid) {
+int GWEN_Crypt_TokenTest_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid)
+{
 }
 
 
 
-int GWEN_Crypt_TokenTest_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid) {
+int GWEN_Crypt_TokenTest_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid)
+{
 }
 
 
@@ -103,15 +108,17 @@ int GWEN_Crypt_TokenTest_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid) 
 int GWEN_Crypt_TokenTest__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
                                        uint32_t *pIdList,
                                        uint32_t *pCount,
-                                       uint32_t gid) {
+                                       uint32_t gid)
+{
 }
 
 
 
-const GWEN_CRYPT_TOKEN_KEYINFO* GWEN_Crypt_TokenTest__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+const GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_TokenTest__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
                                                                  uint32_t id,
                                                                  uint32_t flags,
-                                                                 uint32_t gid) {
+                                                                 uint32_t gid)
+{
 }
 
 
@@ -119,7 +126,8 @@ const GWEN_CRYPT_TOKEN_KEYINFO* GWEN_Crypt_TokenTest__GetKeyInfo(GWEN_CRYPT_TOKE
 int GWEN_Crypt_TokenTest__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
                                      uint32_t id,
                                      const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-                                     uint32_t gid) {
+                                     uint32_t gid)
+{
 }
 
 
@@ -127,14 +135,16 @@ int GWEN_Crypt_TokenTest__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 int GWEN_Crypt_TokenTest__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
                                            uint32_t *pIdList,
                                            uint32_t *pCount,
-                                           uint32_t gid) {
+                                           uint32_t gid)
+{
 }
 
 
 
-const GWEN_CRYPT_TOKEN_CONTEXT* GWEN_Crypt_TokenTest__GetContext(GWEN_CRYPT_TOKEN *ct,
+const GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenTest__GetContext(GWEN_CRYPT_TOKEN *ct,
                                                                  uint32_t id,
-                                                                 uint32_t gid) {
+                                                                 uint32_t gid)
+{
 }
 
 
@@ -142,7 +152,8 @@ const GWEN_CRYPT_TOKEN_CONTEXT* GWEN_Crypt_TokenTest__GetContext(GWEN_CRYPT_TOKE
 int GWEN_Crypt_TokenTest__SetContext(GWEN_CRYPT_TOKEN *ct,
                                      uint32_t id,
                                      const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
-                                     uint32_t gid) {
+                                     uint32_t gid)
+{
 }
 
 
@@ -155,7 +166,8 @@ int GWEN_Crypt_TokenTest__Sign(GWEN_CRYPT_TOKEN *ct,
                                uint8_t *pSignatureData,
                                uint32_t *pSignatureLen,
                                uint32_t *pSeqCounter,
-                               uint32_t gid) {
+                               uint32_t gid)
+{
 }
 
 
@@ -168,7 +180,8 @@ int GWEN_Crypt_TokenTest__Verify(GWEN_CRYPT_TOKEN *ct,
                                  const uint8_t *pSignatureData,
                                  uint32_t signatureLen,
                                  uint32_t seqCounter,
-                                 uint32_t gid) {
+                                 uint32_t gid)
+{
 }
 
 
@@ -180,7 +193,8 @@ int GWEN_Crypt_TokenTest__Encipher(GWEN_CRYPT_TOKEN *ct,
                                    uint32_t inLen,
                                    uint8_t *pOutData,
                                    uint32_t *pOutLen,
-                                   uint32_t gid) {
+                                   uint32_t gid)
+{
 }
 
 
@@ -192,7 +206,8 @@ int GWEN_Crypt_TokenTest__Decipher(GWEN_CRYPT_TOKEN *ct,
                                    uint32_t inLen,
                                    uint8_t *pOutData,
                                    uint32_t *pOutLen,
-                                   uint32_t gid) {
+                                   uint32_t gid)
+{
 }
 
 
@@ -200,7 +215,8 @@ int GWEN_Crypt_TokenTest__Decipher(GWEN_CRYPT_TOKEN *ct,
 int GWEN_Crypt_TokenTest__GenerateKey(GWEN_CRYPT_TOKEN *ct,
                                       uint32_t keyId,
                                       const GWEN_CRYPT_CRYPTALGO *a,
-                                      uint32_t gid) {
+                                      uint32_t gid)
+{
 }
 
 

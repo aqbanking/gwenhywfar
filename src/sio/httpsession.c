@@ -36,7 +36,8 @@ GWEN_INHERIT_FUNCTIONS(GWEN_HTTP_SESSION)
 
 
 
-GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProto, int defaultPort) {
+GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProto, int defaultPort)
+{
   GWEN_HTTP_SESSION *sess;
 
   GWEN_NEW_OBJECT(GWEN_HTTP_SESSION, sess);
@@ -54,7 +55,8 @@ GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProt
 
 
 
-void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess) {
+void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
   sess->usage++;
@@ -62,7 +64,8 @@ void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess) {
 
 
 
-void GWEN_HttpSession_free(GWEN_HTTP_SESSION *sess) {
+void GWEN_HttpSession_free(GWEN_HTTP_SESSION *sess)
+{
   if (sess) {
     assert(sess->usage);
     if (sess->usage==1) {
@@ -82,7 +85,9 @@ void GWEN_HttpSession_free(GWEN_HTTP_SESSION *sess) {
 
 
 
-GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSION *sess, GWEN_HTTPSESSION_INITSYNCIO_FN f) {
+GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSION *sess,
+                                                                GWEN_HTTPSESSION_INITSYNCIO_FN f)
+{
   GWEN_HTTPSESSION_INITSYNCIO_FN oldFn;
 
   oldFn=sess->initSyncIoFn;
@@ -92,7 +97,8 @@ GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSIO
 
 
 
-uint32_t GWEN_HttpSession_GetFlags(const GWEN_HTTP_SESSION *sess) {
+uint32_t GWEN_HttpSession_GetFlags(const GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -101,7 +107,8 @@ uint32_t GWEN_HttpSession_GetFlags(const GWEN_HTTP_SESSION *sess) {
 
 
 
-void GWEN_HttpSession_SetFlags(GWEN_HTTP_SESSION *sess, uint32_t fl) {
+void GWEN_HttpSession_SetFlags(GWEN_HTTP_SESSION *sess, uint32_t fl)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -110,7 +117,8 @@ void GWEN_HttpSession_SetFlags(GWEN_HTTP_SESSION *sess, uint32_t fl) {
 
 
 
-void GWEN_HttpSession_AddFlags(GWEN_HTTP_SESSION *sess, uint32_t fl) {
+void GWEN_HttpSession_AddFlags(GWEN_HTTP_SESSION *sess, uint32_t fl)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -119,7 +127,8 @@ void GWEN_HttpSession_AddFlags(GWEN_HTTP_SESSION *sess, uint32_t fl) {
 
 
 
-void GWEN_HttpSession_SubFlags(GWEN_HTTP_SESSION *sess, uint32_t fl) {
+void GWEN_HttpSession_SubFlags(GWEN_HTTP_SESSION *sess, uint32_t fl)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -128,7 +137,8 @@ void GWEN_HttpSession_SubFlags(GWEN_HTTP_SESSION *sess, uint32_t fl) {
 
 
 
-const char *GWEN_HttpSession_GetHttpUserAgent(const GWEN_HTTP_SESSION *sess) {
+const char *GWEN_HttpSession_GetHttpUserAgent(const GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -137,7 +147,8 @@ const char *GWEN_HttpSession_GetHttpUserAgent(const GWEN_HTTP_SESSION *sess) {
 
 
 
-void GWEN_HttpSession_SetHttpUserAgent(GWEN_HTTP_SESSION *sess, const char *s) {
+void GWEN_HttpSession_SetHttpUserAgent(GWEN_HTTP_SESSION *sess, const char *s)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -150,7 +161,8 @@ void GWEN_HttpSession_SetHttpUserAgent(GWEN_HTTP_SESSION *sess, const char *s) {
 
 
 
-const char *GWEN_HttpSession_GetHttpContentType(const GWEN_HTTP_SESSION *sess) {
+const char *GWEN_HttpSession_GetHttpContentType(const GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -159,7 +171,8 @@ const char *GWEN_HttpSession_GetHttpContentType(const GWEN_HTTP_SESSION *sess) {
 
 
 
-void GWEN_HttpSession_SetHttpContentType(GWEN_HTTP_SESSION *sess, const char *s) {
+void GWEN_HttpSession_SetHttpContentType(GWEN_HTTP_SESSION *sess, const char *s)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -172,7 +185,8 @@ void GWEN_HttpSession_SetHttpContentType(GWEN_HTTP_SESSION *sess, const char *s)
 
 
 
-int GWEN_HttpSession_GetHttpVMajor(const GWEN_HTTP_SESSION *sess) {
+int GWEN_HttpSession_GetHttpVMajor(const GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -181,7 +195,8 @@ int GWEN_HttpSession_GetHttpVMajor(const GWEN_HTTP_SESSION *sess) {
 
 
 
-void GWEN_HttpSession_SetHttpVMajor(GWEN_HTTP_SESSION *sess, int i) {
+void GWEN_HttpSession_SetHttpVMajor(GWEN_HTTP_SESSION *sess, int i)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -190,7 +205,8 @@ void GWEN_HttpSession_SetHttpVMajor(GWEN_HTTP_SESSION *sess, int i) {
 
 
 
-int GWEN_HttpSession_GetHttpVMinor(const GWEN_HTTP_SESSION *sess) {
+int GWEN_HttpSession_GetHttpVMinor(const GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -199,7 +215,8 @@ int GWEN_HttpSession_GetHttpVMinor(const GWEN_HTTP_SESSION *sess) {
 
 
 
-void GWEN_HttpSession_SetHttpVMinor(GWEN_HTTP_SESSION *sess, int i) {
+void GWEN_HttpSession_SetHttpVMinor(GWEN_HTTP_SESSION *sess, int i)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -211,7 +228,8 @@ void GWEN_HttpSession_SetHttpVMinor(GWEN_HTTP_SESSION *sess, int i) {
 
 
 
-int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
+int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO *sioTls;
   GWEN_DB_NODE *db;
@@ -279,7 +297,8 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess) {
 
 
 
-int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess) {
+int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess)
+{
   assert(sess);
   assert(sess->usage);
 
@@ -296,7 +315,8 @@ int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess) {
 
 int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
                                 const char *httpCommand,
-                                const uint8_t *buf, uint32_t blen) {
+                                const uint8_t *buf, uint32_t blen)
+{
   int rv;
 
   assert(sess);
@@ -377,7 +397,8 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 
 
 
-int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
+int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
+{
   int rv;
 
   assert(sess);
@@ -399,24 +420,24 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
       dbHeaderIn=GWEN_SyncIo_Http_GetDbHeaderIn(sess->syncIo);
 
       if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Detailed Error Log For Packet:");
+        DBG_INFO(GWEN_LOGDOMAIN, "Detailed Error Log For Packet:");
 
-	if (dbHeaderIn) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Recevied this HTTP header:");
-	  GWEN_DB_Dump(dbHeaderIn, 2);
-	}
-	else {
-	  DBG_INFO(GWEN_LOGDOMAIN, "-- No HTTP header recevied --");
-	}
+        if (dbHeaderIn) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Recevied this HTTP header:");
+          GWEN_DB_Dump(dbHeaderIn, 2);
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "-- No HTTP header recevied --");
+        }
 
-	if (GWEN_Buffer_GetUsedBytes(buf)) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Recevied this body:");
-	  GWEN_Text_LogString(GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf),
-			      GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
-	}
-	else {
-	  DBG_INFO(GWEN_LOGDOMAIN, "-- No body recevied --");
-	}
+        if (GWEN_Buffer_GetUsedBytes(buf)) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Recevied this body:");
+          GWEN_Text_LogString(GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf),
+                              GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "-- No body recevied --");
+        }
 
       }
 
@@ -427,7 +448,7 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
 
           s=GWEN_DB_GetCharValue(dbHeaderIn, "Location", 0, 0);
           if (s) {
-            switch(rv) {
+            switch (rv) {
             case 301:
             case 303:
               GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("HTTP: Moved permanently to %s"), s);
@@ -452,7 +473,8 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
+int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
+{
   int rv;
   uint32_t pos;
 
@@ -494,7 +516,8 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio) {
+int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+{
   int rv;
 
   assert(sess);
@@ -522,7 +545,7 @@ int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 
           s=GWEN_DB_GetCharValue(dbHeaderIn, "Location", 0, 0);
           if (s) {
-            switch(rv) {
+            switch (rv) {
             case 301:
             case 303:
               GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("HTTP: Moved permanently to %s"), s);
@@ -547,7 +570,8 @@ int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 
 
 
-int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname) {
+int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname)
+{
   int rv;
 
   /* read response */
@@ -626,7 +650,8 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
 
 
 
-int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
+int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess)
+{
   int rv;
 
   assert(sess);
@@ -663,7 +688,8 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess) {
 
 
 
-int GWEN_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio) {
+int GWEN_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+{
   if (sess->initSyncIoFn)
     return sess->initSyncIoFn(sess, sio);
   DBG_INFO(GWEN_LOGDOMAIN, "initSyncIoFn not set");

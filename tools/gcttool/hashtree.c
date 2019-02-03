@@ -24,7 +24,8 @@
 
 
 
-int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *folder;
   GWEN_MDIGEST *md;
@@ -33,29 +34,29 @@ int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_BUFFER *tbuf;
   FILE *f;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "folder",                     /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "d",                          /* short option */
-    "dir",                        /* long option */
-    "Specify folder to hash",     /* short description */
-    "Specify folder to hash"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "folder",                     /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "d",                          /* short option */
+      "dir",                        /* long option */
+      "Specify folder to hash",     /* short description */
+      "Specify folder to hash"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -103,7 +104,7 @@ int hashTree(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   }
 
   se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);

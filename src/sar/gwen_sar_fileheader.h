@@ -163,7 +163,8 @@ GWENHYWFAR_API void GWEN_SarFileHeader_Attach(GWEN_SAR_FILEHEADER *p_struct);
 
 GWENHYWFAR_API GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_dup(const GWEN_SAR_FILEHEADER *p_struct);
 
-GWENHYWFAR_API GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_copy(GWEN_SAR_FILEHEADER *p_struct, const GWEN_SAR_FILEHEADER *p_src);
+GWENHYWFAR_API GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_copy(GWEN_SAR_FILEHEADER *p_struct,
+                                                            const GWEN_SAR_FILEHEADER *p_src);
 
 /** Getter.
  * Use this function to get the member "status" (see @ref GWEN_SAR_FILEHEADER_status)

@@ -44,35 +44,36 @@
 
 
 int addDefinitions(GWEN_XMLNODE *top,
-                   GWEN_XMLNODE *node) {
+                   GWEN_XMLNODE *node)
+{
   GWEN_XMLNODE *nsrc, *ndst;
 
   assert(top);
   assert(node);
 
   nsrc=GWEN_XMLNode_GetChild(node);
-  while(nsrc) {
+  while (nsrc) {
     if (GWEN_XMLNode_GetType(nsrc)==GWEN_XMLNodeTypeTag) {
       ndst=GWEN_XMLNode_FindNode(top, GWEN_XMLNodeTypeTag,
                                  GWEN_XMLNode_GetData(nsrc));
       if (ndst) {
-	GWEN_XMLNODE *n;
+        GWEN_XMLNODE *n;
 
         n=GWEN_XMLNode_GetChild(nsrc);
-	while (n) {
-	  GWEN_XMLNODE *newNode;
+        while (n) {
+          GWEN_XMLNODE *newNode;
 
           DBG_DEBUG(0, "Adding node \"%s\"", GWEN_XMLNode_GetData(n));
           newNode=GWEN_XMLNode_dup(n);
           GWEN_XMLNode_AddChild(ndst, newNode);
-	  n=GWEN_XMLNode_Next(n);
-	} /* while n */
+          n=GWEN_XMLNode_Next(n);
+        } /* while n */
       }
       else {
-	GWEN_XMLNODE *newNode;
+        GWEN_XMLNODE *newNode;
 
         DBG_DEBUG(0, "Adding branch \"%s\"", GWEN_XMLNode_GetData(nsrc));
-	newNode=GWEN_XMLNode_dup(nsrc);
+        newNode=GWEN_XMLNode_dup(nsrc);
         GWEN_XMLNode_AddChild(top, newNode);
       }
     } /* if TAG */
@@ -84,7 +85,8 @@ int addDefinitions(GWEN_XMLNODE *top,
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   ARGUMENTS *args;
   int rv;
   FREEPARAM *inFile;
@@ -142,7 +144,7 @@ int main(int argc, char **argv) {
   }
 
   /* read all files */
-  while(inFile) {
+  while (inFile) {
     GWEN_XMLNODE *n;
 
     n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "inFile");
@@ -178,17 +180,17 @@ int main(int argc, char **argv) {
 
   sio=GWEN_SyncIo_File_new(args->outputFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
   GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_GREAD |
                        GWEN_SYNCIO_FILE_FLAGS_GWRITE);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     fprintf(stderr, "Error opening file \"%s\": %s\n",
-	    args->outputFile,
-	    strerror(errno));
+            args->outputFile,
+            strerror(errno));
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     GWEN_XmlCtx_free(ctx);
@@ -199,8 +201,8 @@ int main(int argc, char **argv) {
   rv=GWEN_XMLNode_WriteToStream(top, ctx, sio);
   if (rv<0) {
     fprintf(stderr, "Error writing to file \"%s\": %s\n",
-	    args->outputFile,
-	    strerror(errno));
+            args->outputFile,
+            strerror(errno));
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     GWEN_XmlCtx_free(ctx);

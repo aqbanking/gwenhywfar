@@ -57,7 +57,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_FSLOCK, GWEN_FSLock)
 
 
 
-GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t) {
+GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t)
+{
   GWEN_FSLOCK *fl;
   GWEN_BUFFER *nbuf;
   const char *s;
@@ -68,7 +69,7 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t) {
   fl->usage=1;
   fl->entryName=strdup(fname);
 
-  switch(t) {
+  switch (t) {
   case GWEN_FSLock_TypeFile:
     s=".lck";
     break;
@@ -98,7 +99,8 @@ GWEN_FSLOCK *GWEN_FSLock_new(const char *fname, GWEN_FSLOCK_TYPE t) {
 
 
 
-void GWEN_FSLock_free(GWEN_FSLOCK *fl) {
+void GWEN_FSLock_free(GWEN_FSLOCK *fl)
+{
   if (fl) {
     assert(fl->usage);
     if (fl->usage==1) {
@@ -121,7 +123,8 @@ void GWEN_FSLock_free(GWEN_FSLOCK *fl) {
 
 
 
-void GWEN_FSLock_Attach(GWEN_FSLOCK *fl) {
+void GWEN_FSLock_Attach(GWEN_FSLOCK *fl)
+{
   assert(fl);
   assert(fl->usage);
   fl->usage++;
@@ -129,7 +132,8 @@ void GWEN_FSLock_Attach(GWEN_FSLOCK *fl) {
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl) {
+GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl)
+{
   assert(fl);
 
   if (fl->lockCount==0) {
@@ -215,7 +219,8 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl) {
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl) {
+GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl)
+{
   assert(fl);
 
   if (fl->lockCount<1) {
@@ -234,7 +239,8 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Unlock(GWEN_FSLOCK *fl) {
 
 
 
-GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid) {
+GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid)
+{
   GWEN_TIME *t0;
   int distance;
   int count;
@@ -416,7 +422,8 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid) 
 
 
 
-int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf) {
+int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf)
+{
   char buffer[256];
 
   GWEN_Buffer_AppendString(nbuf, ".");
@@ -440,7 +447,8 @@ int GWEN_FSLock__UnifyLockFileName(GWEN_BUFFER *nbuf) {
 
 
 
-const char *GWEN_FSLock_GetName(const GWEN_FSLOCK *fl) {
+const char *GWEN_FSLock_GetName(const GWEN_FSLOCK *fl)
+{
   assert(fl);
   assert(fl->usage);
   return fl->entryName;

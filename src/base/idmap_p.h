@@ -31,16 +31,16 @@
 #include "idmap.h"
 
 
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_SETPAIR_FN)(GWEN_IDMAP *map,
-    uint32_t id,
-    void *ptr);
-typedef void* (*GWEN_IDMAP_GETPAIR_FN)(GWEN_IDMAP *map,
+typedef GWEN_IDMAP_RESULT(*GWEN_IDMAP_SETPAIR_FN)(GWEN_IDMAP *map,
+                                                  uint32_t id,
+                                                  void *ptr);
+typedef void *(*GWEN_IDMAP_GETPAIR_FN)(GWEN_IDMAP *map,
                                        uint32_t id);
 
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDFIRST_FN)(const GWEN_IDMAP *map,
-    uint32_t *pid);
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDNEXT_FN)(const GWEN_IDMAP *map,
-    uint32_t *pid);
+typedef GWEN_IDMAP_RESULT(*GWEN_IDMAP_FINDFIRST_FN)(const GWEN_IDMAP *map,
+                                                    uint32_t *pid);
+typedef GWEN_IDMAP_RESULT(*GWEN_IDMAP_FINDNEXT_FN)(const GWEN_IDMAP *map,
+                                                   uint32_t *pid);
 
 typedef void (*GWEN_IDMAP_DUMP_FN)(GWEN_IDMAP *map, FILE *f, int indent);
 
@@ -68,10 +68,10 @@ typedef struct GWEN_IDMAP_HEX4_TABLE GWEN_IDMAP_HEX4_TABLE;
 struct GWEN_IDMAP_HEX4_TABLE {
   GWEN_IDMAP_HEX4_TABLE *parent;
   int isPtrTable;
-  void* ptrs[16];
+  void *ptrs[16];
 };
 static GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4Map_new(GWEN_IDMAP_HEX4_TABLE *p,
-    int isPtrTable);
+                                                    int isPtrTable);
 static void GWEN_IdMapHex4Map_free(GWEN_IDMAP_HEX4_TABLE *t);
 
 
@@ -84,29 +84,29 @@ struct GWEN_IDMAP_HEX4 {
 static void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map);
 static void GWEN_IdMapHex4_free(GWEN_IDMAP *map);
 static GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
-    uint32_t id,
-    void *ptr);
+                                               uint32_t id,
+                                               void *ptr);
 static void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, uint32_t id);
 
 static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(const GWEN_IDMAP *map,
-    uint32_t *pid);
+                                                  uint32_t *pid);
 static GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(const GWEN_IDMAP *map,
-    uint32_t *pid);
+                                                 uint32_t *pid);
 
 
 
 static
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetTable(GWEN_IDMAP_HEX4_TABLE *t,
-    uint32_t id);
+                                                uint32_t id);
 
 static
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
-    uint32_t *pid);
+                                                     uint32_t *pid);
 
 static
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
-    uint32_t *pid,
-    int incr);
+                                                    uint32_t *pid,
+                                                    int incr);
 
 static void GWEN_IdMapHex4__Dump(GWEN_IDMAP_HEX4_TABLE *table,
                                  FILE *f, int indent);

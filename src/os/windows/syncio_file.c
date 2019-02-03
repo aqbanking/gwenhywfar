@@ -42,7 +42,8 @@ GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_FILE)
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMODE cm) {
+GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMODE cm)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_FILE *xio;
 
@@ -65,7 +66,8 @@ GWEN_SYNCIO *GWEN_SyncIo_File_new(const char *path, GWEN_SYNCIO_FILE_CREATIONMOD
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromHandle(HANDLE hd) {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromHandle(HANDLE hd)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_FILE *xio;
 
@@ -85,7 +87,8 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromHandle(HANDLE hd) {
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(HANDLE hd, const char *hname) {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(HANDLE hd, const char *hname)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_FILE *xio;
 
@@ -107,25 +110,29 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromStdHandle(HANDLE hd, const char *hname) {
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin(void) {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdin(void)
+{
   return GWEN_SyncIo_File_fromStdHandle(GetStdHandle(STD_INPUT_HANDLE), "stdin");
 }
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout(void) {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStdout(void)
+{
   return GWEN_SyncIo_File_fromStdHandle(GetStdHandle(STD_OUTPUT_HANDLE), "stdout");
 }
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr(void) {
+GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr(void)
+{
   return GWEN_SyncIo_File_fromStdHandle(GetStdHandle(STD_ERROR_HANDLE), "stderr");
 }
 
 
 
-const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_FILE *xio;
 
   assert(sio);
@@ -137,10 +144,11 @@ const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio) {
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(void *bp, void *p)
+{
   GWEN_SYNCIO_FILE *xio;
 
-  xio=(GWEN_SYNCIO_FILE*) p;
+  xio=(GWEN_SYNCIO_FILE *) p;
   free(xio->path);
   if (xio->fh!=INVALID_HANDLE_VALUE)
     CloseHandle(xio->fh);
@@ -149,7 +157,8 @@ void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(void *bp, void *p) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_FILE *xio;
   uint32_t flags;
   DWORD dwDesiredAccess=0;
@@ -179,7 +188,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
   if (flags & GWEN_SYNCIO_FILE_FLAGS_RANDOM)
     dwFlagsAndAttrs|=FILE_FLAG_RANDOM_ACCESS;
 
-  switch(xio->creationMode) {
+  switch (xio->creationMode) {
   case GWEN_SyncIo_File_CreationMode_OpenExisting:
     dwCreationDistribution=OPEN_EXISTING;
     break;
@@ -222,7 +231,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Connect(GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_FILE *xio;
 
   assert(sio);
@@ -250,7 +260,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio) {
 
 int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
                                         uint8_t *buffer,
-                                        uint32_t size) {
+                                        uint32_t size)
+{
   GWEN_SYNCIO_FILE *xio;
   DWORD bytesRead=0;
 
@@ -277,8 +288,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size) {
+                                         const uint8_t *buffer,
+                                         uint32_t size)
+{
   GWEN_SYNCIO_FILE *xio;
   DWORD bytesWritten=0;
 
@@ -304,7 +316,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
 
 
 
-int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WHENCE whence) {
+int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WHENCE whence)
+{
   GWEN_SYNCIO_FILE *xio;
   DWORD w;
   LARGE_INTEGER li;
@@ -318,7 +331,7 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
     return GWEN_ERROR_NOT_CONNECTED;
   }
 
-  switch(whence) {
+  switch (whence) {
   case GWEN_SyncIo_File_Whence_Set:
     w=FILE_BEGIN;
     break;

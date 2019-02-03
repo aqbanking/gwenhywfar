@@ -98,14 +98,14 @@ static int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 
 
 static GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
-    GWEN_XMLNODE_TYPE t);
+                                                 GWEN_XMLNODE_TYPE t);
 static GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
-    GWEN_XMLNODE_TYPE t);
+                                                GWEN_XMLNODE_TYPE t);
 
 static GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
-    const char *tname,
-    const char *pname,
-    const char *pvalue);
+                                          const char *tname,
+                                          const char *pname,
+                                          const char *pvalue);
 
 
 /**
@@ -113,8 +113,8 @@ static GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
  * level.
  */
 static int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
-    GWEN_STRINGLIST2 *sl,
-    const char *currentNameSpace);
+                                              GWEN_STRINGLIST2 *sl,
+                                              const char *currentNameSpace);
 
 /**
  * Moves all namespace declarations from this node to the nodes
@@ -127,8 +127,8 @@ static int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
                                        const char *prefix,
                                        const char *nspace);
 static int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
-    const char *prefix,
-    const char *nspace);
+                                              const char *prefix,
+                                              const char *nspace);
 
 static int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
                               GWEN_FAST_BUFFER *fb,
@@ -143,7 +143,7 @@ static int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio);
 
 
 static GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
-    const char *prefix);
+                                                                const char *prefix);
 
 static int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
                                         GWEN_XMLNODE_NAMESPACE_LIST *l,

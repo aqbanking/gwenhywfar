@@ -87,9 +87,10 @@
 static unsigned int gwen_is_initialized=0;
 static int gwen_binreloc_initialized=0;
 
-char *GWEN__get_plugindir (const char *default_dir);
+char *GWEN__get_plugindir(const char *default_dir);
 
-int GWEN_Init(void) {
+int GWEN_Init(void)
+{
   int err;
 
   if (gwen_is_initialized==0) {
@@ -298,7 +299,8 @@ int GWEN_Init(void) {
 
 
 
-int GWEN_Fini(void) {
+int GWEN_Fini(void)
+{
   int err;
 
   err=0;
@@ -406,7 +408,8 @@ int GWEN_Fini(void) {
 
 
 
-int GWEN_Fini_Forced(void) {
+int GWEN_Fini_Forced(void)
+{
   if (gwen_is_initialized)
     gwen_is_initialized=1;
   return GWEN_Fini();
@@ -417,7 +420,8 @@ int GWEN_Fini_Forced(void) {
 void GWEN_Version(int *major,
                   int *minor,
                   int *patchlevel,
-                  int *build) {
+                  int *build)
+{
   *major=GWENHYWFAR_VERSION_MAJOR;
   *minor=GWENHYWFAR_VERSION_MINOR;
   *patchlevel=GWENHYWFAR_VERSION_PATCHLEVEL;

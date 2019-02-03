@@ -516,8 +516,8 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
-    const char *path,
-    uint32_t flags);
+                                          const char *path,
+                                          uint32_t flags);
 
 
 /*@}*/
@@ -664,11 +664,11 @@ GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n);
 
 GWENHYWFAR_API
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByName(const GWEN_XMLNODE *n,
-    const char *s);
+                                                         const char *s);
 
 GWENHYWFAR_API
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByUrl(const GWEN_XMLNODE *n,
-    const char *s);
+                                                        const char *s);
 
 GWENHYWFAR_API
 void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns);
@@ -736,8 +736,8 @@ void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
  */
 GWENHYWFAR_API
 const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
-    const char *name,
-    const char *defValue);
+                                               const char *name,
+                                               const char *defValue);
 
 /**
  * Internally calls @ref GWEN_XMLNode_GetCharValue and interpretes the
@@ -879,7 +879,7 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np);
 
 GWENHYWFAR_API
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
-    const char *url);
+                                                   const char *url);
 
 GWENHYWFAR_API
 void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns);

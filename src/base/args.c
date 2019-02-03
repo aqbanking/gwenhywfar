@@ -46,7 +46,8 @@ int GWEN_Args_Check(int argc, char **argv,
                     int startAt,
                     uint32_t mode,
                     const GWEN_ARGS *args,
-                    GWEN_DB_NODE *db) {
+                    GWEN_DB_NODE *db)
+{
   int i;
   const char *p;
   const GWEN_ARGS *tmpArgs;
@@ -60,7 +61,7 @@ int GWEN_Args_Check(int argc, char **argv,
   counts=GWEN_DB_Group_new("counts");
 
   stop=0;
-  while(i<argc && !stop) {
+  while (i<argc && !stop) {
     GWEN_ARGS_ELEMENT_TYPE t;
     char *tmpBuf;
     const char *v;
@@ -86,7 +87,7 @@ int GWEN_Args_Check(int argc, char **argv,
     else
       t=GWEN_ArgsElementTypeFreeParam;
 
-    switch(t) {
+    switch (t) {
     case GWEN_ArgsElementTypeFreeParam:
       if (mode & GWEN_ARGS_MODE_ALLOW_FREEPARAM) {
         GWEN_DB_SetCharValue(db,
@@ -107,7 +108,7 @@ int GWEN_Args_Check(int argc, char **argv,
       break;
 
     case GWEN_ArgsElementTypeShort:
-      for(tmpArgs=args;; tmpArgs++) {
+      for (tmpArgs=args;; tmpArgs++) {
         if (tmpArgs->shortOption) {
           if (strcmp(tmpArgs->shortOption, p)==0) {
             /* found option */
@@ -144,7 +145,7 @@ int GWEN_Args_Check(int argc, char **argv,
           return GWEN_ARGS_RESULT_ERROR;
         }
         p=GWEN_Buffer_GetStart(tbuf);
-        switch(tmpArgs->type) {
+        switch (tmpArgs->type) {
         case GWEN_ArgsType_Char:
           GWEN_DB_SetCharValue(db,
                                GWEN_DB_FLAGS_DEFAULT,
@@ -190,13 +191,14 @@ int GWEN_Args_Check(int argc, char **argv,
       /* copy option name up to (but excluding) the "=" if any,
        * determine the start of possible argument */
       v=p;
-      while(*v && *v!='=') v++;
-      tmpBuf=(char*)malloc(v-p+1);
+      while (*v && *v!='=')
+        v++;
+      tmpBuf=(char *)malloc(v-p+1);
       assert(tmpBuf);
       memmove(tmpBuf, p, v-p);
       tmpBuf[v-p]=0;
 
-      for(tmpArgs=args;; tmpArgs++) {
+      for (tmpArgs=args;; tmpArgs++) {
         if (tmpArgs->longOption) {
           if (strcmp(tmpArgs->longOption, tmpBuf)==0) {
             /* found option */
@@ -239,7 +241,7 @@ int GWEN_Args_Check(int argc, char **argv,
           GWEN_Buffer_free(tbuf);
           return GWEN_ARGS_RESULT_ERROR;
         }
-        switch(tmpArgs->type) {
+        switch (tmpArgs->type) {
         case GWEN_ArgsType_Char:
           GWEN_DB_SetCharValue(db,
                                GWEN_DB_FLAGS_DEFAULT,
@@ -296,7 +298,7 @@ int GWEN_Args_Check(int argc, char **argv,
   } /* while */
 
   /* check argument counts */
-  for(tmpArgs=args;; tmpArgs++) {
+  for (tmpArgs=args;; tmpArgs++) {
     const char *s;
     int c;
 
@@ -341,12 +343,14 @@ int GWEN_Args_Check(int argc, char **argv,
 }
 
 
-int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins) {
+int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins)
+{
   unsigned int i;
 
-  while(*s) {
-    for (i=0; i<ins; i++) GWEN_Buffer_AppendByte(ubuf, ' ');
-    while(*s) {
+  while (*s) {
+    for (i=0; i<ins; i++)
+      GWEN_Buffer_AppendByte(ubuf, ' ');
+    while (*s) {
       char c;
 
       c=*s;
@@ -362,10 +366,11 @@ int GWEN_Args__AppendTXT(GWEN_BUFFER *ubuf, const char *s, unsigned int ins) {
 
 
 
-int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf) {
+int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf)
+{
   const GWEN_ARGS *tmpArgs;
 
-  for(tmpArgs=args;; tmpArgs++) {
+  for (tmpArgs=args;; tmpArgs++) {
     const char *s;
 
     GWEN_Buffer_AppendString(ubuf, "\n");
@@ -426,17 +431,19 @@ int GWEN_Args_UsageTXT(const GWEN_ARGS *args, GWEN_BUFFER *ubuf) {
 
 
 int GWEN_Args_UsageHTML(GWEN_UNUSED const GWEN_ARGS *args,
-                        GWEN_UNUSED GWEN_BUFFER *ubuf) {
+                        GWEN_UNUSED GWEN_BUFFER *ubuf)
+{
   return 0;
 }
 
 
 
 int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
-                    GWEN_ARGS_OUTTYPE ot) {
+                    GWEN_ARGS_OUTTYPE ot)
+{
   int rv;
 
-  switch(ot) {
+  switch (ot) {
   case GWEN_ArgsOutType_Txt:
     rv=GWEN_Args_UsageTXT(args, ubuf);
     break;
@@ -455,7 +462,8 @@ int GWEN_Args_Usage(const GWEN_ARGS *args, GWEN_BUFFER *ubuf,
 
 int GWEN_Args_ShortUsage(GWEN_UNUSED const GWEN_ARGS *args,
                          GWEN_UNUSED GWEN_BUFFER *ubuf,
-                         GWEN_UNUSED GWEN_ARGS_OUTTYPE ot) {
+                         GWEN_UNUSED GWEN_ARGS_OUTTYPE ot)
+{
   return 0;
 }
 

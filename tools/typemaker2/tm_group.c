@@ -26,7 +26,8 @@ GWEN_TREE_FUNCTIONS(TYPEMAKER2_GROUP, Typemaker2_Group)
 
 
 
-TYPEMAKER2_GROUP *Typemaker2_Group_new() {
+TYPEMAKER2_GROUP *Typemaker2_Group_new()
+{
   TYPEMAKER2_GROUP *gr;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_GROUP, gr);
@@ -38,7 +39,8 @@ TYPEMAKER2_GROUP *Typemaker2_Group_new() {
 
 
 
-void Typemaker2_Group_free(TYPEMAKER2_GROUP *gr) {
+void Typemaker2_Group_free(TYPEMAKER2_GROUP *gr)
+{
   if (gr) {
     assert(gr->refCount);
     if (gr->refCount==1) {
@@ -55,7 +57,8 @@ void Typemaker2_Group_free(TYPEMAKER2_GROUP *gr) {
 
 
 
-void Typemaker2_Group_Attach(TYPEMAKER2_GROUP *gr) {
+void Typemaker2_Group_Attach(TYPEMAKER2_GROUP *gr)
+{
   assert(gr);
   assert(gr->refCount);
   gr->refCount++;
@@ -63,7 +66,8 @@ void Typemaker2_Group_Attach(TYPEMAKER2_GROUP *gr) {
 
 
 
-const char *Typemaker2_Group_GetTitle(TYPEMAKER2_GROUP *gr) {
+const char *Typemaker2_Group_GetTitle(TYPEMAKER2_GROUP *gr)
+{
   assert(gr);
   assert(gr->refCount);
 
@@ -72,18 +76,22 @@ const char *Typemaker2_Group_GetTitle(TYPEMAKER2_GROUP *gr) {
 
 
 
-void Typemaker2_Group_SetTitle(TYPEMAKER2_GROUP *gr, const char *s) {
+void Typemaker2_Group_SetTitle(TYPEMAKER2_GROUP *gr, const char *s)
+{
   assert(gr);
   assert(gr->refCount);
 
   free(gr->title);
-  if (s && *s) gr->title=strdup(s);
-  else gr->title=NULL;
+  if (s && *s)
+    gr->title=strdup(s);
+  else
+    gr->title=NULL;
 }
 
 
 
-const char *Typemaker2_Group_GetDescription(TYPEMAKER2_GROUP *gr) {
+const char *Typemaker2_Group_GetDescription(TYPEMAKER2_GROUP *gr)
+{
   assert(gr);
   assert(gr->refCount);
 
@@ -92,18 +100,22 @@ const char *Typemaker2_Group_GetDescription(TYPEMAKER2_GROUP *gr) {
 
 
 
-void Typemaker2_Group_SetDescription(TYPEMAKER2_GROUP *gr, const char *s) {
+void Typemaker2_Group_SetDescription(TYPEMAKER2_GROUP *gr, const char *s)
+{
   assert(gr);
   assert(gr->refCount);
 
   free(gr->description);
-  if (s && *s) gr->description=strdup(s);
-  else gr->description=NULL;
+  if (s && *s)
+    gr->description=strdup(s);
+  else
+    gr->description=NULL;
 }
 
 
 
-int Typemaker2_Group_readXml(TYPEMAKER2_GROUP *gr, GWEN_XMLNODE *node, const char *wantedLang) {
+int Typemaker2_Group_readXml(TYPEMAKER2_GROUP *gr, GWEN_XMLNODE *node, const char *wantedLang)
+{
   const char *s;
   GWEN_XMLNODE *n;
 

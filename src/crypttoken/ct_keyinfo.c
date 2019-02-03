@@ -37,7 +37,7 @@ GWEN_CRYPT_TOKEN_KEYSTATUS GWEN_Crypt_Token_KeyStatus_fromString(const char *p_s
 
 const char *GWEN_Crypt_Token_KeyStatus_toString(GWEN_CRYPT_TOKEN_KEYSTATUS p_i)
 {
-  switch(p_i) {
+  switch (p_i) {
   case GWEN_Crypt_Token_KeyStatusFree:
     return "free";
   case GWEN_Crypt_Token_KeyStatusNew:
@@ -92,7 +92,8 @@ void GWEN_Crypt_Token_KeyInfo_free(GWEN_CRYPT_TOKEN_KEYINFO *p_struct)
       p_struct->certificate = NULL;
       p_struct->_refCount = 0;
       GWEN_FREE_OBJECT(p_struct);
-    } else
+    }
+    else
       p_struct->_refCount--;
   }
 }
@@ -174,7 +175,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_dup(const GWEN_CRYPT_TOKEN_KE
   return p_struct;
 }
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_copy(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, const GWEN_CRYPT_TOKEN_KEYINFO *p_src)
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_copy(GWEN_CRYPT_TOKEN_KEYINFO *p_struct,
+                                                        const GWEN_CRYPT_TOKEN_KEYINFO *p_src)
 {
   assert(p_struct);
   assert(p_src);
@@ -305,7 +307,8 @@ void GWEN_Crypt_Token_KeyInfo_SetKeyDescr(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, co
   }
   if (p_src) {
     p_struct->keyDescr = strdup(p_src);
-  } else {
+  }
+  else {
     p_struct->keyDescr = NULL;
   }
 }
@@ -367,7 +370,7 @@ GWEN_CRYPT_TOKEN_KEYINFO_LIST *GWEN_Crypt_Token_KeyInfo_List_dup(const GWEN_CRYP
   assert(p_src);
   p_dest = GWEN_Crypt_Token_KeyInfo_List_new();
   p_elem = GWEN_Crypt_Token_KeyInfo_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     GWEN_CRYPT_TOKEN_KEYINFO *p_cpy;
 
     p_cpy = GWEN_Crypt_Token_KeyInfo_dup(p_elem);
@@ -392,7 +395,8 @@ void GWEN_Crypt_Token_KeyInfo_ReadDb(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, GWEN_DB
   {
     const char *s;
     s = GWEN_DB_GetCharValue(p_db, "keyDescr", 0, NULL);
-    if (s) p_struct->keyDescr = strdup(s);
+    if (s)
+      p_struct->keyDescr = strdup(s);
   }
   if (p_struct->keyDescr == NULL) {
     p_struct->keyDescr = NULL;
@@ -418,7 +422,7 @@ void GWEN_Crypt_Token_KeyInfo_ReadDb(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, GWEN_DB
     ptr = GWEN_DB_GetBinValue(p_db, "modulus", 0, NULL, 0, &len);
     if (ptr && len) {
       p_struct->modulus = GWEN_Buffer_new(0, len, 0, 1);
-      GWEN_Buffer_AppendBytes(p_struct->modulus, (const char*)ptr, len);
+      GWEN_Buffer_AppendBytes(p_struct->modulus, (const char *)ptr, len);
     }
   }
   if (p_struct->modulus == NULL) {
@@ -436,7 +440,7 @@ void GWEN_Crypt_Token_KeyInfo_ReadDb(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, GWEN_DB
     ptr = GWEN_DB_GetBinValue(p_db, "exponent", 0, NULL, 0, &len);
     if (ptr && len) {
       p_struct->exponent = GWEN_Buffer_new(0, len, 0, 1);
-      GWEN_Buffer_AppendBytes(p_struct->exponent, (const char*)ptr, len);
+      GWEN_Buffer_AppendBytes(p_struct->exponent, (const char *)ptr, len);
     }
   }
   if (p_struct->exponent == NULL) {
@@ -463,7 +467,7 @@ void GWEN_Crypt_Token_KeyInfo_ReadDb(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, GWEN_DB
     ptr = GWEN_DB_GetBinValue(p_db, "certificate", 0, NULL, 0, &len);
     if (ptr && len) {
       p_struct->certificate = GWEN_Buffer_new(0, len, 0, 1);
-      GWEN_Buffer_AppendBytes(p_struct->certificate, (const char*)ptr, len);
+      GWEN_Buffer_AppendBytes(p_struct->certificate, (const char *)ptr, len);
     }
   }
   if (p_struct->certificate == NULL) {
@@ -485,7 +489,8 @@ int GWEN_Crypt_Token_KeyInfo_WriteDb(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct, G
   }
 
   /* member "keyDescr" */
-  if (p_struct->keyDescr) p_rv = GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyDescr", p_struct->keyDescr);
+  if (p_struct->keyDescr)
+    p_rv = GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyDescr", p_struct->keyDescr);
   else {
     GWEN_DB_DeleteVar(p_db, "keyDescr");
     p_rv = 0;
@@ -517,7 +522,9 @@ int GWEN_Crypt_Token_KeyInfo_WriteDb(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct, G
   }
 
   /* member "modulus" */
-  if (p_struct->modulus) p_rv = GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "modulus", GWEN_Buffer_GetStart(p_struct->modulus), GWEN_Buffer_GetUsedBytes(p_struct->modulus));
+  if (p_struct->modulus)
+    p_rv = GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "modulus", GWEN_Buffer_GetStart(p_struct->modulus),
+                               GWEN_Buffer_GetUsedBytes(p_struct->modulus));
   else {
     GWEN_DB_DeleteVar(p_db, "modulus");
     p_rv = 0;
@@ -528,7 +535,9 @@ int GWEN_Crypt_Token_KeyInfo_WriteDb(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct, G
   }
 
   /* member "exponent" */
-  if (p_struct->exponent) p_rv = GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "exponent", GWEN_Buffer_GetStart(p_struct->exponent), GWEN_Buffer_GetUsedBytes(p_struct->exponent));
+  if (p_struct->exponent)
+    p_rv = GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "exponent", GWEN_Buffer_GetStart(p_struct->exponent),
+                               GWEN_Buffer_GetUsedBytes(p_struct->exponent));
   else {
     GWEN_DB_DeleteVar(p_db, "exponent");
     p_rv = 0;
@@ -560,7 +569,9 @@ int GWEN_Crypt_Token_KeyInfo_WriteDb(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct, G
   }
 
   /* member "certificate" */
-  if (p_struct->certificate) p_rv = GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "certificate", GWEN_Buffer_GetStart(p_struct->certificate), GWEN_Buffer_GetUsedBytes(p_struct->certificate));
+  if (p_struct->certificate)
+    p_rv = GWEN_DB_SetBinValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "certificate",
+                               GWEN_Buffer_GetStart(p_struct->certificate), GWEN_Buffer_GetUsedBytes(p_struct->certificate));
   else {
     GWEN_DB_DeleteVar(p_db, "certificate");
     p_rv = 0;
@@ -600,7 +611,8 @@ void GWEN_Crypt_Token_KeyInfo_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, GWEN_X
   {
     const char *s;
     s = GWEN_XMLNode_GetCharValue(p_db, "keyDescr", NULL);
-    if (s) p_struct->keyDescr = strdup(s);
+    if (s)
+      p_struct->keyDescr = strdup(s);
   }
   if (p_struct->keyDescr == NULL) { /* preset member "keyDescr" if empty */
     p_struct->keyDescr = NULL;
@@ -699,7 +711,8 @@ void GWEN_Crypt_Token_KeyInfo_WriteXml(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct,
   if (p_struct->modulus) {
     GWEN_BUFFER *tbuf;
     tbuf = GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(p_struct->modulus) * 2, 0, 1);
-    GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(p_struct->modulus), GWEN_Buffer_GetUsedBytes(p_struct->modulus), tbuf, 0, 0, 0);
+    GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(p_struct->modulus), GWEN_Buffer_GetUsedBytes(p_struct->modulus), tbuf, 0, 0,
+                          0);
     GWEN_XMLNode_SetCharValue(p_db, "modulus", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
@@ -708,7 +721,8 @@ void GWEN_Crypt_Token_KeyInfo_WriteXml(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct,
   if (p_struct->exponent) {
     GWEN_BUFFER *tbuf;
     tbuf = GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(p_struct->exponent) * 2, 0, 1);
-    GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(p_struct->exponent), GWEN_Buffer_GetUsedBytes(p_struct->exponent), tbuf, 0, 0, 0);
+    GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(p_struct->exponent), GWEN_Buffer_GetUsedBytes(p_struct->exponent), tbuf, 0,
+                          0, 0);
     GWEN_XMLNode_SetCharValue(p_db, "exponent", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
@@ -726,7 +740,8 @@ void GWEN_Crypt_Token_KeyInfo_WriteXml(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct,
   if (p_struct->certificate) {
     GWEN_BUFFER *tbuf;
     tbuf = GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(p_struct->certificate) * 2, 0, 1);
-    GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(p_struct->certificate), GWEN_Buffer_GetUsedBytes(p_struct->certificate), tbuf, 0, 0, 0);
+    GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(p_struct->certificate), GWEN_Buffer_GetUsedBytes(p_struct->certificate),
+                          tbuf, 0, 0, 0);
     GWEN_XMLNode_SetCharValue(p_db, "certificate", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
@@ -746,18 +761,22 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_fromXml(GWEN_XMLNODE *p_db)
   return p_struct;
 }
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_List_GetById(const GWEN_CRYPT_TOKEN_KEYINFO_LIST *p_list, uint32_t p_cmp)
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_List_GetById(const GWEN_CRYPT_TOKEN_KEYINFO_LIST *p_list,
+                                                                uint32_t p_cmp)
 {
   GWEN_CRYPT_TOKEN_KEYINFO *p_struct;
 
   assert(p_list);
   p_struct = GWEN_Crypt_Token_KeyInfo_List_First(p_list);
-  while(p_struct) {
+  while (p_struct) {
     int p_rv;
 
-    if (p_struct->id == p_cmp) p_rv = 0;
-    else if (p_cmp < p_struct->id) p_rv = -1;
-    else p_rv = 1;
+    if (p_struct->id == p_cmp)
+      p_rv = 0;
+    else if (p_cmp < p_struct->id)
+      p_rv = -1;
+    else
+      p_rv = 1;
     if (p_rv == 0)
       return p_struct;
     p_struct = GWEN_Crypt_Token_KeyInfo_List_Next(p_struct);
@@ -777,65 +796,86 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_KeyInfo_new(uint32_t kid, GWEN_CRYPT_
 void GWEN_Crypt_Token_KeyInfo_SetModulus(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len)
 {
   assert(st);
-  if (st->modulus) GWEN_Buffer_free(st->modulus);
+  if (st->modulus)
+    GWEN_Buffer_free(st->modulus);
   if (p && len) {
     st->modulus = GWEN_Buffer_new(0, len, 0, 1);
-    GWEN_Buffer_AppendBytes(st->modulus, (const char*) p, len);
-  } else st->modulus = NULL;
+    GWEN_Buffer_AppendBytes(st->modulus, (const char *) p, len);
+  }
+  else
+    st->modulus = NULL;
 }
-const uint8_t* GWEN_Crypt_Token_KeyInfo_GetModulusData(const GWEN_CRYPT_TOKEN_KEYINFO *st)
+const uint8_t *GWEN_Crypt_Token_KeyInfo_GetModulusData(const GWEN_CRYPT_TOKEN_KEYINFO *st)
 {
   assert(st);
-  if (st->modulus) return (const uint8_t*) GWEN_Buffer_GetStart(st->modulus);
-  else return NULL;
+  if (st->modulus)
+    return (const uint8_t *) GWEN_Buffer_GetStart(st->modulus);
+  else
+    return NULL;
 }
 uint32_t GWEN_Crypt_Token_KeyInfo_GetModulusLen(const GWEN_CRYPT_TOKEN_KEYINFO *st)
 {
   assert(st);
-  if (st->modulus) return GWEN_Buffer_GetUsedBytes(st->modulus);
-  else return 0;
+  if (st->modulus)
+    return GWEN_Buffer_GetUsedBytes(st->modulus);
+  else
+    return 0;
 }
 void GWEN_Crypt_Token_KeyInfo_SetExponent(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len)
 {
   assert(st);
-  if (st->exponent) GWEN_Buffer_free(st->exponent);
+  if (st->exponent)
+    GWEN_Buffer_free(st->exponent);
   if (p && len) {
     st->exponent = GWEN_Buffer_new(0, len, 0, 1);
-    GWEN_Buffer_AppendBytes(st->exponent, (const char*) p, len);
-  } else st->exponent = NULL;
+    GWEN_Buffer_AppendBytes(st->exponent, (const char *) p, len);
+  }
+  else
+    st->exponent = NULL;
 }
-const uint8_t* GWEN_Crypt_Token_KeyInfo_GetExponentData(const GWEN_CRYPT_TOKEN_KEYINFO *st)
+const uint8_t *GWEN_Crypt_Token_KeyInfo_GetExponentData(const GWEN_CRYPT_TOKEN_KEYINFO *st)
 {
   assert(st);
-  if (st->exponent) return (const uint8_t*) GWEN_Buffer_GetStart(st->exponent);
-  else return NULL;
+  if (st->exponent)
+    return (const uint8_t *) GWEN_Buffer_GetStart(st->exponent);
+  else
+    return NULL;
 }
 uint32_t GWEN_Crypt_Token_KeyInfo_GetExponentLen(const GWEN_CRYPT_TOKEN_KEYINFO *st)
 {
   assert(st);
-  if (st->exponent) return GWEN_Buffer_GetUsedBytes(st->exponent);
-  else return 0;
+  if (st->exponent)
+    return GWEN_Buffer_GetUsedBytes(st->exponent);
+  else
+    return 0;
 }
 void GWEN_Crypt_Token_KeyInfo_SetCertificate(GWEN_CRYPT_TOKEN_KEYINFO *st, const uint8_t *p, uint32_t len)
 {
   assert(st);
-  if (st->certificate) GWEN_Buffer_free(st->certificate);
+  if (st->certificate)
+    GWEN_Buffer_free(st->certificate);
   if (p && len) {
     st->certificate = GWEN_Buffer_new(0, len, 0, 1);
-    GWEN_Buffer_AppendBytes(st->certificate, (const char*) p, len);
-  } else st->certificate = NULL;
+    GWEN_Buffer_AppendBytes(st->certificate, (const char *) p, len);
+  }
+  else
+    st->certificate = NULL;
 }
-const uint8_t* GWEN_Crypt_Token_KeyInfo_GetCertificateData(const GWEN_CRYPT_TOKEN_KEYINFO *st)
+const uint8_t *GWEN_Crypt_Token_KeyInfo_GetCertificateData(const GWEN_CRYPT_TOKEN_KEYINFO *st)
 {
   assert(st);
-  if (st->certificate) return (const uint8_t*) GWEN_Buffer_GetStart(st->certificate);
-  else return NULL;
+  if (st->certificate)
+    return (const uint8_t *) GWEN_Buffer_GetStart(st->certificate);
+  else
+    return NULL;
 }
 uint32_t GWEN_Crypt_Token_KeyInfo_GetCertificateLen(const GWEN_CRYPT_TOKEN_KEYINFO *st)
 {
   assert(st);
-  if (st->certificate) return GWEN_Buffer_GetUsedBytes(st->certificate);
-  else return 0;
+  if (st->certificate)
+    return GWEN_Buffer_GetUsedBytes(st->certificate);
+  else
+    return 0;
 }
 
 /* code headers */

@@ -18,7 +18,8 @@
 
 
 
-static int check_syncio_http1() {
+static int check_syncio_http1()
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO *baseLayer;
   int rv;
@@ -29,7 +30,7 @@ static int check_syncio_http1() {
   sio=GWEN_SyncIo_Socket_new(GWEN_SocketTypeTCP, GWEN_AddressFamilyIP);
   if (sio==NULL) {
     fprintf(stderr,
-	    "ERROR in check_syncio_http1: Could not create socket io layer.\n");
+            "ERROR in check_syncio_http1: Could not create socket io layer.\n");
     return 2;
   }
   GWEN_SyncIo_Socket_SetAddress(sio, "devel.aqbanking.de");
@@ -40,7 +41,7 @@ static int check_syncio_http1() {
   sio=GWEN_SyncIo_Buffered_new(baseLayer);
   if (sio==NULL) {
     fprintf(stderr,
-	    "ERROR in check_syncio_http1: Could not create Buffered io layer.\n");
+            "ERROR in check_syncio_http1: Could not create Buffered io layer.\n");
     return 2;
   }
 
@@ -49,7 +50,7 @@ static int check_syncio_http1() {
   sio=GWEN_SyncIo_Http_new(baseLayer);
   if (sio==NULL) {
     fprintf(stderr,
-	    "ERROR in check_io_tls1: Could not create HTTP io layer.\n");
+            "ERROR in check_io_tls1: Could not create HTTP io layer.\n");
     return 2;
   }
 
@@ -62,7 +63,7 @@ static int check_syncio_http1() {
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
       fprintf(stderr,
-	      "ERROR in check_syncio_http1: Could not connect (%d)\n", rv);
+              "ERROR in check_syncio_http1: Could not connect (%d)\n", rv);
       return 2;
     }
 
@@ -76,10 +77,10 @@ static int check_syncio_http1() {
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-length", 0);
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Connection", "close");
 
-    rv=GWEN_SyncIo_Write(sio, (uint8_t*)"", 0);
+    rv=GWEN_SyncIo_Write(sio, (uint8_t *)"", 0);
     if (rv<0) {
       fprintf(stderr,
-	      "ERROR in check_syncio_http1: Could not write (%d)\n", rv);
+              "ERROR in check_syncio_http1: Could not write (%d)\n", rv);
       return 2;
     }
 
@@ -90,46 +91,47 @@ static int check_syncio_http1() {
 
       rv=GWEN_Buffer_AllocRoom(tbuf, 1024);
       if (rv<0) {
-	fprintf(stderr,
-		"ERROR in check_syncio_http1: Could not allocRoom (%d)\n", rv);
-	return 2;
+        fprintf(stderr,
+                "ERROR in check_syncio_http1: Could not allocRoom (%d)\n", rv);
+        return 2;
       }
 
-      p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+      p=(uint8_t *) GWEN_Buffer_GetPosPointer(tbuf);
       l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
       do {
-	rv=GWEN_SyncIo_Read(sio, p, l-1);
-      } while(rv==GWEN_ERROR_INTERRUPTED);
+        rv=GWEN_SyncIo_Read(sio, p, l-1);
+      }
+      while (rv==GWEN_ERROR_INTERRUPTED);
       if (rv==0)
-	break;
+        break;
       else if (rv<0) {
-	if (rv==GWEN_ERROR_EOF) {
-	  if (bodySize!=-1 && bytesRead<bodySize) {
-	    fprintf(stderr,
-		    "ERROR in check_syncio_http1: Received too few bytes (%d<%d)\n",
-		    bytesRead, bodySize);
-	    return 2;
-	  }
-	}
-	fprintf(stderr,
-		"ERROR in check_syncio_http1: Could not read (%d) [%d / %d]\n",
-		rv, bytesRead, bodySize);
-	return 2;
+        if (rv==GWEN_ERROR_EOF) {
+          if (bodySize!=-1 && bytesRead<bodySize) {
+            fprintf(stderr,
+                    "ERROR in check_syncio_http1: Received too few bytes (%d<%d)\n",
+                    bytesRead, bodySize);
+            return 2;
+          }
+        }
+        fprintf(stderr,
+                "ERROR in check_syncio_http1: Could not read (%d) [%d / %d]\n",
+                rv, bytesRead, bodySize);
+        return 2;
       }
       else {
-	GWEN_Buffer_IncrementPos(tbuf, rv);
-	GWEN_Buffer_AdjustUsedBytes(tbuf);
-	if (firstRead) {
-	  GWEN_DB_NODE *db;
+        GWEN_Buffer_IncrementPos(tbuf, rv);
+        GWEN_Buffer_AdjustUsedBytes(tbuf);
+        if (firstRead) {
+          GWEN_DB_NODE *db;
 
-	  db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
-	  bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
-	}
+          db=GWEN_SyncIo_Http_GetDbHeaderIn(sio);
+          bodySize=GWEN_DB_GetIntValue(db, "Content-length", 0, -1);
+        }
         bytesRead+=rv;
       }
 
       if (bodySize!=-1 && bytesRead>=bodySize) {
-	break;
+        break;
       }
       firstRead=0;
     }
@@ -143,7 +145,7 @@ static int check_syncio_http1() {
     rv=GWEN_SyncIo_Disconnect(sio);
     if (rv<0) {
       fprintf(stderr,
-	      "ERROR in check_syncio_http1: Could not disconnect (%d)\n", rv);
+              "ERROR in check_syncio_http1: Could not disconnect (%d)\n", rv);
       return 2;
     }
   }
@@ -153,7 +155,8 @@ static int check_syncio_http1() {
 
 
 
-int check_syncio_http() {
+int check_syncio_http()
+{
   int errs=0;
   int chks=0;
 

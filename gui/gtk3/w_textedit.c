@@ -16,13 +16,14 @@ int Gtk3Gui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      int value,
-                                     int doSignal) {
+                                     int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -53,13 +54,14 @@ static GWENHYWFAR_CB
 int Gtk3Gui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
-                                     int defaultValue) {
+                                     int defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -89,13 +91,14 @@ int Gtk3Gui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
                                       GWEN_DIALOG_PROPERTY prop,
                                       int index,
                                       const char *value,
-                                      int doSignal) {
+                                      int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Value: {
     GtkTextBuffer *tb;
     GtkTextIter endIter;
@@ -124,16 +127,17 @@ int Gtk3Gui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk3Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk3Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
+                                              GWEN_DIALOG_PROPERTY prop,
+                                              int index,
+                                              const char *defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Value: {
     GtkTextBuffer *tb;
     GtkTextIter startIter;
@@ -167,7 +171,8 @@ const char* Gtk3Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk3Gui_WTextEdit_Changed_handler(GtkTextBuffer *buffer, gpointer data) {
+static void Gtk3Gui_WTextEdit_Changed_handler(GtkTextBuffer *buffer, gpointer data)
+{
   GWEN_WIDGET *w;
   int rv;
 
@@ -184,7 +189,8 @@ static void Gtk3Gui_WTextEdit_Changed_handler(GtkTextBuffer *buffer, gpointer da
 
 
 
-int Gtk3Gui_WTextEdit_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WTextEdit_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   const char *s;
   GWEN_WIDGET *wParent;
@@ -197,8 +203,8 @@ int Gtk3Gui_WTextEdit_Setup(GWEN_WIDGET *w) {
   if (s && *s)
     gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)), s, -1);
 
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WTextEdit_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WTextEdit_GetIntProperty);
@@ -206,9 +212,9 @@ int Gtk3Gui_WTextEdit_Setup(GWEN_WIDGET *w) {
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk3Gui_WTextEdit_GetCharProperty);
 
   g_signal_connect(gtk_text_view_get_buffer(GTK_TEXT_VIEW(g)),
-                                      "changed",
-                                      G_CALLBACK (Gtk3Gui_WTextEdit_Changed_handler),
-                                      w);
+                   "changed",
+                   G_CALLBACK(Gtk3Gui_WTextEdit_Changed_handler),
+                   w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

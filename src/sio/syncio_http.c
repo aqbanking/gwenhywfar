@@ -49,7 +49,8 @@ GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_HTTP)
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Http_new(GWEN_SYNCIO *baseIo) {
+GWEN_SYNCIO *GWEN_SyncIo_Http_new(GWEN_SYNCIO *baseIo)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_HTTP *xio;
 
@@ -76,10 +77,11 @@ GWEN_SYNCIO *GWEN_SyncIo_Http_new(GWEN_SYNCIO *baseIo) {
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Http_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SyncIo_Http_FreeData(void *bp, void *p)
+{
   GWEN_SYNCIO_HTTP *xio;
 
-  xio=(GWEN_SYNCIO_HTTP*) p;
+  xio=(GWEN_SYNCIO_HTTP *) p;
 
   GWEN_DB_Group_free(xio->dbCommandOut);
   GWEN_DB_Group_free(xio->dbStatusOut);
@@ -94,7 +96,8 @@ void GWENHYWFAR_CB GWEN_SyncIo_Http_FreeData(void *bp, void *p) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Http_Connect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Http_Connect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -125,7 +128,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Connect(GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Http_Disconnect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Http_Disconnect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -154,7 +158,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Disconnect(GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Http_SetReadIdle(GWEN_SYNCIO *sio) {
+void GWEN_SyncIo_Http_SetReadIdle(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -168,7 +173,8 @@ void GWEN_SyncIo_Http_SetReadIdle(GWEN_SYNCIO *sio) {
 
 int GWENHYWFAR_CB GWEN_SyncIo_Http_Read(GWEN_SYNCIO *sio,
                                         uint8_t *buffer,
-                                        uint32_t size) {
+                                        uint32_t size)
+{
   GWEN_SYNCIO_HTTP *xio;
   int rv;
 
@@ -304,8 +310,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Http_Write(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size) {
+                                         const uint8_t *buffer,
+                                         uint32_t size)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -410,7 +417,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Write(GWEN_SYNCIO *sio,
 
 
 
-int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
+int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -431,7 +439,7 @@ int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
     uint32_t l;
 
     GWEN_Buffer_AllocRoom(tbuf, 1024);
-    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    p=(uint8_t *) GWEN_Buffer_GetPosPointer(tbuf);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
     rv=GWEN_SyncIo_Read(baseIo, p, l);
     if (rv<0) {
@@ -449,7 +457,7 @@ int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
     else if (rv==0)
       break;
   }
-  while(rv>0);
+  while (rv>0);
 
   if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Nothing received");
@@ -461,7 +469,8 @@ int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
 
 
 
-int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer) {
+int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer)
+{
   GWEN_SYNCIO_HTTP *xio;
   char *p;
   char *s;
@@ -487,7 +496,7 @@ int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer) {
   s=p;
 
   /* read status code */
-  while(*p && isdigit((int)*p))
+  while (*p && isdigit((int)*p))
     p++;
   if (*p) {
     *p=0;
@@ -508,7 +517,8 @@ int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer) {
 
 
 
-int GWEN_SyncIo_Http_ParseCommand(GWEN_SYNCIO *sio, const char *buffer) {
+int GWEN_SyncIo_Http_ParseCommand(GWEN_SYNCIO *sio, const char *buffer)
+{
   GWEN_SYNCIO_HTTP *xio;
   char *tmp;
   char *p;
@@ -565,7 +575,8 @@ int GWEN_SyncIo_Http_ParseCommand(GWEN_SYNCIO *sio, const char *buffer) {
 
 
 
-int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   GWEN_BUFFER *tbuf;
@@ -596,10 +607,10 @@ int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
 
   if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Received HTTP status:");
-    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
-			GWEN_Buffer_GetUsedBytes(tbuf),
-			GWEN_LOGDOMAIN,
-			GWEN_LoggerLevel_Debug);
+    GWEN_Text_LogString((const char *) GWEN_Buffer_GetStart(tbuf),
+                        GWEN_Buffer_GetUsedBytes(tbuf),
+                        GWEN_LOGDOMAIN,
+                        GWEN_LoggerLevel_Debug);
   }
 
   rv=GWEN_SyncIo_Http_ParseStatus(sio, GWEN_Buffer_GetStart(tbuf));
@@ -615,7 +626,8 @@ int GWEN_SyncIo_Http_ReadStatus(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_ReadCommand(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_ReadCommand(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   GWEN_BUFFER *tbuf;
@@ -651,7 +663,8 @@ int GWEN_SyncIo_Http_ReadCommand(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
+int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   char *p;
@@ -666,7 +679,7 @@ int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
 
   /* resolve line continuations */
   p=buf;
-  while(*p) {
+  while (*p) {
     p=strchr(p, 10);
     if (p) {
       if (p[1]==32 || p[1]==9)
@@ -678,7 +691,7 @@ int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
 
   /* parse every line */
   p=buf;
-  while(p && *p) {
+  while (p && *p) {
     char *pNext;
     char *pVarBegin;
     char *pVarEnd;
@@ -689,11 +702,11 @@ int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
       *pNext=0;
       pNext++;
     }
-    while(*p && (*p==32 || *p==9))
+    while (*p && (*p==32 || *p==9))
       p++;
     if (*p) {
       pVarBegin=p;
-      while(*p && *p!=':' && *p>32 && *p<127)
+      while (*p && *p!=':' && *p>32 && *p<127)
         p++;
       pVarEnd=p;
       if (*p!=':') {
@@ -703,7 +716,7 @@ int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
       *pVarEnd=0;
       p++;
 
-      while(*p && (*p==32 || *p==9))
+      while (*p && (*p==32 || *p==9))
         p++;
       if (*p)
         GWEN_DB_SetCharValue(xio->dbHeaderIn, GWEN_PATH_FLAGS_CREATE_VAR, pVarBegin, p);
@@ -749,7 +762,8 @@ int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf) {
 
 
 
-int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   GWEN_BUFFER *tbuf;
@@ -775,7 +789,7 @@ int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio) {
     uint8_t *p;
 
     GWEN_Buffer_AllocRoom(tbuf, 1024);
-    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    p=(uint8_t *) GWEN_Buffer_GetPosPointer(tbuf);
     rv=GWEN_SyncIo_Read(baseIo, p, 1024);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -800,7 +814,7 @@ int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio) {
     else if (rv==0)
       break;
   }
-  while(rv>0);
+  while (rv>0);
 
   if (lines<1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "No header line received");
@@ -810,10 +824,10 @@ int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio) {
 
   if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Received HTTP header:");
-    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
-			GWEN_Buffer_GetUsedBytes(tbuf),
-			GWEN_LOGDOMAIN,
-			GWEN_LoggerLevel_Debug);
+    GWEN_Text_LogString((const char *) GWEN_Buffer_GetStart(tbuf),
+                        GWEN_Buffer_GetUsedBytes(tbuf),
+                        GWEN_LOGDOMAIN,
+                        GWEN_LoggerLevel_Debug);
   }
 
   rv=GWEN_SyncIo_Http_ParseHeader(sio, GWEN_Buffer_GetStart(tbuf));
@@ -829,7 +843,8 @@ int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   GWEN_BUFFER *tbuf;
@@ -878,7 +893,8 @@ int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size) {
+int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -932,7 +948,8 @@ int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
 
 
 
-int GWEN_SyncIo_Http_ReadBody(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size) {
+int GWEN_SyncIo_Http_ReadBody(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -975,7 +992,8 @@ int GWEN_SyncIo_Http_ReadBody(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size) 
 
 
 
-int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1008,15 +1026,15 @@ int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio) {
 
   if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Sending HTTP command:");
-    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
-			GWEN_Buffer_GetUsedBytes(tbuf),
-			GWEN_LOGDOMAIN,
-			GWEN_LoggerLevel_Debug);
+    GWEN_Text_LogString((const char *) GWEN_Buffer_GetStart(tbuf),
+                        GWEN_Buffer_GetUsedBytes(tbuf),
+                        GWEN_LOGDOMAIN,
+                        GWEN_LoggerLevel_Debug);
   }
 
   /* write */
   rv=GWEN_SyncIo_WriteForced(baseIo,
-                             (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                              GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1030,7 +1048,8 @@ int GWEN_SyncIo_Http_WriteCommand(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_WriteStatus(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_WriteStatus(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1070,7 +1089,7 @@ int GWEN_SyncIo_Http_WriteStatus(GWEN_SYNCIO *sio) {
 
   /* write */
   rv=GWEN_SyncIo_WriteForced(baseIo,
-                             (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                              GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1084,7 +1103,8 @@ int GWEN_SyncIo_Http_WriteStatus(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int i;
@@ -1165,15 +1185,15 @@ int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio) {
 
   if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Sending HTTP header:");
-    GWEN_Text_LogString((const char*) GWEN_Buffer_GetStart(tbuf),
-			GWEN_Buffer_GetUsedBytes(tbuf),
-			GWEN_LOGDOMAIN,
-			GWEN_LoggerLevel_Debug);
+    GWEN_Text_LogString((const char *) GWEN_Buffer_GetStart(tbuf),
+                        GWEN_Buffer_GetUsedBytes(tbuf),
+                        GWEN_LOGDOMAIN,
+                        GWEN_LoggerLevel_Debug);
   }
 
   /* write */
   rv=GWEN_SyncIo_WriteForced(baseIo,
-                             (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                              GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1190,7 +1210,8 @@ int GWEN_SyncIo_Http_WriteHeader(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_WriteChunkSize(GWEN_SYNCIO *sio, uint32_t size) {
+int GWEN_SyncIo_Http_WriteChunkSize(GWEN_SYNCIO *sio, uint32_t size)
+{
   GWEN_SYNCIO_HTTP *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1209,7 +1230,7 @@ int GWEN_SyncIo_Http_WriteChunkSize(GWEN_SYNCIO *sio, uint32_t size) {
   snprintf(numbuf, sizeof(numbuf)-1, "%x\r\n", size);
   numbuf[sizeof(numbuf)-1]=0;
 
-  rv=GWEN_SyncIo_WriteForced(baseIo, (const uint8_t*) numbuf, strlen(numbuf));
+  rv=GWEN_SyncIo_WriteForced(baseIo, (const uint8_t *) numbuf, strlen(numbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -1220,7 +1241,8 @@ int GWEN_SyncIo_Http_WriteChunkSize(GWEN_SYNCIO *sio, uint32_t size) {
 
 
 
-void GWEN_SyncIo_Http_SetWriteIdle(GWEN_SYNCIO *sio) {
+void GWEN_SyncIo_Http_SetWriteIdle(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1234,7 +1256,8 @@ void GWEN_SyncIo_Http_SetWriteIdle(GWEN_SYNCIO *sio) {
 
 
 
-GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbCommandIn(const GWEN_SYNCIO *sio) {
+GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbCommandIn(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1246,7 +1269,8 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbCommandIn(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusIn(const GWEN_SYNCIO *sio) {
+GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusIn(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1258,7 +1282,8 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusIn(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderIn(const GWEN_SYNCIO *sio) {
+GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderIn(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1270,7 +1295,8 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderIn(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbCommandOut(const GWEN_SYNCIO *sio) {
+GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbCommandOut(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1282,7 +1308,8 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbCommandOut(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusOut(const GWEN_SYNCIO *sio) {
+GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusOut(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1294,7 +1321,8 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbStatusOut(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderOut(const GWEN_SYNCIO *sio) {
+GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderOut(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_HTTP *xio;
 
   assert(sio);
@@ -1307,7 +1335,8 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderOut(const GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
+int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf)
+{
   GWEN_SYNCIO_HTTP *xio;
   int rv;
   int code=0;
@@ -1342,12 +1371,12 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
       return rv;
     }
 
-    p=(uint8_t*) GWEN_Buffer_GetPosPointer(buf);
+    p=(uint8_t *) GWEN_Buffer_GetPosPointer(buf);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
     do {
       rv=GWEN_SyncIo_Read(sio, p, l-1);
     }
-    while(rv==GWEN_ERROR_INTERRUPTED);
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv==0)
       break;
@@ -1451,7 +1480,8 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
+int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout)
+{
   GWEN_SYNCIO_HTTP *xio;
   int rv;
   int code=0;
@@ -1485,7 +1515,7 @@ int GWEN_SyncIo_Http_RecvBodyToSio(GWEN_SYNCIO *sio, GWEN_SYNCIO *sout) {
     do {
       rv=GWEN_SyncIo_Read(sio, p, l-1);
     }
-    while(rv==GWEN_ERROR_INTERRUPTED);
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv==0)
       break;

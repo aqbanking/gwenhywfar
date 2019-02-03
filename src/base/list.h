@@ -65,7 +65,7 @@ typedef struct GWEN_LIST GWEN_CONSTLIST;
 
 /** Callback function for one const list element. */
 typedef const void *(*GWEN_CONSTLIST_FOREACH_CB)(const void *element,
-    void *user_data);
+                                                 void *user_data);
 
 /** An iterator for the doubly-linked list, i.e. a pointer to a
     specific element */

@@ -26,7 +26,8 @@
 
 
 
-int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE *dbParent, int depth) {
+int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE *dbParent, int depth)
+{
   int rv;
   GWEN_PARSER_ELEMENT *eChild;
   const char *s;
@@ -46,7 +47,7 @@ int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE
 
     if (groupName && *groupName)
       dbThis=GWEN_DB_GetGroup(dbParent, GWEN_DB_FLAGS_DEFAULT, groupName);
-    while(eChild) {
+    while (eChild) {
       rv=GWEN_Parser__toDbElementAndChildren(eChild, dbThis?dbThis:dbParent, depth+1);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d) [%d]", rv, depth);
@@ -62,11 +63,12 @@ int GWEN_Parser__toDbElementAndChildren(GWEN_PARSER_ELEMENT *eData, GWEN_DB_NODE
 
 
 
-int GWEN_Parser_ToDbTree(GWEN_PARSER_ELEMENT_TREE *tData, GWEN_DB_NODE *db) {
+int GWEN_Parser_ToDbTree(GWEN_PARSER_ELEMENT_TREE *tData, GWEN_DB_NODE *db)
+{
   GWEN_PARSER_ELEMENT *e;
 
   e=GWEN_ParserElement_Tree_GetFirst(tData);
-  while(e) {
+  while (e) {
     int rv;
 
     rv=GWEN_Parser__toDbElementAndChildren(e, db, 0);

@@ -43,7 +43,8 @@
 
 
 
-GWEN_STRINGLIST *GWEN_StringList_new(void) {
+GWEN_STRINGLIST *GWEN_StringList_new(void)
+{
   GWEN_STRINGLIST *sl;
 
   GWEN_NEW_OBJECT(GWEN_STRINGLIST, sl);
@@ -54,12 +55,13 @@ GWEN_STRINGLIST *GWEN_StringList_new(void) {
 
 
 
-void GWEN_StringList_free(GWEN_STRINGLIST *sl) {
+void GWEN_StringList_free(GWEN_STRINGLIST *sl)
+{
   GWEN_STRINGLISTENTRY *curr, *next;
 
   if (sl) {
     curr=sl->first;
-    while(curr) {
+    while (curr) {
       next=curr->next;
       GWEN_StringListEntry_free(curr);
       curr=next;
@@ -70,21 +72,24 @@ void GWEN_StringList_free(GWEN_STRINGLIST *sl) {
 
 
 
-void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i) {
+void GWEN_StringList_SetSenseCase(GWEN_STRINGLIST *sl, int i)
+{
   assert(sl);
   sl->senseCase=i;
 }
 
 
 
-void GWEN_StringList_SetIgnoreRefCount(GWEN_STRINGLIST *sl, int i) {
+void GWEN_StringList_SetIgnoreRefCount(GWEN_STRINGLIST *sl, int i)
+{
   assert(sl);
   sl->ignoreRefCount=i;
 }
 
 
 
-GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s, int take) {
+GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s, int take)
+{
   GWEN_STRINGLISTENTRY *sl;
 
   GWEN_NEW_OBJECT(GWEN_STRINGLISTENTRY, sl);
@@ -103,10 +108,11 @@ GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s, int take) {
 
 void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,
                                         const char *s,
-                                        int take) {
+                                        int take)
+{
   assert(e);
   if (e->data)
-    free((void*)(e->data));
+    free((void *)(e->data));
   if (take)
     e->data=s;
   else
@@ -115,10 +121,11 @@ void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,
 
 
 
-void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl) {
+void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl)
+{
   if (sl) {
     if (sl->data)
-      free((void*)(sl->data));
+      free((void *)(sl->data));
     GWEN_FREE_OBJECT(sl);
   }
 }
@@ -126,7 +133,8 @@ void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl) {
 
 
 void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
-                                 GWEN_STRINGLISTENTRY *se) {
+                                 GWEN_STRINGLISTENTRY *se)
+{
   GWEN_STRINGLISTENTRY *curr;
 
   assert(sl);
@@ -137,7 +145,7 @@ void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
     sl->first=se;
   }
   else {
-    while(curr->next) {
+    while (curr->next) {
       curr=curr->next;
     }
     curr->next=se;
@@ -147,12 +155,13 @@ void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
 
 
 
-GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup) {
+GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup)
+{
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_StringList_new();
   if (s && *s) {
-    while(*s) {
+    while (*s) {
       const char *t;
       char *tmpStr;
 
@@ -161,7 +170,7 @@ GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup) {
         int len;
 
         len=(t-s);
-        tmpStr=(char*) malloc(len+1);
+        tmpStr=(char *) malloc(len+1);
         assert(tmpStr);
         memmove(tmpStr, s, len);
         tmpStr[len]=0;
@@ -183,7 +192,8 @@ GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup) {
 
 
 void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
-                                 GWEN_STRINGLISTENTRY *se) {
+                                 GWEN_STRINGLISTENTRY *se)
+{
   GWEN_STRINGLISTENTRY *curr;
 
   assert(sl);
@@ -197,7 +207,7 @@ void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
         sl->count--;
     }
     else {
-      while(curr->next!=se) {
+      while (curr->next!=se) {
         curr=curr->next;
       }
       if (curr) {
@@ -211,7 +221,8 @@ void GWEN_StringList_RemoveEntry(GWEN_STRINGLIST *sl,
 
 
 
-void GWEN_StringList_Clear(GWEN_STRINGLIST *sl) {
+void GWEN_StringList_Clear(GWEN_STRINGLIST *sl)
+{
   GWEN_STRINGLISTENTRY *se, *next;
 
   assert(sl);
@@ -230,16 +241,17 @@ void GWEN_StringList_Clear(GWEN_STRINGLIST *sl) {
 int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
                                  const char *s,
                                  int take,
-                                 int checkDouble) {
+                                 int checkDouble)
+{
   GWEN_STRINGLISTENTRY *se;
 
   if (checkDouble) {
     se=sl->first;
     if (sl->senseCase) {
-      while(se) {
+      while (se) {
         if (strcmp(se->data, s)==0) {
           if (take)
-            free((char*)s);
+            free((char *)s);
           se->refCount++;
           return 0;
         }
@@ -247,10 +259,10 @@ int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
       } /* while */
     }
     else {
-      while(se) {
+      while (se) {
         if (strcasecmp(se->data, s)==0) {
           if (take)
-            free((char*)s);
+            free((char *)s);
           se->refCount++;
           return 0;
         }
@@ -269,16 +281,17 @@ int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
 int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
                                  const char *s,
                                  int take,
-                                 int checkDouble) {
+                                 int checkDouble)
+{
   GWEN_STRINGLISTENTRY *se;
 
   if (checkDouble) {
     se=sl->first;
     if (sl->senseCase) {
-      while(se) {
+      while (se) {
         if (strcmp(se->data, s)==0) {
           if (take)
-            free((char*)s);
+            free((char *)s);
           se->refCount++;
           return 0;
         }
@@ -286,10 +299,10 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
       } /* while */
     }
     else {
-      while(se) {
+      while (se) {
         if (strcasecmp(se->data, s)==0) {
           if (take)
-            free((char*)s);
+            free((char *)s);
           se->refCount++;
           return 0;
         }
@@ -307,12 +320,13 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
 
 
 GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
-    const char *s) {
+                                                const char *s)
+{
   GWEN_STRINGLISTENTRY *se;
 
   se=sl->first;
   if (sl->senseCase) {
-    while(se) {
+    while (se) {
       if (strcmp(se->data, s)==0) {
         assert(se->refCount);
         se->refCount--;
@@ -329,7 +343,7 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
     return 0;
   }
   else {
-    while(se) {
+    while (se) {
       if (strcasecmp(se->data, s)==0) {
         assert(se->refCount);
         se->refCount--;
@@ -349,37 +363,45 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
 
 
 
-GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(const GWEN_STRINGLIST *sl) {
+GWEN_STRINGLISTENTRY *GWEN_StringList_FirstEntry(const GWEN_STRINGLIST *sl)
+{
   assert(sl);
   return sl->first;
 }
 
 
 
-GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(const GWEN_STRINGLISTENTRY *se) {
+GWEN_STRINGLISTENTRY *GWEN_StringListEntry_Next(const GWEN_STRINGLISTENTRY *se)
+{
   assert(se);
   return se->next;
 }
 
 
 
-const char *GWEN_StringListEntry_Data(const GWEN_STRINGLISTENTRY *se) {
+const char *GWEN_StringListEntry_Data(const GWEN_STRINGLISTENTRY *se)
+{
   assert(se);
   return se->data;
 }
 
 
 
-void GWEN_StringListEntry_SetData(GWEN_STRINGLISTENTRY *se, const char *s) {
+void GWEN_StringListEntry_SetData(GWEN_STRINGLISTENTRY *se, const char *s)
+{
   assert(se);
-  if (se->data) free((void*)(se->data));
-  if (s) se->data=strdup(s);
-  else   se->data=NULL;
+  if (se->data)
+    free((void *)(se->data));
+  if (s)
+    se->data=strdup(s);
+  else
+    se->data=NULL;
 }
 
 
 
-unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl) {
+unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl)
+{
   assert(sl);
   return sl->count;
 }
@@ -387,13 +409,14 @@ unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl) {
 
 
 int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
-                              const char *s) {
+                              const char *s)
+{
   GWEN_STRINGLISTENTRY *se;
 
   assert(sl);
   se=sl->first;
   if (sl->senseCase) {
-    while(se) {
+    while (se) {
       if (strcmp(se->data, s)==0) {
         return 1;
       }
@@ -402,7 +425,7 @@ int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
     return 0;
   }
   else {
-    while(se) {
+    while (se) {
       if (strcasecmp(se->data, s)==0) {
         return 1;
       }
@@ -414,7 +437,8 @@ int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
 
 
 
-int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s) {
+int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s)
+{
   GWEN_STRINGLISTENTRY *se;
   int i;
 
@@ -422,7 +446,7 @@ int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s) {
   se=sl->first;
   if (sl->senseCase) {
     i=0;
-    while(se) {
+    while (se) {
       if (strcmp(se->data, s)==0) {
         return i;
       }
@@ -433,7 +457,7 @@ int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s) {
   }
   else {
     i=0;
-    while(se) {
+    while (se) {
       if (strcasecmp(se->data, s)==0) {
         return i;
       }
@@ -446,7 +470,8 @@ int GWEN_StringList_GetStringPos(const GWEN_STRINGLIST *sl, const char *s) {
 
 
 
-GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl, const char *s) {
+GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl, const char *s)
+{
   GWEN_STRINGLISTENTRY *se;
   int i;
 
@@ -454,7 +479,7 @@ GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl,
   se=sl->first;
   if (sl->senseCase) {
     i=0;
-    while(se) {
+    while (se) {
       if (strcmp(se->data, s)==0) {
         return se;
       }
@@ -465,7 +490,7 @@ GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl,
   }
   else {
     i=0;
-    while(se) {
+    while (se) {
       if (strcasecmp(se->data, s)==0) {
         return se;
       }
@@ -478,7 +503,8 @@ GWEN_STRINGLISTENTRY *GWEN_StringList_FindStringEntry(const GWEN_STRINGLIST *sl,
 
 
 
-GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl) {
+GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl)
+{
   GWEN_STRINGLISTENTRY *se;
   GWEN_STRINGLIST *newsl;
 
@@ -486,7 +512,7 @@ GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl) {
   newsl=GWEN_StringList_new();
 
   se=sl->first;
-  while(se) {
+  while (se) {
     GWEN_STRINGLISTENTRY *newse;
 
     newse=GWEN_StringListEntry_new(se->data, 0);
@@ -500,7 +526,8 @@ GWEN_STRINGLIST *GWEN_StringList_dup(const GWEN_STRINGLIST *sl) {
 
 void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
                               void *(*func)(const char *s, void *u),
-                              void *user_data) {
+                              void *user_data)
+{
   GWEN_STRINGLISTENTRY *it;
   const char *el;
   void *result = 0;
@@ -509,7 +536,7 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
   it = GWEN_StringList_FirstEntry(l);
   if (!it)
     return 0;
-  while(it) {
+  while (it) {
     el = GWEN_StringListEntry_Data(it);
     result = func(el, user_data);
     if (result) {
@@ -522,7 +549,8 @@ void *GWEN_StringList_ForEach(const GWEN_STRINGLIST *l,
 
 
 
-const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l) {
+const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l)
+{
   assert(l);
   if (l->first==0)
     return 0;
@@ -531,32 +559,36 @@ const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l) {
 
 
 
-static int GWEN_StringList__compar_asc_nocase(const void *a, const void *b) {
-  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+static int GWEN_StringList__compar_asc_nocase(const void *a, const void *b)
+{
+  const GWEN_STRINGLISTENTRY *const *pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
     return strcmp(se1->data, se2->data);
   else
     return 0;
 }
-static int GWEN_StringList__compar_desc_nocase(const void *a, const void *b) {
-  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+static int GWEN_StringList__compar_desc_nocase(const void *a, const void *b)
+{
+  const GWEN_STRINGLISTENTRY *const *pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
     return strcmp(se2->data, se1->data);
   else
     return 0;
 }
-static int GWEN_StringList__compar_asc_case(const void *a, const void *b) {
-  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+static int GWEN_StringList__compar_asc_case(const void *a, const void *b)
+{
+  const GWEN_STRINGLISTENTRY *const *pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
     return strcasecmp(se1->data, se2->data);
   else
     return 0;
 }
-static int GWEN_StringList__compar_desc_case(const void *a, const void *b) {
-  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+static int GWEN_StringList__compar_desc_case(const void *a, const void *b)
+{
+  const GWEN_STRINGLISTENTRY *const *pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data)
     return strcasecmp(se2->data, se1->data);
@@ -564,8 +596,9 @@ static int GWEN_StringList__compar_desc_case(const void *a, const void *b) {
     return 0;
 }
 
-static int GWEN_StringList__compar_asc_int(const void *a, const void *b) {
-  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+static int GWEN_StringList__compar_asc_int(const void *a, const void *b)
+{
+  const GWEN_STRINGLISTENTRY *const *pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data) {
     int i1, i2;
@@ -578,8 +611,9 @@ static int GWEN_StringList__compar_asc_int(const void *a, const void *b) {
     return 0;
 }
 
-static int GWEN_StringList__compar_desc_int(const void *a, const void *b) {
-  const GWEN_STRINGLISTENTRY * const * pse1 = a, * const * pse2 = b;
+static int GWEN_StringList__compar_desc_int(const void *a, const void *b)
+{
+  const GWEN_STRINGLISTENTRY *const *pse1 = a, * const * pse2 = b;
   const GWEN_STRINGLISTENTRY *se1 = *pse1, *se2 = *pse2;
   if (se1 && se2 && se1->data && se2->data) {
     int i1, i2;
@@ -596,7 +630,8 @@ static int GWEN_StringList__compar_desc_int(const void *a, const void *b) {
 
 void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
                           int ascending,
-                          GWEN_STRINGLIST_SORT_MODE sortMode) {
+                          GWEN_STRINGLIST_SORT_MODE sortMode)
+{
   GWEN_STRINGLISTENTRY **tmpEntries;
   GWEN_STRINGLISTENTRY *sentry;
   GWEN_STRINGLISTENTRY **psentry;
@@ -606,42 +641,42 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 
   /* sort entries into a linear pointer list */
   tmpEntries=(GWEN_STRINGLISTENTRY **)malloc((l->count+1)*
-             sizeof(GWEN_STRINGLISTENTRY*));
+                                             sizeof(GWEN_STRINGLISTENTRY *));
   assert(tmpEntries);
   sentry=l->first;
   psentry=tmpEntries;
-  while(sentry) {
+  while (sentry) {
     *(psentry++)=sentry;
     sentry=sentry->next;
   } /* while */
   *psentry=0;
 
   /* sort */
-  switch(sortMode) {
+  switch (sortMode) {
   case GWEN_StringList_SortModeNoCase:
     if (ascending)
-      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY *),
             GWEN_StringList__compar_asc_nocase);
     else
-      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY *),
             GWEN_StringList__compar_desc_nocase);
     break;
 
   case GWEN_StringList_SortModeCase:
     if (ascending)
-      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY *),
             GWEN_StringList__compar_asc_case);
     else
-      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY *),
             GWEN_StringList__compar_desc_case);
     break;
 
   case GWEN_StringList_SortModeInt:
     if (ascending)
-      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY *),
             GWEN_StringList__compar_asc_int);
     else
-      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY*),
+      qsort(tmpEntries, l->count, sizeof(GWEN_STRINGLISTENTRY *),
             GWEN_StringList__compar_desc_int);
     break;
 
@@ -652,7 +687,7 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
   /* sort entries back into GWEN_STRINGLIST */
   psentry=tmpEntries;
   sentry=0;
-  while(*psentry) {
+  while (*psentry) {
     if (sentry)
       sentry->next=*psentry;
     else
@@ -668,12 +703,13 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 
 
 
-const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *sl, int idx) {
+const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *sl, int idx)
+{
   GWEN_STRINGLISTENTRY *se;
 
   assert(sl);
   se=sl->first;
-  while(se) {
+  while (se) {
     if (idx--==0)
       return se->data;
     se=se->next;
@@ -683,17 +719,18 @@ const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *sl, int idx) {
 
 
 
-GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble) {
+GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble)
+{
   if (str && *str) {
     GWEN_STRINGLIST *sl;
     const unsigned char *s;
 
     sl=GWEN_StringList_new();
-    s=(const unsigned char*)str;
+    s=(const unsigned char *)str;
 
-    while(*s) {
+    while (*s) {
       /* skip blanks */
-      while(*s && *s<33)
+      while (*s && *s<33)
         s++;
 
       if (*s) {
@@ -703,14 +740,14 @@ GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimit
         /* read word */
         pStart=s;
         //s++;
-        while(*s && strchr(delimiters, *s)==NULL)
+        while (*s && strchr(delimiters, *s)==NULL)
           s++;
         len=s-pStart;
 
         if (len) {
           char *toAdd;
 
-          toAdd=(char*) malloc(len+1);
+          toAdd=(char *) malloc(len+1);
           assert(toAdd);
 
           memmove(toAdd, pStart, len);

@@ -22,7 +22,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_PARAM, GWEN_Param)
 GWEN_TREE_FUNCTIONS(GWEN_PARAM, GWEN_Param)
 
 
-GWEN_PARAM_DATATYPE GWEN_Param_DataType_fromString(const char *p_s) {
+GWEN_PARAM_DATATYPE GWEN_Param_DataType_fromString(const char *p_s)
+{
   if (p_s && *p_s) {
     if (strcasecmp(p_s, "int")==0)
       return GWEN_Param_DataType_Int;
@@ -36,7 +37,8 @@ GWEN_PARAM_DATATYPE GWEN_Param_DataType_fromString(const char *p_s) {
   return GWEN_Param_DataType_Unknown;
 }
 
-GWEN_PARAM_TYPE GWEN_Param_Type_fromString(const char *p_s) {
+GWEN_PARAM_TYPE GWEN_Param_Type_fromString(const char *p_s)
+{
   if (p_s && *p_s) {
     if (strcasecmp(p_s, "simple")==0)
       return GWEN_Param_Type_Simple;
@@ -46,8 +48,9 @@ GWEN_PARAM_TYPE GWEN_Param_Type_fromString(const char *p_s) {
   return GWEN_Param_Type_Unknown;
 }
 
-const char *GWEN_Param_DataType_toString(GWEN_PARAM_DATATYPE p_i) {
-  switch(p_i) {
+const char *GWEN_Param_DataType_toString(GWEN_PARAM_DATATYPE p_i)
+{
+  switch (p_i) {
   case GWEN_Param_DataType_Int:
     return "int";
   case GWEN_Param_DataType_Bool:
@@ -61,8 +64,9 @@ const char *GWEN_Param_DataType_toString(GWEN_PARAM_DATATYPE p_i) {
   }
 }
 
-const char *GWEN_Param_Type_toString(GWEN_PARAM_TYPE p_i) {
-  switch(p_i) {
+const char *GWEN_Param_Type_toString(GWEN_PARAM_TYPE p_i)
+{
+  switch (p_i) {
   case GWEN_Param_Type_Simple:
     return "simple";
   case GWEN_Param_Type_Choice:
@@ -72,7 +76,8 @@ const char *GWEN_Param_Type_toString(GWEN_PARAM_TYPE p_i) {
   }
 }
 
-GWEN_PARAM *GWEN_Param_new(void) {
+GWEN_PARAM *GWEN_Param_new(void)
+{
   GWEN_PARAM *p_struct;
 
   GWEN_NEW_OBJECT(GWEN_PARAM, p_struct)
@@ -97,7 +102,8 @@ GWEN_PARAM *GWEN_Param_new(void) {
   return p_struct;
 }
 
-void GWEN_Param_free(GWEN_PARAM *p_struct) {
+void GWEN_Param_free(GWEN_PARAM *p_struct)
+{
   if (p_struct) {
     assert(p_struct->_refCount);
     if (p_struct->_refCount==1) {
@@ -118,13 +124,15 @@ void GWEN_Param_free(GWEN_PARAM *p_struct) {
   }
 }
 
-void GWEN_Param_Attach(GWEN_PARAM *p_struct) {
+void GWEN_Param_Attach(GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   assert(p_struct->_refCount);
   p_struct->_refCount++;
 }
 
-GWEN_PARAM *GWEN_Param_dup(const GWEN_PARAM *p_src) {
+GWEN_PARAM *GWEN_Param_dup(const GWEN_PARAM *p_src)
+{
   GWEN_PARAM *p_struct;
 
   assert(p_src);
@@ -204,7 +212,8 @@ GWEN_PARAM *GWEN_Param_dup(const GWEN_PARAM *p_src) {
   return p_struct;
 }
 
-GWEN_PARAM *GWEN_Param_copy(GWEN_PARAM *p_struct, const GWEN_PARAM *p_src) {
+GWEN_PARAM *GWEN_Param_copy(GWEN_PARAM *p_struct, const GWEN_PARAM *p_src)
+{
   assert(p_struct);
   assert(p_src);
   /* member "name" */
@@ -282,67 +291,80 @@ GWEN_PARAM *GWEN_Param_copy(GWEN_PARAM *p_struct, const GWEN_PARAM *p_src) {
   return p_struct;
 }
 
-const char *GWEN_Param_GetName(const GWEN_PARAM *p_struct) {
+const char *GWEN_Param_GetName(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->name;
 }
 
-uint32_t GWEN_Param_GetFlags(const GWEN_PARAM *p_struct) {
+uint32_t GWEN_Param_GetFlags(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->flags;
 }
 
-GWEN_PARAM_TYPE GWEN_Param_GetType(const GWEN_PARAM *p_struct) {
+GWEN_PARAM_TYPE GWEN_Param_GetType(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->type;
 }
 
-GWEN_PARAM_DATATYPE GWEN_Param_GetDataType(const GWEN_PARAM *p_struct) {
+GWEN_PARAM_DATATYPE GWEN_Param_GetDataType(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->dataType;
 }
 
-const char *GWEN_Param_GetShortDescription(const GWEN_PARAM *p_struct) {
+const char *GWEN_Param_GetShortDescription(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->shortDescription;
 }
 
-const char *GWEN_Param_GetLongDescription(const GWEN_PARAM *p_struct) {
+const char *GWEN_Param_GetLongDescription(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->longDescription;
 }
 
-const char *GWEN_Param_GetCurrentValue(const GWEN_PARAM *p_struct) {
+const char *GWEN_Param_GetCurrentValue(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->currentValue;
 }
 
-const char *GWEN_Param_GetDefaultValue(const GWEN_PARAM *p_struct) {
+const char *GWEN_Param_GetDefaultValue(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->defaultValue;
 }
 
-GWEN_STRINGLIST2 *GWEN_Param_GetChoices(const GWEN_PARAM *p_struct) {
+GWEN_STRINGLIST2 *GWEN_Param_GetChoices(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->choices;
 }
 
-int GWEN_Param_GetInternalIntValue(const GWEN_PARAM *p_struct) {
+int GWEN_Param_GetInternalIntValue(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->internalIntValue;
 }
 
-double GWEN_Param_GetInternalFloatValue(const GWEN_PARAM *p_struct) {
+double GWEN_Param_GetInternalFloatValue(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->internalFloatValue;
 }
 
-uint32_t GWEN_Param_GetRuntimeFlags(const GWEN_PARAM *p_struct) {
+uint32_t GWEN_Param_GetRuntimeFlags(const GWEN_PARAM *p_struct)
+{
   assert(p_struct);
   return p_struct->runtimeFlags;
 }
 
-void GWEN_Param_SetName(GWEN_PARAM *p_struct, const char *p_src) {
+void GWEN_Param_SetName(GWEN_PARAM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->name) {
     free(p_struct->name);
@@ -355,32 +377,38 @@ void GWEN_Param_SetName(GWEN_PARAM *p_struct, const char *p_src) {
   }
 }
 
-void GWEN_Param_SetFlags(GWEN_PARAM *p_struct, uint32_t p_src) {
+void GWEN_Param_SetFlags(GWEN_PARAM *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags=p_src;
 }
 
-void GWEN_Param_AddFlags(GWEN_PARAM *p_struct, uint32_t p_src) {
+void GWEN_Param_AddFlags(GWEN_PARAM *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags|=p_src;
 }
 
-void GWEN_Param_SubFlags(GWEN_PARAM *p_struct, uint32_t p_src) {
+void GWEN_Param_SubFlags(GWEN_PARAM *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags&=~p_src;
 }
 
-void GWEN_Param_SetType(GWEN_PARAM *p_struct, GWEN_PARAM_TYPE  p_src) {
+void GWEN_Param_SetType(GWEN_PARAM *p_struct, GWEN_PARAM_TYPE  p_src)
+{
   assert(p_struct);
   p_struct->type=p_src;
 }
 
-void GWEN_Param_SetDataType(GWEN_PARAM *p_struct, GWEN_PARAM_DATATYPE  p_src) {
+void GWEN_Param_SetDataType(GWEN_PARAM *p_struct, GWEN_PARAM_DATATYPE  p_src)
+{
   assert(p_struct);
   p_struct->dataType=p_src;
 }
 
-void GWEN_Param_SetShortDescription(GWEN_PARAM *p_struct, const char *p_src) {
+void GWEN_Param_SetShortDescription(GWEN_PARAM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->shortDescription) {
     free(p_struct->shortDescription);
@@ -393,7 +421,8 @@ void GWEN_Param_SetShortDescription(GWEN_PARAM *p_struct, const char *p_src) {
   }
 }
 
-void GWEN_Param_SetLongDescription(GWEN_PARAM *p_struct, const char *p_src) {
+void GWEN_Param_SetLongDescription(GWEN_PARAM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->longDescription) {
     free(p_struct->longDescription);
@@ -406,7 +435,8 @@ void GWEN_Param_SetLongDescription(GWEN_PARAM *p_struct, const char *p_src) {
   }
 }
 
-void GWEN_Param_SetCurrentValue(GWEN_PARAM *p_struct, const char *p_src) {
+void GWEN_Param_SetCurrentValue(GWEN_PARAM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->currentValue) {
     free(p_struct->currentValue);
@@ -419,7 +449,8 @@ void GWEN_Param_SetCurrentValue(GWEN_PARAM *p_struct, const char *p_src) {
   }
 }
 
-void GWEN_Param_SetDefaultValue(GWEN_PARAM *p_struct, const char *p_src) {
+void GWEN_Param_SetDefaultValue(GWEN_PARAM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->defaultValue) {
     free(p_struct->defaultValue);
@@ -432,7 +463,8 @@ void GWEN_Param_SetDefaultValue(GWEN_PARAM *p_struct, const char *p_src) {
   }
 }
 
-void GWEN_Param_SetChoices(GWEN_PARAM *p_struct, GWEN_STRINGLIST2 *p_src) {
+void GWEN_Param_SetChoices(GWEN_PARAM *p_struct, GWEN_STRINGLIST2 *p_src)
+{
   assert(p_struct);
   if (p_struct->choices) {
     GWEN_StringList2_free(p_struct->choices);
@@ -440,40 +472,46 @@ void GWEN_Param_SetChoices(GWEN_PARAM *p_struct, GWEN_STRINGLIST2 *p_src) {
   p_struct->choices=p_src;
 }
 
-void GWEN_Param_SetInternalIntValue(GWEN_PARAM *p_struct, int p_src) {
+void GWEN_Param_SetInternalIntValue(GWEN_PARAM *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->internalIntValue=p_src;
 }
 
-void GWEN_Param_SetInternalFloatValue(GWEN_PARAM *p_struct, double p_src) {
+void GWEN_Param_SetInternalFloatValue(GWEN_PARAM *p_struct, double p_src)
+{
   assert(p_struct);
   p_struct->internalFloatValue=p_src;
 }
 
-void GWEN_Param_SetRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src) {
+void GWEN_Param_SetRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->runtimeFlags=p_src;
 }
 
-void GWEN_Param_AddRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src) {
+void GWEN_Param_AddRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->runtimeFlags|=p_src;
 }
 
-void GWEN_Param_SubRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src) {
+void GWEN_Param_SubRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->runtimeFlags&=~p_src;
 }
 
 /* list1 functions */
-GWEN_PARAM_LIST *GWEN_Param_List_dup(const GWEN_PARAM_LIST *p_src) {
+GWEN_PARAM_LIST *GWEN_Param_List_dup(const GWEN_PARAM_LIST *p_src)
+{
   GWEN_PARAM_LIST *p_dest;
   GWEN_PARAM *p_elem;
 
   assert(p_src);
   p_dest=GWEN_Param_List_new();
   p_elem=GWEN_Param_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     GWEN_PARAM *p_cpy;
 
     p_cpy=GWEN_Param_dup(p_elem);
@@ -484,13 +522,19 @@ GWEN_PARAM_LIST *GWEN_Param_List_dup(const GWEN_PARAM_LIST *p_src) {
   return p_dest;
 }
 
-void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
+void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db)
+{
   assert(p_struct);
   /* member "name" */
   if (p_struct->name) {
     free(p_struct->name);
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "name", 0, NULL); if (s) p_struct->name=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "name", 0, NULL);
+    if (s)
+      p_struct->name=strdup(s);
+  }
   if (p_struct->name==NULL) {
     p_struct->name=NULL;
   }
@@ -499,16 +543,35 @@ void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   p_struct->flags=GWEN_DB_GetIntValue(p_db, "flags", 0, 0);
 
   /* member "type" */
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "type", 0, NULL); if (s) p_struct->type=GWEN_Param_Type_fromString(s); else p_struct->type=GWEN_Param_Type_Unknown; }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "type", 0, NULL);
+    if (s)
+      p_struct->type=GWEN_Param_Type_fromString(s);
+    else
+      p_struct->type=GWEN_Param_Type_Unknown;
+  }
 
   /* member "dataType" */
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "dataType", 0, NULL); if (s) p_struct->dataType=GWEN_Param_DataType_fromString(s); else p_struct->dataType=GWEN_Param_DataType_Unknown; }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "dataType", 0, NULL);
+    if (s)
+      p_struct->dataType=GWEN_Param_DataType_fromString(s);
+    else
+      p_struct->dataType=GWEN_Param_DataType_Unknown;
+  }
 
   /* member "shortDescription" */
   if (p_struct->shortDescription) {
     free(p_struct->shortDescription);
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "shortDescription", 0, NULL); if (s) p_struct->shortDescription=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "shortDescription", 0, NULL);
+    if (s)
+      p_struct->shortDescription=strdup(s);
+  }
   if (p_struct->shortDescription==NULL) {
     p_struct->shortDescription=NULL;
   }
@@ -517,7 +580,12 @@ void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   if (p_struct->longDescription) {
     free(p_struct->longDescription);
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "longDescription", 0, NULL); if (s) p_struct->longDescription=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "longDescription", 0, NULL);
+    if (s)
+      p_struct->longDescription=strdup(s);
+  }
   if (p_struct->longDescription==NULL) {
     p_struct->longDescription=NULL;
   }
@@ -526,7 +594,12 @@ void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   if (p_struct->currentValue) {
     free(p_struct->currentValue);
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "currentValue", 0, NULL); if (s) p_struct->currentValue=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "currentValue", 0, NULL);
+    if (s)
+      p_struct->currentValue=strdup(s);
+  }
   if (p_struct->currentValue==NULL) {
     p_struct->currentValue=NULL;
   }
@@ -535,7 +608,12 @@ void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   if (p_struct->defaultValue) {
     free(p_struct->defaultValue);
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "defaultValue", 0, NULL); if (s) p_struct->defaultValue=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "defaultValue", 0, NULL);
+    if (s)
+      p_struct->defaultValue=strdup(s);
+  }
   if (p_struct->defaultValue==NULL) {
     p_struct->defaultValue=NULL;
   }
@@ -544,7 +622,9 @@ void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   if (p_struct->choices) {
     GWEN_StringList2_free(p_struct->choices);
   }
-  { p_struct->choices=GWEN_StringList2_fromDb(p_db, "choices", GWEN_StringList2_IntertMode_AlwaysAdd); }
+  {
+    p_struct->choices=GWEN_StringList2_fromDb(p_db, "choices", GWEN_StringList2_IntertMode_AlwaysAdd);
+  }
   if (p_struct->choices==NULL) {
     p_struct->choices=NULL;
   }
@@ -563,13 +643,18 @@ void GWEN_Param_ReadDb(GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
 
 }
 
-int GWEN_Param_WriteDb(const GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
+int GWEN_Param_WriteDb(const GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db)
+{
   int p_rv;
 
   assert(p_struct);
   /* member "name" */
-  if (p_struct->name) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", p_struct->name);
-  else { GWEN_DB_DeleteVar(p_db, "name"); p_rv=0; }
+  if (p_struct->name)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", p_struct->name);
+  else {
+    GWEN_DB_DeleteVar(p_db, "name");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -590,47 +675,69 @@ int GWEN_Param_WriteDb(const GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   }
 
   /* member "dataType" */
-  p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dataType", GWEN_Param_DataType_toString(p_struct->dataType));
+  p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dataType",
+                            GWEN_Param_DataType_toString(p_struct->dataType));
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "shortDescription" */
-  if (p_struct->shortDescription) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "shortDescription", p_struct->shortDescription);
-  else { GWEN_DB_DeleteVar(p_db, "shortDescription"); p_rv=0; }
+  if (p_struct->shortDescription)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "shortDescription", p_struct->shortDescription);
+  else {
+    GWEN_DB_DeleteVar(p_db, "shortDescription");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "longDescription" */
-  if (p_struct->longDescription) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "longDescription", p_struct->longDescription);
-  else { GWEN_DB_DeleteVar(p_db, "longDescription"); p_rv=0; }
+  if (p_struct->longDescription)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "longDescription", p_struct->longDescription);
+  else {
+    GWEN_DB_DeleteVar(p_db, "longDescription");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "currentValue" */
-  if (p_struct->currentValue) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "currentValue", p_struct->currentValue);
-  else { GWEN_DB_DeleteVar(p_db, "currentValue"); p_rv=0; }
+  if (p_struct->currentValue)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "currentValue", p_struct->currentValue);
+  else {
+    GWEN_DB_DeleteVar(p_db, "currentValue");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "defaultValue" */
-  if (p_struct->defaultValue) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "defaultValue", p_struct->defaultValue);
-  else { GWEN_DB_DeleteVar(p_db, "defaultValue"); p_rv=0; }
+  if (p_struct->defaultValue)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "defaultValue", p_struct->defaultValue);
+  else {
+    GWEN_DB_DeleteVar(p_db, "defaultValue");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "choices" */
-  if (p_struct->choices) { p_rv=GWEN_StringList2_toDb(p_struct->choices, p_db, "choices"); }
-  else { GWEN_DB_DeleteVar(p_db, "choices"); p_rv=0; }
+  if (p_struct->choices) {
+    p_rv=GWEN_StringList2_toDb(p_struct->choices, p_db, "choices");
+  }
+  else {
+    GWEN_DB_DeleteVar(p_db, "choices");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -645,24 +752,32 @@ int GWEN_Param_WriteDb(const GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
   return 0;
 }
 
-GWEN_PARAM *GWEN_Param_fromDb(GWEN_DB_NODE *p_db) {
+GWEN_PARAM *GWEN_Param_fromDb(GWEN_DB_NODE *p_db)
+{
   GWEN_PARAM *p_struct;
   p_struct=GWEN_Param_new();
   GWEN_Param_ReadDb(p_struct, p_db);
   return p_struct;
 }
 
-int GWEN_Param_toDb(const GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db) {
+int GWEN_Param_toDb(const GWEN_PARAM *p_struct, GWEN_DB_NODE *p_db)
+{
   return GWEN_Param_WriteDb(p_struct, p_db);
 }
 
-void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
+void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "name" */
   if (p_struct->name) {
     free(p_struct->name);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "name", NULL); if (s) p_struct->name=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "name", NULL);
+    if (s)
+      p_struct->name=strdup(s);
+  }
   if (p_struct->name==NULL) {  /* member "name" is volatile, just presetting */
     p_struct->name=NULL;
   }
@@ -671,16 +786,35 @@ void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
   p_struct->flags=GWEN_XMLNode_GetIntValue(p_db, "flags", 0);
 
   /* member "type" */
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "type", NULL); if (s) p_struct->type=GWEN_Param_Type_fromString(s); else p_struct->type=GWEN_Param_Type_Unknown; }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "type", NULL);
+    if (s)
+      p_struct->type=GWEN_Param_Type_fromString(s);
+    else
+      p_struct->type=GWEN_Param_Type_Unknown;
+  }
 
   /* member "dataType" */
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "dataType", NULL); if (s) p_struct->dataType=GWEN_Param_DataType_fromString(s); else p_struct->dataType=GWEN_Param_DataType_Unknown; }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "dataType", NULL);
+    if (s)
+      p_struct->dataType=GWEN_Param_DataType_fromString(s);
+    else
+      p_struct->dataType=GWEN_Param_DataType_Unknown;
+  }
 
   /* member "shortDescription" */
   if (p_struct->shortDescription) {
     free(p_struct->shortDescription);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "shortDescription", NULL); if (s) p_struct->shortDescription=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "shortDescription", NULL);
+    if (s)
+      p_struct->shortDescription=strdup(s);
+  }
   if (p_struct->shortDescription==NULL) {  /* member "shortDescription" is volatile, just presetting */
     p_struct->shortDescription=NULL;
   }
@@ -689,7 +823,12 @@ void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
   if (p_struct->longDescription) {
     free(p_struct->longDescription);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "longDescription", NULL); if (s) p_struct->longDescription=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "longDescription", NULL);
+    if (s)
+      p_struct->longDescription=strdup(s);
+  }
   if (p_struct->longDescription==NULL) {  /* member "longDescription" is volatile, just presetting */
     p_struct->longDescription=NULL;
   }
@@ -698,7 +837,12 @@ void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
   if (p_struct->currentValue) {
     free(p_struct->currentValue);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "currentValue", NULL); if (s) p_struct->currentValue=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "currentValue", NULL);
+    if (s)
+      p_struct->currentValue=strdup(s);
+  }
   if (p_struct->currentValue==NULL) {  /* member "currentValue" is volatile, just presetting */
     p_struct->currentValue=NULL;
   }
@@ -707,7 +851,12 @@ void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
   if (p_struct->defaultValue) {
     free(p_struct->defaultValue);
   }
-  { const char *s; s=GWEN_XMLNode_GetCharValue(p_db, "defaultValue", NULL); if (s) p_struct->defaultValue=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetCharValue(p_db, "defaultValue", NULL);
+    if (s)
+      p_struct->defaultValue=strdup(s);
+  }
   if (p_struct->defaultValue==NULL) {  /* member "defaultValue" is volatile, just presetting */
     p_struct->defaultValue=NULL;
   }
@@ -716,7 +865,15 @@ void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
   if (p_struct->choices) {
     GWEN_StringList2_free(p_struct->choices);
   }
-  { GWEN_XMLNODE *n; n=GWEN_XMLNode_FindFirstTag(p_db, "choices", 0, 0); if(n) { p_struct->choices=GWEN_StringList2_fromXml(n, GWEN_StringList2_IntertMode_AlwaysAdd); } else p_struct->choices=NULL; }
+  {
+    GWEN_XMLNODE *n;
+    n=GWEN_XMLNode_FindFirstTag(p_db, "choices", 0, 0);
+    if (n) {
+      p_struct->choices=GWEN_StringList2_fromXml(n, GWEN_StringList2_IntertMode_AlwaysAdd);
+    }
+    else
+      p_struct->choices=NULL;
+  }
   if (p_struct->choices==NULL) {  /* member "choices" is volatile, just presetting */
     p_struct->choices=NULL;
   }
@@ -735,7 +892,8 @@ void GWEN_Param_ReadXml(GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
 
 }
 
-void GWEN_Param_WriteXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
+void GWEN_Param_WriteXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "name" */
   GWEN_XMLNode_SetCharValue(p_db, "name", p_struct->name);
@@ -762,7 +920,12 @@ void GWEN_Param_WriteXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
   GWEN_XMLNode_SetCharValue(p_db, "defaultValue", p_struct->defaultValue);
 
   /* member "choices" */
-  if (p_struct->choices) { GWEN_XMLNODE *n; n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "choices"); GWEN_StringList2_toXml(p_struct->choices, n); GWEN_XMLNode_AddChild(p_db, n); }
+  if (p_struct->choices) {
+    GWEN_XMLNODE *n;
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "choices");
+    GWEN_StringList2_toXml(p_struct->choices, n);
+    GWEN_XMLNode_AddChild(p_db, n);
+  }
 
   /* member "internalIntValue" is volatile, not writing to xml */
 
@@ -772,29 +935,36 @@ void GWEN_Param_WriteXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
 
 }
 
-void GWEN_Param_toXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db) {
+void GWEN_Param_toXml(const GWEN_PARAM *p_struct, GWEN_XMLNODE *p_db)
+{
   GWEN_Param_WriteXml(p_struct, p_db);
 }
 
-GWEN_PARAM *GWEN_Param_fromXml(GWEN_XMLNODE *p_db) {
+GWEN_PARAM *GWEN_Param_fromXml(GWEN_XMLNODE *p_db)
+{
   GWEN_PARAM *p_struct;
   p_struct=GWEN_Param_new();
   GWEN_Param_ReadXml(p_struct, p_db);
   return p_struct;
 }
 
-GWEN_PARAM *GWEN_Param_List_GetByName(const GWEN_PARAM_LIST *p_list,  const char *p_cmp) {
+GWEN_PARAM *GWEN_Param_List_GetByName(const GWEN_PARAM_LIST *p_list,  const char *p_cmp)
+{
   GWEN_PARAM *p_struct;
 
   assert(p_list);
   p_struct = GWEN_Param_List_First(p_list);
-  while(p_struct) {
+  while (p_struct) {
     int p_rv;
 
-    if (p_struct->name && p_cmp) p_rv=strcasecmp(p_cmp, p_struct->name);
-    else if (p_cmp) p_rv=1;
-    else if (p_struct->name) p_rv=-1;
-    else p_rv=0;
+    if (p_struct->name && p_cmp)
+      p_rv=strcasecmp(p_cmp, p_struct->name);
+    else if (p_cmp)
+      p_rv=1;
+    else if (p_struct->name)
+      p_rv=-1;
+    else
+      p_rv=0;
     if (p_rv == 0)
       return p_struct;
     p_struct = GWEN_Param_List_Next(p_struct);
@@ -802,18 +972,23 @@ GWEN_PARAM *GWEN_Param_List_GetByName(const GWEN_PARAM_LIST *p_list,  const char
   return NULL;
 }
 
-GWEN_PARAM *GWEN_Param_Tree_GetByName(const GWEN_PARAM_TREE *p_tree,  const char *p_cmp) {
+GWEN_PARAM *GWEN_Param_Tree_GetByName(const GWEN_PARAM_TREE *p_tree,  const char *p_cmp)
+{
   GWEN_PARAM *p_struct;
 
   assert(p_tree);
   p_struct = GWEN_Param_Tree_GetFirst(p_tree);
-  while(p_struct) {
+  while (p_struct) {
     int p_rv;
 
-    if (p_struct->name && p_cmp) p_rv=strcasecmp(p_cmp, p_struct->name);
-    else if (p_cmp) p_rv=1;
-    else if (p_struct->name) p_rv=-1;
-    else p_rv=0;
+    if (p_struct->name && p_cmp)
+      p_rv=strcasecmp(p_cmp, p_struct->name);
+    else if (p_cmp)
+      p_rv=1;
+    else if (p_struct->name)
+      p_rv=-1;
+    else
+      p_rv=0;
     if (p_rv == 0)
       return p_struct;
     p_struct = GWEN_Param_Tree_GetBelow(p_struct);

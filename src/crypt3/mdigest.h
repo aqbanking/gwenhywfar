@@ -78,9 +78,9 @@ GWENHYWFAR_API int GWEN_MDigest_PBKDF2(GWEN_MDIGEST *md,
                                        uint32_t iterations);
 
 GWENHYWFAR_API int GWEN_MDigest_HashFileTree(GWEN_MDIGEST *md,
-    const char *folder,
-    const char *ignoreFile,
-    GWEN_STRINGLIST *sl);
+                                             const char *folder,
+                                             const char *ignoreFile,
+                                             GWEN_STRINGLIST *sl);
 
 
 /**

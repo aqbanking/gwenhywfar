@@ -25,7 +25,8 @@
 
 
 
-static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
+static int HtmlObject_Box_Layout(HTML_OBJECT *o)
+{
   HTML_OBJECT *c;
   HTML_OBJECT *cFirstInLine;
   GWEN_XML_CONTEXT *ctx;
@@ -48,7 +49,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 
   c=HtmlObject_Tree_GetFirstChild(o);
   cFirstInLine=c;
-  while(c) {
+  while (c) {
     int th;
 
     if ((HtmlObject_GetFlags(c) & HTML_OBJECT_FLAGS_START_ON_NEWLINE) &&
@@ -70,7 +71,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
           HTML_OBJECT *ct;
 
           ct=cFirstInLine;
-          while(ct) {
+          while (ct) {
             HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
             if (ct==c)
               break;
@@ -123,7 +124,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
             HTML_OBJECT *ct;
 
             ct=cFirstInLine;
-            while(ct) {
+            while (ct) {
               HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
               if (ct==c)
                 break;
@@ -167,7 +168,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
             HTML_OBJECT *ct;
 
             ct=cFirstInLine;
-            while(ct) {
+            while (ct) {
               HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
               if (ct==c)
                 break;
@@ -213,7 +214,7 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
         HTML_OBJECT *ct;
 
         ct=cFirstInLine;
-        while(ct) {
+        while (ct) {
           HtmlObject_SetX(ct, HtmlObject_GetX(ct)+diff);
           ct=HtmlObject_Tree_GetNext(ct);
         }
@@ -233,7 +234,8 @@ static int HtmlObject_Box_Layout(HTML_OBJECT *o) {
 
 
 
-HTML_OBJECT *HtmlObject_Box_new(GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT *HtmlObject_Box_new(GWEN_XML_CONTEXT *ctx)
+{
   HTML_OBJECT *o;
 
   o=HtmlObject_new(ctx, HtmlObjectType_Box);

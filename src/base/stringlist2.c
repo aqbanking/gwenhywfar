@@ -42,7 +42,8 @@
 #endif
 
 
-GWEN_STRINGLIST2 *GWEN_StringList2_new(void) {
+GWEN_STRINGLIST2 *GWEN_StringList2_new(void)
+{
   GWEN_STRINGLIST2 *sl2;
   GWEN_REFPTR_INFO *rpi;
 
@@ -59,7 +60,8 @@ GWEN_STRINGLIST2 *GWEN_StringList2_new(void) {
 
 
 
-void GWEN_StringList2_free(GWEN_STRINGLIST2 *sl2) {
+void GWEN_StringList2_free(GWEN_STRINGLIST2 *sl2)
+{
   if (sl2) {
     GWEN_List_free(sl2->listPtr);
     GWEN_FREE_OBJECT(sl2);
@@ -68,7 +70,8 @@ void GWEN_StringList2_free(GWEN_STRINGLIST2 *sl2) {
 
 
 
-GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2) {
+GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2)
+{
   GWEN_STRINGLIST2 *nsl2;
 
   GWEN_NEW_OBJECT(GWEN_STRINGLIST2, nsl2);
@@ -80,7 +83,8 @@ GWEN_STRINGLIST2 *GWEN_StringList2_dup(GWEN_STRINGLIST2 *sl2) {
 
 
 
-int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *name) {
+int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *name)
+{
   GWEN_DB_DeleteVar(db, name);
 
   if (sl2) {
@@ -91,7 +95,7 @@ int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *n
       const char *s;
 
       s=GWEN_StringList2Iterator_Data(it);
-      while(s) {
+      while (s) {
         int rv;
 
         rv=GWEN_DB_SetCharValue(db, 0, name, s);
@@ -111,7 +115,8 @@ int GWEN_StringList2_toDb(GWEN_STRINGLIST2 *sl2, GWEN_DB_NODE *db, const char *n
 
 
 
-GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, GWEN_STRINGLIST2_INSERTMODE m) {
+GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, GWEN_STRINGLIST2_INSERTMODE m)
+{
   GWEN_STRINGLIST2 *sl2;
   int i;
 
@@ -130,7 +135,8 @@ GWEN_STRINGLIST2 *GWEN_StringList2_fromDb(GWEN_DB_NODE *db, const char *name, GW
 
 
 
-int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node) {
+int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
 
   it=GWEN_StringList2_First(sl2);
@@ -138,7 +144,7 @@ int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node) {
     const char *s;
 
     s=GWEN_StringList2Iterator_Data(it);
-    while(s) {
+    while (s) {
       GWEN_XMLNode_SetCharValue(node, "elem", s);
       s=GWEN_StringList2Iterator_Next(it);
     }
@@ -150,7 +156,8 @@ int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node) {
 
 
 
-GWEN_STRINGLIST2 *GWEN_StringList2_fromXml(GWEN_XMLNODE *node, GWEN_STRINGLIST2_INSERTMODE m) {
+GWEN_STRINGLIST2 *GWEN_StringList2_fromXml(GWEN_XMLNODE *node, GWEN_STRINGLIST2_INSERTMODE m)
+{
   GWEN_STRINGLIST2 *sl2;
   GWEN_XMLNODE *n;
 
@@ -158,7 +165,7 @@ GWEN_STRINGLIST2 *GWEN_StringList2_fromXml(GWEN_XMLNODE *node, GWEN_STRINGLIST2_
 
 
   n=GWEN_XMLNode_GetFirstTag(node);
-  while(n) {
+  while (n) {
     GWEN_XMLNODE *dn;
 
     dn=GWEN_XMLNode_GetFirstData(n);
@@ -178,7 +185,8 @@ GWEN_STRINGLIST2 *GWEN_StringList2_fromXml(GWEN_XMLNODE *node, GWEN_STRINGLIST2_
 
 
 
-void GWEN_StringList2_SetSenseCase(GWEN_STRINGLIST2 *sl2, int i) {
+void GWEN_StringList2_SetSenseCase(GWEN_STRINGLIST2 *sl2, int i)
+{
   assert(sl2);
   sl2->senseCase=i;
 }
@@ -188,7 +196,8 @@ void GWEN_StringList2_SetSenseCase(GWEN_STRINGLIST2 *sl2, int i) {
 int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
                                   const char *s,
                                   int take,
-                                  GWEN_STRINGLIST2_INSERTMODE m) {
+                                  GWEN_STRINGLIST2_INSERTMODE m)
+{
   GWEN_REFPTR *rp;
 
   assert(sl2);
@@ -201,14 +210,14 @@ int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
     if (it) {
       if (m==GWEN_StringList2_IntertMode_NoDouble) {
         if (take)
-          free((void*)s);
+          free((void *)s);
         GWEN_StringList2Iterator_free(it);
         return 0;
       }
       if (m==GWEN_StringList2_IntertMode_Reuse) {
-        GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR*)it);
+        GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR *)it);
         if (take)
-          free((void*)s);
+          free((void *)s);
         GWEN_StringList2Iterator_free(it);
         return 0;
       }
@@ -217,7 +226,7 @@ int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
   }
 
   if (take)
-    rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
+    rp=GWEN_RefPtr_new((void *)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
   else
     rp=GWEN_RefPtr_new(strdup(s), GWEN_List_GetRefPtrInfo(sl2->listPtr));
   GWEN_RefPtr_AddFlags(rp, GWEN_REFPTR_FLAGS_AUTODELETE);
@@ -230,7 +239,8 @@ int GWEN_StringList2_AppendString(GWEN_STRINGLIST2 *sl2,
 int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
                                   const char *s,
                                   int take,
-                                  GWEN_STRINGLIST2_INSERTMODE m) {
+                                  GWEN_STRINGLIST2_INSERTMODE m)
+{
   GWEN_REFPTR *rp;
 
   assert(sl2);
@@ -243,14 +253,14 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
     if (it) {
       if (m==GWEN_StringList2_IntertMode_NoDouble) {
         if (take)
-          free((void*)s);
+          free((void *)s);
         GWEN_StringList2Iterator_free(it);
         return 0;
       }
       if (m==GWEN_StringList2_IntertMode_Reuse) {
-        GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR*)it);
+        GWEN_ListIterator_IncLinkCount((GWEN_LIST_ITERATOR *)it);
         if (take)
-          free((void*)s);
+          free((void *)s);
         GWEN_StringList2Iterator_free(it);
         return 0;
       }
@@ -259,7 +269,7 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
   }
 
   if (take)
-    rp=GWEN_RefPtr_new((void*)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
+    rp=GWEN_RefPtr_new((void *)s, GWEN_List_GetRefPtrInfo(sl2->listPtr));
   else
     rp=GWEN_RefPtr_new(strdup(s), GWEN_List_GetRefPtrInfo(sl2->listPtr));
   GWEN_RefPtr_AddFlags(rp, GWEN_REFPTR_FLAGS_AUTODELETE);
@@ -270,7 +280,8 @@ int GWEN_StringList2_InsertString(GWEN_STRINGLIST2 *sl2,
 
 
 int GWEN_StringList2_RemoveString(GWEN_STRINGLIST2 *sl2,
-                                  const char *s) {
+                                  const char *s)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
 
   it=GWEN_StringList2__GetString(sl2, s);
@@ -290,7 +301,8 @@ int GWEN_StringList2_RemoveString(GWEN_STRINGLIST2 *sl2,
 
 
 int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
-                               const char *s) {
+                               const char *s)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
   int gotIt;
 
@@ -301,7 +313,7 @@ int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
 
     t=GWEN_StringList2Iterator_Data(it);
     if (sl2->senseCase) {
-      while(t) {
+      while (t) {
         if (strcmp(s, t)) {
           gotIt=1;
           break;
@@ -310,7 +322,7 @@ int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
       }
     }
     else {
-      while(t) {
+      while (t) {
         if (strcasecmp(s, t)) {
           gotIt=1;
           break;
@@ -326,36 +338,36 @@ int GWEN_StringList2_HasString(const GWEN_STRINGLIST2 *sl2,
 
 
 
-GWEN_STRINGLIST2_ITERATOR*
-GWEN_StringList2__GetString(const GWEN_STRINGLIST2 *sl2,
-                            const char *s) {
+GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2__GetString(const GWEN_STRINGLIST2 *sl2,
+                                                       const char *s)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
   GWEN_REFPTR *rp;
 
   it=GWEN_StringList2_First(sl2);
   if (it) {
-    rp=GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR*)it);
+    rp=GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR *)it);
 
     if (sl2->senseCase) {
-      while(rp) {
+      while (rp) {
         const char *t;
 
-        t=(const char*)GWEN_RefPtr_GetData(rp);
+        t=(const char *)GWEN_RefPtr_GetData(rp);
         assert(t);
         if (strcmp(s, t)==0)
           return it;
-        rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR*)it);
+        rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR *)it);
       }
     }
     else {
-      while(rp) {
+      while (rp) {
         const char *t;
 
-        t=(const char*)GWEN_RefPtr_GetData(rp);
+        t=(const char *)GWEN_RefPtr_GetData(rp);
         assert(t);
         if (strcasecmp(s, t)==0)
           return it;
-        rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR*)it);
+        rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR *)it);
       }
     }
     GWEN_StringList2Iterator_free(it);
@@ -366,24 +378,25 @@ GWEN_StringList2__GetString(const GWEN_STRINGLIST2 *sl2,
 
 
 
-const char *GWEN_StringList2_GetStringAt(const GWEN_STRINGLIST2 *sl2, int idx) {
+const char *GWEN_StringList2_GetStringAt(const GWEN_STRINGLIST2 *sl2, int idx)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
   GWEN_REFPTR *rp;
 
   it=GWEN_StringList2_First(sl2);
   if (it) {
-    rp=GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR*)it);
+    rp=GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR *)it);
 
-    while(rp) {
+    while (rp) {
       const char *t;
 
-      t=(const char*)GWEN_RefPtr_GetData(rp);
+      t=(const char *)GWEN_RefPtr_GetData(rp);
       assert(t);
       if (idx--==0) {
         GWEN_StringList2Iterator_free(it);
         return t;
       }
-      rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR*)it);
+      rp=GWEN_ListIterator_NextRefPtr((GWEN_LIST_ITERATOR *)it);
     }
     GWEN_StringList2Iterator_free(it);
   }
@@ -403,69 +416,77 @@ const char *GWEN_StringList2_GetStringAt(const GWEN_STRINGLIST2 *sl2, int idx) {
 
 
 
-GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2_First(const GWEN_STRINGLIST2 *l) {
+GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2_First(const GWEN_STRINGLIST2 *l)
+{
   assert(l);
-  return (GWEN_STRINGLIST2_ITERATOR*) GWEN_List_First(l->listPtr);
+  return (GWEN_STRINGLIST2_ITERATOR *) GWEN_List_First(l->listPtr);
 }
 
 
 
-GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2_Last(const GWEN_STRINGLIST2 *l) {
+GWEN_STRINGLIST2_ITERATOR *GWEN_StringList2_Last(const GWEN_STRINGLIST2 *l)
+{
   assert(l);
-  return (GWEN_STRINGLIST2_ITERATOR*) GWEN_List_Last(l->listPtr);
+  return (GWEN_STRINGLIST2_ITERATOR *) GWEN_List_Last(l->listPtr);
 }
 
 
 
-void GWEN_StringList2Iterator_free(GWEN_STRINGLIST2_ITERATOR *li) {
+void GWEN_StringList2Iterator_free(GWEN_STRINGLIST2_ITERATOR *li)
+{
   assert(li);
-  GWEN_ListIterator_free((GWEN_LIST_ITERATOR*)li);
+  GWEN_ListIterator_free((GWEN_LIST_ITERATOR *)li);
 }
 
 
-const char *GWEN_StringList2Iterator_Previous(GWEN_STRINGLIST2_ITERATOR *li) {
+const char *GWEN_StringList2Iterator_Previous(GWEN_STRINGLIST2_ITERATOR *li)
+{
   assert(li);
-  return (const char*) GWEN_ListIterator_Previous((GWEN_LIST_ITERATOR*)li);
+  return (const char *) GWEN_ListIterator_Previous((GWEN_LIST_ITERATOR *)li);
 }
 
 
-const char *GWEN_StringList2Iterator_Next(GWEN_STRINGLIST2_ITERATOR *li) {
+const char *GWEN_StringList2Iterator_Next(GWEN_STRINGLIST2_ITERATOR *li)
+{
   assert(li);
-  return (const char*) GWEN_ListIterator_Next((GWEN_LIST_ITERATOR*)li);
+  return (const char *) GWEN_ListIterator_Next((GWEN_LIST_ITERATOR *)li);
 }
 
 
-const char *GWEN_StringList2Iterator_Data(GWEN_STRINGLIST2_ITERATOR *li) {
+const char *GWEN_StringList2Iterator_Data(GWEN_STRINGLIST2_ITERATOR *li)
+{
   assert(li);
-  return (const char*) GWEN_ListIterator_Data((GWEN_LIST_ITERATOR*)li);
+  return (const char *) GWEN_ListIterator_Data((GWEN_LIST_ITERATOR *)li);
 }
 
 
 
-GWEN_REFPTR*
-GWEN_StringList2Iterator_DataRefPtr(GWEN_STRINGLIST2_ITERATOR *li) {
+GWEN_REFPTR *GWEN_StringList2Iterator_DataRefPtr(GWEN_STRINGLIST2_ITERATOR *li)
+{
   assert(li);
-  return (GWEN_REFPTR*) GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR*)li);
+  return (GWEN_REFPTR *) GWEN_ListIterator_DataRefPtr((GWEN_LIST_ITERATOR *)li);
 }
 
 
 
-unsigned int
-GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li) {
+unsigned int GWEN_StringList2Iterator_GetLinkCount(const GWEN_STRINGLIST2_ITERATOR *li)
+{
   assert(li);
-  return GWEN_ListIterator_GetLinkCount((const GWEN_LIST_ITERATOR*)li);
+  return GWEN_ListIterator_GetLinkCount((const GWEN_LIST_ITERATOR *)li);
 }
 
 
 
-unsigned int GWEN_StringList2_GetCount(const GWEN_STRINGLIST2 *l) {
+unsigned int GWEN_StringList2_GetCount(const GWEN_STRINGLIST2 *l)
+{
   assert(l);
   return GWEN_List_GetSize(l->listPtr);
 }
 
 
 
-void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2) {
+void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
 
   it=GWEN_StringList2_First(sl2);
@@ -475,7 +496,7 @@ void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2) {
 
     t=GWEN_StringList2Iterator_Data(it);
     i=0;
-    while(t) {
+    while (t) {
       fprintf(stderr, "String %d: \"%s\" [%d]\n", i, t,
               GWEN_StringList2Iterator_GetLinkCount(it));
       t=GWEN_StringList2Iterator_Next(it);

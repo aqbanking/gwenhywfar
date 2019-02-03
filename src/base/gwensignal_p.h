@@ -50,7 +50,7 @@ struct GWEN_SIGNAL {
 
 GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, void *user_data);
 GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
-    void *user_data);
+                                             void *user_data);
 int GWEN_Signal_List2_HasSignal(GWEN_SIGNAL_LIST2 *slist,
                                 const GWEN_SIGNAL *sig);
 
@@ -84,9 +84,9 @@ struct GWEN_SIGNALOBJECT {
 
 uint32_t GWEN_SignalObject_MkTypeId(const char *typeName);
 GWEN_SIGNAL *GWEN_SignalObject__findSignal(const GWEN_SIGNALOBJECT *so,
-    const char *name,
-    uint32_t typeId1,
-    uint32_t typeId2);
+                                           const char *name,
+                                           uint32_t typeId1,
+                                           uint32_t typeId2);
 GWEN_SLOT *GWEN_SignalObject__findSlot(const GWEN_SIGNALOBJECT *so,
                                        const char *name,
                                        uint32_t typeId1,

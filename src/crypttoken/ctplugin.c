@@ -37,7 +37,8 @@ GWEN_INHERIT(GWEN_PLUGIN, GWEN_CRYPT_TOKEN_PLUGIN)
 
 
 
-int GWEN_Crypt_Token_ModuleInit(void) {
+int GWEN_Crypt_Token_ModuleInit(void)
+{
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -58,7 +59,7 @@ int GWEN_Crypt_Token_ModuleInit(void) {
     pbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       GWEN_Buffer_AppendString(pbuf, GWEN_StringListEntry_Data(se));
       GWEN_Buffer_AppendString(pbuf, DIRSEP GWEN_CRYPT_TOKEN_FOLDER);
       DBG_INFO(GWEN_LOGDOMAIN, "Adding plugin path [%s]",
@@ -77,7 +78,8 @@ int GWEN_Crypt_Token_ModuleInit(void) {
 
 
 
-int GWEN_Crypt_Token_ModuleFini(void) {
+int GWEN_Crypt_Token_ModuleFini(void)
+{
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
@@ -108,9 +110,10 @@ int GWEN_Crypt_Token_ModuleFini(void) {
 
 
 GWEN_PLUGIN *GWEN_Crypt_Token_Plugin_new(GWEN_PLUGIN_MANAGER *mgr,
-    GWEN_CRYPT_TOKEN_DEVICE devType,
-    const char *typeName,
-    const char *fileName) {
+                                         GWEN_CRYPT_TOKEN_DEVICE devType,
+                                         const char *typeName,
+                                         const char *fileName)
+{
   GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 
@@ -125,17 +128,19 @@ GWEN_PLUGIN *GWEN_Crypt_Token_Plugin_new(GWEN_PLUGIN_MANAGER *mgr,
 
 
 GWENHYWFAR_CB
-void GWEN_Crypt_Token_Plugin_FreeData(GWEN_UNUSED void *bp, void *p) {
+void GWEN_Crypt_Token_Plugin_FreeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 
-  xpl=(GWEN_CRYPT_TOKEN_PLUGIN*)p;
+  xpl=(GWEN_CRYPT_TOKEN_PLUGIN *)p;
 
   GWEN_FREE_OBJECT(xpl);
 }
 
 
 
-GWEN_CRYPT_TOKEN *GWEN_Crypt_Token_Plugin_CreateToken(GWEN_PLUGIN *pl, const char *name) {
+GWEN_CRYPT_TOKEN *GWEN_Crypt_Token_Plugin_CreateToken(GWEN_PLUGIN *pl, const char *name)
+{
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 
   assert(pl);
@@ -152,7 +157,8 @@ GWEN_CRYPT_TOKEN *GWEN_Crypt_Token_Plugin_CreateToken(GWEN_PLUGIN *pl, const cha
 
 
 
-int GWEN_Crypt_Token_Plugin_CheckToken(GWEN_PLUGIN *pl, GWEN_BUFFER *name) {
+int GWEN_Crypt_Token_Plugin_CheckToken(GWEN_PLUGIN *pl, GWEN_BUFFER *name)
+{
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 
   assert(pl);
@@ -169,7 +175,8 @@ int GWEN_Crypt_Token_Plugin_CheckToken(GWEN_PLUGIN *pl, GWEN_BUFFER *name) {
 
 
 
-GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Plugin_GetDeviceType(const GWEN_PLUGIN *pl) {
+GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Plugin_GetDeviceType(const GWEN_PLUGIN *pl)
+{
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 
   assert(pl);
@@ -182,7 +189,8 @@ GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Plugin_GetDeviceType(const GWEN_PLUGIN 
 
 
 GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN GWEN_Crypt_Token_Plugin_SetCreateTokenFn(GWEN_PLUGIN *pl,
-    GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN fn) {
+                                                                                GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN fn)
+{
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
   GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN of;
 
@@ -199,7 +207,8 @@ GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN GWEN_Crypt_Token_Plugin_SetCreateTokenFn(
 
 
 GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN GWEN_Crypt_Token_Plugin_SetCheckTokenFn(GWEN_PLUGIN *pl,
-    GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN fn) {
+                                                                              GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN fn)
+{
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
   GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN of;
 
@@ -223,7 +232,8 @@ GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN GWEN_Crypt_Token_Plugin_SetCheckTokenFn(GW
 
 
 GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
-    GWEN_CRYPT_TOKEN_DEVICE devt) {
+                                                                              GWEN_CRYPT_TOKEN_DEVICE devt)
+{
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl1;
 
   pl1=GWEN_PluginManager_GetPluginDescrs(pm);
@@ -242,7 +252,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GW
       else
         ts=GWEN_Crypt_Token_Device_toString(devt);
       pd=GWEN_PluginDescription_List2Iterator_Data(pit);
-      while(pd) {
+      while (pd) {
         GWEN_XMLNODE *node;
         const char *nts;
         int match=0;
@@ -287,10 +297,11 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GW
 
 
 int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
-    GWEN_CRYPT_TOKEN_DEVICE devt,
-    GWEN_BUFFER *typeName,
-    GWEN_BUFFER *tokenName,
-    uint32_t guiid) {
+                                              GWEN_CRYPT_TOKEN_DEVICE devt,
+                                              GWEN_BUFFER *typeName,
+                                              GWEN_BUFFER *tokenName,
+                                              uint32_t guiid)
+{
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
 
   assert(pm);
@@ -332,7 +343,7 @@ int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
 
       pd=GWEN_PluginDescription_List2Iterator_Data(pit);
       assert(pd);
-      while(pd) {
+      while (pd) {
         GWEN_XMLNODE *n;
         int err;
         GWEN_PLUGIN *pl;
@@ -371,7 +382,7 @@ int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *pm,
                    GWEN_Buffer_GetStart(lTokenName));
 
           rv=GWEN_Crypt_Token_Plugin_CheckToken(pl, lTokenName);
-          switch(rv) {
+          switch (rv) {
           case 0:
             /* responsive plugin found */
             snprintf(logbuffer, sizeof(logbuffer)-1,

@@ -20,7 +20,8 @@
 
 
 
-void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
+void dumpObject(HTML_OBJECT *o, FILE *f, int indent)
+{
   HTML_OBJECT *c;
   int i;
   const char *s;
@@ -28,7 +29,8 @@ void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
   HTML_FONT *fnt;
 
   s=HtmlObject_GetText(o);
-  for (i=0; i<indent; i++) fprintf(f, " ");
+  for (i=0; i<indent; i++)
+    fprintf(f, " ");
   fprintf(stderr, "Object type: %d [%s] flags: %08x\n",
           HtmlObject_GetObjectType(o),
           s?s:"(empty)",
@@ -37,7 +39,8 @@ void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
   pr=HtmlObject_GetProperties(o);
   fnt=HtmlProps_GetFont(pr);
 
-  for (i=0; i<indent+2; i++) fprintf(f, " ");
+  for (i=0; i<indent+2; i++)
+    fprintf(f, " ");
   fprintf(stderr, "fgcol=%06x, bgcol=%06x, fontsize=%d, fontflags=%08x, fontname=[%s]\n",
           HtmlProps_GetForegroundColor(pr),
           HtmlProps_GetBackgroundColor(pr),
@@ -46,7 +49,7 @@ void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
           HtmlFont_GetFontName(fnt));
 
   c=HtmlObject_Tree_GetFirstChild(o);
-  while(c) {
+  while (c) {
     dumpObject(c, f, indent+2);
     c=HtmlObject_Tree_GetNext(c);
   }
@@ -54,7 +57,8 @@ void dumpObject(HTML_OBJECT *o, FILE *f, int indent) {
 
 
 
-int test1(int argc, char **argv) {
+int test1(int argc, char **argv)
+{
   GWEN_XML_CONTEXT *xmlCtx;
   GWEN_SYNCIO *sio;
   int rv;
@@ -113,7 +117,8 @@ int test1(int argc, char **argv) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   return test1(argc, argv);
 }
 

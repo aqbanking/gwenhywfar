@@ -50,7 +50,7 @@ typedef int (*GWEN_XMLCTX_ENDTAG_FN)(GWEN_XML_CONTEXT *ctx, int closing);
 typedef int (*GWEN_XMLCTX_ADDDATA_FN)(GWEN_XML_CONTEXT *ctx,
                                       const char *data);
 typedef int (*GWEN_XMLCTX_ADDCOMMENT_FN)(GWEN_XML_CONTEXT *ctx,
-    const char *data);
+                                         const char *data);
 typedef int (*GWEN_XMLCTX_ADDATTR_FN)(GWEN_XML_CONTEXT *ctx,
                                       const char *attrName,
                                       const char *attrData);
@@ -105,15 +105,15 @@ GWEN_XMLNODE *GWEN_XmlCtx_GetCurrentHeader(const GWEN_XML_CONTEXT *ctx);
 
 GWENHYWFAR_API
 GWEN_XMLCTX_STARTTAG_FN GWEN_XmlCtx_SetStartTagFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_STARTTAG_FN f);
+                                                  GWEN_XMLCTX_STARTTAG_FN f);
 
 GWENHYWFAR_API
 GWEN_XMLCTX_ENDTAG_FN GWEN_XmlCtx_SetEndTagFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_ENDTAG_FN f);
+                                              GWEN_XMLCTX_ENDTAG_FN f);
 
 GWENHYWFAR_API
 GWEN_XMLCTX_ADDDATA_FN GWEN_XmlCtx_SetAddDataFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_ADDDATA_FN f);
+                                                GWEN_XMLCTX_ADDDATA_FN f);
 
 GWENHYWFAR_API
 GWEN_XMLCTX_ADDCOMMENT_FN
@@ -122,7 +122,7 @@ GWEN_XmlCtx_SetAddCommentFn(GWEN_XML_CONTEXT *ctx,
 
 GWENHYWFAR_API
 GWEN_XMLCTX_ADDATTR_FN GWEN_XmlCtx_SetAddAttrFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_ADDATTR_FN f);
+                                                GWEN_XMLCTX_ADDATTR_FN f);
 
 
 

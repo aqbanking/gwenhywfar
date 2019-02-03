@@ -9,7 +9,7 @@ int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags);
 
 
 int write_hp_group_c(ARGUMENTS *args, GWEN_XMLNODE *node,
-                    GWEN_SYNCIO *sio);
+                     GWEN_SYNCIO *sio);
 
 int write_hp_file_c(ARGUMENTS *args, GWEN_XMLNODE *node);
 

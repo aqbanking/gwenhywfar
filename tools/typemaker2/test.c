@@ -20,7 +20,8 @@
 GWEN_LIST_FUNCTIONS(TEST, Test)
 
 
-int Test_Mode_fromString(const char *p_s) {
+int Test_Mode_fromString(const char *p_s)
+{
   if (p_s && *p_s) {
     if (strcasecmp(p_s, "sequence")==0)
       return Test_Mode_Sequence;
@@ -30,15 +31,20 @@ int Test_Mode_fromString(const char *p_s) {
   return Test_Mode_Unknown;
 }
 
-const char *Test_Mode_toString(int p_i) {
-  switch(p_i) {
-    case Test_Mode_Sequence: return "sequence";
-    case Test_Mode_BitField: return "bitField";
-    default: return "unknown";
+const char *Test_Mode_toString(int p_i)
+{
+  switch (p_i) {
+  case Test_Mode_Sequence:
+    return "sequence";
+  case Test_Mode_BitField:
+    return "bitField";
+  default:
+    return "unknown";
   }
 }
 
-TEST *Test_new() {
+TEST *Test_new()
+{
   TEST *p_struct;
 
   GWEN_NEW_OBJECT(TEST, p_struct)
@@ -47,26 +53,28 @@ TEST *Test_new() {
   p_struct->id=NULL;
   p_struct->prefix=NULL;
   p_struct->type=NULL;
-  
-  
+
+
 
   return p_struct;
 }
 
-void Test_free(TEST *p_struct) {
+void Test_free(TEST *p_struct)
+{
   if (p_struct) {
     GWEN_LIST_FINI(TEST, p_struct)
-  /* members */
+    /* members */
     free(p_struct->id);
     free(p_struct->prefix);
     free(p_struct->type);
-    
-    
+
+
     GWEN_FREE_OBJECT(p_struct);
   }
 }
 
-TEST *Test_dup(const TEST *p_src) {
+TEST *Test_dup(const TEST *p_src)
+{
   TEST *p_struct;
 
   assert(p_src);
@@ -100,45 +108,51 @@ TEST *Test_dup(const TEST *p_src) {
 
   /* member "items" */
   if (p_struct->items) {
-    
+
     p_struct->items=NULL;
   }
   if (p_src->items) {
-    
+
   }
 
   /* member "mode" */
-  
+
 
   return p_struct;
 }
 
-const char *Test_GetId(const TEST *p_struct) {
+const char *Test_GetId(const TEST *p_struct)
+{
   assert(p_struct);
   return p_struct->id;
 }
 
-const char *Test_GetPrefix(const TEST *p_struct) {
+const char *Test_GetPrefix(const TEST *p_struct)
+{
   assert(p_struct);
   return p_struct->prefix;
 }
 
-const char *Test_GetType(const TEST *p_struct) {
+const char *Test_GetType(const TEST *p_struct)
+{
   assert(p_struct);
   return p_struct->type;
 }
 
-TYPEMAKER2_ITEM_LIST *Test_GetItems(const TEST *p_struct) {
+TYPEMAKER2_ITEM_LIST *Test_GetItems(const TEST *p_struct)
+{
   assert(p_struct);
   return p_struct->items;
 }
 
-int Test_GetMode(const TEST *p_struct) {
+int Test_GetMode(const TEST *p_struct)
+{
   assert(p_struct);
   return p_struct->mode;
 }
 
-void Test_SetId(TEST *p_struct, const char *p_src) {
+void Test_SetId(TEST *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->id) {
     free(p_struct->id);
@@ -151,7 +165,8 @@ void Test_SetId(TEST *p_struct, const char *p_src) {
   }
 }
 
-void Test_SetPrefix(TEST *p_struct, const char *p_src) {
+void Test_SetPrefix(TEST *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->prefix) {
     free(p_struct->prefix);
@@ -164,7 +179,8 @@ void Test_SetPrefix(TEST *p_struct, const char *p_src) {
   }
 }
 
-void Test_SetType(TEST *p_struct, const char *p_src) {
+void Test_SetType(TEST *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->type) {
     free(p_struct->type);
@@ -177,61 +193,80 @@ void Test_SetType(TEST *p_struct, const char *p_src) {
   }
 }
 
-void Test_SetItems(TEST *p_struct, const TYPEMAKER2_ITEM_LIST *p_src) {
+void Test_SetItems(TEST *p_struct, const TYPEMAKER2_ITEM_LIST *p_src)
+{
   assert(p_struct);
   if (p_struct->items) {
-    
+
   }
   if (p_src) {
-    
+
   }
   else {
-    
+
   }
 }
 
-void Test_SetMode(TEST *p_struct, int p_src) {
+void Test_SetMode(TEST *p_struct, int p_src)
+{
   assert(p_struct);
-  
+
 }
 
-void Test_ReadXml(TEST *p_struct, GWEN_XMLNODE *p_db) {
+void Test_ReadXml(TEST *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   if (p_struct->id) {
     free(p_struct->id);
   }
   p_struct->id=NULL;
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "id", NULL); if (s) p_struct->id=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "id", NULL);
+    if (s)
+      p_struct->id=strdup(s);
+  }
 
   /* member "prefix" */
   if (p_struct->prefix) {
     free(p_struct->prefix);
   }
   p_struct->prefix=NULL;
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "prefix", NULL); if (s) p_struct->prefix=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "prefix", NULL);
+    if (s)
+      p_struct->prefix=strdup(s);
+  }
 
   /* member "type" */
   if (p_struct->type) {
     free(p_struct->type);
   }
   p_struct->type=NULL;
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "type", NULL); if (s) p_struct->type=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "type", NULL);
+    if (s)
+      p_struct->type=strdup(s);
+  }
 
   /* member "items" */
   if (p_struct->items) {
-    
+
   }
-  
+
   /* member "items" is volatile, not reading from xml */
 
   /* member "mode" */
-  
-  
+
+
 
 }
 
-void Test_WriteXml(const TEST *p_struct, GWEN_XMLNODE *p_db) {
+void Test_WriteXml(const TEST *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   GWEN_XMLNode_SetProperty(p_db, "id", p_struct->id);
@@ -245,15 +280,17 @@ void Test_WriteXml(const TEST *p_struct, GWEN_XMLNODE *p_db) {
   /* member "items" is volatile, not writing to xml */
 
   /* member "mode" */
-  
+
 
 }
 
-void Test_toXml(const TEST *p_struct, GWEN_XMLNODE *p_db) {
+void Test_toXml(const TEST *p_struct, GWEN_XMLNODE *p_db)
+{
   Test_WriteXml(p_struct, p_db);
 }
 
-TEST *Test_fromXml(GWEN_XMLNODE *p_db) {
+TEST *Test_fromXml(GWEN_XMLNODE *p_db)
+{
   TEST *p_struct;
   p_struct=Test_new();
   Test_ReadXml(p_struct, p_db);

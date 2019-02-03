@@ -70,8 +70,8 @@ GWENHYWFAR_API GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_
 GWENHYWFAR_API uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a);
 GWENHYWFAR_API uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a);
 GWENHYWFAR_API int GWEN_Crypt_HashAlgo_SetInitVector(GWEN_CRYPT_HASHALGO *a,
-    const uint8_t *pv,
-    uint32_t lv);
+                                                     const uint8_t *pv,
+                                                     uint32_t lv);
 
 #ifdef __cplusplus
 }

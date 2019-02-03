@@ -36,7 +36,8 @@ GWEN_INHERIT(GWEN_DIALOG, GWEN_DLGPROGRESS)
 
 
 
-GWEN_DIALOG *GWEN_DlgProgress_new(void) {
+GWEN_DIALOG *GWEN_DlgProgress_new(void)
+{
   GWEN_DIALOG *dlg;
   GWEN_DLGPROGRESS *xdlg;
   GWEN_BUFFER *fbuf;
@@ -80,10 +81,11 @@ GWEN_DIALOG *GWEN_DlgProgress_new(void) {
 
 
 
-void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(void *bp, void *p)
+{
   GWEN_DLGPROGRESS *xdlg;
 
-  xdlg=(GWEN_DLGPROGRESS*) p;
+  xdlg=(GWEN_DLGPROGRESS *) p;
 
   GWEN_Buffer_free(xdlg->logBufferHtml);
   GWEN_Buffer_free(xdlg->logBufferTxt);
@@ -93,7 +95,8 @@ void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(void *bp, void *p) {
 
 
 
-void GWEN_DlgProgress_SetAllowClose(GWEN_DIALOG *dlg, int b) {
+void GWEN_DlgProgress_SetAllowClose(GWEN_DIALOG *dlg, int b)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -109,7 +112,8 @@ void GWEN_DlgProgress_SetAllowClose(GWEN_DIALOG *dlg, int b) {
 
 
 
-void GWEN_DlgProgress_SetStayOpen(GWEN_DIALOG *dlg, int b) {
+void GWEN_DlgProgress_SetStayOpen(GWEN_DIALOG *dlg, int b)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -121,7 +125,8 @@ void GWEN_DlgProgress_SetStayOpen(GWEN_DIALOG *dlg, int b) {
 
 
 
-int GWEN_DlgProgress_GetStayOpen(const GWEN_DIALOG *dlg) {
+int GWEN_DlgProgress_GetStayOpen(const GWEN_DIALOG *dlg)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -133,7 +138,8 @@ int GWEN_DlgProgress_GetStayOpen(const GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgProgress_SetShowLog(GWEN_DIALOG *dlg, int b) {
+void GWEN_DlgProgress_SetShowLog(GWEN_DIALOG *dlg, int b)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -164,7 +170,8 @@ void GWEN_DlgProgress_SetShowLog(GWEN_DIALOG *dlg, int b) {
 
 
 
-GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetFirstProgress(const GWEN_DIALOG *dlg) {
+GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetFirstProgress(const GWEN_DIALOG *dlg)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -176,7 +183,8 @@ GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetFirstProgress(const GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgProgress_SetFirstProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
+void GWEN_DlgProgress_SetFirstProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -213,7 +221,8 @@ void GWEN_DlgProgress_SetFirstProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
 
 
 
-GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetSecondProgress(const GWEN_DIALOG *dlg) {
+GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetSecondProgress(const GWEN_DIALOG *dlg)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -225,7 +234,8 @@ GWEN_PROGRESS_DATA *GWEN_DlgProgress_GetSecondProgress(const GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgProgress_SetSecondProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
+void GWEN_DlgProgress_SetSecondProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -253,7 +263,8 @@ void GWEN_DlgProgress_SetSecondProgress(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd
 
 void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
                                  GWEN_LOGGER_LEVEL level,
-                                 const char *s) {
+                                 const char *s)
+{
   GWEN_DLGPROGRESS *xdlg;
   GWEN_TIME *ti;
   int rv;
@@ -300,7 +311,7 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
   if (col) {
     GWEN_Buffer_AppendString(xdlg->logBufferHtml, "<font color=\"");
     GWEN_Buffer_AppendString(xdlg->logBufferHtml, col);
-    GWEN_Buffer_AppendString(xdlg->logBufferHtml,"\">");
+    GWEN_Buffer_AppendString(xdlg->logBufferHtml, "\">");
   }
   if (s)
     GWEN_Text_EscapeXmlToBuffer(s, xdlg->logBufferHtml);
@@ -327,7 +338,8 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
 
 
 
-void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
+void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
+{
   GWEN_DLGPROGRESS *xdlg;
   const char *s;
 
@@ -353,7 +365,8 @@ void GWEN_DlgProgress_Advanced(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
 
 
 
-void GWEN_DlgProgress_TotalChanged(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
+void GWEN_DlgProgress_TotalChanged(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd)
+{
   GWEN_DLGPROGRESS *xdlg;
   const char *s;
 
@@ -379,7 +392,8 @@ void GWEN_DlgProgress_TotalChanged(GWEN_DIALOG *dlg, GWEN_PROGRESS_DATA *pd) {
 
 
 
-void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
+void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg)
+{
   GWEN_DLGPROGRESS *xdlg;
   int i;
   GWEN_DB_NODE *dbParams;
@@ -453,7 +467,8 @@ void GWEN_DlgProgress_Init(GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgProgress_Fini(GWEN_DIALOG *dlg) {
+void GWEN_DlgProgress_Fini(GWEN_DIALOG *dlg)
+{
   GWEN_DLGPROGRESS *xdlg;
   int i;
   GWEN_DB_NODE *dbParams;
@@ -499,7 +514,8 @@ void GWEN_DlgProgress_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
@@ -529,15 +545,16 @@ int GWEN_DlgProgress_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB GWEN_DlgProgress_SignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender) {
+                                                 GWEN_DIALOG_EVENTTYPE t,
+                                                 const char *sender)
+{
   GWEN_DLGPROGRESS *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     GWEN_DlgProgress_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

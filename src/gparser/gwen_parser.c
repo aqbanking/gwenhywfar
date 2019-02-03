@@ -40,7 +40,8 @@
 
 
 /* Checks whether the given eData matches the given eDefinitions element */
-int GWEN_Parser__CheckElement(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData) {
+int GWEN_Parser__CheckElement(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData)
+{
   GWEN_PARSER_ELEMENT_TYPE tDefinitions, tData;
   const char *nameDefinitions, *nameData;
 
@@ -86,11 +87,13 @@ int GWEN_Parser__CheckElement(const GWEN_PARSER_ELEMENT *eDefinitions, const GWE
 
 
 
-const GWEN_PARSER_ELEMENT *GWEN_Parser__GetChoice(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData) {
+const GWEN_PARSER_ELEMENT *GWEN_Parser__GetChoice(const GWEN_PARSER_ELEMENT *eDefinitions,
+                                                  const GWEN_PARSER_ELEMENT *eData)
+{
   GWEN_PARSER_ELEMENT *e;
 
   e=GWEN_ParserElement_Tree_GetFirstChild(eDefinitions);
-  while(e) {
+  while (e) {
     if (0==GWEN_Parser__CheckElement(e, eData))
       return e;
     e=GWEN_ParserElement_Tree_GetNext(e);

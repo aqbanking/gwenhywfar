@@ -27,7 +27,8 @@ GWEN_INHERIT(GWEN_CRYPT_TOKEN_CONTEXT, GWEN_CTF_CONTEXT)
 
 
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_CTF_Context_new() {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_CTF_Context_new()
+{
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CTF_CONTEXT *fctx;
 
@@ -41,7 +42,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_CTF_Context_new() {
 
 
 
-int GWEN_CTF_Context_IsOfThisType(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+int GWEN_CTF_Context_IsOfThisType(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   assert(ctx);
   return GWEN_INHERIT_ISOFTYPE(GWEN_CRYPT_TOKEN_CONTEXT, GWEN_CTF_CONTEXT, ctx);
 }
@@ -49,10 +51,11 @@ int GWEN_CTF_Context_IsOfThisType(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
 
 
 GWENHYWFAR_CB
-void GWEN_CTF_Context_freeData(GWEN_UNUSED void *bp, void *p) {
+void GWEN_CTF_Context_freeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CTF_CONTEXT *fctx;
 
-  fctx=(GWEN_CTF_CONTEXT*) p;
+  fctx=(GWEN_CTF_CONTEXT *) p;
   GWEN_Crypt_Key_free(fctx->localSignKey);
   GWEN_Crypt_Key_free(fctx->localCryptKey);
   GWEN_Crypt_Key_free(fctx->remoteSignKey);
@@ -74,7 +77,8 @@ void GWEN_CTF_Context_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -86,7 +90,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalSignKey(const GWEN_CRYPT_TOKEN_CONTEXT 
 
 
 
-void GWEN_CTF_Context_SetLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -99,7 +104,8 @@ void GWEN_CTF_Context_SetLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO*GWEN_CTF_Context_GetLocalSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -111,7 +117,8 @@ GWEN_CRYPT_TOKEN_KEYINFO*GWEN_CTF_Context_GetLocalSignKeyInfo(const GWEN_CRYPT_T
 
 
 
-void GWEN_CTF_Context_SetLocalSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetLocalSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -124,7 +131,8 @@ void GWEN_CTF_Context_SetLocalSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CR
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalCryptKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalCryptKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -136,7 +144,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalCryptKey(const GWEN_CRYPT_TOKEN_CONTEXT
 
 
 
-void GWEN_CTF_Context_SetLocalCryptKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetLocalCryptKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -149,7 +158,8 @@ void GWEN_CTF_Context_SetLocalCryptKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalCryptKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalCryptKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -161,7 +171,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalCryptKeyInfo(const GWEN_CRYPT
 
 
 
-void GWEN_CTF_Context_SetLocalCryptKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetLocalCryptKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -174,7 +185,8 @@ void GWEN_CTF_Context_SetLocalCryptKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_C
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -186,7 +198,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteSignKey(const GWEN_CRYPT_TOKEN_CONTEXT
 
 
 
-void GWEN_CTF_Context_SetRemoteSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetRemoteSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -199,7 +212,8 @@ void GWEN_CTF_Context_SetRemoteSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -211,7 +225,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteSignKeyInfo(const GWEN_CRYPT
 
 
 
-void GWEN_CTF_Context_SetRemoteSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetRemoteSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -224,7 +239,8 @@ void GWEN_CTF_Context_SetRemoteSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_C
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteCryptKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteCryptKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -236,7 +252,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteCryptKey(const GWEN_CRYPT_TOKEN_CONTEX
 
 
 
-void GWEN_CTF_Context_SetRemoteCryptKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetRemoteCryptKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -249,7 +266,8 @@ void GWEN_CTF_Context_SetRemoteCryptKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYP
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteCryptKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteCryptKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -261,7 +279,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteCryptKeyInfo(const GWEN_CRYP
 
 
 
-void GWEN_CTF_Context_SetRemoteCryptKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetRemoteCryptKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -274,7 +293,8 @@ void GWEN_CTF_Context_SetRemoteCryptKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalAuthKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalAuthKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -286,7 +306,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetLocalAuthKey(const GWEN_CRYPT_TOKEN_CONTEXT 
 
 
 
-void GWEN_CTF_Context_SetLocalAuthKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetLocalAuthKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -299,7 +320,8 @@ void GWEN_CTF_Context_SetLocalAuthKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalAuthKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalAuthKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -311,7 +333,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetLocalAuthKeyInfo(const GWEN_CRYPT_
 
 
 
-void GWEN_CTF_Context_SetLocalAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetLocalAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -324,7 +347,8 @@ void GWEN_CTF_Context_SetLocalAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CR
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteAuthKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteAuthKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -336,7 +360,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetRemoteAuthKey(const GWEN_CRYPT_TOKEN_CONTEXT
 
 
 
-void GWEN_CTF_Context_SetRemoteAuthKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetRemoteAuthKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -349,7 +374,8 @@ void GWEN_CTF_Context_SetRemoteAuthKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteAuthKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteAuthKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -361,7 +387,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetRemoteAuthKeyInfo(const GWEN_CRYPT
 
 
 
-void GWEN_CTF_Context_SetRemoteAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetRemoteAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -374,7 +401,8 @@ void GWEN_CTF_Context_SetRemoteAuthKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_C
 
 
 
-GWEN_CRYPT_KEY *GWEN_CTF_Context_GetTempLocalSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_KEY *GWEN_CTF_Context_GetTempLocalSignKey(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -386,7 +414,8 @@ GWEN_CRYPT_KEY *GWEN_CTF_Context_GetTempLocalSignKey(const GWEN_CRYPT_TOKEN_CONT
 
 
 
-void GWEN_CTF_Context_SetTempLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k) {
+void GWEN_CTF_Context_SetTempLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_KEY *k)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -399,7 +428,8 @@ void GWEN_CTF_Context_SetTempLocalSignKey(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CR
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO*GWEN_CTF_Context_GetTempLocalSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+GWEN_CRYPT_TOKEN_KEYINFO *GWEN_CTF_Context_GetTempLocalSignKeyInfo(const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);
@@ -411,7 +441,8 @@ GWEN_CRYPT_TOKEN_KEYINFO*GWEN_CTF_Context_GetTempLocalSignKeyInfo(const GWEN_CRY
 
 
 
-void GWEN_CTF_Context_SetTempLocalSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki) {
+void GWEN_CTF_Context_SetTempLocalSignKeyInfo(GWEN_CRYPT_TOKEN_CONTEXT *ctx, GWEN_CRYPT_TOKEN_KEYINFO *ki)
+{
   GWEN_CTF_CONTEXT *fctx;
 
   assert(ctx);

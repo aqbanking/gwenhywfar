@@ -41,7 +41,7 @@ struct GWEN_STRINGLIST2 {
   GWEN_LIST *listPtr;
 };
 
-GWEN_STRINGLIST2_ITERATOR*
+GWEN_STRINGLIST2_ITERATOR *
 GWEN_StringList2__GetString(const GWEN_STRINGLIST2 *sl2,
                             const char *s);
 

@@ -26,12 +26,13 @@
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__FindNameSpaceByUrl(GWEN_XMLNODE_NAMESPACE_LIST *l,
-    const char *s) {
+                                                       const char *s)
+{
   GWEN_XMLNODE_NAMESPACE *ns;
 
   assert(l);
   ns=GWEN_XMLNode_NameSpace_List_First(l);
-  while(ns) {
+  while (ns) {
     const char *d;
 
     d=GWEN_XMLNode_NameSpace_GetUrl(ns);
@@ -46,14 +47,15 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__FindNameSpaceByUrl(GWEN_XMLNODE_NAMESPACE_LI
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
-    const char *prefix) {
-  while(n) {
+                                                         const char *prefix)
+{
+  while (n) {
     if (n->type==GWEN_XMLNodeTypeTag) {
       GWEN_XMLNODE_NAMESPACE *ns;
 
       DBG_ERROR(0, "Checking in node [%s]", GWEN_XMLNode_GetData(n));
       ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-      while(ns) {
+      while (ns) {
         const char *d;
 
         d=GWEN_XMLNode_NameSpace_GetName(ns);
@@ -73,7 +75,8 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLGL__GetNameSpaceByPrefix(GWEN_XMLNODE *n,
 
 int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
                               GWEN_XMLNODE_NAMESPACE_LIST *l,
-                              char **pValue) {
+                              char **pValue)
+{
   GWEN_XMLNODE_NAMESPACE *ns;
   char *dcopy=NULL;
   char *v;
@@ -104,8 +107,8 @@ int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
       char *newValue;
 
       /* translate prefix part of the name */
-      newValue=(char*)malloc(strlen(GWEN_XMLNode_NameSpace_GetName(newNs))+
-                             strlen(name)+1+1);
+      newValue=(char *)malloc(strlen(GWEN_XMLNode_NameSpace_GetName(newNs))+
+                              strlen(name)+1+1);
       assert(newValue);
       strcpy(newValue, GWEN_XMLNode_NameSpace_GetName(newNs));
       strcat(newValue, ":");
@@ -134,7 +137,8 @@ int GWEN_XMLGL__TranslateName(GWEN_XMLNODE *n,
 
 int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
                                  GWEN_XMLNODE_NAMESPACE_LIST *l,
-                                 uint32_t *pLastId) {
+                                 uint32_t *pLastId)
+{
   GWEN_XMLNODE *nn;
 
   if (n->type==GWEN_XMLNodeTypeTag) {
@@ -143,7 +147,7 @@ int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
     int rv;
 
     ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-    while(ns) {
+    while (ns) {
       const char *url;
 
       url=GWEN_XMLNode_NameSpace_GetUrl(ns);
@@ -162,7 +166,7 @@ int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
 
     /* translate some properties */
     pr=n->properties;
-    while(pr) {
+    while (pr) {
       if (pr->name && pr->value) {
         if (strcasecmp(pr->name, "type")==0 ||
             strcasecmp(pr->name, "ref")==0 ||
@@ -189,7 +193,7 @@ int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
 
   /* sample and rename children */
   nn=GWEN_XMLNode_List_First(n->children);
-  while(nn) {
+  while (nn) {
     int rv;
 
     rv=GWEN_XMLGL__SampleNameSpaces(nn, l, pLastId);
@@ -203,13 +207,14 @@ int GWEN_XMLGL__SampleNameSpaces(GWEN_XMLNODE *n,
 
 
 
-void GWEN_XMLGL__ClearNameSpaces(GWEN_XMLNODE *n) {
+void GWEN_XMLGL__ClearNameSpaces(GWEN_XMLNODE *n)
+{
   GWEN_XMLNODE *nn;
 
   GWEN_XMLNode_NameSpace_List_Clear(n->nameSpaces);
 
   nn=GWEN_XMLNode_List_First(n->children);
-  while(nn) {
+  while (nn) {
     GWEN_XMLGL__ClearNameSpaces(nn);
     nn=GWEN_XMLNode_List_Next(nn);
   }
@@ -219,7 +224,8 @@ void GWEN_XMLGL__ClearNameSpaces(GWEN_XMLNODE *n) {
 
 int GWEN_XMLNode_GlobalizeWithList(GWEN_XMLNODE *n,
                                    GWEN_XMLNODE_NAMESPACE_LIST *l,
-                                   uint32_t *pLastId) {
+                                   uint32_t *pLastId)
+{
   int rv;
 
   rv=GWEN_XMLGL__SampleNameSpaces(n, l, pLastId);
@@ -234,7 +240,8 @@ int GWEN_XMLNode_GlobalizeWithList(GWEN_XMLNODE *n,
 
 
 
-int GWEN_XMLNode_Globalize(GWEN_XMLNODE *n) {
+int GWEN_XMLNode_Globalize(GWEN_XMLNODE *n)
+{
   GWEN_XMLNODE_NAMESPACE_LIST *l;
   uint32_t lastId=0;
   int rv;

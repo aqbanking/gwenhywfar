@@ -50,17 +50,19 @@
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
 
 
-int GWEN_Process_ModuleInit(void) {
+int GWEN_Process_ModuleInit(void)
+{
   return 0;
 }
 
 
 
-int GWEN_Process_ModuleFini(void) {
+int GWEN_Process_ModuleFini(void)
+{
   GWEN_PROCESS *pr, *prnext;
 
   pr=GWEN_Process_ProcessList;
-  while(pr) {
+  while (pr) {
     prnext=pr->next;
 
     pr->usage=1;
@@ -73,11 +75,12 @@ int GWEN_Process_ModuleFini(void) {
 
 
 #if 0
-GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid) {
+GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid)
+{
   GWEN_PROCESS *pr;
 
   pr=GWEN_Process_ProcessList;
-  while(pr) {
+  while (pr) {
     if (pr->pid==pid)
       return pr;
     pr=pr->next;
@@ -87,11 +90,12 @@ GWEN_PROCESS *GWEN_Process_FindProcess(pid_t pid) {
 
 
 
-void GWEN_Process_SignalHandler(int s) {
+void GWEN_Process_SignalHandler(int s)
+{
   int status;
   pid_t pid;
 
-  switch(s) {
+  switch (s) {
   case SIGCHLD:
     /* try to get the status */
     pid=waitpid(0, &status, WNOHANG);
@@ -130,7 +134,8 @@ void GWEN_Process_SignalHandler(int s) {
 
 
 
-GWEN_PROCESS *GWEN_Process_new(void) {
+GWEN_PROCESS *GWEN_Process_new(void)
+{
   GWEN_PROCESS *pr;
 
   GWEN_NEW_OBJECT(GWEN_PROCESS, pr);
@@ -144,7 +149,8 @@ GWEN_PROCESS *GWEN_Process_new(void) {
 
 
 
-void GWEN_Process_free(GWEN_PROCESS *pr) {
+void GWEN_Process_free(GWEN_PROCESS *pr)
+{
   if (pr) {
     assert(pr->usage);
     if (--(pr->usage)==0) {
@@ -162,7 +168,8 @@ void GWEN_Process_free(GWEN_PROCESS *pr) {
 
 GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                                       const char *prg,
-                                      const char *args) {
+                                      const char *args)
+{
   pid_t pid;
   char *argv[32];
   int argc;
@@ -254,8 +261,8 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
   argc++;
   p=args;
   wbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  while(argc<32 && *p) {
-    while(*p && isspace((int)*p))
+  while (argc<32 && *p) {
+    while (*p && isspace((int)*p))
       p++;
     if (!(*p))
       break;
@@ -286,7 +293,8 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w) {
+GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w)
+{
   int rv;
   int status;
 
@@ -308,7 +316,8 @@ GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w) {
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status) {
+GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status)
+{
   /* process has terminated for any reason */
   if (WIFEXITED(status)) {
     /* normal termination */
@@ -345,7 +354,8 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status) {
 
 
 
-GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr) {
+GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr)
+{
   assert(pr);
 
   if (pr->pid==-1)
@@ -358,7 +368,8 @@ GWEN_PROCESS_STATE GWEN_Process_CheckState(GWEN_PROCESS *pr) {
 
 
 
-int GWEN_Process_GetResult(GWEN_PROCESS *pr) {
+int GWEN_Process_GetResult(GWEN_PROCESS *pr)
+{
   assert(pr);
   if (GWEN_Process_CheckState(pr)==GWEN_ProcessStateExited)
     return pr->result;
@@ -368,7 +379,8 @@ int GWEN_Process_GetResult(GWEN_PROCESS *pr) {
 
 
 
-int GWEN_Process_Wait(GWEN_PROCESS *pr) {
+int GWEN_Process_Wait(GWEN_PROCESS *pr)
+{
   GWEN_PROCESS_STATE pst;
 
   assert(pr);
@@ -390,7 +402,8 @@ int GWEN_Process_Wait(GWEN_PROCESS *pr) {
 
 
 
-int GWEN_Process_Terminate(GWEN_PROCESS *pr) {
+int GWEN_Process_Terminate(GWEN_PROCESS *pr)
+{
   assert(pr);
 
   if (pr->state!=GWEN_ProcessStateRunning) {
@@ -417,56 +430,64 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr) {
 
 
 
-uint32_t GWEN_Process_GetFlags(const GWEN_PROCESS *pr) {
+uint32_t GWEN_Process_GetFlags(const GWEN_PROCESS *pr)
+{
   assert(pr);
   return pr->pflags;
 }
 
 
 
-void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f) {
+void GWEN_Process_SetFlags(GWEN_PROCESS *pr, uint32_t f)
+{
   assert(pr);
   pr->pflags=f;
 }
 
 
 
-void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f) {
+void GWEN_Process_AddFlags(GWEN_PROCESS *pr, uint32_t f)
+{
   assert(pr);
   pr->pflags|=f;
 }
 
 
 
-void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f) {
+void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f)
+{
   assert(pr);
   pr->pflags&=~f;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr) {
+GWEN_SYNCIO *GWEN_Process_GetStdin(const GWEN_PROCESS *pr)
+{
   assert(pr);
   return pr->stdIn;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr) {
+GWEN_SYNCIO *GWEN_Process_GetStdout(const GWEN_PROCESS *pr)
+{
   assert(pr);
   return pr->stdOut;
 }
 
 
 
-GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr) {
+GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr)
+{
   assert(pr);
   return pr->stdErr;
 }
 
 
 
-int GWEN_Process_Redirect(GWEN_PROCESS *pr) {
+int GWEN_Process_Redirect(GWEN_PROCESS *pr)
+{
   assert(pr);
 
   pr->filesStdin[0]=-1;

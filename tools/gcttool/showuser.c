@@ -24,7 +24,8 @@
 
 
 
-int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
@@ -32,51 +33,51 @@ int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   unsigned int cid;
   int shown=0;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "contextId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "i",                          /* short option */
-    "id",                         /* long option */
-    "Context id (0 for any)",     /* short description */
-    "Context id (0 for any)"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                    /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "contextId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "i",                          /* short option */
+      "id",                         /* long option */
+      "Context id (0 for any)",     /* short description */
+      "Context id (0 for any)"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                    /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -136,58 +137,58 @@ int showUser(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
     for (i=0; i<ctxCount; i++) {
       if (cid==0 || cid==ctxIds[i]) {
-	const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-	const char *s;
+        const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+        const char *s;
         uint32_t kid;
 
-	ctx=GWEN_Crypt_Token_GetContext(ct, ctxIds[i], 0);
-	if (ctx) {
-	  fprintf(stdout, "-------------------------------------------------\n");
-	  fprintf(stdout, "Context %u\n",
-		  (unsigned int)GWEN_Crypt_Token_Context_GetId(ctx));
-	  s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
-	  if (s)
-	    fprintf(stdout, "Service        : %s\n", s);
-	  s=GWEN_Crypt_Token_Context_GetUserId(ctx);
-	  if (s)
-	    fprintf(stdout, "User Id        : %s\n", s);
-	  s=GWEN_Crypt_Token_Context_GetCustomerId(ctx);
-	  if (s)
-	    fprintf(stdout, "Customer Id    : %s\n", s);
-	  s=GWEN_Crypt_Token_Context_GetUserName(ctx);
-	  if (s)
-	    fprintf(stdout, "User Name      : %s\n", s);
-	  s=GWEN_Crypt_Token_Context_GetPeerId(ctx);
-	  if (s)
-	    fprintf(stdout, "Peer Id        : %s\n", s);
-	  s=GWEN_Crypt_Token_Context_GetPeerName(ctx);
-	  if (s)
-	    fprintf(stdout, "Peer Name      : %s\n", s);
-	  s=GWEN_Crypt_Token_Context_GetAddress(ctx);
-	  if (s)
-	    fprintf(stdout, "Address        : %s\n", s);
-	  fprintf(stdout, "Port           : %d\n", GWEN_Crypt_Token_Context_GetPort(ctx));
-	  s=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-	  if (s)
-	    fprintf(stdout, "System Id      : %s\n", s);
-	  kid=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
-	  if (kid!=0)
-	    fprintf(stdout, "Sign Key Id    : %d\n", kid);
-	  kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(ctx);
-	  if (kid!=0)
-	    fprintf(stdout, "Verify Key Id  : %d\n", kid);
-	  kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
-	  if (kid!=0)
-	    fprintf(stdout, "Encipher Key Id: %d\n", kid);
-	  kid=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
-	  if (kid!=0)
-	    fprintf(stdout, "Decipher Key Id: %d\n", kid);
+        ctx=GWEN_Crypt_Token_GetContext(ct, ctxIds[i], 0);
+        if (ctx) {
+          fprintf(stdout, "-------------------------------------------------\n");
+          fprintf(stdout, "Context %u\n",
+                  (unsigned int)GWEN_Crypt_Token_Context_GetId(ctx));
+          s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
+          if (s)
+            fprintf(stdout, "Service        : %s\n", s);
+          s=GWEN_Crypt_Token_Context_GetUserId(ctx);
+          if (s)
+            fprintf(stdout, "User Id        : %s\n", s);
+          s=GWEN_Crypt_Token_Context_GetCustomerId(ctx);
+          if (s)
+            fprintf(stdout, "Customer Id    : %s\n", s);
+          s=GWEN_Crypt_Token_Context_GetUserName(ctx);
+          if (s)
+            fprintf(stdout, "User Name      : %s\n", s);
+          s=GWEN_Crypt_Token_Context_GetPeerId(ctx);
+          if (s)
+            fprintf(stdout, "Peer Id        : %s\n", s);
+          s=GWEN_Crypt_Token_Context_GetPeerName(ctx);
+          if (s)
+            fprintf(stdout, "Peer Name      : %s\n", s);
+          s=GWEN_Crypt_Token_Context_GetAddress(ctx);
+          if (s)
+            fprintf(stdout, "Address        : %s\n", s);
+          fprintf(stdout, "Port           : %d\n", GWEN_Crypt_Token_Context_GetPort(ctx));
+          s=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+          if (s)
+            fprintf(stdout, "System Id      : %s\n", s);
+          kid=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
+          if (kid!=0)
+            fprintf(stdout, "Sign Key Id    : %d\n", kid);
+          kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(ctx);
+          if (kid!=0)
+            fprintf(stdout, "Verify Key Id  : %d\n", kid);
+          kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
+          if (kid!=0)
+            fprintf(stdout, "Encipher Key Id: %d\n", kid);
+          kid=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
+          if (kid!=0)
+            fprintf(stdout, "Decipher Key Id: %d\n", kid);
 
-	  shown++;
-	}
-	else {
+          shown++;
+        }
+        else {
           fprintf(stderr, "Context %d not found (%d)\n", i, ctxIds[i]);
-	}
+        }
       }
     }
   }

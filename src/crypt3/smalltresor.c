@@ -35,7 +35,8 @@ static int _encodeData(const uint8_t *ptr,
                        uint32_t len,
                        uint8_t *pOutData,
                        uint32_t *pOutLen,
-                       const uint8_t *pKey) {
+                       const uint8_t *pKey)
+{
   GWEN_CRYPT_KEY *k;
   int rv;
 
@@ -63,7 +64,8 @@ static int _encodeData(const uint8_t *ptr,
 
 
 
-static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterations) {
+static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterations)
+{
   GWEN_BUFFER *tbuf1;
   GWEN_BUFFER *tbuf2;
   int i;
@@ -90,7 +92,7 @@ static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterati
 
     lDest=len;
     GWEN_Buffer_AllocRoom(tbuf1, lDest);
-    pDest=(uint8_t*)GWEN_Buffer_GetPosPointer(tbuf1);
+    pDest=(uint8_t *)GWEN_Buffer_GetPosPointer(tbuf1);
 
     rv=GWEN_Crypt_Key_Encipher(ck, p, len, pDest, &lDest);
     if (rv<0) {
@@ -106,7 +108,7 @@ static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterati
 
     /* append key */
     GWEN_Buffer_AppendBytes(tbuf1,
-                            (const char*) GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(ck),
+                            (const char *) GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(ck),
                             BLOWFISH_KEYSIZE);
     GWEN_Crypt_Key_free(ck);
 
@@ -116,12 +118,12 @@ static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterati
     tbuf1=tmpbufptr;
     /* reset buffer 1, point to buffer 2 for next iteration */
     GWEN_Buffer_Reset(tbuf1);
-    p=(uint8_t*)GWEN_Buffer_GetStart(tbuf2);
+    p=(uint8_t *)GWEN_Buffer_GetStart(tbuf2);
     len=GWEN_Buffer_GetUsedBytes(tbuf2);
   }
 
   /* add data from last round to buffer */
-  GWEN_Buffer_AppendBytes(buf, (const char*) p, len);
+  GWEN_Buffer_AppendBytes(buf, (const char *) p, len);
 
   GWEN_Buffer_free(tbuf2);
   GWEN_Buffer_free(tbuf1);
@@ -131,7 +133,8 @@ static int _encode(const uint8_t *p, uint32_t len, GWEN_BUFFER *buf, int iterati
 
 
 
-static int _addRandomBytes(GWEN_BUFFER *dst, int withLength) {
+static int _addRandomBytes(GWEN_BUFFER *dst, int withLength)
+{
   uint8_t v1[2];
   uint16_t len;
 
@@ -143,7 +146,7 @@ static int _addRandomBytes(GWEN_BUFFER *dst, int withLength) {
     GWEN_Buffer_AppendByte(dst, len & 0xff);
   }
   GWEN_Buffer_AllocRoom(dst, len);
-  GWEN_Crypt_Random(3, (uint8_t*) GWEN_Buffer_GetPosPointer(dst), len);
+  GWEN_Crypt_Random(3, (uint8_t *) GWEN_Buffer_GetPosPointer(dst), len);
   GWEN_Buffer_IncrementPos(dst, len);
   GWEN_Buffer_AdjustUsedBytes(dst);
 
@@ -156,7 +159,8 @@ static int _decodeData(const uint8_t *ptr,
                        uint32_t len,
                        uint8_t *pOutData,
                        uint32_t *pOutLen,
-                       const uint8_t *pKey) {
+                       const uint8_t *pKey)
+{
   GWEN_CRYPT_KEY *k;
   int rv;
 
@@ -176,7 +180,8 @@ static int _decodeData(const uint8_t *ptr,
 
 
 
-static int _decode(const uint8_t *p, uint32_t len, GWEN_BUFFER *dst, int iterations) {
+static int _decode(const uint8_t *p, uint32_t len, GWEN_BUFFER *dst, int iterations)
+{
   GWEN_BUFFER *tbuf1;
   GWEN_BUFFER *tbuf2;
   int i;
@@ -196,7 +201,7 @@ static int _decode(const uint8_t *p, uint32_t len, GWEN_BUFFER *dst, int iterati
     len-=sizeof(key);
     lDest=len;
     GWEN_Buffer_AllocRoom(tbuf1, lDest);
-    pDest=(uint8_t*)GWEN_Buffer_GetPosPointer(tbuf1);
+    pDest=(uint8_t *)GWEN_Buffer_GetPosPointer(tbuf1);
     /* only unpadd for last loop */
     rv=_decodeData(p, len, pDest, &lDest, key);
     if (rv) {
@@ -212,7 +217,7 @@ static int _decode(const uint8_t *p, uint32_t len, GWEN_BUFFER *dst, int iterati
     tbuf1=tmpbufptr;
     /* reset buffer 1, point to buffer 2 for next iteration */
     GWEN_Buffer_Reset(tbuf1);
-    p=(const uint8_t*)GWEN_Buffer_GetStart(tbuf2);
+    p=(const uint8_t *)GWEN_Buffer_GetStart(tbuf2);
     len=GWEN_Buffer_GetUsedBytes(tbuf2);
   }
 
@@ -236,7 +241,8 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
                              const char *password,
                              GWEN_BUFFER *dst,
                              int passwordIterations,
-                             int cryptIterations) {
+                             int cryptIterations)
+{
   GWEN_BUFFER *tbuf;
   GWEN_BUFFER *xbuf;
   uint32_t x;
@@ -275,7 +281,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   GWEN_Buffer_AppendByte(tbuf, slen & 0xff);
 
   /* add data itself */
-  GWEN_Buffer_AppendBytes(tbuf, (const char*) src, slen);
+  GWEN_Buffer_AppendBytes(tbuf, (const char *) src, slen);
 
   /* add random bytes at the end (without length marker) */
   rv=_addRandomBytes(tbuf, 0);
@@ -297,7 +303,7 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
 
   /* actually encode the data into xbuf */
   xbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(tbuf)+(cryptIterations*BLOWFISH_KEYSIZE), 0, 1);
-  rv=_encode((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+  rv=_encode((const uint8_t *) GWEN_Buffer_GetStart(tbuf),
              GWEN_Buffer_GetUsedBytes(tbuf),
              xbuf,
              cryptIterations);
@@ -313,14 +319,14 @@ int GWEN_SmallTresor_Encrypt(const uint8_t *src,
   len=sizeof(salt);
   GWEN_Buffer_AppendByte(dst, (len>>8) & 0xff);
   GWEN_Buffer_AppendByte(dst, len & 0xff);
-  GWEN_Buffer_AppendBytes(dst, (const char*) salt, len);
+  GWEN_Buffer_AppendBytes(dst, (const char *) salt, len);
 
   /* final round */
-  p=(const uint8_t*) GWEN_Buffer_GetStart(xbuf);
+  p=(const uint8_t *) GWEN_Buffer_GetStart(xbuf);
   len=GWEN_Buffer_GetUsedBytes(xbuf);
 
   GWEN_Buffer_AllocRoom(dst, len);
-  pDest=(uint8_t*)GWEN_Buffer_GetPosPointer(dst);
+  pDest=(uint8_t *)GWEN_Buffer_GetPosPointer(dst);
   lDest=len;
   rv=_encodeData(p, len, pDest, &lDest, key);
   if (rv<0) {
@@ -342,7 +348,8 @@ int GWEN_SmallTresor_Decrypt(const uint8_t *p,
                              const char *password,
                              GWEN_BUFFER *dst,
                              int passwordIterations,
-                             int cryptIterations) {
+                             int cryptIterations)
+{
   GWEN_BUFFER *tbuf1;
   GWEN_BUFFER *tbuf2;
   int rv;
@@ -386,7 +393,7 @@ int GWEN_SmallTresor_Decrypt(const uint8_t *p,
   tbuf1=GWEN_Buffer_new(0, len, 0, 1);
   GWEN_Buffer_AllocRoom(tbuf1, len);
 
-  pDest=(uint8_t*)GWEN_Buffer_GetPosPointer(tbuf1);
+  pDest=(uint8_t *)GWEN_Buffer_GetPosPointer(tbuf1);
   lDest=len;
   rv=_decodeData(p, len, pDest, &lDest, key);
   if (rv<0) {
@@ -397,7 +404,7 @@ int GWEN_SmallTresor_Decrypt(const uint8_t *p,
   GWEN_Buffer_AdjustUsedBytes(tbuf1);
 
   /* decode the next rounds */
-  p=(const uint8_t*) GWEN_Buffer_GetStart(tbuf1);
+  p=(const uint8_t *) GWEN_Buffer_GetStart(tbuf1);
   len=GWEN_Buffer_GetUsedBytes(tbuf1);
   tbuf2=GWEN_Buffer_new(0, len, 0, 1);
   rv=_decode(p, len, tbuf2, cryptIterations);
@@ -416,7 +423,7 @@ int GWEN_SmallTresor_Decrypt(const uint8_t *p,
   }
 
   /* extract data */
-  p=(const uint8_t*) GWEN_Buffer_GetStart(tbuf2);
+  p=(const uint8_t *) GWEN_Buffer_GetStart(tbuf2);
   len=GWEN_Buffer_GetUsedBytes(tbuf2);
 
   /* skip random bytes at the beginning */
@@ -438,7 +445,7 @@ int GWEN_SmallTresor_Decrypt(const uint8_t *p,
   }
   p+=2;
   len-=2;
-  GWEN_Buffer_AppendBytes(dst, (const char*) p, lDest);
+  GWEN_Buffer_AppendBytes(dst, (const char *) p, lDest);
 
   GWEN_Buffer_free(tbuf2);
 

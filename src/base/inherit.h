@@ -50,8 +50,8 @@ extern "C" {
  *
  */
 /*@{*/
-typedef void GWENHYWFAR_CB (*GWEN_INHERIT_FREEDATAFN)(void *baseData,
-    void *data);
+typedef void GWENHYWFAR_CB(*GWEN_INHERIT_FREEDATAFN)(void *baseData,
+                                                     void *data);
 
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_INHERITDATA, GWEN_InheritData, GWENHYWFAR_API)
 /* No trailing semicolon because this is a macro call */
@@ -91,14 +91,14 @@ GWENHYWFAR_API
 uint32_t GWEN_Inherit_MakeId(const char *typeName);
 
 GWENHYWFAR_API
-void* GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
+void *GWEN_Inherit_FindData(GWEN_INHERITDATA_LIST *l,
                             uint32_t id,
                             int wantCreate);
 
 GWENHYWFAR_API
 GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
-    uint32_t id,
-    int wantCreate);
+                                         uint32_t id,
+                                         int wantCreate);
 
 /** @name Macros To Be Used In Inherited Classes - Header Files
  *

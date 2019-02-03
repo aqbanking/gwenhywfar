@@ -16,13 +16,14 @@ int Gtk3Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      int value,
-                                     int doSignal) {
+                                     int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -53,13 +54,14 @@ static GWENHYWFAR_CB
 int Gtk3Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
-                                     int defaultValue) {
+                                     int defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -89,16 +91,17 @@ int Gtk3Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
                                       GWEN_DIALOG_PROPERTY prop,
                                       int index,
                                       const char *value,
-                                      int doSignal) {
+                                      int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Value:
     if (value && *value)
-        gtk_entry_set_text(GTK_ENTRY(g), value);
+      gtk_entry_set_text(GTK_ENTRY(g), value);
     return 0;
   default:
     break;
@@ -113,16 +116,17 @@ int Gtk3Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk3Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk3Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
+                                              GWEN_DIALOG_PROPERTY prop,
+                                              int index,
+                                              const char *defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Value:
     return gtk_entry_get_text(GTK_ENTRY(g));
   default:
@@ -138,9 +142,10 @@ const char* Gtk3Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
 
 
 static void Gtk3Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
-    guint arg1,
-    guint arg2,
-    gpointer data) {
+                                                   guint arg1,
+                                                   guint arg2,
+                                                   gpointer data)
+{
   GWEN_WIDGET *w;
   int rv;
 
@@ -158,10 +163,11 @@ static void Gtk3Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
 
 
 static void Gtk3Gui_WLineEdit_Inserted_text_handler(GtkEntryBuffer *entrybuffer,
-    guint arg1,
-    gchar *arg2,
-    guint arg3,
-    gpointer data) {
+                                                    guint arg1,
+                                                    gchar *arg2,
+                                                    guint arg3,
+                                                    gpointer data)
+{
   GWEN_WIDGET *w;
   int rv;
 
@@ -178,7 +184,8 @@ static void Gtk3Gui_WLineEdit_Inserted_text_handler(GtkEntryBuffer *entrybuffer,
 
 
 
-int Gtk3Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WLineEdit_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   const char *s;
   uint32_t flags;
@@ -196,8 +203,8 @@ int Gtk3Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
     gtk_entry_set_text(GTK_ENTRY(g), s);
   gtk_entry_set_visibility(GTK_ENTRY(g), text_is_visible);
 
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WLineEdit_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WLineEdit_GetIntProperty);
@@ -206,12 +213,12 @@ int Gtk3Gui_WLineEdit_Setup(GWEN_WIDGET *w) {
 
   g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
                    "deleted-text",
-                   G_CALLBACK (Gtk3Gui_WLineEdit_Deleted_text_handler),
+                   G_CALLBACK(Gtk3Gui_WLineEdit_Deleted_text_handler),
                    w);
 
   g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
                    "inserted-text",
-                   G_CALLBACK (Gtk3Gui_WLineEdit_Inserted_text_handler),
+                   G_CALLBACK(Gtk3Gui_WLineEdit_Inserted_text_handler),
                    w);
 
   if (wParent)

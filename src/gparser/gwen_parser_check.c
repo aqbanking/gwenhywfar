@@ -26,7 +26,9 @@
 
 
 
-int GWEN_Parser__CheckElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData, int depth) {
+int GWEN_Parser__CheckElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData,
+                                         int depth)
+{
   int rv;
   const GWEN_PARSER_ELEMENT *dReal=eDefinitions;
   const GWEN_PARSER_ELEMENT *eDefChild=NULL;
@@ -66,7 +68,8 @@ int GWEN_Parser__CheckElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinitions
 
 
 
-int GWEN_Parser__CheckSequence(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData, int depth) {
+int GWEN_Parser__CheckSequence(const GWEN_PARSER_ELEMENT *eDefinitions, const GWEN_PARSER_ELEMENT *eData, int depth)
+{
   const GWEN_PARSER_ELEMENT *d;
   const GWEN_PARSER_ELEMENT *e;
   int count=0;
@@ -76,7 +79,7 @@ int GWEN_Parser__CheckSequence(const GWEN_PARSER_ELEMENT *eDefinitions, const GW
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Entering sequence [%d]", depth);
 
-  while(d) {
+  while (d) {
     int rv;
 
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Checking definition \"%s\" (%s) against \"%s\" (%s) [%d]",
@@ -141,7 +144,8 @@ int GWEN_Parser__CheckSequence(const GWEN_PARSER_ELEMENT *eDefinitions, const GW
 
 
 
-int GWEN_Parser_CheckTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, const GWEN_PARSER_ELEMENT_TREE *tData) {
+int GWEN_Parser_CheckTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, const GWEN_PARSER_ELEMENT_TREE *tData)
+{
   const GWEN_PARSER_ELEMENT *d;
   const GWEN_PARSER_ELEMENT *e;
   int rv;

@@ -32,7 +32,8 @@
 
 
 
-int GWEN_Param_GetCurrentValueAsInt(const GWEN_PARAM *param) {
+int GWEN_Param_GetCurrentValueAsInt(const GWEN_PARAM *param)
+{
   const char *s;
 
   assert(param);
@@ -63,7 +64,8 @@ int GWEN_Param_GetCurrentValueAsInt(const GWEN_PARAM *param) {
 
 
 
-void GWEN_Param_SetCurrentValueAsInt(GWEN_PARAM *param, int v) {
+void GWEN_Param_SetCurrentValueAsInt(GWEN_PARAM *param, int v)
+{
   char numbuf[64];
 
   snprintf(numbuf, sizeof(numbuf)-1, "%i", v);
@@ -74,7 +76,8 @@ void GWEN_Param_SetCurrentValueAsInt(GWEN_PARAM *param, int v) {
 
 
 
-double GWEN_Param_GetCurrentValueAsDouble(const GWEN_PARAM *param) {
+double GWEN_Param_GetCurrentValueAsDouble(const GWEN_PARAM *param)
+{
   const char *s;
 
   assert(param);
@@ -105,7 +108,8 @@ double GWEN_Param_GetCurrentValueAsDouble(const GWEN_PARAM *param) {
 
 
 
-void GWEN_Param_SetCurrentValueAsDouble(GWEN_PARAM *param, double v) {
+void GWEN_Param_SetCurrentValueAsDouble(GWEN_PARAM *param, double v)
+{
   GWEN_BUFFER *tbuf;
 
   tbuf=GWEN_Buffer_new(0, 64, 0, 1);
@@ -119,7 +123,8 @@ void GWEN_Param_SetCurrentValueAsDouble(GWEN_PARAM *param, double v) {
 
 
 
-int GWEN_Param_List_GetCurrentValueAsInt(const GWEN_PARAM_LIST *pl, const char *name, int defVal) {
+int GWEN_Param_List_GetCurrentValueAsInt(const GWEN_PARAM_LIST *pl, const char *name, int defVal)
+{
   GWEN_PARAM *p;
 
   p=GWEN_Param_List_GetByName(pl, name);
@@ -130,7 +135,8 @@ int GWEN_Param_List_GetCurrentValueAsInt(const GWEN_PARAM_LIST *pl, const char *
 
 
 
-void GWEN_Param_List_SetCurrentValueAsInt(GWEN_PARAM_LIST *pl, const char *name, int v) {
+void GWEN_Param_List_SetCurrentValueAsInt(GWEN_PARAM_LIST *pl, const char *name, int v)
+{
   GWEN_PARAM *p;
 
   p=GWEN_Param_List_GetByName(pl, name);
@@ -140,7 +146,8 @@ void GWEN_Param_List_SetCurrentValueAsInt(GWEN_PARAM_LIST *pl, const char *name,
 
 
 
-double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const char *name, double defVal) {
+double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const char *name, double defVal)
+{
   GWEN_PARAM *p;
 
   p=GWEN_Param_List_GetByName(pl, name);
@@ -151,7 +158,8 @@ double GWEN_Param_List_GetCurrentValueAsDouble(const GWEN_PARAM_LIST *pl, const 
 
 
 
-void GWEN_Param_List_SetCurrentValueAsDouble(GWEN_PARAM_LIST *pl, const char *name, double v) {
+void GWEN_Param_List_SetCurrentValueAsDouble(GWEN_PARAM_LIST *pl, const char *name, double v)
+{
   GWEN_PARAM *p;
 
   p=GWEN_Param_List_GetByName(pl, name);
@@ -161,11 +169,12 @@ void GWEN_Param_List_SetCurrentValueAsDouble(GWEN_PARAM_LIST *pl, const char *na
 
 
 
-void GWEN_Param_List_WriteXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+void GWEN_Param_List_WriteXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn)
+{
   const GWEN_PARAM *p;
 
   p=GWEN_Param_List_First(pl);
-  while(p) {
+  while (p) {
     GWEN_XMLNODE *n;
 
     n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "param");
@@ -179,11 +188,12 @@ void GWEN_Param_List_WriteXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
 
 
 
-void GWEN_Param_List_ReadXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+void GWEN_Param_List_ReadXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(xn, "param", NULL, NULL);
-  while(n) {
+  while (n) {
     GWEN_PARAM *p;
 
     p=GWEN_Param_fromXml(n);
@@ -197,11 +207,12 @@ void GWEN_Param_List_ReadXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
 
 
 
-void GWEN_Param_List_WriteValuesToXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+void GWEN_Param_List_WriteValuesToXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn)
+{
   const GWEN_PARAM *p;
 
   p=GWEN_Param_List_First(pl);
-  while(p) {
+  while (p) {
     const char *sName;
     const char *sValue;
 
@@ -223,11 +234,12 @@ void GWEN_Param_List_WriteValuesToXml(const GWEN_PARAM_LIST *pl, GWEN_XMLNODE *x
 
 
 
-void GWEN_Param_List_ReadValuesFromXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn) {
+void GWEN_Param_List_ReadValuesFromXml(GWEN_PARAM_LIST *pl, GWEN_XMLNODE *xn)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(xn, "param", NULL, NULL);
-  while(n) {
+  while (n) {
     const char *sName;
     const char *sValue;
 

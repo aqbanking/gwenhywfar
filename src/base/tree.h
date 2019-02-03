@@ -316,7 +316,7 @@ GWEN_TREE_ELEMENT *_tree_element;
   \
   decl int pr##_Tree_HasChildElement(const t *who, const t *element); \
   decl void pr##_Tree_ClearChildren(t *element); \
- 
+
 
 #define GWEN_TREE_FUNCTION_DEFS_CONST(t, pr) \
   GWEN_TREE_FUNCTION_LIB_DEFS_CONST(t, pr, GWEN_DUMMY_EMPTY_ARG)
@@ -535,7 +535,7 @@ GWEN_TREE_ELEMENT *_tree_element;
     return (t*)GWEN_TreeElement_GetParent(element->_tree_element);\
   } \
   \
- 
+
 
 /**
  * Use this in your code file (*.c) inside the init code for the struct

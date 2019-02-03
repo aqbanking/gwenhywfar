@@ -71,7 +71,8 @@ GWEN_INHERIT(GWEN_GUI, GWEN_GUI_CGUI)
 
 
 
-GWEN_GUI *GWEN_Gui_CGui_new(void) {
+GWEN_GUI *GWEN_Gui_CGui_new(void)
+{
   GWEN_GUI *gui;
   GWEN_GUI_CGUI *cgui;
 
@@ -96,17 +97,19 @@ GWEN_GUI *GWEN_Gui_CGui_new(void) {
 
 
 
-void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_Gui_CGui_FreeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_GUI_CGUI *cgui;
 
-  cgui=(GWEN_GUI_CGUI*)p;
+  cgui=(GWEN_GUI_CGUI *)p;
   GWEN_Gui_CProgress_List_free(cgui->progressList);
   GWEN_FREE_OBJECT(cgui);
 }
 
 
 
-char GWEN_Gui_CGui__readCharFromStdin(int waitFor) {
+char GWEN_Gui_CGui__readCharFromStdin(int waitFor)
+{
   int chr;
 #ifdef HAVE_TERMIOS_H
   struct termios OldAttr, NewAttr;
@@ -124,11 +127,11 @@ char GWEN_Gui_CGui__readCharFromStdin(int waitFor) {
   sigprocmask(SIG_BLOCK, &snew, &sold);
 #endif
 #ifdef HAVE_TERMIOS_H
-  if (0 == tcgetattr (fileno (stdin), &OldAttr)) {
+  if (0 == tcgetattr(fileno(stdin), &OldAttr)) {
     NewAttr = OldAttr;
     NewAttr.c_lflag &= ~ICANON;
     NewAttr.c_lflag &= ~ECHO;
-    tcsetattr (fileno (stdin), TCSAFLUSH, &NewAttr);
+    tcsetattr(fileno(stdin), TCSAFLUSH, &NewAttr);
     AttrChanged = !0;
   }
 #endif
@@ -149,7 +152,7 @@ char GWEN_Gui_CGui__readCharFromStdin(int waitFor) {
 #ifdef HAVE_TERMIOS_H
   /* re-enable canonical mode (if previously disabled) */
   if (AttrChanged)
-    tcsetattr (fileno (stdin), TCSADRAIN, &OldAttr);
+    tcsetattr(fileno(stdin), TCSADRAIN, &OldAttr);
 #endif
 
 #if HAVE_DECL_SIGPROCMASK
@@ -166,7 +169,8 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
                          char *buffer,
                          int minLen,
                          int maxLen,
-                         uint32_t guiid) {
+                         uint32_t guiid)
+{
 #ifdef HAVE_TERMIOS_H
   struct termios OldInAttr, NewInAttr;
   struct termios OldOutAttr, NewOutAttr;
@@ -214,17 +218,17 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #endif
 
 #ifdef HAVE_TERMIOS_H
-  if (0 == tcgetattr (fileno (stdin), &OldInAttr)) {
+  if (0 == tcgetattr(fileno(stdin), &OldInAttr)) {
     NewInAttr = OldInAttr;
     NewInAttr.c_lflag &= ~ECHO;
     NewInAttr.c_lflag &= ~ICANON;
-    tcsetattr (fileno (stdin), TCSAFLUSH, &NewInAttr);
+    tcsetattr(fileno(stdin), TCSAFLUSH, &NewInAttr);
     AttrInChanged = !0;
   }
-  if (0 == tcgetattr (fileno (stderr), &OldOutAttr)) {
+  if (0 == tcgetattr(fileno(stderr), &OldOutAttr)) {
     NewOutAttr = OldOutAttr;
     NewOutAttr.c_lflag &= ~ICANON;
-    tcsetattr (fileno (stderr), TCSAFLUSH, &NewOutAttr);
+    tcsetattr(fileno(stderr), TCSAFLUSH, &NewOutAttr);
     AttrOutChanged = !0;
   }
 #endif
@@ -354,9 +358,9 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #ifdef HAVE_TERMIOS_H
   /* re-enable echo (if previously disabled) */
   if (AttrOutChanged)
-    tcsetattr (fileno (stderr), TCSADRAIN, &OldOutAttr);
+    tcsetattr(fileno(stderr), TCSADRAIN, &OldOutAttr);
   if (AttrInChanged)
-    tcsetattr (fileno (stdin), TCSADRAIN, &OldInAttr);
+    tcsetattr(fileno(stdin), TCSADRAIN, &OldInAttr);
 #endif
 
 #if HAVE_DECL_SIGPROCMASK
@@ -377,7 +381,8 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
                              const char *b1,
                              const char *b2,
                              const char *b3,
-                             GWEN_UNUSED uint32_t guiid) {
+                             GWEN_UNUSED uint32_t guiid)
+{
   GWEN_BUFFER *tbuf;
   int c;
 
@@ -420,7 +425,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
     GWEN_Gui_StdPrintf(gui, stderr, "\n");
   }
   GWEN_Gui_StdPrintf(gui, stderr, "Please enter your choice: ");
-  for(;;) {
+  for (;;) {
     c=GWEN_Gui_CGui__readCharFromStdin(0);
     if (c==EOF) {
       GWEN_Gui_StdPrintf(gui, stderr, "Aborted.\n");
@@ -456,7 +461,8 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
                            char *buffer,
                            int minLen,
                            int maxLen,
-                           uint32_t guiid) {
+                           uint32_t guiid)
+{
   int rv;
   GWEN_BUFFER *tbuf;
 
@@ -472,7 +478,7 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
   if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) {
     char *lbuffer=0;
 
-    lbuffer=(char*)malloc(maxLen);
+    lbuffer=(char *)malloc(maxLen);
     if (!lbuffer) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Not enough memory for %d bytes", maxLen);
       return GWEN_ERROR_INVALID;
@@ -523,7 +529,8 @@ uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
                                GWEN_UNUSED uint32_t flags,
                                const char *title,
                                const char *text,
-                               GWEN_UNUSED uint32_t guiid) {
+                               GWEN_UNUSED uint32_t guiid)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_BUFFER *tbuf;
 
@@ -544,7 +551,8 @@ uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
 
 
 
-void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, GWEN_UNUSED uint32_t id) {
+void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, GWEN_UNUSED uint32_t id)
+{
   GWEN_GUI_CGUI *cgui;
 
   assert(gui);
@@ -561,7 +569,8 @@ uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
                                      const char *title,
                                      const char *text,
                                      uint64_t total,
-                                     GWEN_UNUSED uint32_t guiid) {
+                                     GWEN_UNUSED uint32_t guiid)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -581,7 +590,8 @@ uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
 
 
 
-GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id) {
+GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -592,7 +602,7 @@ GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id) {
   cp=GWEN_Gui_CProgress_List_First(cgui->progressList);
   if (id==0)
     return cp;
-  while(cp) {
+  while (cp) {
     if (GWEN_Gui_CProgress_GetId(cp)==id)
       break;
     cp=GWEN_Gui_CProgress_List_Next(cp);
@@ -605,7 +615,8 @@ GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id) {
 
 int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
                                   uint32_t id,
-                                  uint64_t progress) {
+                                  uint64_t progress)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -625,7 +636,8 @@ int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total) {
+int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -647,7 +659,8 @@ int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total) {
 int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
                               uint32_t id,
                               GWEN_LOGGER_LEVEL level,
-                              const char *text) {
+                              const char *text)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 
@@ -667,7 +680,8 @@ int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui,uint32_t id) {
+int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui, uint32_t id)
+{
   GWEN_GUI_CGUI *cgui;
   GWEN_GUI_CPROGRESS *cp;
 

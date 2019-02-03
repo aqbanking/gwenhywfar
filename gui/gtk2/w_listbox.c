@@ -17,13 +17,14 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
-                                    int doSignal) {
+                                    int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -46,7 +47,7 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
 
     sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(g));
     if (sel) {
-      switch(value) {
+      switch (value) {
       case GWEN_Dialog_SelectionMode_None:
         gtk_tree_selection_set_mode(sel, GTK_SELECTION_NONE);
         return 0;
@@ -95,7 +96,7 @@ int Gtk2Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
       /* set sort indicator on given column */
       col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
       if (col) {
-        switch(value) {
+        switch (value) {
         case GWEN_DialogSortDirection_Up:
           gtk_tree_view_column_set_sort_order(col, GTK_SORT_ASCENDING);
           break;
@@ -141,13 +142,14 @@ static GWENHYWFAR_CB
 int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
-                                    int defaultValue) {
+                                    int defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -194,7 +196,7 @@ int Gtk2Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
     col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), index);
     if (col) {
       if (gtk_tree_view_column_get_sort_indicator(col)==TRUE) {
-        switch(gtk_tree_view_column_get_sort_order(col)) {
+        switch (gtk_tree_view_column_get_sort_order(col)) {
         case GTK_SORT_ASCENDING:
           return GWEN_DialogSortDirection_Up;
         case GTK_SORT_DESCENDING:
@@ -227,13 +229,14 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      const char *value,
-                                     int doSignal) {
+                                     int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Title: {
     int cols=0;
     if (value && *value) {
@@ -265,7 +268,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       s=value;
 
       /* clear current headers in tree view */
-      while( (col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), 0)) )
+      while ((col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), 0)))
         gtk_tree_view_remove_column(GTK_TREE_VIEW(g), col);
 
       /* set new model */
@@ -275,7 +278,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       i=0;
       vcopy=strdup(value);
       p=vcopy;
-      while(*p && i<cols) {
+      while (*p && i<cols) {
         char *pT;
         GtkCellRenderer *renderer;
 
@@ -339,7 +342,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       p=vcopy;
       i=0;
       gtk_list_store_append(sto, &iter);
-      while(*p && i<cols) {
+      while (*p && i<cols) {
         char *pT;
         GValue val= {0};
 
@@ -378,16 +381,17 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
+                                             GWEN_DIALOG_PROPERTY prop,
+                                             int index,
+                                             const char *defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_CONTENT));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Title: {
     GList *cols;
 
@@ -399,7 +403,7 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       le=g_list_first(cols);
-      while(le) {
+      while (le) {
         const gchar *s;
 
         if (cnt)
@@ -439,7 +443,7 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 
           tbuf=GWEN_Buffer_new(0, 256, 0, 1);
           le=g_list_first(cols);
-          while(le) {
+          while (le) {
             gchar *s;
 
             if (cnt)
@@ -477,7 +481,8 @@ const char* Gtk2Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk2Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data) {
+static void Gtk2Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data)
+{
   GWEN_WIDGET *w;
   int rv;
 
@@ -494,7 +499,8 @@ static void Gtk2Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data
 
 
 
-int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
+int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   GtkWidget *gScroll;
   uint32_t flags;
@@ -513,8 +519,8 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(g), TRUE);
   gtk_container_add(GTK_CONTAINER(gScroll), GTK_WIDGET(g));
 
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) gScroll);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void *) gScroll);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WListBox_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WListBox_GetIntProperty);
@@ -523,7 +529,7 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w) {
 
   changed_handler_id=g_signal_connect(g,
                                       "cursor-changed",
-                                      G_CALLBACK (Gtk2Gui_WListBox_CursorChanged_handler),
+                                      G_CALLBACK(Gtk2Gui_WListBox_CursorChanged_handler),
                                       w);
 
   if (wParent)

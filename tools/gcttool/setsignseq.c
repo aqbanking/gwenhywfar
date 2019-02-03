@@ -26,7 +26,8 @@
 
 
 
-int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
@@ -34,62 +35,62 @@ int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   unsigned int keyId;
   unsigned int seq;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "keyId",                      /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "k",                          /* short option */
-    "key",                        /* long option */
-    "Key id (0 for any)",         /* short description */
-    "Key id (0 for any)"          /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "seq",                         /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "s",                          /* short option */
-    "seq",                        /* long option */
-    "New sequence counter value",         /* short description */
-    "New sequence counter value"          /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                    /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "keyId",                      /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "k",                          /* short option */
+      "key",                        /* long option */
+      "Key id (0 for any)",         /* short description */
+      "Key id (0 for any)"          /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "seq",                         /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "s",                          /* short option */
+      "seq",                        /* long option */
+      "New sequence counter value",         /* short description */
+      "New sequence counter value"          /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                    /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -140,8 +141,8 @@ int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     const GWEN_CRYPT_TOKEN_KEYINFO *ki;
 
     ki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId,
-				   GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER,
-				   0);
+                                   GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER,
+                                   0);
     if (ki) {
       GWEN_CRYPT_TOKEN_KEYINFO *nki;
 
@@ -150,8 +151,8 @@ int setSignSeq(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
       rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, nki, 0);
       GWEN_Crypt_Token_KeyInfo_free(nki);
       if (rv) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unable to set sign counter (%d)", rv);
-	return 4;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unable to set sign counter (%d)", rv);
+        return 4;
       }
     }
   }

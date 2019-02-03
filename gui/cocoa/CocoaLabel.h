@@ -1,6 +1,6 @@
 //
 //  CocoaLabel.h
-//  
+//
 //
 //  Created by Samuel Strupp on 10.08.10.
 //
@@ -13,11 +13,12 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaGwenGUIProtocol.h"
 
-@interface CocoaLabel : NSTextField <CocoaGwenGUIProtocol> {
-	BOOL fillX;
-	BOOL fillY;
-	
-	CGFloat minWidth;
+@interface CocoaLabel : NSTextField <CocoaGwenGUIProtocol>
+{
+  BOOL fillX;
+  BOOL fillY;
+
+  CGFloat minWidth;
 }
 
 @property BOOL fillX;

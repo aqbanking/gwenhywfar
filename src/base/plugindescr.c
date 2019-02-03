@@ -54,7 +54,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
 
 
 
-GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node) {
+GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node)
+{
   GWEN_PLUGIN_DESCRIPTION *pd;
   const char *p;
 
@@ -103,7 +104,8 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node) {
 
 
 
-void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd) {
+void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd)
+{
   if (pd) {
     assert(pd->refCount);
     if (pd->refCount==1) {
@@ -129,7 +131,8 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd) {
 
 
 
-void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd) {
+void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   assert(pd->refCount);
   pd->refCount++;
@@ -137,8 +140,8 @@ void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd) {
 
 
 
-GWEN_PLUGIN_DESCRIPTION*
-GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
+GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   GWEN_PLUGIN_DESCRIPTION *np;
   const char *s;
 
@@ -149,24 +152,33 @@ GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
   GWEN_LIST_INIT(GWEN_PLUGIN_DESCRIPTION, np);
 
   s=pd->fileName;
-  if (s) np->fileName=strdup(s);
+  if (s)
+    np->fileName=strdup(s);
 
   s=pd->path;
-  if (s) np->path=strdup(s);
+  if (s)
+    np->path=strdup(s);
   s=pd->name;
-  if (s) np->name=strdup(s);
+  if (s)
+    np->name=strdup(s);
   s=pd->type;
-  if (s) np->type=strdup(s);
+  if (s)
+    np->type=strdup(s);
   s=pd->langDomain;
-  if (s) np->langDomain=strdup(s);
+  if (s)
+    np->langDomain=strdup(s);
   s=pd->shortDescr;
-  if (s) np->shortDescr=strdup(s);
+  if (s)
+    np->shortDescr=strdup(s);
   s=pd->author;
-  if (s) np->author=strdup(s);
+  if (s)
+    np->author=strdup(s);
   s=pd->version;
-  if (s) np->version=strdup(s);
+  if (s)
+    np->version=strdup(s);
   s=pd->longDescr;
-  if (s) np->longDescr=strdup(s);
+  if (s)
+    np->longDescr=strdup(s);
   np->isActive=pd->isActive;
   if (pd->xmlNode)
     np->xmlNode=GWEN_XMLNode_dup(pd->xmlNode);
@@ -176,16 +188,17 @@ GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd) {
 
 
 
-GWEN_PLUGIN_DESCRIPTION*
-GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd,
-                                        __attribute__((unused)) void *user_data) {
+GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd,
+                                                                 __attribute__((unused)) void *user_data)
+{
   GWEN_PluginDescription_free(pd);
   return 0;
 }
 
 
 
-void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl) {
+void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl)
+{
   GWEN_PluginDescription_List2_ForEach
   (pdl,
    GWEN_PluginDescription_List2_freeAll_cb,
@@ -195,7 +208,8 @@ void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl) {
 
 
 
-const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->path;
 }
@@ -203,65 +217,70 @@ const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd) {
 
 
 void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd,
-                                    const char *s) {
+                                    const char *s)
+{
   assert(pd);
   free(pd->path);
-  if (s) pd->path=strdup(s);
-  else pd->path=0;
+  if (s)
+    pd->path=strdup(s);
+  else
+    pd->path=0;
 }
 
 
 
-const char *GWEN_PluginDescription_GetName(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetName(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->name;
 }
 
 
 
-const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->type;
 }
 
 
 
-const char*
-GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return GWEN_I18N_Translate(pd->langDomain, pd->shortDescr);
 }
 
 
 
-const char*
-GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->author;
 }
 
 
 
-const char*
-GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->version;
 }
 
 
 
-const char*
-GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return GWEN_I18N_Translate(pd->langDomain, pd->longDescr);
 }
 
 
 
-int
-GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-    const char *s,
-    GWEN_BUFFER *buf) {
+int GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                                 const char *s,
+                                                 GWEN_BUFFER *buf)
+{
   GWEN_XMLNODE *n;
 
   assert(pd);
@@ -290,11 +309,11 @@ GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
 
 
 
-int
-GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-    const char *s,
-    const char *lang,
-    GWEN_BUFFER *buf) {
+int GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                                          const char *s,
+                                                          const char *lang,
+                                                          GWEN_BUFFER *buf)
+{
   GWEN_XMLNODE *n;
 
   assert(pd);
@@ -327,10 +346,10 @@ GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPT
 
 
 #ifndef NO_DEPRECATED_SYMBOLS
-int
-GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-    const char *s,
-    GWEN_BUFFER *buf) {
+int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
+                                                const char *s,
+                                                GWEN_BUFFER *buf)
+{
   GWEN_STRINGLIST *langl;
   int rv;
 
@@ -339,7 +358,7 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(langl);
-    while(se) {
+    while (se) {
       const char *l;
 
       l=GWEN_StringListEntry_Data(se);
@@ -347,9 +366,9 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
       assert(l);
 
       rv=GWEN_PluginDescription__GetLocalizedLongDescrByFormat(pd,
-          s,
-          l,
-          buf);
+                                                               s,
+                                                               l,
+                                                               buf);
       if (rv==0)
         return rv;
 
@@ -366,11 +385,11 @@ GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
 
   return 0;
 }
-#endif	// ifndef NO_DEPRECATED_SYMBOLS
+#endif  // ifndef NO_DEPRECATED_SYMBOLS
 
 
-const char*
-GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd) {
+const char *GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->fileName;
 }
@@ -378,24 +397,28 @@ GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd) {
 
 
 void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
-                                        const char *s) {
+                                        const char *s)
+{
   assert(pd);
   free(pd->fileName);
-  if (s) pd->fileName=strdup(s);
-  else pd->fileName=0;
+  if (s)
+    pd->fileName=strdup(s);
+  else
+    pd->fileName=0;
 }
 
 
 
-GWEN_XMLNODE*
-GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd) {
+GWEN_XMLNODE *GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->xmlNode;
 }
 
 
 
-GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
+GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path)
+{
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pl;
 
   pl=GWEN_PluginDescription_List2_new();
@@ -410,14 +433,16 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path) {
 
 
 
-int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd) {
+int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd)
+{
   assert(pd);
   return pd->isActive;
 }
 
 
 
-void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i) {
+void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i)
+{
   assert(pd);
   pd->isActive=i;
 }
@@ -426,7 +451,8 @@ void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i) {
 
 int GWEN_LoadPluginDescrsByType(const char *path,
                                 const char *type,
-                                GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl) {
+                                GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl)
+{
   GWEN_DIRECTORY *d;
   GWEN_BUFFER *nbuf;
   char nbuffer[64];
@@ -450,9 +476,9 @@ int GWEN_LoadPluginDescrsByType(const char *path,
     return -1;
   }
 
-  while(!GWEN_Directory_Read(d,
-                             nbuffer,
-                             sizeof(nbuffer))) {
+  while (!GWEN_Directory_Read(d,
+                              nbuffer,
+                              sizeof(nbuffer))) {
     if (strcmp(nbuffer, ".") &&
         strcmp(nbuffer, "..")) {
       int nlen;
@@ -499,7 +525,7 @@ int GWEN_LoadPluginDescrsByType(const char *path,
                   GWEN_STRINGLISTENTRY *se;
 
                   se=GWEN_StringList_FirstEntry(langl);
-                  while(se) {
+                  while (se) {
                     const char *l;
 
                     l=GWEN_StringListEntry_Data(se);

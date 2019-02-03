@@ -48,12 +48,13 @@ static uint8_t nullarray[]= {0, 0, 0, 0, 0, 0, 0, 0};
  * This code has been taken from OpenHBCI (rsakey.cpp, written by Fabian
  * Kaiser)
  */
-unsigned char GWEN_Padd_permutate(unsigned char input) {
+unsigned char GWEN_Padd_permutate(unsigned char input)
+{
   unsigned char leftNibble;
   unsigned char rightNibble;
   static const unsigned char lookUp[2][16] = {
-    {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},
-    {14,3,5,8,9,4,2,15,0,13,11,6,7,10,12,1}
+    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
+    {14, 3, 5, 8, 9, 4, 2, 15, 0, 13, 11, 6, 7, 10, 12, 1}
   };
 
   rightNibble = input & 15;
@@ -72,7 +73,8 @@ unsigned char GWEN_Padd_permutate(unsigned char input) {
  * The original code (in C++) has been written by Fabian Kaiser for OpenHBCI
  * (file rsakey.cpp). Translated to C by Martin Preuss
  */
-int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
+int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src)
+{
   unsigned char *p;
   unsigned int l;
   unsigned int i;
@@ -80,17 +82,17 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
   unsigned char hash[20];
   unsigned char c;
 
-  p=(unsigned char*)GWEN_Buffer_GetStart(src);
+  p=(unsigned char *)GWEN_Buffer_GetStart(src);
   l=GWEN_Buffer_GetUsedBytes(src);
   memmove(hash, p, l);
 
   /* src+src+src */
-  if (GWEN_Buffer_AppendBytes(src, (const char*)hash, l)) {
+  if (GWEN_Buffer_AppendBytes(src, (const char *)hash, l)) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
 
-  if (GWEN_Buffer_AppendBytes(src, (const char*)hash, l)) {
+  if (GWEN_Buffer_AppendBytes(src, (const char *)hash, l)) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
@@ -104,7 +106,7 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
   memset(buffer, 0, sizeof(buffer));
 
   /* append redundancy */
-  p=(unsigned char*)GWEN_Buffer_GetStart(src);
+  p=(unsigned char *)GWEN_Buffer_GetStart(src);
   for (i=0; i<=47; i++) {
     int j1, j2, j3;
 
@@ -134,7 +136,7 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
   p[sizeof(buffer) - 40] = p[sizeof(buffer) - 40] ^ 1;
 
   GWEN_Buffer_Reset(src);
-  if (GWEN_Buffer_AppendBytes(src, (const char*)buffer, sizeof(buffer))) {
+  if (GWEN_Buffer_AppendBytes(src, (const char *)buffer, sizeof(buffer))) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     return -1;
   }
@@ -143,7 +145,8 @@ int GWEN_Padd_PaddWithISO9796(GWEN_BUFFER *src) {
 }
 
 
-int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize) {
+int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize)
+{
   unsigned int diff;
   char *p;
   int i;
@@ -178,7 +181,7 @@ int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize) {
   *(p++)=0x01;
 
   /* insert 8 random bytes */
-  GWEN_Crypt_Random(2, (uint8_t*)p, 8);
+  GWEN_Crypt_Random(2, (uint8_t *)p, 8);
   for (i=0; i<8; i++) {
     if (*p==0)
       /* TODO: Need to find a better but yet fast way */
@@ -190,7 +193,8 @@ int GWEN_Padd_PaddWithIso9796_2(GWEN_BUFFER *buf, int dstSize) {
 }
 
 
-int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf) {
+int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf)
+{
   uint32_t l;
   uint32_t realSize;
   const uint8_t *p;
@@ -201,14 +205,14 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf) {
     return GWEN_ERROR_INVALID;
   }
 
-  p=(const uint8_t*)GWEN_Buffer_GetStart(buf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(buf);
   if (*p!=0x60) {
     DBG_ERROR(GWEN_LOGDOMAIN, "First byte is not a 0x60");
     return GWEN_ERROR_BAD_DATA;
   }
   p++;
   l=0;
-  while(*p==0x00) {
+  while (*p==0x00) {
     l++;
     p++;
   }
@@ -225,7 +229,8 @@ int GWEN_Padd_UnpaddWithIso9796_2(GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(GWEN_BUFFER *src, int y) {
+int GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(GWEN_BUFFER *src, int y)
+{
   unsigned char paddLength;
   unsigned int i;
 
@@ -237,7 +242,8 @@ int GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(GWEN_BUFFER *src, int y) {
 
 
 
-int GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(GWEN_BUFFER *src, int y) {
+int GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(GWEN_BUFFER *src, int y)
+{
   const char *p;
   unsigned int lastpos;
   unsigned char paddLength;
@@ -262,19 +268,22 @@ int GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(GWEN_BUFFER *src, int y) {
 
 
 
-int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src) {
+int GWEN_Padd_PaddWithAnsiX9_23(GWEN_BUFFER *src)
+{
   return GWEN_Padd_PaddWithAnsiX9_23ToMultipleOf(src, 8);
 }
 
 
 
-int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src) {
+int GWEN_Padd_UnpaddWithAnsiX9_23(GWEN_BUFFER *src)
+{
   return GWEN_Padd_UnpaddWithAnsiX9_23FromMultipleOf(src, 8);
 }
 
 
 
-int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize) {
+int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize)
+{
   unsigned int diff;
   char *p;
 
@@ -312,7 +321,8 @@ int GWEN_Padd_PaddWithPkcs1Bt1(GWEN_BUFFER *buf, int dstSize) {
 
 
 
-int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize) {
+int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize)
+{
   unsigned int diff;
   char *p;
   int i;
@@ -340,7 +350,7 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize) {
   p=GWEN_Buffer_GetStart(buf);
   *(p++)=0x00;
   *(p++)=0x02; /* block type 02 */
-  GWEN_Crypt_Random(2, (uint8_t*)p, diff-3);
+  GWEN_Crypt_Random(2, (uint8_t *)p, diff-3);
   for (i=0; i<diff-3; i++) {
     if (*p==0)
       /* TODO: Need to find a better but yet fast way */
@@ -354,7 +364,8 @@ int GWEN_Padd_PaddWithPkcs1Bt2(GWEN_BUFFER *buf, int dstSize) {
 
 
 
-int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf) {
+int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf)
+{
   char *p;
   uint32_t len;
   uint32_t paddBytes;
@@ -364,7 +375,7 @@ int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf) {
   assert(len);
 
   p=GWEN_Buffer_GetStart(buf);
-  if  (*p==0) {
+  if (*p==0) {
     p++;
     len--;
   }
@@ -382,7 +393,7 @@ int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf) {
 
   /* skip padding bytes */
   paddBytes=0;
-  while(*p!=0x00 && len) {
+  while (*p!=0x00 && len) {
     p++;
     len--;
     paddBytes++;
@@ -408,13 +419,15 @@ int GWEN_Padd__UnpaddWithPkcs1Bt1Or2(GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Padd_UnpaddWithPkcs1Bt1(GWEN_BUFFER *src) {
+int GWEN_Padd_UnpaddWithPkcs1Bt1(GWEN_BUFFER *src)
+{
   return GWEN_Padd__UnpaddWithPkcs1Bt1Or2(src);
 }
 
 
 
-int GWEN_Padd_UnpaddWithPkcs1Bt2(GWEN_BUFFER *src) {
+int GWEN_Padd_UnpaddWithPkcs1Bt2(GWEN_BUFFER *src)
+{
   return GWEN_Padd__UnpaddWithPkcs1Bt1Or2(src);
 }
 
@@ -424,7 +437,8 @@ int GWEN_Padd_MGF1(uint8_t *pDestBuffer,
                    uint32_t lDestBuffer,
                    const uint8_t *pSeed,
                    uint32_t lSeed,
-                   GWEN_MDIGEST *md) {
+                   GWEN_MDIGEST *md)
+{
   uint32_t bytesLeft=lDestBuffer;
   uint32_t i;
   uint8_t counter[4];
@@ -484,7 +498,8 @@ int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
                           const uint8_t *pHash,
                           uint32_t lHash,
                           uint32_t lSalt,
-                          GWEN_MDIGEST *md) {
+                          GWEN_MDIGEST *md)
+{
   uint32_t emLen;
   uint8_t *pSalt=NULL;
   uint8_t *pDB;
@@ -508,7 +523,7 @@ int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
   }
 
   /* generate salt */
-  pSalt=(uint8_t*) malloc(lSalt);
+  pSalt=(uint8_t *) malloc(lSalt);
   assert(pSalt);
   GWEN_Crypt_Random(2, pSalt, lSalt);
 
@@ -554,7 +569,7 @@ int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
 
   /* generate DB (PS | '01' | SALT) */
   x=emLen-GWEN_MDigest_GetDigestSize(md)-lSalt-2;
-  pDB=(uint8_t*)malloc(emLen);
+  pDB=(uint8_t *)malloc(emLen);
   assert(pDB);
   p=pDB;
   memset(p, 0, x);
@@ -565,7 +580,7 @@ int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
 
   /* create DBMask */
   x=emLen-GWEN_MDigest_GetDigestSize(md)-1;
-  pDbMask=(uint8_t*)malloc(x);
+  pDbMask=(uint8_t *)malloc(x);
   rv=GWEN_Padd_MGF1(pDbMask, x,
                     hashMBar, GWEN_MDigest_GetDigestSize(md),
                     md);
@@ -607,7 +622,8 @@ int GWEN_Padd_VerifyPkcs1Pss(const uint8_t *pSrcBuffer,
                              const uint8_t *pHash,
                              uint32_t lHash,
                              uint32_t lSalt,
-                             GWEN_MDIGEST *md) {
+                             GWEN_MDIGEST *md)
+{
   uint32_t emLen;
   const uint8_t *pSalt;
   uint8_t *pDB;
@@ -651,7 +667,7 @@ int GWEN_Padd_VerifyPkcs1Pss(const uint8_t *pSrcBuffer,
   /* get DB (PS | '01' | SALT) */
   x=emLen-GWEN_MDigest_GetDigestSize(md)-1;
 
-  pDB=(uint8_t*)malloc(x);
+  pDB=(uint8_t *)malloc(x);
   hashMBar=pSrcBuffer+x;
   rv=GWEN_Padd_MGF1(pDB, x,
                     hashMBar, GWEN_MDigest_GetDigestSize(md),
@@ -747,7 +763,8 @@ int GWEN_Padd_VerifyPkcs1Pss(const uint8_t *pSrcBuffer,
 
 
 
-int GWEN_Padd_ApplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
+int GWEN_Padd_ApplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf)
+{
   int rv;
   unsigned int diff;
   unsigned int bsize;
@@ -777,7 +794,7 @@ int GWEN_Padd_ApplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
   DBG_INFO(GWEN_LOGDOMAIN, "Padding with algo \"%s\"",
            GWEN_Crypt_PaddAlgoId_toString(aid));
 
-  switch(aid) {
+  switch (aid) {
   case GWEN_Crypt_PaddAlgoId_None:
     rv=0;
     break;
@@ -832,7 +849,8 @@ int GWEN_Padd_ApplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Padd_UnapplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
+int GWEN_Padd_UnapplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf)
+{
   int rv;
   GWEN_CRYPT_PADDALGOID aid;
 
@@ -843,7 +861,7 @@ int GWEN_Padd_UnapplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
   DBG_INFO(GWEN_LOGDOMAIN, "Unpadding with algo \"%s\"",
            GWEN_Crypt_PaddAlgoId_toString(aid));
 
-  switch(aid) {
+  switch (aid) {
   case GWEN_Crypt_PaddAlgoId_None:
     rv=0;
     break;
@@ -883,13 +901,15 @@ int GWEN_Padd_UnapplyPaddAlgo(const GWEN_CRYPT_PADDALGO *a, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Padd_PaddWithZka(GWEN_BUFFER *src) {
+int GWEN_Padd_PaddWithZka(GWEN_BUFFER *src)
+{
   return GWEN_Padd_PaddWithZkaToMultipleOf(src, 16);
 }
 
 
 
-int GWEN_Padd_PaddWithZkaToMultipleOf(GWEN_BUFFER *src, int y) {
+int GWEN_Padd_PaddWithZkaToMultipleOf(GWEN_BUFFER *src, int y)
+{
   unsigned char paddLength;
   unsigned int i;
 
@@ -904,7 +924,8 @@ int GWEN_Padd_PaddWithZkaToMultipleOf(GWEN_BUFFER *src, int y) {
 
 
 
-int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y) {
+int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y)
+{
   const uint8_t *p;
   unsigned int lastpos;
   unsigned char paddLength;
@@ -918,7 +939,7 @@ int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y) {
   lastpos--;
   p=GWEN_Buffer_GetStart(buf)+lastpos;
 
-  while(*p==0x00) {
+  while (*p==0x00) {
     paddLength++;
     p--;
   }
@@ -928,8 +949,8 @@ int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y) {
     paddLength++;
     p--;
   }
-  else if ( paddLength>0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid padding, first pad byte has wrong value %xd (%d bytes ?)", *p,paddLength);
+  else if (paddLength>0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid padding, first pad byte has wrong value %xd (%d bytes ?)", *p, paddLength);
     return -1;
   }
 
@@ -944,7 +965,8 @@ int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y) {
 
 
 
-int GWEN_Padd_UnpaddWithZka(GWEN_BUFFER *buf) {
+int GWEN_Padd_UnpaddWithZka(GWEN_BUFFER *buf)
+{
   return GWEN_Padd_UnpaddWithZkaFromMultipleOf(buf, 16);
 }
 

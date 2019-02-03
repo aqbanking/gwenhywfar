@@ -58,21 +58,24 @@ GWEN_LIST2_FUNCTIONS(GWEN_SOCKET, GWEN_Socket)
 
 
 
-int GWEN_Socket_ModuleInit(void) {
+int GWEN_Socket_ModuleInit(void)
+{
   return 0;
 }
 
 
 
-int GWEN_Socket_ModuleFini(void) {
+int GWEN_Socket_ModuleFini(void)
+{
   return 0;
 }
 
 
 
 
-int GWEN_Socket_NetError2GwenError(int rv) {
-  switch(rv) {
+int GWEN_Socket_NetError2GwenError(int rv)
+{
+  switch (rv) {
   case EINTR:
     return GWEN_ERROR_INTERRUPTED;
   case ENOTCONN:
@@ -99,7 +102,8 @@ int GWEN_Socket_NetError2GwenError(int rv) {
 
 
 
-int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp) {
+int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp)
+{
   assert(ssp);
   FD_ZERO(&(ssp->set));
   ssp->highest=0;
@@ -108,7 +112,8 @@ int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp) {
 
 
 
-GWEN_SOCKETSET *GWEN_SocketSet_new(void) {
+GWEN_SOCKETSET *GWEN_SocketSet_new(void)
+{
   GWEN_SOCKETSET *ssp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKETSET, ssp);
@@ -118,7 +123,8 @@ GWEN_SOCKETSET *GWEN_SocketSet_new(void) {
 
 
 
-void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp) {
+void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp)
+{
   if (ssp) {
     FD_ZERO(&(ssp->set));
     GWEN_FREE_OBJECT(ssp);
@@ -128,7 +134,8 @@ void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp) {
 
 
 int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
-                             const GWEN_SOCKET *sp) {
+                             const GWEN_SOCKET *sp)
+{
   assert(ssp);
   assert(sp);
   if (sp->socket==-1) {
@@ -136,7 +143,7 @@ int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
     return GWEN_ERROR_NOT_OPEN;
   }
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
-  FD_SET(sp->socket,&(ssp->set));
+  FD_SET(sp->socket, &(ssp->set));
   ssp->count++;
   return 0;
 }
@@ -144,11 +151,12 @@ int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
 
 
 int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
-                                const GWEN_SOCKET *sp) {
+                                const GWEN_SOCKET *sp)
+{
   assert(ssp);
   assert(sp);
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
-  FD_CLR(sp->socket,&(ssp->set));
+  FD_CLR(sp->socket, &(ssp->set));
   ssp->count--;
   return 0;
 }
@@ -156,15 +164,17 @@ int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
 
 
 int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
-                             const GWEN_SOCKET *sp) {
+                             const GWEN_SOCKET *sp)
+{
   assert(ssp);
   assert(sp);
-  return FD_ISSET(sp->socket,&(ssp->set));
+  return FD_ISSET(sp->socket, &(ssp->set));
 }
 
 
 
-int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp) {
+int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp)
+{
   assert(ssp);
   return ssp->count;
 }
@@ -172,7 +182,8 @@ int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp) {
 
 
 
-GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType) {
+GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType)
+{
   GWEN_SOCKET *sp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKET, sp);
@@ -183,7 +194,8 @@ GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType) {
 
 
 
-GWEN_SOCKET *GWEN_Socket_fromFile(int fd) {
+GWEN_SOCKET *GWEN_Socket_fromFile(int fd)
+{
   GWEN_SOCKET *sp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKET, sp);
@@ -195,7 +207,8 @@ GWEN_SOCKET *GWEN_Socket_fromFile(int fd) {
 
 
 
-void GWEN_Socket_free(GWEN_SOCKET *sp) {
+void GWEN_Socket_free(GWEN_SOCKET *sp)
+{
   if (sp) {
     GWEN_LIST_FINI(GWEN_SOCKET, sp);
     GWEN_FREE_OBJECT(sp);
@@ -204,16 +217,17 @@ void GWEN_Socket_free(GWEN_SOCKET *sp) {
 
 
 
-int GWEN_Socket_Open(GWEN_SOCKET *sp) {
+int GWEN_Socket_Open(GWEN_SOCKET *sp)
+{
   int s;
 
   assert(sp);
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
 #ifdef PF_INET
-    s=socket(PF_INET, SOCK_STREAM,0);
+    s=socket(PF_INET, SOCK_STREAM, 0);
 #else
-    s=socket(AF_INET, SOCK_STREAM,0);
+    s=socket(AF_INET, SOCK_STREAM, 0);
 #endif
     if (s==-1) {
       DBG_INFO(GWEN_LOGDOMAIN, "socket(): %s", strerror(errno));
@@ -224,9 +238,9 @@ int GWEN_Socket_Open(GWEN_SOCKET *sp) {
 
   case GWEN_SocketTypeUDP:
 #ifdef PF_INET
-    s=socket(PF_INET, SOCK_DGRAM,0);
+    s=socket(PF_INET, SOCK_DGRAM, 0);
 #else
-    s=socket(AF_INET, SOCK_DGRAM,0);
+    s=socket(AF_INET, SOCK_DGRAM, 0);
 #endif
     if (s==-1)
       if (s==-1) {
@@ -238,9 +252,9 @@ int GWEN_Socket_Open(GWEN_SOCKET *sp) {
 
   case GWEN_SocketTypeUnix:
 #ifdef PF_UNIX
-    s=socket(PF_UNIX, SOCK_STREAM,0);
+    s=socket(PF_UNIX, SOCK_STREAM, 0);
 #else
-    s=socket(AF_UNIX, SOCK_STREAM,0);
+    s=socket(AF_UNIX, SOCK_STREAM, 0);
 #endif
     if (s==-1) {
       DBG_INFO(GWEN_LOGDOMAIN, "socket(): %s", strerror(errno));
@@ -260,7 +274,8 @@ int GWEN_Socket_Open(GWEN_SOCKET *sp) {
 
 
 int GWEN_Socket_Connect(GWEN_SOCKET *sp,
-                        const GWEN_INETADDRESS *addr) {
+                        const GWEN_INETADDRESS *addr)
+{
   assert(sp);
   if (connect(sp->socket,
               addr->address,
@@ -279,7 +294,8 @@ int GWEN_Socket_Connect(GWEN_SOCKET *sp,
 
 
 
-int GWEN_Socket_Close(GWEN_SOCKET *sp) {
+int GWEN_Socket_Close(GWEN_SOCKET *sp)
+{
   int rv;
 
   assert(sp);
@@ -299,7 +315,8 @@ int GWEN_Socket_Close(GWEN_SOCKET *sp) {
 
 
 int GWEN_Socket_Bind(GWEN_SOCKET *sp,
-                     const GWEN_INETADDRESS *addr) {
+                     const GWEN_INETADDRESS *addr)
+{
   assert(sp);
   assert(addr);
   if (bind(sp->socket,
@@ -313,7 +330,8 @@ int GWEN_Socket_Bind(GWEN_SOCKET *sp,
 
 
 
-int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog) {
+int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog)
+{
   assert(sp);
   if (listen(sp->socket, backlog)) {
     DBG_INFO(GWEN_LOGDOMAIN, "listen(): %s", strerror(errno));
@@ -326,7 +344,8 @@ int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog) {
 
 int GWEN_Socket_Accept(GWEN_SOCKET *sp,
                        GWEN_INETADDRESS **newaddr,
-                       GWEN_SOCKET **newsock) {
+                       GWEN_SOCKET **newsock)
+{
   unsigned int addrlen;
   GWEN_INETADDRESS *localAddr;
   GWEN_SOCKET *localSocket;
@@ -336,7 +355,7 @@ int GWEN_Socket_Accept(GWEN_SOCKET *sp,
   assert(newsock);
   assert(newaddr);
 
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
   case GWEN_SocketTypeUDP:
     af=GWEN_AddressFamilyIP;
@@ -374,7 +393,8 @@ int GWEN_Socket_Accept(GWEN_SOCKET *sp,
 
 
 int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
-                            GWEN_INETADDRESS **newaddr) {
+                            GWEN_INETADDRESS **newaddr)
+{
   unsigned int addrlen;
   GWEN_INETADDRESS *localAddr;
   GWEN_AddressFamily af;
@@ -382,7 +402,7 @@ int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
   assert(sp);
   assert(newaddr);
 
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
   case GWEN_SocketTypeUDP:
     af=GWEN_AddressFamilyIP;
@@ -413,9 +433,10 @@ int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
 int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
                        GWEN_SOCKETSET *ws,
                        GWEN_SOCKETSET *xs,
-                       int timeout) {
-  int h,h1,h2,h3;
-  fd_set *s1,*s2,*s3;
+                       int timeout)
+{
+  int h, h1, h2, h3;
+  fd_set *s1, *s2, *s3;
   int rv;
   struct timeval tv;
 
@@ -438,7 +459,7 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
   h=(h>h3)?h:h3;
   if (timeout<0) {
     /* wait for ever */
-    rv=select(h+1,s1,s2,s3,0);
+    rv=select(h+1, s1, s2, s3, 0);
   }
   else {
     uint32_t tmicro;
@@ -458,7 +479,7 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
       if (s1) {
         DBG_INFO(GWEN_LOGDOMAIN, "Read sockets: (%d/%d)", h1, h);
         for (i=0; i<=h; i++) {
-          if (FD_ISSET(i,s1)) {
+          if (FD_ISSET(i, s1)) {
             DBG_INFO(GWEN_LOGDOMAIN, "Found socket %d", i);
           }
         }
@@ -467,7 +488,7 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
       if (s2) {
         DBG_INFO(GWEN_LOGDOMAIN, "Write sockets: (%d/%d)", h2, h);
         for (i=0; i<=h; i++) {
-          if (FD_ISSET(i,s2)) {
+          if (FD_ISSET(i, s2)) {
             DBG_INFO(GWEN_LOGDOMAIN, "Found socket %d", i);
           }
         }
@@ -479,7 +500,7 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
     }
 #endif
 
-    rv=select(h+1,s1,s2,s3,&tv);
+    rv=select(h+1, s1, s2, s3, &tv);
   }
 
   if (rv<0) {
@@ -499,13 +520,14 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
 
 
 
-int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize) {
+int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize)
+{
   int i;
 
   assert(sp);
   assert(buffer);
   assert(bsize);
-  i=recv(sp->socket,buffer, *bsize,0);
+  i=recv(sp->socket, buffer, *bsize, 0);
   if (i<0) {
     if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
@@ -522,7 +544,8 @@ int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize) {
 
 
 
-int GWEN_Socket_Write(GWEN_SOCKET *sp, const char *buffer, int *bsize) {
+int GWEN_Socket_Write(GWEN_SOCKET *sp, const char *buffer, int *bsize)
+{
   int i;
 
   assert(sp);
@@ -560,7 +583,8 @@ int GWEN_Socket_Write(GWEN_SOCKET *sp, const char *buffer, int *bsize) {
 int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
                          GWEN_INETADDRESS **newaddr,
                          char *buffer,
-                         int *bsize) {
+                         int *bsize)
+{
   unsigned int addrlen;
   int i;
   GWEN_INETADDRESS *localAddr;
@@ -571,7 +595,7 @@ int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
   assert(buffer);
   assert(bsize);
 
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
   case GWEN_SocketTypeUDP:
     af=GWEN_AddressFamilyIP;
@@ -614,7 +638,8 @@ int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
 int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
                         const GWEN_INETADDRESS *addr,
                         const char *buffer,
-                        int *bsize) {
+                        int *bsize)
+{
   int i;
 
   assert(sp);
@@ -647,13 +672,14 @@ int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
 
 
 
-int GWEN_Socket_SetBlocking(GWEN_SOCKET *sp, int fl) {
+int GWEN_Socket_SetBlocking(GWEN_SOCKET *sp, int fl)
+{
   int prevFlags;
   int newFlags;
 
   assert(sp);
   /* get current socket flags */
-  prevFlags=fcntl(sp->socket,F_GETFL);
+  prevFlags=fcntl(sp->socket, F_GETFL);
   if (prevFlags==-1) {
     DBG_INFO(GWEN_LOGDOMAIN, "fcntl(): %s", strerror(errno));
     return GWEN_ERROR_IO;
@@ -665,11 +691,11 @@ int GWEN_Socket_SetBlocking(GWEN_SOCKET *sp, int fl) {
   else
     newFlags=prevFlags|O_NONBLOCK;
 
-  if (-1==fcntl(sp->socket,F_SETFL,newFlags)) {
+  if (-1==fcntl(sp->socket, F_SETFL, newFlags)) {
     DBG_INFO(GWEN_LOGDOMAIN, "fcntl(): %s", strerror(errno));
     return GWEN_ERROR_IO;
   }
-  prevFlags=fcntl(sp->socket,F_GETFL);
+  prevFlags=fcntl(sp->socket, F_GETFL);
   if (prevFlags!=newFlags) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "fcntl() did not set flags correctly (%08x!=%08x)",
@@ -682,7 +708,8 @@ int GWEN_Socket_SetBlocking(GWEN_SOCKET *sp, int fl) {
 
 
 
-int GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp, int fl) {
+int GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp, int fl)
+{
   assert(sp);
   if (sp->type==GWEN_SocketTypeUnix)
     return 0;
@@ -699,7 +726,8 @@ int GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp, int fl) {
 
 
 
-int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl) {
+int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl)
+{
   assert(sp);
 
   /*if (sp->type==SocketTypeUnix)
@@ -718,13 +746,14 @@ int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl) {
 
 
 
-int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp) {
+int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp)
+{
   int rv;
   unsigned int rvs;
 
   assert(sp);
   rvs=sizeof(rv);
-  if (-1==getsockopt(sp->socket,SOL_SOCKET,SO_ERROR,&rv,&rvs)) {
+  if (-1==getsockopt(sp->socket, SOL_SOCKET, SO_ERROR, &rv, &rvs)) {
     DBG_INFO(GWEN_LOGDOMAIN, "getsockopt(): %s", strerror(errno));
     return GWEN_ERROR_IO;
   }
@@ -736,18 +765,19 @@ int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp) {
 
 
 
-int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout) {
+int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout)
+{
   int err;
   GWEN_SOCKETSET *set;
 
   set=GWEN_SocketSet_new();
 
-  err=GWEN_SocketSet_AddSocket(set,sp);
+  err=GWEN_SocketSet_AddSocket(set, sp);
   if (err) {
     GWEN_SocketSet_free(set);
     return err;
   }
-  err=GWEN_Socket_Select(set,0,0,timeout);
+  err=GWEN_Socket_Select(set, 0, 0, timeout);
   GWEN_SocketSet_free(set);
 
   return err;
@@ -755,17 +785,18 @@ int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout) {
 
 
 
-int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout) {
+int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout)
+{
   int err;
   GWEN_SOCKETSET *set;
 
   set=GWEN_SocketSet_new();
-  err=GWEN_SocketSet_AddSocket(set,sp);
+  err=GWEN_SocketSet_AddSocket(set, sp);
   if (err) {
     GWEN_SocketSet_free(set);
     return err;
   }
-  err=GWEN_Socket_Select(0,set,0,timeout);
+  err=GWEN_Socket_Select(0, set, 0, timeout);
   GWEN_SocketSet_free(set);
 
   return err;
@@ -773,14 +804,16 @@ int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout) {
 
 
 
-GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp) {
+GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp)
+{
   assert(sp);
   return sp->type;
 }
 
 
 
-int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp) {
+int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp)
+{
   assert(sp);
   return sp->socket;
 }

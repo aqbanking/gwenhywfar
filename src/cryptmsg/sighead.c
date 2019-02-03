@@ -26,7 +26,8 @@ GWEN_LIST_FUNCTIONS(GWEN_SIGHEAD, GWEN_SigHead)
 
 
 
-GWEN_SIGHEAD *GWEN_SigHead_new(void) {
+GWEN_SIGHEAD *GWEN_SigHead_new(void)
+{
   GWEN_SIGHEAD *sh;
 
   GWEN_NEW_OBJECT(GWEN_SIGHEAD, sh);
@@ -37,7 +38,8 @@ GWEN_SIGHEAD *GWEN_SigHead_new(void) {
 
 
 
-void GWEN_SigHead_free(GWEN_SIGHEAD *sh) {
+void GWEN_SigHead_free(GWEN_SIGHEAD *sh)
+{
   if (sh) {
     GWEN_LIST_FINI(GWEN_SIGHEAD, sh);
     free(sh->keyName);
@@ -49,7 +51,8 @@ void GWEN_SigHead_free(GWEN_SIGHEAD *sh) {
 
 
 
-GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l) {
+GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l)
+{
   if (p==NULL || l<1) {
     DBG_INFO(GWEN_LOGDOMAIN, "Bad tag");
     return NULL;
@@ -62,7 +65,7 @@ GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l) {
     sh=GWEN_SigHead_new();
     sp=p;
     sl=l;
-    while(sl) {
+    while (sl) {
       GWEN_TAG16 *subtag;
       uint32_t subtagLen;
       const char *subtagPtr;
@@ -75,12 +78,12 @@ GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l) {
         return NULL;
       }
       subtagLen=GWEN_Tag16_GetTagLength(subtag);
-      subtagPtr=(const char*)GWEN_Tag16_GetTagData(subtag);
+      subtagPtr=(const char *)GWEN_Tag16_GetTagData(subtag);
 
       if (subtagLen && subtagPtr) {
-        switch(GWEN_Tag16_GetTagType(subtag)) {
+        switch (GWEN_Tag16_GetTagType(subtag)) {
         case GWEN_SIGHEAD_TLV_KEYNAME:
-          sh->keyName=(char*)malloc(subtagLen+1);
+          sh->keyName=(char *)malloc(subtagLen+1);
           memmove(sh->keyName, subtagPtr, subtagLen);
           sh->keyName[subtagLen]=0;
           break;
@@ -100,7 +103,7 @@ GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l) {
             char dt[128];
 
             dt[0]=0;
-            strncpy(dt, (const char*) subtagPtr, sizeof(dt)-1);
+            strncpy(dt, (const char *) subtagPtr, sizeof(dt)-1);
             dt[sizeof(dt)-1]=0;
             sh->dateTime=GWEN_Time_fromUtcString(dt, "YYYYMMDD-hh:mm:ss");
             if (sh->dateTime==NULL) {
@@ -144,7 +147,8 @@ GWEN_SIGHEAD *GWEN_SigHead_fromBuffer(const uint8_t *p, uint32_t l) {
 
 
 
-int GWEN_SigHead_toBuffer(const GWEN_SIGHEAD *sh, GWEN_BUFFER *buf, uint8_t tagType) {
+int GWEN_SigHead_toBuffer(const GWEN_SIGHEAD *sh, GWEN_BUFFER *buf, uint8_t tagType)
+{
   char numbuf[32];
   uint32_t pos;
   uint8_t *p;
@@ -183,7 +187,7 @@ int GWEN_SigHead_toBuffer(const GWEN_SIGHEAD *sh, GWEN_BUFFER *buf, uint8_t tagT
 
   /* write size */
   l=GWEN_Buffer_GetPos(buf)-pos-2;
-  p=(uint8_t*)GWEN_Buffer_GetStart(buf)+pos;
+  p=(uint8_t *)GWEN_Buffer_GetStart(buf)+pos;
   *(p++)=l & 0xff;
   *p=(l>>8) & 0xff;
 
@@ -192,88 +196,104 @@ int GWEN_SigHead_toBuffer(const GWEN_SIGHEAD *sh, GWEN_BUFFER *buf, uint8_t tagT
 
 
 
-const char *GWEN_SigHead_GetKeyName(const GWEN_SIGHEAD *sh) {
+const char *GWEN_SigHead_GetKeyName(const GWEN_SIGHEAD *sh)
+{
   assert(sh);
   return sh->keyName;
 }
 
 
 
-void GWEN_SigHead_SetKeyName(GWEN_SIGHEAD *sh, const char *s) {
+void GWEN_SigHead_SetKeyName(GWEN_SIGHEAD *sh, const char *s)
+{
   assert(sh);
   free(sh->keyName);
-  if (s) sh->keyName=strdup(s);
-  else sh->keyName=NULL;
+  if (s)
+    sh->keyName=strdup(s);
+  else
+    sh->keyName=NULL;
 }
 
 
 
-int GWEN_SigHead_GetKeyNumber(const GWEN_SIGHEAD *sh) {
+int GWEN_SigHead_GetKeyNumber(const GWEN_SIGHEAD *sh)
+{
   assert(sh);
   return sh->keyNumber;
 }
 
 
 
-void GWEN_SigHead_SetKeyNumber(GWEN_SIGHEAD *sh, int i) {
+void GWEN_SigHead_SetKeyNumber(GWEN_SIGHEAD *sh, int i)
+{
   assert(sh);
   sh->keyNumber=i;
 }
 
 
 
-int GWEN_SigHead_GetKeyVersion(const GWEN_SIGHEAD *sh) {
+int GWEN_SigHead_GetKeyVersion(const GWEN_SIGHEAD *sh)
+{
   assert(sh);
   return sh->keyVersion;
 }
 
 
 
-void GWEN_SigHead_SetKeyVersion(GWEN_SIGHEAD *sh, int i) {
+void GWEN_SigHead_SetKeyVersion(GWEN_SIGHEAD *sh, int i)
+{
   assert(sh);
   sh->keyVersion=i;
 }
 
 
 
-const GWEN_TIME *GWEN_SigHead_GetDateTime(const GWEN_SIGHEAD *sh) {
+const GWEN_TIME *GWEN_SigHead_GetDateTime(const GWEN_SIGHEAD *sh)
+{
   assert(sh);
   return sh->dateTime;
 }
 
 
 
-void GWEN_SigHead_SetDateTime(GWEN_SIGHEAD *sh, const GWEN_TIME *ti) {
+void GWEN_SigHead_SetDateTime(GWEN_SIGHEAD *sh, const GWEN_TIME *ti)
+{
   assert(sh);
   GWEN_Time_free(sh->dateTime);
-  if (ti) sh->dateTime=GWEN_Time_dup(ti);
-  else sh->dateTime=NULL;
+  if (ti)
+    sh->dateTime=GWEN_Time_dup(ti);
+  else
+    sh->dateTime=NULL;
 }
 
 
 
-int GWEN_SigHead_GetSignatureProfile(const GWEN_SIGHEAD *sh) {
+int GWEN_SigHead_GetSignatureProfile(const GWEN_SIGHEAD *sh)
+{
   assert(sh);
   return sh->signatureProfile;
 }
 
 
 
-void GWEN_SigHead_SetSignatureProfile(GWEN_SIGHEAD *sh, int i) {
+void GWEN_SigHead_SetSignatureProfile(GWEN_SIGHEAD *sh, int i)
+{
   assert(sh);
   sh->signatureProfile=i;
 }
 
 
 
-int GWEN_SigHead_GetSignatureNumber(const GWEN_SIGHEAD *sh) {
+int GWEN_SigHead_GetSignatureNumber(const GWEN_SIGHEAD *sh)
+{
   assert(sh);
   return sh->signatureNumber;
 }
 
 
 
-void GWEN_SigHead_SetSignatureNumber(GWEN_SIGHEAD *sh, int i) {
+void GWEN_SigHead_SetSignatureNumber(GWEN_SIGHEAD *sh, int i)
+{
   assert(sh);
   sh->signatureNumber=i;
 }

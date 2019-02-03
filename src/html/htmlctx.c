@@ -31,7 +31,8 @@ GWEN_INHERIT(GWEN_XML_CONTEXT, HTML_XMLCTX)
 
 
 
-GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
+GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags)
+{
   GWEN_XML_CONTEXT *ctx;
   HTML_XMLCTX *xctx;
   HTML_GROUP *g;
@@ -75,11 +76,12 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags) {
 
 
 GWENHYWFAR_CB
-void HtmlCtx_FreeData(void *bp, void *p) {
+void HtmlCtx_FreeData(void *bp, void *p)
+{
   HTML_XMLCTX *xctx;
   HTML_GROUP *g;
 
-  xctx=(HTML_XMLCTX*)p;
+  xctx=(HTML_XMLCTX *)p;
 
   g=xctx->currentGroup;
   while (g) {
@@ -103,7 +105,8 @@ void HtmlCtx_FreeData(void *bp, void *p) {
 
 
 
-int HtmlCtx_GetResolutionX(const GWEN_XML_CONTEXT *ctx) {
+int HtmlCtx_GetResolutionX(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -115,7 +118,8 @@ int HtmlCtx_GetResolutionX(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_SetResolutionX(GWEN_XML_CONTEXT *ctx, int i) {
+void HtmlCtx_SetResolutionX(GWEN_XML_CONTEXT *ctx, int i)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -127,7 +131,8 @@ void HtmlCtx_SetResolutionX(GWEN_XML_CONTEXT *ctx, int i) {
 
 
 
-int HtmlCtx_GetResolutionY(const GWEN_XML_CONTEXT *ctx) {
+int HtmlCtx_GetResolutionY(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -139,7 +144,8 @@ int HtmlCtx_GetResolutionY(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_SetResolutionY(GWEN_XML_CONTEXT *ctx, int i) {
+void HtmlCtx_SetResolutionY(GWEN_XML_CONTEXT *ctx, int i)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -151,7 +157,8 @@ void HtmlCtx_SetResolutionY(GWEN_XML_CONTEXT *ctx, int i) {
 
 
 
-GWEN_STRINGLIST *HtmlCtx_GetMediaPaths(const GWEN_XML_CONTEXT *ctx) {
+GWEN_STRINGLIST *HtmlCtx_GetMediaPaths(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -163,7 +170,8 @@ GWEN_STRINGLIST *HtmlCtx_GetMediaPaths(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_AddMediaPath(GWEN_XML_CONTEXT *ctx, const char *s) {
+void HtmlCtx_AddMediaPath(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -177,7 +185,8 @@ void HtmlCtx_AddMediaPath(GWEN_XML_CONTEXT *ctx, const char *s) {
 
 
 
-HTML_GROUP *HtmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx) {
+HTML_GROUP *HtmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -189,7 +198,8 @@ HTML_GROUP *HtmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, HTML_GROUP *g) {
+void HtmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, HTML_GROUP *g)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -201,7 +211,8 @@ void HtmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, HTML_GROUP *g) {
 
 
 
-const char *HtmlCtx_GetCurrentTagName(const GWEN_XML_CONTEXT *ctx) {
+const char *HtmlCtx_GetCurrentTagName(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -213,7 +224,8 @@ const char *HtmlCtx_GetCurrentTagName(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s) {
+void HtmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -221,13 +233,16 @@ void HtmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s) {
   assert(xctx);
 
   free(xctx->currentTagName);
-  if (s) xctx->currentTagName=strdup(s);
-  else xctx->currentTagName=NULL;
+  if (s)
+    xctx->currentTagName=strdup(s);
+  else
+    xctx->currentTagName=NULL;
 }
 
 
 
-GWEN_DB_NODE *HtmlCtx_GetCurrentAttributes(const GWEN_XML_CONTEXT *ctx) {
+GWEN_DB_NODE *HtmlCtx_GetCurrentAttributes(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -239,7 +254,8 @@ GWEN_DB_NODE *HtmlCtx_GetCurrentAttributes(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-HTML_OBJECT_TREE *HtmlCtx_GetObjects(const GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT_TREE *HtmlCtx_GetObjects(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -251,7 +267,8 @@ HTML_OBJECT_TREE *HtmlCtx_GetObjects(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-HTML_OBJECT_TREE *HtmlCtx_TakeObjects(const GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT_TREE *HtmlCtx_TakeObjects(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
   HTML_OBJECT_TREE *t;
 
@@ -267,7 +284,8 @@ HTML_OBJECT_TREE *HtmlCtx_TakeObjects(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -281,7 +299,8 @@ HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx) {
 
 int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
                          const char *data,
-                         GWEN_BUFFER *buf) {
+                         GWEN_BUFFER *buf)
+{
   if (data && *data) {
     const uint8_t *p;
     uint8_t *dst;
@@ -301,15 +320,15 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
       return 0;
     }
 
-    dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
+    dst=(uint8_t *)GWEN_Buffer_GetStart(buf);
     src=dst;
 
     /* skip leading blanks */
-    while(*src && (*src<33 || *src==127))
+    while (*src && (*src<33 || *src==127))
       src++;
 
     p=src;
-    bStart=src-((uint8_t*)GWEN_Buffer_GetStart(buf));
+    bStart=src-((uint8_t *)GWEN_Buffer_GetStart(buf));
     size=GWEN_Buffer_GetUsedBytes(buf)-bStart;
     lastWasBlank=0;
     lastBlankPos=0;
@@ -342,7 +361,7 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
     if (lastBlankPos!=0)
       dst=lastBlankPos;
 
-    size=dst-(uint8_t*)GWEN_Buffer_GetStart(buf);
+    size=dst-(uint8_t *)GWEN_Buffer_GetStart(buf);
     GWEN_Buffer_Crop(buf, 0, size);
   }
 
@@ -351,7 +370,8 @@ int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
 
 
 
-HTML_PROPS *HtmlCtx_GetStandardProps(const GWEN_XML_CONTEXT *ctx) {
+HTML_PROPS *HtmlCtx_GetStandardProps(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -363,7 +383,8 @@ HTML_PROPS *HtmlCtx_GetStandardProps(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void HtmlCtx_SetStandardProps(GWEN_XML_CONTEXT *ctx, HTML_PROPS *pr) {
+void HtmlCtx_SetStandardProps(GWEN_XML_CONTEXT *ctx, HTML_PROPS *pr)
+{
   HTML_XMLCTX *xctx;
   HTML_OBJECT *o;
 
@@ -386,7 +407,8 @@ void HtmlCtx_SetStandardProps(GWEN_XML_CONTEXT *ctx, HTML_PROPS *pr) {
 
 
 
-int HtmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
+int HtmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -405,7 +427,8 @@ int HtmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 
 
 
-int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
+int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -493,7 +516,8 @@ int HtmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
 
 
-int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
+int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -522,7 +546,8 @@ int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 
-int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
+int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -537,7 +562,8 @@ int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
                     const char *attrName,
-                    const char *attrData) {
+                    const char *attrData)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -558,7 +584,8 @@ int HtmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
 
 int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
                          HTML_FONT *fnt,
-                         const char *s) {
+                         const char *s)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -575,7 +602,8 @@ int HtmlCtx_GetTextWidth(GWEN_XML_CONTEXT *ctx,
 
 int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
                           HTML_FONT *fnt,
-                          const char *s) {
+                          const char *s)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -591,7 +619,8 @@ int HtmlCtx_GetTextHeight(GWEN_XML_CONTEXT *ctx,
 
 
 uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
-                                  const char *name) {
+                                  const char *name)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -609,7 +638,8 @@ uint32_t HtmlCtx_GetColorFromName(const GWEN_XML_CONTEXT *ctx,
 HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
                            const char *fontName,
                            int fontSize,
-                           uint32_t fontFlags) {
+                           uint32_t fontFlags)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -624,7 +654,8 @@ HTML_FONT *HtmlCtx_GetFont(GWEN_XML_CONTEXT *ctx,
 
 
 
-HTML_IMAGE *HtmlCtx_GetImage(GWEN_XML_CONTEXT *ctx, const char *imageName) {
+HTML_IMAGE *HtmlCtx_GetImage(GWEN_XML_CONTEXT *ctx, const char *imageName)
+{
   HTML_XMLCTX *xctx;
 
   assert(ctx);
@@ -640,7 +671,8 @@ HTML_IMAGE *HtmlCtx_GetImage(GWEN_XML_CONTEXT *ctx, const char *imageName) {
 
 
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_TEXT_WIDTH_FN fn) {
+                                                    HTMLCTX_GET_TEXT_WIDTH_FN fn)
+{
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_TEXT_WIDTH_FN of;
 
@@ -657,7 +689,8 @@ HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
 
 
 HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_TEXT_HEIGHT_FN fn) {
+                                                      HTMLCTX_GET_TEXT_HEIGHT_FN fn)
+{
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_TEXT_HEIGHT_FN of;
 
@@ -674,7 +707,8 @@ HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
 
 
 HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_COLOR_FROM_NAME_FN fn) {
+                                                             HTMLCTX_GET_COLOR_FROM_NAME_FN fn)
+{
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_COLOR_FROM_NAME_FN of;
 
@@ -690,7 +724,8 @@ HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *c
 
 
 
-HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_FONT_FN fn) {
+HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_FONT_FN fn)
+{
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_FONT_FN of;
 
@@ -706,7 +741,8 @@ HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_FONT
 
 
 
-HTMLCTX_GET_IMAGE_FN HtmlCtx_SetGetImageFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_IMAGE_FN fn) {
+HTMLCTX_GET_IMAGE_FN HtmlCtx_SetGetImageFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_IMAGE_FN fn)
+{
   HTML_XMLCTX *xctx;
   HTMLCTX_GET_IMAGE_FN of;
 
@@ -722,7 +758,8 @@ HTMLCTX_GET_IMAGE_FN HtmlCtx_SetGetImageFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_IM
 
 
 
-int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height) {
+int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height)
+{
   HTML_XMLCTX *xctx;
   HTML_OBJECT *o;
   int rv;
@@ -750,7 +787,8 @@ int HtmlCtx_Layout(GWEN_XML_CONTEXT *ctx, int width, int height) {
 
 
 
-void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
+void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   HTML_XMLCTX *xctx;
   int rv;
   HTML_GROUP *g;
@@ -785,7 +823,7 @@ void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
   fprintf(stderr, "============ Objects:\n");
   fprintf(stderr, "String: [%s]\n", s);
   o=HtmlObject_Tree_GetFirst(xctx->objects);
-  while(o) {
+  while (o) {
     const char *xx;
 
     xx=HtmlObject_GetText(o);
@@ -799,7 +837,8 @@ void HtmlCtx_SetText(GWEN_XML_CONTEXT *ctx, const char *s) {
 
 
 
-int HtmlCtx_GetWidth(const GWEN_XML_CONTEXT *ctx) {
+int HtmlCtx_GetWidth(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_OBJECT *o;
 
   o=HtmlCtx_GetRootObject(ctx);
@@ -811,7 +850,8 @@ int HtmlCtx_GetWidth(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-int HtmlCtx_GetHeight(const GWEN_XML_CONTEXT *ctx) {
+int HtmlCtx_GetHeight(const GWEN_XML_CONTEXT *ctx)
+{
   HTML_OBJECT *o;
 
   o=HtmlCtx_GetRootObject(ctx);

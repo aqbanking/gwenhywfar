@@ -51,7 +51,8 @@ GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_SOCKET)
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Socket_new(GWEN_SOCKETTYPE sockType, GWEN_AddressFamily addressFamily) {
+GWEN_SYNCIO *GWEN_SyncIo_Socket_new(GWEN_SOCKETTYPE sockType, GWEN_AddressFamily addressFamily)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_SOCKET *xio;
 
@@ -72,7 +73,8 @@ GWEN_SYNCIO *GWEN_SyncIo_Socket_new(GWEN_SOCKETTYPE sockType, GWEN_AddressFamily
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Socket_TakeOver(GWEN_SOCKET *socket) {
+GWEN_SYNCIO *GWEN_SyncIo_Socket_TakeOver(GWEN_SOCKET *socket)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_SOCKET *xio;
 
@@ -94,10 +96,11 @@ GWEN_SYNCIO *GWEN_SyncIo_Socket_TakeOver(GWEN_SOCKET *socket) {
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Socket_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SyncIo_Socket_FreeData(void *bp, void *p)
+{
   GWEN_SYNCIO_SOCKET *xio;
 
-  xio=(GWEN_SYNCIO_SOCKET*) p;
+  xio=(GWEN_SYNCIO_SOCKET *) p;
   free(xio->address);
   GWEN_Socket_free(xio->socket);
   GWEN_FREE_OBJECT(xio);
@@ -105,7 +108,8 @@ void GWENHYWFAR_CB GWEN_SyncIo_Socket_FreeData(void *bp, void *p) {
 
 
 
-const char *GWEN_SyncIo_Socket_GetAddress(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_Socket_GetAddress(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_SOCKET *xio;
 
   assert(sio);
@@ -117,7 +121,8 @@ const char *GWEN_SyncIo_Socket_GetAddress(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Socket_SetAddress(GWEN_SYNCIO *sio, const char *s) {
+void GWEN_SyncIo_Socket_SetAddress(GWEN_SYNCIO *sio, const char *s)
+{
   GWEN_SYNCIO_SOCKET *xio;
 
   assert(sio);
@@ -125,13 +130,16 @@ void GWEN_SyncIo_Socket_SetAddress(GWEN_SYNCIO *sio, const char *s) {
   assert(xio);
 
   free(xio->address);
-  if (s) xio->address=strdup(s);
-  else xio->address=NULL;
+  if (s)
+    xio->address=strdup(s);
+  else
+    xio->address=NULL;
 }
 
 
 
-int GWEN_SyncIo_Socket_GetPort(const GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Socket_GetPort(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_SOCKET *xio;
 
   assert(sio);
@@ -143,7 +151,8 @@ int GWEN_SyncIo_Socket_GetPort(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Socket_SetPort(GWEN_SYNCIO *sio, int i) {
+void GWEN_SyncIo_Socket_SetPort(GWEN_SYNCIO *sio, int i)
+{
   GWEN_SYNCIO_SOCKET *xio;
 
   assert(sio);
@@ -155,7 +164,8 @@ void GWEN_SyncIo_Socket_SetPort(GWEN_SYNCIO *sio, int i) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_SOCKET *xio;
   GWEN_SOCKET *sk;
   GWEN_INETADDRESS *addr;
@@ -251,7 +261,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Connect(GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Socket_Disconnect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Socket_Disconnect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_SOCKET *xio;
 
   assert(sio);
@@ -272,8 +283,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
-    uint8_t *buffer,
-    uint32_t size) {
+                                          uint8_t *buffer,
+                                          uint32_t size)
+{
   GWEN_SYNCIO_SOCKET *xio;
   int rv;
   int i;
@@ -332,7 +344,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
   }
 
   i=size;
-  rv=GWEN_Socket_Read(xio->socket, (char*) buffer, &i);
+  rv=GWEN_Socket_Read(xio->socket, (char *) buffer, &i);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -340,7 +352,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
 
 #if 0
   DBG_ERROR(0, "Received this:");
-  GWEN_Text_DumpString((const char*) buffer, i, stderr, 2);
+  GWEN_Text_DumpString((const char *) buffer, i, stderr, 2);
 #endif
 
   return i;
@@ -349,8 +361,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size) {
+                                           const uint8_t *buffer,
+                                           uint32_t size)
+{
   GWEN_SYNCIO_SOCKET *xio;
   int rv;
   int i;
@@ -397,7 +410,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
   }
 
   i=size;
-  rv=GWEN_Socket_Write(xio->socket, (const char*) buffer, &i);
+  rv=GWEN_Socket_Write(xio->socket, (const char *) buffer, &i);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -405,7 +418,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
 
 #if 0
   DBG_ERROR(0, "Written this:");
-  GWEN_Text_DumpString((const char*) buffer, i, stderr, 2);
+  GWEN_Text_DumpString((const char *) buffer, i, stderr, 2);
 #endif
 
   return i;

@@ -32,7 +32,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_TOKEN, GWEN_Crypt_Token)
 
 GWEN_CRYPT_TOKEN *GWEN_Crypt_Token_new(GWEN_CRYPT_TOKEN_DEVICE dev,
                                        const char *typeName,
-                                       const char *tokenName) {
+                                       const char *tokenName)
+{
   GWEN_CRYPT_TOKEN *ct;
 
   assert(typeName);
@@ -52,7 +53,8 @@ GWEN_CRYPT_TOKEN *GWEN_Crypt_Token_new(GWEN_CRYPT_TOKEN_DEVICE dev,
 
 
 
-void GWEN_Crypt_Token_free(GWEN_CRYPT_TOKEN *ct) {
+void GWEN_Crypt_Token_free(GWEN_CRYPT_TOKEN *ct)
+{
   if (ct) {
     assert(ct->refCount);
     if (ct->refCount==1) {
@@ -71,7 +73,8 @@ void GWEN_Crypt_Token_free(GWEN_CRYPT_TOKEN *ct) {
 
 
 
-GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_GetDevice(const GWEN_CRYPT_TOKEN *ct) {
+GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_GetDevice(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -80,7 +83,8 @@ GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_GetDevice(const GWEN_CRYPT_TOKEN *ct) {
 
 
 
-const char *GWEN_Crypt_Token_GetTypeName(const GWEN_CRYPT_TOKEN *ct) {
+const char *GWEN_Crypt_Token_GetTypeName(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -89,7 +93,8 @@ const char *GWEN_Crypt_Token_GetTypeName(const GWEN_CRYPT_TOKEN *ct) {
 
 
 
-const char *GWEN_Crypt_Token_GetTokenName(const GWEN_CRYPT_TOKEN *ct) {
+const char *GWEN_Crypt_Token_GetTokenName(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -98,7 +103,8 @@ const char *GWEN_Crypt_Token_GetTokenName(const GWEN_CRYPT_TOKEN *ct) {
 
 
 
-void GWEN_Crypt_Token_SetTokenName(GWEN_CRYPT_TOKEN *ct, const char *s) {
+void GWEN_Crypt_Token_SetTokenName(GWEN_CRYPT_TOKEN *ct, const char *s)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -110,7 +116,8 @@ void GWEN_Crypt_Token_SetTokenName(GWEN_CRYPT_TOKEN *ct, const char *s) {
 
 
 
-const char *GWEN_Crypt_Token_GetFriendlyName(const GWEN_CRYPT_TOKEN *ct) {
+const char *GWEN_Crypt_Token_GetFriendlyName(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -119,7 +126,8 @@ const char *GWEN_Crypt_Token_GetFriendlyName(const GWEN_CRYPT_TOKEN *ct) {
 
 
 
-void GWEN_Crypt_Token_SetFriendlyName(GWEN_CRYPT_TOKEN *ct, const char *s) {
+void GWEN_Crypt_Token_SetFriendlyName(GWEN_CRYPT_TOKEN *ct, const char *s)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -131,7 +139,8 @@ void GWEN_Crypt_Token_SetFriendlyName(GWEN_CRYPT_TOKEN *ct, const char *s) {
 
 
 
-uint32_t GWEN_Crypt_Token_GetFlags(const GWEN_CRYPT_TOKEN *ct) {
+uint32_t GWEN_Crypt_Token_GetFlags(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -140,7 +149,8 @@ uint32_t GWEN_Crypt_Token_GetFlags(const GWEN_CRYPT_TOKEN *ct) {
 
 
 
-void GWEN_Crypt_Token_SetFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
+void GWEN_Crypt_Token_SetFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -149,7 +159,8 @@ void GWEN_Crypt_Token_SetFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
 
 
 
-void GWEN_Crypt_Token_AddFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
+void GWEN_Crypt_Token_AddFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -158,7 +169,8 @@ void GWEN_Crypt_Token_AddFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
 
 
 
-void GWEN_Crypt_Token_SubFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
+void GWEN_Crypt_Token_SubFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -167,7 +179,8 @@ void GWEN_Crypt_Token_SubFlags(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
 
 
 
-uint32_t GWEN_Crypt_Token_GetModes(const GWEN_CRYPT_TOKEN *ct) {
+uint32_t GWEN_Crypt_Token_GetModes(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -176,7 +189,8 @@ uint32_t GWEN_Crypt_Token_GetModes(const GWEN_CRYPT_TOKEN *ct) {
 
 
 
-void GWEN_Crypt_Token_SetModes(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
+void GWEN_Crypt_Token_SetModes(GWEN_CRYPT_TOKEN *ct, uint32_t f)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -185,7 +199,8 @@ void GWEN_Crypt_Token_SetModes(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
 
 
 
-void GWEN_Crypt_Token_AddModes(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
+void GWEN_Crypt_Token_AddModes(GWEN_CRYPT_TOKEN *ct, uint32_t f)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -194,7 +209,8 @@ void GWEN_Crypt_Token_AddModes(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
 
 
 
-void GWEN_Crypt_Token_SubModes(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
+void GWEN_Crypt_Token_SubModes(GWEN_CRYPT_TOKEN *ct, uint32_t f)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -203,7 +219,8 @@ void GWEN_Crypt_Token_SubModes(GWEN_CRYPT_TOKEN *ct, uint32_t f) {
 
 
 
-int GWEN_Crypt_Token_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid) {
+int GWEN_Crypt_Token_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid)
+{
   int rv;
 
   assert(ct);
@@ -226,7 +243,8 @@ int GWEN_Crypt_Token_Open(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid) {
 
 
 
-int GWEN_Crypt_Token_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_Token_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   int rv;
 
   assert(ct);
@@ -244,7 +262,8 @@ int GWEN_Crypt_Token_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-int GWEN_Crypt_Token_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid) {
+int GWEN_Crypt_Token_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -269,7 +288,8 @@ int GWEN_Crypt_Token_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid) {
 
 
 
-int GWEN_Crypt_Token_IsOpen(const GWEN_CRYPT_TOKEN *ct) {
+int GWEN_Crypt_Token_IsOpen(const GWEN_CRYPT_TOKEN *ct)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -281,7 +301,8 @@ int GWEN_Crypt_Token_IsOpen(const GWEN_CRYPT_TOKEN *ct) {
 int GWEN_Crypt_Token_GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
                                   uint32_t *pIdList,
                                   uint32_t *pCount,
-                                  uint32_t gid) {
+                                  uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -296,10 +317,11 @@ int GWEN_Crypt_Token_GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
 
 
 
-const GWEN_CRYPT_TOKEN_KEYINFO* GWEN_Crypt_Token_GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-    uint32_t id,
-    uint32_t flags,
-    uint32_t gid) {
+const GWEN_CRYPT_TOKEN_KEYINFO *GWEN_Crypt_Token_GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+                                                            uint32_t id,
+                                                            uint32_t flags,
+                                                            uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -319,7 +341,8 @@ const GWEN_CRYPT_TOKEN_KEYINFO* GWEN_Crypt_Token_GetKeyInfo(GWEN_CRYPT_TOKEN *ct
 int GWEN_Crypt_Token_SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
                                 uint32_t id,
                                 const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-                                uint32_t gid) {
+                                uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -337,7 +360,8 @@ int GWEN_Crypt_Token_SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 int GWEN_Crypt_Token_GetContextIdList(GWEN_CRYPT_TOKEN *ct,
                                       uint32_t *pIdList,
                                       uint32_t *pCount,
-                                      uint32_t gid) {
+                                      uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -352,9 +376,10 @@ int GWEN_Crypt_Token_GetContextIdList(GWEN_CRYPT_TOKEN *ct,
 
 
 
-const GWEN_CRYPT_TOKEN_CONTEXT* GWEN_Crypt_Token_GetContext(GWEN_CRYPT_TOKEN *ct,
-    uint32_t id,
-    uint32_t gid) {
+const GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_GetContext(GWEN_CRYPT_TOKEN *ct,
+                                                            uint32_t id,
+                                                            uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -374,7 +399,8 @@ const GWEN_CRYPT_TOKEN_CONTEXT* GWEN_Crypt_Token_GetContext(GWEN_CRYPT_TOKEN *ct
 int GWEN_Crypt_Token_SetContext(GWEN_CRYPT_TOKEN *ct,
                                 uint32_t id,
                                 const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
-                                uint32_t gid) {
+                                uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -397,7 +423,8 @@ int GWEN_Crypt_Token_Sign(GWEN_CRYPT_TOKEN *ct,
                           uint8_t *pSignatureData,
                           uint32_t *pSignatureLen,
                           uint32_t *pSeqCounter,
-                          uint32_t gid) {
+                          uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -421,7 +448,8 @@ int GWEN_Crypt_Token_Verify(GWEN_CRYPT_TOKEN *ct,
                             const uint8_t *pSignatureData,
                             uint32_t signatureLen,
                             uint32_t seqCounter,
-                            uint32_t gid) {
+                            uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -444,7 +472,8 @@ int GWEN_Crypt_Token_Encipher(GWEN_CRYPT_TOKEN *ct,
                               uint32_t inLen,
                               uint8_t *pOutData,
                               uint32_t *pOutLen,
-                              uint32_t gid) {
+                              uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -466,7 +495,8 @@ int GWEN_Crypt_Token_Decipher(GWEN_CRYPT_TOKEN *ct,
                               uint32_t inLen,
                               uint8_t *pOutData,
                               uint32_t *pOutLen,
-                              uint32_t gid) {
+                              uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -485,7 +515,8 @@ int GWEN_Crypt_Token_Decipher(GWEN_CRYPT_TOKEN *ct,
 int GWEN_Crypt_Token_GenerateKey(GWEN_CRYPT_TOKEN *ct,
                                  uint32_t keyId,
                                  const GWEN_CRYPT_CRYPTALGO *a,
-                                 uint32_t gid) {
+                                 uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -500,7 +531,8 @@ int GWEN_Crypt_Token_GenerateKey(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWEN_Crypt_Token_ChangePin(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid) {
+int GWEN_Crypt_Token_ChangePin(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -515,7 +547,8 @@ int GWEN_Crypt_Token_ChangePin(GWEN_CRYPT_TOKEN *ct, int admin, uint32_t gid) {
 
 
 
-int  GWEN_Crypt_Token_ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid) {
+int  GWEN_Crypt_Token_ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -523,7 +556,7 @@ int  GWEN_Crypt_Token_ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
     return GWEN_ERROR_NOT_OPEN;
 
   if (ct->activateKeyFn)
-    return ct->activateKeyFn(ct, id ,gid);
+    return ct->activateKeyFn(ct, id, gid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -534,7 +567,8 @@ int  GWEN_Crypt_Token_ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
 
 
 GWEN_CRYPT_TOKEN_OPEN_FN GWEN_Crypt_Token_SetOpenFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_OPEN_FN f) {
+                                                    GWEN_CRYPT_TOKEN_OPEN_FN f)
+{
   GWEN_CRYPT_TOKEN_OPEN_FN of;
 
   assert(ct);
@@ -548,7 +582,8 @@ GWEN_CRYPT_TOKEN_OPEN_FN GWEN_Crypt_Token_SetOpenFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_CREATE_FN GWEN_Crypt_Token_SetCreateFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_CREATE_FN f) {
+                                                        GWEN_CRYPT_TOKEN_CREATE_FN f)
+{
   GWEN_CRYPT_TOKEN_CREATE_FN of;
 
   assert(ct);
@@ -563,7 +598,8 @@ GWEN_CRYPT_TOKEN_CREATE_FN GWEN_Crypt_Token_SetCreateFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_CLOSE_FN GWEN_Crypt_Token_SetCloseFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_CLOSE_FN f) {
+                                                      GWEN_CRYPT_TOKEN_CLOSE_FN f)
+{
   GWEN_CRYPT_TOKEN_CLOSE_FN of;
 
   assert(ct);
@@ -576,9 +612,9 @@ GWEN_CRYPT_TOKEN_CLOSE_FN GWEN_Crypt_Token_SetCloseFn(GWEN_CRYPT_TOKEN *ct,
 
 
 
-GWEN_CRYPT_TOKEN_GETKEYIDLIST_FN
-GWEN_Crypt_Token_SetGetKeyIdListFn(GWEN_CRYPT_TOKEN *ct,
-                                   GWEN_CRYPT_TOKEN_GETKEYIDLIST_FN f) {
+GWEN_CRYPT_TOKEN_GETKEYIDLIST_FN GWEN_Crypt_Token_SetGetKeyIdListFn(GWEN_CRYPT_TOKEN *ct,
+                                                                    GWEN_CRYPT_TOKEN_GETKEYIDLIST_FN f)
+{
   GWEN_CRYPT_TOKEN_GETKEYIDLIST_FN of;
 
   assert(ct);
@@ -591,9 +627,9 @@ GWEN_Crypt_Token_SetGetKeyIdListFn(GWEN_CRYPT_TOKEN *ct,
 
 
 
-GWEN_CRYPT_TOKEN_GETKEYINFO_FN
-GWEN_Crypt_Token_SetGetKeyInfoFn(GWEN_CRYPT_TOKEN *ct,
-                                 GWEN_CRYPT_TOKEN_GETKEYINFO_FN f) {
+GWEN_CRYPT_TOKEN_GETKEYINFO_FN GWEN_Crypt_Token_SetGetKeyInfoFn(GWEN_CRYPT_TOKEN *ct,
+                                                                GWEN_CRYPT_TOKEN_GETKEYINFO_FN f)
+{
   GWEN_CRYPT_TOKEN_GETKEYINFO_FN of;
 
   assert(ct);
@@ -607,7 +643,8 @@ GWEN_Crypt_Token_SetGetKeyInfoFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_SETKEYINFO_FN GWEN_Crypt_Token_SetSetKeyInfoFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_SETKEYINFO_FN f) {
+                                                                GWEN_CRYPT_TOKEN_SETKEYINFO_FN f)
+{
   GWEN_CRYPT_TOKEN_SETKEYINFO_FN of;
 
   assert(ct);
@@ -620,9 +657,9 @@ GWEN_CRYPT_TOKEN_SETKEYINFO_FN GWEN_Crypt_Token_SetSetKeyInfoFn(GWEN_CRYPT_TOKEN
 
 
 
-GWEN_CRYPT_TOKEN_GETCONTEXTIDLIST_FN
-GWEN_Crypt_Token_SetGetContextIdListFn(GWEN_CRYPT_TOKEN *ct,
-                                       GWEN_CRYPT_TOKEN_GETCONTEXTIDLIST_FN f) {
+GWEN_CRYPT_TOKEN_GETCONTEXTIDLIST_FN GWEN_Crypt_Token_SetGetContextIdListFn(GWEN_CRYPT_TOKEN *ct,
+                                                                            GWEN_CRYPT_TOKEN_GETCONTEXTIDLIST_FN f)
+{
   GWEN_CRYPT_TOKEN_GETCONTEXTIDLIST_FN of;
 
   assert(ct);
@@ -635,9 +672,9 @@ GWEN_Crypt_Token_SetGetContextIdListFn(GWEN_CRYPT_TOKEN *ct,
 
 
 
-GWEN_CRYPT_TOKEN_GETCONTEXT_FN
-GWEN_Crypt_Token_SetGetContextFn(GWEN_CRYPT_TOKEN *ct,
-                                 GWEN_CRYPT_TOKEN_GETCONTEXT_FN f) {
+GWEN_CRYPT_TOKEN_GETCONTEXT_FN GWEN_Crypt_Token_SetGetContextFn(GWEN_CRYPT_TOKEN *ct,
+                                                                GWEN_CRYPT_TOKEN_GETCONTEXT_FN f)
+{
   GWEN_CRYPT_TOKEN_GETCONTEXT_FN of;
 
   assert(ct);
@@ -650,9 +687,9 @@ GWEN_Crypt_Token_SetGetContextFn(GWEN_CRYPT_TOKEN *ct,
 
 
 
-GWEN_CRYPT_TOKEN_SETCONTEXT_FN
-GWEN_Crypt_Token_SetSetContextFn(GWEN_CRYPT_TOKEN *ct,
-                                 GWEN_CRYPT_TOKEN_SETCONTEXT_FN f) {
+GWEN_CRYPT_TOKEN_SETCONTEXT_FN GWEN_Crypt_Token_SetSetContextFn(GWEN_CRYPT_TOKEN *ct,
+                                                                GWEN_CRYPT_TOKEN_SETCONTEXT_FN f)
+{
   GWEN_CRYPT_TOKEN_SETCONTEXT_FN of;
 
   assert(ct);
@@ -666,7 +703,8 @@ GWEN_Crypt_Token_SetSetContextFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_SIGN_FN GWEN_Crypt_Token_SetSignFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_SIGN_FN f) {
+                                                    GWEN_CRYPT_TOKEN_SIGN_FN f)
+{
   GWEN_CRYPT_TOKEN_SIGN_FN of;
 
   assert(ct);
@@ -680,7 +718,8 @@ GWEN_CRYPT_TOKEN_SIGN_FN GWEN_Crypt_Token_SetSignFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_VERIFY_FN GWEN_Crypt_Token_SetVerifyFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_VERIFY_FN f) {
+                                                        GWEN_CRYPT_TOKEN_VERIFY_FN f)
+{
   GWEN_CRYPT_TOKEN_VERIFY_FN of;
 
   assert(ct);
@@ -694,7 +733,8 @@ GWEN_CRYPT_TOKEN_VERIFY_FN GWEN_Crypt_Token_SetVerifyFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_ENCIPHER_FN GWEN_Crypt_Token_SetEncipherFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_ENCIPHER_FN f) {
+                                                            GWEN_CRYPT_TOKEN_ENCIPHER_FN f)
+{
   GWEN_CRYPT_TOKEN_ENCIPHER_FN of;
 
   assert(ct);
@@ -708,7 +748,8 @@ GWEN_CRYPT_TOKEN_ENCIPHER_FN GWEN_Crypt_Token_SetEncipherFn(GWEN_CRYPT_TOKEN *ct
 
 
 GWEN_CRYPT_TOKEN_DECIPHER_FN GWEN_Crypt_Token_SetDecipherFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_DECIPHER_FN f) {
+                                                            GWEN_CRYPT_TOKEN_DECIPHER_FN f)
+{
   GWEN_CRYPT_TOKEN_DECIPHER_FN of;
 
   assert(ct);
@@ -721,9 +762,9 @@ GWEN_CRYPT_TOKEN_DECIPHER_FN GWEN_Crypt_Token_SetDecipherFn(GWEN_CRYPT_TOKEN *ct
 
 
 
-GWEN_CRYPT_TOKEN_GENERATEKEY_FN
-GWEN_Crypt_Token_SetGenerateKeyFn(GWEN_CRYPT_TOKEN *ct,
-                                  GWEN_CRYPT_TOKEN_GENERATEKEY_FN f) {
+GWEN_CRYPT_TOKEN_GENERATEKEY_FN GWEN_Crypt_Token_SetGenerateKeyFn(GWEN_CRYPT_TOKEN *ct,
+                                                                  GWEN_CRYPT_TOKEN_GENERATEKEY_FN f)
+{
   GWEN_CRYPT_TOKEN_GENERATEKEY_FN of;
 
   assert(ct);
@@ -737,7 +778,8 @@ GWEN_Crypt_Token_SetGenerateKeyFn(GWEN_CRYPT_TOKEN *ct,
 
 
 GWEN_CRYPT_TOKEN_CHANGEPIN_FN GWEN_Crypt_Token_SetChangePinFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_CHANGEPIN_FN f) {
+                                                              GWEN_CRYPT_TOKEN_CHANGEPIN_FN f)
+{
   GWEN_CRYPT_TOKEN_CHANGEPIN_FN of;
 
   assert(ct);
@@ -751,7 +793,8 @@ GWEN_CRYPT_TOKEN_CHANGEPIN_FN GWEN_Crypt_Token_SetChangePinFn(GWEN_CRYPT_TOKEN *
 
 
 GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN GWEN_Crypt_Token_SetActivateKeyFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN f) {
+                                                                  GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN f)
+{
   GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN of;
 
   assert(ct);
@@ -767,8 +810,9 @@ GWEN_CRYPT_TOKEN_ACTIVATEKEY_FN GWEN_Crypt_Token_SetActivateKeyFn(GWEN_CRYPT_TOK
 
 
 int GWEN_Crypt_Token__CreatePasswordName(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_PINTYPE pt,
-    GWEN_BUFFER *nbuf) {
+                                         GWEN_CRYPT_PINTYPE pt,
+                                         GWEN_BUFFER *nbuf)
+{
   const char *tname;
   const char *dname;
 
@@ -800,7 +844,8 @@ int GWEN_Crypt_Token_GetPin(GWEN_CRYPT_TOKEN *ct,
                             unsigned int minLength,
                             unsigned int maxLength,
                             unsigned int *pinLength,
-                            uint32_t gid) {
+                            uint32_t gid)
+{
   int rv;
   const char *dname;
   const char *mode;
@@ -867,7 +912,7 @@ int GWEN_Crypt_Token_GetPin(GWEN_CRYPT_TOKEN *ct,
                           GWEN_Buffer_GetStart(nameBuffer),
                           I18N("Enter Password"),
                           buffer,
-                          (char*)pwbuffer,
+                          (char *)pwbuffer,
                           minLength,
                           maxLength,
                           GWEN_Gui_PasswordMethod_Text, NULL,
@@ -878,7 +923,7 @@ int GWEN_Crypt_Token_GetPin(GWEN_CRYPT_TOKEN *ct,
     return rv;
   }
 
-  *pinLength=strlen((char*)pwbuffer);
+  *pinLength=strlen((char *)pwbuffer);
 
   if (pe!=GWEN_Crypt_PinEncoding_Ascii) {
     rv=GWEN_Crypt_TransformPin(GWEN_Crypt_PinEncoding_Ascii,
@@ -904,7 +949,8 @@ int GWEN_Crypt_Token_SetPinStatus(GWEN_CRYPT_TOKEN *ct,
                                   const unsigned char *buffer,
                                   unsigned int pinLength,
                                   int isOk,
-                                  uint32_t gid) {
+                                  uint32_t gid)
+{
   GWEN_BUFFER *nameBuffer;
   int rv;
   unsigned char ibuffer[256];
@@ -934,7 +980,7 @@ int GWEN_Crypt_Token_SetPinStatus(GWEN_CRYPT_TOKEN *ct,
   nameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Crypt_Token__CreatePasswordName(ct, pt, nameBuffer);
   rv=GWEN_Gui_SetPasswordStatus(GWEN_Buffer_GetStart(nameBuffer),
-                                (const char*)buffer,
+                                (const char *)buffer,
                                 isOk?GWEN_Gui_PasswordStatus_Ok:
                                 GWEN_Gui_PasswordStatus_Bad, gid);
   memset(ibuffer, 0, sizeof(ibuffer));
@@ -947,7 +993,8 @@ int GWEN_Crypt_Token_SetPinStatus(GWEN_CRYPT_TOKEN *ct,
 
 uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_CRYPT_TOKEN *ct,
                                         GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
-                                        uint32_t gid) {
+                                        uint32_t gid)
+{
   char buffer[512];
 
   assert(ct);
@@ -971,7 +1018,8 @@ uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_CRYPT_TOKEN *ct,
 int GWEN_Crypt_Token_EndEnterPin(GWEN_CRYPT_TOKEN *ct,
                                  GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
                                  GWEN_UNUSED int ok,
-                                 uint32_t id) {
+                                 uint32_t id)
+{
   assert(ct);
   assert(ct->refCount);
 
@@ -982,7 +1030,8 @@ int GWEN_Crypt_Token_EndEnterPin(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWEN_Crypt_Token_InsertToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_Token_InsertToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   int rv;
   char buffer[512];
   const char *dname;
@@ -1037,7 +1086,8 @@ int GWEN_Crypt_Token_InsertToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-int GWEN_Crypt_Token_InsertCorrectToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_Token_InsertCorrectToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   int rv;
   char buffer[512];
   const char *dname;
@@ -1108,7 +1158,8 @@ int GWEN_Crypt_Token_InsertCorrectToken(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Device_fromString(const char *s) {
+GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Device_fromString(const char *s)
+{
   assert(s);
   if (strcasecmp(s, "none")==0)
     return GWEN_Crypt_Token_Device_None;
@@ -1123,8 +1174,9 @@ GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Device_fromString(const char *s) {
 
 
 
-const char *GWEN_Crypt_Token_Device_toString(GWEN_CRYPT_TOKEN_DEVICE d) {
-  switch(d) {
+const char *GWEN_Crypt_Token_Device_toString(GWEN_CRYPT_TOKEN_DEVICE d)
+{
+  switch (d) {
   case GWEN_Crypt_Token_Device_None:
     return "none";
   case GWEN_Crypt_Token_Device_File:

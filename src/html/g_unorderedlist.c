@@ -32,7 +32,8 @@ GWEN_INHERIT(HTML_GROUP, GROUP_UNORDEREDLIST)
 
 HTML_GROUP *HtmlGroup_UnorderedList_new(const char *groupName,
                                         HTML_GROUP *parent,
-                                        GWEN_XML_CONTEXT *ctx) {
+                                        GWEN_XML_CONTEXT *ctx)
+{
   HTML_GROUP *g;
   GROUP_UNORDEREDLIST *xg;
 
@@ -53,16 +54,18 @@ HTML_GROUP *HtmlGroup_UnorderedList_new(const char *groupName,
 
 
 
-void GWENHYWFAR_CB HtmlGroup_UnorderedList_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlGroup_UnorderedList_FreeData(void *bp, void *p)
+{
   GROUP_UNORDEREDLIST *xg;
 
-  xg=(GROUP_UNORDEREDLIST*) p;
+  xg=(GROUP_UNORDEREDLIST *) p;
   GWEN_FREE_OBJECT(xg);
 }
 
 
 
-int HtmlGroup_UnorderedList_StartTag(HTML_GROUP *g, const char *tagName) {
+int HtmlGroup_UnorderedList_StartTag(HTML_GROUP *g, const char *tagName)
+{
   GROUP_UNORDEREDLIST *xg;
   HTML_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;

@@ -72,14 +72,14 @@ GWENHYWFAR_API GWEN_CRYPT_TOKEN_DEVICE GWEN_Crypt_Token_Plugin_GetDeviceType(con
  * token given by the device type and name.
  */
 GWENHYWFAR_API int GWEN_Crypt_Token_PluginManager_CheckToken(GWEN_PLUGIN_MANAGER *cm,
-    GWEN_CRYPT_TOKEN_DEVICE devt,
-    GWEN_BUFFER *typeName,
-    GWEN_BUFFER *tokenName,
-    uint32_t guiid);
+                                                             GWEN_CRYPT_TOKEN_DEVICE devt,
+                                                             GWEN_BUFFER *typeName,
+                                                             GWEN_BUFFER *tokenName,
+                                                             uint32_t guiid);
 
 GWENHYWFAR_API
 GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_Crypt_Token_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MANAGER *pm,
-    GWEN_CRYPT_TOKEN_DEVICE devt);
+                                                                              GWEN_CRYPT_TOKEN_DEVICE devt);
 
 /*@}*/
 

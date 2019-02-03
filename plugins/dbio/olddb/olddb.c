@@ -50,9 +50,10 @@
 
 
 GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
-					 GWEN_DB_NODE *group,
-					 const char *s,
-					 uint32_t mode) {
+                                         GWEN_DB_NODE *group,
+                                         const char *s,
+                                         uint32_t mode)
+{
   char name[256];
   char *np;
   char *p;
@@ -68,7 +69,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
 
   /* check for group definition */
   g=s;
-  while(*g && (unsigned char)(*g)<33)
+  while (*g && (unsigned char)(*g)<33)
     g++;
   if (*g=='[') {
     /* ok, parse group name */
@@ -76,7 +77,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
 
     s=g;
     s++;
-    while(*s && (unsigned char)(*s)<33)
+    while (*s && (unsigned char)(*s)<33)
       s++;
     p=name;
     i=sizeof(name)-1;
@@ -87,7 +88,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
     } /* while */
     if (!i) {
       DBG_ERROR(0, "Groupname is too long (limit is %zd chars)",
-		sizeof(name)-1);
+                sizeof(name)-1);
       return 0;
     }
     if (*s!=']') {
@@ -95,7 +96,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
       return 0;
     }
     *p=0;
-    DBG_VERBOUS(0, "Selecting group \"%s\"",name);
+    DBG_VERBOUS(0, "Selecting group \"%s\"", name);
     grp=GWEN_DB_GetGroup(root, mode, name);
     if (!grp) {
       DBG_DEBUG(0, "Group \"%s\" is not available", name);
@@ -105,7 +106,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
   }
 
   /* get name */
-  while(*s && (unsigned char)(*s)<33)
+  while (*s && (unsigned char)(*s)<33)
     s++;
   i=sizeof(name)-1;
   p=name;
@@ -134,7 +135,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
   i=strlen(name);
   if (i>1) {
     if (name[i-1]=='"' &&
-	name[0]=='"') {
+        name[0]=='"') {
       name[i-1]=0;
       np++;
     }
@@ -157,7 +158,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
     return 0;
   }
 
-  DBG_VERBOUS(0, "Creating variable \"%s\"",np);
+  DBG_VERBOUS(0, "Creating variable \"%s\"", np);
 
 
   firstval=1;
@@ -168,29 +169,29 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
     char *vp;
 
     /* skip komma that may occur */
-    while(*s && (unsigned char)(*s)<33)
+    while (*s && (unsigned char)(*s)<33)
       s++;
     if (*s==0) {
       break;
     }
     if (*s==',') {
       if (firstval) {
-	DBG_ERROR(0, "Unexpected comma");
-	GWEN_Buffer_free(vbuf);
-	return 0;
+        DBG_ERROR(0, "Unexpected comma");
+        GWEN_Buffer_free(vbuf);
+        return 0;
       }
       s++;
     }
     else {
       if (!firstval) {
-	DBG_ERROR(0, "Comma expected");
-	GWEN_Buffer_free(vbuf);
-	return 0;
+        DBG_ERROR(0, "Comma expected");
+        GWEN_Buffer_free(vbuf);
+        return 0;
       }
     }
 
     /* get value */
-    while(*s && (unsigned char)(*s)<33)
+    while (*s && (unsigned char)(*s)<33)
       s++;
     /* copy value */
     quotes=0;
@@ -198,34 +199,34 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
     i=GWEN_DBIO_OLDDB_MAXVALUE_LEN-1;
     while ((unsigned char)(*s)>31 && i) {
       if (esc) {
-	GWEN_Buffer_AppendByte(vbuf, *s);
-	i--;
-	esc=0;
+        GWEN_Buffer_AppendByte(vbuf, *s);
+        i--;
+        esc=0;
       }
       else {
-	if (*s=='\\')
-	  esc=1;
-	else if (*s=='"') {
-	  quotes++;
-	  if (quotes==2) {
-	    s++;
-	    break;
-	  }
-	}
-	else if (*s=='#' && !(quotes&1))
-	  break;
-	else if (*s==',' && !(quotes&1))
-	  break;
-	else {
+        if (*s=='\\')
+          esc=1;
+        else if (*s=='"') {
+          quotes++;
+          if (quotes==2) {
+            s++;
+            break;
+          }
+        }
+        else if (*s=='#' && !(quotes&1))
+          break;
+        else if (*s==',' && !(quotes&1))
+          break;
+        else {
           GWEN_Buffer_AppendByte(vbuf, *s);
-	  i--;
-	}
+          i--;
+        }
       }
       s++;
     } /* while */
     if (!i) {
       DBG_ERROR(0, "Value is too long (limit is %d chars)",
-		GWEN_DBIO_OLDDB_MAXVALUE_LEN-1);
+                GWEN_DBIO_OLDDB_MAXVALUE_LEN-1);
       GWEN_Buffer_free(vbuf);
       return 0;
     }
@@ -243,21 +244,21 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
       i=GWEN_Buffer_GetUsedBytes(vbuf);
       if (i) {
         i--;
-	while (i>=0) {
-	  if ((unsigned char)(vp[i])<33)
-	    vp[i]=0;
-	  else
-	    break;
-	  i--;
-	}
+        while (i>=0) {
+          if ((unsigned char)(vp[i])<33)
+            vp[i]=0;
+          else
+            break;
+          i--;
+        }
       }
       i=strlen(vp);
       if (i>1) {
-	if (vp[i-1]=='"' &&
-	    vp[0]=='"') {
-	  vp[i-1]=0;
-	  vp++;
-	}
+        if (vp[i-1]=='"' &&
+            vp[0]=='"') {
+          vp[i-1]=0;
+          vp++;
+        }
       }
     }
 
@@ -279,10 +280,11 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
 
 
 int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
-			   GWEN_SYNCIO *sio,
-			   GWEN_DB_NODE *data,
-			   GWEN_DB_NODE *cfg,
-			   uint32_t flags) {
+                           GWEN_SYNCIO *sio,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg,
+                           uint32_t flags)
+{
   GWEN_DB_NODE *curr;
   int ln;
   int gerr;
@@ -302,12 +304,12 @@ int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
     if (gerr) {
       GWEN_Buffer_free(lbuffer);
       if (gerr==GWEN_ERROR_EOF && ln) {
-	GWEN_FastBuffer_free(fb);
-	return 0;
+        GWEN_FastBuffer_free(fb);
+        return 0;
       }
       else {
-	DBG_ERROR_ERR(0, gerr);
-	return gerr;
+        DBG_ERROR_ERR(0, gerr);
+        return gerr;
       }
     }
     curr=GWEN_DBIO_OldDb__ParseLine(data, curr, GWEN_Buffer_GetStart(lbuffer), flags);
@@ -324,17 +326,19 @@ int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
 
 
 int GWEN_DBIO_OldDb_Export(GWEN_DBIO *dbio,
-			   GWEN_SYNCIO *sio,
-			   GWEN_DB_NODE *data,
-			   GWEN_DB_NODE *cfg,
-			   uint32_t flags) {
+                           GWEN_SYNCIO *sio,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg,
+                           uint32_t flags)
+{
   DBG_ERROR(GWEN_LOGDOMAIN, "Export function not supported");
   return GWEN_ERROR_GENERIC;
 }
 
 
 
-GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio, const char *fname){
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio, const char *fname)
+{
   int rv;
   GWEN_SYNCIO *sio;
   GWEN_DB_NODE *dbTmp;
@@ -351,7 +355,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio, const char
 
   dbTmp=GWEN_DB_Group_new("tmp");
   dbCfg=GWEN_DB_Group_new("cfg");
-  rv=GWEN_DBIO_OldDb_Import(dbio, sio, dbTmp, dbCfg ,GWEN_DB_FLAGS_DEFAULT);
+  rv=GWEN_DBIO_OldDb_Import(dbio, sio, dbTmp, dbCfg, GWEN_DB_FLAGS_DEFAULT);
 
   GWEN_DB_Group_free(dbCfg);
   GWEN_DB_Group_free(dbTmp);
@@ -367,7 +371,8 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio, const char
 
 
 
-GWEN_DBIO *GWEN_DBIO_OldDb_Factory(GWEN_PLUGIN *pl) {
+GWEN_DBIO *GWEN_DBIO_OldDb_Factory(GWEN_PLUGIN *pl)
+{
   GWEN_DBIO *dbio;
 
   dbio=GWEN_DBIO_new("OldDb", "Imports and exports Old OpenHBCI data");
@@ -381,7 +386,8 @@ GWEN_DBIO *GWEN_DBIO_OldDb_Factory(GWEN_PLUGIN *pl) {
 
 GWEN_PLUGIN *dbio_olddb_factory(GWEN_PLUGIN_MANAGER *pm,
                                 const char *modName,
-                                const char *fileName) {
+                                const char *fileName)
+{
   GWEN_PLUGIN *pl;
 
   pl=GWEN_DBIO_Plugin_new(pm, modName, fileName);

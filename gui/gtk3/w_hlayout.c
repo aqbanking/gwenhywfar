@@ -16,13 +16,14 @@ int Gtk3Gui_WHLayout_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
-                                    int doSignal) {
+                                    int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -48,13 +49,14 @@ static GWENHYWFAR_CB
 int Gtk3Gui_WHLayout_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
-                                    int defaultValue) {
+                                    int defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -79,7 +81,8 @@ int Gtk3Gui_WHLayout_SetCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      const char *value,
-                                     int doSignal) {
+                                     int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
@@ -94,10 +97,11 @@ int Gtk3Gui_WHLayout_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk3Gui_WHLayout_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk3Gui_WHLayout_GetCharProperty(GWEN_WIDGET *w,
+                                             GWEN_DIALOG_PROPERTY prop,
+                                             int index,
+                                             const char *defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
@@ -112,7 +116,8 @@ const char* Gtk3Gui_WHLayout_GetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk3Gui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+int Gtk3Gui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
+{
   GtkWidget *g;
   GtkWidget *gChild;
   uint32_t cflags;
@@ -135,7 +140,8 @@ int Gtk3Gui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 
 
 
-int Gtk3Gui_WHLayout_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WHLayout_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   GWEN_WIDGET *wParent;
 
@@ -144,8 +150,8 @@ int Gtk3Gui_WHLayout_Setup(GWEN_WIDGET *w) {
   g=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
                 GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
 
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WHLayout_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WHLayout_GetIntProperty);

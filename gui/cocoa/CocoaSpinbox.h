@@ -1,6 +1,6 @@
 //
 //  CocoaSpinbox.h
-//  
+//
 //
 //  Created by Samuel Strupp on 19.08.10.
 //
@@ -13,29 +13,30 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaGwenGUIProtocol.h"
 
-typedef void (*gwenSpinBoxActionPtr)(NSView *spinbox, void* data);
+typedef void (*gwenSpinBoxActionPtr)(NSView *spinbox, void *data);
 
 
-@interface CocoaSpinbox : NSView <CocoaGwenGUIProtocol> {
-	NSStepper *stepper;
-	NSTextField *textfield;
-	
-	CGFloat minWidth;
-	
-	BOOL fillX;
-	BOOL fillY;
-	
-	NSInteger minValue;
-	NSInteger maxValue;
-	
-	gwenSpinBoxActionPtr c_actionPtr;
-	void* c_actionData;
+@interface CocoaSpinbox : NSView <CocoaGwenGUIProtocol>
+{
+  NSStepper *stepper;
+  NSTextField *textfield;
+
+  CGFloat minWidth;
+
+  BOOL fillX;
+  BOOL fillY;
+
+  NSInteger minValue;
+  NSInteger maxValue;
+
+  gwenSpinBoxActionPtr c_actionPtr;
+  void *c_actionData;
 }
 
 @property BOOL fillX;
 @property BOOL fillY;
 
--(void) setC_ActionPtr:(gwenSpinBoxActionPtr)ptr Data:(void*)data;
+-(void) setC_ActionPtr:(gwenSpinBoxActionPtr)ptr Data:(void *)data;
 
 -(void) makeFirstResponder;
 -(BOOL) isFirstResponder;
@@ -51,7 +52,7 @@ typedef void (*gwenSpinBoxActionPtr)(NSView *spinbox, void* data);
 -(NSInteger) maxValue;
 
 -(void)setStringValue:(NSString *)aString;
--(NSString*) stringValue;
+-(NSString *) stringValue;
 
 @end
 

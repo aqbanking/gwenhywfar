@@ -26,7 +26,9 @@
 
 
 
-int GWEN_Parser__UpdateElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData, int depth) {
+int GWEN_Parser__UpdateElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData,
+                                          int depth)
+{
   int rv;
   const GWEN_PARSER_ELEMENT *dReal=eDefinitions;
   const GWEN_PARSER_ELEMENT *eDefChild=NULL;
@@ -71,7 +73,8 @@ int GWEN_Parser__UpdateElementAndChildren(const GWEN_PARSER_ELEMENT *eDefinition
 
 
 
-int GWEN_Parser__UpdateSequence(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData, int depth) {
+int GWEN_Parser__UpdateSequence(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PARSER_ELEMENT *eData, int depth)
+{
   const GWEN_PARSER_ELEMENT *d;
   GWEN_PARSER_ELEMENT *e;
   int count=0;
@@ -81,7 +84,7 @@ int GWEN_Parser__UpdateSequence(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PA
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Entering sequence [%d]", depth);
 
-  while(d) {
+  while (d) {
     int rv;
 
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Updateing definition \"%s\" (%s) against \"%s\" (%s) [%d]",
@@ -146,7 +149,8 @@ int GWEN_Parser__UpdateSequence(const GWEN_PARSER_ELEMENT *eDefinitions, GWEN_PA
 
 
 
-int GWEN_Parser_UpdateTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, GWEN_PARSER_ELEMENT_TREE *tData) {
+int GWEN_Parser_UpdateTree(const GWEN_PARSER_ELEMENT_TREE *tDefinitions, GWEN_PARSER_ELEMENT_TREE *tData)
+{
   const GWEN_PARSER_ELEMENT *d;
   GWEN_PARSER_ELEMENT *e;
   int rv;

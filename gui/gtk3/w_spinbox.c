@@ -24,7 +24,8 @@ int Gtk3Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
-                                    int doSignal) {
+                                    int doSignal)
+{
   GtkWidget *g;
   W_SPINBOX *xw;
 
@@ -35,7 +36,7 @@ int Gtk3Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -78,7 +79,8 @@ static GWENHYWFAR_CB
 int Gtk3Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
-                                    int defaultValue) {
+                                    int defaultValue)
+{
   GtkWidget *g;
   W_SPINBOX *xw;
 
@@ -89,7 +91,7 @@ int Gtk3Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -128,7 +130,8 @@ int Gtk3Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      const char *value,
-                                     int doSignal) {
+                                     int doSignal)
+{
   DBG_WARN(GWEN_LOGDOMAIN,
            "Function is not appropriate for this type of widget (%s)",
            GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
@@ -138,10 +141,11 @@ int Gtk3Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk3Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk3Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
+                                             GWEN_DIALOG_PROPERTY prop,
+                                             int index,
+                                             const char *defaultValue)
+{
   DBG_WARN(GWEN_LOGDOMAIN,
            "Function is not appropriate for this type of widget (%s)",
            GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
@@ -150,16 +154,18 @@ const char* Gtk3Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void GWENHYWFAR_CB Gtk3Gui_WSpinBox_FreeData(void *bp, void *p) {
+static void GWENHYWFAR_CB Gtk3Gui_WSpinBox_FreeData(void *bp, void *p)
+{
   W_SPINBOX *xw;
 
-  xw=(W_SPINBOX*) p;
+  xw=(W_SPINBOX *) p;
   GWEN_FREE_OBJECT(xw);
 }
 
 
 
-static void Gtk3Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer data) {
+static void Gtk3Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer data)
+{
   GWEN_WIDGET *w;
   int rv;
 
@@ -176,7 +182,8 @@ static void Gtk3Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer
 
 
 
-int Gtk3Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WSpinBox_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   GWEN_WIDGET *wParent;
   W_SPINBOX *xw;
@@ -188,8 +195,8 @@ int Gtk3Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
 
   xw->adjustment=GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 100.0, 1.0, 5.0, 5.0));
   g=gtk_spin_button_new(xw->adjustment, 1.0, 0);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WSpinBox_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WSpinBox_GetIntProperty);
@@ -198,7 +205,7 @@ int Gtk3Gui_WSpinBox_Setup(GWEN_WIDGET *w) {
 
   g_signal_connect(g,
                    "value-changed",
-                   G_CALLBACK (Gtk3Gui_WSpinBox_Changed_handler),
+                   G_CALLBACK(Gtk3Gui_WSpinBox_Changed_handler),
                    w);
 
   if (wParent)

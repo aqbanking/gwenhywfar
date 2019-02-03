@@ -117,18 +117,18 @@
 
 GWENHYWFAR_EXPORT
 GWEN_PLUGIN *ct_ohbci_factory(GWEN_PLUGIN_MANAGER *pm,
-			      const char *modName,
-			      const char *fileName);
+                              const char *modName,
+                              const char *fileName);
 
 GWEN_PLUGIN *GWEN_Crypt_TokenOHBCI_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
-					      const char *modName,
-					      const char *fileName);
-GWEN_CRYPT_TOKEN* GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_Plugin_CreateToken(GWEN_PLUGIN *pl, const char *name);
+                                              const char *modName,
+                                              const char *fileName);
+GWEN_CRYPT_TOKEN *GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_Plugin_CreateToken(GWEN_PLUGIN *pl, const char *name);
 
 int GWENHYWFAR_CB
-  GWEN_Crypt_TokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
-					  GWEN_BUFFER *name);
+GWEN_Crypt_TokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
+                                        GWEN_BUFFER *name);
 
 
 typedef struct GWEN_CRYPT_TOKEN_OHBCI GWEN_CRYPT_TOKEN_OHBCI;
@@ -152,60 +152,60 @@ void GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_FreeData(void *bp, void *p);
 
 
 int GWEN_Crypt_TokenOHBCI__DecryptFile(GWEN_CRYPT_TOKEN *ct,
-				       GWEN_BUFFER *fbuf,
-				       int trynum,
-				       uint32_t gid);
+                                       GWEN_BUFFER *fbuf,
+                                       int trynum,
+                                       uint32_t gid);
 int GWEN_Crypt_TokenOHBCI__DecryptFile16(GWEN_CRYPT_TOKEN *ct,
-					 GWEN_BUFFER *fbuf,
-					 int trynum,
-					 uint32_t gid);
+                                         GWEN_BUFFER *fbuf,
+                                         int trynum,
+                                         uint32_t gid);
 
 int GWEN_Crypt_TokenOHBCI__DecryptTresor(GWEN_CRYPT_TOKEN *ct,
-					 GWEN_BUFFER *fbuf,
-					 int trynum,
-					 uint32_t gid);
+                                         GWEN_BUFFER *fbuf,
+                                         int trynum,
+                                         uint32_t gid);
 
 void GWEN_Crypt_TokenOHBCI__DecodeKey(GWEN_CRYPT_TOKEN *ct,
-				      GWEN_TAG16 *keyTlv,
-				      GWEN_DB_NODE *dbKeys,
-				      const char *keyName);
+                                      GWEN_TAG16 *keyTlv,
+                                      GWEN_DB_NODE *dbKeys,
+                                      const char *keyName);
 int GWEN_Crypt_TokenOHBCI__Decode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf);
 
 
 
 int GWEN_Crypt_TokenOHBCI__EncodeKey(const GWEN_CRYPT_KEY *key,
                                      GWEN_CRYPT_TOKEN_CONTEXT *fct,
-				     unsigned int tagType,
-				     int wantPublic,
-				     int isCrypt,
-				     GWEN_BUFFER *dbuf);
+                                     unsigned int tagType,
+                                     int wantPublic,
+                                     int isCrypt,
+                                     GWEN_BUFFER *dbuf);
 int GWEN_Crypt_TokenOHBCI_Encode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf);
 
 
 int GWEN_Crypt_TokenOHBCI__EnsurePassword(GWEN_CRYPT_TOKEN *ct,
-					  int trynum,
+                                          int trynum,
                                           int twice,
-					  uint32_t gid);
+                                          uint32_t gid);
 
 
 
-int GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid);
-int GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_Open(GWEN_CRYPT_TOKEN *ct, int manage, uint32_t gid);
-int GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid);
+int GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid);
+int GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_Open(GWEN_CRYPT_TOKEN *ct, int manage, uint32_t gid);
+int GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid);
 
-int GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_Write(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid);
-int GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_Read(GWEN_CRYPT_TOKEN *ct, int fd, uint32_t gid);
+int GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_Write(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid);
+int GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_Read(GWEN_CRYPT_TOKEN *ct, int fd, uint32_t gid);
 
 
-int GWENHYWFAR_CB 
-  GWEN_Crypt_TokenOHBCI_ChangePin(GWEN_CRYPT_TOKEN *ct,
-				  int admin,
-				  uint32_t gid);
+int GWENHYWFAR_CB
+GWEN_Crypt_TokenOHBCI_ChangePin(GWEN_CRYPT_TOKEN *ct,
+                                int admin,
+                                uint32_t gid);
 
 
 

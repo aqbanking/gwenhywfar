@@ -29,7 +29,8 @@ GWEN_INHERIT_FUNCTIONS(HTML_GROUP)
 
 HTML_GROUP *HtmlGroup_new(const char *groupName,
                           HTML_GROUP *parent,
-                          GWEN_XML_CONTEXT *ctx) {
+                          GWEN_XML_CONTEXT *ctx)
+{
   HTML_GROUP *g;
 
   GWEN_NEW_OBJECT(HTML_GROUP, g);
@@ -46,7 +47,8 @@ HTML_GROUP *HtmlGroup_new(const char *groupName,
 
 
 
-void HtmlGroup_free(HTML_GROUP *g) {
+void HtmlGroup_free(HTML_GROUP *g)
+{
   if (g) {
     GWEN_INHERIT_FINI(HTML_GROUP, g);
 
@@ -59,49 +61,56 @@ void HtmlGroup_free(HTML_GROUP *g) {
 
 
 
-HTML_GROUP *HtmlGroup_GetParent(const HTML_GROUP *g) {
+HTML_GROUP *HtmlGroup_GetParent(const HTML_GROUP *g)
+{
   assert(g);
   return g->parent;
 }
 
 
 
-GWEN_XML_CONTEXT *HtmlGroup_GetXmlContext(const HTML_GROUP *g) {
+GWEN_XML_CONTEXT *HtmlGroup_GetXmlContext(const HTML_GROUP *g)
+{
   assert(g);
   return g->xmlContext;
 }
 
 
 
-const char *HtmlGroup_GetGroupName(const HTML_GROUP *g) {
+const char *HtmlGroup_GetGroupName(const HTML_GROUP *g)
+{
   assert(g);
   return g->groupName;
 }
 
 
 
-HTML_OBJECT *HtmlGroup_GetObject(const HTML_GROUP *g) {
+HTML_OBJECT *HtmlGroup_GetObject(const HTML_GROUP *g)
+{
   assert(g);
   return g->object;
 }
 
 
 
-void HtmlGroup_SetObject(HTML_GROUP *g, HTML_OBJECT *o) {
+void HtmlGroup_SetObject(HTML_GROUP *g, HTML_OBJECT *o)
+{
   assert(g);
   g->object=o;
 }
 
 
 
-HTML_PROPS *HtmlGroup_GetProperties(const HTML_GROUP *g) {
+HTML_PROPS *HtmlGroup_GetProperties(const HTML_GROUP *g)
+{
   assert(g);
   return g->properties;
 }
 
 
 
-void HtmlGroup_SetProperties(HTML_GROUP *g, HTML_PROPS *pr) {
+void HtmlGroup_SetProperties(HTML_GROUP *g, HTML_PROPS *pr)
+{
   assert(g);
 
   HtmlProps_Attach(pr);
@@ -116,9 +125,9 @@ void HtmlGroup_SetProperties(HTML_GROUP *g, HTML_PROPS *pr) {
 
 
 
-HTML_GROUP_STARTTAG_FN
-HtmlGroup_SetStartTagFn(HTML_GROUP *g,
-                        HTML_GROUP_STARTTAG_FN f) {
+HTML_GROUP_STARTTAG_FN HtmlGroup_SetStartTagFn(HTML_GROUP *g,
+                                               HTML_GROUP_STARTTAG_FN f)
+{
   HTML_GROUP_STARTTAG_FN oldFn;
 
   assert(g);
@@ -129,9 +138,9 @@ HtmlGroup_SetStartTagFn(HTML_GROUP *g,
 
 
 
-HTML_GROUP_ENDTAG_FN
-HtmlGroup_SetEndTagFn(HTML_GROUP *g,
-                      HTML_GROUP_ENDTAG_FN f) {
+HTML_GROUP_ENDTAG_FN HtmlGroup_SetEndTagFn(HTML_GROUP *g,
+                                           HTML_GROUP_ENDTAG_FN f)
+{
   HTML_GROUP_ENDTAG_FN oldFn;
 
   assert(g);
@@ -142,9 +151,9 @@ HtmlGroup_SetEndTagFn(HTML_GROUP *g,
 
 
 
-HTML_GROUP_ADDDATA_FN
-HtmlGroup_SetAddDataFn(HTML_GROUP *g,
-                       HTML_GROUP_ADDDATA_FN f) {
+HTML_GROUP_ADDDATA_FN HtmlGroup_SetAddDataFn(HTML_GROUP *g,
+                                             HTML_GROUP_ADDDATA_FN f)
+{
   HTML_GROUP_ADDDATA_FN oldFn;
 
   assert(g);
@@ -155,9 +164,9 @@ HtmlGroup_SetAddDataFn(HTML_GROUP *g,
 
 
 
-HTML_GROUP_ENDSUBGROUP_FN
-HtmlGroup_SetEndSubGroupFn(HTML_GROUP *g,
-                           HTML_GROUP_ENDSUBGROUP_FN f) {
+HTML_GROUP_ENDSUBGROUP_FN HtmlGroup_SetEndSubGroupFn(HTML_GROUP *g,
+                                                     HTML_GROUP_ENDSUBGROUP_FN f)
+{
   HTML_GROUP_ENDSUBGROUP_FN oldFn;
 
   assert(g);
@@ -171,7 +180,8 @@ HtmlGroup_SetEndSubGroupFn(HTML_GROUP *g,
 
 
 int HtmlGroup_StartTag(HTML_GROUP *g,
-                       const char *tagName) {
+                       const char *tagName)
+{
   assert(g);
   if (g->startTagFn)
     return g->startTagFn(g, tagName);
@@ -182,7 +192,8 @@ int HtmlGroup_StartTag(HTML_GROUP *g,
 
 
 int HtmlGroup_EndTag(HTML_GROUP *g,
-                     const char *tagName) {
+                     const char *tagName)
+{
   assert(g);
   if (g->endTagFn)
     return g->endTagFn(g, tagName);
@@ -193,7 +204,8 @@ int HtmlGroup_EndTag(HTML_GROUP *g,
 
 
 int HtmlGroup_AddData(HTML_GROUP *g,
-                      const char *data) {
+                      const char *data)
+{
   assert(g);
   if (g->addDataFn)
     return g->addDataFn(g, data);
@@ -203,7 +215,8 @@ int HtmlGroup_AddData(HTML_GROUP *g,
 
 
 
-int HtmlGroup_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg) {
+int HtmlGroup_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg)
+{
   assert(g);
   if (g->endSubGroupFn)
     return g->endSubGroupFn(g, sg);

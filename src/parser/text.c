@@ -75,7 +75,8 @@ char *GWEN_Text_GetWord(const char *src,
                         char *buffer,
                         unsigned int maxsize,
                         uint32_t flags,
-                        const char **next) {
+                        const char **next)
+{
   unsigned int size;
   int lastWasBlank;
   int lastBlankPos;
@@ -86,7 +87,7 @@ char *GWEN_Text_GetWord(const char *src,
 
   /* skip leading blanks, if wanted */
   if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
-    while(*src && (unsigned char)(*src)<33)
+    while (*src && (unsigned char)(*src)<33)
       src++;
   }
 
@@ -103,7 +104,7 @@ char *GWEN_Text_GetWord(const char *src,
       src++;
   }
 
-  while(*src && size<(maxsize-1)) {
+  while (*src && size<(maxsize-1)) {
     if (lastWasEscape) {
       buffer[size]=*src;
       size++;
@@ -199,7 +200,8 @@ int GWEN_Text_GetWordToBuffer(const char *src,
                               const char *delims,
                               GWEN_BUFFER *buf,
                               uint32_t flags,
-                              const char **next) {
+                              const char **next)
+{
   const char *savedSrc=src;
   int lastWasBlank;
   int lastBlankPos;
@@ -208,7 +210,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
 
   /* skip leading blanks, if wanted */
   if (flags & GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS) {
-    while(*src && (unsigned char)(*src)<33) {
+    while (*src && (unsigned char)(*src)<33) {
       if (strchr(delims, *src)) {
         *next=src;
         return 0;
@@ -229,7 +231,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
       src++;
   }
 
-  while(*src) {
+  while (*src) {
     if (lastWasEscape) {
       GWEN_Buffer_AppendByte(buf, *src);
       lastWasEscape=0;
@@ -271,7 +273,7 @@ int GWEN_Text_GetWordToBuffer(const char *src,
         }
         /* remember next loop whether this char was a blank */
 
-        if (!lastWasEscape && *((unsigned char*)src)<33) {
+        if (!lastWasEscape && *((unsigned char *)src)<33) {
           lastWasBlank=1;
           lastBlankPos=GWEN_Buffer_GetPos(buf);
         }
@@ -319,11 +321,12 @@ int GWEN_Text_GetWordToBuffer(const char *src,
 
 char *GWEN_Text_Escape(const char *src,
                        char *buffer,
-                       unsigned int maxsize) {
+                       unsigned int maxsize)
+{
   unsigned int size;
 
   size=0;
-  while(*src) {
+  while (*src) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -369,11 +372,12 @@ char *GWEN_Text_Escape(const char *src,
 
 char *GWEN_Text_EscapeTolerant(const char *src,
                                char *buffer,
-                               unsigned int maxsize) {
+                               unsigned int maxsize)
+{
   unsigned int size;
 
   size=0;
-  while(*src) {
+  while (*src) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -427,12 +431,13 @@ char *GWEN_Text_EscapeTolerant(const char *src,
 char *GWEN_Text_UnescapeN(const char *src,
                           unsigned int srclen,
                           char *buffer,
-                          unsigned int maxsize) {
+                          unsigned int maxsize)
+{
   unsigned int size;
 
   size=0;
 
-  while(*src && srclen>0) {
+  while (*src && srclen>0) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -509,7 +514,8 @@ char *GWEN_Text_UnescapeN(const char *src,
 
 char *GWEN_Text_Unescape(const char *src,
                          char *buffer,
-                         unsigned int maxsize) {
+                         unsigned int maxsize)
+{
   unsigned int srclen;
 
   srclen=strlen(src);
@@ -521,12 +527,13 @@ char *GWEN_Text_Unescape(const char *src,
 char *GWEN_Text_UnescapeTolerantN(const char *src,
                                   unsigned int srclen,
                                   char *buffer,
-                                  unsigned int maxsize) {
+                                  unsigned int maxsize)
+{
   unsigned int size;
 
   size=0;
 
-  while(*src && srclen>0) {
+  while (*src && srclen>0) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -610,7 +617,8 @@ char *GWEN_Text_UnescapeTolerantN(const char *src,
 
 char *GWEN_Text_UnescapeTolerant(const char *src,
                                  char *buffer,
-                                 unsigned int maxsize) {
+                                 unsigned int maxsize)
+{
   unsigned int srclen;
 
   srclen=strlen(src);
@@ -620,7 +628,8 @@ char *GWEN_Text_UnescapeTolerant(const char *src,
 
 
 char *GWEN_Text_ToHex(const char *src, unsigned l,
-                      char *buffer, unsigned int maxsize) {
+                      char *buffer, unsigned int maxsize)
+{
   unsigned int pos;
   unsigned int size;
 
@@ -631,7 +640,7 @@ char *GWEN_Text_ToHex(const char *src, unsigned l,
 
   pos=0;
   size=0;
-  while(pos<l) {
+  while (pos<l) {
     unsigned char c;
 
     c=(((unsigned char)(src[pos]))>>4)&0xf;
@@ -658,7 +667,8 @@ char *GWEN_Text_ToHexGrouped(const char *src,
                              unsigned maxsize,
                              unsigned int groupsize,
                              char delimiter,
-                             int skipLeadingZeroes) {
+                             int skipLeadingZeroes)
+{
   unsigned int pos;
   unsigned int size;
   unsigned int j;
@@ -668,7 +678,7 @@ char *GWEN_Text_ToHexGrouped(const char *src,
   pos=0;
   size=0;
   j=0;
-  while(pos<l) {
+  while (pos<l) {
     unsigned char c;
     int skipThis;
 
@@ -741,11 +751,12 @@ int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
                           GWEN_BUFFER *buf,
                           unsigned int groupsize,
                           char delimiter,
-                          int skipLeadingZeroes) {
+                          int skipLeadingZeroes)
+{
   unsigned int pos = 0;
   unsigned int j = 0;
 
-  while(pos<l) {
+  while (pos<l) {
     unsigned char c;
     int skipThis;
 
@@ -809,10 +820,11 @@ int GWEN_Text_ToHexBuffer(const char *src, unsigned l,
 
 
 
-int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize) {
+int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize)
+{
   unsigned int size = 0;
 
-  while(*src) {
+  while (*src) {
     unsigned char d1, d2;
     unsigned char c;
 
@@ -855,8 +867,9 @@ int GWEN_Text_FromHex(const char *src, char *buffer, unsigned maxsize) {
 
 
 
-int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     unsigned char d1, d2;
     unsigned char c;
 
@@ -899,13 +912,14 @@ int GWEN_Text_FromHexBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf) {
+int GWEN_Text_FromBcdBuffer(const char *src, GWEN_BUFFER *buf)
+{
   unsigned int l;
   int fakeByte;
 
   l=strlen(src);
   fakeByte=(l%2);
-  while(*src) {
+  while (*src) {
     unsigned char d1, d2;
     unsigned char c;
 
@@ -948,7 +962,8 @@ int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
                           GWEN_BUFFER *buf,
                           unsigned int groupsize,
                           char delimiter,
-                          int skipLeadingZeroes) {
+                          int skipLeadingZeroes)
+{
   unsigned int pos;
   unsigned int j;
 
@@ -956,7 +971,7 @@ int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
 
   pos=0;
   j=0;
-  while(pos<l) {
+  while (pos<l) {
     unsigned char c;
     int skipThis;
 
@@ -1016,7 +1031,8 @@ int GWEN_Text_ToBcdBuffer(const char *src, unsigned l,
 
 
 
-int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
+int GWEN_Text_Compare(const char *s1, const char *s2, int ign)
+{
   if (s1)
     if (*s1==0)
       s1=0;
@@ -1037,9 +1053,10 @@ int GWEN_Text_Compare(const char *s1, const char *s2, int ign) {
 
 
 
-const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle) {
-  while(*haystack) {
-    while(*haystack && tolower(*haystack)!=tolower(*needle))
+const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle)
+{
+  while (*haystack) {
+    while (*haystack && tolower(*haystack)!=tolower(*needle))
       haystack++;
     if (*haystack) {
       const char *t;
@@ -1050,7 +1067,7 @@ const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle) {
       s=needle;
       t++;
       s++;
-      while(*t && *s && (tolower(*t)==tolower(*s))) {
+      while (*t && *s && (tolower(*t)==tolower(*s))) {
         t++;
         s++;
       }
@@ -1074,7 +1091,8 @@ const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle) {
 int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
                           const char *p, unsigned int *ppos,
                           int sensecase,
-                          unsigned int *matches) {
+                          unsigned int *matches)
+{
   char a;
   char b;
   unsigned wlength;
@@ -1139,7 +1157,8 @@ int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
 int GWEN_Text__findSegment(const char *w, unsigned int *wpos,
                            const char *p, unsigned int *ppos,
                            int sensecase,
-                           unsigned int *matches) {
+                           unsigned int *matches)
+{
   unsigned int lwpos, lppos, lmatches;
   unsigned wlength;
 
@@ -1147,11 +1166,11 @@ int GWEN_Text__findSegment(const char *w, unsigned int *wpos,
   lwpos=*wpos;
   lppos=*ppos;
   lmatches=*matches;
-  while(lwpos<wlength) {
+  while (lwpos<wlength) {
     *ppos=lppos;
     *wpos=lwpos;
     *matches=lmatches;
-    if (GWEN_Text__cmpSegment(w,wpos,p,ppos,sensecase,matches))
+    if (GWEN_Text__cmpSegment(w, wpos, p, ppos, sensecase, matches))
       return 1;
     lwpos++;
   }
@@ -1159,7 +1178,8 @@ int GWEN_Text__findSegment(const char *w, unsigned int *wpos,
 }
 
 
-int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
+int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase)
+{
   unsigned int ppos;
   unsigned int wpos;
   unsigned int matches;
@@ -1169,11 +1189,11 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
   plength=strlen(p);
 
   /* compare until first occurrence of '*' */
-  if (!GWEN_Text__cmpSegment(w,&wpos,p,&ppos,sensecase,&matches)) {
+  if (!GWEN_Text__cmpSegment(w, &wpos, p, &ppos, sensecase, &matches)) {
     return -1;
   }
 
-  while(1) {
+  while (1) {
     /* if pattern ends we have done it */
     if (ppos>=plength)
       return matches;
@@ -1183,7 +1203,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
     if (ppos>=plength)
       return matches;
     /* find next matching segment */
-    if (!GWEN_Text__findSegment(w,&wpos,p,&ppos,sensecase,&matches)) {
+    if (!GWEN_Text__findSegment(w, &wpos, p, &ppos, sensecase, &matches)) {
       return -1;
     }
   } /* while */
@@ -1194,11 +1214,12 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase) {
 
 
 int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
-                          int fillchar) {
+                          int fillchar)
+{
   char lbuffer[128];
   unsigned int i;
 
-  sprintf(lbuffer,"%d", num);
+  sprintf(lbuffer, "%d", num);
   i=strlen(lbuffer);
   if (i>=bufsize) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (%d>=%d)", i, bufsize);
@@ -1207,7 +1228,7 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
   if (fillchar>0) {
     /* fill right, but first copy chars */
     strcpy(buffer, lbuffer);
-    while(i<bufsize-1)
+    while (i<bufsize-1)
       buffer[i++]=fillchar;
     buffer[i]=0;
     return bufsize;
@@ -1233,7 +1254,8 @@ int GWEN_Text_NumToString(int num, char *buffer, unsigned int bufsize,
 
 
 void GWEN_Text_DumpString(const char *s, unsigned int l,
-                          unsigned int insert) {
+                          unsigned int insert)
+{
   unsigned int i;
   unsigned int j;
   unsigned int pos;
@@ -1242,30 +1264,30 @@ void GWEN_Text_DumpString(const char *s, unsigned int l,
   pos=0;
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr,"String size is %d:\n",l);
-  while(pos<l) {
+  fprintf(stderr, "String size is %d:\n", l);
+  while (pos<l) {
     for (k=0; k<insert; k++)
       fprintf(stderr, " ");
-    fprintf(stderr,"%04x: ",pos);
+    fprintf(stderr, "%04x: ", pos);
     j=pos+16;
     if (j>=l)
       j=l;
 
     /* show hex dump */
     for (i=pos; i<j; i++) {
-      fprintf(stderr,"%02x ",(unsigned char)s[i]);
+      fprintf(stderr, "%02x ", (unsigned char)s[i]);
     }
     if (j-pos<16)
       for (i=0; i<16-(j-pos); i++)
-        fprintf(stderr,"   ");
+        fprintf(stderr, "   ");
     /* show text */
     for (i=pos; i<j; i++) {
       if (s[i]<32)
-        fprintf(stderr,".");
+        fprintf(stderr, ".");
       else
-        fprintf(stderr,"%c",s[i]);
+        fprintf(stderr, "%c", s[i]);
     }
-    fprintf(stderr,"\n");
+    fprintf(stderr, "\n");
     pos+=16;
   }
 }
@@ -1274,7 +1296,8 @@ void GWEN_Text_DumpString(const char *s, unsigned int l,
 
 void GWEN_Text_DumpString2Buffer(const char *s, unsigned int l,
                                  GWEN_BUFFER *mbuf,
-                                 unsigned int insert) {
+                                 unsigned int insert)
+{
   unsigned int i;
   unsigned int j;
   unsigned int pos;
@@ -1284,14 +1307,14 @@ void GWEN_Text_DumpString2Buffer(const char *s, unsigned int l,
   pos=0;
   for (k=0; k<insert; k++)
     GWEN_Buffer_AppendByte(mbuf, ' ');
-  GWEN_Buffer_AppendString(mbuf,"String size is ");
+  GWEN_Buffer_AppendString(mbuf, "String size is ");
   snprintf(numbuf, sizeof(numbuf), "%d", l);
   GWEN_Buffer_AppendString(mbuf, numbuf);
   GWEN_Buffer_AppendByte(mbuf, '\n');
-  while(pos<l) {
+  while (pos<l) {
     for (k=0; k<insert; k++)
       GWEN_Buffer_AppendByte(mbuf, ' ');
-    snprintf(numbuf, sizeof(numbuf),"%04x: ",pos);
+    snprintf(numbuf, sizeof(numbuf), "%04x: ", pos);
     GWEN_Buffer_AppendString(mbuf, numbuf);
     j=pos+16;
     if (j>=l)
@@ -1299,7 +1322,7 @@ void GWEN_Text_DumpString2Buffer(const char *s, unsigned int l,
 
     /* show hex dump */
     for (i=pos; i<j; i++) {
-      snprintf(numbuf, sizeof(numbuf),"%02x ", (unsigned char)s[i]);
+      snprintf(numbuf, sizeof(numbuf), "%02x ", (unsigned char)s[i]);
       GWEN_Buffer_AppendString(mbuf, numbuf);
     }
     if (j-pos<16)
@@ -1323,8 +1346,9 @@ void GWEN_Text_DumpString2Buffer(const char *s, unsigned int l,
 
 
 
-int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -1357,8 +1381,9 @@ int GWEN_Text_EscapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -1416,8 +1441,9 @@ int GWEN_Text_UnescapeToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -1459,8 +1485,9 @@ int GWEN_Text_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     //const char *srcBak=src;
 
     int charHandled=0;
@@ -1503,8 +1530,9 @@ int GWEN_Text_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf) {
-  while(GWEN_Buffer_GetBytesLeft(src)) {
+int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf)
+{
+  while (GWEN_Buffer_GetBytesLeft(src)) {
     int z;
     unsigned char x;
 
@@ -1550,7 +1578,8 @@ int GWEN_Text_EscapeToBufferTolerant2(GWEN_BUFFER *src, GWEN_BUFFER *buf) {
 
 void GWEN_Text_LogString(const char *s, unsigned int l,
                          const char *logDomain,
-                         GWEN_LOGGER_LEVEL lv) {
+                         GWEN_LOGGER_LEVEL lv)
+{
   GWEN_BUFFER *mbuf;
 
   mbuf=GWEN_Buffer_new(0, ((l*16)<1024)?1024:l*16, 0, 1);
@@ -1561,7 +1590,8 @@ void GWEN_Text_LogString(const char *s, unsigned int l,
 
 
 
-void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf) {
+void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf)
+{
   const char *p;
   char *dst;
   unsigned int size;
@@ -1603,13 +1633,14 @@ void GWEN_Text_CondenseBuffer(GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf) {
+int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf)
+{
   char numbuf[128];
   int rv;
 #ifdef HAVE_SETLOCALE
   const char *orig_locale = setlocale(LC_NUMERIC, NULL);
   char *currentLocale = strdup(orig_locale ? orig_locale : "C");
-  setlocale(LC_NUMERIC,"C");
+  setlocale(LC_NUMERIC, "C");
 #endif
 
   rv=snprintf(numbuf, sizeof(numbuf), "%f", num);
@@ -1627,12 +1658,13 @@ int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_StringToDouble(const char *s, double *num) {
+int GWEN_Text_StringToDouble(const char *s, double *num)
+{
   int rv;
 #ifdef HAVE_SETLOCALE
   const char *orig_locale = setlocale(LC_NUMERIC, NULL);
   char *currentLocale = strdup(orig_locale ? orig_locale : "C");
-  setlocale(LC_NUMERIC,"C");
+  setlocale(LC_NUMERIC, "C");
 #endif
 
   rv=sscanf(s, "%lf", num);
@@ -1649,7 +1681,8 @@ int GWEN_Text_StringToDouble(const char *s, double *num) {
 
 
 
-double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign) {
+double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign)
+{
   int nboth;
   int nmatch;
   double pc;
@@ -1657,14 +1690,14 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign) {
   nboth=strlen(s1)+strlen(s2);
   nmatch=0;
   if (ign) {
-    while(*s1 && *s2) {
+    while (*s1 && *s2) {
       const char *t;
       int lmatch;
 
       /* find next equal in s2 */
       t=s2;
       lmatch=0;
-      while(*t) {
+      while (*t) {
         if (toupper(*s1)==toupper(*t)) {
           lmatch=2;
           break;
@@ -1685,14 +1718,14 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign) {
     } /* while */
   }
   else {
-    while(*s1 && *s2) {
+    while (*s1 && *s2) {
       const char *t;
       int lmatch;
 
       /* find next equal in s2 */
       t=s2;
       lmatch=0;
-      while(*t) {
+      while (*t) {
         if (*s1==*t) {
           lmatch=2;
           break;
@@ -1723,7 +1756,8 @@ double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign) {
 
 
 
-double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign) {
+double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign)
+{
   double pc1, pc2;
 
   pc1=GWEN_Text__CheckSimilarity(s1, s2, ign);
@@ -1735,7 +1769,8 @@ double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign) {
 
 
 
-int GWEN_Text_CountUtf8Chars(const char *s, int len) {
+int GWEN_Text_CountUtf8Chars(const char *s, int len)
+{
   int count;
   int handled;
 
@@ -1743,7 +1778,7 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
     len=strlen(s);
   count=0;
   handled=0;
-  while(handled<len) {
+  while (handled<len) {
     unsigned char c;
     int i;
 
@@ -1791,7 +1826,8 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len) {
 
 
 
-int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
+int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
+{
   char *pdst;
   uint32_t roomLeft;
   uint32_t bytesAdded;
@@ -1816,7 +1852,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
   roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
   bytesAdded=0;
 
-  while(*src) {
+  while (*src) {
     unsigned char x;
     int match;
 
@@ -1828,7 +1864,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 
         src++;
         src++;
-        while(*src && isdigit((int)*src)) {
+        while (*src && isdigit((int)*src)) {
           num*=10;
           num+=(*src)-'0';
           src++;
@@ -1881,7 +1917,7 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
       else {
         const GWEN_TEXT_ESCAPE_ENTRY *e;
         e=gwen_text__xml_escape_chars;
-        while(e->replace) {
+        while (e->replace) {
           int l;
 
           l=strlen(e->replace);
@@ -1912,8 +1948,9 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     unsigned char x;
     const GWEN_TEXT_ESCAPE_ENTRY *e;
     int match;
@@ -1921,7 +1958,7 @@ int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
     match=0;
     x=(unsigned char)*src;
     e=gwen_text__xml_escape_chars;
-    while(e->replace) {
+    while (e->replace) {
       if (x==e->character) {
         GWEN_Buffer_AppendString(buf, e->replace);
         match=1;
@@ -1951,7 +1988,8 @@ int GWEN_Text_EscapeXmlToBuffer(const char *src, GWEN_BUFFER *buf) {
 int GWEN_Text_ConvertCharset(const char *fromCharset,
                              const char *toCharset,
                              const char *text, int len,
-                             GWEN_BUFFER *tbuf) {
+                             GWEN_BUFFER *tbuf)
+{
   if (len) {
     if (fromCharset && *fromCharset && toCharset && *toCharset &&
         strcasecmp(fromCharset, toCharset)!=0) {
@@ -1981,15 +2019,15 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
         size_t space;
 
         /* convert */
-        pInbuf=(char*)text;
+        pInbuf=(char *)text;
 
         outLeft=len*2;
         space=outLeft;
-        outbuf=(char*)malloc(outLeft);
+        outbuf=(char *)malloc(outLeft);
         assert(outbuf);
 
         inLeft=len;
-        pInbuf=(char*)text;
+        pInbuf=(char *)text;
         pOutbuf=outbuf;
         done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
         if (done==(size_t)-1) {

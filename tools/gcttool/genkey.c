@@ -23,7 +23,8 @@
 
 
 
-int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
@@ -33,84 +34,84 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_CRYPT_CRYPTALGOID algoId;
   int rv;
   const char *s;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "keyId",                      /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "k",                          /* short option */
-    "key",                        /* long option */
-    "Key id",                     /* short description */
-    "Key id"                      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                      /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "algo",                       /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "algo",                       /* long option */
-    "Specify the algorithm",      /* short description */
-    "Specify the algorithm"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "keysize",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "s",                          /* short option */
-    "keysize",                    /* long option */
-    "Key size in bytes",          /* short description */
-    "Key size in bytes"           /* long description */
-  },
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "exp65537",                   /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "e",                          /* short option */
-    "exp65537",                   /* long option */
-    "Use default exponent of 65537", /* short description */
-    "Use default exponent of 65537"  /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "keyId",                      /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "k",                          /* short option */
+      "key",                        /* long option */
+      "Key id",                     /* short description */
+      "Key id"                      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                      /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "algo",                       /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "algo",                       /* long option */
+      "Specify the algorithm",      /* short description */
+      "Specify the algorithm"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "keysize",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "s",                          /* short option */
+      "keysize",                    /* long option */
+      "Key size in bytes",          /* short description */
+      "Key size in bytes"           /* long description */
+    },
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "exp65537",                   /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "e",                          /* short option */
+      "exp65537",                   /* long option */
+      "Use default exponent of 65537", /* short description */
+      "Use default exponent of 65537"  /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -190,7 +191,7 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
     if (rv) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error generating key (%d)", rv);
+                "Error generating key (%d)", rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return 3;
     }
@@ -204,7 +205,7 @@ int genKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   }
 
   fprintf(stderr, "Key %d (%s, %d bytes) successfully generated.\n",
-	  keyId, GWEN_Crypt_CryptAlgoId_toString(algoId), keySize);
+          keyId, GWEN_Crypt_CryptAlgoId_toString(algoId), keySize);
 
   return 0;
 }

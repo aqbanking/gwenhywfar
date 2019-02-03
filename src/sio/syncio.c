@@ -48,7 +48,8 @@ GWEN_LIST_FUNCTIONS(GWEN_SYNCIO, GWEN_SyncIo)
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_new(const char *typeName, GWEN_SYNCIO *baseIo) {
+GWEN_SYNCIO *GWEN_SyncIo_new(const char *typeName, GWEN_SYNCIO *baseIo)
+{
   GWEN_SYNCIO *sio;
 
   assert(typeName);
@@ -65,7 +66,8 @@ GWEN_SYNCIO *GWEN_SyncIo_new(const char *typeName, GWEN_SYNCIO *baseIo) {
 
 
 
-void GWEN_SyncIo_Attach(GWEN_SYNCIO *sio) {
+void GWEN_SyncIo_Attach(GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   sio->refCount++;
@@ -73,7 +75,8 @@ void GWEN_SyncIo_Attach(GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_free(GWEN_SYNCIO *sio) {
+void GWEN_SyncIo_free(GWEN_SYNCIO *sio)
+{
   if (sio) {
     assert(sio->refCount);
     if (sio->refCount==1) {
@@ -91,7 +94,8 @@ void GWEN_SyncIo_free(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Connect(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Connect(GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   if (sio->connectFn)
@@ -102,7 +106,8 @@ int GWEN_SyncIo_Connect(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Disconnect(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Disconnect(GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   if (sio->disconnectFn)
@@ -113,7 +118,8 @@ int GWEN_SyncIo_Disconnect(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Flush(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Flush(GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   if (sio->flushFn)
@@ -126,7 +132,8 @@ int GWEN_SyncIo_Flush(GWEN_SYNCIO *sio) {
 
 int GWEN_SyncIo_Read(GWEN_SYNCIO *sio,
                      uint8_t *buffer,
-                     uint32_t size) {
+                     uint32_t size)
+{
   assert(sio);
   assert(sio->refCount);
   if (sio->readFn)
@@ -139,7 +146,8 @@ int GWEN_SyncIo_Read(GWEN_SYNCIO *sio,
 
 int GWEN_SyncIo_Write(GWEN_SYNCIO *sio,
                       const uint8_t *buffer,
-                      uint32_t size) {
+                      uint32_t size)
+{
   assert(sio);
   assert(sio->refCount);
   if (sio->writeFn)
@@ -150,7 +158,8 @@ int GWEN_SyncIo_Write(GWEN_SYNCIO *sio,
 
 
 
-uint32_t GWEN_SyncIo_GetFlags(const GWEN_SYNCIO *sio) {
+uint32_t GWEN_SyncIo_GetFlags(const GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   return sio->flags;
@@ -158,7 +167,8 @@ uint32_t GWEN_SyncIo_GetFlags(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_SetFlags(GWEN_SYNCIO *sio, uint32_t fl) {
+void GWEN_SyncIo_SetFlags(GWEN_SYNCIO *sio, uint32_t fl)
+{
   assert(sio);
   assert(sio->refCount);
   sio->flags=fl;
@@ -166,7 +176,8 @@ void GWEN_SyncIo_SetFlags(GWEN_SYNCIO *sio, uint32_t fl) {
 
 
 
-void GWEN_SyncIo_AddFlags(GWEN_SYNCIO *sio, uint32_t fl) {
+void GWEN_SyncIo_AddFlags(GWEN_SYNCIO *sio, uint32_t fl)
+{
   assert(sio);
   assert(sio->refCount);
   sio->flags|=fl;
@@ -174,7 +185,8 @@ void GWEN_SyncIo_AddFlags(GWEN_SYNCIO *sio, uint32_t fl) {
 
 
 
-void GWEN_SyncIo_SubFlags(GWEN_SYNCIO *sio, uint32_t fl) {
+void GWEN_SyncIo_SubFlags(GWEN_SYNCIO *sio, uint32_t fl)
+{
   assert(sio);
   assert(sio->refCount);
   sio->flags&=~fl;
@@ -182,7 +194,8 @@ void GWEN_SyncIo_SubFlags(GWEN_SYNCIO *sio, uint32_t fl) {
 
 
 
-GWEN_SYNCIO_STATUS GWEN_SyncIo_GetStatus(const GWEN_SYNCIO *sio) {
+GWEN_SYNCIO_STATUS GWEN_SyncIo_GetStatus(const GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   return sio->status;
@@ -190,7 +203,8 @@ GWEN_SYNCIO_STATUS GWEN_SyncIo_GetStatus(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_SetStatus(GWEN_SYNCIO *sio, GWEN_SYNCIO_STATUS st) {
+void GWEN_SyncIo_SetStatus(GWEN_SYNCIO *sio, GWEN_SYNCIO_STATUS st)
+{
   assert(sio);
   assert(sio->refCount);
   sio->status=st;
@@ -198,7 +212,8 @@ void GWEN_SyncIo_SetStatus(GWEN_SYNCIO *sio, GWEN_SYNCIO_STATUS st) {
 
 
 
-const char *GWEN_SyncIo_GetTypeName(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_GetTypeName(const GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   return sio->typeName;
@@ -206,7 +221,8 @@ const char *GWEN_SyncIo_GetTypeName(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_GetBaseIo(const GWEN_SYNCIO *sio) {
+GWEN_SYNCIO *GWEN_SyncIo_GetBaseIo(const GWEN_SYNCIO *sio)
+{
   assert(sio);
   assert(sio->refCount);
   return sio->baseIo;
@@ -214,14 +230,15 @@ GWEN_SYNCIO *GWEN_SyncIo_GetBaseIo(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_GetBaseIoByTypeName(const GWEN_SYNCIO *sio, const char *typeName) {
+GWEN_SYNCIO *GWEN_SyncIo_GetBaseIoByTypeName(const GWEN_SYNCIO *sio, const char *typeName)
+{
   GWEN_SYNCIO *baseIo;
 
   assert(sio);
   assert(sio->refCount);
 
   baseIo=sio->baseIo;
-  while(baseIo) {
+  while (baseIo) {
     if (baseIo->typeName && strcasecmp(baseIo->typeName, typeName)==0)
       return baseIo;
     baseIo=baseIo->baseIo;
@@ -232,7 +249,8 @@ GWEN_SYNCIO *GWEN_SyncIo_GetBaseIoByTypeName(const GWEN_SYNCIO *sio, const char 
 
 
 
-GWEN_SYNCIO_CONNECT_FN GWEN_SyncIo_SetConnectFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_CONNECT_FN fn) {
+GWEN_SYNCIO_CONNECT_FN GWEN_SyncIo_SetConnectFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_CONNECT_FN fn)
+{
   GWEN_SYNCIO_CONNECT_FN of;
 
   assert(sio);
@@ -244,7 +262,8 @@ GWEN_SYNCIO_CONNECT_FN GWEN_SyncIo_SetConnectFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_CO
 
 
 
-GWEN_SYNCIO_DISCONNECT_FN GWEN_SyncIo_SetDisconnectFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_DISCONNECT_FN fn) {
+GWEN_SYNCIO_DISCONNECT_FN GWEN_SyncIo_SetDisconnectFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_DISCONNECT_FN fn)
+{
   GWEN_SYNCIO_DISCONNECT_FN of;
 
   assert(sio);
@@ -256,7 +275,8 @@ GWEN_SYNCIO_DISCONNECT_FN GWEN_SyncIo_SetDisconnectFn(GWEN_SYNCIO *sio, GWEN_SYN
 
 
 
-GWEN_SYNCIO_FLUSH_FN GWEN_SyncIo_SetFlushFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_FLUSH_FN fn) {
+GWEN_SYNCIO_FLUSH_FN GWEN_SyncIo_SetFlushFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_FLUSH_FN fn)
+{
   GWEN_SYNCIO_FLUSH_FN of;
 
   assert(sio);
@@ -268,7 +288,8 @@ GWEN_SYNCIO_FLUSH_FN GWEN_SyncIo_SetFlushFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_FLUSH_
 
 
 
-GWEN_SYNCIO_READ_FN GWEN_SyncIo_SetReadFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_READ_FN fn) {
+GWEN_SYNCIO_READ_FN GWEN_SyncIo_SetReadFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_READ_FN fn)
+{
   GWEN_SYNCIO_READ_FN of;
 
   assert(sio);
@@ -280,7 +301,8 @@ GWEN_SYNCIO_READ_FN GWEN_SyncIo_SetReadFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_READ_FN 
 
 
 
-GWEN_SYNCIO_WRITE_FN GWEN_SyncIo_SetWriteFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_WRITE_FN fn) {
+GWEN_SYNCIO_WRITE_FN GWEN_SyncIo_SetWriteFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_WRITE_FN fn)
+{
   GWEN_SYNCIO_WRITE_FN of;
 
   assert(sio);
@@ -294,7 +316,8 @@ GWEN_SYNCIO_WRITE_FN GWEN_SyncIo_SetWriteFn(GWEN_SYNCIO *sio, GWEN_SYNCIO_WRITE_
 
 int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
                             const uint8_t *buffer,
-                            uint32_t size) {
+                            uint32_t size)
+{
   if (size==0) {
     int rv;
 
@@ -312,7 +335,7 @@ int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
     uint32_t todo;
 
     todo=size;
-    while(todo) {
+    while (todo) {
       int rv;
 
       do {
@@ -336,11 +359,12 @@ int GWEN_SyncIo_WriteForced(GWEN_SYNCIO *sio,
 
 int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
                            uint8_t *buffer,
-                           uint32_t size) {
+                           uint32_t size)
+{
   uint32_t todo;
 
   todo=size;
-  while(todo) {
+  while (todo) {
     int rv;
 
     do {
@@ -365,10 +389,11 @@ int GWEN_SyncIo_ReadForced(GWEN_SYNCIO *sio,
 
 
 
-int GWEN_SyncIo_WriteString(GWEN_SYNCIO *sio, const char *s) {
+int GWEN_SyncIo_WriteString(GWEN_SYNCIO *sio, const char *s)
+{
   int rv;
 
-  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) s, s?strlen(s):0);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) s, s?strlen(s):0);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -379,7 +404,8 @@ int GWEN_SyncIo_WriteString(GWEN_SYNCIO *sio, const char *s) {
 
 
 
-int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s) {
+int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s)
+{
   int rv;
 
   rv=GWEN_SyncIo_WriteString(sio, s);
@@ -389,9 +415,9 @@ int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s) {
   }
 
   if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_DOSMODE)
-    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\r\n", 2);
+    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "\r\n", 2);
   else
-    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
+    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "\n", 1);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -402,15 +428,17 @@ int GWEN_SyncIo_WriteLine(GWEN_SYNCIO *sio, const char *s) {
 
 
 
-int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s) {
-  return GWEN_SyncIo_WriteForced(sio, (const uint8_t*) &s, 1);
+int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s)
+{
+  return GWEN_SyncIo_WriteForced(sio, (const uint8_t *) &s, 1);
 }
 
 
 
 int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
-    int maxLines,
-    GWEN_STRINGLIST *sl) {
+                                            int maxLines,
+                                            GWEN_STRINGLIST *sl)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO *baseSio;
   int rv;
@@ -445,7 +473,8 @@ int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
 
 
 
-int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uint32_t size) {
+int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uint32_t size)
+{
   GWEN_SYNCIO *sio;
   uint32_t todo;
   int rv;
@@ -463,7 +492,7 @@ int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uin
 
   /* read file */
   todo=size;
-  while(todo) {
+  while (todo) {
     int rv;
 
     do {
@@ -494,7 +523,8 @@ int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uin
 
 
 
-int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf) {
+int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf)
+{
   GWEN_SYNCIO *sio;
   int rv;
   int bytesRead=0;
@@ -517,13 +547,13 @@ int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf) {
     GWEN_Buffer_AllocRoom(dbuf, (uint32_t) fileSize);
 
   /* read file */
-  while(1) {
+  while (1) {
     uint32_t l;
     uint8_t *p;
 
     GWEN_Buffer_AllocRoom(dbuf, 4096);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
-    p=(uint8_t*) GWEN_Buffer_GetPosPointer(dbuf);
+    p=(uint8_t *) GWEN_Buffer_GetPosPointer(dbuf);
 
     do {
       rv=GWEN_SyncIo_Read(sio, p, l);

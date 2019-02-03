@@ -36,24 +36,24 @@
 
 GWENHYWFAR_EXPORT
 GWEN_PLUGIN *dbio_csv_factory(GWEN_PLUGIN_MANAGER *pm,
-			      const char *modName,
-			      const char *fileName);
+                              const char *modName,
+                              const char *fileName);
 
 
 static GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl);
 
 
 static int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
-				GWEN_SYNCIO *sio,
-				GWEN_DB_NODE *data,
-				GWEN_DB_NODE *cfg,
-				uint32_t flags);
+                                GWEN_SYNCIO *sio,
+                                GWEN_DB_NODE *data,
+                                GWEN_DB_NODE *cfg,
+                                uint32_t flags);
 
 static int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
-				GWEN_SYNCIO *sio,
-				GWEN_DB_NODE *data,
-				GWEN_DB_NODE *cfg,
-				uint32_t flags);
+                                GWEN_SYNCIO *sio,
+                                GWEN_DB_NODE *data,
+                                GWEN_DB_NODE *cfg,
+                                uint32_t flags);
 
 static GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *fname);
 

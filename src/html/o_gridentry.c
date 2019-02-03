@@ -24,7 +24,8 @@ GWEN_INHERIT(HTML_OBJECT, OBJECT_GRIDENTRY);
 
 
 
-HTML_OBJECT *HtmlObject_GridEntry_new(GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT *HtmlObject_GridEntry_new(GWEN_XML_CONTEXT *ctx)
+{
   HTML_OBJECT *o;
   OBJECT_GRIDENTRY *xo;
 
@@ -40,17 +41,19 @@ HTML_OBJECT *HtmlObject_GridEntry_new(GWEN_XML_CONTEXT *ctx) {
 
 
 
-void GWENHYWFAR_CB HtmlObject_GridEntry_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlObject_GridEntry_FreeData(void *bp, void *p)
+{
   OBJECT_GRIDENTRY *xo;
 
-  xo=(OBJECT_GRIDENTRY*) p;
+  xo=(OBJECT_GRIDENTRY *) p;
 
   GWEN_FREE_OBJECT(xo);
 }
 
 
 
-int HtmlObject_GridEntry_GetRow(const HTML_OBJECT *o) {
+int HtmlObject_GridEntry_GetRow(const HTML_OBJECT *o)
+{
   OBJECT_GRIDENTRY *xo;
 
   assert(o);
@@ -62,7 +65,8 @@ int HtmlObject_GridEntry_GetRow(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_GridEntry_SetRow(HTML_OBJECT *o, int i) {
+void HtmlObject_GridEntry_SetRow(HTML_OBJECT *o, int i)
+{
   OBJECT_GRIDENTRY *xo;
 
   assert(o);
@@ -74,7 +78,8 @@ void HtmlObject_GridEntry_SetRow(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GridEntry_GetColumn(const HTML_OBJECT *o) {
+int HtmlObject_GridEntry_GetColumn(const HTML_OBJECT *o)
+{
   OBJECT_GRIDENTRY *xo;
 
   assert(o);
@@ -86,7 +91,8 @@ int HtmlObject_GridEntry_GetColumn(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_GridEntry_SetColumn(HTML_OBJECT *o, int i) {
+void HtmlObject_GridEntry_SetColumn(HTML_OBJECT *o, int i)
+{
   OBJECT_GRIDENTRY *xo;
 
   assert(o);
@@ -98,7 +104,8 @@ void HtmlObject_GridEntry_SetColumn(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_GridEntry_GetIsHeader(const HTML_OBJECT *o) {
+int HtmlObject_GridEntry_GetIsHeader(const HTML_OBJECT *o)
+{
   OBJECT_GRIDENTRY *xo;
 
   assert(o);
@@ -110,7 +117,8 @@ int HtmlObject_GridEntry_GetIsHeader(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_GridEntry_SetIsHeader(HTML_OBJECT *o, int i) {
+void HtmlObject_GridEntry_SetIsHeader(HTML_OBJECT *o, int i)
+{
   OBJECT_GRIDENTRY *xo;
 
   assert(o);

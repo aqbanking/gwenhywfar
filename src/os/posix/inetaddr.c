@@ -55,7 +55,8 @@ static int GWEN_INETADDR__Counter=0;
 #endif
 
 
-uint32_t GWEN_InetAddr_GetCapabilities(void) {
+uint32_t GWEN_InetAddr_GetCapabilities(void)
+{
   return
     GWEN_INETADDR_CAPS_AF_TCP |
     GWEN_INETADDR_CAPS_AF_UNIX;
@@ -63,33 +64,36 @@ uint32_t GWEN_InetAddr_GetCapabilities(void) {
 
 
 
-int GWEN_InetAddr_ModuleInit(void) {
+int GWEN_InetAddr_ModuleInit(void)
+{
   return 0;
 }
 
 
 
-int GWEN_InetAddr_ModuleFini(void) {
+int GWEN_InetAddr_ModuleFini(void)
+{
   return 0;
 }
 
 
 
-GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af) {
+GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af)
+{
   GWEN_INETADDRESS *ia;
 
   GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
 
   ia->af=af;
-  switch(ia->af) {
+  switch (ia->af) {
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    ia->address=(struct sockaddr*)malloc(sizeof(struct sockaddr_in));
+    ia->address=(struct sockaddr *)malloc(sizeof(struct sockaddr_in));
     assert(ia->address);
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     ia->size=sizeof(struct sockaddr_in);
-    memset(ia->address,0,ia->size);
+    memset(ia->address, 0, ia->size);
 #ifdef PF_INET
     aptr->sin_family=PF_INET;
 #else
@@ -101,9 +105,9 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af) {
   case GWEN_AddressFamilyUnix: {
     struct sockaddr_un *aptr;
 
-    ia->address=(struct sockaddr*)malloc(sizeof(struct sockaddr_un));
+    ia->address=(struct sockaddr *)malloc(sizeof(struct sockaddr_un));
     assert(ia->address);
-    aptr=(struct sockaddr_un*)(ia->address);
+    aptr=(struct sockaddr_un *)(ia->address);
 #if defined(PF_UNIX)
     aptr->sun_family=PF_UNIX;
 #elif defined (AF_UNIX)
@@ -115,24 +119,25 @@ GWEN_INETADDRESS *GWEN_InetAddr_new(GWEN_AddressFamily af) {
 #endif
     aptr->sun_path[0]=0;
     ia->size=sizeof(struct sockaddr_un);
-    memset(ia->address,0,ia->size);
+    memset(ia->address, 0, ia->size);
     break;
   }
 
   default:
-    DBG_INFO(GWEN_LOGDOMAIN, "Unknown address family (%d)",af);
+    DBG_INFO(GWEN_LOGDOMAIN, "Unknown address family (%d)", af);
     assert(0);
   } /* switch */
 #ifdef MEMTRACE
   GWEN_INETADDR__Counter++;
-  DBG_INFO(GWEN_LOGDOMAIN, "InetAddr created, now %d",GWEN_INETADDR__Counter);
+  DBG_INFO(GWEN_LOGDOMAIN, "InetAddr created, now %d", GWEN_INETADDR__Counter);
 #endif
   return ia;
 }
 
 
 
-GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa) {
+GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa)
+{
   GWEN_INETADDRESS *ia;
 
   GWEN_NEW_OBJECT(GWEN_INETADDRESS, ia);
@@ -149,11 +154,12 @@ GWEN_INETADDRESS *GWEN_InetAddr_dup(const GWEN_INETADDRESS *oa) {
 
 
 
-void GWEN_InetAddr_free(GWEN_INETADDRESS *ia) {
+void GWEN_InetAddr_free(GWEN_INETADDRESS *ia)
+{
   if (ia) {
 #ifdef MEMTRACE
     GWEN_INETADDR__Counter--;
-    DBG_INFO(GWEN_LOGDOMAIN, "Free InetAddr, makes %d",GWEN_INETADDR__Counter);
+    DBG_INFO(GWEN_LOGDOMAIN, "Free InetAddr, makes %d", GWEN_INETADDR__Counter);
 #endif
     free(ia->address);
     GWEN_FREE_OBJECT(ia);
@@ -163,14 +169,15 @@ void GWEN_InetAddr_free(GWEN_INETADDRESS *ia) {
 
 
 int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
-                             const char *addr) {
+                             const char *addr)
+{
   assert(ia);
 
   switch (ia->af) {
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     /* reset */
 #ifdef PF_INET
     aptr->sin_family=PF_INET;
@@ -184,7 +191,7 @@ int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 
     if (addr) {
       /* ok, address to be set */
-      if (!inet_aton(addr,&aptr->sin_addr))
+      if (!inet_aton(addr, &aptr->sin_addr))
         /* bad address, so maybe it rather is a name */
         return GWEN_ERROR_BAD_ADDRESS;
     }
@@ -194,7 +201,7 @@ int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
   case GWEN_AddressFamilyUnix: {
     struct sockaddr_un *aptr;
 
-    aptr=(struct sockaddr_un*)(ia->address);
+    aptr=(struct sockaddr_un *)(ia->address);
 #ifdef PF_UNIX
     aptr->sun_family=PF_UNIX;
 #elif defined (AF_UNIX)
@@ -209,7 +216,7 @@ int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
       if ((strlen(addr)+1)>sizeof(aptr->sun_path)) {
         /* bad address */
         DBG_INFO(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
-                 (int)(strlen(addr)+1),(int)(sizeof(aptr->sun_path)));
+                 (int)(strlen(addr)+1), (int)(sizeof(aptr->sun_path)));
         return GWEN_ERROR_BAD_ADDRESS;
       }
       strcpy(aptr->sun_path, addr);
@@ -227,10 +234,11 @@ int GWEN_InetAddr_SetAddress(GWEN_INETADDRESS *ia,
 
 
 /* internal function */
-int GWEN_InetAddr_TranslateHError(int herr) {
+int GWEN_InetAddr_TranslateHError(int herr)
+{
   int rv;
 
-  switch(herr) {
+  switch (herr) {
   case HOST_NOT_FOUND:
     rv=GWEN_ERROR_HOST_NOT_FOUND;
     break;
@@ -254,7 +262,8 @@ int GWEN_InetAddr_TranslateHError(int herr) {
 
 
 
-int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name) {
+int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name)
+{
   struct hostent *he;
 
   assert(ia);
@@ -263,7 +272,7 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name) {
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     /* try to resolve name */
     he=gethostbyname(name);
     if (!he)
@@ -278,7 +287,7 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name) {
   case GWEN_AddressFamilyUnix: {
     struct sockaddr_un *aptr;
 
-    aptr=(struct sockaddr_un*)(ia->address);
+    aptr=(struct sockaddr_un *)(ia->address);
 #ifdef PF_UNIX
     aptr->sun_family=PF_UNIX;
 #elif defined (AF_UNIX)
@@ -294,10 +303,10 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name) {
       if ((strlen(name)+1)>sizeof(aptr->sun_path)) {
         /* bad address */
         DBG_INFO(GWEN_LOGDOMAIN, "Path too long (%d>%d)",
-                 (int)(strlen(name)+1),(int)(sizeof(aptr->sun_path)));
+                 (int)(strlen(name)+1), (int)(sizeof(aptr->sun_path)));
         return GWEN_ERROR_BAD_ADDRESS;
       }
-      strcpy(aptr->sun_path,name);
+      strcpy(aptr->sun_path, name);
       ia->size=SUN_LEN(aptr);
     }
     break;
@@ -312,7 +321,8 @@ int GWEN_InetAddr_SetName(GWEN_INETADDRESS *ia, const char *name) {
 
 
 int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
-                             char *buffer, unsigned int bsize) {
+                             char *buffer, unsigned int bsize)
+{
   const char *s;
 
   assert(ia);
@@ -322,12 +332,12 @@ int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     s=inet_ntoa(aptr->sin_addr);
     assert(s);
     if (strlen(s)+1>bsize)
       return GWEN_ERROR_BUFFER_OVERFLOW;
-    strcpy(buffer,s);
+    strcpy(buffer, s);
     break;
   }
 
@@ -335,13 +345,13 @@ int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
     struct sockaddr_un *aptr;
     int i;
 
-    aptr=(struct sockaddr_un*)(ia->address);
+    aptr=(struct sockaddr_un *)(ia->address);
     s=aptr->sun_path;
     i=ia->size;
     i-=sizeof(aptr->sun_family);
     if (i+1>(int)bsize)
       return GWEN_ERROR_BUFFER_OVERFLOW;
-    memmove(buffer,s,i);
+    memmove(buffer, s, i);
     buffer[i]=0;
     break;
   }
@@ -355,7 +365,8 @@ int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
 
 
 int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
-                          char *buffer, unsigned int bsize) {
+                          char *buffer, unsigned int bsize)
+{
   struct hostent *he;
   struct in_addr lia;
 
@@ -366,13 +377,13 @@ int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     /* resolve name from address */
     lia=aptr->sin_addr;
 #ifdef PF_INET
-    he=gethostbyaddr((char*)&lia,sizeof(lia),PF_INET);
+    he=gethostbyaddr((char *)&lia, sizeof(lia), PF_INET);
 #else
-    he=gethostbyaddr((char*)&lia,sizeof(lia),AF_INET);
+    he=gethostbyaddr((char *)&lia, sizeof(lia), AF_INET);
 #endif
     if (!he)
       return GWEN_InetAddr_TranslateHError(h_errno);
@@ -382,18 +393,18 @@ int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
     if (strlen(he->h_name)+1>bsize)
       return GWEN_ERROR_BUFFER_OVERFLOW;
     /* copy the name into the buffer */
-    strcpy(buffer,he->h_name);
+    strcpy(buffer, he->h_name);
     break;
   }
 
   case GWEN_AddressFamilyUnix: {
     struct sockaddr_un *aptr;
 
-    aptr=(struct sockaddr_un*)(ia->address);
+    aptr=(struct sockaddr_un *)(ia->address);
     /* simply copy path */
     if (strlen(aptr->sun_path)+1>bsize)
       return GWEN_ERROR_BUFFER_OVERFLOW;
-    strcpy(buffer,aptr->sun_path);
+    strcpy(buffer, aptr->sun_path);
     break;
   }
 
@@ -408,7 +419,8 @@ int GWEN_InetAddr_GetName(const GWEN_INETADDRESS *ia,
 
 
 
-int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia) {
+int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia)
+{
   int i;
 
   assert(ia);
@@ -417,7 +429,7 @@ int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia) {
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     i=ntohs(aptr->sin_port);
     break;
   }
@@ -432,14 +444,15 @@ int GWEN_InetAddr_GetPort(const GWEN_INETADDRESS *ia) {
 
 
 
-int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port) {
+int GWEN_InetAddr_SetPort(GWEN_INETADDRESS *ia, int port)
+{
   assert(ia);
 
   switch (ia->af) {
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
 
-    aptr=(struct sockaddr_in*)(ia->address);
+    aptr=(struct sockaddr_in *)(ia->address);
     aptr->sin_port=htons(port);
     break;
   }

@@ -43,7 +43,8 @@
 
 
 
-GWEN_PASSWD_STORE *GWEN_PasswordStore_new(const char *fname) {
+GWEN_PASSWD_STORE *GWEN_PasswordStore_new(const char *fname)
+{
   GWEN_PASSWD_STORE *sto;
 
   GWEN_NEW_OBJECT(GWEN_PASSWD_STORE, sto);
@@ -56,7 +57,8 @@ GWEN_PASSWD_STORE *GWEN_PasswordStore_new(const char *fname) {
 
 
 
-void GWEN_PasswordStore_free(GWEN_PASSWD_STORE *sto) {
+void GWEN_PasswordStore_free(GWEN_PASSWD_STORE *sto)
+{
   if (sto) {
     memset(sto->pw, 0, sizeof(sto->pw));
     if (sto->dbPasswords) {
@@ -71,7 +73,8 @@ void GWEN_PasswordStore_free(GWEN_PASSWD_STORE *sto) {
 
 
 
-void GWEN_PasswordStore_ClearStoragePasswd(GWEN_PASSWD_STORE *sto) {
+void GWEN_PasswordStore_ClearStoragePasswd(GWEN_PASSWD_STORE *sto)
+{
   assert(sto);
   memset(sto->pw, 0, GWEN_PASSWDSTORE_PWLEN);
   if (sto->dbPasswords) {
@@ -84,12 +87,13 @@ void GWEN_PasswordStore_ClearStoragePasswd(GWEN_PASSWD_STORE *sto) {
 
 
 
-static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
+static int readFile(const char *fname, GWEN_BUFFER *dbuf)
+{
   FILE *f;
 
   f=fopen(fname, "rb");
   if (f) {
-    while(!feof(f)) {
+    while (!feof(f)) {
       uint32_t l;
       ssize_t s;
       char *p;
@@ -131,8 +135,9 @@ static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
 
 
 
-static int writeToFile(FILE *f, const char *p, int len) {
-  while(len>0) {
+static int writeToFile(FILE *f, const char *p, int len)
+{
+  while (len>0) {
     ssize_t l;
     ssize_t s;
 
@@ -155,7 +160,8 @@ static int writeToFile(FILE *f, const char *p, int len) {
 
 
 
-static int writeFile(const char *fname, const char *p, int len) {
+static int writeFile(const char *fname, const char *p, int len)
+{
   FILE *f;
 
   f=fopen(fname, "wb");
@@ -184,7 +190,8 @@ static int writeFile(const char *fname, const char *p, int len) {
 
 
 
-static int GWEN_PasswordStore_Digest(const uint8_t *t, uint32_t size, GWEN_BUFFER *buf) {
+static int GWEN_PasswordStore_Digest(const uint8_t *t, uint32_t size, GWEN_BUFFER *buf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -192,7 +199,7 @@ static int GWEN_PasswordStore_Digest(const uint8_t *t, uint32_t size, GWEN_BUFFE
   md=GWEN_MDigest_Rmd160_new();
   rv=GWEN_MDigest_Begin(md);
   if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)t, size);
+    rv=GWEN_MDigest_Update(md, (const uint8_t *)t, size);
   if (rv==0)
     rv=GWEN_MDigest_End(md);
   if (rv<0) {
@@ -202,7 +209,7 @@ static int GWEN_PasswordStore_Digest(const uint8_t *t, uint32_t size, GWEN_BUFFE
   }
 
   GWEN_Buffer_AppendBytes(buf,
-                          (const char*)GWEN_MDigest_GetDigestPtr(md),
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
                           GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
   return 0;
@@ -210,7 +217,8 @@ static int GWEN_PasswordStore_Digest(const uint8_t *t, uint32_t size, GWEN_BUFFE
 
 
 
-static int GWEN_PasswordStore_CheckDigest(const uint8_t *t, uint32_t size, const uint8_t *h) {
+static int GWEN_PasswordStore_CheckDigest(const uint8_t *t, uint32_t size, const uint8_t *h)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -218,7 +226,7 @@ static int GWEN_PasswordStore_CheckDigest(const uint8_t *t, uint32_t size, const
   md=GWEN_MDigest_Rmd160_new();
   rv=GWEN_MDigest_Begin(md);
   if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)t, size);
+    rv=GWEN_MDigest_Update(md, (const uint8_t *)t, size);
   if (rv==0)
     rv=GWEN_MDigest_End(md);
   if (rv<0) {
@@ -239,7 +247,8 @@ static int GWEN_PasswordStore_CheckDigest(const uint8_t *t, uint32_t size, const
 
 
 
-static void GWEN_PasswordStore_SafeFreeDb(GWEN_PASSWD_STORE *sto) {
+static void GWEN_PasswordStore_SafeFreeDb(GWEN_PASSWD_STORE *sto)
+{
   if (sto->dbPasswords) {
     GWEN_DB_ModifyBranchFlagsDown(sto->dbPasswords, GWEN_DB_NODE_FLAGS_SAFE, GWEN_DB_NODE_FLAGS_SAFE);
     GWEN_DB_Group_free(sto->dbPasswords);
@@ -249,7 +258,8 @@ static void GWEN_PasswordStore_SafeFreeDb(GWEN_PASSWD_STORE *sto) {
 
 
 
-static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFER *secbuf) {
+static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFER *secbuf)
+{
   int rv;
   GWEN_BUFFER *sbuf;
 
@@ -298,7 +308,7 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
 
     pos1=GWEN_Buffer_GetPos(secbuf);
 
-    rv=GWEN_SmallTresor_Decrypt((const uint8_t*) GWEN_Buffer_GetStart(sbuf),
+    rv=GWEN_SmallTresor_Decrypt((const uint8_t *) GWEN_Buffer_GetStart(sbuf),
                                 GWEN_Buffer_GetUsedBytes(sbuf),
                                 sto->pw,
                                 secbuf,
@@ -319,8 +329,8 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
         const uint8_t *p1;
         const uint8_t *p2;
 
-        p1=(const uint8_t*)GWEN_Buffer_GetStart(secbuf)+pos1;      /* start of decrypted data */
-        p2=(const uint8_t*)GWEN_Buffer_GetStart(secbuf)+(pos2-20); /* start of hash */
+        p1=(const uint8_t *)GWEN_Buffer_GetStart(secbuf)+pos1;     /* start of decrypted data */
+        p2=(const uint8_t *)GWEN_Buffer_GetStart(secbuf)+(pos2-20); /* start of hash */
 
         rv=GWEN_PasswordStore_CheckDigest(p1, len-20, p2);
         if (rv<0) {
@@ -350,7 +360,8 @@ static int GWEN_PasswordStore_ReadDecryptFile(GWEN_PASSWD_STORE *sto, GWEN_BUFFE
 
 
 
-static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uint8_t *sec, uint32_t len) {
+static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uint8_t *sec, uint32_t len)
+{
   int rv;
   GWEN_BUFFER *sbuf;
   GWEN_BUFFER *tbuf;
@@ -435,10 +446,10 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
   tbuf=GWEN_Buffer_new(0, len+20, 0, 1);
 
   /* add clear text data */
-  GWEN_Buffer_AppendBytes(tbuf, (const char*) sec, len);
+  GWEN_Buffer_AppendBytes(tbuf, (const char *) sec, len);
 
   /* add hash (20 bytes) */
-  rv=GWEN_PasswordStore_Digest((const uint8_t*) sec, len, tbuf);
+  rv=GWEN_PasswordStore_Digest((const uint8_t *) sec, len, tbuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -447,7 +458,7 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
   }
 
   /* encrypt cleartext */
-  rv=GWEN_SmallTresor_Encrypt((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+  rv=GWEN_SmallTresor_Encrypt((const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                               GWEN_Buffer_GetUsedBytes(tbuf),
                               sto->pw,
                               sbuf,
@@ -480,7 +491,8 @@ static int GWEN_PasswordStore_EncryptWriteFile(GWEN_PASSWD_STORE *sto, const uin
 
 
 
-static int GWEN_PasswordStore_ReadFile(GWEN_PASSWD_STORE *sto) {
+static int GWEN_PasswordStore_ReadFile(GWEN_PASSWD_STORE *sto)
+{
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -516,7 +528,8 @@ static int GWEN_PasswordStore_ReadFile(GWEN_PASSWD_STORE *sto) {
 
 
 
-static int GWEN_PasswordStore_WriteFile(GWEN_PASSWD_STORE *sto) {
+static int GWEN_PasswordStore_WriteFile(GWEN_PASSWD_STORE *sto)
+{
   if (sto->dbPasswords) {
     GWEN_BUFFER *tbuf;
     int rv;
@@ -531,7 +544,7 @@ static int GWEN_PasswordStore_WriteFile(GWEN_PASSWD_STORE *sto) {
     }
 
     rv=GWEN_PasswordStore_EncryptWriteFile(sto,
-                                           (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                                           (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                                            GWEN_Buffer_GetUsedBytes(tbuf));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -553,7 +566,8 @@ static int GWEN_PasswordStore_WriteFile(GWEN_PASSWD_STORE *sto) {
 
 
 
-static int GWEN_PasswordStore__SetPassword(GWEN_PASSWD_STORE *sto, const char *token, const char *secret) {
+static int GWEN_PasswordStore__SetPassword(GWEN_PASSWD_STORE *sto, const char *token, const char *secret)
+{
   GWEN_BUFFER *buf;
 
   buf=GWEN_Buffer_new(0, 64, 0, 1);
@@ -572,7 +586,9 @@ static int GWEN_PasswordStore__SetPassword(GWEN_PASSWD_STORE *sto, const char *t
 
 
 
-static int GWEN_PasswordStore__GetPassword(GWEN_PASSWD_STORE *sto, const char *token, char *buffer, int minLen, int maxLen) {
+static int GWEN_PasswordStore__GetPassword(GWEN_PASSWD_STORE *sto, const char *token, char *buffer, int minLen,
+                                           int maxLen)
+{
   GWEN_BUFFER *buf;
   const char *s;
 
@@ -605,7 +621,8 @@ static int GWEN_PasswordStore__GetPassword(GWEN_PASSWD_STORE *sto, const char *t
 
 
 
-int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, const char *secret) {
+int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, const char *secret)
+{
   GWEN_FSLOCK *lck;
   GWEN_FSLOCK_RESULT rs;
   int rv;
@@ -675,7 +692,8 @@ int GWEN_PasswordStore_SetPassword(GWEN_PASSWD_STORE *sto, const char *token, co
 
 
 
-int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, char *buffer, int minLen, int maxLen) {
+int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, char *buffer, int minLen, int maxLen)
+{
   int rv;
   GWEN_FSLOCK *lck;
   GWEN_FSLOCK_RESULT rs;
@@ -723,7 +741,8 @@ int GWEN_PasswordStore_GetPassword(GWEN_PASSWD_STORE *sto, const char *token, ch
 
 
 
-int GWEN_PasswordStore_GetTokenList(GWEN_PASSWD_STORE *sto, GWEN_STRINGLIST *sl) {
+int GWEN_PasswordStore_GetTokenList(GWEN_PASSWD_STORE *sto, GWEN_STRINGLIST *sl)
+{
   int rv;
   GWEN_FSLOCK *lck;
   GWEN_FSLOCK_RESULT rs;
@@ -762,7 +781,7 @@ int GWEN_PasswordStore_GetTokenList(GWEN_PASSWD_STORE *sto, GWEN_STRINGLIST *sl)
   /* read list of tokens from the file */
   pwErrors=0;
   dbVar=GWEN_DB_GetFirstVar(sto->dbPasswords);
-  while(dbVar) {
+  while (dbVar) {
     const char *s;
 
     s=GWEN_DB_VariableName(dbVar);

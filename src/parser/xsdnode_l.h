@@ -36,9 +36,9 @@ typedef int (*GWEN_XSDNODE_WRITE_FN)(GWEN_XSD_NODE *xsdNode,
                                      GWEN_DB_NODE *db);
 
 GWEN_XSDNODE_READ_FN GWEN_XsdNode_SetReadFn(GWEN_XSD_NODE *xsdNode,
-    GWEN_XSDNODE_READ_FN fn);
+                                            GWEN_XSDNODE_READ_FN fn);
 GWEN_XSDNODE_WRITE_FN GWEN_XsdNode_SetWriteFn(GWEN_XSD_NODE *xsdNode,
-    GWEN_XSDNODE_WRITE_FN fn);
+                                              GWEN_XSDNODE_WRITE_FN fn);
 
 #endif
 

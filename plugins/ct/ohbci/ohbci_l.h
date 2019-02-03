@@ -23,7 +23,7 @@
  */
 /*@{*/
 GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenOHBCI_new(GWEN_PLUGIN_MANAGER *pm,
-					    const char *name);
+                                            const char *name);
 /*@}*/
 
 

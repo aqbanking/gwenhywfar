@@ -47,7 +47,8 @@ GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_BUFFERED)
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo) {
+GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_BUFFERED *xio;
 
@@ -68,17 +69,19 @@ GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo) {
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Buffered_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SyncIo_Buffered_FreeData(void *bp, void *p)
+{
   GWEN_SYNCIO_BUFFERED *xio;
 
-  xio=(GWEN_SYNCIO_BUFFERED*) p;
+  xio=(GWEN_SYNCIO_BUFFERED *) p;
   GWEN_RingBuffer_free(xio->readBuffer);
   GWEN_FREE_OBJECT(xio);
 }
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Connect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Connect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO *baseIo;
 
   //GWEN_RingBuffer_Reset(xio->readBuffer);
@@ -100,7 +103,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Connect(GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Disconnect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Disconnect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO *baseIo;
 
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
@@ -122,8 +126,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Disconnect(GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
-    uint8_t *buffer,
-    uint32_t size) {
+                                            uint8_t *buffer,
+                                            uint32_t size)
+{
   GWEN_SYNCIO_BUFFERED *xio;
   uint32_t flags;
 
@@ -153,7 +158,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
         i=bytesInBuffer;
       else
         i=size;
-      rv=GWEN_RingBuffer_ReadBytes(xio->readBuffer, (char*) buffer, &i);
+      rv=GWEN_RingBuffer_ReadBytes(xio->readBuffer, (char *) buffer, &i);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         return rv;
@@ -184,7 +189,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
   else {
     uint32_t bytesRead=0;
 
-    while(bytesRead==0) {
+    while (bytesRead==0) {
       uint32_t bytesInBuffer;
       const uint8_t *psrc;
       uint32_t bytesSkipped=0;
@@ -207,7 +212,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 
         do {
           rv=GWEN_SyncIo_Read(baseIo,
-                              (uint8_t*) GWEN_RingBuffer_GetWritePointer(xio->readBuffer),
+                              (uint8_t *) GWEN_RingBuffer_GetWritePointer(xio->readBuffer),
                               bytesFree);
         }
         while (rv==GWEN_ERROR_INTERRUPTED);
@@ -229,8 +234,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
       }
 
       /* read data from ring buffer */
-      psrc=(const uint8_t*)GWEN_RingBuffer_GetReadPointer(xio->readBuffer);
-      while(bytesSkipped<bytesInBuffer && bytesRead<(size-1)) {
+      psrc=(const uint8_t *)GWEN_RingBuffer_GetReadPointer(xio->readBuffer);
+      while (bytesSkipped<bytesInBuffer && bytesRead<(size-1)) {
         uint8_t c;
 
         c=*psrc;
@@ -256,8 +261,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size) {
+                                             const uint8_t *buffer,
+                                             uint32_t size)
+{
   GWEN_SYNCIO_BUFFERED *xio;
   GWEN_SYNCIO *baseIo;
 
@@ -298,13 +304,13 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
 
       if (flags & GWEN_SYNCIO_FLAGS_DOSMODE) {
         do {
-          rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\r\n", 2);
+          rv=GWEN_SyncIo_Write(baseIo, (const uint8_t *) "\r\n", 2);
         }
         while (rv==GWEN_ERROR_INTERRUPTED);
       }
       else {
         do {
-          rv=GWEN_SyncIo_Write(baseIo, (const uint8_t*) "\n", 1);
+          rv=GWEN_SyncIo_Write(baseIo, (const uint8_t *) "\n", 1);
         }
         while (rv==GWEN_ERROR_INTERRUPTED);
       }
@@ -325,7 +331,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Buffered_Write(GWEN_SYNCIO *sio,
 
 
 
-int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
+int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf)
+{
   int rv;
 
   /* read a single line */
@@ -334,7 +341,7 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
     uint32_t l;
 
     GWEN_Buffer_AllocRoom(tbuf, 1024);
-    p=(uint8_t*) GWEN_Buffer_GetPosPointer(tbuf);
+    p=(uint8_t *) GWEN_Buffer_GetPosPointer(tbuf);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
     rv=GWEN_SyncIo_Read(sio, p, l);
     if (rv<0) {
@@ -352,7 +359,7 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
     else if (rv==0)
       break;
   }
-  while(rv>0);
+  while (rv>0);
 
   if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
     DBG_INFO(GWEN_LOGDOMAIN, "Nothing received: EOF met");
@@ -364,7 +371,8 @@ int GWEN_SyncIo_Buffered_ReadLineToBuffer(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf) {
 
 
 
-int GWEN_SyncIo_Buffered_ReadLinesToStringList(GWEN_SYNCIO *sio, int maxLines, GWEN_STRINGLIST *sl) {
+int GWEN_SyncIo_Buffered_ReadLinesToStringList(GWEN_SYNCIO *sio, int maxLines, GWEN_STRINGLIST *sl)
+{
   GWEN_BUFFER *tbuf;
   int rv;
   int lineCount=0;
@@ -376,7 +384,7 @@ int GWEN_SyncIo_Buffered_ReadLinesToStringList(GWEN_SYNCIO *sio, int maxLines, G
 
   /* read every line of the file */
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  while( (maxLines==-1) || (lineCount<maxLines) ) {
+  while ((maxLines==-1) || (lineCount<maxLines)) {
     rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, tbuf);
     if (rv<0) {
       if (rv==GWEN_ERROR_EOF)

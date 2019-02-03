@@ -1,6 +1,6 @@
 //
 //  CocoaLineTextField.h
-//  
+//
 //
 //  Created by Samuel Strupp on 10.08.10.
 //
@@ -13,19 +13,20 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaLabel.h"
 
-typedef void (*gwenTextFieldActionPtr)(NSTextField *textField, void* data);
+typedef void (*gwenTextFieldActionPtr)(NSTextField *textField, void *data);
 
 
-@interface CocoaLineTextField : CocoaLabel {
-	gwenTextFieldActionPtr c_actionPtr;
-	void* c_actionData;
-	
-	gwenTextFieldActionPtr c_textChangedActionPtr;
-	void* c_textChangedActionData;
+@interface CocoaLineTextField : CocoaLabel
+{
+  gwenTextFieldActionPtr c_actionPtr;
+  void *c_actionData;
+
+  gwenTextFieldActionPtr c_textChangedActionPtr;
+  void *c_textChangedActionData;
 }
 
--(void) setC_ActionPtr:(gwenTextFieldActionPtr)ptr Data:(void*)data;
--(void) setC_TextChanged_ActionPtr:(gwenTextFieldActionPtr)ptr Data:(void*)data;
+-(void) setC_ActionPtr:(gwenTextFieldActionPtr)ptr Data:(void *)data;
+-(void) setC_TextChanged_ActionPtr:(gwenTextFieldActionPtr)ptr Data:(void *)data;
 
 @end
 

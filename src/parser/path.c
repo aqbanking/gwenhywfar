@@ -39,7 +39,8 @@
 void *GWEN_Path_Handle(const char *path,
                        void *data,
                        uint32_t flags,
-                       GWEN_PATHHANDLERPTR elementFunction) {
+                       GWEN_PATHHANDLERPTR elementFunction)
+{
   GWEN_BUFFER *buf1;
   unsigned int origflags;
   int startAtRoot;
@@ -188,7 +189,8 @@ void *GWEN_Path_Handle(const char *path,
 void *GWEN_Path_HandleWithIdx(const char *path,
                               void *data,
                               uint32_t flags,
-                              GWEN_PATHIDXHANDLERPTR elementFunction) {
+                              GWEN_PATHIDXHANDLERPTR elementFunction)
+{
   GWEN_BUFFER *buf1;
   unsigned int origflags;
   int startAtRoot;
@@ -367,10 +369,11 @@ void *GWEN_Path_HandleWithIdx(const char *path,
 
 void *GWEN_Path_AppendPathElement(const char *entry,
                                   void *data,
-                                  unsigned int flags) {
+                                  unsigned int flags)
+{
   GWEN_BUFFER *ebuf;
 
-  ebuf=(GWEN_BUFFER*)data;
+  ebuf=(GWEN_BUFFER *)data;
 
   GWEN_Buffer_AppendString(ebuf, entry);
   if (!(flags & GWEN_PATH_FLAGS_LAST) ||
@@ -385,7 +388,8 @@ void *GWEN_Path_AppendPathElement(const char *entry,
 
 int GWEN_Path_Convert(const char *path,
                       GWEN_BUFFER *buffer,
-                      uint32_t flags) {
+                      uint32_t flags)
+{
   void *p;
 
   p=GWEN_Path_Handle(path,

@@ -1,6 +1,6 @@
 //
 //  CocoaPopUpButton.h
-//  
+//
 //
 //  Created by Samuel Strupp on 10.08.10.
 //
@@ -13,22 +13,23 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaGwenGUIProtocol.h"
 
-typedef void (*gwenPopUpActionPtr)(NSPopUpButton *button, void* data);
+typedef void (*gwenPopUpActionPtr)(NSPopUpButton *button, void *data);
 
 
-@interface CocoaPopUpButton : NSPopUpButton <CocoaGwenGUIProtocol> {
-	gwenPopUpActionPtr c_actionPtr;
-	void* c_actionData;
-	BOOL fillX;
-	BOOL fillY;
-	
-	CGFloat minWidth;
+@interface CocoaPopUpButton : NSPopUpButton <CocoaGwenGUIProtocol>
+{
+  gwenPopUpActionPtr c_actionPtr;
+  void *c_actionData;
+  BOOL fillX;
+  BOOL fillY;
+
+  CGFloat minWidth;
 }
 
 @property BOOL fillX;
 @property BOOL fillY;
 
--(void) setC_PopUpActionPtr:(gwenPopUpActionPtr)ptr Data:(void*)data;
+-(void) setC_PopUpActionPtr:(gwenPopUpActionPtr)ptr Data:(void *)data;
 
 @end
 

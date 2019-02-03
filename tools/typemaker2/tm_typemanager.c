@@ -32,7 +32,8 @@
 
 
 
-TYPEMAKER2_TYPEMANAGER *Typemaker2_TypeManager_new() {
+TYPEMAKER2_TYPEMANAGER *Typemaker2_TypeManager_new()
+{
   TYPEMAKER2_TYPEMANAGER *tym;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_TYPEMANAGER, tym);
@@ -47,7 +48,8 @@ TYPEMAKER2_TYPEMANAGER *Typemaker2_TypeManager_new() {
 
 
 
-void Typemaker2_TypeManager_free(TYPEMAKER2_TYPEMANAGER *tym) {
+void Typemaker2_TypeManager_free(TYPEMAKER2_TYPEMANAGER *tym)
+{
   if (tym) {
     Typemaker2_Type_List_free(tym->typeList);
     GWEN_StringList_free(tym->folders);
@@ -57,58 +59,69 @@ void Typemaker2_TypeManager_free(TYPEMAKER2_TYPEMANAGER *tym) {
 
 
 
-const char *Typemaker2_TypeManager_GetLanguage(const TYPEMAKER2_TYPEMANAGER *tym) {
+const char *Typemaker2_TypeManager_GetLanguage(const TYPEMAKER2_TYPEMANAGER *tym)
+{
   assert(tym);
   return tym->lang;
 }
 
 
 
-void Typemaker2_TypeManager_SetLanguage(TYPEMAKER2_TYPEMANAGER *tym, const char *s) {
+void Typemaker2_TypeManager_SetLanguage(TYPEMAKER2_TYPEMANAGER *tym, const char *s)
+{
   assert(tym);
   free(tym->lang);
-  if (s) tym->lang=strdup(s);
-  else tym->lang=NULL;
+  if (s)
+    tym->lang=strdup(s);
+  else
+    tym->lang=NULL;
 }
 
 
 
-const char *Typemaker2_TypeManager_GetApiDeclaration(const TYPEMAKER2_TYPEMANAGER *tym) {
+const char *Typemaker2_TypeManager_GetApiDeclaration(const TYPEMAKER2_TYPEMANAGER *tym)
+{
   assert(tym);
   return tym->apiDeclaration;
 }
 
 
 
-void Typemaker2_TypeManager_SetApiDeclaration(TYPEMAKER2_TYPEMANAGER *tym, const char *s) {
+void Typemaker2_TypeManager_SetApiDeclaration(TYPEMAKER2_TYPEMANAGER *tym, const char *s)
+{
   assert(tym);
   free(tym->apiDeclaration);
-  if (s) tym->apiDeclaration=strdup(s);
-  else tym->apiDeclaration=NULL;
+  if (s)
+    tym->apiDeclaration=strdup(s);
+  else
+    tym->apiDeclaration=NULL;
 }
 
 
 
-void Typemaker2_TypeManager_AddFolder(TYPEMAKER2_TYPEMANAGER *tym, const char *s) {
+void Typemaker2_TypeManager_AddFolder(TYPEMAKER2_TYPEMANAGER *tym, const char *s)
+{
   assert(tym);
   GWEN_StringList_AppendString(tym->folders, s, 0, 1);
 }
 
 
 
-void Typemaker2_TypeManager_AddType(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
+void Typemaker2_TypeManager_AddType(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty)
+{
   assert(tym);
   Typemaker2_Type_List_Add(ty, tym->typeList);
 }
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_TypeManager_FindType(TYPEMAKER2_TYPEMANAGER *tym, const char *s) {
+TYPEMAKER2_TYPE *Typemaker2_TypeManager_FindType(TYPEMAKER2_TYPEMANAGER *tym, const char *s)
+{
   TYPEMAKER2_TYPE *ty;
 
   assert(tym);
   ty=Typemaker2_Type_List_First(tym->typeList);
-  while(ty) {
+  while (ty) {
     const char *n;
 
     n=Typemaker2_Type_GetName(ty);
@@ -122,7 +135,8 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_FindType(TYPEMAKER2_TYPEMANAGER *tym, co
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, const char *typeName) {
+TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, const char *typeName)
+{
   GWEN_BUFFER *tbuf;
   GWEN_BUFFER *nbuf;
   char *p;
@@ -134,7 +148,7 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(tbuf, typeName);
   p=GWEN_Buffer_GetStart(tbuf);
-  while(*p) {
+  while (*p) {
     *p=tolower(*p);
     p++;
   }
@@ -165,8 +179,8 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   node=GWEN_XMLNode_FindFirstTag(root, "tm2", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a tm2 element",
-	      GWEN_Buffer_GetStart(nbuf));
+              "File [%s] does not contain a tm2 element",
+              GWEN_Buffer_GetStart(nbuf));
     GWEN_XMLNode_free(root);
     GWEN_Buffer_free(nbuf);
     GWEN_Buffer_free(tbuf);
@@ -175,7 +189,7 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
 
   /* get <typedef> element with id==typeName and wanted language */
   node=GWEN_XMLNode_FindFirstTag(node, "typedef", "id", typeName);
-  while(node) {
+  while (node) {
     const char *s=GWEN_XMLNode_GetProperty(node, "lang", NULL);
     if (s && *s && strcasecmp(s, tym->lang)==0)
       break;
@@ -183,7 +197,7 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   }
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a <typedef> element for type [%s] and language [%s]",
+              "File [%s] does not contain a <typedef> element for type [%s] and language [%s]",
               GWEN_Buffer_GetStart(nbuf), typeName, tym->lang);
     GWEN_XMLNode_free(root);
     GWEN_Buffer_free(nbuf);
@@ -196,9 +210,9 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
   rv=Typemaker2_Type_readXml(ty, node, NULL);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error reading type [%s] from file [%s] (%d)",
-	     typeName,
-	     GWEN_Buffer_GetStart(nbuf),
-	     rv);
+             typeName,
+             GWEN_Buffer_GetStart(nbuf),
+             rv);
     Typemaker2_Type_free(ty);
     GWEN_XMLNode_free(root);
     GWEN_Buffer_free(nbuf);
@@ -216,9 +230,10 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadType(TYPEMAKER2_TYPEMANAGER *tym, co
 
 
 int Typemaker2_TypeManager_MakeTypeDerivatives(TYPEMAKER2_TYPEMANAGER *tym,
-					       TYPEMAKER2_TYPE *ty,
-					       const char *baseType,
-					       const char *nType, const char *nPrefix) {
+                                               TYPEMAKER2_TYPE *ty,
+                                               const char *baseType,
+                                               const char *nType, const char *nPrefix)
+{
   TYPEMAKER2_TYPE *t2;
   char tbuf[256];
   int rv;
@@ -259,25 +274,29 @@ int Typemaker2_TypeManager_MakeTypeDerivatives(TYPEMAKER2_TYPEMANAGER *tym,
 
 
 
-int Typemaker2_TypeManager_MakeTypeList1(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
+int Typemaker2_TypeManager_MakeTypeList1(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty)
+{
   return Typemaker2_TypeManager_MakeTypeDerivatives(tym, ty, "list1_base", "LIST", "List");
 }
 
 
 
-int Typemaker2_TypeManager_MakeTypeList2(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
+int Typemaker2_TypeManager_MakeTypeList2(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty)
+{
   return Typemaker2_TypeManager_MakeTypeDerivatives(tym, ty, "list2_base", "LIST2", "List2");
 }
 
 
 
-int Typemaker2_TypeManager_MakeTypeTree(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
+int Typemaker2_TypeManager_MakeTypeTree(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty)
+{
   return Typemaker2_TypeManager_MakeTypeDerivatives(tym, ty, "tree_base", "TREE", "Tree");
 }
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName) {
+TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName)
+{
   int rv;
   TYPEMAKER2_TYPE *ty=NULL;
   GWEN_XMLNODE *root;
@@ -297,8 +316,8 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   node=GWEN_XMLNode_FindFirstTag(root, "tm2", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a tm2 element",
-	      fileName);
+              "File [%s] does not contain a tm2 element",
+              fileName);
     GWEN_XMLNode_free(root);
     return NULL;
   }
@@ -307,7 +326,7 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   node=GWEN_XMLNode_FindFirstTag(node, "type", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a type element",
+              "File [%s] does not contain a type element",
               fileName);
     GWEN_XMLNode_free(root);
     return NULL;
@@ -318,8 +337,8 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
   rv=Typemaker2_Type_readXml(ty, node, tym->lang);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
-	     fileName,
-	     rv);
+             fileName,
+             rv);
     Typemaker2_Type_free(ty);
     GWEN_XMLNode_free(root);
     return NULL;
@@ -372,7 +391,8 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_LoadTypeFile(TYPEMAKER2_TYPEMANAGER *tym
 
 
 int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName,
-                                         TYPEMAKER2_TYPE_LIST2 *tlist2) {
+                                         TYPEMAKER2_TYPE_LIST2 *tlist2)
+{
   int rv;
   TYPEMAKER2_TYPE *ty=NULL;
   GWEN_XMLNODE *root;
@@ -394,8 +414,8 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
   node=GWEN_XMLNode_FindFirstTag(root, "tm2", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a tm2 element",
-	      fileName);
+              "File [%s] does not contain a tm2 element",
+              fileName);
     GWEN_XMLNode_free(root);
     return GWEN_ERROR_NO_DATA;
   }
@@ -404,7 +424,7 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
   node=GWEN_XMLNode_FindFirstTag(node, "type", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a type element",
+              "File [%s] does not contain a type element",
               fileName);
     GWEN_XMLNode_free(root);
     return GWEN_ERROR_NO_DATA;
@@ -412,41 +432,41 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
 
   /* read all types from the file */
   tl=Typemaker2_Type_List2_new();
-  while(node) {
-     /* load type from XML element */
-     ty=Typemaker2_Type_new();
-     rv=Typemaker2_Type_readXml(ty, node, tym->lang);
-     if (rv<0) {
-       DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
-                fileName,
-                rv);
-       Typemaker2_Type_free(ty);
-       GWEN_XMLNode_free(root);
-       Typemaker2_Type_List2_free(tl);
-       return rv;
-     }
-   
-     /* preset some stuff */
-     if (1) {
-       const char *x;
-   
-       x=Typemaker2_Type_GetExtends(ty);
-       if (!x || !(*x))
-         Typemaker2_Type_SetExtends(ty, "struct_base");
-     }
-   
-     /* add first, because other types might want to refer to this one */
-     Typemaker2_Type_List_Add(ty, tym->typeList);
-     Typemaker2_Type_List2_PushBack(tl, ty);
-   
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
-       Typemaker2_TypeManager_MakeTypeList1(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
-       Typemaker2_TypeManager_MakeTypeList2(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
-       Typemaker2_TypeManager_MakeTypeTree(tym, ty);
+  while (node) {
+    /* load type from XML element */
+    ty=Typemaker2_Type_new();
+    rv=Typemaker2_Type_readXml(ty, node, tym->lang);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
+               fileName,
+               rv);
+      Typemaker2_Type_free(ty);
+      GWEN_XMLNode_free(root);
+      Typemaker2_Type_List2_free(tl);
+      return rv;
+    }
 
-     node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
+    /* preset some stuff */
+    if (1) {
+      const char *x;
+
+      x=Typemaker2_Type_GetExtends(ty);
+      if (!x || !(*x))
+        Typemaker2_Type_SetExtends(ty, "struct_base");
+    }
+
+    /* add first, because other types might want to refer to this one */
+    Typemaker2_Type_List_Add(ty, tym->typeList);
+    Typemaker2_Type_List2_PushBack(tl, ty);
+
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
+      Typemaker2_TypeManager_MakeTypeList1(tym, ty);
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
+      Typemaker2_TypeManager_MakeTypeList2(tym, ty);
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
+      Typemaker2_TypeManager_MakeTypeTree(tym, ty);
+
+    node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
   }
 
   GWEN_XMLNode_free(root);
@@ -455,9 +475,9 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
 
   /* set type pointers first */
   it=Typemaker2_Type_List2_First(tl);
-  if(it) {
+  if (it) {
     ty=Typemaker2_Type_List2Iterator_Data(it);
-    while(ty) {
+    while (ty) {
       /* set type pointers in this type structure */
       rv=Typemaker2_TypeManager_SetTypePtrs(tym, ty);
       if (rv<0) {
@@ -475,9 +495,9 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
 
   /* now set member pointers */
   it=Typemaker2_Type_List2_First(tl);
-  if(it) {
+  if (it) {
     ty=Typemaker2_Type_List2Iterator_Data(it);
-    while(ty) {
+    while (ty) {
       /* set type pointers in the member structures */
       rv=Typemaker2_TypeManager_SetMemberTypePtrs(tym, ty);
       if (rv<0) {
@@ -504,7 +524,8 @@ int Typemaker2_TypeManager_LoadTypeFile2(TYPEMAKER2_TYPEMANAGER *tym, const char
 
 
 int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, const char *fileName,
-                                                TYPEMAKER2_TYPE_LIST2 *tlist2) {
+                                                TYPEMAKER2_TYPE_LIST2 *tlist2)
+{
   int rv;
   TYPEMAKER2_TYPE *ty=NULL;
   GWEN_XMLNODE *root;
@@ -524,8 +545,8 @@ int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, con
   node=GWEN_XMLNode_FindFirstTag(root, "tm2", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a tm2 element",
-	      fileName);
+              "File [%s] does not contain a tm2 element",
+              fileName);
     GWEN_XMLNode_free(root);
     return GWEN_ERROR_NO_DATA;
   }
@@ -534,47 +555,47 @@ int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, con
   node=GWEN_XMLNode_FindFirstTag(node, "type", NULL, NULL);
   if (node==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "File [%s] does not contain a type element",
+              "File [%s] does not contain a type element",
               fileName);
     GWEN_XMLNode_free(root);
     return GWEN_ERROR_NO_DATA;
   }
 
   /* read all types from the file */
-  while(node) {
-     /* load type from XML element */
-     ty=Typemaker2_Type_new();
-     rv=Typemaker2_Type_readXml(ty, node, tym->lang);
-     if (rv<0) {
-       DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
-                fileName,
-                rv);
-       Typemaker2_Type_free(ty);
-       GWEN_XMLNode_free(root);
-       return rv;
-     }
-   
-     /* preset some stuff */
-     if (1) {
-       const char *x;
-   
-       x=Typemaker2_Type_GetExtends(ty);
-       if (!x || !(*x))
-         Typemaker2_Type_SetExtends(ty, "struct_base");
-     }
-   
-     /* add first, because other types might want to refer to this one */
-     Typemaker2_Type_List_Add(ty, tym->typeList);
-     Typemaker2_Type_List2_PushBack(tlist2, ty);
+  while (node) {
+    /* load type from XML element */
+    ty=Typemaker2_Type_new();
+    rv=Typemaker2_Type_readXml(ty, node, tym->lang);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error reading type from file [%s] (%d)",
+               fileName,
+               rv);
+      Typemaker2_Type_free(ty);
+      GWEN_XMLNode_free(root);
+      return rv;
+    }
 
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
-       Typemaker2_TypeManager_MakeTypeList1(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
-       Typemaker2_TypeManager_MakeTypeList2(tym, ty);
-     if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
-       Typemaker2_TypeManager_MakeTypeTree(tym, ty);
+    /* preset some stuff */
+    if (1) {
+      const char *x;
 
-     node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
+      x=Typemaker2_Type_GetExtends(ty);
+      if (!x || !(*x))
+        Typemaker2_Type_SetExtends(ty, "struct_base");
+    }
+
+    /* add first, because other types might want to refer to this one */
+    Typemaker2_Type_List_Add(ty, tym->typeList);
+    Typemaker2_Type_List2_PushBack(tlist2, ty);
+
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1)
+      Typemaker2_TypeManager_MakeTypeList1(tym, ty);
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2)
+      Typemaker2_TypeManager_MakeTypeList2(tym, ty);
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE)
+      Typemaker2_TypeManager_MakeTypeTree(tym, ty);
+
+    node=GWEN_XMLNode_FindNextTag(node, "type", NULL, NULL);
   }
 
   GWEN_XMLNode_free(root);
@@ -586,7 +607,8 @@ int Typemaker2_TypeManager_LoadTypeFileNoLookup(TYPEMAKER2_TYPEMANAGER *tym, con
 
 
 
-int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
+int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty)
+{
   if (Typemaker2_Type_GetExtendsPtr(ty)==NULL) {
     const char *s;
 
@@ -596,7 +618,7 @@ int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_T
 
       tt=Typemaker2_TypeManager_GetType(tym, s);
       if (tt==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Type for \"extends\" not found [%s]", s);
+        DBG_INFO(GWEN_LOGDOMAIN, "Type for \"extends\" not found [%s]", s);
         return GWEN_ERROR_NOT_FOUND;
       }
       Typemaker2_Type_SetExtendsPtr(ty, tt);
@@ -612,7 +634,7 @@ int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_T
 
       tt=Typemaker2_TypeManager_GetType(tym, s);
       if (tt==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Type for \"basetype\" not found [%s]", s);
+        DBG_INFO(GWEN_LOGDOMAIN, "Type for \"basetype\" not found [%s]", s);
         return GWEN_ERROR_NOT_FOUND;
       }
       Typemaker2_Type_SetBaseTypePtr(ty, tt);
@@ -628,7 +650,7 @@ int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_T
 
       tt=Typemaker2_TypeManager_GetType(tym, s);
       if (tt==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Type for \"inherits\" not found [%s]", s);
+        DBG_INFO(GWEN_LOGDOMAIN, "Type for \"inherits\" not found [%s]", s);
         return GWEN_ERROR_NOT_FOUND;
       }
       Typemaker2_Type_SetInheritsPtr(ty, tt);
@@ -640,7 +662,8 @@ int Typemaker2_TypeManager_SetTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_T
 
 
 
-int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty) {
+int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMAKER2_TYPE *ty)
+{
   TYPEMAKER2_MEMBER_LIST *ml;
 
   ml=Typemaker2_Type_GetMembers(ty);
@@ -650,37 +673,37 @@ int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMA
 
     /* set pointers */
     m=Typemaker2_Member_List_First(ml);
-    while(m) {
+    while (m) {
       if (Typemaker2_Member_GetTypePtr(m)==NULL) {
-	const char *s;
+        const char *s;
 
         /* set type pointer */
-	s=Typemaker2_Member_GetTypeName(m);
-	if (s && *s) {
-	  TYPEMAKER2_TYPE *tt;
-    
-	  tt=Typemaker2_TypeManager_GetType(tym, s);
-	  if (tt==NULL) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Type for \"type\" not found [%s]", s);
-	    return GWEN_ERROR_NOT_FOUND;
-	  }
-	  Typemaker2_Member_SetTypePtr(m, tt);
-	}
+        s=Typemaker2_Member_GetTypeName(m);
+        if (s && *s) {
+          TYPEMAKER2_TYPE *tt;
+
+          tt=Typemaker2_TypeManager_GetType(tym, s);
+          if (tt==NULL) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Type for \"type\" not found [%s]", s);
+            return GWEN_ERROR_NOT_FOUND;
+          }
+          Typemaker2_Member_SetTypePtr(m, tt);
+        }
 
         /* set enum pointer (if any) */
-	if ((Typemaker2_Member_GetFlags(m) & TYPEMAKER2_FLAGS_ENUM) &&
-	    Typemaker2_Member_GetEnumPtr(m)==NULL) {
-	  s=Typemaker2_Member_GetEnumId(m);
-	  if (s && *s) {
-	    TYPEMAKER2_ENUM *te=Typemaker2_Type_FindEnum(ty, s);
-	    if (te)
-	      Typemaker2_Member_SetEnumPtr(m, te);
-	    else {
-	      DBG_ERROR(GWEN_LOGDOMAIN, "Enum [%s] not found", s);
-	      return GWEN_ERROR_NOT_FOUND;
-	    }
-	  }
-	}
+        if ((Typemaker2_Member_GetFlags(m) & TYPEMAKER2_FLAGS_ENUM) &&
+            Typemaker2_Member_GetEnumPtr(m)==NULL) {
+          s=Typemaker2_Member_GetEnumId(m);
+          if (s && *s) {
+            TYPEMAKER2_ENUM *te=Typemaker2_Type_FindEnum(ty, s);
+            if (te)
+              Typemaker2_Member_SetEnumPtr(m, te);
+            else {
+              DBG_ERROR(GWEN_LOGDOMAIN, "Enum [%s] not found", s);
+              return GWEN_ERROR_NOT_FOUND;
+            }
+          }
+        }
       }
 
       m=Typemaker2_Member_List_Next(m);
@@ -688,33 +711,33 @@ int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMA
 
     /* update member positions (needed for toObject/fromObject functions) */
     m=Typemaker2_Member_List_First(ml);
-    while(m) {
+    while (m) {
       if (!(Typemaker2_Member_GetFlags(m) & TYPEMAKER2_FLAGS_VOLATILE)) {
-	const char *s;
+        const char *s;
 
-	Typemaker2_Member_SetMemberPosition(m, pos++);
+        Typemaker2_Member_SetMemberPosition(m, pos++);
 
-	/* create field id */
-	s=Typemaker2_Type_GetName(ty);
-	if (s && *s) {
-	  GWEN_BUFFER *tbuf;
-	  char *p;
-    
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  GWEN_Buffer_AppendString(tbuf, s);
-	  GWEN_Buffer_AppendString(tbuf, "_FIELD_");
-	  s=Typemaker2_Member_GetName(m);
-	  GWEN_Buffer_AppendString(tbuf, s);
-	  /* all in capitals */
-	  p=GWEN_Buffer_GetStart(tbuf);
-	  while(*p) {
-	    *p=toupper(*p);
-	    p++;
-	  }
+        /* create field id */
+        s=Typemaker2_Type_GetName(ty);
+        if (s && *s) {
+          GWEN_BUFFER *tbuf;
+          char *p;
 
-	  Typemaker2_Member_SetFieldId(m, GWEN_Buffer_GetStart(tbuf));
-	  GWEN_Buffer_free(tbuf);
-	}
+          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          GWEN_Buffer_AppendString(tbuf, s);
+          GWEN_Buffer_AppendString(tbuf, "_FIELD_");
+          s=Typemaker2_Member_GetName(m);
+          GWEN_Buffer_AppendString(tbuf, s);
+          /* all in capitals */
+          p=GWEN_Buffer_GetStart(tbuf);
+          while (*p) {
+            *p=toupper(*p);
+            p++;
+          }
+
+          Typemaker2_Member_SetFieldId(m, GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
       }
 
       m=Typemaker2_Member_List_Next(m);
@@ -722,25 +745,25 @@ int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMA
     Typemaker2_Type_SetNonVolatileMemberCount(ty, pos);
     if (pos) {
       const char *s;
-  
+
       /* create field id */
       s=Typemaker2_Type_GetName(ty);
       if (s && *s) {
-	GWEN_BUFFER *tbuf;
-	char *p;
-  
-	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendString(tbuf, "_FIELD_COUNT");
-	/* all in capitals */
-	p=GWEN_Buffer_GetStart(tbuf);
-	while(*p) {
-	  *p=toupper(*p);
-	  p++;
-	}
+        GWEN_BUFFER *tbuf;
+        char *p;
 
-	Typemaker2_Type_SetFieldCountId(ty, GWEN_Buffer_GetStart(tbuf));
-	GWEN_Buffer_free(tbuf);
+        tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, "_FIELD_COUNT");
+        /* all in capitals */
+        p=GWEN_Buffer_GetStart(tbuf);
+        while (*p) {
+          *p=toupper(*p);
+          p++;
+        }
+
+        Typemaker2_Type_SetFieldCountId(ty, GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
       }
 
     }
@@ -751,7 +774,8 @@ int Typemaker2_TypeManager_SetMemberTypePtrs(TYPEMAKER2_TYPEMANAGER *tym, TYPEMA
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, const char *s) {
+TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, const char *s)
+{
   TYPEMAKER2_TYPE *ty;
 
   ty=Typemaker2_TypeManager_FindType(tym, s);
@@ -766,15 +790,15 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, con
       /* set type pointers in this type structure */
       rv=Typemaker2_TypeManager_SetTypePtrs(tym, ty);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         return NULL;
       }
 
       /* set type pointers in the member structures */
       rv=Typemaker2_TypeManager_SetMemberTypePtrs(tym, ty);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return NULL;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return NULL;
       }
     }
     else {
@@ -791,18 +815,21 @@ TYPEMAKER2_TYPE *Typemaker2_TypeManager_GetType(TYPEMAKER2_TYPEMANAGER *tym, con
 
 
 
-void Typemaker2_TypeManager_Dump(TYPEMAKER2_TYPEMANAGER *tym, FILE *f, int indent) {
+void Typemaker2_TypeManager_Dump(TYPEMAKER2_TYPEMANAGER *tym, FILE *f, int indent)
+{
   TYPEMAKER2_TYPE *ty;
   int i;
 
-  for (i=0; i<indent; i++) fprintf(f, " ");
+  for (i=0; i<indent; i++)
+    fprintf(f, " ");
   fprintf(f, "TypeManager\n");
 
-  for (i=0; i<indent; i++) fprintf(f, " ");
+  for (i=0; i<indent; i++)
+    fprintf(f, " ");
   fprintf(f, "Types\n");
 
   ty=Typemaker2_Type_List_First(tym->typeList);
-  while(ty) {
+  while (ty) {
     Typemaker2_Type_Dump(ty, f, indent+2);
     ty=Typemaker2_Type_List_Next(ty);
   }

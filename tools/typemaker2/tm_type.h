@@ -205,7 +205,7 @@ void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s);
 TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s);
 TYPEMAKER2_CODE *Typemaker2_Type_FindCodeForMember(const TYPEMAKER2_TYPE *ty,
                                                    const TYPEMAKER2_MEMBER *tm,
-						   const char *id);
+                                                   const char *id);
 
 
 int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang);

@@ -41,7 +41,8 @@ static void GWEN_LibInit(void) __attribute__((constructor));
 static void GWEN_LibFini(void) __attribute__((destructor));
 
 
-void GWEN_LibInit(void) {
+void GWEN_LibInit(void)
+{
   int err;
 
   err=GWEN_Init();
@@ -53,7 +54,8 @@ void GWEN_LibInit(void) {
 }
 
 
-void GWEN_LibFini(void) {
+void GWEN_LibFini(void)
+{
   int err;
 
   err=GWEN_Fini_Forced();

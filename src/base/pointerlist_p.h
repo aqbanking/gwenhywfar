@@ -38,7 +38,7 @@ typedef struct GWEN_POINTERLIST_TABLE GWEN_POINTERLIST_TABLE;
 
 struct GWEN_POINTERLIST_TABLE {
   uint64_t freeEntries;
-  void* entries[GWEN_POINTERLIST_TABLE_MAXENTRIES];
+  void *entries[GWEN_POINTERLIST_TABLE_MAXENTRIES];
   uint32_t refCount;
 };
 

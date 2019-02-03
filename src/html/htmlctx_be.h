@@ -25,23 +25,23 @@ extern "C" {
 
 
 typedef int (*HTMLCTX_GET_TEXT_WIDTH_FN)(GWEN_XML_CONTEXT *ctx,
-    HTML_FONT *fnt,
-    const char *s);
+                                         HTML_FONT *fnt,
+                                         const char *s);
 
 typedef int (*HTMLCTX_GET_TEXT_HEIGHT_FN)(GWEN_XML_CONTEXT *ctx,
-    HTML_FONT *fnt,
-    const char *s);
+                                          HTML_FONT *fnt,
+                                          const char *s);
 
 
 typedef uint32_t (*HTMLCTX_GET_COLOR_FROM_NAME_FN)(const GWEN_XML_CONTEXT *ctx, const char *s);
 
 
-typedef HTML_FONT* (*HTMLCTX_GET_FONT_FN)(GWEN_XML_CONTEXT *ctx,
-    const char *fontName,
-    int fontSize,
-    uint32_t fontFlags);
+typedef HTML_FONT *(*HTMLCTX_GET_FONT_FN)(GWEN_XML_CONTEXT *ctx,
+                                          const char *fontName,
+                                          int fontSize,
+                                          uint32_t fontFlags);
 
-typedef HTML_IMAGE* (*HTMLCTX_GET_IMAGE_FN)(GWEN_XML_CONTEXT *ctx, const char *imageName);
+typedef HTML_IMAGE *(*HTMLCTX_GET_IMAGE_FN)(GWEN_XML_CONTEXT *ctx, const char *imageName);
 
 
 
@@ -106,20 +106,20 @@ void HtmlCtx_AddMediaPath(GWEN_XML_CONTEXT *ctx, const char *s);
 
 GWENHYWFAR_API
 HTMLCTX_GET_TEXT_WIDTH_FN HtmlCtx_SetGetTextWidthFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_TEXT_WIDTH_FN fn);
+                                                    HTMLCTX_GET_TEXT_WIDTH_FN fn);
 
 GWENHYWFAR_API
 HTMLCTX_GET_TEXT_HEIGHT_FN HtmlCtx_SetGetTextHeightFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_TEXT_HEIGHT_FN fn);
+                                                      HTMLCTX_GET_TEXT_HEIGHT_FN fn);
 
 
 GWENHYWFAR_API
 HTMLCTX_GET_COLOR_FROM_NAME_FN HtmlCtx_SetGetColorFromNameFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_COLOR_FROM_NAME_FN fn);
+                                                             HTMLCTX_GET_COLOR_FROM_NAME_FN fn);
 
 GWENHYWFAR_API
 HTMLCTX_GET_FONT_FN HtmlCtx_SetGetFontFn(GWEN_XML_CONTEXT *ctx,
-    HTMLCTX_GET_FONT_FN fn);
+                                         HTMLCTX_GET_FONT_FN fn);
 
 GWENHYWFAR_API
 HTMLCTX_GET_IMAGE_FN HtmlCtx_SetGetImageFn(GWEN_XML_CONTEXT *ctx, HTMLCTX_GET_IMAGE_FN fn);

@@ -22,12 +22,13 @@
 
 
 
-int readFile(const char *fname, GWEN_BUFFER *dbuf) {
+int readFile(const char *fname, GWEN_BUFFER *dbuf)
+{
   FILE *f;
 
   f=fopen(fname, "rb");
   if (f) {
-    while(!feof(f)) {
+    while (!feof(f)) {
       uint32_t l;
       ssize_t s;
       char *p;
@@ -37,13 +38,13 @@ int readFile(const char *fname, GWEN_BUFFER *dbuf) {
       p=GWEN_Buffer_GetPosPointer(dbuf);
       s=fread(p, 1, l, f);
       if (s==0)
-	break;
+        break;
       if (s==(ssize_t)-1) {
-	DBG_INFO(GWEN_LOGDOMAIN,
-		 "fread(%s): %s",
-		 fname, strerror(errno));
-	fclose(f);
-	return GWEN_ERROR_IO;
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "fread(%s): %s",
+                 fname, strerror(errno));
+        fclose(f);
+        return GWEN_ERROR_IO;
       }
 
       GWEN_Buffer_IncrementPos(dbuf, s);
@@ -55,8 +56,8 @@ int readFile(const char *fname, GWEN_BUFFER *dbuf) {
   }
   else {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "fopen(%s): %s",
-	     fname, strerror(errno));
+             "fopen(%s): %s",
+             fname, strerror(errno));
     return GWEN_ERROR_IO;
   }
 }
@@ -65,24 +66,25 @@ int readFile(const char *fname, GWEN_BUFFER *dbuf) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *cmd;
   int rv;
   int err;
   GWEN_GUI *gui;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   err=GWEN_Init();
@@ -95,8 +97,8 @@ int main(int argc, char **argv) {
   GWEN_Gui_SetGui(gui);
 
   GWEN_Logger_Open(GSA_LOGDOMAIN, "gsa", 0,
-		   GWEN_LoggerType_Console,
-		   GWEN_LoggerFacility_User);
+                   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
 
   GWEN_Logger_SetLevel(GSA_LOGDOMAIN, GWEN_LoggerLevel_Warning);
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
@@ -114,10 +116,10 @@ int main(int argc, char **argv) {
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
-		     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
-		     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
-		     args,
-		     db);
+                     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
+                     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
+                     args,
+                     db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
     return -1;
@@ -149,14 +151,14 @@ int main(int argc, char **argv) {
                                   "    This command creates an archive file"
                                   "\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  add:\n"
+                             I18N("  add:\n"
                                   "    Add files and folders to an archive file\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  list:\n"
+                             I18N("  list:\n"
                                   "    List files and folders in an archive file\n\n"));
 
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  check:\n"
+                             I18N("  check:\n"
                                   "    Check integrity of files and folders in an archive file\n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));

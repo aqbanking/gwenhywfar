@@ -40,13 +40,14 @@
 
 
 static const uint8_t daysInMonth[12]= {
-  31,28,31,30,31,30,31,31,30,31,30,31
+  31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
 
 
 
-GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d) {
+GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d)
+{
   GWEN_DATE *gd;
 
   if (m<1 || m>12 || d<1 || d>31) {
@@ -73,7 +74,8 @@ GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d) {
 
 
 
-void GWEN_Date_setJulian(GWEN_DATE *gd, int julian) {
+void GWEN_Date_setJulian(GWEN_DATE *gd, int julian)
+{
   int l, n, i, j;
 
   l=julian+68569;
@@ -96,19 +98,22 @@ void GWEN_Date_setJulian(GWEN_DATE *gd, int julian) {
 
 
 
-void GWEN_Date_AddDays(GWEN_DATE *gd, int days) {
+void GWEN_Date_AddDays(GWEN_DATE *gd, int days)
+{
   GWEN_Date_setJulian(gd, gd->julian+days);
 }
 
 
 
-void GWEN_Date_SubDays(GWEN_DATE *gd, int days) {
+void GWEN_Date_SubDays(GWEN_DATE *gd, int days)
+{
   GWEN_Date_setJulian(gd, gd->julian-days);
 }
 
 
 
-GWEN_DATE *GWEN_Date_fromJulian(int julian) {
+GWEN_DATE *GWEN_Date_fromJulian(int julian)
+{
   GWEN_DATE *gd;
 
   GWEN_NEW_OBJECT(GWEN_DATE, gd);
@@ -118,7 +123,8 @@ GWEN_DATE *GWEN_Date_fromJulian(int julian) {
 
 
 
-GWEN_DATE *GWEN_Date_fromLocalTime(time_t t) {
+GWEN_DATE *GWEN_Date_fromLocalTime(time_t t)
+{
   struct tm *ltm;
 
   ltm=localtime(&t);
@@ -134,7 +140,8 @@ GWEN_DATE *GWEN_Date_fromLocalTime(time_t t) {
 
 
 
-time_t GWEN_Date_toLocalTime(const GWEN_DATE *gd) {
+time_t GWEN_Date_toLocalTime(const GWEN_DATE *gd)
+{
   struct tm ti;
   struct tm *tp;
   time_t tt;
@@ -158,7 +165,8 @@ time_t GWEN_Date_toLocalTime(const GWEN_DATE *gd) {
 
 
 
-GWEN_DATE *GWEN_Date_fromGmTime(time_t t) {
+GWEN_DATE *GWEN_Date_fromGmTime(time_t t)
+{
   struct tm *ltm;
 
   ltm=gmtime(&t);
@@ -175,7 +183,8 @@ GWEN_DATE *GWEN_Date_fromGmTime(time_t t) {
 
 
 
-GWEN_DATE *GWEN_Date_CurrentDate(void) {
+GWEN_DATE *GWEN_Date_CurrentDate(void)
+{
   time_t l;
 
   time(&l);
@@ -184,7 +193,8 @@ GWEN_DATE *GWEN_Date_CurrentDate(void) {
 
 
 
-GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd) {
+GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd)
+{
   GWEN_DATE *gd;
 
   assert(ogd);
@@ -204,7 +214,8 @@ GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd) {
 
 
 
-GWEN_DATE *GWEN_Date_fromString(const char *s) {
+GWEN_DATE *GWEN_Date_fromString(const char *s)
+{
   int y, m, d;
 
   if (3==sscanf(s, "%04d%02d%02d", &y, &m, &d)) {
@@ -221,7 +232,8 @@ GWEN_DATE *GWEN_Date_fromString(const char *s) {
 
 
 
-void GWEN_Date_free(GWEN_DATE *gd) {
+void GWEN_Date_free(GWEN_DATE *gd)
+{
   if (gd) {
     GWEN_FREE_OBJECT(gd);
   }
@@ -229,14 +241,16 @@ void GWEN_Date_free(GWEN_DATE *gd) {
 
 
 
-int GWEN_Date_IsLeapYear(int y) {
+int GWEN_Date_IsLeapYear(int y)
+{
   return ((y%4==0) && (y%100!=0)) || (y%400==0);
 }
 
 
 
 
-int GWEN_Date_DaysInMonth(const GWEN_DATE *gd) {
+int GWEN_Date_DaysInMonth(const GWEN_DATE *gd)
+{
   assert(gd);
   if (gd->month==2 &&
       ((((gd->year%4)==0) && ((gd->year)%100!=0)) || ((gd->year)%400==0)))
@@ -248,7 +262,8 @@ int GWEN_Date_DaysInMonth(const GWEN_DATE *gd) {
 
 
 
-int GWEN_Date_DaysInYear(const GWEN_DATE *gd) {
+int GWEN_Date_DaysInYear(const GWEN_DATE *gd)
+{
   GWEN_DATE *gd11;
   int result;
 
@@ -263,49 +278,56 @@ int GWEN_Date_DaysInYear(const GWEN_DATE *gd) {
 
 
 
-int GWEN_Date_GetYear(const GWEN_DATE *gd) {
+int GWEN_Date_GetYear(const GWEN_DATE *gd)
+{
   assert(gd);
   return gd->year;
 }
 
 
 
-int GWEN_Date_GetMonth(const GWEN_DATE *gd) {
+int GWEN_Date_GetMonth(const GWEN_DATE *gd)
+{
   assert(gd);
   return gd->month;
 }
 
 
 
-int GWEN_Date_GetDay(const GWEN_DATE *gd) {
+int GWEN_Date_GetDay(const GWEN_DATE *gd)
+{
   assert(gd);
   return gd->day;
 }
 
 
 
-int GWEN_Date_GetJulian(const GWEN_DATE *gd) {
+int GWEN_Date_GetJulian(const GWEN_DATE *gd)
+{
   assert(gd);
   return gd->julian;
 }
 
 
 
-int GWEN_Date_WeekDay(const GWEN_DATE *gd) {
+int GWEN_Date_WeekDay(const GWEN_DATE *gd)
+{
   assert(gd);
   return (gd->julian+1)%7; /* 0=Sunday */
 }
 
 
 
-const char *GWEN_Date_GetString(const GWEN_DATE *gd) {
+const char *GWEN_Date_GetString(const GWEN_DATE *gd)
+{
   assert(gd);
   return gd->asString;
 }
 
 
 
-int GWEN_Date_Compare(const GWEN_DATE *gd1, const GWEN_DATE *gd0) {
+int GWEN_Date_Compare(const GWEN_DATE *gd1, const GWEN_DATE *gd0)
+{
   if (gd0 && gd1) {
     if (gd1->julian==gd0->julian)
       return 0;
@@ -324,7 +346,8 @@ int GWEN_Date_Compare(const GWEN_DATE *gd1, const GWEN_DATE *gd0) {
 
 
 
-int GWEN_Date_Diff(const GWEN_DATE *gd1, const GWEN_DATE *gd0) {
+int GWEN_Date_Diff(const GWEN_DATE *gd1, const GWEN_DATE *gd0)
+{
   assert(gd1);
   assert(gd0);
 
@@ -333,7 +356,8 @@ int GWEN_Date_Diff(const GWEN_DATE *gd1, const GWEN_DATE *gd0) {
 
 
 
-GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti) {
+GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti)
+{
   GWEN_BUFFER *tbuf;
   GWEN_DATE *gd;
 
@@ -348,7 +372,8 @@ GWEN_DATE *GWEN_Date_fromTime(const GWEN_TIME *ti) {
 
 
 
-GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
+GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl)
+{
   int year, month, day;
   const char *p;
   const char *t;
@@ -360,7 +385,7 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
 
   p=s;
   t=tmpl;
-  while(*t && *p) {
+  while (*t && *p) {
     int i;
 
     if (*t=='*') {
@@ -370,7 +395,7 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
         return 0;
       }
       i=0;
-      while(*p) {
+      while (*p) {
         if (!isdigit((int)*p))
           break;
         if (*p==*t)
@@ -394,7 +419,7 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
       p--;
     }
     else {
-      switch(*t) {
+      switch (*t) {
       case 'Y':
         if (i==-1) {
           DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -451,13 +476,14 @@ GWEN_DATE *GWEN_Date_fromStringWithTemplate(const char *s, const char *tmpl) {
 GWEN_LIST_FUNCTIONS(GWEN_DATE_TMPLCHAR, GWEN_DateTmplChar)
 
 
-GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c) {
+GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c)
+{
   GWEN_DATE_TMPLCHAR *e;
 
   GWEN_NEW_OBJECT(GWEN_DATE_TMPLCHAR, e);
   GWEN_LIST_INIT(GWEN_DATE_TMPLCHAR, e);
   e->character=c;
-  switch(c) {
+  switch (c) {
   case 'Y':
     e->maxCount=4;
     break;
@@ -481,7 +507,8 @@ GWEN_DATE_TMPLCHAR *GWEN_DateTmplChar_new(char c) {
 
 
 
-void GWEN_DateTmplChar_free(GWEN_DATE_TMPLCHAR *e) {
+void GWEN_DateTmplChar_free(GWEN_DATE_TMPLCHAR *e)
+{
   if (e) {
     free(e->content);
     GWEN_LIST_FINI(GWEN_DATE_TMPLCHAR, e);
@@ -491,11 +518,12 @@ void GWEN_DateTmplChar_free(GWEN_DATE_TMPLCHAR *e) {
 
 
 
-GWEN_DATE_TMPLCHAR *GWEN_Date__findTmplChar(GWEN_DATE_TMPLCHAR_LIST *ll, char c) {
+GWEN_DATE_TMPLCHAR *GWEN_Date__findTmplChar(GWEN_DATE_TMPLCHAR_LIST *ll, char c)
+{
   GWEN_DATE_TMPLCHAR *e;
 
   e=GWEN_DateTmplChar_List_First(ll);
-  while(e) {
+  while (e) {
     if (e->character==c)
       break;
     e=GWEN_DateTmplChar_List_Next(e);
@@ -509,11 +537,12 @@ GWEN_DATE_TMPLCHAR *GWEN_Date__findTmplChar(GWEN_DATE_TMPLCHAR_LIST *ll, char c)
 
 void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const char *tmpl,
                                 GWEN_UNUSED GWEN_BUFFER *buf,
-                                GWEN_DATE_TMPLCHAR_LIST *ll) {
+                                GWEN_DATE_TMPLCHAR_LIST *ll)
+{
   const char *s;
 
   s=tmpl;
-  while(*s) {
+  while (*s) {
     if (strchr("YMDWw", *s)) {
       GWEN_DATE_TMPLCHAR *e;
 
@@ -536,18 +565,19 @@ void GWEN_Date__sampleTmplChars(GWEN_UNUSED const GWEN_DATE *t, const char *tmpl
 
 
 
-void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
+void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll)
+{
   GWEN_DATE_TMPLCHAR *e;
 
 
   e=GWEN_DateTmplChar_List_First(ll);
-  while(e) {
+  while (e) {
     int v;
 
     if (e->character=='w') {
       const char *s=NULL;
 
-      switch(GWEN_Date_WeekDay(t)) {
+      switch (GWEN_Date_WeekDay(t)) {
       case 0:
         s=I18N("Sunday");
         break;
@@ -578,7 +608,7 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
       char buffer[32];
       int clen;
 
-      switch(e->character) {
+      switch (e->character) {
       case 'Y':
         v=t->year;
         break;
@@ -617,7 +647,8 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll) {
 
 
 
-int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BUFFER *buf) {
+int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BUFFER *buf)
+{
   GWEN_DATE_TMPLCHAR_LIST *ll;
   const char *s;
 
@@ -626,7 +657,7 @@ int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BU
   GWEN_Date__fillTmplChars(t, ll);
 
   s=tmpl;
-  while(*s) {
+  while (*s) {
     if (strchr("YMDWw", *s)) {
       GWEN_DATE_TMPLCHAR *e;
       char c;
@@ -658,7 +689,8 @@ int GWEN_Date_toStringWithTemplate(const GWEN_DATE *t, const char *tmpl, GWEN_BU
 
 
 
-int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db) {
+int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db)
+{
   const char *s;
 
   assert(dt);
@@ -669,7 +701,8 @@ int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db) {
 
 
 
-GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db) {
+GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db)
+{
   const char *s;
 
   s=GWEN_DB_GetCharValue(db, "dateString", 0, NULL);
@@ -692,16 +725,18 @@ GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db) {
 
 
 
-GWEN_DATE *GWEN_Date_GetThisMonthStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisMonthStart(const GWEN_DATE *dt)
+{
   return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
 }
 
 
 
-GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt)
+{
   int day;
 
-  switch(GWEN_Date_GetMonth(dt)) {
+  switch (GWEN_Date_GetMonth(dt)) {
   case 1:
   case 3:
   case 5:
@@ -735,11 +770,12 @@ GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt)
+{
   int m;
 
   m=GWEN_Date_GetMonth(dt)>>2;
-  switch(m) {
+  switch (m) {
   case 0:
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
   case 1:
@@ -755,11 +791,12 @@ GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt)
+{
   int m;
 
   m=GWEN_Date_GetMonth(dt)>>2;
-  switch(m) {
+  switch (m) {
   case 0:
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 3, 31);
   case 1:
@@ -775,7 +812,8 @@ GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetThisHalfYearStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisHalfYearStart(const GWEN_DATE *dt)
+{
   if (GWEN_Date_GetMonth(dt)<7)
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
   else
@@ -784,7 +822,8 @@ GWEN_DATE *GWEN_Date_GetThisHalfYearStart(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetThisHalfYearEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisHalfYearEnd(const GWEN_DATE *dt)
+{
   if (GWEN_Date_GetMonth(dt)<7)
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 6, 30);
   else
@@ -793,19 +832,22 @@ GWEN_DATE *GWEN_Date_GetThisHalfYearEnd(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetThisYearStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisYearStart(const GWEN_DATE *dt)
+{
   return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 1, 1);
 }
 
 
 
-GWEN_DATE *GWEN_Date_GetThisYearEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetThisYearEnd(const GWEN_DATE *dt)
+{
   return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 12, 31);
 }
 
 
 
-GWEN_DATE *GWEN_Date_GetLastMonthStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastMonthStart(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   GWEN_DATE *result;
   int j;
@@ -821,7 +863,8 @@ GWEN_DATE *GWEN_Date_GetLastMonthStart(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastMonthEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastMonthEnd(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   int j;
 
@@ -833,7 +876,8 @@ GWEN_DATE *GWEN_Date_GetLastMonthEnd(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastQuarterYearStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastQuarterYearStart(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   GWEN_DATE *result;
 
@@ -845,7 +889,8 @@ GWEN_DATE *GWEN_Date_GetLastQuarterYearStart(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastQuarterYearEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastQuarterYearEnd(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   int j;
 
@@ -857,7 +902,8 @@ GWEN_DATE *GWEN_Date_GetLastQuarterYearEnd(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastHalfYearStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastHalfYearStart(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   GWEN_DATE *result;
 
@@ -869,7 +915,8 @@ GWEN_DATE *GWEN_Date_GetLastHalfYearStart(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastHalfYearEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastHalfYearEnd(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   int j;
 
@@ -881,7 +928,8 @@ GWEN_DATE *GWEN_Date_GetLastHalfYearEnd(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastYearStart(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastYearStart(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   GWEN_DATE *result;
 
@@ -893,7 +941,8 @@ GWEN_DATE *GWEN_Date_GetLastYearStart(const GWEN_DATE *dt) {
 
 
 
-GWEN_DATE *GWEN_Date_GetLastYearEnd(const GWEN_DATE *dt) {
+GWEN_DATE *GWEN_Date_GetLastYearEnd(const GWEN_DATE *dt)
+{
   GWEN_DATE *tmpDate;
   int j;
 

@@ -24,12 +24,13 @@
 #include <assert.h>
 
 
-GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io) {
+GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io)
+{
   GWEN_FAST_BUFFER *fb;
 
   assert(bsize);
 
-  fb=(GWEN_FAST_BUFFER*) GWEN_Memory_malloc(sizeof(GWEN_FAST_BUFFER)+bsize);
+  fb=(GWEN_FAST_BUFFER *) GWEN_Memory_malloc(sizeof(GWEN_FAST_BUFFER)+bsize);
   assert(fb);
   memset(fb, 0, sizeof(GWEN_FAST_BUFFER)+bsize);
 
@@ -42,7 +43,8 @@ GWEN_FAST_BUFFER *GWEN_FastBuffer_new(uint32_t bsize, GWEN_SYNCIO *io) {
 
 
 
-void GWEN_FastBuffer_free(GWEN_FAST_BUFFER *fb) {
+void GWEN_FastBuffer_free(GWEN_FAST_BUFFER *fb)
+{
   if (fb) {
     GWEN_Memory_dealloc(fb);
   }
@@ -50,7 +52,8 @@ void GWEN_FastBuffer_free(GWEN_FAST_BUFFER *fb) {
 
 
 
-int GWEN_FastBuffer_ReadLine(GWEN_FAST_BUFFER *fb, uint8_t *p, int len) {
+int GWEN_FastBuffer_ReadLine(GWEN_FAST_BUFFER *fb, uint8_t *p, int len)
+{
   int bytes;
   int copied=0;
 
@@ -67,7 +70,7 @@ int GWEN_FastBuffer_ReadLine(GWEN_FAST_BUFFER *fb, uint8_t *p, int len) {
   bytes=fb->bufferWritePos-fb->bufferReadPos;
   if (bytes>len)
     bytes=len;
-  while(bytes) {
+  while (bytes) {
     uint8_t c;
 
     c=fb->buffer[fb->bufferReadPos++];
@@ -89,7 +92,8 @@ int GWEN_FastBuffer_ReadLine(GWEN_FAST_BUFFER *fb, uint8_t *p, int len) {
 
 
 
-int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
+int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf)
+{
   int lineComplete=0;
   int hadSome=0;
 
@@ -125,7 +129,7 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
 
     bytes=fb->bufferWritePos-fb->bufferReadPos;
     p=fb->buffer+fb->bufferReadPos;
-    while(bytes) {
+    while (bytes) {
       uint8_t c;
 
       hadSome=1;
@@ -147,7 +151,7 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
     } /* while */
 
     if (copied)
-      GWEN_Buffer_AppendBytes(buf, (const char*)p, copied);
+      GWEN_Buffer_AppendBytes(buf, (const char *)p, copied);
   }
 
   return 0;
@@ -155,42 +159,48 @@ int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_BUFFER *buf) {
 
 
 
-uint32_t GWEN_FastBuffer_GetFlags(const GWEN_FAST_BUFFER *fb) {
+uint32_t GWEN_FastBuffer_GetFlags(const GWEN_FAST_BUFFER *fb)
+{
   assert(fb);
   return fb->flags;
 }
 
 
 
-void GWEN_FastBuffer_SetFlags(GWEN_FAST_BUFFER *fb, uint32_t fl) {
+void GWEN_FastBuffer_SetFlags(GWEN_FAST_BUFFER *fb, uint32_t fl)
+{
   assert(fb);
   fb->flags=fl;
 }
 
 
 
-void GWEN_FastBuffer_AddFlags(GWEN_FAST_BUFFER *fb, uint32_t fl) {
+void GWEN_FastBuffer_AddFlags(GWEN_FAST_BUFFER *fb, uint32_t fl)
+{
   assert(fb);
   fb->flags|=fl;
 }
 
 
 
-void GWEN_FastBuffer_SubFlags(GWEN_FAST_BUFFER *fb, uint32_t fl) {
+void GWEN_FastBuffer_SubFlags(GWEN_FAST_BUFFER *fb, uint32_t fl)
+{
   assert(fb);
   fb->flags&=~fl;
 }
 
 
 
-uint32_t GWEN_FastBuffer_GetBytesWritten(const GWEN_FAST_BUFFER *fb) {
+uint32_t GWEN_FastBuffer_GetBytesWritten(const GWEN_FAST_BUFFER *fb)
+{
   assert(fb);
   return fb->bytesWritten;
 }
 
 
 
-uint32_t GWEN_FastBuffer_GetBytesRead(const GWEN_FAST_BUFFER *fb) {
+uint32_t GWEN_FastBuffer_GetBytesRead(const GWEN_FAST_BUFFER *fb)
+{
   assert(fb);
   return fb->bytesRead;
 }

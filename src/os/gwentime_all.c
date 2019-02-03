@@ -47,7 +47,8 @@ GWEN_LIST_FUNCTIONS(GWEN_TIME_TMPLCHAR, GWEN_TimeTmplChar)
 
 
 
-GWEN_TIME *GWEN_CurrentTime(void) {
+GWEN_TIME *GWEN_CurrentTime(void)
+{
   GWEN_TIME *t;
 
   GWEN_NEW_OBJECT(GWEN_TIME, t);
@@ -61,7 +62,8 @@ GWEN_TIME *GWEN_CurrentTime(void) {
 
 
 
-GWEN_TIME *GWEN_Time_fromSeconds(uint32_t secs) {
+GWEN_TIME *GWEN_Time_fromSeconds(uint32_t secs)
+{
   GWEN_TIME *t;
 
   GWEN_NEW_OBJECT(GWEN_TIME, t);
@@ -72,7 +74,8 @@ GWEN_TIME *GWEN_Time_fromSeconds(uint32_t secs) {
 
 
 int GWEN_Time_AddSeconds(GWEN_TIME *ti,
-                         uint32_t secs) {
+                         uint32_t secs)
+{
   uint32_t i;
 
   assert(ti);
@@ -89,7 +92,8 @@ int GWEN_Time_AddSeconds(GWEN_TIME *ti,
 
 
 int GWEN_Time_SubSeconds(GWEN_TIME *ti,
-                         uint32_t secs) {
+                         uint32_t secs)
+{
   assert(ti);
 
   if (ti->secs<secs) {
@@ -105,7 +109,8 @@ int GWEN_Time_SubSeconds(GWEN_TIME *ti,
 
 void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
                                 uint32_t secs,
-                                uint32_t msecs) {
+                                uint32_t msecs)
+{
   assert(ti);
   ti->secs=secs;
   ti->msecs=msecs;
@@ -113,7 +118,8 @@ void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
 
 
 
-int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db) {
+int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db)
+{
   GWEN_DB_NODE *dbT;
   int i1, i2, i3;
 
@@ -153,7 +159,8 @@ int GWEN_Time_toDb(const GWEN_TIME *t, GWEN_DB_NODE *db) {
 
 
 
-GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
+GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db)
+{
   GWEN_TIME *t;
   GWEN_DB_NODE *dbT;
   int day, month, year;
@@ -196,7 +203,8 @@ GWEN_TIME *GWEN_Time_fromDb(GWEN_DB_NODE *db) {
 
 
 
-GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc) {
+GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc)
+{
   int year, month, day;
   int hour, min, sec;
   const char *p;
@@ -210,7 +218,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc) {
 
   p=s;
   t=tmpl;
-  while(*t && *p) {
+  while (*t && *p) {
     int i;
 
     if (*t=='*') {
@@ -220,7 +228,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc) {
         return 0;
       }
       i=0;
-      while(*p) {
+      while (*p) {
         if (!isdigit((int)*p))
           break;
         if (*p==*t)
@@ -244,7 +252,7 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc) {
       p--;
     }
     else {
-      switch(*t) {
+      switch (*t) {
       case 'Y':
         if (i==-1) {
           DBG_INFO(GWEN_LOGDOMAIN, "here");
@@ -322,13 +330,15 @@ GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc) {
 
 
 
-GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl) {
+GWEN_TIME *GWEN_Time_fromString(const char *s, const char *tmpl)
+{
   return GWEN_Time__fromString(s, tmpl, 0);
 }
 
 
 
-GWEN_TIME *GWEN_Time_fromUtcString(const char *s, const char *tmpl) {
+GWEN_TIME *GWEN_Time_fromUtcString(const char *s, const char *tmpl)
+{
   return GWEN_Time__fromString(s, tmpl, 1);
 }
 
@@ -340,7 +350,8 @@ GWEN_TIME *GWEN_Time_new(int year,
                          int hour,
                          int min,
                          int sec,
-                         int inUtc) {
+                         int inUtc)
+{
   uint32_t s;
 
   if (inUtc)
@@ -381,7 +392,8 @@ uint32_t GWEN_Time__mktimeUtc(int year,
                               int day,
                               int hour,
                               int min,
-                              int sec) {
+                              int sec)
+{
   uint32_t result;
   int i;
   int isLeap;
@@ -422,7 +434,8 @@ uint32_t GWEN_Time__mktimeUtc(int year,
 
 
 
-GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t) {
+GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t)
+{
   GWEN_TIME *newT;
 
   assert(t);
@@ -434,7 +447,8 @@ GWEN_TIME *GWEN_Time_dup(const GWEN_TIME *t) {
 
 
 
-void GWEN_Time_free(GWEN_TIME *t) {
+void GWEN_Time_free(GWEN_TIME *t)
+{
   if (t) {
     GWEN_FREE_OBJECT(t);
   }
@@ -442,7 +456,8 @@ void GWEN_Time_free(GWEN_TIME *t) {
 
 
 
-double GWEN_Time_Diff(const GWEN_TIME *t1, const GWEN_TIME *t0) {
+double GWEN_Time_Diff(const GWEN_TIME *t1, const GWEN_TIME *t0)
+{
   double d;
 
   assert(t1);
@@ -456,7 +471,8 @@ double GWEN_Time_Diff(const GWEN_TIME *t1, const GWEN_TIME *t0) {
 
 
 
-double GWEN_Time_DiffSeconds(const GWEN_TIME *t1, const GWEN_TIME *t0) {
+double GWEN_Time_DiffSeconds(const GWEN_TIME *t1, const GWEN_TIME *t0)
+{
   double d;
 
   assert(t1);
@@ -470,7 +486,8 @@ double GWEN_Time_DiffSeconds(const GWEN_TIME *t1, const GWEN_TIME *t0) {
 
 
 
-int GWEN_Time_Compare(const GWEN_TIME *t1, const GWEN_TIME *t0) {
+int GWEN_Time_Compare(const GWEN_TIME *t1, const GWEN_TIME *t0)
+{
   if (t1 && t0) {
     if (t1->secs<t0->secs)
       return -1;
@@ -495,14 +512,16 @@ int GWEN_Time_Compare(const GWEN_TIME *t1, const GWEN_TIME *t0) {
 
 
 
-double GWEN_Time_Milliseconds(const GWEN_TIME *t) {
+double GWEN_Time_Milliseconds(const GWEN_TIME *t)
+{
   assert(t);
   return (double)((t->secs*1000)+(t->msecs));
 }
 
 
 
-uint32_t GWEN_Time_Seconds(const GWEN_TIME *t) {
+uint32_t GWEN_Time_Seconds(const GWEN_TIME *t)
+{
   assert(t);
   return t->secs;
 }
@@ -512,7 +531,8 @@ uint32_t GWEN_Time_Seconds(const GWEN_TIME *t) {
 int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
                                 int *hours,
                                 int *mins,
-                                int *secs) {
+                                int *secs)
+{
   struct tm *tb;
   time_t tt;
 
@@ -534,7 +554,8 @@ int GWEN_Time_GetBrokenDownTime(const GWEN_TIME *t,
 int GWEN_Time_GetBrokenDownUtcTime(const GWEN_TIME *t,
                                    int *hours,
                                    int *mins,
-                                   int *secs) {
+                                   int *secs)
+{
   struct tm *tb;
   time_t tt;
 
@@ -556,7 +577,8 @@ int GWEN_Time_GetBrokenDownUtcTime(const GWEN_TIME *t,
 int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
                                 int *days,
                                 int *month,
-                                int *year) {
+                                int *year)
+{
   struct tm *tb;
   time_t tt;
 
@@ -578,7 +600,8 @@ int GWEN_Time_GetBrokenDownDate(const GWEN_TIME *t,
 int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
                                    int *days,
                                    int *month,
-                                   int *year) {
+                                   int *year)
+{
   struct tm *tb;
   time_t tt;
 
@@ -598,7 +621,8 @@ int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
 
 
 /* TODO: compiler says "function returns an aggregate" */
-struct tm GWEN_Time_toTm(const GWEN_TIME *t) {
+struct tm GWEN_Time_toTm(const GWEN_TIME *t)
+{
   struct tm *tb;
   time_t tt;
 
@@ -608,7 +632,8 @@ struct tm GWEN_Time_toTm(const GWEN_TIME *t) {
   return *tb;
 }
 
-time_t GWEN_Time_toTime_t(const GWEN_TIME *t) {
+time_t GWEN_Time_toTime_t(const GWEN_TIME *t)
+{
   assert(t);
   return t->secs;
 }
@@ -616,7 +641,8 @@ time_t GWEN_Time_toTime_t(const GWEN_TIME *t) {
 
 
 
-GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c) {
+GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c)
+{
   GWEN_TIME_TMPLCHAR *e;
 
   GWEN_NEW_OBJECT(GWEN_TIME_TMPLCHAR, e);
@@ -627,7 +653,8 @@ GWEN_TIME_TMPLCHAR *GWEN_TimeTmplChar_new(char c) {
 
 
 
-void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e) {
+void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e)
+{
   if (e) {
     free(e->content);
     GWEN_LIST_FINI(GWEN_TIME_TMPLCHAR, e);
@@ -637,11 +664,12 @@ void GWEN_TimeTmplChar_free(GWEN_TIME_TMPLCHAR *e) {
 
 
 GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
-    char c) {
+                                            char c)
+{
   GWEN_TIME_TMPLCHAR *e;
 
   e=GWEN_TimeTmplChar_List_First(ll);
-  while(e) {
+  while (e) {
     if (e->character==c)
       break;
     e=GWEN_TimeTmplChar_List_Next(e);
@@ -655,11 +683,12 @@ GWEN_TIME_TMPLCHAR *GWEN_Time__findTmplChar(GWEN_TIME_TMPLCHAR_LIST *ll,
 
 void GWEN_Time__sampleTmplChars(GWEN_UNUSED const GWEN_TIME *t, const char *tmpl,
                                 GWEN_UNUSED GWEN_BUFFER *buf,
-                                GWEN_TIME_TMPLCHAR_LIST *ll) {
+                                GWEN_TIME_TMPLCHAR_LIST *ll)
+{
   const char *s;
 
   s=tmpl;
-  while(*s) {
+  while (*s) {
     if (strchr("YMDhms", *s)) {
       GWEN_TIME_TMPLCHAR *e;
 
@@ -684,7 +713,8 @@ void GWEN_Time__sampleTmplChars(GWEN_UNUSED const GWEN_TIME *t, const char *tmpl
 
 void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
                               GWEN_TIME_TMPLCHAR_LIST *ll,
-                              int useUtc) {
+                              int useUtc)
+{
   GWEN_TIME_TMPLCHAR *e;
   int year, month, day, hour, minute, second;
 
@@ -698,11 +728,11 @@ void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
   }
 
   e=GWEN_TimeTmplChar_List_First(ll);
-  while(e) {
+  while (e) {
     int v;
     char buffer[32];
 
-    switch(e->character) {
+    switch (e->character) {
     case 'Y':
       v=year;
       break;
@@ -742,7 +772,8 @@ void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
 
 
 int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
-                        GWEN_BUFFER *buf, int useUtc) {
+                        GWEN_BUFFER *buf, int useUtc)
+{
   GWEN_TIME_TMPLCHAR_LIST *ll;
   const char *s;
 
@@ -751,7 +782,7 @@ int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
   GWEN_Time__fillTmplChars(t, ll, useUtc);
 
   s=tmpl;
-  while(*s) {
+  while (*s) {
     if (strchr("YMDhms", *s)) {
       GWEN_TIME_TMPLCHAR *e;
       char c;
@@ -782,14 +813,16 @@ int GWEN_Time__toString(const GWEN_TIME *t, const char *tmpl,
 
 
 int GWEN_Time_toString(const GWEN_TIME *t, const char *tmpl,
-                       GWEN_BUFFER *buf) {
+                       GWEN_BUFFER *buf)
+{
   return GWEN_Time__toString(t, tmpl, buf, 0);
 }
 
 
 
 int GWEN_Time_toUtcString(const GWEN_TIME *t, const char *tmpl,
-                          GWEN_BUFFER *buf) {
+                          GWEN_BUFFER *buf)
+{
   return GWEN_Time__toString(t, tmpl, buf, 1);
 }
 

@@ -49,14 +49,14 @@ static int GWENHYWFAR_CB GWEN_SyncIo_File_Disconnect(GWEN_SYNCIO *sio);
 
 
 static int GWENHYWFAR_CB GWEN_SyncIo_File_Read(GWEN_SYNCIO *sio,
-    uint8_t *buffer,
-    uint32_t size);
+                                               uint8_t *buffer,
+                                               uint32_t size);
 
 
 
 static int GWENHYWFAR_CB GWEN_SyncIo_File_Write(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size);
+                                                const uint8_t *buffer,
+                                                uint32_t size);
 
 
 

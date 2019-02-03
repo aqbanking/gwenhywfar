@@ -33,7 +33,8 @@ GWENHYWFAR_CB int GWEN_Crypt_KeySym_Encipher(GWEN_CRYPT_KEY *k,
                                              const uint8_t *pInData,
                                              uint32_t inLen,
                                              uint8_t *pOutData,
-                                             uint32_t *pOutLen) {
+                                             uint32_t *pOutLen)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
@@ -57,7 +58,8 @@ GWENHYWFAR_CB int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
                                              const uint8_t *pInData,
                                              uint32_t inLen,
                                              uint8_t *pOutData,
-                                             uint32_t *pOutLen) {
+                                             uint32_t *pOutLen)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
@@ -77,10 +79,11 @@ GWENHYWFAR_CB int GWEN_Crypt_KeySym_Decipher(GWEN_CRYPT_KEY *k,
 
 
 
-GWENHYWFAR_CB void GWEN_Crypt_KeySym_freeData(GWEN_UNUSED void *bp, void *p) {
+GWENHYWFAR_CB void GWEN_Crypt_KeySym_freeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CRYPT_KEY_SYM *xk;
 
-  xk=(GWEN_CRYPT_KEY_SYM*) p;
+  xk=(GWEN_CRYPT_KEY_SYM *) p;
   if (xk->keyData && xk->keyLen) {
     memset(xk->keyData, 0, xk->keyLen);
     free(xk->keyData);
@@ -94,7 +97,8 @@ GWENHYWFAR_CB void GWEN_Crypt_KeySym_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_dup(const GWEN_CRYPT_KEY *k) {
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_dup(const GWEN_CRYPT_KEY *k)
+{
   GWEN_CRYPT_KEY *nk;
   GWEN_CRYPT_KEY_SYM *xk;
 
@@ -114,10 +118,11 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_dup(const GWEN_CRYPT_KEY *k) {
 
 
 
-enum gcry_cipher_modes GWEN_Crypt_KeySym__MyMode2GMode(GWEN_CRYPT_CRYPTMODE mode) {
-  switch(mode) {
+enum gcry_cipher_modes GWEN_Crypt_KeySym__MyMode2GMode(GWEN_CRYPT_CRYPTMODE mode)
+{
+  switch (mode) {
   case GWEN_Crypt_CryptMode_Unknown:
-      return GCRY_CIPHER_MODE_NONE;
+        return GCRY_CIPHER_MODE_NONE;
   case GWEN_Crypt_CryptMode_None:
     return GCRY_CIPHER_MODE_NONE;
   case GWEN_Crypt_CryptMode_Ecb:
@@ -137,7 +142,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
                                            GWEN_CRYPT_CRYPTMODE mode,
                                            int algo,
                                            unsigned int flags,
-                                           int quality) {
+                                           int quality)
+{
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
   int kbytes;
@@ -152,7 +158,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
   GWEN_Crypt_Key_SetEncipherFn(k, GWEN_Crypt_KeySym_Encipher);
   GWEN_Crypt_Key_SetDecipherFn(k, GWEN_Crypt_KeySym_Decipher);
 
-  switch(quality) {
+  switch (quality) {
   case 0:
     q=GCRY_WEAK_RANDOM;
     break;
@@ -175,7 +181,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_Generate(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
   xk->algoValid=1;
   xk->mode=mode;
 
-  while(1) {
+  while (1) {
     kbytes=keySize;
     keyData=gcry_random_bytes(kbytes, q);
 
@@ -214,7 +220,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
                                            GWEN_CRYPT_CRYPTMODE mode,
                                            int algo,
                                            unsigned int flags,
-                                           const uint8_t *kd, uint32_t kl) {
+                                           const uint8_t *kd, uint32_t kl)
+{
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
@@ -253,7 +260,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromData(GWEN_CRYPT_CRYPTALGOID cryptAlgoId, i
   }
 
   /* store key data */
-  xk->keyData=(uint8_t*) malloc(kl);
+  xk->keyData=(uint8_t *) malloc(kl);
   assert(xk->keyData);
   memmove(xk->keyData, kd, kl);
   xk->keyLen=kl;
@@ -276,7 +283,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
                                           int algo,
                                           unsigned int flags,
                                           const char *gname,
-                                          GWEN_DB_NODE *db) {
+                                          GWEN_DB_NODE *db)
+{
   gcry_error_t err;
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
@@ -330,7 +338,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
   }
 
   /* store key data */
-  xk->keyData=(uint8_t*) malloc(len);
+  xk->keyData=(uint8_t *) malloc(len);
   assert(xk->keyData);
   memmove(xk->keyData, p, len);
   xk->keyLen=len;
@@ -348,7 +356,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym__fromDb(GWEN_CRYPT_CRYPTALGOID cryptAlgoId,
 
 
 
-int GWEN_Crypt_KeySym__toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname) {
+int GWEN_Crypt_KeySym__toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const char *gname)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   GWEN_DB_NODE *dbR;
   int rv;
@@ -374,7 +383,8 @@ int GWEN_Crypt_KeySym__toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db, const cha
 
 
 
-GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE *db) {
+GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE *db)
+{
   gcry_error_t err;
   GWEN_CRYPT_KEY *k;
   GWEN_CRYPT_KEY_SYM *xk;
@@ -431,7 +441,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE
   }
 
   /* store key data */
-  xk->keyData=(uint8_t*) malloc(len);
+  xk->keyData=(uint8_t *) malloc(len);
   assert(xk->keyData);
   memmove(xk->keyData, p, len);
   xk->keyLen=len;
@@ -449,7 +459,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE
 
 
 
-int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   GWEN_DB_NODE *dbR;
   int rv;
@@ -478,7 +489,8 @@ int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
 
 
 
-int GWEN_Crypt_KeySym_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+int GWEN_Crypt_KeySym_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
@@ -497,7 +509,7 @@ int GWEN_Crypt_KeySym_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t 
   }
 
   /* store key data */
-  xk->keyData=(uint8_t*)malloc(kl);
+  xk->keyData=(uint8_t *)malloc(kl);
   assert(xk->keyData);
   memmove(xk->keyData, kd, kl);
   xk->keyLen=kl;
@@ -515,7 +527,8 @@ int GWEN_Crypt_KeySym_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t 
 
 
 
-uint8_t *GWEN_Crypt_KeySym_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+uint8_t *GWEN_Crypt_KeySym_GetKeyDataPtr(const GWEN_CRYPT_KEY *k)
+{
   GWEN_CRYPT_KEY_SYM *xk;
 
   assert(k);
@@ -527,7 +540,8 @@ uint8_t *GWEN_Crypt_KeySym_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
 
 
 
-uint32_t GWEN_Crypt_KeySym_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+uint32_t GWEN_Crypt_KeySym_GetKeyDataLen(const GWEN_CRYPT_KEY *k)
+{
   GWEN_CRYPT_KEY_SYM *xk;
 
   assert(k);
@@ -541,8 +555,9 @@ uint32_t GWEN_Crypt_KeySym_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_Generate(GWEN_CRYPT_CRYPTMODE mode,
-    int keySize,
-    int quality) {
+                                             int keySize,
+                                             int quality)
+{
   uint8_t kd[16];
   GWEN_CRYPT_KEY *k;
 
@@ -556,7 +571,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_Generate(GWEN_CRYPT_CRYPTMODE mode,
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
-    const uint8_t *kd, uint32_t kl) {
+                                             const uint8_t *kd, uint32_t kl)
+{
   if (kl==16) {
     uint8_t new_kd[24];
     GWEN_CRYPT_KEY *k;
@@ -577,20 +593,23 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_fromData(GWEN_CRYPT_CRYPTMODE mode, int keyS
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyDes3K_fromDb(GWEN_CRYPT_CRYPTMODE mode,
-                                           GWEN_DB_NODE *db) {
+                                           GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_Des3K, mode,
                                    GCRY_CIPHER_3DES, GCRY_CIPHER_SECURE, "des3k", db);
 }
 
 
 
-int GWEN_Crypt_KeyDes3K_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+int GWEN_Crypt_KeyDes3K_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__toDb(k, db, "des3k");
 }
 
 
 
-int GWEN_Crypt_KeyDes3K_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+int GWEN_Crypt_KeyDes3K_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl)
+{
   if (kl==16) {
     uint8_t new_kd[24];
     int rv;
@@ -608,13 +627,15 @@ int GWEN_Crypt_KeyDes3K_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_
 
 
 
-uint8_t *GWEN_Crypt_KeyDes3K_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+uint8_t *GWEN_Crypt_KeyDes3K_GetKeyDataPtr(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataPtr(k);
 }
 
 
 
-uint32_t GWEN_Crypt_KeyDes3K_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+uint32_t GWEN_Crypt_KeyDes3K_GetKeyDataLen(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataLen(k);
 }
 
@@ -622,7 +643,8 @@ uint32_t GWEN_Crypt_KeyDes3K_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
 
 int GWEN_Crypt_KeyDes3K_SetIV(GWEN_CRYPT_KEY *k,
                               const uint8_t *kd,
-                              uint32_t kl) {
+                              uint32_t kl)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
@@ -654,7 +676,8 @@ int GWEN_Crypt_KeyDes3K_SetIV(GWEN_CRYPT_KEY *k,
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_Generate(GWEN_CRYPT_CRYPTMODE mode,
                                                 int keySize,
-                                                int quality) {
+                                                int quality)
+{
   return GWEN_Crypt_KeySym_Generate(GWEN_Crypt_CryptAlgoId_BlowFish, keySize, mode,
                                     GCRY_CIPHER_BLOWFISH, GCRY_CIPHER_SECURE, quality);
 }
@@ -662,7 +685,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_Generate(GWEN_CRYPT_CRYPTMODE mode,
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
-                                                const uint8_t *kd, uint32_t kl) {
+                                                const uint8_t *kd, uint32_t kl)
+{
   return GWEN_Crypt_KeySym_fromData(GWEN_Crypt_CryptAlgoId_BlowFish, keySize, mode,
                                     GCRY_CIPHER_BLOWFISH, GCRY_CIPHER_SECURE,
                                     kd, kl);
@@ -671,32 +695,37 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_fromData(GWEN_CRYPT_CRYPTMODE mode, int k
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyBlowFish_fromDb(GWEN_CRYPT_CRYPTMODE mode,
-                                              GWEN_DB_NODE *db) {
+                                              GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_BlowFish, mode,
                                    GCRY_CIPHER_BLOWFISH, GCRY_CIPHER_SECURE, "blowFish", db);
 }
 
 
 
-int GWEN_Crypt_KeyBlowFish_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+int GWEN_Crypt_KeyBlowFish_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__toDb(k, db, "blowFish");
 }
 
 
 
-int GWEN_Crypt_KeyBlowFish_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+int GWEN_Crypt_KeyBlowFish_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl)
+{
   return GWEN_Crypt_KeySym_SetKeyData(k, kd, kl);
 }
 
 
 
-uint8_t *GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+uint8_t *GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataPtr(k);
 }
 
 
 
-uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataLen(k);
 }
 
@@ -705,7 +734,8 @@ uint32_t GWEN_Crypt_KeyBlowFish_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_Generate(GWEN_CRYPT_CRYPTMODE mode,
                                               int keySize,
-                                              int quality) {
+                                              int quality)
+{
   return GWEN_Crypt_KeySym_Generate(GWEN_Crypt_CryptAlgoId_Aes128, keySize, mode,
                                     GCRY_CIPHER_AES128, GCRY_CIPHER_SECURE, quality);
 }
@@ -713,7 +743,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_Generate(GWEN_CRYPT_CRYPTMODE mode,
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
-                                              const uint8_t *kd, uint32_t kl) {
+                                              const uint8_t *kd, uint32_t kl)
+{
   return GWEN_Crypt_KeySym_fromData(GWEN_Crypt_CryptAlgoId_Aes128, keySize, mode,
                                     GCRY_CIPHER_AES128, GCRY_CIPHER_SECURE,
                                     kd, kl);
@@ -722,32 +753,37 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromData(GWEN_CRYPT_CRYPTMODE mode, int key
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes128_fromDb(GWEN_CRYPT_CRYPTMODE mode,
-                                            GWEN_DB_NODE *db) {
+                                            GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_Aes128, mode,
                                    GCRY_CIPHER_AES128, GCRY_CIPHER_SECURE, "aes128", db);
 }
 
 
 
-int GWEN_Crypt_KeyAes128_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+int GWEN_Crypt_KeyAes128_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__toDb(k, db, "aes128");
 }
 
 
 
-int GWEN_Crypt_KeyAes128_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+int GWEN_Crypt_KeyAes128_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl)
+{
   return GWEN_Crypt_KeySym_SetKeyData(k, kd, kl);
 }
 
 
 
-uint8_t *GWEN_Crypt_KeyAes128_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+uint8_t *GWEN_Crypt_KeyAes128_GetKeyDataPtr(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataPtr(k);
 }
 
 
 
-uint32_t GWEN_Crypt_KeyAes128_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+uint32_t GWEN_Crypt_KeyAes128_GetKeyDataLen(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataLen(k);
 }
 
@@ -755,7 +791,8 @@ uint32_t GWEN_Crypt_KeyAes128_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
 
 int GWEN_Crypt_KeyAes128_SetIV(GWEN_CRYPT_KEY *k,
                                const uint8_t *kd,
-                               uint32_t kl) {
+                               uint32_t kl)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 
@@ -784,7 +821,8 @@ int GWEN_Crypt_KeyAes128_SetIV(GWEN_CRYPT_KEY *k,
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_Generate(GWEN_CRYPT_CRYPTMODE mode,
                                               int keySize,
-                                              int quality) {
+                                              int quality)
+{
   return GWEN_Crypt_KeySym_Generate(GWEN_Crypt_CryptAlgoId_Aes256, keySize, mode,
                                     GCRY_CIPHER_AES256, GCRY_CIPHER_SECURE, quality);
 }
@@ -792,7 +830,8 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_Generate(GWEN_CRYPT_CRYPTMODE mode,
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_fromData(GWEN_CRYPT_CRYPTMODE mode, int keySize,
-                                              const uint8_t *kd, uint32_t kl) {
+                                              const uint8_t *kd, uint32_t kl)
+{
   return GWEN_Crypt_KeySym_fromData(GWEN_Crypt_CryptAlgoId_Aes256, keySize, mode,
                                     GCRY_CIPHER_AES256, GCRY_CIPHER_SECURE,
                                     kd, kl);
@@ -801,38 +840,44 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_fromData(GWEN_CRYPT_CRYPTMODE mode, int key
 
 
 GWEN_CRYPT_KEY *GWEN_Crypt_KeyAes256_fromDb(GWEN_CRYPT_CRYPTMODE mode,
-                                            GWEN_DB_NODE *db) {
+                                            GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__fromDb(GWEN_Crypt_CryptAlgoId_Aes256, mode,
                                    GCRY_CIPHER_AES256, GCRY_CIPHER_SECURE, "aes256", db);
 }
 
 
 
-int GWEN_Crypt_KeyAes256_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db) {
+int GWEN_Crypt_KeyAes256_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db)
+{
   return GWEN_Crypt_KeySym__toDb(k, db, "aes256");
 }
 
 
 
-int GWEN_Crypt_KeyAes256_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl) {
+int GWEN_Crypt_KeyAes256_SetKeyData(GWEN_CRYPT_KEY *k, const uint8_t *kd, uint32_t kl)
+{
   return GWEN_Crypt_KeySym_SetKeyData(k, kd, kl);
 }
 
 
 
-uint8_t *GWEN_Crypt_KeyAes256_GetKeyDataPtr(const GWEN_CRYPT_KEY *k) {
+uint8_t *GWEN_Crypt_KeyAes256_GetKeyDataPtr(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataPtr(k);
 }
 
 
 
-uint32_t GWEN_Crypt_KeyAes256_GetKeyDataLen(const GWEN_CRYPT_KEY *k) {
+uint32_t GWEN_Crypt_KeyAes256_GetKeyDataLen(const GWEN_CRYPT_KEY *k)
+{
   return GWEN_Crypt_KeySym_GetKeyDataLen(k);
 }
 
 int GWEN_Crypt_KeyAes256_SetIV(GWEN_CRYPT_KEY *k,
                                const uint8_t *kd,
-                               uint32_t kl) {
+                               uint32_t kl)
+{
   GWEN_CRYPT_KEY_SYM *xk;
   gcry_error_t err;
 

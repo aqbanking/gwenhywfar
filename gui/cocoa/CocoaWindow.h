@@ -1,6 +1,6 @@
 //
 //  CocoaWindow.h
-//  
+//
 //
 //  Created by Samuel Strupp on 20.08.10.
 //
@@ -12,14 +12,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef void (*gwenWindowActionPtr)(NSWindow *window, void* data);
+typedef void (*gwenWindowActionPtr)(NSWindow *window, void *data);
 
-@interface CocoaWindow : NSWindow {
-	gwenWindowActionPtr c_actionPtr;
-	void* c_actionData;
-	
-	gwenWindowActionPtr c_textChangedActionPtr;
-	void* c_textChangedActionData;
+@interface CocoaWindow : NSWindow
+{
+  gwenWindowActionPtr c_actionPtr;
+  void *c_actionData;
+
+  gwenWindowActionPtr c_textChangedActionPtr;
+  void *c_textChangedActionData;
 }
 
 @end

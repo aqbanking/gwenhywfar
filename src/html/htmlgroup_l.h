@@ -28,7 +28,7 @@ typedef int (*HTML_GROUP_ADDDATA_FN)(HTML_GROUP *g,
                                      const char *data);
 
 typedef int (*HTML_GROUP_ENDSUBGROUP_FN)(HTML_GROUP *g,
-    HTML_GROUP *sg);
+                                         HTML_GROUP *sg);
 
 
 #include "htmlobject_be.h"

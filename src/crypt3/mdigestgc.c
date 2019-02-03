@@ -26,7 +26,8 @@ GWEN_INHERIT(GWEN_MDIGEST, GWEN_MDIGEST_GC)
 
 
 
-int GWEN_MDigest_Gc_Begin(GWEN_MDIGEST *md) {
+int GWEN_MDigest_Gc_Begin(GWEN_MDIGEST *md)
+{
   GWEN_MDIGEST_GC *xmd;
   int err;
 
@@ -47,7 +48,8 @@ int GWEN_MDigest_Gc_Begin(GWEN_MDIGEST *md) {
 
 
 
-int GWEN_MDigest_Gc_End(GWEN_MDIGEST *md) {
+int GWEN_MDigest_Gc_End(GWEN_MDIGEST *md)
+{
   GWEN_MDIGEST_GC *xmd;
   uint8_t *p;
   unsigned int len;
@@ -66,7 +68,7 @@ int GWEN_MDigest_Gc_End(GWEN_MDIGEST *md) {
     return GWEN_ERROR_GENERIC;
   }
 
-  p=(uint8_t*)malloc(len);
+  p=(uint8_t *)malloc(len);
   assert(p);
   memmove(p, gcry_md_read(xmd->handle, xmd->algo), len);
 
@@ -79,7 +81,8 @@ int GWEN_MDigest_Gc_End(GWEN_MDIGEST *md) {
 
 
 
-int GWEN_MDigest_Gc_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l) {
+int GWEN_MDigest_Gc_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l)
+{
   GWEN_MDIGEST_GC *xmd;
 
   assert(md);
@@ -98,10 +101,11 @@ int GWEN_MDigest_Gc_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l)
 
 
 GWENHYWFAR_CB
-void GWEN_Digest_Gc_freeData(GWEN_UNUSED void *bp, void *p) {
+void GWEN_Digest_Gc_freeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_MDIGEST_GC *xmd;
 
-  xmd=(GWEN_MDIGEST_GC*) p;
+  xmd=(GWEN_MDIGEST_GC *) p;
   if (xmd->isOpen) {
     gcry_md_close(xmd->handle);
     xmd->isOpen=0;
@@ -111,7 +115,8 @@ void GWEN_Digest_Gc_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Gc_new(GWEN_CRYPT_HASHALGOID a) {
+GWEN_MDIGEST *GWEN_MDigest_Gc_new(GWEN_CRYPT_HASHALGOID a)
+{
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -132,7 +137,8 @@ GWEN_MDIGEST *GWEN_MDigest_Gc_new(GWEN_CRYPT_HASHALGOID a) {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Md5_new(void) {
+GWEN_MDIGEST *GWEN_MDigest_Md5_new(void)
+{
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -149,7 +155,8 @@ GWEN_MDIGEST *GWEN_MDigest_Md5_new(void) {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Rmd160_new(void) {
+GWEN_MDIGEST *GWEN_MDigest_Rmd160_new(void)
+{
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -166,7 +173,8 @@ GWEN_MDIGEST *GWEN_MDigest_Rmd160_new(void) {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Sha1_new(void) {
+GWEN_MDIGEST *GWEN_MDigest_Sha1_new(void)
+{
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 
@@ -183,7 +191,8 @@ GWEN_MDIGEST *GWEN_MDigest_Sha1_new(void) {
 
 
 
-GWEN_MDIGEST *GWEN_MDigest_Sha256_new(void) {
+GWEN_MDIGEST *GWEN_MDigest_Sha256_new(void)
+{
   GWEN_MDIGEST *md;
   GWEN_MDIGEST_GC *xmd;
 

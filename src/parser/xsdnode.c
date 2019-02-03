@@ -45,7 +45,8 @@ GWEN_LIST_FUNCTIONS(GWEN_XSD_NODE, GWEN_XsdNode)
 
 GWEN_XSD_NODE *GWEN_XsdNode_new(GWEN_XSD_NODE *parent,
                                 GWEN_XSD_NODETYPE t,
-                                const char *name) {
+                                const char *name)
+{
   GWEN_XSD_NODE *xsdNode;
 
   GWEN_NEW_OBJECT(GWEN_XSD_NODE, xsdNode);
@@ -62,7 +63,8 @@ GWEN_XSD_NODE *GWEN_XsdNode_new(GWEN_XSD_NODE *parent,
 
 
 
-void GWEN_XsdNode_free(GWEN_XSD_NODE *xsdNode) {
+void GWEN_XsdNode_free(GWEN_XSD_NODE *xsdNode)
+{
   if (xsdNode) {
     GWEN_LIST_FINI(GWEN_XSD_NODE, xsdNode);
     GWEN_INHERIT_FINI(GWEN_XSD_NODE, xsdNode);
@@ -74,63 +76,72 @@ void GWEN_XsdNode_free(GWEN_XSD_NODE *xsdNode) {
 
 
 
-GWEN_XSD_NODETYPE GWEN_XsdNode_GetNodeType(const GWEN_XSD_NODE *xsdNode) {
+GWEN_XSD_NODETYPE GWEN_XsdNode_GetNodeType(const GWEN_XSD_NODE *xsdNode)
+{
   assert(xsdNode);
   return xsdNode->nodeType;
 }
 
 
 
-const char *GWEN_XsdNode_GetName(const GWEN_XSD_NODE *xsdNode) {
+const char *GWEN_XsdNode_GetName(const GWEN_XSD_NODE *xsdNode)
+{
   assert(xsdNode);
   return xsdNode->name;
 }
 
 
 
-uint32_t GWEN_XsdNode_GetFlags(const GWEN_XSD_NODE *xsdNode) {
+uint32_t GWEN_XsdNode_GetFlags(const GWEN_XSD_NODE *xsdNode)
+{
   assert(xsdNode);
   return xsdNode->flags;
 }
 
 
 
-void GWEN_XsdNode_SetFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl) {
+void GWEN_XsdNode_SetFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl)
+{
   assert(xsdNode);
   xsdNode->flags=fl;
 }
 
 
 
-void GWEN_XsdNode_AddFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl) {
+void GWEN_XsdNode_AddFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl)
+{
   assert(xsdNode);
   xsdNode->flags|=fl;
 }
 
 
 
-void GWEN_XsdNode_SubFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl) {
+void GWEN_XsdNode_SubFlags(GWEN_XSD_NODE *xsdNode, uint32_t fl)
+{
   assert(xsdNode);
   xsdNode->flags&=~fl;
 }
 
 
 
-GWEN_XSD_NODE *GWEN_XsdNode_GetParent(const GWEN_XSD_NODE *xsdNode) {
+GWEN_XSD_NODE *GWEN_XsdNode_GetParent(const GWEN_XSD_NODE *xsdNode)
+{
   assert(xsdNode);
   return xsdNode->parent;
 }
 
 
 
-GWEN_XSD_NODE_LIST *GWEN_XsdNode_GetChildren(const GWEN_XSD_NODE *xsdNode) {
+GWEN_XSD_NODE_LIST *GWEN_XsdNode_GetChildren(const GWEN_XSD_NODE *xsdNode)
+{
   assert(xsdNode);
   return xsdNode->children;
 }
 
 
 
-void GWEN_XsdNode_AddChild(GWEN_XSD_NODE *xsdNode, GWEN_XSD_NODE *newChild) {
+void GWEN_XsdNode_AddChild(GWEN_XSD_NODE *xsdNode, GWEN_XSD_NODE *newChild)
+{
   assert(xsdNode);
   assert(newChild);
   GWEN_XsdNode_List_Add(newChild, xsdNode->children);
@@ -139,7 +150,8 @@ void GWEN_XsdNode_AddChild(GWEN_XSD_NODE *xsdNode, GWEN_XSD_NODE *newChild) {
 
 
 
-void GWEN_XsdNode_Unlink(GWEN_XSD_NODE *xsdNode) {
+void GWEN_XsdNode_Unlink(GWEN_XSD_NODE *xsdNode)
+{
   GWEN_XsdNode_List_Del(xsdNode);
   xsdNode->parent=NULL;
 }
@@ -147,7 +159,8 @@ void GWEN_XsdNode_Unlink(GWEN_XSD_NODE *xsdNode) {
 
 
 GWEN_XSDNODE_READ_FN GWEN_XsdNode_SetReadFn(GWEN_XSD_NODE *xsdNode,
-    GWEN_XSDNODE_READ_FN fn) {
+                                            GWEN_XSDNODE_READ_FN fn)
+{
   GWEN_XSDNODE_READ_FN oldFn;
 
   assert(xsdNode);
@@ -159,7 +172,8 @@ GWEN_XSDNODE_READ_FN GWEN_XsdNode_SetReadFn(GWEN_XSD_NODE *xsdNode,
 
 
 GWEN_XSDNODE_WRITE_FN GWEN_XsdNode_SetWriteFn(GWEN_XSD_NODE *xsdNode,
-    GWEN_XSDNODE_WRITE_FN fn) {
+                                              GWEN_XSDNODE_WRITE_FN fn)
+{
   GWEN_XSDNODE_WRITE_FN oldFn;
 
   assert(xsdNode);
@@ -172,7 +186,8 @@ GWEN_XSDNODE_WRITE_FN GWEN_XsdNode_SetWriteFn(GWEN_XSD_NODE *xsdNode,
 
 int GWEN_XsdNode_Read(GWEN_XSD_NODE *xsdNode,
                       GWEN_XMLNODE *xmlNode,
-                      GWEN_DB_NODE *db) {
+                      GWEN_DB_NODE *db)
+{
   assert(xsdNode);
   if (xsdNode->readFn)
     return xsdNode->readFn(xsdNode, xmlNode, db);
@@ -184,7 +199,8 @@ int GWEN_XsdNode_Read(GWEN_XSD_NODE *xsdNode,
 
 int GWEN_XsdNode_Write(GWEN_XSD_NODE *xsdNode,
                        GWEN_XMLNODE *xmlNode,
-                       GWEN_DB_NODE *db) {
+                       GWEN_DB_NODE *db)
+{
   assert(xsdNode);
   if (xsdNode->writeFn)
     return xsdNode->writeFn(xsdNode, xmlNode, db);

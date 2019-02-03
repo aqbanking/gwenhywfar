@@ -20,7 +20,8 @@
 GWEN_LIST_FUNCTIONS(TYPEMAKER2_ENUM, Typemaker2_Enum)
 
 
-TYPEMAKER2_ENUM *Typemaker2_Enum_new(void) {
+TYPEMAKER2_ENUM *Typemaker2_Enum_new(void)
+{
   TYPEMAKER2_ENUM *p_struct;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_ENUM, p_struct)
@@ -37,10 +38,11 @@ TYPEMAKER2_ENUM *Typemaker2_Enum_new(void) {
   return p_struct;
 }
 
-void Typemaker2_Enum_free(TYPEMAKER2_ENUM *p_struct) {
+void Typemaker2_Enum_free(TYPEMAKER2_ENUM *p_struct)
+{
   if (p_struct) {
     GWEN_LIST_FINI(TYPEMAKER2_ENUM, p_struct)
-  /* members */
+    /* members */
     free(p_struct->id);
     free(p_struct->prefix);
     free(p_struct->type);
@@ -51,7 +53,8 @@ void Typemaker2_Enum_free(TYPEMAKER2_ENUM *p_struct) {
   }
 }
 
-TYPEMAKER2_ENUM *Typemaker2_Enum_dup(const TYPEMAKER2_ENUM *p_src) {
+TYPEMAKER2_ENUM *Typemaker2_Enum_dup(const TYPEMAKER2_ENUM *p_src)
+{
   TYPEMAKER2_ENUM *p_struct;
 
   assert(p_src);
@@ -113,8 +116,9 @@ TYPEMAKER2_ENUM *Typemaker2_Enum_dup(const TYPEMAKER2_ENUM *p_src) {
   return p_struct;
 }
 
-TYPEMAKER2_ENUM *Typemaker2_Enum_copy(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER2_ENUM *p_src) {
-    assert(p_struct);
+TYPEMAKER2_ENUM *Typemaker2_Enum_copy(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER2_ENUM *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "id" */
   if (p_struct->id) {
@@ -173,37 +177,44 @@ TYPEMAKER2_ENUM *Typemaker2_Enum_copy(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER
   return p_struct;
 }
 
-const char *Typemaker2_Enum_GetId(const TYPEMAKER2_ENUM *p_struct) {
+const char *Typemaker2_Enum_GetId(const TYPEMAKER2_ENUM *p_struct)
+{
   assert(p_struct);
   return p_struct->id;
 }
 
-const char *Typemaker2_Enum_GetPrefix(const TYPEMAKER2_ENUM *p_struct) {
+const char *Typemaker2_Enum_GetPrefix(const TYPEMAKER2_ENUM *p_struct)
+{
   assert(p_struct);
   return p_struct->prefix;
 }
 
-const char *Typemaker2_Enum_GetType(const TYPEMAKER2_ENUM *p_struct) {
+const char *Typemaker2_Enum_GetType(const TYPEMAKER2_ENUM *p_struct)
+{
   assert(p_struct);
   return p_struct->type;
 }
 
-TYPEMAKER2_ITEM_LIST *Typemaker2_Enum_GetItems(const TYPEMAKER2_ENUM *p_struct) {
+TYPEMAKER2_ITEM_LIST *Typemaker2_Enum_GetItems(const TYPEMAKER2_ENUM *p_struct)
+{
   assert(p_struct);
   return p_struct->items;
 }
 
-const char *Typemaker2_Enum_GetToStringFn(const TYPEMAKER2_ENUM *p_struct) {
+const char *Typemaker2_Enum_GetToStringFn(const TYPEMAKER2_ENUM *p_struct)
+{
   assert(p_struct);
   return p_struct->toStringFn;
 }
 
-const char *Typemaker2_Enum_GetFromStringFn(const TYPEMAKER2_ENUM *p_struct) {
+const char *Typemaker2_Enum_GetFromStringFn(const TYPEMAKER2_ENUM *p_struct)
+{
   assert(p_struct);
   return p_struct->fromStringFn;
 }
 
-void Typemaker2_Enum_SetId(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
+void Typemaker2_Enum_SetId(TYPEMAKER2_ENUM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->id) {
     free(p_struct->id);
@@ -216,7 +227,8 @@ void Typemaker2_Enum_SetId(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
   }
 }
 
-void Typemaker2_Enum_SetPrefix(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
+void Typemaker2_Enum_SetPrefix(TYPEMAKER2_ENUM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->prefix) {
     free(p_struct->prefix);
@@ -229,7 +241,8 @@ void Typemaker2_Enum_SetPrefix(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
   }
 }
 
-void Typemaker2_Enum_SetType(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
+void Typemaker2_Enum_SetType(TYPEMAKER2_ENUM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->type) {
     free(p_struct->type);
@@ -242,7 +255,8 @@ void Typemaker2_Enum_SetType(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
   }
 }
 
-void Typemaker2_Enum_SetItems(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER2_ITEM_LIST *p_src) {
+void Typemaker2_Enum_SetItems(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER2_ITEM_LIST *p_src)
+{
   assert(p_struct);
   if (p_struct->items) {
     Typemaker2_Item_List_free(p_struct->items);
@@ -255,7 +269,8 @@ void Typemaker2_Enum_SetItems(TYPEMAKER2_ENUM *p_struct, const TYPEMAKER2_ITEM_L
   }
 }
 
-void Typemaker2_Enum_SetToStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
+void Typemaker2_Enum_SetToStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->toStringFn) {
     free(p_struct->toStringFn);
@@ -268,7 +283,8 @@ void Typemaker2_Enum_SetToStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src)
   }
 }
 
-void Typemaker2_Enum_SetFromStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src) {
+void Typemaker2_Enum_SetFromStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->fromStringFn) {
     free(p_struct->fromStringFn);
@@ -281,14 +297,15 @@ void Typemaker2_Enum_SetFromStringFn(TYPEMAKER2_ENUM *p_struct, const char *p_sr
   }
 }
 
-TYPEMAKER2_ENUM_LIST *Typemaker2_Enum_List_dup(const TYPEMAKER2_ENUM_LIST *p_src) {
+TYPEMAKER2_ENUM_LIST *Typemaker2_Enum_List_dup(const TYPEMAKER2_ENUM_LIST *p_src)
+{
   TYPEMAKER2_ENUM_LIST *p_dest;
   TYPEMAKER2_ENUM *p_elem;
 
   assert(p_src);
   p_dest=Typemaker2_Enum_List_new();
   p_elem=Typemaker2_Enum_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     TYPEMAKER2_ENUM *p_cpy;
 
     p_cpy=Typemaker2_Enum_dup(p_elem);
@@ -299,33 +316,49 @@ TYPEMAKER2_ENUM_LIST *Typemaker2_Enum_List_dup(const TYPEMAKER2_ENUM_LIST *p_src
   return p_dest;
 }
 
-void Typemaker2_Enum_ReadXml(TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Enum_ReadXml(TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   if (p_struct->id) {
     free(p_struct->id);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "id", NULL); if (s) p_struct->id=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "id", NULL);
+    if (s)
+      p_struct->id=strdup(s);
+  }
   if (p_struct->id==NULL) {  /* member "id" is volatile, just presetting */
-  p_struct->id=NULL;
+    p_struct->id=NULL;
   }
 
   /* member "prefix" */
   if (p_struct->prefix) {
     free(p_struct->prefix);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "prefix", NULL); if (s) p_struct->prefix=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "prefix", NULL);
+    if (s)
+      p_struct->prefix=strdup(s);
+  }
   if (p_struct->prefix==NULL) {  /* member "prefix" is volatile, just presetting */
-  p_struct->prefix=NULL;
+    p_struct->prefix=NULL;
   }
 
   /* member "type" */
   if (p_struct->type) {
     free(p_struct->type);
   }
-  { const char *s; s=GWEN_XMLNode_GetProperty(p_db, "type", NULL); if (s) p_struct->type=strdup(s); }
+  {
+    const char *s;
+    s=GWEN_XMLNode_GetProperty(p_db, "type", NULL);
+    if (s)
+      p_struct->type=strdup(s);
+  }
   if (p_struct->type==NULL) {  /* member "type" is volatile, just presetting */
-  p_struct->type=NULL;
+    p_struct->type=NULL;
   }
 
   /* member "items" */
@@ -351,7 +384,8 @@ void Typemaker2_Enum_ReadXml(TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db) {
 
 }
 
-void Typemaker2_Enum_WriteXml(const TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Enum_WriteXml(const TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   GWEN_XMLNode_SetProperty(p_db, "id", p_struct->id);
@@ -370,11 +404,13 @@ void Typemaker2_Enum_WriteXml(const TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_d
 
 }
 
-void Typemaker2_Enum_toXml(const TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db) {
+void Typemaker2_Enum_toXml(const TYPEMAKER2_ENUM *p_struct, GWEN_XMLNODE *p_db)
+{
   Typemaker2_Enum_WriteXml(p_struct, p_db);
 }
 
-TYPEMAKER2_ENUM *Typemaker2_Enum_fromXml(GWEN_XMLNODE *p_db) {
+TYPEMAKER2_ENUM *Typemaker2_Enum_fromXml(GWEN_XMLNODE *p_db)
+{
   TYPEMAKER2_ENUM *p_struct;
   p_struct=Typemaker2_Enum_new();
   Typemaker2_Enum_ReadXml(p_struct, p_db);

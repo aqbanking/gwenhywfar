@@ -1108,8 +1108,8 @@ GWEN_DB_NODE_TYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n);
 
 GWENHYWFAR_API
 GWEN_DB_NODE_TYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
-    const char *p,
-    unsigned int i);
+                                             const char *p,
+                                             unsigned int i);
 
 /**
  * Returns the value data of the given value node.

@@ -78,16 +78,16 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       fb_peekbyte_rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize); \
       if (fb_peekbyte_rv<0) { \
         DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_peekbyte_rv); \
-	var=fb_peekbyte_rv; \
+  var=fb_peekbyte_rv; \
       } \
       else if (fb_peekbyte_rv==0) { \
         DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met"); \
-	var=GWEN_ERROR_EOF; \
+  var=GWEN_ERROR_EOF; \
       } \
       else { \
-	fb->bufferWritePos=fb_peekbyte_rv; \
-	fb->bufferReadPos=0; \
-	var=((int)((fb->buffer[fb->bufferReadPos])) & 0xff); \
+  fb->bufferWritePos=fb_peekbyte_rv; \
+  fb->bufferReadPos=0; \
+  var=((int)((fb->buffer[fb->bufferReadPos])) & 0xff); \
       } \
     } \
     else { \
@@ -107,16 +107,16 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       fb_readbyte_rv=GWEN_SyncIo_Read(fb->io, fb->buffer, fb->bufferSize); \
       if (fb_readbyte_rv<0) { \
         DBG_DEBUG(GWEN_LOGDOMAIN, "here (%d)", fb_readbyte_rv); \
-	var=fb_readbyte_rv; \
+  var=fb_readbyte_rv; \
       } \
       else if (fb_readbyte_rv==0) { \
         DBG_DEBUG(GWEN_LOGDOMAIN, "EOF met"); \
-	var=GWEN_ERROR_EOF; \
+  var=GWEN_ERROR_EOF; \
       } \
       else { \
-	fb->bufferWritePos=fb_readbyte_rv; \
-	fb->bufferReadPos=0; \
-	var=((int)((fb->buffer[fb->bufferReadPos++])) & 0xff); \
+  fb->bufferWritePos=fb_readbyte_rv; \
+  fb->bufferReadPos=0; \
+  var=((int)((fb->buffer[fb->bufferReadPos++])) & 0xff); \
         fb->bytesRead++; \
       } \
     } \
@@ -138,12 +138,12 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       fb_writeByte_rv=GWEN_SyncIo_WriteForced(fb->io, fb->buffer, fb->bufferWritePos); \
       if (fb_writeByte_rv<(int)(fb->bufferWritePos)) { \
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", fb_writeByte_rv); \
-	var=fb_writeByte_rv; \
+  var=fb_writeByte_rv; \
       } \
       else { \
         var=0; \
-	fb->bufferWritePos=0; \
-	fb->buffer[fb->bufferWritePos++]=chr; \
+  fb->bufferWritePos=0; \
+  fb->buffer[fb->bufferWritePos++]=chr; \
         fb->bytesWritten++; \
       } \
     } \
@@ -240,20 +240,20 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       fb_readline_p=(uint8_t*)p;\
       \
       while(fb_readline_bytes) {\
-	uint8_t c;\
+  uint8_t c;\
         \
-	c=fb->buffer[fb->bufferReadPos++];\
+  c=fb->buffer[fb->bufferReadPos++];\
         fb->bytesRead++; \
-	fb_readline_bytes--;\
+  fb_readline_bytes--;\
         if (c==10) {\
-	  *(fb_readline_p++)=c;\
-	  var++;\
-	  break;\
+    *(fb_readline_p++)=c;\
+    var++;\
+    break;\
         }\
-	else if (c!=13) {\
-	  *(fb_readline_p++)=c;\
-	  var++;\
-	}\
+  else if (c!=13) {\
+    *(fb_readline_p++)=c;\
+    var++;\
+  }\
       }\
     }\
   }\
@@ -461,7 +461,7 @@ GWENHYWFAR_API int GWEN_FastBuffer_ReadLineToBuffer(GWEN_FAST_BUFFER *fb, GWEN_B
       GWEN_FASTBUFFER_WRITEBYTES(fb2, fb_copybytes_rv, (fb1->buffer+fb1->bufferReadPos), fb_bytes);\
       var=fb_copybytes_rv;\
       if (fb_copybytes_rv>0) {\
-	fb1->bufferReadPos+=fb_copybytes_rv;\
+  fb1->bufferReadPos+=fb_copybytes_rv;\
         fb1->bytesRead+=fb_copybytes_rv; \
       }\
     }\

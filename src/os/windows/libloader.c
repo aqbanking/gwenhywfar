@@ -44,19 +44,22 @@
 
 
 
-int GWEN_LibLoader_ModuleInit(void) {
+int GWEN_LibLoader_ModuleInit(void)
+{
   return 0;
 }
 
 
 
-int GWEN_LibLoader_ModuleFini(void) {
+int GWEN_LibLoader_ModuleFini(void)
+{
   return 0;
 }
 
 
 
-GWEN_LIBLOADER *GWEN_LibLoader_new(void) {
+GWEN_LIBLOADER *GWEN_LibLoader_new(void)
+{
   GWEN_LIBLOADER *h;
 
   GWEN_NEW_OBJECT(GWEN_LIBLOADER, h);
@@ -65,7 +68,8 @@ GWEN_LIBLOADER *GWEN_LibLoader_new(void) {
 
 
 
-void GWEN_LibLoader_free(GWEN_LIBLOADER *h) {
+void GWEN_LibLoader_free(GWEN_LIBLOADER *h)
+{
   if (h) {
     GWEN_FREE_OBJECT(h);
   }
@@ -74,10 +78,11 @@ void GWEN_LibLoader_free(GWEN_LIBLOADER *h) {
 
 
 int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
-                               const char *name) {
+                               const char *name)
+{
   assert(h);
 
-  h->handle=(void*)LoadLibrary(name);
+  h->handle=(void *)LoadLibrary(name);
   if (!h->handle) {
     int werr;
     char *lpMsgBuf; /* from: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/formatmessage.asp */
@@ -98,9 +103,9 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
               name, werr, werr, lpMsgBuf);
     LocalFree(lpMsgBuf);
 
-    if ( (werr == ERROR_DLL_NOT_FOUND) ||
-         (werr == ERROR_FILE_NOT_FOUND) ||
-         (werr == ERROR_MOD_NOT_FOUND) ) {
+    if ((werr == ERROR_DLL_NOT_FOUND) ||
+        (werr == ERROR_FILE_NOT_FOUND) ||
+        (werr == ERROR_MOD_NOT_FOUND)) {
       DBG_INFO(GWEN_LOGDOMAIN, "File \"%s\" not found", name);
       return GWEN_ERROR_NOT_FOUND;
     }
@@ -115,7 +120,8 @@ int GWEN_LibLoader_LoadLibrary(GWEN_LIBLOADER *h,
 
 
 
-int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h) {
+int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h)
+{
   assert(h);
 
   if (!h->handle)
@@ -129,14 +135,15 @@ int GWEN_LibLoader_CloseLibrary(GWEN_LIBLOADER *h) {
 
 
 int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
-                           const char *name, void **p) {
+                           const char *name, void **p)
+{
   assert(h);
   assert(name);
   assert(p);
 
   if (!h->handle)
     return GWEN_ERROR_NOT_OPEN;
-  *p=(void*)GetProcAddress((HINSTANCE)h->handle, name);
+  *p=(void *)GetProcAddress((HINSTANCE)h->handle, name);
   if (!*p) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error resolving symbol \"%s\"",
               name);
@@ -151,7 +158,8 @@ int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
 
 int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
                                         const char *path,
-                                        const char *name) {
+                                        const char *name)
+{
   GWEN_BUFFER *buffer;
   unsigned int pos;
   unsigned int i;
@@ -198,7 +206,8 @@ int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
 
 int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
                                        const char *path,
-                                       const char *name) {
+                                       const char *name)
+{
   int err;
 
   assert(h);
@@ -232,16 +241,18 @@ int GWEN_LibLoader_OpenLibraryWithPath(GWEN_LIBLOADER *h,
 
 
 int GWEN_LibLoader_OpenLibrary(GWEN_LIBLOADER *h,
-                               const char *name) {
+                               const char *name)
+{
   return GWEN_LibLoader_OpenLibraryWithPath(h, 0, name);
 }
 
 
 
-const char *GWEN_LibLoader_ErrorString(int c) {
+const char *GWEN_LibLoader_ErrorString(int c)
+{
   const char *s;
 
-  switch(c) {
+  switch (c) {
   case 0:
     s="Success";
     break;
@@ -262,7 +273,7 @@ const char *GWEN_LibLoader_ErrorString(int c) {
     s="Library not found";
     break;
   default:
-    s=(const char*)0;
+    s=(const char *)0;
   } /* switch */
   return s;
 }

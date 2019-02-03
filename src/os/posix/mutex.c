@@ -35,7 +35,8 @@
 
 
 
-GWEN_MUTEX *GWEN_Mutex_new(void) {
+GWEN_MUTEX *GWEN_Mutex_new(void)
+{
   GWEN_MUTEX *mtx;
 
   GWEN_NEW_OBJECT(GWEN_MUTEX, mtx);
@@ -47,7 +48,8 @@ GWEN_MUTEX *GWEN_Mutex_new(void) {
 
 
 
-void GWEN_Mutex_free(GWEN_UNUSED GWEN_MUTEX *mtx) {
+void GWEN_Mutex_free(GWEN_UNUSED GWEN_MUTEX *mtx)
+{
   if (mtx) {
     pthread_mutex_destroy(&(mtx->mutex));
   }
@@ -55,7 +57,8 @@ void GWEN_Mutex_free(GWEN_UNUSED GWEN_MUTEX *mtx) {
 
 
 
-int GWEN_Mutex_Lock(GWEN_MUTEX *mtx) {
+int GWEN_Mutex_Lock(GWEN_MUTEX *mtx)
+{
   int rv;
 
   rv=pthread_mutex_lock(&(mtx->mutex));
@@ -70,7 +73,8 @@ int GWEN_Mutex_Lock(GWEN_MUTEX *mtx) {
 
 
 
-int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx) {
+int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx)
+{
   int rv;
 
   rv=pthread_mutex_unlock(&(mtx->mutex));

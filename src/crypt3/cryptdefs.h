@@ -50,14 +50,14 @@ GWENHYWFAR_API const char *GWEN_Crypt_PinEncoding_toString(GWEN_CRYPT_PINENCODIN
 
 
 GWENHYWFAR_API int GWEN_Crypt_TransformPin(GWEN_CRYPT_PINENCODING peSrc,
-    GWEN_CRYPT_PINENCODING peDst,
-    unsigned char *buffer,
-    unsigned int bufLength,
-    unsigned int *pinLength);
+                                           GWEN_CRYPT_PINENCODING peDst,
+                                           unsigned char *buffer,
+                                           unsigned int bufLength,
+                                           unsigned int *pinLength);
 
 GWENHYWFAR_API int GWEN_Crypt_KeyDataFromText(const char *text,
-    unsigned char *buffer,
-    unsigned int bufLength);
+                                              unsigned char *buffer,
+                                              unsigned int bufLength);
 
 GWENHYWFAR_API void GWEN_Crypt_Random(int quality, uint8_t *buffer, uint32_t len);
 

@@ -49,7 +49,7 @@ typedef int (*GWEN_DBIO_EXPORTFN)(GWEN_DBIO *dbio,
                                   GWEN_DB_NODE *params,
                                   uint32_t flags);
 
-typedef GWEN_DBIO_CHECKFILE_RESULT (*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio, const char *fname);
+typedef GWEN_DBIO_CHECKFILE_RESULT(*GWEN_DBIO_CHECKFILEFN)(GWEN_DBIO *dbio, const char *fname);
 
 
 

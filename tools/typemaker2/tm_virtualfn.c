@@ -27,7 +27,8 @@ GWEN_LIST_FUNCTIONS(TYPEMAKER2_VIRTUALFN_PARAM, Typemaker2_VirtualFn_Param);
 
 
 
-TYPEMAKER2_VIRTUALFN *Typemaker2_VirtualFn_new() {
+TYPEMAKER2_VIRTUALFN *Typemaker2_VirtualFn_new()
+{
   TYPEMAKER2_VIRTUALFN *vf;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_VIRTUALFN, vf);
@@ -41,7 +42,8 @@ TYPEMAKER2_VIRTUALFN *Typemaker2_VirtualFn_new() {
 
 
 
-void Typemaker2_VirtualFn_free(TYPEMAKER2_VIRTUALFN *vf) {
+void Typemaker2_VirtualFn_free(TYPEMAKER2_VIRTUALFN *vf)
+{
   if (vf) {
     if (vf->refCount==1) {
       GWEN_LIST_FINI(TYPEMAKER2_VIRTUALFN, vf);
@@ -62,7 +64,8 @@ void Typemaker2_VirtualFn_free(TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_Attach(TYPEMAKER2_VIRTUALFN *vf) {
+void Typemaker2_VirtualFn_Attach(TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
   vf->refCount++;
@@ -70,7 +73,8 @@ void Typemaker2_VirtualFn_Attach(TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
+int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node)
+{
   const char *s;
   GWEN_XMLNODE *n;
 
@@ -128,7 +132,7 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
   n=GWEN_XMLNode_FindFirstTag(node, "params", NULL, NULL);
   if (n) {
     n=GWEN_XMLNode_FindFirstTag(n, "param", NULL, NULL);
-    while(n) {
+    while (n) {
       const char *paramName;
       const char *paramType;
       const char *paramDescr;
@@ -139,8 +143,8 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
       paramDescr=GWEN_XMLNode_GetCharValue(n, "descr", NULL);
 
       if (!(paramType && *paramType)) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Parameter has no type");
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Parameter has no type");
+        return GWEN_ERROR_BAD_DATA;
       }
 
       prm=Typemaker2_VirtualFn_Param_new();
@@ -163,7 +167,8 @@ int Typemaker2_VirtualFn_readXml(TYPEMAKER2_VIRTUALFN *vf, GWEN_XMLNODE *node) {
 
 
 
-const char *Typemaker2_VirtualFn_GetName(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetName(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -172,18 +177,22 @@ const char *Typemaker2_VirtualFn_GetName(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetName(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetName(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   assert(vf->refCount);
 
   free(vf->name);
-  if (s) vf->name=strdup(s);
-  else vf->name=NULL;
+  if (s)
+    vf->name=strdup(s);
+  else
+    vf->name=NULL;
 }
 
 
 
-const char *Typemaker2_VirtualFn_GetLocation(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetLocation(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -192,18 +201,22 @@ const char *Typemaker2_VirtualFn_GetLocation(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetLocation(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetLocation(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   assert(vf->refCount);
 
   free(vf->location);
-  if (s) vf->location=strdup(s);
-  else vf->location=NULL;
+  if (s)
+    vf->location=strdup(s);
+  else
+    vf->location=NULL;
 }
 
 
 
-const char *Typemaker2_VirtualFn_GetDescr(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetDescr(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -212,18 +225,22 @@ const char *Typemaker2_VirtualFn_GetDescr(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   assert(vf->refCount);
 
   free(vf->descr);
-  if (s) vf->descr=strdup(s);
-  else vf->descr=NULL;
+  if (s)
+    vf->descr=strdup(s);
+  else
+    vf->descr=NULL;
 }
 
 
 
-uint32_t Typemaker2_VirtualFn_GetFlags(const TYPEMAKER2_VIRTUALFN *vf) {
+uint32_t Typemaker2_VirtualFn_GetFlags(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -232,7 +249,8 @@ uint32_t Typemaker2_VirtualFn_GetFlags(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl) {
+void Typemaker2_VirtualFn_SetFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -241,7 +259,8 @@ void Typemaker2_VirtualFn_SetFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl) {
 
 
 
-void Typemaker2_VirtualFn_AddFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl) {
+void Typemaker2_VirtualFn_AddFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -250,7 +269,8 @@ void Typemaker2_VirtualFn_AddFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl) {
 
 
 
-void Typemaker2_VirtualFn_SubFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl) {
+void Typemaker2_VirtualFn_SubFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -259,7 +279,8 @@ void Typemaker2_VirtualFn_SubFlags(TYPEMAKER2_VIRTUALFN *vf, uint32_t fl) {
 
 
 
-int Typemaker2_VirtualFn_GetAccess(const TYPEMAKER2_VIRTUALFN *vf) {
+int Typemaker2_VirtualFn_GetAccess(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -268,7 +289,8 @@ int Typemaker2_VirtualFn_GetAccess(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetAccess(TYPEMAKER2_VIRTUALFN *vf, int i) {
+void Typemaker2_VirtualFn_SetAccess(TYPEMAKER2_VIRTUALFN *vf, int i)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -277,7 +299,8 @@ void Typemaker2_VirtualFn_SetAccess(TYPEMAKER2_VIRTUALFN *vf, int i) {
 
 
 
-const char *Typemaker2_VirtualFn_GetReturnType(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetReturnType(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -286,34 +309,42 @@ const char *Typemaker2_VirtualFn_GetReturnType(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetReturnType(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetReturnType(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   assert(vf->refCount);
 
   free(vf->returnType);
-  if (s) vf->returnType=strdup(s);
-  else vf->returnType=NULL;
+  if (s)
+    vf->returnType=strdup(s);
+  else
+    vf->returnType=NULL;
 }
 
 
 
-const char *Typemaker2_VirtualFn_GetReturnTypeDescr(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetReturnTypeDescr(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   return vf->returnTypeDescr;
 }
 
 
 
-void Typemaker2_VirtualFn_SetReturnTypeDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetReturnTypeDescr(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   free(vf->returnTypeDescr);
-  if (s) vf->returnTypeDescr=strdup(s);
-  else vf->returnTypeDescr=NULL;
+  if (s)
+    vf->returnTypeDescr=strdup(s);
+  else
+    vf->returnTypeDescr=NULL;
 }
 
 
 
-const char *Typemaker2_VirtualFn_GetDefaultReturnValue(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetDefaultReturnValue(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -322,18 +353,22 @@ const char *Typemaker2_VirtualFn_GetDefaultReturnValue(const TYPEMAKER2_VIRTUALF
 
 
 
-void Typemaker2_VirtualFn_SetDefaultReturnValue(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetDefaultReturnValue(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   assert(vf->refCount);
 
   free(vf->defaultReturnValue);
-  if (s) vf->defaultReturnValue=strdup(s);
-  else vf->defaultReturnValue=NULL;
+  if (s)
+    vf->defaultReturnValue=strdup(s);
+  else
+    vf->defaultReturnValue=NULL;
 }
 
 
 
-TYPEMAKER2_VIRTUALFN_PARAM_LIST *Typemaker2_VirtualFn_GetParamTypeList(const TYPEMAKER2_VIRTUALFN *vf) {
+TYPEMAKER2_VIRTUALFN_PARAM_LIST *Typemaker2_VirtualFn_GetParamTypeList(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -342,7 +377,8 @@ TYPEMAKER2_VIRTUALFN_PARAM_LIST *Typemaker2_VirtualFn_GetParamTypeList(const TYP
 
 
 
-const char *Typemaker2_VirtualFn_GetPreset(const TYPEMAKER2_VIRTUALFN *vf) {
+const char *Typemaker2_VirtualFn_GetPreset(const TYPEMAKER2_VIRTUALFN *vf)
+{
   assert(vf);
   assert(vf->refCount);
 
@@ -351,13 +387,16 @@ const char *Typemaker2_VirtualFn_GetPreset(const TYPEMAKER2_VIRTUALFN *vf) {
 
 
 
-void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
+void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s)
+{
   assert(vf);
   assert(vf->refCount);
 
   free(vf->preset);
-  if (s) vf->preset=strdup(s);
-  else vf->preset=NULL;
+  if (s)
+    vf->preset=strdup(s);
+  else
+    vf->preset=NULL;
 }
 
 
@@ -371,7 +410,8 @@ void Typemaker2_VirtualFn_SetPreset(TYPEMAKER2_VIRTUALFN *vf, const char *s) {
 
 
 
-TYPEMAKER2_VIRTUALFN_PARAM *Typemaker2_VirtualFn_Param_new() {
+TYPEMAKER2_VIRTUALFN_PARAM *Typemaker2_VirtualFn_Param_new()
+{
   TYPEMAKER2_VIRTUALFN_PARAM *prm;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_VIRTUALFN_PARAM, prm);
@@ -382,7 +422,8 @@ TYPEMAKER2_VIRTUALFN_PARAM *Typemaker2_VirtualFn_Param_new() {
 
 
 
-void Typemaker2_VirtualFn_Param_free(TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+void Typemaker2_VirtualFn_Param_free(TYPEMAKER2_VIRTUALFN_PARAM *prm)
+{
   if (prm) {
     free(prm->name);
     free(prm->type);
@@ -394,50 +435,62 @@ void Typemaker2_VirtualFn_Param_free(TYPEMAKER2_VIRTUALFN_PARAM *prm) {
 
 
 
-const char *Typemaker2_VirtualFn_Param_GetName(const TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+const char *Typemaker2_VirtualFn_Param_GetName(const TYPEMAKER2_VIRTUALFN_PARAM *prm)
+{
   assert(prm);
   return prm->name;
 }
 
 
 
-void Typemaker2_VirtualFn_Param_SetName(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s) {
+void Typemaker2_VirtualFn_Param_SetName(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s)
+{
   assert(prm);
   free(prm->name);
-  if (s) prm->name=strdup(s);
-  else prm->name=NULL;
+  if (s)
+    prm->name=strdup(s);
+  else
+    prm->name=NULL;
 }
 
 
 
-const char *Typemaker2_VirtualFn_Param_GetType(const TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+const char *Typemaker2_VirtualFn_Param_GetType(const TYPEMAKER2_VIRTUALFN_PARAM *prm)
+{
   assert(prm);
   return prm->type;
 }
 
 
 
-void Typemaker2_VirtualFn_Param_SetType(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s) {
+void Typemaker2_VirtualFn_Param_SetType(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s)
+{
   assert(prm);
   free(prm->type);
-  if (s) prm->type=strdup(s);
-  else prm->type=NULL;
+  if (s)
+    prm->type=strdup(s);
+  else
+    prm->type=NULL;
 }
 
 
 
-const char *Typemaker2_VirtualFn_Param_GetDescr(const TYPEMAKER2_VIRTUALFN_PARAM *prm) {
+const char *Typemaker2_VirtualFn_Param_GetDescr(const TYPEMAKER2_VIRTUALFN_PARAM *prm)
+{
   assert(prm);
   return prm->descr;
 }
 
 
 
-void Typemaker2_VirtualFn_Param_SetDescr(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s) {
+void Typemaker2_VirtualFn_Param_SetDescr(TYPEMAKER2_VIRTUALFN_PARAM *prm, const char *s)
+{
   assert(prm);
   free(prm->descr);
-  if (s) prm->descr=strdup(s);
-  else prm->descr=NULL;
+  if (s)
+    prm->descr=strdup(s);
+  else
+    prm->descr=NULL;
 }
 
 

@@ -25,7 +25,8 @@
 
 HTML_GROUP *HtmlGroup_Generic_new(const char *groupName,
                                   HTML_GROUP *parent,
-                                  GWEN_XML_CONTEXT *ctx) {
+                                  GWEN_XML_CONTEXT *ctx)
+{
   HTML_GROUP *g;
 
   /* create base group */
@@ -42,7 +43,8 @@ HTML_GROUP *HtmlGroup_Generic_new(const char *groupName,
 
 
 
-int HtmlGroup_Generic_EndTag(HTML_GROUP *g, const char *tagName) {
+int HtmlGroup_Generic_EndTag(HTML_GROUP *g, const char *tagName)
+{
   assert(g);
 
   if (strcasecmp(HtmlGroup_GetGroupName(g), tagName)!=0) {
@@ -59,7 +61,8 @@ int HtmlGroup_Generic_EndTag(HTML_GROUP *g, const char *tagName) {
 
 
 
-int HtmlGroup_Generic_AddData(HTML_GROUP *g, const char *data) {
+int HtmlGroup_Generic_AddData(HTML_GROUP *g, const char *data)
+{
   assert(g);
 
   /* just ignore the data */
@@ -68,7 +71,8 @@ int HtmlGroup_Generic_AddData(HTML_GROUP *g, const char *data) {
 
 
 
-int HtmlGroup_Generic_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg) {
+int HtmlGroup_Generic_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg)
+{
   assert(g);
 
   /* just ignore the end of sub group */

@@ -37,27 +37,27 @@ GWEN_CONFIGMGR *GWEN_ConfigMgr_new(const char *url);
 
 
 typedef int (*GWEN_CONFIGMGR_GETGROUP_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    const char *subGroupName,
-    GWEN_DB_NODE **pDb);
+                                          const char *groupName,
+                                          const char *subGroupName,
+                                          GWEN_DB_NODE **pDb);
 
 typedef int (*GWEN_CONFIGMGR_SETGROUP_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    const char *subGroupName,
-    GWEN_DB_NODE *db);
+                                          const char *groupName,
+                                          const char *subGroupName,
+                                          GWEN_DB_NODE *db);
 
 typedef int (*GWEN_CONFIGMGR_LOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    const char *subGroupName);
+                                           const char *groupName,
+                                           const char *subGroupName);
 
 typedef int (*GWEN_CONFIGMGR_UNLOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    const char *subGroupName);
+                                             const char *groupName,
+                                             const char *subGroupName);
 
 typedef int (*GWEN_CONFIGMGR_GETUNIQUEID_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    char *buffer,
-    uint32_t bufferLen);
+                                             const char *groupName,
+                                             char *buffer,
+                                             uint32_t bufferLen);
 
 typedef int (*GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN)(GWEN_CONFIGMGR *mgr,
                                                   const char *groupName,
@@ -67,37 +67,37 @@ typedef int (*GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN)(GWEN_CONFIGMGR *mgr,
                                                   uint32_t bufferLen);
 
 typedef int (*GWEN_CONFIGMGR_DELETEGROUP_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    const char *subGroupName);
+                                             const char *groupName,
+                                             const char *subGroupName);
 
 typedef int (*GWEN_CONFIGMGR_LISTGROUPS_FN)(GWEN_CONFIGMGR *mgr,
-    GWEN_STRINGLIST *sl);
+                                            GWEN_STRINGLIST *sl);
 
 typedef int (*GWEN_CONFIGMGR_LISTSUBGROUPS_FN)(GWEN_CONFIGMGR *mgr,
-    const char *groupName,
-    GWEN_STRINGLIST *sl);
+                                               const char *groupName,
+                                               GWEN_STRINGLIST *sl);
 
 
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_GETGROUP_FN GWEN_ConfigMgr_SetGetGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_GETGROUP_FN f);
+                                                        GWEN_CONFIGMGR_GETGROUP_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_SETGROUP_FN GWEN_ConfigMgr_SetSetGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_SETGROUP_FN f);
+                                                        GWEN_CONFIGMGR_SETGROUP_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_LOCKGROUP_FN GWEN_ConfigMgr_SetLockGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_LOCKGROUP_FN f);
+                                                          GWEN_CONFIGMGR_LOCKGROUP_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_UNLOCKGROUP_FN GWEN_ConfigMgr_SetUnlockGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_UNLOCKGROUP_FN f);
+                                                              GWEN_CONFIGMGR_UNLOCKGROUP_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_GETUNIQUEID_FN f);
+                                                              GWEN_CONFIGMGR_GETUNIQUEID_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(GWEN_CONFIGMGR *mgr,
@@ -105,22 +105,22 @@ GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(GWEN_CON
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_DELETEGROUP_FN f);
+                                                              GWEN_CONFIGMGR_DELETEGROUP_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_LISTGROUPS_FN GWEN_ConfigMgr_SetListGroupsFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_LISTGROUPS_FN f);
+                                                            GWEN_CONFIGMGR_LISTGROUPS_FN f);
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_LISTSUBGROUPS_FN GWEN_ConfigMgr_SetListSubGroupsFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_LISTSUBGROUPS_FN f);
+                                                                  GWEN_CONFIGMGR_LISTSUBGROUPS_FN f);
 
 
 
 
 
-typedef GWEN_CONFIGMGR* (*GWEN_CONFIGMGR_PLUGIN_FACTORYFN)(GWEN_PLUGIN *pl,
-    const char *url);
+typedef GWEN_CONFIGMGR *(*GWEN_CONFIGMGR_PLUGIN_FACTORYFN)(GWEN_PLUGIN *pl,
+                                                           const char *url);
 
 GWENHYWFAR_API
 GWEN_PLUGIN *GWEN_ConfigMgr_Plugin_new(GWEN_PLUGIN_MANAGER *pm,

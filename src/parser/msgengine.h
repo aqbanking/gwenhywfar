@@ -61,7 +61,7 @@ typedef enum {
 
 
 GWENHYWFAR_API
-GWEN_MSGENGINE_TRUSTEDDATA*
+GWEN_MSGENGINE_TRUSTEDDATA *
 GWEN_MsgEngine_TrustedData_new(const char *data,
                                unsigned int size,
                                const char *description,
@@ -70,11 +70,11 @@ GWENHYWFAR_API
 void GWEN_MsgEngine_TrustedData_free(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 GWENHYWFAR_API
-GWEN_MSGENGINE_TRUSTEDDATA*
+GWEN_MSGENGINE_TRUSTEDDATA *
 GWEN_MsgEngine_TrustedData_GetNext(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_MsgEngine_TrustedData_GetData(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 GWENHYWFAR_API
@@ -82,7 +82,7 @@ unsigned int
 GWEN_MsgEngine_TrustedData_GetSize(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_MsgEngine_TrustedData_GetDescription(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 GWENHYWFAR_API
@@ -90,7 +90,7 @@ GWEN_MSGENGINE_TRUSTLEVEL
 GWEN_MsgEngine_TrustedData_GetTrustLevel(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_MsgEngine_TrustedData_GetReplacement(GWEN_MSGENGINE_TRUSTEDDATA *td);
 
 
@@ -107,7 +107,7 @@ int GWEN_MsgEngine_TrustedData_GetNextPos(GWEN_MSGENGINE_TRUSTEDDATA *td);
 GWENHYWFAR_API
 int
 GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
-    *td);
+                                              *td);
 /*@}*/ /* defgroup */
 
 
@@ -141,47 +141,47 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_MSGENGINE, GWENHYWFAR_API)
  */
 /*@{*/
 typedef int (*GWEN_MSGENGINE_TYPEREAD_PTR)(GWEN_MSGENGINE *e,
-    GWEN_BUFFER *msgbuf,
-    GWEN_XMLNODE *node,
-    GWEN_BUFFER *vbuf,
-    char escapeChar,
-    const char *delimiters);
+                                           GWEN_BUFFER *msgbuf,
+                                           GWEN_XMLNODE *node,
+                                           GWEN_BUFFER *vbuf,
+                                           char escapeChar,
+                                           const char *delimiters);
 
 /**
  * @return 0 on success, -1 on error, 1 if unknown type
  */
 typedef int (*GWEN_MSGENGINE_TYPEWRITE_PTR)(GWEN_MSGENGINE *e,
-    GWEN_BUFFER *gbuf,
-    GWEN_BUFFER *data,
-    GWEN_XMLNODE *node);
+                                            GWEN_BUFFER *gbuf,
+                                            GWEN_BUFFER *data,
+                                            GWEN_XMLNODE *node);
 
 /**
  * Checks of what base-type the given type is.
  */
-typedef GWEN_DB_NODE_TYPE (*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
-    const char *tname);
+typedef GWEN_DB_NODE_TYPE(*GWEN_MSGENGINE_TYPECHECK_PTR)(GWEN_MSGENGINE *e,
+                                                         const char *tname);
 
 typedef int (*GWEN_MSGENGINE_BINTYPEREAD_PTR)(GWEN_MSGENGINE *e,
-    GWEN_XMLNODE *node,
-    GWEN_DB_NODE *gr,
-    GWEN_BUFFER *vbuf);
+                                              GWEN_XMLNODE *node,
+                                              GWEN_DB_NODE *gr,
+                                              GWEN_BUFFER *vbuf);
 
 typedef int (*GWEN_MSGENGINE_BINTYPEWRITE_PTR)(GWEN_MSGENGINE *e,
-    GWEN_XMLNODE *node,
-    GWEN_DB_NODE *gr,
-    GWEN_BUFFER *dbuf);
+                                               GWEN_XMLNODE *node,
+                                               GWEN_DB_NODE *gr,
+                                               GWEN_BUFFER *dbuf);
 
 /**
  * Get the value of the given name (or default value if none set)
  */
-typedef const char* (*GWEN_MSGENGINE_GETCHARVALUE_PTR)(GWEN_MSGENGINE *e,
-    const char *name,
-    const char *defValue);
+typedef const char *(*GWEN_MSGENGINE_GETCHARVALUE_PTR)(GWEN_MSGENGINE *e,
+                                                       const char *name,
+                                                       const char *defValue);
 typedef int (*GWEN_MSGENGINE_GETINTVALUE_PTR)(GWEN_MSGENGINE *e,
-    const char *name,
-    int defValue);
+                                              const char *name,
+                                              int defValue);
 
-typedef GWEN_DB_NODE*
+typedef GWEN_DB_NODE *
 (*GWEN_MSGENGINE_GETGLOBALVALUES_PTR)(GWEN_MSGENGINE *e);
 
 typedef void (*GWEN_MSGENGINE_FREEDATA_PTR)(GWEN_MSGENGINE *e);
@@ -267,21 +267,21 @@ GWEN_MsgEngine_GetTypeReadFunction(GWEN_MSGENGINE *e);
 
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetTypeWriteFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_TYPEWRITE_PTR p);
+                                         GWEN_MSGENGINE_TYPEWRITE_PTR p);
 GWENHYWFAR_API
 GWEN_MSGENGINE_TYPEWRITE_PTR
 GWEN_MsgEngine_GetTypeWriteFunction(GWEN_MSGENGINE *e);
 
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetTypeCheckFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_TYPECHECK_PTR p);
+                                         GWEN_MSGENGINE_TYPECHECK_PTR p);
 GWENHYWFAR_API
 GWEN_MSGENGINE_TYPECHECK_PTR
 GWEN_MsgEngine_GetTypeCheckFunction(GWEN_MSGENGINE *e);
 
 GWENHYWFAR_API void
 GWEN_MsgEngine_SetGetGlobalValuesFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_GETGLOBALVALUES_PTR p);
+                                          GWEN_MSGENGINE_GETGLOBALVALUES_PTR p);
 
 GWENHYWFAR_API
 GWEN_MSGENGINE_GETGLOBALVALUES_PTR
@@ -296,14 +296,14 @@ GWEN_MsgEngine_GetGetGlobalValuesFunction(GWEN_MSGENGINE *e);
 /*@{*/
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetBinTypeReadFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_BINTYPEREAD_PTR p);
+                                           GWEN_MSGENGINE_BINTYPEREAD_PTR p);
 GWENHYWFAR_API
 GWEN_MSGENGINE_BINTYPEREAD_PTR
 GWEN_MsgEngine_GetBinTypeReadFunction(GWEN_MSGENGINE *e);
 
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetBinTypeWriteFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_BINTYPEWRITE_PTR p);
+                                            GWEN_MSGENGINE_BINTYPEWRITE_PTR p);
 GWENHYWFAR_API
 GWEN_MSGENGINE_BINTYPEWRITE_PTR
 GWEN_MsgEngine_GetBinTypeWriteFunction(GWEN_MSGENGINE *e);
@@ -316,10 +316,10 @@ GWEN_MsgEngine_GetBinTypeWriteFunction(GWEN_MSGENGINE *e);
 /*@{*/
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetGetCharValueFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_GETCHARVALUE_PTR p);
+                                            GWEN_MSGENGINE_GETCHARVALUE_PTR p);
 GWENHYWFAR_API
 void GWEN_MsgEngine_SetGetIntValueFunction(GWEN_MSGENGINE *e,
-    GWEN_MSGENGINE_GETINTVALUE_PTR p);
+                                           GWEN_MSGENGINE_GETINTVALUE_PTR p);
 /*@}*/  /* Getting variables */
 
 
@@ -344,9 +344,9 @@ void GWEN_MsgEngine_SetFreeDataFunction(GWEN_MSGENGINE *e,
 /*@{*/
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_MsgEngine_FindGroupByProperty(GWEN_MSGENGINE *e,
-    const char *pname,
-    int version,
-    const char *pvalue);
+                                                 const char *pname,
+                                                 int version,
+                                                 const char *pvalue);
 
 /**
  * Looks for a node of the given type.
@@ -355,17 +355,17 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindGroupByProperty(GWEN_MSGENGINE *e,
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByProperty(GWEN_MSGENGINE *e,
-    const char *t,
-    const char *pname,
-    int version,
-    const char *pvalue);
+                                                const char *t,
+                                                const char *pname,
+                                                int version,
+                                                const char *pvalue);
 
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByPropertyStrictProto(GWEN_MSGENGINE *e,
-    const char *t,
-    const char *pname,
-    int version,
-    const char *pvalue);
+                                                           const char *t,
+                                                           const char *pname,
+                                                           int version,
+                                                           const char *pvalue);
 
 /**
  * Searches for a property in "node" and in "refnode" and all its parents.
@@ -374,9 +374,9 @@ GWEN_XMLNODE *GWEN_MsgEngine_FindNodeByPropertyStrictProto(GWEN_MSGENGINE *e,
  */
 GWENHYWFAR_API
 const char *GWEN_MsgEngine_SearchForProperty(GWEN_XMLNODE *node,
-    GWEN_XMLNODE *refnode,
-    const char *name,
-    int topDown);
+                                             GWEN_XMLNODE *refnode,
+                                             const char *name,
+                                             int topDown);
 /*@}*/
 
 /** @name Getters And Setters for Global Variables
@@ -419,9 +419,9 @@ int GWEN_MsgEngine_CreateMessage(GWEN_MSGENGINE *e,
 
 GWENHYWFAR_API
 int GWEN_MsgEngine_CreateMessageFromNode(GWEN_MSGENGINE *e,
-    GWEN_XMLNODE *node,
-    GWEN_BUFFER *gbuf,
-    GWEN_DB_NODE *msgData);
+                                         GWEN_XMLNODE *node,
+                                         GWEN_BUFFER *gbuf,
+                                         GWEN_DB_NODE *msgData);
 
 /**
  * Deprecated, use @ref GWEN_MsgEngine_ListMessage instead.
@@ -514,10 +514,10 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
  */
 GWENHYWFAR_API
 GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
-    const char *typ,
-    const char *msgName,
-    int msgVersion,
-    uint32_t flags);
+                                         const char *typ,
+                                         const char *msgName,
+                                         int msgVersion,
+                                         uint32_t flags);
 /*@}*/
 
 

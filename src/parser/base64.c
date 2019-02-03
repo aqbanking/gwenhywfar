@@ -43,7 +43,8 @@ static const char GWEN_Base64_Alphabet[]=
 
 int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
                        GWEN_BUFFER *dst,
-                       unsigned int maxLineLength) {
+                       unsigned int maxLineLength)
+{
   unsigned int by3;
   unsigned int i;
   unsigned int l;
@@ -90,7 +91,7 @@ int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
   }
 
   /* then encode remainder */
-  switch(size % 3) {
+  switch (size % 3) {
   case 0:
     /* no remainder */
     break;
@@ -130,7 +131,8 @@ int GWEN_Base64_Encode(const unsigned char *src, unsigned int size,
 
 
 int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
-                       GWEN_BUFFER *dst) {
+                       GWEN_BUFFER *dst)
+{
   unsigned int i;
   const char *p = "0";
   uint32_t v;
@@ -177,7 +179,7 @@ int GWEN_Base64_Decode(const unsigned char *src, unsigned int size,
 
     /* now we have a triplet */
     if (sizeGiven) {
-      switch(size) {
+      switch (size) {
       case 1:
         GWEN_Buffer_AppendByte(dst, (v>>16) & 0xff);
         size--;

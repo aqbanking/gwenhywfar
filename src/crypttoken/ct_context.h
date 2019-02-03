@@ -238,7 +238,8 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_Attach(GWEN_CRYPT_TOKEN_CONTEXT *p_
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_dup(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const GWEN_CRYPT_TOKEN_CONTEXT *p_src);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_copy(GWEN_CRYPT_TOKEN_CONTEXT *p_struct,
+                                                                       const GWEN_CRYPT_TOKEN_CONTEXT *p_src);
 
 /** Getter.
  * Use this function to get the member "id" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_id)
@@ -521,7 +522,8 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetPort(GWEN_CRYPT_TOKEN_CONTEXT *p
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetSystemId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, const char *p_src);
 
 /* list1 functions */
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_src);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT_LIST *GWEN_Crypt_Token_Context_List_dup(const GWEN_CRYPT_TOKEN_CONTEXT_LIST
+                                                                                *p_src);
 
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_ReadDb(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, GWEN_DB_NODE *p_db);
 
@@ -539,13 +541,14 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_toXml(const GWEN_CRYPT_TOKEN_CONTEX
 
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_fromXml(GWEN_XMLNODE *p_db);
 
-GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(const GWEN_CRYPT_TOKEN_CONTEXT_LIST *p_list, uint32_t p_cmp);
+GWENHYWFAR_API GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_Token_Context_List_GetById(const GWEN_CRYPT_TOKEN_CONTEXT_LIST
+                                                                               *p_list, uint32_t p_cmp);
 
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetKeyHash(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len);
-GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_Context_GetKeyHashPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
+GWENHYWFAR_API const uint8_t *GWEN_Crypt_Token_Context_GetKeyHashPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetKeyHashLen(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetCid(GWEN_CRYPT_TOKEN_CONTEXT *st, const uint8_t *p, uint32_t len);
-GWENHYWFAR_API const uint8_t* GWEN_Crypt_Token_Context_GetCidPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
+GWENHYWFAR_API const uint8_t *GWEN_Crypt_Token_Context_GetCidPtr(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetCidLen(const GWEN_CRYPT_TOKEN_CONTEXT *st);
 /* end-headers */
 

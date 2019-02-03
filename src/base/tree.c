@@ -36,7 +36,8 @@
 
 
 
-GWEN_TREE *GWEN_Tree_new(void) {
+GWEN_TREE *GWEN_Tree_new(void)
+{
   GWEN_TREE *l;
 
   GWEN_NEW_OBJECT(GWEN_TREE, l);
@@ -44,7 +45,8 @@ GWEN_TREE *GWEN_Tree_new(void) {
 }
 
 
-void GWEN_Tree_free(GWEN_TREE *l) {
+void GWEN_Tree_free(GWEN_TREE *l)
+{
   if (l) {
     GWEN_FREE_OBJECT(l);
   }
@@ -52,14 +54,16 @@ void GWEN_Tree_free(GWEN_TREE *l) {
 
 
 
-int GWEN_Tree_GetCount(const GWEN_TREE *l) {
+int GWEN_Tree_GetCount(const GWEN_TREE *l)
+{
   assert(l);
   return l->count;
 }
 
 
 
-void GWEN_Tree_Add(GWEN_TREE *l, GWEN_TREE_ELEMENT *el) {
+void GWEN_Tree_Add(GWEN_TREE *l, GWEN_TREE_ELEMENT *el)
+{
   assert(l);
   assert(el);
   if (el->treePtr) {
@@ -84,13 +88,14 @@ void GWEN_Tree_Add(GWEN_TREE *l, GWEN_TREE_ELEMENT *el) {
 
 
 
-void GWEN_Tree_AddList(GWEN_TREE *dest, GWEN_TREE *l) {
+void GWEN_Tree_AddList(GWEN_TREE *dest, GWEN_TREE *l)
+{
   GWEN_TREE_ELEMENT *el;
 
   assert(dest);
   assert(l);
 
-  while((el=l->firstElement)) {
+  while ((el=l->firstElement)) {
     GWEN_Tree_Del(el);
     GWEN_Tree_Add(dest, el);
   }
@@ -98,7 +103,8 @@ void GWEN_Tree_AddList(GWEN_TREE *dest, GWEN_TREE *l) {
 
 
 
-void GWEN_Tree_Insert(GWEN_TREE *l, GWEN_TREE_ELEMENT *el) {
+void GWEN_Tree_Insert(GWEN_TREE *l, GWEN_TREE_ELEMENT *el)
+{
   assert(l);
   assert(el);
   if (el->treePtr) {
@@ -120,7 +126,8 @@ void GWEN_Tree_Insert(GWEN_TREE *l, GWEN_TREE_ELEMENT *el) {
 
 
 
-void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el) {
+void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el)
+{
   GWEN_TREE *l;
 
   l=el->treePtr;
@@ -163,7 +170,8 @@ void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el) {
 
 
 
-void GWEN_Tree_AddChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el) {
+void GWEN_Tree_AddChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el)
+{
   if (el->treePtr) {
     /* element is already part of another tree */
     DBG_ERROR(GWEN_LOGDOMAIN, "Element is already part of a tree");
@@ -188,7 +196,8 @@ void GWEN_Tree_AddChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el) {
 
 
 
-void GWEN_Tree_InsertChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el) {
+void GWEN_Tree_InsertChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el)
+{
   if (el->treePtr) {
     /* element is already part of another list */
     DBG_ERROR(GWEN_LOGDOMAIN, "Element is already part of a tree");
@@ -211,7 +220,8 @@ void GWEN_Tree_InsertChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_Tree_GetFirst(const GWEN_TREE *l) {
+void *GWEN_Tree_GetFirst(const GWEN_TREE *l)
+{
   if (l->firstElement)
     return l->firstElement->data;
   return 0;
@@ -219,7 +229,8 @@ void *GWEN_Tree_GetFirst(const GWEN_TREE *l) {
 
 
 
-void *GWEN_Tree_GetLast(const GWEN_TREE *l) {
+void *GWEN_Tree_GetLast(const GWEN_TREE *l)
+{
   if (l->lastElement)
     return l->lastElement->data;
   return 0;
@@ -229,7 +240,8 @@ void *GWEN_Tree_GetLast(const GWEN_TREE *l) {
 
 
 
-GWEN_TREE_ELEMENT *GWEN_TreeElement_new(void *d) {
+GWEN_TREE_ELEMENT *GWEN_TreeElement_new(void *d)
+{
   GWEN_TREE_ELEMENT *el;
 
   GWEN_NEW_OBJECT(GWEN_TREE_ELEMENT, el);
@@ -240,7 +252,8 @@ GWEN_TREE_ELEMENT *GWEN_TreeElement_new(void *d) {
 
 
 
-void GWEN_TreeElement_free(GWEN_TREE_ELEMENT *el) {
+void GWEN_TreeElement_free(GWEN_TREE_ELEMENT *el)
+{
   if (el) {
     if (el->treePtr)
       GWEN_Tree_Del(el);
@@ -254,7 +267,8 @@ void GWEN_TreeElement_free(GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el) {
+void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el)
+{
   if (el->prevElement)
     return el->prevElement->data;
   return 0;
@@ -262,7 +276,8 @@ void *GWEN_TreeElement_GetPrevious(const GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el) {
+void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el)
+{
   if (el->nextElement)
     return el->nextElement->data;
   return 0;
@@ -270,14 +285,15 @@ void *GWEN_TreeElement_GetNext(const GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el) {
+void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el)
+{
   if (el->firstChild)                               /* look down */
     return el->firstChild->data;
   else if (el->nextElement)                         /* look right */
     return el->nextElement->data;
   else {
     /* look for a parent which has a right neighbour */
-    while(el && el->parent) {
+    while (el && el->parent) {
       if (el->parent->nextElement)                  /* look right of parent */
         return el->parent->nextElement->data;
       /* parent has no right neighbour, consult its parent */
@@ -290,7 +306,8 @@ void *GWEN_TreeElement_GetBelow(const GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el) {
+void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el)
+{
   if (el->firstChild)
     return el->firstChild->data;
   return NULL;
@@ -298,7 +315,8 @@ void *GWEN_TreeElement_GetFirstChild(const GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el) {
+void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el)
+{
   if (el->lastChild)
     return el->lastChild->data;
   return NULL;
@@ -306,7 +324,8 @@ void *GWEN_TreeElement_GetLastChild(const GWEN_TREE_ELEMENT *el) {
 
 
 
-void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el) {
+void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el)
+{
   if (el->parent)
     return el->parent->data;
   return NULL;
@@ -314,7 +333,8 @@ void *GWEN_TreeElement_GetParent(const GWEN_TREE_ELEMENT *el) {
 
 
 
-uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el) {
+uint32_t GWEN_TreeElement_GetChildrenCount(const GWEN_TREE_ELEMENT *el)
+{
   assert(el);
   return el->count;
 }

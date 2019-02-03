@@ -41,7 +41,8 @@ GWEN_LIST_FUNCTIONS(GWEN_MULTICACHE_TYPE, GWEN_MultiCache_Type);
 
 
 
-GWEN_MULTICACHE_ENTRY *GWEN_MultiCache_Entry_new(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *p, uint32_t i) {
+GWEN_MULTICACHE_ENTRY *GWEN_MultiCache_Entry_new(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *p, uint32_t i)
+{
   GWEN_MULTICACHE_ENTRY *e;
 
   GWEN_NEW_OBJECT(GWEN_MULTICACHE_ENTRY, e);
@@ -57,7 +58,8 @@ GWEN_MULTICACHE_ENTRY *GWEN_MultiCache_Entry_new(GWEN_MULTICACHE_TYPE *ct, uint3
 
 
 
-void GWEN_MultiCache_Entry_free(GWEN_MULTICACHE_ENTRY *e) {
+void GWEN_MultiCache_Entry_free(GWEN_MULTICACHE_ENTRY *e)
+{
   if (e) {
     GWEN_LIST_FINI(GWEN_MULTICACHE_ENTRY, e);
     GWEN_FREE_OBJECT(e);
@@ -66,98 +68,112 @@ void GWEN_MultiCache_Entry_free(GWEN_MULTICACHE_ENTRY *e) {
 
 
 
-uint32_t GWEN_MultiCache_Entry_GetId(const GWEN_MULTICACHE_ENTRY *e) {
+uint32_t GWEN_MultiCache_Entry_GetId(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->id;
 }
 
 
 
-uint32_t GWEN_MultiCache_Entry_GetDataSize(const GWEN_MULTICACHE_ENTRY *e) {
+uint32_t GWEN_MultiCache_Entry_GetDataSize(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->dataSize;
 }
 
 
 
-void *GWEN_MultiCache_Entry_GetDataPtr(const GWEN_MULTICACHE_ENTRY *e) {
+void *GWEN_MultiCache_Entry_GetDataPtr(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->dataPtr;
 }
 
 
 
-GWEN_MULTICACHE_TYPE *GWEN_MultiCache_Entry_GetCacheType(const GWEN_MULTICACHE_ENTRY *e) {
+GWEN_MULTICACHE_TYPE *GWEN_MultiCache_Entry_GetCacheType(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->cacheType;
 }
 
 
 
-uint32_t GWEN_MultiCache_Entry_GetParam1(const GWEN_MULTICACHE_ENTRY *e) {
+uint32_t GWEN_MultiCache_Entry_GetParam1(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->param1;
 }
 
 
 
-void GWEN_MultiCache_Entry_SetParam1(GWEN_MULTICACHE_ENTRY *e, uint32_t i) {
+void GWEN_MultiCache_Entry_SetParam1(GWEN_MULTICACHE_ENTRY *e, uint32_t i)
+{
   assert(e);
   e->param1=i;
 }
 
 
 
-uint32_t GWEN_MultiCache_Entry_GetParam2(const GWEN_MULTICACHE_ENTRY *e) {
+uint32_t GWEN_MultiCache_Entry_GetParam2(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->param2;
 }
 
 
 
-void GWEN_MultiCache_Entry_SetParam2(GWEN_MULTICACHE_ENTRY *e, uint32_t i) {
+void GWEN_MultiCache_Entry_SetParam2(GWEN_MULTICACHE_ENTRY *e, uint32_t i)
+{
   assert(e);
   e->param2=i;
 }
 
 
 
-uint32_t GWEN_MultiCache_Entry_GetParam3(const GWEN_MULTICACHE_ENTRY *e) {
+uint32_t GWEN_MultiCache_Entry_GetParam3(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->param3;
 }
 
 
 
-void GWEN_MultiCache_Entry_SetParam3(GWEN_MULTICACHE_ENTRY *e, uint32_t i) {
+void GWEN_MultiCache_Entry_SetParam3(GWEN_MULTICACHE_ENTRY *e, uint32_t i)
+{
   assert(e);
   e->param3=i;
 }
 
 
 
-uint32_t GWEN_MultiCache_Entry_GetParam4(const GWEN_MULTICACHE_ENTRY *e) {
+uint32_t GWEN_MultiCache_Entry_GetParam4(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->param4;
 }
 
 
 
-void GWEN_MultiCache_Entry_SetParam4(GWEN_MULTICACHE_ENTRY *e, uint32_t i) {
+void GWEN_MultiCache_Entry_SetParam4(GWEN_MULTICACHE_ENTRY *e, uint32_t i)
+{
   assert(e);
   e->param4=i;
 }
 
 
 
-double GWEN_MultiCache_Entry_GetParam5(const GWEN_MULTICACHE_ENTRY *e) {
+double GWEN_MultiCache_Entry_GetParam5(const GWEN_MULTICACHE_ENTRY *e)
+{
   assert(e);
   return e->param5;
 }
 
 
 
-void GWEN_MultiCache_Entry_SetParam5(GWEN_MULTICACHE_ENTRY *e, double d) {
+void GWEN_MultiCache_Entry_SetParam5(GWEN_MULTICACHE_ENTRY *e, double d)
+{
   assert(e);
   e->param5=d;
 }
@@ -170,7 +186,8 @@ void GWEN_MultiCache_Entry_SetParam5(GWEN_MULTICACHE_ENTRY *e, double d) {
 
 
 
-GWEN_MULTICACHE_TYPE *GWEN_MultiCache_Type_new(GWEN_MULTICACHE *mc) {
+GWEN_MULTICACHE_TYPE *GWEN_MultiCache_Type_new(GWEN_MULTICACHE *mc)
+{
   GWEN_MULTICACHE_TYPE *ct;
 
   GWEN_NEW_OBJECT(GWEN_MULTICACHE_TYPE, ct);
@@ -184,7 +201,8 @@ GWEN_MULTICACHE_TYPE *GWEN_MultiCache_Type_new(GWEN_MULTICACHE *mc) {
 
 
 
-void GWEN_MultiCache_Type_free(GWEN_MULTICACHE_TYPE *ct) {
+void GWEN_MultiCache_Type_free(GWEN_MULTICACHE_TYPE *ct)
+{
   if (ct) {
     assert(ct->_refCount);
     if (ct->_refCount==1) {
@@ -201,13 +219,14 @@ void GWEN_MultiCache_Type_free(GWEN_MULTICACHE_TYPE *ct) {
 
 
 
-void *GWEN_MultiCache_Type_GetData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id) {
+void *GWEN_MultiCache_Type_GetData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id)
+{
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
   assert(ct->_refCount);
 
-  e=(GWEN_MULTICACHE_ENTRY*)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
+  e=(GWEN_MULTICACHE_ENTRY *)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
   if (e) {
     void *p;
 
@@ -224,14 +243,15 @@ void *GWEN_MultiCache_Type_GetData(const GWEN_MULTICACHE_TYPE *ct, uint32_t id) 
 
 
 void *GWEN_MultiCache_Type_GetDataWithParams(const GWEN_MULTICACHE_TYPE *ct, uint32_t id,
-    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4) {
+                                             uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4)
+{
 
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
   assert(ct->_refCount);
 
-  e=(GWEN_MULTICACHE_ENTRY*)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
+  e=(GWEN_MULTICACHE_ENTRY *)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
   if (e) {
     if ((GWEN_MultiCache_Entry_GetParam1(e)==param1) &&
         (GWEN_MultiCache_Entry_GetParam2(e)==param2) &&
@@ -253,15 +273,16 @@ void *GWEN_MultiCache_Type_GetDataWithParams(const GWEN_MULTICACHE_TYPE *ct, uin
 
 
 void *GWEN_MultiCache_Type_GetDataWithParams5(const GWEN_MULTICACHE_TYPE *ct, uint32_t id,
-    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
-    double param5) {
+                                              uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
+                                              double param5)
+{
 
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
   assert(ct->_refCount);
 
-  e=(GWEN_MULTICACHE_ENTRY*)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
+  e=(GWEN_MULTICACHE_ENTRY *)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
   if (e) {
     if ((GWEN_MultiCache_Entry_GetParam1(e)==param1) &&
         (GWEN_MultiCache_Entry_GetParam2(e)==param2) &&
@@ -283,7 +304,8 @@ void *GWEN_MultiCache_Type_GetDataWithParams5(const GWEN_MULTICACHE_TYPE *ct, ui
 
 
 
-void GWEN_MultiCache_Type_SetData(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size) {
+void GWEN_MultiCache_Type_SetData(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size)
+{
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
@@ -292,13 +314,14 @@ void GWEN_MultiCache_Type_SetData(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *p
   GWEN_MultiCache_Type_PurgeData(ct, id);
   e=GWEN_MultiCache_Entry_new(ct, id, ptr, size);
   GWEN_MultiCache_AddEntry(ct->multiCache, e);
-  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void*) e);
+  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void *) e);
 }
 
 
 
 void GWEN_MultiCache_Type_SetDataWithParams(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size,
-    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4) {
+                                            uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4)
+{
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
@@ -312,14 +335,15 @@ void GWEN_MultiCache_Type_SetDataWithParams(GWEN_MULTICACHE_TYPE *ct, uint32_t i
   GWEN_MultiCache_Entry_SetParam2(e, param2);
   GWEN_MultiCache_Entry_SetParam3(e, param3);
   GWEN_MultiCache_Entry_SetParam4(e, param4);
-  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void*) e);
+  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void *) e);
 }
 
 
 
 void GWEN_MultiCache_Type_SetDataWithParams5(GWEN_MULTICACHE_TYPE *ct, uint32_t id, void *ptr, uint32_t size,
-    uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
-    double param5) {
+                                             uint32_t param1, uint32_t param2, uint32_t param3, uint32_t param4,
+                                             double param5)
+{
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
@@ -334,25 +358,27 @@ void GWEN_MultiCache_Type_SetDataWithParams5(GWEN_MULTICACHE_TYPE *ct, uint32_t 
   GWEN_MultiCache_Entry_SetParam3(e, param3);
   GWEN_MultiCache_Entry_SetParam4(e, param4);
   GWEN_MultiCache_Entry_SetParam5(e, param5);
-  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void*) e);
+  GWEN_MultiCache_Entry_IdMap_Insert(ct->entryMap, id, (void *) e);
 }
 
 
 
-void GWEN_MultiCache_Type_PurgeData(GWEN_MULTICACHE_TYPE *ct, uint32_t id) {
+void GWEN_MultiCache_Type_PurgeData(GWEN_MULTICACHE_TYPE *ct, uint32_t id)
+{
   GWEN_MULTICACHE_ENTRY *e;
 
   assert(ct);
   assert(ct->_refCount);
 
-  e=(GWEN_MULTICACHE_ENTRY*)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
+  e=(GWEN_MULTICACHE_ENTRY *)GWEN_MultiCache_Entry_IdMap_Find(ct->entryMap, id);
   if (e)
     GWEN_MultiCache_ReleaseEntry(ct->multiCache, e);
 }
 
 
 
-void GWEN_MultiCache_Type_PurgeAll(GWEN_MULTICACHE_TYPE *ct) {
+void GWEN_MultiCache_Type_PurgeAll(GWEN_MULTICACHE_TYPE *ct)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -361,7 +387,8 @@ void GWEN_MultiCache_Type_PurgeAll(GWEN_MULTICACHE_TYPE *ct) {
 
 
 
-void GWEN_MultiCache_Type_SetAttachFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_FN fn) {
+void GWEN_MultiCache_Type_SetAttachFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_FN fn)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -370,7 +397,8 @@ void GWEN_MultiCache_Type_SetAttachFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_
 
 
 
-void GWEN_MultiCache_Type_SetFreeFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_FREE_FN fn) {
+void GWEN_MultiCache_Type_SetFreeFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_FREE_FN fn)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -379,7 +407,8 @@ void GWEN_MultiCache_Type_SetFreeFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TY
 
 
 
-void GWEN_MultiCache_Type_SetAttachObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_OBJECT_FN fn) {
+void GWEN_MultiCache_Type_SetAttachObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_OBJECT_FN fn)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -388,7 +417,8 @@ void GWEN_MultiCache_Type_SetAttachObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTI
 
 
 
-void GWEN_MultiCache_Type_SetFreeObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_FREE_OBJECT_FN fn) {
+void GWEN_MultiCache_Type_SetFreeObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_FREE_OBJECT_FN fn)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -397,7 +427,8 @@ void GWEN_MultiCache_Type_SetFreeObjectFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICA
 
 
 
-int GWEN_MultiCache_Type_AttachData(const GWEN_MULTICACHE_TYPE *ct, void *p) {
+int GWEN_MultiCache_Type_AttachData(const GWEN_MULTICACHE_TYPE *ct, void *p)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -413,7 +444,8 @@ int GWEN_MultiCache_Type_AttachData(const GWEN_MULTICACHE_TYPE *ct, void *p) {
 
 
 
-int GWEN_MultiCache_Type_FreeData(const GWEN_MULTICACHE_TYPE *ct, void *p) {
+int GWEN_MultiCache_Type_FreeData(const GWEN_MULTICACHE_TYPE *ct, void *p)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -428,7 +460,8 @@ int GWEN_MultiCache_Type_FreeData(const GWEN_MULTICACHE_TYPE *ct, void *p) {
 }
 
 
-void GWEN_MultiCache_Type_ReleaseEntry(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_ENTRY *e) {
+void GWEN_MultiCache_Type_ReleaseEntry(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_ENTRY *e)
+{
   assert(ct);
   assert(ct->_refCount);
 
@@ -443,7 +476,8 @@ void GWEN_MultiCache_Type_ReleaseEntry(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE
 
 
 
-GWEN_MULTICACHE *GWEN_MultiCache_new(uint64_t maxSize) {
+GWEN_MULTICACHE *GWEN_MultiCache_new(uint64_t maxSize)
+{
   GWEN_MULTICACHE *mc;
 
   GWEN_NEW_OBJECT(GWEN_MULTICACHE, mc);
@@ -457,7 +491,8 @@ GWEN_MULTICACHE *GWEN_MultiCache_new(uint64_t maxSize) {
 
 
 
-void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
+void GWEN_MultiCache_free(GWEN_MULTICACHE *mc)
+{
   if (mc) {
     assert(mc->_refCount);
 
@@ -465,7 +500,7 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
       GWEN_MULTICACHE_ENTRY *ce;
 
       ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
-      while(ce) {
+      while (ce) {
         GWEN_MultiCache_ReleaseEntry(mc, ce);
         ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
       }
@@ -473,12 +508,13 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
       GWEN_MultiCache_Entry_List_free(mc->entryList);
       GWEN_MultiCache_Type_List_free(mc->typeList);
 
-      DBG_NOTICE(GWEN_LOGDOMAIN, "MultiCache usage: %lld hits, %lld misses, %lld drops, %lld mb max memory used from %lld mb (%d %%)",
+      DBG_NOTICE(GWEN_LOGDOMAIN,
+                 "MultiCache usage: %lld hits, %lld misses, %lld drops, %lld mb max memory used from %lld mb (%d %%)",
                  (unsigned long long int) mc->cacheHits,
                  (unsigned long long int) mc->cacheMisses,
                  (unsigned long long int) mc->cacheDrops,
-                 (unsigned long long int) ((mc->maxSizeUsed)/(1024*1024)),
-                 (unsigned long long int) ((mc->maxSize)/(1024*1024)),
+                 (unsigned long long int)((mc->maxSizeUsed)/(1024*1024)),
+                 (unsigned long long int)((mc->maxSize)/(1024*1024)),
                  (int)((mc->maxSizeUsed)*100.0/mc->maxSize));
 
       mc->_refCount=0;
@@ -491,7 +527,8 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc) {
 
 
 
-uint64_t GWEN_MultiCache_GetMaxSizeUsed(const GWEN_MULTICACHE *mc) {
+uint64_t GWEN_MultiCache_GetMaxSizeUsed(const GWEN_MULTICACHE *mc)
+{
   assert(mc);
   assert(mc->_refCount);
   return mc->maxSizeUsed;
@@ -499,7 +536,8 @@ uint64_t GWEN_MultiCache_GetMaxSizeUsed(const GWEN_MULTICACHE *mc) {
 
 
 
-int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
+int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e)
+{
   uint32_t esize;
 
   assert(mc);
@@ -512,7 +550,7 @@ int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
 
     /* make room */
     nsize=(mc->currentSize+esize)-mc->maxSize;
-    while(nsize>0) {
+    while (nsize>0) {
       GWEN_MULTICACHE_ENTRY *ce;
 
       ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
@@ -538,7 +576,8 @@ int GWEN_MultiCache_AddEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
 
 
 
-void GWEN_MultiCache_ReleaseEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
+void GWEN_MultiCache_ReleaseEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e)
+{
   uint32_t esize;
 
   assert(mc);
@@ -561,7 +600,8 @@ void GWEN_MultiCache_ReleaseEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e)
 
 
 
-void GWEN_MultiCache_ReleaseEntriesForType(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_TYPE *ct) {
+void GWEN_MultiCache_ReleaseEntriesForType(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_TYPE *ct)
+{
   GWEN_MULTICACHE_ENTRY *ce;
 
   assert(mc);
@@ -570,7 +610,7 @@ void GWEN_MultiCache_ReleaseEntriesForType(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_
 
 
   ce=GWEN_MultiCache_Entry_List_First(mc->entryList);
-  while(ce) {
+  while (ce) {
     GWEN_MULTICACHE_ENTRY *ceNext;
 
     ceNext=GWEN_MultiCache_Entry_List_Next(ce);
@@ -582,7 +622,8 @@ void GWEN_MultiCache_ReleaseEntriesForType(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_
 
 
 
-void GWEN_MultiCache_UsingEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
+void GWEN_MultiCache_UsingEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e)
+{
   assert(mc);
   assert(mc->_refCount);
 
@@ -593,7 +634,8 @@ void GWEN_MultiCache_UsingEntry(GWEN_MULTICACHE *mc, GWEN_MULTICACHE_ENTRY *e) {
 
 
 
-void GWEN_MultiCache_IncCacheHits(GWEN_MULTICACHE *mc) {
+void GWEN_MultiCache_IncCacheHits(GWEN_MULTICACHE *mc)
+{
   assert(mc);
   assert(mc->_refCount);
   mc->cacheHits++;
@@ -601,7 +643,8 @@ void GWEN_MultiCache_IncCacheHits(GWEN_MULTICACHE *mc) {
 
 
 
-void GWEN_MultiCache_IncCacheMisses(GWEN_MULTICACHE *mc) {
+void GWEN_MultiCache_IncCacheMisses(GWEN_MULTICACHE *mc)
+{
   assert(mc);
   assert(mc->_refCount);
   mc->cacheMisses++;

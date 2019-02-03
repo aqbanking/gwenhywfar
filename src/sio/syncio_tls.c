@@ -58,7 +58,8 @@
 GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_TLS)
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Tls_new(GWEN_SYNCIO *baseIo) {
+GWEN_SYNCIO *GWEN_SyncIo_Tls_new(GWEN_SYNCIO *baseIo)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_TLS *xio;
 
@@ -81,10 +82,11 @@ GWEN_SYNCIO *GWEN_SyncIo_Tls_new(GWEN_SYNCIO *baseIo) {
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p)
+{
   GWEN_SYNCIO_TLS *xio;
 
-  xio=(GWEN_SYNCIO_TLS*) p;
+  xio=(GWEN_SYNCIO_TLS *) p;
   free(xio->localCertFile);
   free(xio->localKeyFile);
   free(xio->localTrustFile);
@@ -95,7 +97,8 @@ void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p) {
 
 
 
-GWEN_SIO_TLS_CHECKCERT_FN GWEN_SyncIo_Tls_SetCheckCertFn(GWEN_SYNCIO *sio, GWEN_SIO_TLS_CHECKCERT_FN f) {
+GWEN_SIO_TLS_CHECKCERT_FN GWEN_SyncIo_Tls_SetCheckCertFn(GWEN_SYNCIO *sio, GWEN_SIO_TLS_CHECKCERT_FN f)
+{
   GWEN_SYNCIO_TLS *xio;
   GWEN_SIO_TLS_CHECKCERT_FN oldF;
 
@@ -110,7 +113,8 @@ GWEN_SIO_TLS_CHECKCERT_FN GWEN_SyncIo_Tls_SetCheckCertFn(GWEN_SYNCIO *sio, GWEN_
 
 
 
-int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
+int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -123,7 +127,8 @@ int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR
 
 
 
-int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
+int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -143,7 +148,8 @@ int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
 
 
 
-const char *GWEN_SyncIo_Tls_GetLocalCertFile(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_Tls_GetLocalCertFile(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -155,7 +161,8 @@ const char *GWEN_SyncIo_Tls_GetLocalCertFile(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Tls_SetLocalCertFile(GWEN_SYNCIO *sio, const char *s) {
+void GWEN_SyncIo_Tls_SetLocalCertFile(GWEN_SYNCIO *sio, const char *s)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -163,13 +170,16 @@ void GWEN_SyncIo_Tls_SetLocalCertFile(GWEN_SYNCIO *sio, const char *s) {
   assert(xio);
 
   free(xio->localCertFile);
-  if (s) xio->localCertFile=strdup(s);
-  else xio->localCertFile=NULL;
+  if (s)
+    xio->localCertFile=strdup(s);
+  else
+    xio->localCertFile=NULL;
 }
 
 
 
-const char *GWEN_SyncIo_Tls_GetLocalKeyFile(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_Tls_GetLocalKeyFile(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -181,7 +191,8 @@ const char *GWEN_SyncIo_Tls_GetLocalKeyFile(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Tls_SetLocalKeyFile(GWEN_SYNCIO *sio, const char *s) {
+void GWEN_SyncIo_Tls_SetLocalKeyFile(GWEN_SYNCIO *sio, const char *s)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -189,13 +200,16 @@ void GWEN_SyncIo_Tls_SetLocalKeyFile(GWEN_SYNCIO *sio, const char *s) {
   assert(xio);
 
   free(xio->localKeyFile);
-  if (s) xio->localKeyFile=strdup(s);
-  else xio->localKeyFile=NULL;
+  if (s)
+    xio->localKeyFile=strdup(s);
+  else
+    xio->localKeyFile=NULL;
 }
 
 
 
-const char *GWEN_SyncIo_Tls_GetLocalTrustFile(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_Tls_GetLocalTrustFile(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -207,7 +221,8 @@ const char *GWEN_SyncIo_Tls_GetLocalTrustFile(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Tls_SetLocalTrustFile(GWEN_SYNCIO *sio, const char *s) {
+void GWEN_SyncIo_Tls_SetLocalTrustFile(GWEN_SYNCIO *sio, const char *s)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -215,13 +230,16 @@ void GWEN_SyncIo_Tls_SetLocalTrustFile(GWEN_SYNCIO *sio, const char *s) {
   assert(xio);
 
   free(xio->localTrustFile);
-  if (s) xio->localTrustFile=strdup(s);
-  else xio->localTrustFile=NULL;
+  if (s)
+    xio->localTrustFile=strdup(s);
+  else
+    xio->localTrustFile=NULL;
 }
 
 
 
-const char *GWEN_SyncIo_Tls_GetDhParamFile(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_Tls_GetDhParamFile(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -233,7 +251,8 @@ const char *GWEN_SyncIo_Tls_GetDhParamFile(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Tls_SetDhParamFile(GWEN_SYNCIO *sio, const char *s) {
+void GWEN_SyncIo_Tls_SetDhParamFile(GWEN_SYNCIO *sio, const char *s)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -241,13 +260,16 @@ void GWEN_SyncIo_Tls_SetDhParamFile(GWEN_SYNCIO *sio, const char *s) {
   assert(xio);
 
   free(xio->dhParamFile);
-  if (s) xio->dhParamFile=strdup(s);
-  else xio->dhParamFile=NULL;
+  if (s)
+    xio->dhParamFile=strdup(s);
+  else
+    xio->dhParamFile=NULL;
 }
 
 
 
-const char *GWEN_SyncIo_Tls_GetRemoteHostName(const GWEN_SYNCIO *sio) {
+const char *GWEN_SyncIo_Tls_GetRemoteHostName(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -259,7 +281,8 @@ const char *GWEN_SyncIo_Tls_GetRemoteHostName(const GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Tls_SetRemoteHostName(GWEN_SYNCIO *sio, const char *s) {
+void GWEN_SyncIo_Tls_SetRemoteHostName(GWEN_SYNCIO *sio, const char *s)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -267,13 +290,16 @@ void GWEN_SyncIo_Tls_SetRemoteHostName(GWEN_SYNCIO *sio, const char *s) {
   assert(xio);
 
   free(xio->hostName);
-  if (s) xio->hostName=strdup(s);
-  else xio->hostName=NULL;
+  if (s)
+    xio->hostName=strdup(s);
+  else
+    xio->hostName=NULL;
 }
 
 
 
-GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_GetPeerCertDescr(const GWEN_SYNCIO *sio) {
+GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_GetPeerCertDescr(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -285,14 +311,15 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_GetPeerCertDescr(const GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf) {
+int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf)
+{
   FILE *f;
 
   f=fopen(fname, "r");
   if (f==NULL)
     return GWEN_ERROR_IO;
 
-  while(!feof(f)) {
+  while (!feof(f)) {
     int rv;
 
     GWEN_Buffer_AllocRoom(buf, 512);
@@ -318,7 +345,8 @@ int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf) {
 
 #if GWEN_TLS_USE_SYSTEM_CERTIFICATES
 # ifndef OS_WIN32
-static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder) {
+static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
+{
   GWEN_SYNCIO_TLS *xio;
   int rv;
   int successfullTustFileCount=0;
@@ -341,14 +369,14 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
       GWEN_STRINGLISTENTRY *se;
 
       se=GWEN_StringList_FirstEntry(fileList);
-      while(se) {
+      while (se) {
         const char *s;
 
         s=GWEN_StringListEntry_Data(se);
         if (s && *s) {
           rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-              s,
-              GNUTLS_X509_FMT_PEM);
+                                                    s,
+                                                    GNUTLS_X509_FMT_PEM);
           if (rv<=0) {
             DBG_WARN(GWEN_LOGDOMAIN,
                      "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
@@ -377,7 +405,8 @@ static int GWEN_SyncIo_Tls_AddCaCertFolder(GWEN_SYNCIO *sio, const char *folder)
 
 
 
-int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
   int rv;
   uint32_t lflags;
@@ -490,8 +519,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
                  GWEN_Buffer_GetStart(nbuf));
 
         rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-            GWEN_Buffer_GetStart(nbuf),
-            GNUTLS_X509_FMT_PEM);
+                                                  GWEN_Buffer_GetStart(nbuf),
+                                                  GNUTLS_X509_FMT_PEM);
         if (rv<=0) {
           DBG_WARN(GWEN_LOGDOMAIN,
                    "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
@@ -543,8 +572,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
   /* possibly set trust file */
   if (xio->localTrustFile) {
     rv=gnutls_certificate_set_x509_trust_file(xio->credentials,
-        xio->localTrustFile,
-        GNUTLS_X509_FMT_PEM);
+                                              xio->localTrustFile,
+                                              GNUTLS_X509_FMT_PEM);
     if (rv<=0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "gnutls_certificate_set_x509_trust_file(%s): %d (%s)",
@@ -587,7 +616,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
 
       d.size=GWEN_Buffer_GetUsedBytes(dbuf);
-      d.data=(unsigned char*)GWEN_Buffer_GetStart(dbuf);
+      d.data=(unsigned char *)GWEN_Buffer_GetStart(dbuf);
 
       rv=gnutls_dh_params_import_pkcs3(dh_params, &d, GNUTLS_X509_FMT_PEM);
       if (rv<0) {
@@ -633,7 +662,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
 
 
 
-void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio) {
+void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
 
   assert(sio);
@@ -649,7 +679,8 @@ void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
+int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
   const gnutls_datum_t *cert_list;
   unsigned int cert_list_size;
@@ -767,14 +798,14 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
 
         if (n.data && n.size) {
           /* store public modulus */
-          GWEN_Text_ToHexBuffer((const char*)(n.data), n.size, kbuf, 0, 0, 0);
+          GWEN_Text_ToHexBuffer((const char *)(n.data), n.size, kbuf, 0, 0, 0);
           GWEN_SslCertDescr_SetPubKeyModulus(certDescr, GWEN_Buffer_GetStart(kbuf));
           GWEN_Buffer_Reset(kbuf);
         }
 
         if (e.data && e.size) {
           /* store public exponent */
-          GWEN_Text_ToHexBuffer((const char*)(e.data), e.size, kbuf, 0, 0, 0);
+          GWEN_Text_ToHexBuffer((const char *)(e.data), e.size, kbuf, 0, 0, 0);
           GWEN_SslCertDescr_SetPubKeyExponent(certDescr, GWEN_Buffer_GetStart(kbuf));
           GWEN_Buffer_Reset(kbuf);
         }
@@ -800,7 +831,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
         if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ buffer1,
-            size, dbuf, 2, ':', 0)) {
+                                                                     size, dbuf, 2, ':', 0)) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Could not convert fingerprint to hex");
         }
@@ -824,7 +855,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
         if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ buffer1,
-            size, dbuf, 2, ':', 0)) {
+                                                                     size, dbuf, 2, ':', 0)) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Could not convert fingerprint to hex");
         }
@@ -848,7 +879,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
         if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ buffer1,
-            size, dbuf, 2, ':', 0)) {
+                                                                     size, dbuf, 2, ':', 0)) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Could not convert fingerprint to hex");
         }
@@ -1049,13 +1080,14 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio) {
 
 
 
-ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len) {
+ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
 
-  sio=(GWEN_SYNCIO*) p;
+  sio=(GWEN_SYNCIO *) p;
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
@@ -1085,13 +1117,14 @@ ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len) {
 
 
 
-ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t len) {
+ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t len)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
 
-  sio=(GWEN_SYNCIO*) p;
+  sio=(GWEN_SYNCIO *) p;
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
@@ -1119,7 +1152,8 @@ ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t l
 
 
 
-void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
+void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
   const char *s;
   gnutls_kx_algorithm_t kx;
@@ -1185,7 +1219,7 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
   GWEN_Buffer_free(sbuf);
 
   /* possibly show warning */
-  switch(gnutls_cipher_get(xio->session)) {
+  switch (gnutls_cipher_get(xio->session)) {
   case GNUTLS_CIPHER_ARCFOUR_128:
   case GNUTLS_CIPHER_3DES_CBC:
   case GNUTLS_CIPHER_AES_128_CBC:
@@ -1207,7 +1241,8 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1314,7 +1349,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1361,7 +1397,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio) {
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
                                        uint8_t *buffer,
-                                       uint32_t size) {
+                                       uint32_t size)
+{
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1414,7 +1451,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
 
 #ifdef GWEN_TLS_DEBUG
   DBG_ERROR(0, "Received this:");
-  GWEN_Text_DumpString((const char*) buffer, rv, 2);
+  GWEN_Text_DumpString((const char *) buffer, rv, 2);
 #endif
 
   return rv;
@@ -1424,7 +1461,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
 
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
                                         const uint8_t *buffer,
-                                        uint32_t size) {
+                                        uint32_t size)
+{
   GWEN_SYNCIO_TLS *xio;
   GWEN_SYNCIO *baseIo;
   int rv;
@@ -1435,7 +1473,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
 
 #ifdef GWEN_TLS_DEBUG
   DBG_ERROR(0, "Sending this:");
-  GWEN_Text_DumpString((const char*) buffer, size, 2);
+  GWEN_Text_DumpString((const char *) buffer, size, 2);
 #endif
 
   baseIo=GWEN_SyncIo_GetBaseIo(sio);

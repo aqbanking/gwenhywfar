@@ -33,7 +33,8 @@
 
 
 
-int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
+int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node)
+{
   int rv;
   const char *f;
   GWEN_BUFFER *fname;
@@ -83,19 +84,19 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_Buffer_AppendString(fname, "_l.h");
 
   sio=GWEN_SyncIo_File_new(GWEN_Buffer_GetStart(fname),
-			   GWEN_SyncIo_File_CreationMode_CreateAlways);
+                           GWEN_SyncIo_File_CreationMode_CreateAlways);
   GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_GREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+                       GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_ERROR(0, "open(%s): %s",
-	      GWEN_Buffer_GetStart(fname),
-	      strerror(errno));
+              GWEN_Buffer_GetStart(fname),
+              strerror(errno));
     GWEN_Buffer_free(fname);
     GWEN_SyncIo_free(sio);
     return -1;
@@ -111,7 +112,7 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
   s=f;
-  while(*s) {
+  while (*s) {
     GWEN_Buffer_AppendByte(hbuf, toupper(*s));
     s++;
   }
@@ -184,9 +185,9 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     n=GWEN_XMLNode_FindFirstTag(node, "pre-headers", 0, 0);
     if (n) {
       GWEN_XMLNODE *nn;
-  
+
       nn=GWEN_XMLNode_GetFirstTag(n);
-      while(nn) {
+      while (nn) {
         rv=write_hp_group_c(args, nn, sio);
         if (rv) {
           GWEN_Buffer_free(hbuf);
@@ -199,9 +200,9 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     n=GWEN_XMLNode_FindFirstTag(node, "headers", 0, 0);
     if (n) {
       GWEN_XMLNODE *nn;
-  
+
       nn=GWEN_XMLNode_GetFirstTag(n);
-      while(nn) {
+      while (nn) {
         rv=write_hp_group_c(args, nn, sio);
         if (rv) {
           GWEN_Buffer_free(hbuf);
@@ -214,9 +215,9 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     n=GWEN_XMLNode_FindFirstTag(node, "post-headers", 0, 0);
     if (n) {
       GWEN_XMLNODE *nn;
-  
+
       nn=GWEN_XMLNode_GetFirstTag(n);
-      while(nn) {
+      while (nn) {
         rv=write_hp_group_c(args, nn, sio);
         if (rv) {
           GWEN_Buffer_free(hbuf);
@@ -399,7 +400,8 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
 
 
-int write_hl_files_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
+int write_hl_files_c(ARGUMENTS *args, GWEN_XMLNODE *node)
+{
   GWEN_XMLNODE *n;
   int rv;
 

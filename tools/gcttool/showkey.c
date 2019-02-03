@@ -26,7 +26,8 @@
 
 
 
-int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
@@ -34,51 +35,51 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   unsigned int keyId;
   int shown=0;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "keyId",                      /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "k",                          /* short option */
-    "key",                        /* long option */
-    "Key id (0 for any)",         /* short description */
-    "Key id (0 for any)"          /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                    /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "keyId",                      /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "k",                          /* short option */
+      "key",                        /* long option */
+      "Key id (0 for any)",         /* short description */
+      "Key id (0 for any)"          /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                    /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -138,124 +139,124 @@ int showKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
     for (i=0; i<keyCount; i++) {
       if (keyId==0 || keyId==keyIds[i]) {
-	const GWEN_CRYPT_TOKEN_KEYINFO *ki;
-	uint32_t flags;
+        const GWEN_CRYPT_TOKEN_KEYINFO *ki;
+        uint32_t flags;
         const char *s;
 
-	ki=GWEN_Crypt_Token_GetKeyInfo(ct, keyIds[i], 0xffffffff, 0);
-	if (ki) {
-	  fprintf(stdout, "-------------------------------------------------\n");
-	  fprintf(stdout, "Key %08x\n",
-		  (unsigned int)GWEN_Crypt_Token_KeyInfo_GetId(ki));
+        ki=GWEN_Crypt_Token_GetKeyInfo(ct, keyIds[i], 0xffffffff, 0);
+        if (ki) {
+          fprintf(stdout, "-------------------------------------------------\n");
+          fprintf(stdout, "Key %08x\n",
+                  (unsigned int)GWEN_Crypt_Token_KeyInfo_GetId(ki));
 
-	  s=GWEN_Crypt_Token_KeyInfo_GetKeyDescr(ki);
-	  if (s)
-	    fprintf(stdout, "Key Descr  : %s\n", s);
+          s=GWEN_Crypt_Token_KeyInfo_GetKeyDescr(ki);
+          if (s)
+            fprintf(stdout, "Key Descr  : %s\n", s);
 
-	  fprintf(stdout, "Crypt Algo : %s\n",
-		  GWEN_Crypt_CryptAlgoId_toString(GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(ki)));
-	  fprintf(stdout, "Key Size   : %d\n", GWEN_Crypt_Token_KeyInfo_GetKeySize(ki));
+          fprintf(stdout, "Crypt Algo : %s\n",
+                  GWEN_Crypt_CryptAlgoId_toString(GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(ki)));
+          fprintf(stdout, "Key Size   : %d\n", GWEN_Crypt_Token_KeyInfo_GetKeySize(ki));
 
-	  fprintf(stdout, "Key Flags  :");
-	  flags=GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSTATUS)
-	    fprintf(stdout, " STATUS");
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS)
-	    fprintf(stdout, " MODULUS");
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)
-	    fprintf(stdout, " EXPONENT");
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
-	    fprintf(stdout, " KEYVERSION");
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
-	    fprintf(stdout, " KEYNUMBER");
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
-	    fprintf(stdout, " SIGNCOUNTER");
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS) {
-	    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN)
-	      fprintf(stdout, " SIGN");
-	    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY)
-	      fprintf(stdout, " VERIFY");
-	    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER)
-	      fprintf(stdout, " ENCIPHER");
-	    if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER)
-	      fprintf(stdout, " DECIPHER");
-	  }
-	  fprintf(stdout, "\n");
+          fprintf(stdout, "Key Flags  :");
+          flags=GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSTATUS)
+            fprintf(stdout, " STATUS");
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS)
+            fprintf(stdout, " MODULUS");
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)
+            fprintf(stdout, " EXPONENT");
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
+            fprintf(stdout, " KEYVERSION");
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
+            fprintf(stdout, " KEYNUMBER");
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
+            fprintf(stdout, " SIGNCOUNTER");
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASACTIONFLAGS) {
+            if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANSIGN)
+              fprintf(stdout, " SIGN");
+            if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANVERIFY)
+              fprintf(stdout, " VERIFY");
+            if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANENCIPHER)
+              fprintf(stdout, " ENCIPHER");
+            if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_CANDECIPHER)
+              fprintf(stdout, " DECIPHER");
+          }
+          fprintf(stdout, "\n");
 
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
-	    fprintf(stdout, "Key Number : %d\n", GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
-	    fprintf(stdout, "Key Version: %d\n", GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
-	    fprintf(stdout, "Sign Cnt   : %d\n", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) {
-	    GWEN_BUFFER *tbuf;
-	    const uint8_t *p;
-	    uint32_t len;
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER)
+            fprintf(stdout, "Key Number : %d\n", GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION)
+            fprintf(stdout, "Key Version: %d\n", GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER)
+            fprintf(stdout, "Sign Cnt   : %d\n", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) {
+            GWEN_BUFFER *tbuf;
+            const uint8_t *p;
+            uint32_t len;
             int nbits;
 
-	    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	    p=(const uint8_t*)GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-	    len=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+            tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+            p=(const uint8_t *)GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+            len=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
 
-	    nbits=len*8;
-	    while(len && *p==0) {
-	      p++;
-	      len--;
-	      nbits-=8;
-	    }
-	    if (len) {
-	      int i;
+            nbits=len*8;
+            while (len && *p==0) {
+              p++;
+              len--;
+              nbits-=8;
+            }
+            if (len) {
+              int i;
               uint8_t mask=0x80;
-	      uint8_t b=*p;
+              uint8_t b=*p;
 
-	      for (i=0; i<8; i++) {
-		if (b & mask)
-		  break;
-		nbits--;
+              for (i=0; i<8; i++) {
+                if (b & mask)
+                  break;
+                nbits--;
                 mask>>=1;
-	      }
-	    }
+              }
+            }
 
-	    fprintf(stdout, "Modulus    : (%d bits)\n", nbits);
+            fprintf(stdout, "Modulus    : (%d bits)\n", nbits);
 
-	    while(len) {
-	      uint32_t rl;
+            while (len) {
+              uint32_t rl;
 
-	      rl=(len>16)?16:len;
-	      GWEN_Text_ToHexBuffer((const char*)p, rl, tbuf, 2, ' ', 0);
-	      fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
-	      GWEN_Buffer_Reset(tbuf);
-	      p+=rl;
-	      len-=rl;
-	    }
-	    GWEN_Buffer_free(tbuf);
-	  }
+              rl=(len>16)?16:len;
+              GWEN_Text_ToHexBuffer((const char *)p, rl, tbuf, 2, ' ', 0);
+              fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
+              GWEN_Buffer_Reset(tbuf);
+              p+=rl;
+              len-=rl;
+            }
+            GWEN_Buffer_free(tbuf);
+          }
 
-	  if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT) {
-	    GWEN_BUFFER *tbuf;
-	    const char *p;
-	    uint32_t len;
+          if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT) {
+            GWEN_BUFFER *tbuf;
+            const char *p;
+            uint32_t len;
 
-	    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	    fprintf(stdout, "Exponent   : \n");
-	    p=(const char*)GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
-	    len=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-	    while(len) {
-	      uint32_t rl;
+            tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+            fprintf(stdout, "Exponent   : \n");
+            p=(const char *)GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
+            len=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
+            while (len) {
+              uint32_t rl;
 
-	      rl=(len>16)?16:len;
-	      GWEN_Text_ToHexBuffer(p, rl, tbuf, 2, ' ', 0);
-	      fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
-	      GWEN_Buffer_Reset(tbuf);
-	      p+=rl;
-	      len-=rl;
-	    }
-	    GWEN_Buffer_free(tbuf);
-	  }
+              rl=(len>16)?16:len;
+              GWEN_Text_ToHexBuffer(p, rl, tbuf, 2, ' ', 0);
+              fprintf(stdout, "   %s\n", GWEN_Buffer_GetStart(tbuf));
+              GWEN_Buffer_Reset(tbuf);
+              p+=rl;
+              len-=rl;
+            }
+            GWEN_Buffer_free(tbuf);
+          }
 
-	  shown++;
-	}
+          shown++;
+        }
       }
     }
   }

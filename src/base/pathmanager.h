@@ -356,7 +356,7 @@ int GWEN_PathManager_PathChanged(const char *destLib,
  */
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
-    const char *pathName);
+                                           const char *pathName);
 
 
 /**
@@ -401,10 +401,10 @@ int GWEN_PathManager_FindFile(const char *destLib,
  */
 GWENHYWFAR_API
 int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
-    const char *pathName,
-    const char *subFolderName,
-    GWEN_STRINGLIST *sl,
-    const char *mask);
+                                                 const char *pathName,
+                                                 const char *subFolderName,
+                                                 GWEN_STRINGLIST *sl,
+                                                 const char *mask);
 
 /*@}*/
 

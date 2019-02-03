@@ -45,9 +45,10 @@
 
 #ifdef HAVE_OPENSSL
 int getKeyDataFromTextOpenSSL(GWEN_GUI *gui,
-			      const char *password,
-			      unsigned char *buffer,
-			      unsigned int bsize) {
+                              const char *password,
+                              unsigned char *buffer,
+                              unsigned int bsize)
+{
   DES_cblock left, right;
   int i;
 
@@ -67,7 +68,8 @@ int getKeyDataFromTextOpenSSL(GWEN_GUI *gui,
 
 
 GWEN_CRYPT_TOKEN *getCryptToken(const char *ttype,
-				const char *tname) {
+                                const char *tname)
+{
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN *ct;
@@ -84,10 +86,10 @@ GWEN_CRYPT_TOKEN *getCryptToken(const char *ttype,
     DBG_ERROR(0, "Plugin not found");
 
     fprintf(stderr, "%s",
-	    I18N("The plugin could not be found.\n"
-		 "Please make sure that you have the following "
-		 "packages installed (at least on Debian/Ubuntu):\n"
-		 "- libchipcard-plugins-libgwenhywfar (for chipcards)\n"
+            I18N("The plugin could not be found.\n"
+                 "Please make sure that you have the following "
+                 "packages installed (at least on Debian/Ubuntu):\n"
+                 "- libchipcard-plugins-libgwenhywfar (for chipcards)\n"
                  "- libaqbanking-plugins-libgwenhywfar\n"));
     return NULL;
   }
@@ -104,46 +106,47 @@ GWEN_CRYPT_TOKEN *getCryptToken(const char *ttype,
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *cmd;
   int rv;
   int err;
   GWEN_GUI *gui;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "cfgfile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "C",                          /* short option */
-    "cfgfile",                    /* long option */
-    "Specify the configuration file",     /* short description */
-    "Specify the configuration file"      /* long description */
-  },
-  {
-    0, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "forcePin",                   /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "forcepin",                   /* long option */
-    "force pin entry",     /* short description */
-    "force pin entry even if the error counter is not zero"
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "cfgfile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "C",                          /* short option */
+      "cfgfile",                    /* long option */
+      "Specify the configuration file",     /* short description */
+      "Specify the configuration file"      /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "forcePin",                   /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "forcepin",                   /* long option */
+      "force pin entry",     /* short description */
+      "force pin entry even if the error counter is not zero"
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   err=GWEN_Init();
@@ -163,8 +166,8 @@ int main(int argc, char **argv) {
 #endif
 
   GWEN_Logger_Open(GCT_LOGDOMAIN, "gct-tool", 0,
-		   GWEN_LoggerType_Console,
-		   GWEN_LoggerFacility_User);
+                   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
 
   GWEN_Logger_SetLevel(GCT_LOGDOMAIN, GWEN_LoggerLevel_Warning);
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
@@ -182,10 +185,10 @@ int main(int argc, char **argv) {
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
-		     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
-		     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
-		     args,
-		     db);
+                     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
+                     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
+                     args,
+                     db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
     return -1;
@@ -213,20 +216,20 @@ int main(int argc, char **argv) {
                                   "    This command creates a crypt token"
                                   "\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  showuser:\n"
-				  "    Display user data stored on the "
-				  "token\n\n"));
+                             I18N("  showuser:\n"
+                                  "    Display user data stored on the "
+                                  "token\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  showkey:\n"
-				  "    Display key info stored on the "
-				  "token\n\n"));
+                             I18N("  showkey:\n"
+                                  "    Display key info stored on the "
+                                  "token\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  update:\n"
-				  "    Update Crypt Token to newer version (e.g. OpenHBCI key"
-				  "files)\n\n"));
+                             I18N("  update:\n"
+                                  "    Update Crypt Token to newer version (e.g. OpenHBCI key"
+                                  "files)\n\n"));
     GWEN_Buffer_AppendString(ubuf,
-			     I18N("  showpasswords:\n"
-				  "    Display passwords store in a GWEN_PASSWD_STORE file\n\n"));
+                             I18N("  showpasswords:\n"
+                                  "    Display passwords store in a GWEN_PASSWD_STORE file\n\n"));
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);

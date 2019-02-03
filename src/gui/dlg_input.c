@@ -35,7 +35,8 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
                                const char *title,
                                const char *text,
                                int minLen,
-                               int maxLen) {
+                               int maxLen)
+{
   GWEN_DIALOG *dlg;
   GWEN_DLGINPUT *xdlg;
   GWEN_BUFFER *fbuf;
@@ -52,7 +53,8 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
 
   /* setup dialog name */
   n=0;
-  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) n|=1;
+  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)
+    n|=1;
   if (
     (gflags & GWEN_GUI_FLAGS_PERMPASSWORDS) &&
     !(flags & GWEN_GUI_INPUT_FLAGS_DIRECT) &&
@@ -130,10 +132,11 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
 
 
 
-void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p)
+{
   GWEN_DLGINPUT *xdlg;
 
-  xdlg=(GWEN_DLGINPUT*) p;
+  xdlg=(GWEN_DLGINPUT *) p;
 
   if (xdlg->response) {
     memset(xdlg->response, 0, strlen(xdlg->response));
@@ -147,7 +150,8 @@ void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p) {
 
 
 
-int GWEN_DlgInput_CheckInput(GWEN_DIALOG *dlg) {
+int GWEN_DlgInput_CheckInput(GWEN_DIALOG *dlg)
+{
   GWEN_DLGINPUT *xdlg;
   const char *s1;
 
@@ -179,7 +183,8 @@ int GWEN_DlgInput_CheckInput(GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgInput_Init(GWEN_DIALOG *dlg) {
+void GWEN_DlgInput_Init(GWEN_DIALOG *dlg)
+{
   GWEN_DLGINPUT *xdlg;
   GWEN_DB_NODE *dbParams;
 
@@ -221,7 +226,8 @@ void GWEN_DlgInput_Init(GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg) {
+void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg)
+{
   GWEN_DLGINPUT *xdlg;
   GWEN_DB_NODE *dbParams;
 
@@ -270,7 +276,8 @@ void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int GWEN_DlgInput_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int GWEN_DlgInput_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);
@@ -295,7 +302,8 @@ int GWEN_DlgInput_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int GWEN_DlgInput_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int GWEN_DlgInput_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);
@@ -319,15 +327,16 @@ int GWEN_DlgInput_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender) {
+                                              GWEN_DIALOG_EVENTTYPE t,
+                                              const char *sender)
+{
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGINPUT, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     GWEN_DlgInput_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;
@@ -359,7 +368,8 @@ int GWENHYWFAR_CB GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
 
 
 
-int GWEN_DlgInput_CopyInput(GWEN_DIALOG *dlg, char *buffer, int size) {
+int GWEN_DlgInput_CopyInput(GWEN_DIALOG *dlg, char *buffer, int size)
+{
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);
@@ -383,7 +393,8 @@ int GWEN_DlgInput_CopyInput(GWEN_DIALOG *dlg, char *buffer, int size) {
 
 
 
-int GWEN_DlgInput_GetFlagAllowStore(GWEN_DIALOG *dlg) {
+int GWEN_DlgInput_GetFlagAllowStore(GWEN_DIALOG *dlg)
+{
   GWEN_DLGINPUT *xdlg;
 
   assert(dlg);

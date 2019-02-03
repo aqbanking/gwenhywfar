@@ -50,7 +50,8 @@ static char gwen_directory_posix__homedir[256];
 static int gwen_directory_posix__home_set=0;
 
 
-GWEN_DIRECTORY *GWEN_Directory_new(void) {
+GWEN_DIRECTORY *GWEN_Directory_new(void)
+{
   GWEN_DIRECTORY *d;
 
   GWEN_NEW_OBJECT(GWEN_DIRECTORY, d);
@@ -58,7 +59,8 @@ GWEN_DIRECTORY *GWEN_Directory_new(void) {
 }
 
 
-void GWEN_Directory_free(GWEN_DIRECTORY *d) {
+void GWEN_Directory_free(GWEN_DIRECTORY *d)
+{
   if (d) {
     if (d->handle)
       closedir(d->handle);
@@ -68,7 +70,8 @@ void GWEN_Directory_free(GWEN_DIRECTORY *d) {
 }
 
 
-int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n) {
+int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n)
+{
   assert(d);
 
   d->handle=opendir(n);
@@ -81,7 +84,8 @@ int GWEN_Directory_Open(GWEN_DIRECTORY *d, const char *n) {
 }
 
 
-int GWEN_Directory_Close(GWEN_DIRECTORY *d) {
+int GWEN_Directory_Close(GWEN_DIRECTORY *d)
+{
   int rv;
 
   assert(d);
@@ -93,7 +97,8 @@ int GWEN_Directory_Close(GWEN_DIRECTORY *d) {
 
 int GWEN_Directory_Read(GWEN_DIRECTORY *d,
                         char *buffer,
-                        unsigned int len) {
+                        unsigned int len)
+{
   struct dirent *de;
 
   assert(d);
@@ -107,14 +112,15 @@ int GWEN_Directory_Read(GWEN_DIRECTORY *d,
       DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
       return GWEN_ERROR_BUFFER_OVERFLOW;
     }
-    strcpy(buffer,de->d_name);
+    strcpy(buffer, de->d_name);
     return 0;
   }
   return GWEN_ERROR_NOT_FOUND;
 }
 
 
-int GWEN_Directory_Rewind(GWEN_DIRECTORY *d) {
+int GWEN_Directory_Rewind(GWEN_DIRECTORY *d)
+{
   assert(d);
   if (d->handle==0)
     return GWEN_ERROR_INVALID;
@@ -124,7 +130,8 @@ int GWEN_Directory_Rewind(GWEN_DIRECTORY *d) {
 
 
 
-int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size) {
+int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size)
+{
   if (!gwen_directory_posix__home_set) {
     struct passwd *p;
 
@@ -158,7 +165,8 @@ int GWEN_Directory_GetHomeDirectory(char *buffer, unsigned int size) {
 
 
 
-int GWEN_Directory_Create(const char *path) {
+int GWEN_Directory_Create(const char *path)
+{
 
   if (mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error on mkdir(%s): %s",
@@ -170,7 +178,8 @@ int GWEN_Directory_Create(const char *path) {
 
 
 
-int GWEN_Directory_CreatePublic(const char *path) {
+int GWEN_Directory_CreatePublic(const char *path)
+{
 
   if (mkdir(path,
             S_IRUSR | S_IWUSR | S_IXUSR
@@ -196,7 +205,8 @@ int GWEN_Directory_CreatePublic(const char *path) {
 
 
 
-int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size) {
+int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size)
+{
 #ifdef OS_DARWIN
 # ifdef ENABLE_LOCAL_INSTALL
   char binarypath[1024];
@@ -261,7 +271,7 @@ int GWEN_Directory_GetPrefixDirectory(char *buffer, unsigned int size) {
   char *exeDir;
 
   exeDir=br_find_prefix(NULL);
-  if (exeDir==(char*)NULL) {
+  if (exeDir==(char *)NULL) {
     DBG_INFO(GWEN_LOGDOMAIN,
              "Unable to determine exe folder");
     return GWEN_ERROR_GENERIC;

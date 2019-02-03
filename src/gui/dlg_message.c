@@ -36,7 +36,8 @@ GWEN_DIALOG *GWEN_DlgMessage_new(uint32_t flags,
                                  const char *text,
                                  const char *b1,
                                  const char *b2,
-                                 const char *b3) {
+                                 const char *b3)
+{
   GWEN_DIALOG *dlg;
   GWEN_DLGMSG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -112,10 +113,11 @@ GWEN_DIALOG *GWEN_DlgMessage_new(uint32_t flags,
 
 
 
-void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(void *bp, void *p)
+{
   GWEN_DLGMSG *xdlg;
 
-  xdlg=(GWEN_DLGMSG*) p;
+  xdlg=(GWEN_DLGMSG *) p;
 
   free(xdlg->title);
   free(xdlg->text);
@@ -125,7 +127,8 @@ void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(void *bp, void *p) {
 
 
 
-int GWEN_DlgMessage_GetResponse(const GWEN_DIALOG *dlg) {
+int GWEN_DlgMessage_GetResponse(const GWEN_DIALOG *dlg)
+{
   GWEN_DLGMSG *xdlg;
 
   assert(dlg);
@@ -137,7 +140,8 @@ int GWEN_DlgMessage_GetResponse(const GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg) {
+void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg)
+{
   GWEN_DLGMSG *xdlg;
   GWEN_DB_NODE *dbParams;
 
@@ -173,7 +177,8 @@ void GWEN_DlgMessage_Init(GWEN_DIALOG *dlg) {
 
 
 
-void GWEN_DlgMessage_Fini(GWEN_DIALOG *dlg) {
+void GWEN_DlgMessage_Fini(GWEN_DIALOG *dlg)
+{
   GWEN_DLGMSG *xdlg;
   GWEN_DB_NODE *dbParams;
 
@@ -208,7 +213,8 @@ void GWEN_DlgMessage_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int GWEN_DlgMessage_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int GWEN_DlgMessage_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   GWEN_DLGMSG *xdlg;
 
   assert(dlg);
@@ -235,15 +241,16 @@ int GWEN_DlgMessage_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB GWEN_DlgMessage_SignalHandler(GWEN_DIALOG *dlg,
-    GWEN_DIALOG_EVENTTYPE t,
-    const char *sender) {
+                                                GWEN_DIALOG_EVENTTYPE t,
+                                                const char *sender)
+{
   GWEN_DLGMSG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, GWEN_DLGMSG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     GWEN_DlgMessage_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

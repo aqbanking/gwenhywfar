@@ -30,7 +30,8 @@ GWEN_INHERIT(HTML_OBJECT, OBJECT_GRID);
 
 
 
-static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
+static int HtmlObject_Grid_Layout(HTML_OBJECT *o)
+{
   OBJECT_GRID *xo;
   HTML_OBJECT *c;
   int w;
@@ -60,7 +61,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
   for (i=0; i<xo->columns; i++)
     cw[i]=0;
   c=HtmlObject_Tree_GetFirstChild(o);
-  while(c) {
+  while (c) {
     int k;
 
     i=HtmlObject_GridEntry_GetColumn(c);
@@ -96,7 +97,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
         fullw[i]=0;
       /* calculate full width of every column */
       c=HtmlObject_Tree_GetFirstChild(o);
-      while(c) {
+      while (c) {
         i=HtmlObject_GridEntry_GetColumn(c);
         k=HtmlObject_GetWidth(c);
         if (k>fullw[i])
@@ -140,7 +141,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 
       /* re-layout columns */
       c=HtmlObject_Tree_GetFirstChild(o);
-      while(c) {
+      while (c) {
         i=HtmlObject_GridEntry_GetColumn(c);
         HtmlObject_SetHeight(c, -1);
         HtmlObject_SetWidth(c, cw[i]);
@@ -161,7 +162,7 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
   maxLineWidth=0;
   currentRow=0;
   c=HtmlObject_Tree_GetFirstChild(o);
-  while(c) {
+  while (c) {
     int r;
     int ch;
 
@@ -203,7 +204,8 @@ static int HtmlObject_Grid_Layout(HTML_OBJECT *o) {
 
 
 
-HTML_OBJECT *HtmlObject_Grid_new(GWEN_XML_CONTEXT *ctx) {
+HTML_OBJECT *HtmlObject_Grid_new(GWEN_XML_CONTEXT *ctx)
+{
   HTML_OBJECT *o;
   OBJECT_GRID *xo;
 
@@ -221,17 +223,19 @@ HTML_OBJECT *HtmlObject_Grid_new(GWEN_XML_CONTEXT *ctx) {
 
 
 
-void GWENHYWFAR_CB HtmlObject_Grid_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlObject_Grid_FreeData(void *bp, void *p)
+{
   OBJECT_GRID *xo;
 
-  xo=(OBJECT_GRID*) p;
+  xo=(OBJECT_GRID *) p;
 
   GWEN_FREE_OBJECT(xo);
 }
 
 
 
-int HtmlObject_Grid_GetRows(const HTML_OBJECT *o) {
+int HtmlObject_Grid_GetRows(const HTML_OBJECT *o)
+{
   OBJECT_GRID *xo;
 
   assert(o);
@@ -243,7 +247,8 @@ int HtmlObject_Grid_GetRows(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_Grid_SetRows(HTML_OBJECT *o, int i) {
+void HtmlObject_Grid_SetRows(HTML_OBJECT *o, int i)
+{
   OBJECT_GRID *xo;
 
   assert(o);
@@ -255,7 +260,8 @@ void HtmlObject_Grid_SetRows(HTML_OBJECT *o, int i) {
 
 
 
-int HtmlObject_Grid_GetColumns(const HTML_OBJECT *o) {
+int HtmlObject_Grid_GetColumns(const HTML_OBJECT *o)
+{
   OBJECT_GRID *xo;
 
   assert(o);
@@ -267,7 +273,8 @@ int HtmlObject_Grid_GetColumns(const HTML_OBJECT *o) {
 
 
 
-void HtmlObject_Grid_SetColumns(HTML_OBJECT *o, int i) {
+void HtmlObject_Grid_SetColumns(HTML_OBJECT *o, int i)
+{
   OBJECT_GRID *xo;
 
   assert(o);

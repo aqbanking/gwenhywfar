@@ -26,7 +26,8 @@ int Gtk3Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
                                         int value,
-                                        int doSignal) {
+                                        int doSignal)
+{
   GtkProgressBar *g;
   W_PROGRESSBAR *xw;
 
@@ -37,7 +38,7 @@ int Gtk3Gui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
   g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -126,7 +127,8 @@ static GWENHYWFAR_CB
 int Gtk3Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
-                                        int defaultValue) {
+                                        int defaultValue)
+{
   GtkProgressBar *g;
   W_PROGRESSBAR *xw;
 
@@ -137,7 +139,7 @@ int Gtk3Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
   g=GTK_PROGRESS_BAR(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -173,10 +175,11 @@ int Gtk3Gui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk3Gui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *value,
-    int doSignal) {
+                                         GWEN_DIALOG_PROPERTY prop,
+                                         int index,
+                                         const char *value,
+                                         int doSignal)
+{
   DBG_WARN(GWEN_LOGDOMAIN,
            "Function is not appropriate for this type of widget (%s)",
            GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
@@ -186,10 +189,11 @@ int Gtk3Gui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk3Gui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk3Gui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
+                                                 GWEN_DIALOG_PROPERTY prop,
+                                                 int index,
+                                                 const char *defaultValue)
+{
   DBG_WARN(GWEN_LOGDOMAIN,
            "Function is not appropriate for this type of widget (%s)",
            GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
@@ -198,16 +202,18 @@ const char* Gtk3Gui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void GWENHYWFAR_CB Gtk3Gui_WProgressBar_FreeData(void *bp, void *p) {
+static void GWENHYWFAR_CB Gtk3Gui_WProgressBar_FreeData(void *bp, void *p)
+{
   W_PROGRESSBAR *xw;
 
-  xw=(W_PROGRESSBAR*) p;
+  xw=(W_PROGRESSBAR *) p;
   GWEN_FREE_OBJECT(xw);
 }
 
 
 
-int Gtk3Gui_WProgressBar_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WProgressBar_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   GWEN_WIDGET *wParent;
   W_PROGRESSBAR *xw;
@@ -218,8 +224,8 @@ int Gtk3Gui_WProgressBar_Setup(GWEN_WIDGET *w) {
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   g=gtk_progress_bar_new();
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WProgressBar_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WProgressBar_GetIntProperty);

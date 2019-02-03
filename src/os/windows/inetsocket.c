@@ -53,7 +53,8 @@ static int gwen_socket_is_initialized=0;
 
 
 
-char* h_strerror(int errnum) {
+char *h_strerror(int errnum)
+{
   /* Modified new whole routine */
   static char stringWSAEINTR[] = "A blocking call was cancelled.";
   static char stringWSAEBADF[] = "WSAEBADF (10009) No description.";
@@ -127,9 +128,9 @@ char* h_strerror(int errnum) {
   /* static char stringWSAPROVIDERFAILEDINIT[] = "Unable to initialize a service provider."; */
   static char stringWSA_OPERATION_ABORTED[] = "Overlapped operation aborted.";
   static char stringDEFAULT[] = "Unknown Error";
-  char* resultString;
+  char *resultString;
 
-  switch(errnum) {
+  switch (errnum) {
   case WSAEINTR:
     /* (10004)
      * Interrupted function call.
@@ -684,12 +685,12 @@ char* h_strerror(int errnum) {
     resultString = &stringWSANO_DATA[0];
     break;
 
-    /* Multiple defined
-     *    case WSANO_ADDRESS:
-     *                     * (11004)
-     *                     * No description
-     *      resultString = &stringWSANO_ADDRESS[0];
-     *      break; */
+  /* Multiple defined
+   *    case WSANO_ADDRESS:
+   *                     * (11004)
+   *                     * No description
+   *      resultString = &stringWSANO_ADDRESS[0];
+   *      break; */
 
   case WSA_IO_PENDING:
     /* (OS dependent)
@@ -717,22 +718,22 @@ char* h_strerror(int errnum) {
     resultString = &stringWSA_INVALID_PARAMETER[0];
     break;
 
-    /* Not defined in GNU Compiler
-     *     case WSAINVALIDPROCTABLE:
-     * (OS dependent)
-     * Invalid procedure table from service provider.
-     * A service provider returned a bogus procedure table to Ws2_32.dll.
-     * (Usually caused by one or more of the function pointers being null.)
-     *       resultString = &stringWSAINVALIDPROCTABLE[0];
-     *       break; */
+  /* Not defined in GNU Compiler
+   *     case WSAINVALIDPROCTABLE:
+   * (OS dependent)
+   * Invalid procedure table from service provider.
+   * A service provider returned a bogus procedure table to Ws2_32.dll.
+   * (Usually caused by one or more of the function pointers being null.)
+   *       resultString = &stringWSAINVALIDPROCTABLE[0];
+   *       break; */
 
-    /* Not defined in GNU Compiler
-     *    case WSAINVALIDPROVIDER:
-     * (OS dependent)
-     * Invalid service provider version number.
-     * A service provider returned a version number other than 2.0.
-     *      resultString = &stringWSAINVALIDPROVIDER[0];
-     *      break; */
+  /* Not defined in GNU Compiler
+   *    case WSAINVALIDPROVIDER:
+   * (OS dependent)
+   * Invalid service provider version number.
+   * A service provider returned a version number other than 2.0.
+   *      resultString = &stringWSAINVALIDPROVIDER[0];
+   *      break; */
 
   case WSA_IO_INCOMPLETE:
     /* (OS dependent)
@@ -754,13 +755,13 @@ char* h_strerror(int errnum) {
     resultString = &stringWSA_NOT_ENOUGH_MEMORY[0];
     break;
 
-    /* Not defined in GNU Compiler
-     *    case WSAPROVIDERFAILEDINIT:
-     * (OS dependent)
-     * Unable to initialize a service provider.
-     * Either a service provider's DLL could not be loaded (LoadLibrary failed) or the provider's WSPStartup/NSPStartup function failed.
-     *      resultString = &stringWSAPROVIDERFAILEDINIT[0];
-     *      break; */
+  /* Not defined in GNU Compiler
+   *    case WSAPROVIDERFAILEDINIT:
+   * (OS dependent)
+   * Unable to initialize a service provider.
+   * Either a service provider's DLL could not be loaded (LoadLibrary failed) or the provider's WSPStartup/NSPStartup function failed.
+   *      resultString = &stringWSAPROVIDERFAILEDINIT[0];
+   *      break; */
 
 
   case WSA_OPERATION_ABORTED:
@@ -772,12 +773,13 @@ char* h_strerror(int errnum) {
     resultString = &stringDEFAULT[0];
 
   }
-  return(resultString);
+  return (resultString);
 }
 
 
 
-int GWEN_Socket_ModuleInit(void) {
+int GWEN_Socket_ModuleInit(void)
+{
   WORD wVersionRequested;
   WSADATA wsaData;
 
@@ -785,8 +787,8 @@ int GWEN_Socket_ModuleInit(void) {
     int rv;
 
     /* setup WINSOCK (request version 1.1) */
-    wVersionRequested=MAKEWORD(1,1);
-    rv=WSAStartup(wVersionRequested,&wsaData);
+    wVersionRequested=MAKEWORD(1, 1);
+    rv=WSAStartup(wVersionRequested, &wsaData);
     if (rv) {
       DBG_INFO(GWEN_LOGDOMAIN, "Error on WSAStartup");
       return rv;
@@ -805,7 +807,8 @@ int GWEN_Socket_ModuleInit(void) {
 
 
 
-int GWEN_Socket_ModuleFini(void) {
+int GWEN_Socket_ModuleFini(void)
+{
   if (gwen_socket_is_initialized) {
 
     WSACleanup();
@@ -817,7 +820,8 @@ int GWEN_Socket_ModuleFini(void) {
 
 
 
-int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp) {
+int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp)
+{
   assert(ssp);
   FD_ZERO(&(ssp->set));
   ssp->highest=0;
@@ -826,7 +830,8 @@ int GWEN_SocketSet_Clear(GWEN_SOCKETSET *ssp) {
 
 
 
-GWEN_SOCKETSET *GWEN_SocketSet_new(void) {
+GWEN_SOCKETSET *GWEN_SocketSet_new(void)
+{
   GWEN_SOCKETSET *ssp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKETSET, ssp);
@@ -836,7 +841,8 @@ GWEN_SOCKETSET *GWEN_SocketSet_new(void) {
 
 
 
-GWEN_SOCKET *GWEN_Socket_fromFile(int fd) {
+GWEN_SOCKET *GWEN_Socket_fromFile(int fd)
+{
   DBG_ERROR(GWEN_LOGDOMAIN,
             "No file sockets available for this system");
   return 0;
@@ -844,7 +850,8 @@ GWEN_SOCKET *GWEN_Socket_fromFile(int fd) {
 
 
 
-void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp) {
+void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp)
+{
   if (ssp) {
     FD_ZERO(&(ssp->set));
     GWEN_FREE_OBJECT(ssp);
@@ -854,7 +861,8 @@ void GWEN_SocketSet_free(GWEN_SOCKETSET *ssp) {
 
 
 int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
-                             const GWEN_SOCKET *sp) {
+                             const GWEN_SOCKET *sp)
+{
   assert(ssp);
   assert(sp);
   if (sp->socket==-1) {
@@ -862,7 +870,7 @@ int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
     return GWEN_ERROR_NOT_OPEN;
   }
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
-  FD_SET(sp->socket,&(ssp->set));
+  FD_SET(sp->socket, &(ssp->set));
   ssp->count++;
   return 0;
 }
@@ -870,11 +878,12 @@ int GWEN_SocketSet_AddSocket(GWEN_SOCKETSET *ssp,
 
 
 int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
-                                const GWEN_SOCKET *sp) {
+                                const GWEN_SOCKET *sp)
+{
   assert(ssp);
   assert(sp);
   ssp->highest=(ssp->highest<sp->socket)?sp->socket:ssp->highest;
-  FD_CLR(sp->socket,&(ssp->set));
+  FD_CLR(sp->socket, &(ssp->set));
   ssp->count--;
   return 0;
 }
@@ -882,15 +891,17 @@ int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
 
 
 int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
-                             const GWEN_SOCKET *sp) {
+                             const GWEN_SOCKET *sp)
+{
   assert(ssp);
   assert(sp);
-  return FD_ISSET(sp->socket,&(ssp->set));
+  return FD_ISSET(sp->socket, &(ssp->set));
 }
 
 
 
-int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp) {
+int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp)
+{
   assert(ssp);
   return ssp->count;
 }
@@ -899,7 +910,8 @@ int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp) {
 
 
 
-GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType) {
+GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType)
+{
   GWEN_SOCKET *sp;
 
   GWEN_NEW_OBJECT(GWEN_SOCKET, sp);
@@ -910,7 +922,8 @@ GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType) {
 
 
 
-void GWEN_Socket_free(GWEN_SOCKET *sp) {
+void GWEN_Socket_free(GWEN_SOCKET *sp)
+{
   if (sp) {
     GWEN_LIST_FINI(GWEN_SOCKET, sp);
     GWEN_FREE_OBJECT(sp);
@@ -919,16 +932,17 @@ void GWEN_Socket_free(GWEN_SOCKET *sp) {
 
 
 
-int GWEN_Socket_Open(GWEN_SOCKET *sp) {
+int GWEN_Socket_Open(GWEN_SOCKET *sp)
+{
   int s;
 
   assert(sp);
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
 #ifdef PF_INET
-    s=socket(PF_INET, SOCK_STREAM,0);
+    s=socket(PF_INET, SOCK_STREAM, 0);
 #else
-    s=socket(AF_INET, SOCK_STREAM,0);
+    s=socket(AF_INET, SOCK_STREAM, 0);
 #endif
     if (s==-1)
       return WSAGetLastError();
@@ -937,9 +951,9 @@ int GWEN_Socket_Open(GWEN_SOCKET *sp) {
 
   case GWEN_SocketTypeUDP:
 #ifdef PF_INET
-    s=socket(PF_INET, SOCK_DGRAM,0);
+    s=socket(PF_INET, SOCK_DGRAM, 0);
 #else
-    s=socket(AF_INET, SOCK_DGRAM,0);
+    s=socket(AF_INET, SOCK_DGRAM, 0);
 #endif
     if (s==-1)
       return WSAGetLastError();
@@ -961,7 +975,8 @@ int GWEN_Socket_Open(GWEN_SOCKET *sp) {
 
 
 int GWEN_Socket_Connect(GWEN_SOCKET *sp,
-                        const GWEN_INETADDRESS *addr) {
+                        const GWEN_INETADDRESS *addr)
+{
   assert(sp);
   if (connect(sp->socket,
               addr->address,
@@ -981,7 +996,8 @@ int GWEN_Socket_Connect(GWEN_SOCKET *sp,
 
 
 
-int GWEN_Socket_Close(GWEN_SOCKET *sp) {
+int GWEN_Socket_Close(GWEN_SOCKET *sp)
+{
   int rv;
 
   assert(sp);
@@ -998,7 +1014,8 @@ int GWEN_Socket_Close(GWEN_SOCKET *sp) {
 
 
 int GWEN_Socket_Bind(GWEN_SOCKET *sp,
-                     const GWEN_INETADDRESS *addr) {
+                     const GWEN_INETADDRESS *addr)
+{
   assert(sp);
   assert(addr);
   if (bind(sp->socket,
@@ -1010,7 +1027,8 @@ int GWEN_Socket_Bind(GWEN_SOCKET *sp,
 
 
 
-int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog) {
+int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog)
+{
   assert(sp);
   if (listen(sp->socket, backlog))
     return WSAGetLastError();
@@ -1021,7 +1039,8 @@ int GWEN_Socket_Listen(GWEN_SOCKET *sp, int backlog) {
 
 int GWEN_Socket_Accept(GWEN_SOCKET *sp,
                        GWEN_INETADDRESS **newaddr,
-                       GWEN_SOCKET **newsock) {
+                       GWEN_SOCKET **newsock)
+{
   int addrlen;
   GWEN_INETADDRESS *localAddr;
   GWEN_SOCKET *localSocket;
@@ -1031,7 +1050,7 @@ int GWEN_Socket_Accept(GWEN_SOCKET *sp,
   assert(newsock);
   assert(newaddr);
 
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
   case GWEN_SocketTypeUDP:
     af=GWEN_AddressFamilyIP;
@@ -1067,7 +1086,8 @@ int GWEN_Socket_Accept(GWEN_SOCKET *sp,
 
 
 int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
-                            GWEN_INETADDRESS **newaddr) {
+                            GWEN_INETADDRESS **newaddr)
+{
   int addrlen;
   GWEN_INETADDRESS *localAddr;
   GWEN_AddressFamily af;
@@ -1075,7 +1095,7 @@ int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
   assert(sp);
   assert(newaddr);
 
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
   case GWEN_SocketTypeUDP:
     af=GWEN_AddressFamilyIP;
@@ -1105,9 +1125,10 @@ int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
 int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
                        GWEN_SOCKETSET *ws,
                        GWEN_SOCKETSET *xs,
-                       int timeout) {
-  int h,h1,h2,h3;
-  fd_set *s1,*s2,*s3;
+                       int timeout)
+{
+  int h, h1, h2, h3;
+  fd_set *s1, *s2, *s3;
   int rv;
   struct timeval tv;
 
@@ -1130,12 +1151,12 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
   h=(h>h3)?h:h3;
   if (timeout<0)
     /* wait for ever */
-    rv=select(h+1,s1,s2,s3,0);
+    rv=select(h+1, s1, s2, s3, 0);
   else {
     /* return immediately */
     tv.tv_sec=0;
     tv.tv_usec=timeout*1000;
-    rv=select(h+1,s1,s2,s3,&tv);
+    rv=select(h+1, s1, s2, s3, &tv);
   }
   if (rv<0) {
     /* error */
@@ -1154,13 +1175,14 @@ int GWEN_Socket_Select(GWEN_SOCKETSET *rs,
 
 int GWEN_Socket_Read(GWEN_SOCKET *sp,
                      char *buffer,
-                     int *bsize) {
+                     int *bsize)
+{
   int i;
 
   assert(sp);
   assert(buffer);
   assert(bsize);
-  i=recv(sp->socket,buffer, *bsize,0);
+  i=recv(sp->socket, buffer, *bsize, 0);
   if (i<0) {
     if (WSAGetLastError()==WSAEWOULDBLOCK)
       return GWEN_ERROR_TIMEOUT;
@@ -1177,16 +1199,17 @@ int GWEN_Socket_Read(GWEN_SOCKET *sp,
 
 int GWEN_Socket_Write(GWEN_SOCKET *sp,
                       const char *buffer,
-                      int *bsize) {
+                      int *bsize)
+{
   int i;
 
   assert(sp);
   assert(buffer);
   assert(bsize);
 #ifndef MSG_NOSIGNAL
-  i=send(sp->socket,buffer, *bsize,0);
+  i=send(sp->socket, buffer, *bsize, 0);
 #else
-  i=send(sp->socket,buffer, *bsize, MSG_NOSIGNAL);
+  i=send(sp->socket, buffer, *bsize, MSG_NOSIGNAL);
 #endif
   if (i<0) {
     if (WSAGetLastError()==WSAEWOULDBLOCK)
@@ -1205,7 +1228,8 @@ int GWEN_Socket_Write(GWEN_SOCKET *sp,
 int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
                          GWEN_INETADDRESS **newaddr,
                          char *buffer,
-                         int *bsize) {
+                         int *bsize)
+{
   int addrlen;
   int i;
   GWEN_INETADDRESS *localAddr;
@@ -1216,7 +1240,7 @@ int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
   assert(buffer);
   assert(bsize);
 
-  switch(sp->type) {
+  switch (sp->type) {
   case GWEN_SocketTypeTCP:
   case GWEN_SocketTypeUDP:
     af=GWEN_AddressFamilyIP;
@@ -1257,7 +1281,8 @@ int GWEN_Socket_ReadFrom(GWEN_SOCKET *sp,
 int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
                         const GWEN_INETADDRESS *addr,
                         const char *buffer,
-                        int *bsize) {
+                        int *bsize)
+{
   int i;
 
   assert(sp);
@@ -1289,12 +1314,13 @@ int GWEN_Socket_WriteTo(GWEN_SOCKET *sp,
 
 
 int GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
-                            int b) {
+                            int b)
+{
   unsigned long fl;
 
   assert(sp);
   fl=!b;
-  if (ioctlsocket(sp->socket,FIONBIO,&fl)) {
+  if (ioctlsocket(sp->socket, FIONBIO, &fl)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error %d (%s)",
              WSAGetLastError(),
              h_strerror(WSAGetLastError()));
@@ -1306,7 +1332,8 @@ int GWEN_Socket_SetBlocking(GWEN_SOCKET *sp,
 
 
 int GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
-                             int fl) {
+                             int fl)
+{
 
   assert(sp);
   if (sp->type==GWEN_SocketTypeUnix)
@@ -1314,7 +1341,7 @@ int GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
   if (setsockopt(sp->socket,
                  SOL_SOCKET,
                  SO_BROADCAST,
-                 (const char*)&fl,
+                 (const char *)&fl,
                  sizeof(fl)))
     return WSAGetLastError();
   return 0;
@@ -1322,7 +1349,8 @@ int GWEN_Socket_SetBroadcast(GWEN_SOCKET *sp,
 
 
 
-int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl) {
+int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl)
+{
   assert(sp);
 
   /*if (sp->type==SocketTypeUnix)
@@ -1331,7 +1359,7 @@ int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl) {
   if (setsockopt(sp->socket,
                  SOL_SOCKET,
                  SO_REUSEADDR,
-                 (const char*)&fl,
+                 (const char *)&fl,
                  sizeof(fl)))
     return WSAGetLastError();
   return 0;
@@ -1339,19 +1367,20 @@ int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl) {
 
 
 
-int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp) {
+int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp)
+{
   int rv;
   int rvs;
 
   assert(sp);
   rvs=sizeof(rv);
-  if (-1==getsockopt(sp->socket,SOL_SOCKET,SO_ERROR,(char*)&rv,&rvs)) {
+  if (-1==getsockopt(sp->socket, SOL_SOCKET, SO_ERROR, (char *)&rv, &rvs)) {
     DBG_INFO(GWEN_LOGDOMAIN, "getsockopt(): %s", h_strerror(WSAGetLastError()));
     return GWEN_ERROR_IO;
   }
 
   if (rv) {
-    switch(rv) {
+    switch (rv) {
     case WSAEWOULDBLOCK:
       return GWEN_ERROR_TIMEOUT;
     case WSAEINTR:
@@ -1367,18 +1396,19 @@ int GWEN_Socket_GetSocketError(GWEN_SOCKET *sp) {
 
 
 
-int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout) {
+int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout)
+{
   int err;
   GWEN_SOCKETSET *set;
 
   set=GWEN_SocketSet_new();
 
-  err=GWEN_SocketSet_AddSocket(set,sp);
+  err=GWEN_SocketSet_AddSocket(set, sp);
   if (err) {
     GWEN_SocketSet_free(set);
     return err;
   }
-  err=GWEN_Socket_Select(set,0,0,timeout);
+  err=GWEN_Socket_Select(set, 0, 0, timeout);
   GWEN_SocketSet_free(set);
 
   return err;
@@ -1386,17 +1416,18 @@ int GWEN_Socket_WaitForRead(GWEN_SOCKET *sp, int timeout) {
 
 
 
-int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout) {
+int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout)
+{
   int err;
   GWEN_SOCKETSET *set;
 
   set=GWEN_SocketSet_new();
-  err=GWEN_SocketSet_AddSocket(set,sp);
+  err=GWEN_SocketSet_AddSocket(set, sp);
   if (err) {
     GWEN_SocketSet_free(set);
     return err;
   }
-  err=GWEN_Socket_Select(0,set,0,timeout);
+  err=GWEN_Socket_Select(0, set, 0, timeout);
   GWEN_SocketSet_free(set);
 
   return err;
@@ -1404,24 +1435,27 @@ int GWEN_Socket_WaitForWrite(GWEN_SOCKET *sp, int timeout) {
 
 
 
-GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp) {
+GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp)
+{
   assert(sp);
   return sp->type;
 }
 
 
 
-int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp) {
+int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp)
+{
   assert(sp);
   return sp->socket;
 }
 
 
 
-const char *GWEN_Socket_ErrorString(int c) {
+const char *GWEN_Socket_ErrorString(int c)
+{
   const char *s;
 
-  switch(c) {
+  switch (c) {
   case 0:
     s="Success";
     break;
@@ -1450,7 +1484,7 @@ const char *GWEN_Socket_ErrorString(int c) {
     if (c>0)
       s=h_strerror(c);
     else
-      s=(const char*)0;
+      s=(const char *)0;
   } /* switch */
   return s;
 }

@@ -70,7 +70,8 @@ GWEN_INHERIT(GWEN_DIALOG, GTK2_GUI_DIALOG)
 
 
 
-void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg) {
+void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg)
+{
   GTK2_GUI_DIALOG *xdlg;
 
   GWEN_NEW_OBJECT(GTK2_GUI_DIALOG, xdlg);
@@ -86,7 +87,8 @@ void Gtk2Gui_Dialog_Extend(GWEN_DIALOG *dlg) {
 
 
 
-void Gtk2Gui_Dialog_Unextend(GWEN_DIALOG *dlg) {
+void Gtk2Gui_Dialog_Unextend(GWEN_DIALOG *dlg)
+{
   GTK2_GUI_DIALOG *xdlg;
 
   assert(dlg);
@@ -104,10 +106,11 @@ void Gtk2Gui_Dialog_Unextend(GWEN_DIALOG *dlg) {
 
 
 
-void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p)
+{
   GTK2_GUI_DIALOG *xdlg;
 
-  xdlg=(GTK2_GUI_DIALOG*) p;
+  xdlg=(GTK2_GUI_DIALOG *) p;
 
   if (xdlg->mainWidget)
     gtk_widget_destroy(xdlg->mainWidget);
@@ -117,7 +120,8 @@ void GWENHYWFAR_CB Gtk2Gui_Dialog_FreeData(void *bp, void *p) {
 
 
 
-GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg) {
+GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg)
+{
   GTK2_GUI_DIALOG *xdlg;
 
   assert(dlg);
@@ -130,48 +134,53 @@ GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg) {
 
 
 GWENHYWFAR_CB int Gtk2Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    int value,
-    int doSignal) {
+                                                GWEN_WIDGET *w,
+                                                GWEN_DIALOG_PROPERTY prop,
+                                                int index,
+                                                int value,
+                                                int doSignal)
+{
   return GWEN_Widget_SetIntProperty(w, prop, index, value, doSignal);
 }
 
 
 
 GWENHYWFAR_CB int Gtk2Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    int defaultValue) {
+                                                GWEN_WIDGET *w,
+                                                GWEN_DIALOG_PROPERTY prop,
+                                                int index,
+                                                int defaultValue)
+{
   return GWEN_Widget_GetIntProperty(w, prop, index, defaultValue);
 }
 
 
 
 GWENHYWFAR_CB int Gtk2Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *value,
-    int doSignal) {
+                                                 GWEN_WIDGET *w,
+                                                 GWEN_DIALOG_PROPERTY prop,
+                                                 int index,
+                                                 const char *value,
+                                                 int doSignal)
+{
   return GWEN_Widget_SetCharProperty(w, prop, index, value, doSignal);
 }
 
 
 
 GWENHYWFAR_CB const char *Gtk2Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+                                                         GWEN_WIDGET *w,
+                                                         GWEN_DIALOG_PROPERTY prop,
+                                                         int index,
+                                                         const char *defaultValue)
+{
   return GWEN_Widget_GetCharProperty(w, prop, index, defaultValue);
 }
 
 
 
-int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
+int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow)
+{
   GTK2_GUI_DIALOG *xdlg;
   GWEN_WIDGET_TREE *wtree;
   GWEN_WIDGET *w;
@@ -202,17 +211,17 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
 
   gw=GTK_WINDOW(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   gtk_window_set_type_hint(GTK_WINDOW(gw), GDK_WINDOW_TYPE_HINT_DIALOG);
-  gtk_window_set_position (GTK_WINDOW (gw), GTK_WIN_POS_CENTER_ON_PARENT);
+  gtk_window_set_position(GTK_WINDOW(gw), GTK_WIN_POS_CENTER_ON_PARENT);
   /*gtk_window_set_keep_above(GTK_WINDOW(gw), TRUE);*/
   xdlg->mainWidget=GTK_WIDGET(gw);
 
   tll=gtk_window_list_toplevels();
   if (tll) {
-    GList* element;
+    GList *element;
     GtkWindow *topLevel=NULL;
 
     for (element = tll; element; element = g_list_next(element)) {
-      GtkWindow* win = GTK_WINDOW(element->data);
+      GtkWindow *win = GTK_WINDOW(element->data);
       if (gtk_window_is_active(win)) {
         topLevel=win;
         break;
@@ -235,12 +244,13 @@ int Gtk2Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow) {
 
 
 
-void Gtk2Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result) {
+void Gtk2Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result)
+{
   GTK2_GUI_DIALOG *xdlg;
   GWEN_DIALOG *parent;
 
   /* get toplevel dialog, the one which actually is the GUI dialog */
-  while( (parent=GWEN_Dialog_GetParentDialog(dlg)) )
+  while ((parent=GWEN_Dialog_GetParentDialog(dlg)))
     dlg=parent;
 
   assert(dlg);
@@ -254,8 +264,8 @@ void Gtk2Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result) {
 
 
 
-static void
-run_unmap_handler (GtkWindow *window, gpointer data) {
+static void run_unmap_handler(GtkWindow *window, gpointer data)
+{
   GWEN_DIALOG *dlg;
   GTK2_GUI_DIALOG *xdlg;
 
@@ -269,10 +279,10 @@ run_unmap_handler (GtkWindow *window, gpointer data) {
 
 
 
-static gint
-run_delete_handler(GtkWindow *window,
-                   GdkEventAny *event,
-                   gpointer data) {
+static gint run_delete_handler(GtkWindow *window,
+                               GdkEventAny *event,
+                               gpointer data)
+{
   GWEN_DIALOG *dlg;
   GTK2_GUI_DIALOG *xdlg;
 
@@ -287,8 +297,8 @@ run_delete_handler(GtkWindow *window,
 
 
 
-static void
-run_destroy_handler(GtkWindow *window, gpointer data) {
+static void run_destroy_handler(GtkWindow *window, gpointer data)
+{
   GWEN_DIALOG *dlg;
   GTK2_GUI_DIALOG *xdlg;
 
@@ -302,7 +312,8 @@ run_destroy_handler(GtkWindow *window, gpointer data) {
 
 
 
-int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
+int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd)
+{
   GTK2_GUI_DIALOG *xdlg;
   GtkWidget *g;
 
@@ -320,19 +331,19 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
   xdlg->unmap_handler =
     g_signal_connect(g,
                      "unmap",
-                     G_CALLBACK (run_unmap_handler),
+                     G_CALLBACK(run_unmap_handler),
                      dlg);
 
   xdlg->delete_handler =
     g_signal_connect(g,
                      "delete-event",
-                     G_CALLBACK (run_delete_handler),
+                     G_CALLBACK(run_delete_handler),
                      dlg);
 
   xdlg->destroy_handler =
     g_signal_connect(g,
                      "destroy",
-                     G_CALLBACK (run_destroy_handler),
+                     G_CALLBACK(run_destroy_handler),
                      dlg);
 
   xdlg->loop=g_main_loop_new(NULL, FALSE);
@@ -342,7 +353,7 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
     GMainContext *ctx;
 
     ctx=g_main_loop_get_context(xdlg->loop);
-    while(g_main_context_pending(ctx))
+    while (g_main_context_pending(ctx))
       g_main_context_iteration(ctx, FALSE);
   }
   g_main_loop_unref(xdlg->loop);
@@ -358,10 +369,11 @@ int GTK2_Gui_Dialog_Run(GWEN_DIALOG *dlg, int untilEnd) {
 
 
 
-int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
+int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w)
+{
   int rv;
 
-  switch(GWEN_Widget_GetType(w)) {
+  switch (GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeDialog:
     rv=Gtk2Gui_WDialog_Setup(w);
     break;
@@ -451,7 +463,7 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
 
     /* handle children */
     wChild=GWEN_Widget_Tree_GetFirstChild(w);
-    while(wChild) {
+    while (wChild) {
       /* recursion */
       rv=Gtk2Gui_Dialog_SetupTree(wChild);
       if (rv<0) {
@@ -468,7 +480,8 @@ int Gtk2Gui_Dialog_SetupTree(GWEN_WIDGET *w) {
 
 
 
-int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf) {
+int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf)
+{
   const char *p=0;
   const char *p2=0;
 

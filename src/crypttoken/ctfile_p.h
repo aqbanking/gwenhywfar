@@ -61,10 +61,10 @@ static int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct
                                                             uint32_t *pCount,
                                                             uint32_t gid);
 
-static const GWEN_CRYPT_TOKEN_KEYINFO* GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-                                                                                      uint32_t id,
-                                                                                      uint32_t flags,
-                                                                                      uint32_t gid);
+static const GWEN_CRYPT_TOKEN_KEYINFO *GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+    uint32_t id,
+    uint32_t flags,
+    uint32_t gid);
 
 static int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
                                                           uint32_t id,
@@ -77,9 +77,9 @@ static int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN
                                                                 uint32_t *pCount,
                                                                 uint32_t gid);
 
-static const GWEN_CRYPT_TOKEN_CONTEXT* GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
-                                                                                      uint32_t id,
-                                                                                      uint32_t gid);
+static const GWEN_CRYPT_TOKEN_CONTEXT *GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
+    uint32_t id,
+    uint32_t gid);
 
 static int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
                                                           uint32_t id,

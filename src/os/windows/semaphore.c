@@ -34,7 +34,8 @@
 
 
 
-GWEN_SEMAPHORE *GWEN_Semaphore_new(void) {
+GWEN_SEMAPHORE *GWEN_Semaphore_new(void)
+{
   GWEN_SEMAPHORE *sm;
 
   GWEN_NEW_OBJECT(GWEN_SEMAPHORE, sm);
@@ -44,7 +45,8 @@ GWEN_SEMAPHORE *GWEN_Semaphore_new(void) {
 
 
 
-void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm) {
+void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm)
+{
   if (sm) {
     CloseHandle(sm->semId);
     GWEN_FREE_OBJECT(sm);
@@ -53,14 +55,16 @@ void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm) {
 
 
 
-void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm) {
+void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm)
+{
   assert(sm);
   WaitForSingleObject(sm->semId, INFINITE);
 }
 
 
 
-void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm) {
+void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm)
+{
   assert(sm);
   ReleaseSemaphore(sm->semId, 1, NULL);
 }

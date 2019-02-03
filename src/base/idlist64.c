@@ -47,7 +47,8 @@
 /*#define GWEN_IDLIST64_COMPACT */
 
 
-GWEN_IDTABLE64 *GWEN_IdTable64_new(void) {
+GWEN_IDTABLE64 *GWEN_IdTable64_new(void)
+{
   GWEN_IDTABLE64 *idt;
 
   GWEN_NEW_OBJECT(GWEN_IDTABLE64, idt);
@@ -59,7 +60,8 @@ GWEN_IDTABLE64 *GWEN_IdTable64_new(void) {
 
 
 
-void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt) {
+void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt)
+{
   if (idt) {
     assert(idt->refCount);
     if (--(idt->refCount)==0) {
@@ -71,7 +73,8 @@ void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt) {
 
 
 #if 0
-void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt) {
+void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt)
+{
   assert(idt);
   assert(idt->refCount);
   idt->refCount++;
@@ -80,7 +83,8 @@ void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt) {
 
 
 
-static inline int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id) {
+static inline int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id)
+{
   unsigned int i;
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
@@ -95,7 +99,8 @@ static inline int GWEN_IdTable64_AddId(GWEN_IDTABLE64 *idt, uint64_t id) {
 
 
 
-static inline int GWEN_IdTable64_AppendId(GWEN_IDTABLE64 *idt, uint64_t id) {
+static inline int GWEN_IdTable64_AppendId(GWEN_IDTABLE64 *idt, uint64_t id)
+{
   if (idt->freeEntries) {
     unsigned int i;
 
@@ -110,7 +115,8 @@ static inline int GWEN_IdTable64_AppendId(GWEN_IDTABLE64 *idt, uint64_t id) {
 
 
 
-static inline int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id) {
+static inline int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id)
+{
   unsigned int i;
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
@@ -123,7 +129,8 @@ static inline int GWEN_IdTable64_HasId(const GWEN_IDTABLE64 *idt, uint64_t id) {
 
 
 
-static inline int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id) {
+static inline int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id)
+{
   unsigned int i;
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
@@ -138,25 +145,29 @@ static inline int GWEN_IdTable64_DelId(GWEN_IDTABLE64 *idt, uint64_t id) {
 
 
 
-static inline int GWEN_IdTable64_IsEmpty(const GWEN_IDTABLE64 *idt) {
+static inline int GWEN_IdTable64_IsEmpty(const GWEN_IDTABLE64 *idt)
+{
   return GWEN_IDTABLE64_MAXENTRIES==idt->freeEntries;
 }
 
 
 
-static inline int GWEN_IdTable64_IsFull(const GWEN_IDTABLE64 *idt) {
+static inline int GWEN_IdTable64_IsFull(const GWEN_IDTABLE64 *idt)
+{
   return idt->freeEntries==0;
 }
 
 
 #if 0
-static inline unsigned int GWEN_IdTable64_GetCount(const GWEN_IDTABLE64 *idt) {
+static inline unsigned int GWEN_IdTable64_GetCount(const GWEN_IDTABLE64 *idt)
+{
   return GWEN_IDTABLE64_MAXENTRIES-idt->freeEntries;
 }
 
 
 
-static inline uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt) {
+static inline uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt)
+{
   unsigned int i;
 
   assert(idt);
@@ -172,7 +183,8 @@ static inline uint64_t GWEN_IdTable64_GetFirstId(GWEN_IDTABLE64 *idt) {
 
 
 
-static inline uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt) {
+static inline uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt)
+{
   unsigned int i;
 
   for (i=idt->current+1; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
@@ -188,7 +200,8 @@ static inline uint64_t GWEN_IdTable64_GetNextId(GWEN_IDTABLE64 *idt) {
 
 
 static inline uint64_t GWEN_IdTable64_GetFirstId2(const GWEN_IDTABLE64 *idt,
-    uint64_t *tabIdx) {
+                                                  uint64_t *tabIdx)
+{
   unsigned int i;
 
   for (i=0; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
@@ -203,7 +216,8 @@ static inline uint64_t GWEN_IdTable64_GetFirstId2(const GWEN_IDTABLE64 *idt,
 
 
 static inline uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
-    uint64_t *tabIdx) {
+                                                 uint64_t *tabIdx)
+{
   unsigned int i;
 
   for (i=(*tabIdx)+1; i<GWEN_IDTABLE64_MAXENTRIES; i++) {
@@ -220,7 +234,8 @@ static inline uint64_t GWEN_IdTable64_GetNextId2(const GWEN_IDTABLE64 *idt,
 
 
 
-GWEN_IDLIST64 *GWEN_IdList64_new(void) {
+GWEN_IDLIST64 *GWEN_IdList64_new(void)
+{
   GWEN_IDLIST64 *idl;
 
   GWEN_NEW_OBJECT(GWEN_IDLIST64, idl);
@@ -230,7 +245,8 @@ GWEN_IDLIST64 *GWEN_IdList64_new(void) {
 
 
 
-void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl) {
+void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl)
+{
   assert(idl);
   assert(idl->refCount);
   idl->refCount++;
@@ -238,7 +254,8 @@ void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl) {
 
 
 
-void GWEN_IdList64_free(GWEN_IDLIST64 *idl) {
+void GWEN_IdList64_free(GWEN_IDLIST64 *idl)
+{
   if (idl) {
     assert(idl->refCount);
     if (idl->refCount==1) {
@@ -253,7 +270,8 @@ void GWEN_IdList64_free(GWEN_IDLIST64 *idl) {
 
 
 
-void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt) {
+void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt)
+{
   GWEN_IDTABLE64 **tablePtr;
   int idx;
 
@@ -271,12 +289,12 @@ void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt) {
 
     /* resize */
     newCount=idl->idTableCount+GWEN_IDLIST64_STEP;
-    newPtr=(GWEN_IDTABLE64 **)realloc(idl->pIdTablePointers, sizeof(GWEN_IDTABLE64*)*newCount);
+    newPtr=(GWEN_IDTABLE64 **)realloc(idl->pIdTablePointers, sizeof(GWEN_IDTABLE64 *)*newCount);
     assert(newPtr);
     /* init new pointers */
-    memset((void*)(newPtr+idl->idTableCount),
+    memset((void *)(newPtr+idl->idTableCount),
            0,
-           sizeof(GWEN_IDTABLE64*)*(newCount-idl->idTableCount));
+           sizeof(GWEN_IDTABLE64 *)*(newCount-idl->idTableCount));
     idl->pIdTablePointers=newPtr;
     idl->pIdTablePointers[idl->idTableCount]=idt;
     idl->lastTableIdx=idl->idTableCount;  /* this is the idx of the new table, and it is the last one */
@@ -290,7 +308,8 @@ void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt) {
 
 
 
-int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id) {
+int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id)
+{
 #ifdef GWEN_IDLIST64_COMPACT
   GWEN_IDTABLE64 *idt=NULL;
   GWEN_IDTABLE64 **tablePtr;
@@ -300,9 +319,9 @@ int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id) {
 
   if (idl->pIdTablePointers==NULL) {
     /* create an initial pointer table which can take up to GWEN_IDLIST64_STEP pointers */
-    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64 *)*GWEN_IDLIST64_STEP);
     assert(idl->pIdTablePointers);
-    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64 *)*GWEN_IDLIST64_STEP);
     idl->idTableCount=GWEN_IDLIST64_STEP;
   }
 
@@ -327,9 +346,9 @@ int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id) {
 
   if (idl->pIdTablePointers==NULL) {
     /* create an initial pointer table which can take up to GWEN_IDLIST64_STEP pointers */
-    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64 *)*GWEN_IDLIST64_STEP);
     assert(idl->pIdTablePointers);
-    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64 *)*GWEN_IDLIST64_STEP);
     idl->idTableCount=GWEN_IDLIST64_STEP;
   }
   idx=idl->lastTableIdx;
@@ -346,7 +365,8 @@ int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id) {
 
 
 
-int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id) {
+int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id)
+{
   if (idl->pIdTablePointers) {
     GWEN_IDTABLE64 *idt=NULL;
     GWEN_IDTABLE64 **tablePtr;
@@ -368,7 +388,8 @@ int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id) {
 
 
 
-int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id) {
+int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id)
+{
   if (idl->pIdTablePointers) {
     GWEN_IDTABLE64 *idt=NULL;
     GWEN_IDTABLE64 **tablePtr;
@@ -386,7 +407,8 @@ int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id) {
 
 
 
-void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl) {
+void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl)
+{
   GWEN_IDTABLE64 *idt=NULL;
   GWEN_IDTABLE64 **tablePtr;
   int idx;
@@ -402,7 +424,8 @@ void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl) {
 
 
 
-void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl) {
+void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl)
+{
   if (idl->pIdTablePointers) {
     GWEN_IDTABLE64 *idt=NULL;
     GWEN_IDTABLE64 **tablePtr;
@@ -424,9 +447,10 @@ void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl) {
 
 
 
-static int __compAscending(const void *pa, const void *pb) {
-  uint64_t a=*((const uint64_t*)pa);
-  uint64_t b=*((const uint64_t*)pb);
+static int __compAscending(const void *pa, const void *pb)
+{
+  uint64_t a=*((const uint64_t *)pa);
+  uint64_t b=*((const uint64_t *)pb);
 
   if (a<b)
     return -1;
@@ -438,9 +462,10 @@ static int __compAscending(const void *pa, const void *pb) {
 
 
 
-static int __compDescending(const void *pa, const void *pb) {
-  uint64_t a=*((const uint64_t*)pa);
-  uint64_t b=*((const uint64_t*)pb);
+static int __compDescending(const void *pa, const void *pb)
+{
+  uint64_t a=*((const uint64_t *)pa);
+  uint64_t b=*((const uint64_t *)pb);
 
   if (a<b)
     return 1;
@@ -452,7 +477,8 @@ static int __compDescending(const void *pa, const void *pb) {
 
 
 
-static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending) {
+static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending)
+{
   assert(idl);
   assert(idl->refCount);
   if (idl->pIdTablePointers && idl->entryCount) {
@@ -467,7 +493,7 @@ static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending) {
     cnt=idl->entryCount;
 
     /* move ids to a temporary list */
-    ptr=(uint64_t*)malloc(sizeof(uint64_t)*cnt);
+    ptr=(uint64_t *)malloc(sizeof(uint64_t)*cnt);
     assert(ptr);
 
     it=GWEN_IdList64_Iterator_new(idl);
@@ -502,19 +528,22 @@ static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending) {
 
 
 
-int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl) {
+int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl)
+{
   return GWEN_IdList64__Sort(idl, 1);
 }
 
 
 
-int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl) {
+int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl)
+{
   return GWEN_IdList64__Sort(idl, 0);
 }
 
 
 
-GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl) {
+GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl)
+{
   GWEN_IDLIST64 *nidl;
   int idx;
 
@@ -543,7 +572,8 @@ GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl) {
 
 
 
-uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl) {
+uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl)
+{
   assert(idl);
   assert(idl->refCount);
 
@@ -552,7 +582,8 @@ uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl) {
 
 
 
-uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos) {
+uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos)
+{
   GWEN_IDTABLE64 *idt=NULL;
   GWEN_IDTABLE64 **tablePtr;
   int idx;
@@ -581,7 +612,8 @@ uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos) {
 
 
 
-uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos) {
+uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos)
+{
   if (*pos) {
     GWEN_IDTABLE64 *idt;
     uint64_t tableNum=*pos / GWEN_IDTABLE64_MAXENTRIES;
@@ -633,35 +665,40 @@ uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos) {
 
 
 #ifndef NO_DEPRECATED_SYMBOLS
-uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl) {
+uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl)
+{
   return GWEN_IdList64__GetFirstId(idl, &(idl->nextIdx));
 }
 
 
 
-uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl) {
+uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl)
+{
   return GWEN_IdList64__GetNextId(idl, &(idl->nextIdx));
 }
 
 
 
-uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *pos) {
+uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *pos)
+{
   return GWEN_IdList64__GetFirstId(idl, pos);
 }
 
 
 
-uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *pos) {
+uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *pos)
+{
   return GWEN_IdList64__GetNextId(idl, pos);
 }
-#endif	// ifndef NO_DEPRECATED_SYMBOLS
+#endif  // ifndef NO_DEPRECATED_SYMBOLS
 
 
 
 
 
 
-GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl) {
+GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl)
+{
   GWEN_IDLIST64_ITERATOR *it;
 
   assert(idl);
@@ -675,7 +712,8 @@ GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl) {
 
 
 
-void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it) {
+void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it)
+{
   if (it) {
     GWEN_IdList64_free(it->list);
     GWEN_FREE_OBJECT(it);
@@ -684,28 +722,31 @@ void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it) {
 
 
 
-uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it) {
+uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it)
+{
   return GWEN_IdList64__GetFirstId(it->list, &(it->nextIndex));
 }
 
 
 
-uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it) {
+uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it)
+{
   return GWEN_IdList64__GetNextId(it->list, &(it->nextIndex));
 }
 
 
 
-int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id) {
+int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id)
+{
   GWEN_IDTABLE64 *idt=NULL;
 
   assert(idl);
 
   if (idl->pIdTablePointers==NULL) {
     /* create an initial pointer table which can take up to GWEN_IDLIST64_STEP pointers */
-    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    idl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64 *)*GWEN_IDLIST64_STEP);
     assert(idl->pIdTablePointers);
-    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64*)*GWEN_IDLIST64_STEP);
+    memset(idl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64 *)*GWEN_IDLIST64_STEP);
     idl->idTableCount=GWEN_IDLIST64_STEP;
   }
 
@@ -723,7 +764,8 @@ int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id) {
 
 
 
-uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t idx) {
+uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t idx)
+{
   GWEN_IDTABLE64 *idt;
   uint64_t tableNum=idx / GWEN_IDTABLE64_MAXENTRIES;
   uint64_t tableIdx=idx % GWEN_IDTABLE64_MAXENTRIES;

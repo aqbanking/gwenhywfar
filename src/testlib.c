@@ -14,7 +14,8 @@
 
 
 
-int check1() {
+int check1()
+{
   const char *testString="01234567890123456789";
   int rv;
   GWEN_BUFFER *buf1;
@@ -26,7 +27,7 @@ int check1() {
   fprintf(stderr, "Check 1 ...");
 
   buf1=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_Base64_Encode((const unsigned char*)testString,
+  rv=GWEN_Base64_Encode((const unsigned char *)testString,
                         strlen(testString),
                         buf1, 0);
   if (rv) {
@@ -35,7 +36,7 @@ int check1() {
   }
 
   buf2=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_Base64_Decode((const unsigned char*)GWEN_Buffer_GetStart(buf1), 0,
+  rv=GWEN_Base64_Decode((const unsigned char *)GWEN_Buffer_GetStart(buf1), 0,
                         buf2);
   if (rv) {
     fprintf(stderr, "FAILED: Could not decode.\n");
@@ -73,7 +74,8 @@ int check1() {
 
 
 
-int test_gui(int test_with_interaction) {
+int test_gui(int test_with_interaction)
+{
   char buffer[50];
   int rv;
   GWEN_GUI *gui = GWEN_Gui_CGui_new();
@@ -119,7 +121,8 @@ int test_gui(int test_with_interaction) {
 #ifndef MAX_PATH
 # define MAX_PATH 200
 #endif
-int check_directory() {
+int check_directory()
+{
   char tmpdir[MAX_PATH];
   GWEN_DIRECTORY *dir;
   int rv;
@@ -144,19 +147,20 @@ int check_directory() {
 
 #define ASSERT(expr) if (!(expr)) \
  { printf("FAILED assertion in " __FILE__ ": %d: " #expr "\n", \
-	  __LINE__); return -1; }
-int check_list() {
+    __LINE__); return -1; }
+int check_list()
+{
   const char *e1 = "one", *e2 = "two", *e3 = "three";
   GWEN_LIST *list;
   GWEN_LIST_ITERATOR *iter;
 
   list = GWEN_List_new();
   ASSERT(GWEN_List_GetSize(list) == 0);
-  GWEN_List_PushBack(list, (void*) e2);
+  GWEN_List_PushBack(list, (void *) e2);
   ASSERT(GWEN_List_GetSize(list) == 1);
-  GWEN_List_PushBack(list, (void*) e3);
+  GWEN_List_PushBack(list, (void *) e3);
   ASSERT(GWEN_List_GetSize(list) == 2);
-  GWEN_List_PushFront(list, (void*) e1);
+  GWEN_List_PushFront(list, (void *) e1);
   ASSERT(GWEN_List_GetSize(list) == 3);
   ASSERT(GWEN_List_GetFront(list) == e1);
   ASSERT(GWEN_List_GetBack(list) == e3);
@@ -171,7 +175,7 @@ int check_list() {
   ASSERT(GWEN_List_GetFront(list) == e1);
   ASSERT(GWEN_List_GetBack(list) == e1);
 
-  GWEN_List_PushBack(list, (void*) e2);
+  GWEN_List_PushBack(list, (void *) e2);
   ASSERT(GWEN_List_GetSize(list) == 2);
   ASSERT(GWEN_List_GetFront(list) == e1);
   ASSERT(GWEN_List_GetBack(list) == e2);
@@ -196,7 +200,8 @@ int check_list() {
   return 0;
 }
 
-int check_constlist() {
+int check_constlist()
+{
   const char *e1 = "one", *e2 = "two", *e3 = "three";
   GWEN_CONSTLIST *list;
   GWEN_CONSTLIST_ITERATOR *iter;
@@ -238,12 +243,14 @@ int check_constlist() {
   return 0;
 }
 
-void *printfunc(const char *s, void *u) {
+void *printfunc(const char *s, void *u)
+{
   const char *pathname = u;
   printf("Path %s contains: %s\n", pathname, s);
   return 0;
 }
-int print_paths() {
+int print_paths()
+{
   const char *paths[] = { GWEN_PM_SYSCONFDIR
                           , GWEN_PM_LOCALEDIR
                           , GWEN_PM_PLUGINDIR
@@ -251,19 +258,20 @@ int print_paths() {
                           , 0
                         };
   const char **p = paths;
-  for ( ; *p != 0; ++p) {
+  for (; *p != 0; ++p) {
     const char *pathname = *p;
     GWEN_STRINGLIST *sl =
       GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, pathname);
     printf("Path %s has %d elements.\n", pathname, GWEN_StringList_Count(sl));
-    GWEN_StringList_ForEach(sl, printfunc, (void*)pathname);
+    GWEN_StringList_ForEach(sl, printfunc, (void *)pathname);
   }
   return 0;
 }
 
 
 
-int check2() {
+int check2()
+{
   const char *testString="01234567890123456789";
   int rv;
   GWEN_BUFFER *buf1;
@@ -320,7 +328,8 @@ int check2() {
 }
 
 
-int test_date() {
+int test_date()
+{
   GWEN_DATE *dt1;
   GWEN_DATE *dt2;
   time_t tt;
@@ -344,7 +353,8 @@ int test_date() {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int rv;
   const char *cmd;
 

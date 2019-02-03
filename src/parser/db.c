@@ -66,27 +66,29 @@ GWEN_LIST_FUNCTIONS(GWEN_DB_NODE, GWEN_DB_Node)
 
 
 
-GWEN_DB_NODE *GWEN_DB_Node_new(GWEN_DB_NODE_TYPE t) {
+GWEN_DB_NODE *GWEN_DB_Node_new(GWEN_DB_NODE_TYPE t)
+{
   GWEN_DB_NODE *node;
 
   GWEN_NEW_OBJECT(GWEN_DB_NODE, node);
   GWEN_LIST_INIT(GWEN_DB_NODE, node);
   node->typ=t;
-  return (GWEN_DB_NODE*)node;
+  return (GWEN_DB_NODE *)node;
 }
 
 
 
 
 GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
-                                   unsigned int datasize) {
+                                   unsigned int datasize)
+{
   GWEN_DB_NODE *n;
 
   n=GWEN_DB_Node_new(GWEN_DB_NodeType_ValueBin);
   if (datasize) {
     assert(data);
     n->dataSize=datasize;
-    n->data.dataBin=(char*)GWEN_Memory_malloc(datasize);
+    n->data.dataBin=(char *)GWEN_Memory_malloc(datasize);
     assert(n->data.dataBin);
     memmove(n->data.dataBin, data, datasize);
   }
@@ -95,7 +97,8 @@ GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
 
 
 
-GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data) {
+GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data)
+{
   GWEN_DB_NODE *n;
 
   n=GWEN_DB_Node_new(GWEN_DB_NodeType_ValueInt);
@@ -105,7 +108,8 @@ GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data) {
+GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data)
+{
   GWEN_DB_NODE *n;
 
   n=GWEN_DB_Node_new(GWEN_DB_NodeType_ValueChar);
@@ -118,7 +122,8 @@ GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data) {
+GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data)
+{
   GWEN_DB_NODE *n;
 
   n=GWEN_DB_Node_new(GWEN_DB_NodeType_ValuePtr);
@@ -128,7 +133,8 @@ GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_Group_new(const char *name) {
+GWEN_DB_NODE *GWEN_DB_Group_new(const char *name)
+{
   GWEN_DB_NODE *n;
 
   assert(name);
@@ -143,7 +149,8 @@ GWEN_DB_NODE *GWEN_DB_Group_new(const char *name) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_Var_new(const char *name) {
+GWEN_DB_NODE *GWEN_DB_Var_new(const char *name)
+{
   GWEN_DB_NODE *n;
 
   assert(name);
@@ -159,7 +166,8 @@ GWEN_DB_NODE *GWEN_DB_Var_new(const char *name) {
 
 
 void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
-                                 GWEN_DB_NODE *n) {
+                                 GWEN_DB_NODE *n)
+{
   assert(parent);
   assert(n);
   assert(parent!=n);
@@ -173,7 +181,8 @@ void GWEN_DB_Node_Append_UnDirty(GWEN_DB_NODE *parent,
 
 
 void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
-                         GWEN_DB_NODE *n) {
+                         GWEN_DB_NODE *n)
+{
   GWEN_DB_Node_Append_UnDirty(parent, n);
   GWEN_DB_ModifyBranchFlagsUp(parent,
                               GWEN_DB_NODE_FLAGS_DIRTY,
@@ -183,7 +192,8 @@ void GWEN_DB_Node_Append(GWEN_DB_NODE *parent,
 
 
 void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
-                                GWEN_DB_NODE *n) {
+                                GWEN_DB_NODE *n)
+{
   assert(parent);
   assert(n);
   assert(parent!=n);
@@ -197,7 +207,8 @@ void GWEN_DB_Node_InsertUnDirty(GWEN_DB_NODE *parent,
 
 
 void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
-                         GWEN_DB_NODE *n) {
+                         GWEN_DB_NODE *n)
+{
   GWEN_DB_Node_InsertUnDirty(parent, n);
   GWEN_DB_ModifyBranchFlagsUp(parent,
                               GWEN_DB_NODE_FLAGS_DIRTY,
@@ -206,7 +217,8 @@ void GWEN_DB_Node_Insert(GWEN_DB_NODE *parent,
 
 
 
-void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n) {
+void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *parent;
 
   assert(n);
@@ -222,7 +234,8 @@ void GWEN_DB_Node_Unlink_UnDirty(GWEN_DB_NODE *n) {
 
 
 
-void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
+void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *parent;
 
   assert(n);
@@ -237,7 +250,8 @@ void GWEN_DB_Node_Unlink(GWEN_DB_NODE *n) {
 
 
 
-void GWEN_DB_Node_free(GWEN_DB_NODE *n) {
+void GWEN_DB_Node_free(GWEN_DB_NODE *n)
+{
   if (n) {
     GWEN_LIST_FINI(GWEN_DB_NODE, n);
 
@@ -247,7 +261,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n) {
 
     if (n->nodeFlags & GWEN_DB_NODE_FLAGS_SAFE) {
       /* free dynamic (allocated) data safely */
-      switch(n->typ) {
+      switch (n->typ) {
       case GWEN_DB_NodeType_Group:
       case GWEN_DB_NodeType_Var:
         if (n->data.dataName) {
@@ -284,7 +298,7 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n) {
     }
     else {
       /* free dynamic (allocated) data */
-      switch(n->typ) {
+      switch (n->typ) {
       case GWEN_DB_NodeType_Group:
       case GWEN_DB_NodeType_Var:
         GWEN_Memory_dealloc(n->data.dataName);
@@ -311,10 +325,11 @@ void GWEN_DB_Node_free(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *nn;
 
-  switch(n->typ) {
+  switch (n->typ) {
   case GWEN_DB_NodeType_Group:
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Duplicating group \"%s\"",
                 n->data.dataName);
@@ -347,7 +362,7 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n) {
     const GWEN_DB_NODE *cn;
 
     cn=GWEN_DB_Node_List_First(n->children);
-    while(cn) {
+    while (cn) {
       GWEN_DB_NODE *ncn;
 
       /* duplicate child and add it */
@@ -366,13 +381,15 @@ GWEN_DB_NODE *GWEN_DB_Node_dup(const GWEN_DB_NODE *n) {
 
 
 
-void GWEN_DB_Group_free(GWEN_DB_NODE *n) {
+void GWEN_DB_Group_free(GWEN_DB_NODE *n)
+{
   GWEN_DB_Node_free(n);
 }
 
 
 
-GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Group) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
@@ -383,7 +400,8 @@ GWEN_DB_NODE *GWEN_DB_Group_dup(const GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -393,7 +411,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n) {
   }
   assert(n->children);
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if (nn->typ==GWEN_DB_NodeType_Group)
       break;
     nn=GWEN_DB_Node_List_Next(nn);
@@ -403,14 +421,15 @@ GWEN_DB_NODE *GWEN_DB_GetFirstGroup(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Group) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
     return NULL;
   }
   n=GWEN_DB_Node_List_Next(n);
-  while(n) {
+  while (n) {
     if (n->typ==GWEN_DB_NodeType_Group)
       break;
     n=GWEN_DB_Node_List_Next(n);
@@ -420,7 +439,8 @@ GWEN_DB_NODE *GWEN_DB_GetNextGroup(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -430,7 +450,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n) {
   }
   assert(n->children);
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if (nn->typ==GWEN_DB_NodeType_Var)
       break;
     nn=GWEN_DB_Node_List_Next(nn);
@@ -440,14 +460,15 @@ GWEN_DB_NODE *GWEN_DB_GetFirstVar(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Var) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a variable");
     return NULL;
   }
   n=GWEN_DB_Node_List_Next(n);
-  while(n) {
+  while (n) {
     if (n->typ==GWEN_DB_NodeType_Var)
       break;
     n=GWEN_DB_Node_List_Next(n);
@@ -457,7 +478,8 @@ GWEN_DB_NODE *GWEN_DB_GetNextVar(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -467,7 +489,7 @@ GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n) {
   }
   assert(n->children);
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if (nn->typ>=GWEN_DB_NodeType_ValueChar &&
         nn->typ<GWEN_DB_NodeType_ValueLast) {
       break;
@@ -479,7 +501,8 @@ GWEN_DB_NODE *GWEN_DB_GetFirstValue(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ<GWEN_DB_NodeType_ValueChar ||
       n->typ>=GWEN_DB_NodeType_ValueLast) {
@@ -488,7 +511,7 @@ GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n) {
   }
 
   n=GWEN_DB_Node_List_Next(n);
-  while(n) {
+  while (n) {
     if (n->typ>=GWEN_DB_NodeType_ValueChar &&
         n->typ<GWEN_DB_NodeType_ValueLast) {
       break;
@@ -500,7 +523,8 @@ GWEN_DB_NODE *GWEN_DB_GetNextValue(GWEN_DB_NODE *n) {
 
 
 
-GWEN_DB_NODE_TYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n) {
+GWEN_DB_NODE_TYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ>=GWEN_DB_NodeType_ValueChar &&
       n->typ<GWEN_DB_NodeType_ValueLast) {
@@ -514,7 +538,8 @@ GWEN_DB_NODE_TYPE GWEN_DB_GetValueType(GWEN_DB_NODE *n) {
 
 
 
-const char *GWEN_DB_GetCharValueFromNode(const GWEN_DB_NODE *n) {
+const char *GWEN_DB_GetCharValueFromNode(const GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_ValueChar) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a char value");
@@ -525,7 +550,8 @@ const char *GWEN_DB_GetCharValueFromNode(const GWEN_DB_NODE *n) {
 
 
 
-int GWEN_DB_SetCharValueInNode(GWEN_DB_NODE *n, const char *s) {
+int GWEN_DB_SetCharValueInNode(GWEN_DB_NODE *n, const char *s)
+{
   assert(n);
   assert(s);
 
@@ -541,13 +567,14 @@ int GWEN_DB_SetCharValueInNode(GWEN_DB_NODE *n, const char *s) {
 
 
 
-int GWEN_DB_GetIntValueFromNode(const GWEN_DB_NODE *n) {
+int GWEN_DB_GetIntValueFromNode(const GWEN_DB_NODE *n)
+{
   const char *p;
   int res;
 
   assert(n);
 
-  switch(n->typ) {
+  switch (n->typ) {
   case GWEN_DB_NodeType_ValueInt:
     return n->data.dataInt;
   case GWEN_DB_NodeType_ValueChar:
@@ -568,7 +595,8 @@ int GWEN_DB_GetIntValueFromNode(const GWEN_DB_NODE *n) {
 
 
 const void *GWEN_DB_GetBinValueFromNode(const GWEN_DB_NODE *n,
-                                        unsigned int *size) {
+                                        unsigned int *size)
+{
   assert(n);
 
   if (n->typ!=GWEN_DB_NodeType_ValueBin) {
@@ -584,7 +612,8 @@ const void *GWEN_DB_GetBinValueFromNode(const GWEN_DB_NODE *n,
 
 GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
                                 const char *name,
-                                int idx) {
+                                int idx)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -598,7 +627,7 @@ GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
   /* find existing node */
   assert(n->children);
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if (nn->typ==GWEN_DB_NodeType_Group) {
       if (strcasecmp(nn->data.dataName, name)==0) {
         if (!idx)
@@ -617,7 +646,8 @@ GWEN_DB_NODE *GWEN_DB_FindGroup(GWEN_DB_NODE *n,
 
 GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
                               const char *name,
-                              int idx) {
+                              int idx)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -631,7 +661,7 @@ GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
   /* find existing node */
   assert(n->children);
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if (nn->typ==GWEN_DB_NodeType_Var) {
       if (strcasecmp(nn->data.dataName, name)==0) {
         if (!idx)
@@ -652,14 +682,15 @@ GWEN_DB_NODE *GWEN_DB_FindVar(GWEN_DB_NODE *n,
 
 
 
-void* GWEN_DB_HandlePath(const char *entry,
+void *GWEN_DB_HandlePath(const char *entry,
                          void *data,
                          int idx,
-                         uint32_t flags) {
+                         uint32_t flags)
+{
   GWEN_DB_NODE *n;
   GWEN_DB_NODE *nn;
 
-  n=(GWEN_DB_NODE*)data;
+  n=(GWEN_DB_NODE *)data;
 
   /* check whether we are allowed to simply create the node */
   if (
@@ -771,16 +802,18 @@ void* GWEN_DB_HandlePath(const char *entry,
 
 GWEN_DB_NODE *GWEN_DB_GetNode(GWEN_DB_NODE *n,
                               const char *path,
-                              uint32_t flags) {
-  return (GWEN_DB_NODE*)GWEN_Path_HandleWithIdx(path,
-         n,
-         flags,
-         GWEN_DB_HandlePath);
+                              uint32_t flags)
+{
+  return (GWEN_DB_NODE *)GWEN_Path_HandleWithIdx(path,
+                                                 n,
+                                                 flags,
+                                                 GWEN_DB_HandlePath);
 }
 
 
 
-void GWEN_DB_ClearNode(GWEN_DB_NODE *n) {
+void GWEN_DB_ClearNode(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->children)
     GWEN_DB_Node_List_Clear(n->children);
@@ -790,7 +823,8 @@ void GWEN_DB_ClearNode(GWEN_DB_NODE *n) {
 
 GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
                                const char *path,
-                               int idx) {
+                               int idx)
+{
   GWEN_DB_NODE *nn;
 
   /* find corresponding node */
@@ -808,7 +842,7 @@ GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
   /* find value */
   assert(nn->children);
   nn=GWEN_DB_Node_List_First(nn->children);
-  while(nn) {
+  while (nn) {
     if (nn->typ>=GWEN_DB_NodeType_ValueChar &&
         nn->typ<GWEN_DB_NodeType_ValueLast) {
       if (!idx)
@@ -826,7 +860,8 @@ GWEN_DB_NODE *GWEN_DB_GetValue(GWEN_DB_NODE *n,
 
 
 int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
-                      const char *path) {
+                      const char *path)
+{
   GWEN_DB_NODE *nn;
 
   /* find corresponding node */
@@ -848,7 +883,8 @@ int GWEN_DB_DeleteVar(GWEN_DB_NODE *n,
 
 
 int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
-                        const char *path) {
+                        const char *path)
+{
   GWEN_DB_NODE *nn;
 
   /* find corresponding node */
@@ -869,7 +905,8 @@ int GWEN_DB_DeleteGroup(GWEN_DB_NODE *n,
 
 
 int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
-                       const char *path) {
+                       const char *path)
+{
   assert(n);
   if (path) {
     GWEN_DB_NODE *nn;
@@ -897,7 +934,8 @@ int GWEN_DB_ClearGroup(GWEN_DB_NODE *n,
 const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
                                  const char *path,
                                  int idx,
-                                 const char *defVal) {
+                                 const char *defVal)
+{
   GWEN_DB_NODE *nn;
 
   nn=GWEN_DB_GetValue(n, path, idx);
@@ -922,7 +960,8 @@ const char *GWEN_DB_GetCharValue(GWEN_DB_NODE *n,
 int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          uint32_t flags,
                          const char *path,
-                         const char *val) {
+                         const char *val)
+{
   GWEN_DB_NODE *nn;
   GWEN_DB_NODE *nv;
 
@@ -961,7 +1000,8 @@ int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
                          const char *path,
                          const char *val,
                          int senseCase,
-                         int check) {
+                         int check)
+{
   GWEN_DB_NODE *nn;
   GWEN_DB_NODE *nv;
 
@@ -1007,7 +1047,8 @@ int GWEN_DB_AddCharValue(GWEN_DB_NODE *n,
 int GWEN_DB_RemoveCharValue(GWEN_DB_NODE *n,
                             const char *path,
                             const char *val,
-                            int senseCase) {
+                            int senseCase)
+{
   GWEN_DB_NODE *nn;
   GWEN_DB_NODE *nv;
 
@@ -1048,7 +1089,8 @@ int GWEN_DB_RemoveCharValue(GWEN_DB_NODE *n,
 int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
                         const char *path,
                         int idx,
-                        int defVal) {
+                        int defVal)
+{
   GWEN_DB_NODE *nn;
   const char *p;
   int res;
@@ -1062,7 +1104,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     return defVal;
   }
 
-  switch(nn->typ) {
+  switch (nn->typ) {
   case GWEN_DB_NodeType_ValueInt:
     return nn->data.dataInt;
   case GWEN_DB_NodeType_ValueChar:
@@ -1086,7 +1128,8 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
 int GWEN_DB_SetIntValue(GWEN_DB_NODE *n,
                         uint32_t flags,
                         const char *path,
-                        int val) {
+                        int val)
+{
   GWEN_DB_NODE *nn;
   GWEN_DB_NODE *nv;
 
@@ -1122,7 +1165,8 @@ const void *GWEN_DB_GetBinValue(GWEN_DB_NODE *n,
                                 int idx,
                                 const void *defVal,
                                 unsigned int defValSize,
-                                unsigned int *returnValueSize) {
+                                unsigned int *returnValueSize)
+{
   GWEN_DB_NODE *nn;
 
   assert(returnValueSize);
@@ -1152,7 +1196,8 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
                         uint32_t flags,
                         const char *path,
                         const void *val,
-                        unsigned int valSize) {
+                        unsigned int valSize)
+{
   GWEN_DB_NODE *nn;
   GWEN_DB_NODE *nv;
 
@@ -1187,7 +1232,8 @@ int GWEN_DB_SetBinValue(GWEN_DB_NODE *n,
 void *GWEN_DB_GetPtrValue(GWEN_DB_NODE *n,
                           const char *path,
                           int idx,
-                          void *defVal) {
+                          void *defVal)
+{
   GWEN_DB_NODE *nn;
 
   nn=GWEN_DB_GetValue(n, path, idx);
@@ -1212,7 +1258,8 @@ void *GWEN_DB_GetPtrValue(GWEN_DB_NODE *n,
 int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
                         uint32_t flags,
                         const char *path,
-                        void *val) {
+                        void *val)
+{
   GWEN_DB_NODE *nn;
   GWEN_DB_NODE *nv;
 
@@ -1259,7 +1306,8 @@ int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
 
 GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
                                uint32_t flags,
-                               const char *path) {
+                               const char *path)
+{
   GWEN_DB_NODE *nn;
 
   /* select/create node */
@@ -1283,7 +1331,8 @@ GWEN_DB_NODE *GWEN_DB_GetGroup(GWEN_DB_NODE *n,
 
 
 
-const char *GWEN_DB_GroupName(GWEN_DB_NODE *n) {
+const char *GWEN_DB_GroupName(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Group) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
@@ -1294,7 +1343,8 @@ const char *GWEN_DB_GroupName(GWEN_DB_NODE *n) {
 
 
 
-void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert) {
+void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert)
+{
   if (n) {
     int i;
 
@@ -1302,7 +1352,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert) {
       fprintf(stderr, " ");
 
     /* dump dynamic (allocated) data */
-    switch(n->typ) {
+    switch (n->typ) {
     case GWEN_DB_NodeType_Group:
       fprintf(stderr, "Group : \"%s\"\n", n->data.dataName);
       break;
@@ -1318,7 +1368,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert) {
     case GWEN_DB_NodeType_ValueBin: {
       char *buffer;
 
-      buffer=(char*)GWEN_Memory_malloc((n->dataSize*2)+1);
+      buffer=(char *)GWEN_Memory_malloc((n->dataSize*2)+1);
       assert(buffer);
       if (GWEN_Text_ToHex(n->data.dataBin, n->dataSize,
                           buffer, (n->dataSize*2)+1)==0) {
@@ -1342,7 +1392,7 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert) {
       GWEN_DB_NODE *cn;
 
       cn=GWEN_DB_Node_List_First(n->children);
-      while(cn) {
+      while (cn) {
         GWEN_DB_Dump(cn, insert+4);
         cn=GWEN_DB_Node_List_Next(cn);
       }
@@ -1355,7 +1405,8 @@ void GWEN_DB_Dump(GWEN_DB_NODE *n, int insert) {
 
 
 
-int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn) {
+int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn)
+{
   assert(n);
   assert(nn);
 
@@ -1375,7 +1426,8 @@ int GWEN_DB_AddGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn) {
 
 
 
-int GWEN_DB_InsertGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn) {
+int GWEN_DB_InsertGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn)
+{
   assert(n);
   assert(nn);
 
@@ -1395,7 +1447,8 @@ int GWEN_DB_InsertGroup(GWEN_DB_NODE *n, GWEN_DB_NODE *nn) {
 
 
 
-int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn) {
+int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn)
+{
   GWEN_DB_NODE *cpn;
 
   assert(n);
@@ -1424,7 +1477,8 @@ int GWEN_DB_AddGroupChildren(GWEN_DB_NODE *n, GWEN_DB_NODE *nn) {
 
 
 
-void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n) {
+void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Group) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a group");
@@ -1434,7 +1488,8 @@ void GWEN_DB_UnlinkGroup(GWEN_DB_NODE *n) {
 }
 
 
-int GWEN_DB_VariableExists(GWEN_DB_NODE *n, const char *path) {
+int GWEN_DB_VariableExists(GWEN_DB_NODE *n, const char *path)
+{
   GWEN_DB_NODE *nn;
 
   /* find corresponding node */
@@ -1456,14 +1511,16 @@ int GWEN_DB_VariableExists(GWEN_DB_NODE *n, const char *path) {
 
 int GWEN_DB_ValueExists(GWEN_DB_NODE *n,
                         const char *path,
-                        unsigned int i) {
+                        unsigned int i)
+{
   return (GWEN_DB_GetValue(n, path, i)!=0);
 }
 
 
 
 GWEN_DB_NODE_TYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
-    const char *p) {
+                                          const char *p)
+{
   GWEN_DB_NODE *nn;
 
   nn=GWEN_DB_FindVar(n, p, 0);
@@ -1479,8 +1536,9 @@ GWEN_DB_NODE_TYPE GWEN_DB_GetVariableType(GWEN_DB_NODE *n,
 
 
 GWEN_DB_NODE_TYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
-    const char *path,
-    unsigned int i) {
+                                             const char *path,
+                                             unsigned int i)
+{
   GWEN_DB_NODE *nn;
 
   nn=GWEN_DB_GetValue(n, path, i);
@@ -1490,7 +1548,8 @@ GWEN_DB_NODE_TYPE GWEN_DB_GetValueTypeByPath(GWEN_DB_NODE *n,
 }
 
 
-void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname) {
+void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname)
+{
   assert(n);
   assert(newname);
   assert(n->typ==GWEN_DB_NodeType_Group);
@@ -1504,21 +1563,24 @@ void GWEN_DB_GroupRename(GWEN_DB_NODE *n, const char *newname) {
 
 
 
-int GWEN_DB_IsGroup(const GWEN_DB_NODE *n) {
+int GWEN_DB_IsGroup(const GWEN_DB_NODE *n)
+{
   assert(n);
   return n->typ==GWEN_DB_NodeType_Group;
 }
 
 
 
-int GWEN_DB_IsVariable(const GWEN_DB_NODE *n) {
+int GWEN_DB_IsVariable(const GWEN_DB_NODE *n)
+{
   assert(n);
   return n->typ==GWEN_DB_NodeType_Var;
 }
 
 
 
-int GWEN_DB_IsValue(const GWEN_DB_NODE *n) {
+int GWEN_DB_IsValue(const GWEN_DB_NODE *n)
+{
   assert(n);
   return (n->typ>=GWEN_DB_NodeType_ValueChar &&
           n->typ>=GWEN_DB_NodeType_ValueLast);
@@ -1527,7 +1589,8 @@ int GWEN_DB_IsValue(const GWEN_DB_NODE *n) {
 
 
 void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
-                             void *user_data) {
+                             void *user_data)
+{
   GWEN_DB_NODE *iter;
   void *res;
 
@@ -1536,7 +1599,7 @@ void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
   iter=GWEN_DB_GetFirstGroup(node);
   res=NULL;
-  while(iter) {
+  while (iter) {
     res=(*func)(iter, user_data);
     if (res) {
       break;
@@ -1548,7 +1611,8 @@ void *GWEN_DB_Groups_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
 
 
-void *GWEN_DB_count_cb(GWEN_UNUSED GWEN_DB_NODE *node, void *user_data) {
+void *GWEN_DB_count_cb(GWEN_UNUSED GWEN_DB_NODE *node, void *user_data)
+{
   unsigned int *a = user_data;
   ++(*a);
   return NULL;
@@ -1556,7 +1620,8 @@ void *GWEN_DB_count_cb(GWEN_UNUSED GWEN_DB_NODE *node, void *user_data) {
 
 
 
-unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node) {
+unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node)
+{
   unsigned int res = 0;
   GWEN_DB_Groups_Foreach((GWEN_DB_NODE *)node, GWEN_DB_count_cb, &res);
   return res;
@@ -1565,7 +1630,8 @@ unsigned int GWEN_DB_Groups_Count(const GWEN_DB_NODE *node) {
 
 
 void *GWEN_DB_Variables_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
-                                void *user_data) {
+                                void *user_data)
+{
   GWEN_DB_NODE *iter;
   void *res;
 
@@ -1574,7 +1640,7 @@ void *GWEN_DB_Variables_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
   iter=GWEN_DB_GetFirstVar(node);
   res=NULL;
-  while(iter) {
+  while (iter) {
     res=(*func)(iter, user_data);
     if (res) {
       break;
@@ -1586,7 +1652,8 @@ void *GWEN_DB_Variables_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
 
 
-unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node) {
+unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node)
+{
   unsigned int res = 0;
   GWEN_DB_Variables_Foreach((GWEN_DB_NODE *)node, GWEN_DB_count_cb, &res);
   return res;
@@ -1595,7 +1662,8 @@ unsigned int GWEN_DB_Variables_Count(const GWEN_DB_NODE *node) {
 
 
 void *GWEN_DB_Values_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
-                             void *user_data) {
+                             void *user_data)
+{
   GWEN_DB_NODE *iter;
   void *res;
 
@@ -1604,7 +1672,7 @@ void *GWEN_DB_Values_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
   iter=GWEN_DB_GetFirstValue(node);
   res=NULL;
-  while(iter) {
+  while (iter) {
     res=(*func)(iter, user_data);
     if (res) {
       break;
@@ -1616,7 +1684,8 @@ void *GWEN_DB_Values_Foreach(GWEN_DB_NODE *node, GWEN_DB_NODES_CB func,
 
 
 
-unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node) {
+unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node)
+{
   unsigned int res = 0;
   GWEN_DB_Values_Foreach((GWEN_DB_NODE *)node, GWEN_DB_count_cb, &res);
   return res;
@@ -1624,7 +1693,8 @@ unsigned int GWEN_DB_Values_Count(const GWEN_DB_NODE *node) {
 
 
 
-uint32_t GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n) {
+uint32_t GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n)
+{
   assert(n);
   return n->nodeFlags;
 }
@@ -1632,7 +1702,8 @@ uint32_t GWEN_DB_GetNodeFlags(const GWEN_DB_NODE *n) {
 
 
 void GWEN_DB_SetNodeFlags(GWEN_DB_NODE *n,
-                          uint32_t flags) {
+                          uint32_t flags)
+{
   assert(n);
   n->nodeFlags=flags;
 }
@@ -1641,12 +1712,13 @@ void GWEN_DB_SetNodeFlags(GWEN_DB_NODE *n,
 
 void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
                                  uint32_t newflags,
-                                 uint32_t mask) {
+                                 uint32_t mask)
+{
   uint32_t flags;
 
   assert(n);
 
-  while(n) {
+  while (n) {
     flags=n->nodeFlags;
     flags=((flags^newflags)&(mask))^flags;
     n->nodeFlags=flags;
@@ -1658,7 +1730,8 @@ void GWEN_DB_ModifyBranchFlagsUp(GWEN_DB_NODE *n,
 
 void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
                                    uint32_t newflags,
-                                   uint32_t mask) {
+                                   uint32_t mask)
+{
   uint32_t flags;
   GWEN_DB_NODE *cn;
 
@@ -1669,7 +1742,7 @@ void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
   n->nodeFlags=flags;
 
   cn=GWEN_DB_Node_List_First(n->children);
-  while(cn) {
+  while (cn) {
     GWEN_DB_ModifyBranchFlagsDown(cn, newflags, mask);
     cn=GWEN_DB_Node_List_Next(cn);
   } /* while cn */
@@ -1677,19 +1750,21 @@ void GWEN_DB_ModifyBranchFlagsDown(GWEN_DB_NODE *n,
 
 
 
-GWEN_DB_NODE *GWEN_DB_GetParentGroup(GWEN_DB_NODE *n) {
+GWEN_DB_NODE *GWEN_DB_GetParentGroup(GWEN_DB_NODE *n)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
   nn=n->parent;
-  while(nn && nn->typ!=GWEN_DB_NodeType_Group)
+  while (nn && nn->typ!=GWEN_DB_NodeType_Group)
     nn=nn->parent;
   return nn;
 }
 
 
 
-GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name) {
+GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -1698,7 +1773,7 @@ GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name) {
     return NULL;
   }
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if ((nn->typ==GWEN_DB_NodeType_Group) &&
         (-1!=GWEN_Text_ComparePattern(nn->data.dataName, name, 0)))
       break;
@@ -1709,7 +1784,8 @@ GWEN_DB_NODE *GWEN_DB_FindFirstGroup(GWEN_DB_NODE *n, const char *name) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name) {
+GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name)
+{
   GWEN_DB_NODE *og;
 
   og=n;
@@ -1719,7 +1795,7 @@ GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name) {
     return NULL;
   }
   n=GWEN_DB_GetNextGroup(n);
-  while(n) {
+  while (n) {
     if (-1!=GWEN_Text_ComparePattern(n->data.dataName, name, 0))
       break;
     n=GWEN_DB_GetNextGroup(n);
@@ -1730,7 +1806,8 @@ GWEN_DB_NODE *GWEN_DB_FindNextGroup(GWEN_DB_NODE *n, const char *name) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_FindFirstVar(GWEN_DB_NODE *n, const char *name) {
+GWEN_DB_NODE *GWEN_DB_FindFirstVar(GWEN_DB_NODE *n, const char *name)
+{
   GWEN_DB_NODE *nn;
 
   assert(n);
@@ -1740,7 +1817,7 @@ GWEN_DB_NODE *GWEN_DB_FindFirstVar(GWEN_DB_NODE *n, const char *name) {
   }
 
   nn=GWEN_DB_Node_List_First(n->children);
-  while(nn) {
+  while (nn) {
     if ((nn->typ==GWEN_DB_NodeType_Var) &&
         (-1!=GWEN_Text_ComparePattern(nn->data.dataName, name, 0)))
       break;
@@ -1752,7 +1829,8 @@ GWEN_DB_NODE *GWEN_DB_FindFirstVar(GWEN_DB_NODE *n, const char *name) {
 
 
 
-GWEN_DB_NODE *GWEN_DB_FindNextVar(GWEN_DB_NODE *n, const char *name) {
+GWEN_DB_NODE *GWEN_DB_FindNextVar(GWEN_DB_NODE *n, const char *name)
+{
   GWEN_DB_NODE *og;
 
   og=n;
@@ -1762,7 +1840,7 @@ GWEN_DB_NODE *GWEN_DB_FindNextVar(GWEN_DB_NODE *n, const char *name) {
     return NULL;
   }
   n=GWEN_DB_GetNextVar(n);
-  while(n) {
+  while (n) {
     if (-1!=GWEN_Text_ComparePattern(n->data.dataName, name, 0))
       break;
     n=GWEN_DB_GetNextVar(n);
@@ -1773,7 +1851,8 @@ GWEN_DB_NODE *GWEN_DB_FindNextVar(GWEN_DB_NODE *n, const char *name) {
 
 
 
-const char *GWEN_DB_VariableName(GWEN_DB_NODE *n) {
+const char *GWEN_DB_VariableName(GWEN_DB_NODE *n)
+{
   assert(n);
   if (n->typ!=GWEN_DB_NodeType_Var) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Node is not a variable");
@@ -1784,7 +1863,8 @@ const char *GWEN_DB_VariableName(GWEN_DB_NODE *n) {
 
 
 
-void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname) {
+void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname)
+{
   assert(n);
   assert(newname);
   assert(n->typ==GWEN_DB_NodeType_Var);
@@ -1796,118 +1876,119 @@ void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname) {
 
 
 
-int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf) {
+int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
+{
   const char *p;
 
   p=s;
-  while(*p) {
+  while (*p) {
     if (*p=='$') {
       p++;
       if (*p=='$')
-	GWEN_Buffer_AppendByte(dbuf, '$');
+        GWEN_Buffer_AppendByte(dbuf, '$');
       else if (*p=='(') {
-	const char *pStart;
+        const char *pStart;
 
-	p++;
-	pStart=p;
-	while(*p && *p!=')')
-	  p++;
-	if (*p!=')') {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	else {
+        p++;
+        pStart=p;
+        while (*p && *p!=')')
+          p++;
+        if (*p!=')') {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
+          return GWEN_ERROR_BAD_DATA;
+        }
+        else {
           int len;
-	  char *name;
-	  const char *valueString;
-	  int valueInt;
-	  char numbuf[32];
-	  int rv;
+          char *name;
+          const char *valueString;
+          int valueInt;
+          char numbuf[32];
+          int rv;
 
-	  len=p-pStart;
-	  if (len<1) {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-	  name=(char*) malloc(len+1);
-	  assert(name);
-	  memmove(name, pStart, len);
+          len=p-pStart;
+          if (len<1) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+            return GWEN_ERROR_BAD_DATA;
+          }
+          name=(char *) malloc(len+1);
+          assert(name);
+          memmove(name, pStart, len);
           name[len]=0;
 
-	  switch(GWEN_DB_GetVariableType(db, name)) {
-	  case GWEN_DB_NodeType_ValueInt:
-	    valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
-	    rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
-	    if (rv>=0)
-	      GWEN_Buffer_AppendString(dbuf, numbuf);
-	    break;
-	  case GWEN_DB_NodeType_ValueChar:
-	    valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
-	    if (valueString)
-	      GWEN_Buffer_AppendString(dbuf, valueString);
+          switch (GWEN_DB_GetVariableType(db, name)) {
+          case GWEN_DB_NodeType_ValueInt:
+            valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
+            rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
+            if (rv>=0)
+              GWEN_Buffer_AppendString(dbuf, numbuf);
+            break;
+          case GWEN_DB_NodeType_ValueChar:
+            valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
+            if (valueString)
+              GWEN_Buffer_AppendString(dbuf, valueString);
 #if 0 /* just replace with empty value */
-	    else {
-	      GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
-	      GWEN_Buffer_AppendString(dbuf, name);
-	      GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
-	    }
+            else {
+              GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
+              GWEN_Buffer_AppendString(dbuf, name);
+              GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
+            }
 #endif
-	    break;
+            break;
 
-	  default:
-	    break;
-	  }
-	  free(name);
-	}
+          default:
+            break;
+          }
+          free(name);
+        }
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
         return GWEN_ERROR_BAD_DATA;
       }
       p++;
     }
     else {
       if (*p=='#') {
-	/* let # lines begin on a new line */
-	GWEN_Buffer_AppendByte(dbuf, '\n');
-	GWEN_Buffer_AppendByte(dbuf, *p);
+        /* let # lines begin on a new line */
+        GWEN_Buffer_AppendByte(dbuf, '\n');
+        GWEN_Buffer_AppendByte(dbuf, *p);
 
-	/* skip introducing cross and copy all stuff until the next cross
-	 * upon which wa inject a newline (to make the preprocessor happy)
-	 */
-	p++;
-	while(*p && *p!='#') {
-	  GWEN_Buffer_AppendByte(dbuf, *p);
-	  p++;
-	}
-	if (*p=='#') {
-	  GWEN_Buffer_AppendByte(dbuf, '\n');
-	  p++;
-	}
+        /* skip introducing cross and copy all stuff until the next cross
+         * upon which wa inject a newline (to make the preprocessor happy)
+         */
+        p++;
+        while (*p && *p!='#') {
+          GWEN_Buffer_AppendByte(dbuf, *p);
+          p++;
+        }
+        if (*p=='#') {
+          GWEN_Buffer_AppendByte(dbuf, '\n');
+          p++;
+        }
       }
       else if (*p=='\\') {
-	/* check for recognized control escapes */
-	if (tolower(p[1])=='n') {
-	  GWEN_Buffer_AppendByte(dbuf, '\n');
-	  p+=2; /* skip introducing backslash and control character */
-	}
-	else if (tolower(p[1])=='t') {
-	  GWEN_Buffer_AppendByte(dbuf, '\t');
-	  p+=2; /* skip introducing backslash and control character */
-	}
-	else if (tolower(p[1])=='\\') {
-	  GWEN_Buffer_AppendByte(dbuf, '\\');
-	  p+=2; /* skip introducing backslash and control character */
-	}
-	else {
-	  /* no known escape character, just add literally */
-	  GWEN_Buffer_AppendByte(dbuf, *p);
-	  p++;
-	}
+        /* check for recognized control escapes */
+        if (tolower(p[1])=='n') {
+          GWEN_Buffer_AppendByte(dbuf, '\n');
+          p+=2; /* skip introducing backslash and control character */
+        }
+        else if (tolower(p[1])=='t') {
+          GWEN_Buffer_AppendByte(dbuf, '\t');
+          p+=2; /* skip introducing backslash and control character */
+        }
+        else if (tolower(p[1])=='\\') {
+          GWEN_Buffer_AppendByte(dbuf, '\\');
+          p+=2; /* skip introducing backslash and control character */
+        }
+        else {
+          /* no known escape character, just add literally */
+          GWEN_Buffer_AppendByte(dbuf, *p);
+          p++;
+        }
       }
       else {
-	GWEN_Buffer_AppendByte(dbuf, *p);
-	p++;
+        GWEN_Buffer_AppendByte(dbuf, *p);
+        p++;
       }
     }
   }

@@ -35,7 +35,8 @@
 
 HTML_GROUP *HtmlGroup_Box_new(const char *groupName,
                               HTML_GROUP *parent,
-                              GWEN_XML_CONTEXT *ctx) {
+                              GWEN_XML_CONTEXT *ctx)
+{
   HTML_GROUP *g;
 
   /* create base group */
@@ -51,7 +52,8 @@ HTML_GROUP *HtmlGroup_Box_new(const char *groupName,
 
 
 
-int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
+int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName)
+{
   HTML_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
   GWEN_DB_NODE *dbAttribs;
@@ -429,7 +431,8 @@ int HtmlGroup_Box_StartTag(HTML_GROUP *g, const char *tagName) {
 
 
 
-int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data) {
+int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data)
+{
   GWEN_XML_CONTEXT *ctx;
   GWEN_BUFFER *buf;
   int rv;
@@ -448,23 +451,23 @@ int HtmlGroup_Box_AddData(HTML_GROUP *g, const char *data) {
       return rv;
     }
     if (GWEN_Buffer_GetUsedBytes(buf)) {
-      s=(uint8_t*)GWEN_Buffer_GetStart(buf);
+      s=(uint8_t *)GWEN_Buffer_GetStart(buf);
 
-      while(*s) {
+      while (*s) {
         uint8_t *t;
         uint8_t c;
 
         /* find begin of word */
-        while(*s && isspace(*s))
+        while (*s && isspace(*s))
           s++;
 
         /* find end of word */
         t=s;
-        while(*t && !isspace(*t))
+        while (*t && !isspace(*t))
           t++;
         c=*t;
         *t=0;
-        o=HtmlObject_Word_new(ctx, (const char*) s);
+        o=HtmlObject_Word_new(ctx, (const char *) s);
         HtmlObject_SetProperties(o, HtmlGroup_GetProperties(g));
         HtmlObject_Tree_AddChild(HtmlGroup_GetObject(g), o);
         *t=c;

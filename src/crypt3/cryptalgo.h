@@ -76,7 +76,7 @@ GWENHYWFAR_API const char *GWEN_Crypt_CryptMode_toString(GWEN_CRYPT_CRYPTMODE m)
 
 
 GWENHYWFAR_API GWEN_CRYPT_CRYPTALGO *GWEN_Crypt_CryptAlgo_new(GWEN_CRYPT_CRYPTALGOID id,
-    GWEN_CRYPT_CRYPTMODE m);
+                                                              GWEN_CRYPT_CRYPTMODE m);
 GWENHYWFAR_API GWEN_CRYPT_CRYPTALGO *GWEN_Crypt_CryptAlgo_dup(const GWEN_CRYPT_CRYPTALGO *a);
 GWENHYWFAR_API GWEN_CRYPT_CRYPTALGO *GWEN_Crypt_CryptAlgo_fromDb(GWEN_DB_NODE *db);
 GWENHYWFAR_API int GWEN_Crypt_CryptAlgo_toDb(const GWEN_CRYPT_CRYPTALGO *a, GWEN_DB_NODE *db);
@@ -88,8 +88,8 @@ GWENHYWFAR_API GWEN_CRYPT_CRYPTMODE GWEN_Crypt_CryptAlgo_GetMode(const GWEN_CRYP
 GWENHYWFAR_API uint8_t *GWEN_Crypt_CryptAlgo_GetInitVectorPtr(const GWEN_CRYPT_CRYPTALGO *a);
 GWENHYWFAR_API uint32_t GWEN_Crypt_CryptAlgo_GetInitVectorLen(const GWEN_CRYPT_CRYPTALGO *a);
 GWENHYWFAR_API int GWEN_Crypt_CryptAlgo_SetInitVector(GWEN_CRYPT_CRYPTALGO *a,
-    const uint8_t *pv,
-    uint32_t lv);
+                                                      const uint8_t *pv,
+                                                      uint32_t lv);
 
 
 GWENHYWFAR_API int GWEN_Crypt_CryptAlgo_GetChunkSize(const GWEN_CRYPT_CRYPTALGO *a);

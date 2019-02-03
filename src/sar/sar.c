@@ -47,7 +47,8 @@
 
 
 
-GWEN_SAR *GWEN_Sar_new(void) {
+GWEN_SAR *GWEN_Sar_new(void)
+{
   GWEN_SAR *sr;
 
   GWEN_NEW_OBJECT(GWEN_SAR, sr);
@@ -60,7 +61,8 @@ GWEN_SAR *GWEN_Sar_new(void) {
 
 
 
-void GWEN_Sar_Attach(GWEN_SAR *sr) {
+void GWEN_Sar_Attach(GWEN_SAR *sr)
+{
   assert(sr);
   assert(sr->refCount);
   sr->refCount++;
@@ -68,7 +70,8 @@ void GWEN_Sar_Attach(GWEN_SAR *sr) {
 
 
 
-void GWEN_Sar_free(GWEN_SAR *sr) {
+void GWEN_Sar_free(GWEN_SAR *sr)
+{
   if (sr) {
     assert(sr->refCount);
     if (sr->refCount==1) {
@@ -86,7 +89,8 @@ void GWEN_Sar_free(GWEN_SAR *sr) {
 
 
 
-int GWEN_Sar_CreateArchive(GWEN_SAR *sr, const char *aname) {
+int GWEN_Sar_CreateArchive(GWEN_SAR *sr, const char *aname)
+{
   GWEN_SYNCIO *sio;
   int rv;
 
@@ -129,7 +133,8 @@ int GWEN_Sar_CreateArchive(GWEN_SAR *sr, const char *aname) {
 
 int GWEN_Sar_OpenArchive(GWEN_SAR *sr, const char *aname,
                          GWEN_SYNCIO_FILE_CREATIONMODE cm,
-                         uint32_t acc) {
+                         uint32_t acc)
+{
   GWEN_SYNCIO *sio;
   int rv;
 
@@ -173,7 +178,8 @@ int GWEN_Sar_OpenArchive(GWEN_SAR *sr, const char *aname,
 
 
 
-int GWEN_Sar_CloseArchive(GWEN_SAR *sr, int abandon) {
+int GWEN_Sar_CloseArchive(GWEN_SAR *sr, int abandon)
+{
   int rv;
 
   assert(sr);
@@ -222,7 +228,8 @@ int GWEN_Sar_CloseArchive(GWEN_SAR *sr, int abandon) {
 
 
 
-int GWEN_Sar_FileHeaderToTlv(const GWEN_SAR_FILEHEADER *fh, GWEN_BUFFER *tbuf) {
+int GWEN_Sar_FileHeaderToTlv(const GWEN_SAR_FILEHEADER *fh, GWEN_BUFFER *tbuf)
+{
   const char *s;
   uint16_t v8;
   uint32_t v32;
@@ -335,10 +342,11 @@ int GWEN_Sar_FileHeaderToTlv(const GWEN_SAR_FILEHEADER *fh, GWEN_BUFFER *tbuf) {
 
 
 
-uint64_t GWEN_Sar_ReadUint64(const uint8_t *p, uint32_t bs) {
+uint64_t GWEN_Sar_ReadUint64(const uint8_t *p, uint32_t bs)
+{
   uint64_t v=0;
 
-  switch(bs) {
+  switch (bs) {
   case 8:
     v=(((uint64_t)(p[0]))<<56)+
       (((uint64_t)(p[1]))<<48)+
@@ -402,8 +410,9 @@ uint64_t GWEN_Sar_ReadUint64(const uint8_t *p, uint32_t bs) {
 
 
 
-int GWEN_Sar_TlvToFileHeader(GWEN_BUFFER *mbuf, GWEN_SAR_FILEHEADER *fh) {
-  while(GWEN_Buffer_GetBytesLeft(mbuf)) {
+int GWEN_Sar_TlvToFileHeader(GWEN_BUFFER *mbuf, GWEN_SAR_FILEHEADER *fh)
+{
+  while (GWEN_Buffer_GetBytesLeft(mbuf)) {
     GWEN_TLV *tlv;
 
     tlv=GWEN_TLV_fromBuffer(mbuf, 1);
@@ -415,10 +424,10 @@ int GWEN_Sar_TlvToFileHeader(GWEN_BUFFER *mbuf, GWEN_SAR_FILEHEADER *fh) {
 
       p=GWEN_TLV_GetTagData(tlv);
       bs=GWEN_TLV_GetTagLength(tlv);
-      switch(GWEN_TLV_GetTagType(tlv)) {
+      switch (GWEN_TLV_GetTagType(tlv)) {
       case GWEN_SAR_TAG_HEADER_VERSION:
         v=GWEN_Sar_ReadUint64(p, bs);
-        DBG_DEBUG(GWEN_LOGDOMAIN, "File Header Version: %08x", (unsigned int) (v & 0xffffffff));
+        DBG_DEBUG(GWEN_LOGDOMAIN, "File Header Version: %08x", (unsigned int)(v & 0xffffffff));
         break;
 
       case GWEN_SAR_TAG_HEADER_STATUS:
@@ -432,7 +441,7 @@ int GWEN_Sar_TlvToFileHeader(GWEN_BUFFER *mbuf, GWEN_SAR_FILEHEADER *fh) {
         break;
 
       case GWEN_SAR_TAG_HEADER_PATH:
-        GWEN_SarFileHeader_SetPath(fh, (const char*)p);
+        GWEN_SarFileHeader_SetPath(fh, (const char *)p);
         break;
 
       case GWEN_SAR_TAG_HEADER_TYPE:
@@ -446,17 +455,17 @@ int GWEN_Sar_TlvToFileHeader(GWEN_BUFFER *mbuf, GWEN_SAR_FILEHEADER *fh) {
         break;
 
       case GWEN_SAR_TAG_HEADER_ATIME:
-        ti=GWEN_Time_fromUtcString((const char*) p, "YYYYMMDDhhmmss");
+        ti=GWEN_Time_fromUtcString((const char *) p, "YYYYMMDDhhmmss");
         GWEN_SarFileHeader_SetAtime(fh, ti);
         break;
 
       case GWEN_SAR_TAG_HEADER_MTIME:
-        ti=GWEN_Time_fromUtcString((const char*) p, "YYYYMMDDhhmmss");
+        ti=GWEN_Time_fromUtcString((const char *) p, "YYYYMMDDhhmmss");
         GWEN_SarFileHeader_SetMtime(fh, ti);
         break;
 
       case GWEN_SAR_TAG_HEADER_CTIME:
-        ti=GWEN_Time_fromUtcString((const char*) p, "YYYYMMDDhhmmss");
+        ti=GWEN_Time_fromUtcString((const char *) p, "YYYYMMDDhhmmss");
         GWEN_SarFileHeader_SetCtime(fh, ti);
         break;
 
@@ -480,7 +489,8 @@ int GWEN_Sar_TlvToFileHeader(GWEN_BUFFER *mbuf, GWEN_SAR_FILEHEADER *fh) {
 
 
 
-int GWEN_Sar_AddAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md) {
+int GWEN_Sar_AddAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md)
+{
   int rv;
   const char *fname;
   uint64_t fsize;
@@ -505,7 +515,7 @@ int GWEN_Sar_AddAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GW
 
   /* write TLV header */
   rv=GWEN_SyncIo_WriteForced(sr->archiveSio,
-                             (const uint8_t*) GWEN_Buffer_GetStart(hbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(hbuf),
                              GWEN_Buffer_GetUsedBytes(hbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -539,7 +549,7 @@ int GWEN_Sar_AddAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GW
                                fsize,
                                0);
     bytesDone=0;
-    while(fsize) {
+    while (fsize) {
       uint8_t fbuf[10240];
       uint64_t bs;
 
@@ -613,7 +623,8 @@ int GWEN_Sar_AddAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GW
 
 
 
-int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md) {
+int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md)
+{
 #if ((_BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L) && !defined(__MINGW32__)) || defined(OS_DARWIN)
 
   int rv;
@@ -647,7 +658,7 @@ int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, G
 
   /* write TLV */
   rv=GWEN_SyncIo_WriteForced(sr->archiveSio,
-                             (const uint8_t*) GWEN_Buffer_GetStart(hbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(hbuf),
                              GWEN_Buffer_GetUsedBytes(hbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -657,7 +668,7 @@ int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, G
   GWEN_Buffer_free(hbuf);
 
   /* digest data */
-  rv=GWEN_MDigest_Update(md, (const uint8_t*) lbuf, len+1);
+  rv=GWEN_MDigest_Update(md, (const uint8_t *) lbuf, len+1);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -673,10 +684,11 @@ int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, G
 
 
 
-int GWEN_Sar_AddAndDigestFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md) {
+int GWEN_Sar_AddAndDigestFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_MDIGEST *md)
+{
   int rv;
 
-  switch(GWEN_SarFileHeader_GetFileType(fh)) {
+  switch (GWEN_SarFileHeader_GetFileType(fh)) {
   case GWEN_SarFileHeader_FType_File:
     rv=GWEN_Sar_AddAndDigestFileReg(sr, fh, md);
     break;
@@ -701,7 +713,8 @@ int GWEN_Sar_AddAndDigestFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, GWEN_
 
 
 
-int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
+int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname)
+{
   struct stat st;
   int rv;
   GWEN_SAR_FILEHEADER *fh;
@@ -733,7 +746,7 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
   GWEN_SarFileHeader_SetPath(fh, fname);
 
   /* file type */
-  switch(st.st_mode & S_IFMT) {
+  switch (st.st_mode & S_IFMT) {
 #ifdef S_IFLNK
   case S_IFLNK:
     GWEN_SarFileHeader_SetFileType(fh, GWEN_SarFileHeader_FType_SymLink);
@@ -751,28 +764,37 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
   }
 
   /* permissions */
-  if (st.st_mode & S_IRUSR) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_UREAD);
-  if (st.st_mode & S_IWUSR) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_UWRITE);
-  if (st.st_mode & S_IXUSR) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_UEXEC);
+  if (st.st_mode & S_IRUSR)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_UREAD);
+  if (st.st_mode & S_IWUSR)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_UWRITE);
+  if (st.st_mode & S_IXUSR)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_UEXEC);
 
 #ifdef S_IRGRP
-  if (st.st_mode & S_IRGRP) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_GREAD);
+  if (st.st_mode & S_IRGRP)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_GREAD);
 #endif
 #ifdef S_IWGRP
-  if (st.st_mode & S_IWGRP) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+  if (st.st_mode & S_IWGRP)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_GWRITE);
 #endif
 #ifdef S_IXGRP
-  if (st.st_mode & S_IXGRP) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_GEXEC);
+  if (st.st_mode & S_IXGRP)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_GEXEC);
 #endif
 
 #ifdef S_IROTH
-  if (st.st_mode & S_IROTH) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_OREAD);
+  if (st.st_mode & S_IROTH)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_OREAD);
 #endif
 #ifdef S_IWOTH
-  if (st.st_mode & S_IWOTH) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_OWRITE);
+  if (st.st_mode & S_IWOTH)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_OWRITE);
 #endif
 #ifdef S_IXOTH
-  if (st.st_mode & S_IXOTH) GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_OEXEC);
+  if (st.st_mode & S_IXOTH)
+    GWEN_SarFileHeader_AddPermissions(fh, GWEN_SYNCIO_FILE_FLAGS_OEXEC);
 #endif
 
   /* atime */
@@ -833,7 +855,7 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
 
   /* write header into archive file */
   rv=GWEN_SyncIo_WriteForced(sr->archiveSio,
-                             (const uint8_t*) GWEN_Buffer_GetStart(hbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(hbuf),
                              GWEN_Buffer_GetUsedBytes(hbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -854,7 +876,7 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
   }
 
   /* digest header */
-  rv=GWEN_MDigest_Update(md, (const uint8_t*) GWEN_Buffer_GetStart(hbuf), GWEN_Buffer_GetUsedBytes(hbuf));
+  rv=GWEN_MDigest_Update(md, (const uint8_t *) GWEN_Buffer_GetStart(hbuf), GWEN_Buffer_GetUsedBytes(hbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -894,7 +916,7 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
 
   /* write hash into archive file */
   rv=GWEN_SyncIo_WriteForced(sr->archiveSio,
-                             (const uint8_t*) GWEN_Buffer_GetStart(hbuf),
+                             (const uint8_t *) GWEN_Buffer_GetStart(hbuf),
                              GWEN_Buffer_GetUsedBytes(hbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -912,7 +934,8 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname) {
 
 
 
-int GWEN_Sar_ScanFile(GWEN_SAR *sr) {
+int GWEN_Sar_ScanFile(GWEN_SAR *sr)
+{
   int rv;
   int64_t pos;
   GWEN_BUFFER *mbuf;
@@ -985,7 +1008,7 @@ int GWEN_Sar_ScanFile(GWEN_SAR *sr) {
       GWEN_Buffer_AllocRoom(mbuf, tagLength);
 
       /* read header data */
-      rv=GWEN_SyncIo_ReadForced(sr->archiveSio, (uint8_t*) GWEN_Buffer_GetStart(mbuf), tagLength);
+      rv=GWEN_SyncIo_ReadForced(sr->archiveSio, (uint8_t *) GWEN_Buffer_GetStart(mbuf), tagLength);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_Buffer_free(mbuf);
@@ -1094,7 +1117,8 @@ int GWEN_Sar_ScanFile(GWEN_SAR *sr) {
 
 
 
-int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly) {
+int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly)
+{
   int rv;
   const char *fname;
   uint32_t perms;
@@ -1139,7 +1163,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
     mbuf=GWEN_Buffer_new(0, hsize, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                              (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                              (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                               hsize);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1151,7 +1175,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
     GWEN_Buffer_AdjustUsedBytes(mbuf);
 
     /* digest TLV */
-    rv=GWEN_MDigest_Update(md, (const uint8_t*) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(mbuf);
@@ -1203,7 +1227,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
                                  fsize,
                                  0);
       bytesDone=0;
-      while(fsize) {
+      while (fsize) {
         uint8_t fbuf[10240];
         uint64_t bs;
 
@@ -1315,7 +1339,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
       /* read 20 bytes of hash */
       mbuf=GWEN_Buffer_new(0, 20, 0, 1);
       rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                                (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                                (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                                 20);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1331,7 +1355,7 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
                  20)!=0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         DBG_ERROR(0, "Hash don't match:");
-        GWEN_Text_LogString((const char*) GWEN_MDigest_GetDigestPtr(md), 20,
+        GWEN_Text_LogString((const char *) GWEN_MDigest_GetDigestPtr(md), 20,
                             GWEN_LOGDOMAIN, GWEN_LoggerLevel_Error);
 
         GWEN_Text_LogString(GWEN_Buffer_GetStart(mbuf), 20,
@@ -1352,7 +1376,8 @@ int GWEN_Sar_ExtractAndDigestFileReg(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
 
 
-int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly) {
+int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly)
+{
 #if ((_BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L) && !defined(__MINGW32__)) || defined(OS_DARWIN)
   int rv;
   const char *fname;
@@ -1397,7 +1422,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
 
     mbuf=GWEN_Buffer_new(0, hsize, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                              (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                              (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                               hsize);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1409,7 +1434,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
     GWEN_Buffer_AdjustUsedBytes(mbuf);
 
     /* digest header TLV */
-    rv=GWEN_MDigest_Update(md, (const uint8_t*) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(mbuf);
@@ -1433,7 +1458,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
 
     mbuf=GWEN_Buffer_new(0, fsize, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                              (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                              (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                               fsize);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1445,7 +1470,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
     GWEN_Buffer_AdjustUsedBytes(mbuf);
 
     /* digest TLV */
-    rv=GWEN_MDigest_Update(md, (const uint8_t*) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(mbuf);
@@ -1476,24 +1501,30 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
 
       /* group perms */
 #ifdef S_IRGRP
-      if (perms & GWEN_SYNCIO_FILE_FLAGS_GREAD) mode|=S_IRGRP;
+      if (perms & GWEN_SYNCIO_FILE_FLAGS_GREAD)
+        mode|=S_IRGRP;
 #endif
 #ifdef S_IWGRP
-      if (perms & GWEN_SYNCIO_FILE_FLAGS_GWRITE) mode|=S_IWGRP;
+      if (perms & GWEN_SYNCIO_FILE_FLAGS_GWRITE)
+        mode|=S_IWGRP;
 #endif
 #ifdef S_IXGRP
-      if (perms & GWEN_SYNCIO_FILE_FLAGS_GEXEC) mode|=S_IXGRP;
+      if (perms & GWEN_SYNCIO_FILE_FLAGS_GEXEC)
+        mode|=S_IXGRP;
 #endif
 
       /* other perms */
 #ifdef S_IROTH
-      if (perms & GWEN_SYNCIO_FILE_FLAGS_OREAD) mode|=S_IROTH;
+      if (perms & GWEN_SYNCIO_FILE_FLAGS_OREAD)
+        mode|=S_IROTH;
 #endif
 #ifdef S_IWOTH
-      if (perms & GWEN_SYNCIO_FILE_FLAGS_OWRITE) mode|=S_IWOTH;
+      if (perms & GWEN_SYNCIO_FILE_FLAGS_OWRITE)
+        mode|=S_IWOTH;
 #endif
 #ifdef S_IXOTH
-      if (perms & GWEN_SYNCIO_FILE_FLAGS_OEXEC) mode|=S_IXOTH;
+      if (perms & GWEN_SYNCIO_FILE_FLAGS_OEXEC)
+        mode|=S_IXOTH;
 #endif
 
       rv=chmod(fname, mode);
@@ -1531,7 +1562,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
     /* read 20 bytes of hash */
     mbuf=GWEN_Buffer_new(0, 20, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                              (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                              (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                               20);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1570,7 +1601,8 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
 
 
 
-int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly) {
+int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly)
+{
   int rv;
   const char *fname;
   //uint64_t dpos;
@@ -1614,7 +1646,7 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
   mbuf=GWEN_Buffer_new(0, hsize, 0, 1);
   rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                            (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                            (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                             hsize);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1626,7 +1658,7 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   GWEN_Buffer_AdjustUsedBytes(mbuf);
 
   /* digest TLV */
-  rv=GWEN_MDigest_Update(md, (const uint8_t*) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
+  rv=GWEN_MDigest_Update(md, (const uint8_t *) GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf));
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(mbuf);
@@ -1659,7 +1691,7 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
     /* read 20 bytes of hash */
     mbuf=GWEN_Buffer_new(0, 20, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                              (uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                              (uint8_t *) GWEN_Buffer_GetStart(mbuf),
                               20);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1699,24 +1731,30 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
     /* group perms */
 #ifdef S_IRGRP
-    if (perms & GWEN_SYNCIO_FILE_FLAGS_GREAD) mode|=S_IRGRP;
+    if (perms & GWEN_SYNCIO_FILE_FLAGS_GREAD)
+      mode|=S_IRGRP;
 #endif
 #ifdef S_IWGRP
-    if (perms & GWEN_SYNCIO_FILE_FLAGS_GWRITE) mode|=S_IWGRP;
+    if (perms & GWEN_SYNCIO_FILE_FLAGS_GWRITE)
+      mode|=S_IWGRP;
 #endif
 #ifdef S_IXGRP
-    if (perms & GWEN_SYNCIO_FILE_FLAGS_GEXEC) mode|=S_IXGRP;
+    if (perms & GWEN_SYNCIO_FILE_FLAGS_GEXEC)
+      mode|=S_IXGRP;
 #endif
 
     /* other perms */
 #ifdef S_IROTH
-    if (perms & GWEN_SYNCIO_FILE_FLAGS_OREAD) mode|=S_IROTH;
+    if (perms & GWEN_SYNCIO_FILE_FLAGS_OREAD)
+      mode|=S_IROTH;
 #endif
 #ifdef S_IWOTH
-    if (perms & GWEN_SYNCIO_FILE_FLAGS_OWRITE) mode|=S_IWOTH;
+    if (perms & GWEN_SYNCIO_FILE_FLAGS_OWRITE)
+      mode|=S_IWOTH;
 #endif
 #ifdef S_IXOTH
-    if (perms & GWEN_SYNCIO_FILE_FLAGS_OEXEC) mode|=S_IXOTH;
+    if (perms & GWEN_SYNCIO_FILE_FLAGS_OEXEC)
+      mode|=S_IXOTH;
 #endif
 
     /* create folder */
@@ -1737,10 +1775,11 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
 
 
-int GWEN_Sar_ExtractAndDigestFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly) {
+int GWEN_Sar_ExtractAndDigestFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, int checkOnly)
+{
   int rv;
 
-  switch(GWEN_SarFileHeader_GetFileType(fh)) {
+  switch (GWEN_SarFileHeader_GetFileType(fh)) {
   case GWEN_SarFileHeader_FType_File:
     rv=GWEN_Sar_ExtractAndDigestFileReg(sr, fh, checkOnly);
     break;
@@ -1765,7 +1804,8 @@ int GWEN_Sar_ExtractAndDigestFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, i
 
 
 
-int GWEN_Sar_ExtractFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh) {
+int GWEN_Sar_ExtractFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh)
+{
   int rv;
 
   rv=GWEN_Sar_ExtractAndDigestFile(sr, fh, 0);
@@ -1779,7 +1819,8 @@ int GWEN_Sar_ExtractFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh) {
 
 
 
-int GWEN_Sar_CheckFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh) {
+int GWEN_Sar_CheckFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh)
+{
   int rv;
 
   rv=GWEN_Sar_ExtractAndDigestFile(sr, fh, 1);
@@ -1793,7 +1834,8 @@ int GWEN_Sar_CheckFile(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh) {
 
 
 
-const GWEN_SAR_FILEHEADER_LIST *GWEN_Sar_GetHeaders(GWEN_SAR *sr) {
+const GWEN_SAR_FILEHEADER_LIST *GWEN_Sar_GetHeaders(GWEN_SAR *sr)
+{
   assert(sr);
   assert(sr->refCount);
   return sr->headers;
@@ -1801,7 +1843,8 @@ const GWEN_SAR_FILEHEADER_LIST *GWEN_Sar_GetHeaders(GWEN_SAR *sr) {
 
 
 
-int GWEN_Sar__UnpackArchive(const char *inFile, const char *where) {
+int GWEN_Sar__UnpackArchive(const char *inFile, const char *where)
+{
   GWEN_SAR *sr;
   int rv;
   const GWEN_SAR_FILEHEADER_LIST *fhl;
@@ -1839,7 +1882,7 @@ int GWEN_Sar__UnpackArchive(const char *inFile, const char *where) {
                                0);
 
     fh=GWEN_SarFileHeader_List_First(fhl);
-    while(fh) {
+    while (fh) {
       //const char *s;
 
       //s=GWEN_SarFileHeader_GetPath(fh);
@@ -1876,7 +1919,8 @@ int GWEN_Sar__UnpackArchive(const char *inFile, const char *where) {
 
 
 
-int GWEN_Sar_UnpackArchive(const char *inFile, const char *where) {
+int GWEN_Sar_UnpackArchive(const char *inFile, const char *where)
+{
   char savedPwd[300];
   int rv;
 
@@ -1903,7 +1947,8 @@ int GWEN_Sar_UnpackArchive(const char *inFile, const char *where) {
 
 
 
-int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
+int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm)
+{
   int rv;
   GWEN_SAR_FILEHEADER_LIST *fhl;
 
@@ -1941,7 +1986,7 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
 
     /* clear SIGNED flags */
     fh=GWEN_SarFileHeader_List_First(fhl);
-    while(fh) {
+    while (fh) {
       GWEN_SarFileHeader_SubFlags(fh, GWEN_SAR_FILEHEADER_FLAGS_SIGNED);
       fh=GWEN_SarFileHeader_List_Next(fh);
     }
@@ -1956,7 +2001,7 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
                                GWEN_SarFileHeader_List_GetCount(fhl),
                                0);
     fh=GWEN_SarFileHeader_List_First(fhl);
-    while(fh) {
+    while (fh) {
       const char *s;
       uint64_t hpos;
 
@@ -2058,7 +2103,7 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
 
     /* write TLV into archive file */
     rv=GWEN_SyncIo_WriteForced(sr->archiveSio,
-                               (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+                               (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                                GWEN_Buffer_GetUsedBytes(tbuf));
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -2080,7 +2125,8 @@ int GWEN_Sar_Sign(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
 
 
 
-int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
+int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm)
+{
   int rv;
   GWEN_SAR_FILEHEADER_LIST *fhl;
 
@@ -2118,7 +2164,7 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
 
     /* clear SIGNED flags */
     fh=GWEN_SarFileHeader_List_First(fhl);
-    while(fh) {
+    while (fh) {
       GWEN_SarFileHeader_SubFlags(fh, GWEN_SAR_FILEHEADER_FLAGS_SIGNED);
       fh=GWEN_SarFileHeader_List_Next(fh);
     }
@@ -2133,7 +2179,7 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
                                GWEN_SarFileHeader_List_GetCount(fhl),
                                0);
     fh=GWEN_SarFileHeader_List_First(fhl);
-    while(fh) {
+    while (fh) {
       const char *s;
       uint64_t hpos;
 
@@ -2206,7 +2252,7 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
     /* read signature data */
     sbuf=GWEN_Buffer_new(0, sr->signatureSize, 0, 1);
     rv=GWEN_SyncIo_ReadForced(sr->archiveSio,
-                              (uint8_t*) GWEN_Buffer_GetStart(sbuf),
+                              (uint8_t *) GWEN_Buffer_GetStart(sbuf),
                               sr->signatureSize);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -2221,7 +2267,7 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
     /* verify signature */
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_CryptMgr_Verify(cm,
-                            (const uint8_t*) GWEN_Buffer_GetStart(sbuf),
+                            (const uint8_t *) GWEN_Buffer_GetStart(sbuf),
                             GWEN_Buffer_GetUsedBytes(sbuf),
                             hbuf);
     if (rv<0) {
@@ -2262,7 +2308,8 @@ int GWEN_Sar_Verify(GWEN_SAR *sr, GWEN_CRYPTMGR *cm) {
 
 
 
-int GWEN_Sar_VerifyArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY *key) {
+int GWEN_Sar_VerifyArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY *key)
+{
   GWEN_SAR *sr;
   int rv;
 
@@ -2307,7 +2354,8 @@ int GWEN_Sar_VerifyArchive(const char *inFile, const char *signer, GWEN_CRYPT_KE
 
 
 
-int GWEN_Sar_SignArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY *key) {
+int GWEN_Sar_SignArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY *key)
+{
   GWEN_SAR *sr;
   int rv;
 
@@ -2352,7 +2400,8 @@ int GWEN_Sar_SignArchive(const char *inFile, const char *signer, GWEN_CRYPT_KEY 
 
 
 
-int GWEN_Sar_CheckArchive(const char *inFile) {
+int GWEN_Sar_CheckArchive(const char *inFile)
+{
   GWEN_SAR *sr;
   int rv;
   const GWEN_SAR_FILEHEADER_LIST *fhl;
@@ -2382,7 +2431,7 @@ int GWEN_Sar_CheckArchive(const char *inFile) {
                                0);
 
     fh=GWEN_SarFileHeader_List_First(fhl);
-    while(fh) {
+    while (fh) {
       //const char *s;
 
       //s=GWEN_SarFileHeader_GetPath(fh);

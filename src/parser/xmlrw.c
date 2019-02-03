@@ -29,7 +29,8 @@
 int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
                                 GWEN_FAST_BUFFER *fb,
                                 uint32_t flags,
-                                unsigned int ind) {
+                                unsigned int ind)
+{
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
   int i;
@@ -48,7 +49,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
   if (n->type==GWEN_XMLNodeTypeTag) {
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
       if (flags & GWEN_XML_FLAGS_INDENT) {
-        for(i=0; i<ind; i++) {
+        for (i=0; i<ind; i++) {
           GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
           CHECK_ERROR(rv);
         }
@@ -70,7 +71,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       GWEN_XMLNODE_NAMESPACE *ns;
 
       ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-      while(ns) {
+      while (ns) {
         const char *name;
         const char *url;
 
@@ -136,7 +137,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     CHECK_ERROR(rv);
     if (!simpleTag) {
       c=GWEN_XMLNode_GetChild(n);
-      while(c) {
+      while (c) {
         rv=GWEN_XMLNode__WriteToStream(c, fb, flags, ind+2);
         CHECK_ERROR(rv);
         c=GWEN_XMLNode_Next(c);
@@ -144,7 +145,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 
       if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
         if (flags & GWEN_XML_FLAGS_INDENT) {
-          for(i=0; i<ind; i++) {
+          for (i=0; i<ind; i++) {
             GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
             CHECK_ERROR(rv);
           }
@@ -173,7 +174,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (n->data) {
       if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
         if (flags & GWEN_XML_FLAGS_INDENT) {
-          for(i=0; i<ind; i++) {
+          for (i=0; i<ind; i++) {
             GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
             CHECK_ERROR(rv);
           }
@@ -191,7 +192,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
   else if (n->type==GWEN_XMLNodeTypeComment) {
     if (flags & GWEN_XML_FLAGS_HANDLE_COMMENTS) {
       if (flags & GWEN_XML_FLAGS_INDENT) {
-        for(i=0; i<ind; i++) {
+        for (i=0; i<ind; i++) {
           GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
           CHECK_ERROR(rv);
         }
@@ -219,7 +220,8 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 
 int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
                                GWEN_XML_CONTEXT *ctx,
-                               GWEN_SYNCIO *sio) {
+                               GWEN_SYNCIO *sio)
+{
   const GWEN_XMLNODE *nn;
   const GWEN_XMLNODE *nchild;
   const GWEN_XMLNODE *nheader;
@@ -236,7 +238,7 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
   if (nheader && (flags & GWEN_XML_FLAGS_HANDLE_HEADERS)) {
 
     nn=nheader;
-    while(nn) {
+    while (nn) {
       const GWEN_XMLNODE *next;
 
       rv=GWEN_XMLNode__WriteToStream(nn, fb, GWEN_XmlCtx_GetFlags(ctx), 0);
@@ -273,7 +275,7 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
   }
 
   nn=nchild;
-  while(nn) {
+  while (nn) {
     const GWEN_XMLNODE *next;
 
     if (GWEN_XMLNode__WriteToStream(nn, fb, GWEN_XmlCtx_GetFlags(ctx), 0))
@@ -308,7 +310,8 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
 
 int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
                            const char *fname,
-                           uint32_t flags) {
+                           uint32_t flags)
+{
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   int rv;
@@ -348,7 +351,8 @@ int GWEN_XMLNode_WriteFile(const GWEN_XMLNODE *n,
 
 
 
-int GWEN_XMLNode_toBuffer(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, uint32_t flags) {
+int GWEN_XMLNode_toBuffer(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, uint32_t flags)
+{
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   int rv;
@@ -383,7 +387,8 @@ int GWEN_XMLNode_toBuffer(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, uint32_t flag
 
 int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
                        GWEN_FAST_BUFFER *fb,
-                       GWEN_UNUSED uint32_t flags) {
+                       GWEN_UNUSED uint32_t flags)
+{
   int chr;
   unsigned char uc;
   GWEN_BUFFER *dbuf;
@@ -431,7 +436,8 @@ int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
                       GWEN_FAST_BUFFER *fb,
                       GWEN_UNUSED uint32_t flags,
-                      GWEN_BUFFER *dbuf) {
+                      GWEN_BUFFER *dbuf)
+{
   int chr;
   unsigned char uc=0;
   int rv;
@@ -776,7 +782,8 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
 
 
 
-int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb) {
+int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb)
+{
   int oks=0;
   int startingDepth;
   GWEN_BUFFER *workBuf;
@@ -851,7 +858,8 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb) {
 
 
 
-int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio) {
+int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio)
+{
   GWEN_FAST_BUFFER *fb;
   int oks=0;
 
@@ -879,7 +887,8 @@ int GWEN_XML__ReadAllFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio) {
+int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio)
+{
 #if 0
   GWEN_FAST_BUFFER *fb;
   int rv;
@@ -910,7 +919,8 @@ int GWEN_XMLContext_ReadFromIo(GWEN_XML_CONTEXT *ctx, GWEN_SYNCIO *sio) {
 
 
 
-int GWEN_XMLContext_ReadFromFile(GWEN_XML_CONTEXT *ctx, const char *fname) {
+int GWEN_XMLContext_ReadFromFile(GWEN_XML_CONTEXT *ctx, const char *fname)
+{
   GWEN_SYNCIO *sio;
   int rv;
 
@@ -939,7 +949,8 @@ int GWEN_XMLContext_ReadFromFile(GWEN_XML_CONTEXT *ctx, const char *fname) {
 
 
 
-int GWEN_XMLContext_ReadFromString(GWEN_XML_CONTEXT *ctx, const char *text) {
+int GWEN_XMLContext_ReadFromString(GWEN_XML_CONTEXT *ctx, const char *text)
+{
   if (text && *text) {
     GWEN_SYNCIO *sio;
     int rv;
@@ -947,7 +958,7 @@ int GWEN_XMLContext_ReadFromString(GWEN_XML_CONTEXT *ctx, const char *text) {
     int i;
 
     i=strlen(text)+1;
-    tbuf=GWEN_Buffer_new((char*)text, i, i, 0);
+    tbuf=GWEN_Buffer_new((char *)text, i, i, 0);
     /* static buffer, don't resize */
     GWEN_Buffer_SubMode(tbuf, GWEN_BUFFER_MODE_DYNAMIC);
     GWEN_Buffer_AddMode(tbuf, GWEN_BUFFER_MODE_READONLY);
@@ -970,7 +981,8 @@ int GWEN_XMLContext_ReadFromString(GWEN_XML_CONTEXT *ctx, const char *text) {
 
 
 
-int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags) {
+int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags)
+{
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   int rv;
@@ -1004,7 +1016,8 @@ int GWEN_XML_ReadFile(GWEN_XMLNODE *n, const char *filepath, uint32_t flags) {
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s, int len, uint32_t flags) {
+GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s, int len, uint32_t flags)
+{
 #if 0
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
@@ -1013,7 +1026,7 @@ GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s, int len, uint32_t flags) {
 
   if (len==0)
     len=strlen(s);
-  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*)s, len);
+  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t *)s, len);
 
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "doc");
   ctx=GWEN_XmlCtxStore_new(n, flags);
@@ -1038,7 +1051,7 @@ GWEN_XMLNODE *GWEN_XMLNode_fromString(const char *s, int len, uint32_t flags) {
   int rv;
   GWEN_BUFFER *tbuf;
 
-  tbuf=GWEN_Buffer_new((char*)s, len, len, 0);
+  tbuf=GWEN_Buffer_new((char *)s, len, len, 0);
   /* static buffer, don't resize */
   GWEN_Buffer_SubMode(tbuf, GWEN_BUFFER_MODE_DYNAMIC);
   GWEN_Buffer_AddMode(tbuf, GWEN_BUFFER_MODE_READONLY);

@@ -16,13 +16,14 @@ int Gtk2Gui_WTabBook_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
-                                    int doSignal) {
+                                    int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -52,13 +53,14 @@ static GWENHYWFAR_CB
 int Gtk2Gui_WTabBook_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
-                                    int defaultValue) {
+                                    int defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -86,7 +88,8 @@ int Gtk2Gui_WTabBook_SetCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      const char *value,
-                                     int doSignal) {
+                                     int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -101,10 +104,11 @@ int Gtk2Gui_WTabBook_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WTabBook_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk2Gui_WTabBook_GetCharProperty(GWEN_WIDGET *w,
+                                             GWEN_DIALOG_PROPERTY prop,
+                                             int index,
+                                             const char *defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -119,7 +123,8 @@ const char* Gtk2Gui_WTabBook_GetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WTabBook_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+int Gtk2Gui_WTabBook_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
+{
   GtkWidget *g;
   GtkWidget *gChild;
   const char *s;
@@ -139,7 +144,8 @@ int Gtk2Gui_WTabBook_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 
 
 
-int Gtk2Gui_WTabBook_Setup(GWEN_WIDGET *w) {
+int Gtk2Gui_WTabBook_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   uint32_t flags;
   GWEN_WIDGET *wParent;
@@ -148,8 +154,8 @@ int Gtk2Gui_WTabBook_Setup(GWEN_WIDGET *w) {
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   g=gtk_notebook_new();
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WTabBook_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WTabBook_GetIntProperty);

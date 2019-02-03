@@ -81,7 +81,7 @@ void GWEN_MemCache_free(GWEN_MEMCACHE *mc);
  */
 GWENHYWFAR_API
 GWEN_MEMCACHE_ENTRY *GWEN_MemCache_FindEntry(GWEN_MEMCACHE *mc,
-    uint32_t id);
+                                             uint32_t id);
 
 /**
  * Creates a cache entry for the given id. If there already is an entry
@@ -92,9 +92,9 @@ GWEN_MEMCACHE_ENTRY *GWEN_MemCache_FindEntry(GWEN_MEMCACHE *mc,
  */
 GWENHYWFAR_API
 GWEN_MEMCACHE_ENTRY *GWEN_MemCache_CreateEntry(GWEN_MEMCACHE *mc,
-    uint32_t id,
-    void *dataPtr,
-    size_t dataLen);
+                                               uint32_t id,
+                                               void *dataPtr,
+                                               size_t dataLen);
 
 /**
  * This function invalidates a given cache entry (if it exists).

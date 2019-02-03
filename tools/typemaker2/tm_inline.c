@@ -27,7 +27,8 @@ GWEN_LIST_FUNCTIONS(TYPEMAKER2_INLINE, Typemaker2_Inline)
 
 
 
-TYPEMAKER2_INLINE *Typemaker2_Inline_new() {
+TYPEMAKER2_INLINE *Typemaker2_Inline_new()
+{
   TYPEMAKER2_INLINE *th;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_INLINE, th);
@@ -39,7 +40,8 @@ TYPEMAKER2_INLINE *Typemaker2_Inline_new() {
 
 
 
-void Typemaker2_Inline_free(TYPEMAKER2_INLINE *th) {
+void Typemaker2_Inline_free(TYPEMAKER2_INLINE *th)
+{
   if (th) {
     assert(th->refCount);
     if (th->refCount==1) {
@@ -55,7 +57,8 @@ void Typemaker2_Inline_free(TYPEMAKER2_INLINE *th) {
 
 
 
-void Typemaker2_Inline_Attach(TYPEMAKER2_INLINE *th) {
+void Typemaker2_Inline_Attach(TYPEMAKER2_INLINE *th)
+{
   assert(th);
   assert(th->refCount);
   th->refCount++;
@@ -63,7 +66,8 @@ void Typemaker2_Inline_Attach(TYPEMAKER2_INLINE *th) {
 
 
 
-const char *Typemaker2_Inline_GetContent(const TYPEMAKER2_INLINE *th) {
+const char *Typemaker2_Inline_GetContent(const TYPEMAKER2_INLINE *th)
+{
   assert(th);
   assert(th->refCount);
   return th->content;
@@ -71,17 +75,21 @@ const char *Typemaker2_Inline_GetContent(const TYPEMAKER2_INLINE *th) {
 
 
 
-void Typemaker2_Inline_SetContent(TYPEMAKER2_INLINE *th, const char *s) {
+void Typemaker2_Inline_SetContent(TYPEMAKER2_INLINE *th, const char *s)
+{
   assert(th);
   assert(th->refCount);
   free(th->content);
-  if (s) th->content=strdup(s);
-  else th->content=NULL;
+  if (s)
+    th->content=strdup(s);
+  else
+    th->content=NULL;
 }
 
 
 
-int Typemaker2_Inline_GetLocation(const TYPEMAKER2_INLINE *th) {
+int Typemaker2_Inline_GetLocation(const TYPEMAKER2_INLINE *th)
+{
   assert(th);
   assert(th->refCount);
   return th->location;
@@ -89,7 +97,8 @@ int Typemaker2_Inline_GetLocation(const TYPEMAKER2_INLINE *th) {
 
 
 
-void Typemaker2_Inline_SetLocation(TYPEMAKER2_INLINE *th, int i) {
+void Typemaker2_Inline_SetLocation(TYPEMAKER2_INLINE *th, int i)
+{
   assert(th);
   assert(th->refCount);
   th->location=i;
@@ -97,7 +106,8 @@ void Typemaker2_Inline_SetLocation(TYPEMAKER2_INLINE *th, int i) {
 
 
 
-int Typemaker2_Inline_GetAccess(const TYPEMAKER2_INLINE *th) {
+int Typemaker2_Inline_GetAccess(const TYPEMAKER2_INLINE *th)
+{
   assert(th);
   assert(th->refCount);
   return th->acc;
@@ -105,7 +115,8 @@ int Typemaker2_Inline_GetAccess(const TYPEMAKER2_INLINE *th) {
 
 
 
-void Typemaker2_Inline_SetAccess(TYPEMAKER2_INLINE *th, int i) {
+void Typemaker2_Inline_SetAccess(TYPEMAKER2_INLINE *th, int i)
+{
   assert(th);
   assert(th->refCount);
   th->acc=i;
@@ -113,7 +124,8 @@ void Typemaker2_Inline_SetAccess(TYPEMAKER2_INLINE *th, int i) {
 
 
 
-int Typemaker2_Inline_GetTypeFlagsMask(const TYPEMAKER2_INLINE *th) {
+int Typemaker2_Inline_GetTypeFlagsMask(const TYPEMAKER2_INLINE *th)
+{
   assert(th);
   assert(th->refCount);
   return th->typeFlagsMask;
@@ -121,7 +133,8 @@ int Typemaker2_Inline_GetTypeFlagsMask(const TYPEMAKER2_INLINE *th) {
 
 
 
-int Typemaker2_Inline_GetTypeFlagsValue(const TYPEMAKER2_INLINE *th) {
+int Typemaker2_Inline_GetTypeFlagsValue(const TYPEMAKER2_INLINE *th)
+{
   assert(th);
   assert(th->refCount);
   return th->typeFlagsValue;
@@ -129,7 +142,8 @@ int Typemaker2_Inline_GetTypeFlagsValue(const TYPEMAKER2_INLINE *th) {
 
 
 
-TYPEMAKER2_INLINE *Typemaker2_Inline_fromXml(GWEN_XMLNODE *node) {
+TYPEMAKER2_INLINE *Typemaker2_Inline_fromXml(GWEN_XMLNODE *node)
+{
   TYPEMAKER2_INLINE *th;
   const char *s;
 

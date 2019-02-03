@@ -14,14 +14,16 @@
 int GWENHYWFAR_CB checkCert(GWEN_GUI *gui,
                             const GWEN_SSLCERTDESCR *cert,
                             GWEN_SYNCIO *sio,
-                            uint32_t guiid) {
+                            uint32_t guiid)
+{
   /* automatically accept any cert for non-interactive checks */
   return 0;
 }
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int errs=0;
   GWEN_GUI *gui;
 
@@ -34,7 +36,7 @@ int main(int argc, char **argv) {
 
 #ifdef GWENHYWFAR_SKIP_NETWORK_CHECKS
   fprintf(stderr, "Skipping all checks that assume available network connectivity\n"
-                  "Run ./configure without --disable-network-checks to enable the skipped checks\n");
+          "Run ./configure without --disable-network-checks to enable the skipped checks\n");
 #else
   if (check_syncio_tls())
     errs++;

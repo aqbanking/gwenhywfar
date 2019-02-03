@@ -16,7 +16,8 @@ int Gtk3Gui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
                                         int value,
-                                        int doSignal) {
+                                        int doSignal)
+{
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
 
@@ -25,7 +26,7 @@ int Gtk3Gui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
   gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(gs);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(gs), (value==0)?FALSE:TRUE);
     return 0;
@@ -56,7 +57,8 @@ static GWENHYWFAR_CB
 int Gtk3Gui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
-                                        int defaultValue) {
+                                        int defaultValue)
+{
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
 
@@ -68,7 +70,7 @@ int Gtk3Gui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_CONTENT));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(gs))==TRUE)?1:0;
 
@@ -95,10 +97,11 @@ int Gtk3Gui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk3Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *value,
-    int doSignal) {
+                                         GWEN_DIALOG_PROPERTY prop,
+                                         int index,
+                                         const char *value,
+                                         int doSignal)
+{
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
   GWEN_BUFFER *tbuf;
@@ -112,7 +115,7 @@ int Gtk3Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
   if (value && *value)
     Gtk3Gui_GetRawText(value, tbuf);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Value: {
     GtkTextBuffer *tb;
     GtkAdjustment *va;
@@ -143,10 +146,11 @@ int Gtk3Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk3Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk3Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
+                                                 GWEN_DIALOG_PROPERTY prop,
+                                                 int index,
+                                                 const char *defaultValue)
+{
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
 
@@ -155,7 +159,7 @@ const char* Gtk3Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
   gs=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK3_DIALOG_WIDGET_REAL));
   assert(gs);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Value: {
     GtkTextBuffer *tb;
     GtkTextIter startIter;
@@ -189,7 +193,8 @@ const char* Gtk3Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-int Gtk3Gui_WTextBrowser_Setup(GWEN_WIDGET *w) {
+int Gtk3Gui_WTextBrowser_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *gs;
   GtkWidget *g;
   const char *s;
@@ -212,8 +217,8 @@ int Gtk3Gui_WTextBrowser_Setup(GWEN_WIDGET *w) {
     GWEN_Buffer_free(tbuf);
   }
 
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void*) gs);
-  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) gs);
+  GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk3Gui_WTextBrowser_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk3Gui_WTextBrowser_GetIntProperty);

@@ -50,7 +50,8 @@
 static GWEN_DB_NODE *gwen__paths=0;
 
 
-int GWEN_PathManager_ModuleInit(void) {
+int GWEN_PathManager_ModuleInit(void)
+{
   gwen__paths=GWEN_DB_Group_new("paths");
 
   return 0;
@@ -58,7 +59,8 @@ int GWEN_PathManager_ModuleInit(void) {
 
 
 
-int GWEN_PathManager_ModuleFini(void) {
+int GWEN_PathManager_ModuleFini(void)
+{
   GWEN_DB_Group_free(gwen__paths);
   gwen__paths=0;
   return 0;
@@ -67,7 +69,8 @@ int GWEN_PathManager_ModuleFini(void) {
 
 
 int GWEN_PathManager_DefinePath(const char *destLib,
-                                const char *pathName) {
+                                const char *pathName)
+{
   GWEN_DB_NODE *dbT;
 
   assert(destLib);
@@ -91,7 +94,8 @@ int GWEN_PathManager_DefinePath(const char *destLib,
 
 
 int GWEN_PathManager_UndefinePath(const char *destLib,
-                                  const char *pathName) {
+                                  const char *pathName)
+{
   GWEN_DB_NODE *dbT;
 
   assert(destLib);
@@ -117,7 +121,8 @@ int GWEN_PathManager_UndefinePath(const char *destLib,
 int GWEN_PathManager_AddPath(const char *callingLib,
                              const char *destLib,
                              const char *pathName,
-                             const char *pathValue) {
+                             const char *pathValue)
+{
   GWEN_DB_NODE *dbT;
   GWEN_BUFFER *buf;
 
@@ -159,10 +164,11 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
                                 const char *destLib,
                                 const char *pathName,
                                 const char *pathValue,
-                                GWEN_PATHMANAGER_RELMODE rm) {
+                                GWEN_PATHMANAGER_RELMODE rm)
+{
   char cwd[256];
 
-  switch(rm) {
+  switch (rm) {
   case GWEN_PathManager_RelModeCwd: {
     const char *pcwd;
 
@@ -248,7 +254,8 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
 int GWEN_PathManager_InsertPath(const char *callingLib,
                                 const char *destLib,
                                 const char *pathName,
-                                const char *pathValue) {
+                                const char *pathValue)
+{
   GWEN_DB_NODE *dbT;
 
   assert(destLib);
@@ -286,10 +293,11 @@ int GWEN_PathManager_InsertRelPath(const char *callingLib,
                                    const char *destLib,
                                    const char *pathName,
                                    const char *pathValue,
-                                   GWEN_PATHMANAGER_RELMODE rm) {
+                                   GWEN_PATHMANAGER_RELMODE rm)
+{
   char cwd[256];
 
-  switch(rm) {
+  switch (rm) {
   case GWEN_PathManager_RelModeCwd: {
     const char *pcwd;
 
@@ -374,7 +382,8 @@ int GWEN_PathManager_InsertRelPath(const char *callingLib,
 int GWEN_PathManager_RemovePath(const char *callingLib,
                                 const char *destLib,
                                 const char *pathName,
-                                const char *pathValue) {
+                                const char *pathValue)
+{
   GWEN_DB_NODE *dbT;
   const char *s;
   const char *p;
@@ -390,7 +399,7 @@ int GWEN_PathManager_RemovePath(const char *callingLib,
     return GWEN_ERROR_NOT_FOUND;
 
   dbT=GWEN_DB_FindFirstGroup(dbT, "pair");
-  while(dbT) {
+  while (dbT) {
     p=GWEN_DB_GetCharValue(dbT, "path", 0, 0);
     assert(p);
     s=GWEN_DB_GetCharValue(dbT, "lib", 0, 0);
@@ -418,7 +427,8 @@ int GWEN_PathManager_RemovePath(const char *callingLib,
 
 
 
-int GWEN_PathManager_RemovePaths(const char *callingLib) {
+int GWEN_PathManager_RemovePaths(const char *callingLib)
+{
   GWEN_DB_NODE *dbT;
   const char *s;
 
@@ -426,15 +436,15 @@ int GWEN_PathManager_RemovePaths(const char *callingLib) {
   GWEN_DB_DeleteGroup(gwen__paths, callingLib);
 
   dbT=GWEN_DB_GetFirstGroup(gwen__paths);
-  while(dbT) {
+  while (dbT) {
     GWEN_DB_NODE *dbN;
 
     dbN=GWEN_DB_GetFirstGroup(dbT);
-    while(dbN) {
+    while (dbN) {
       GWEN_DB_NODE *dbNN;
 
       dbNN=GWEN_DB_FindFirstGroup(dbN, "pair");
-      while(dbNN) {
+      while (dbNN) {
         GWEN_DB_NODE *dbNext;
 
         dbNext=GWEN_DB_FindNextGroup(dbNN, "pair");
@@ -458,7 +468,8 @@ int GWEN_PathManager_RemovePaths(const char *callingLib) {
 
 
 int GWEN_PathManager_PathChanged(const char *destLib,
-                                 const char *pathName) {
+                                 const char *pathName)
+{
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -481,7 +492,8 @@ int GWEN_PathManager_PathChanged(const char *destLib,
 
 
 GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
-    const char *pathName) {
+                                           const char *pathName)
+{
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -500,7 +512,7 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
 
       /* then add all paths from other libs */
       dbN=GWEN_DB_FindFirstGroup(dbT, "pair");
-      while(dbN) {
+      while (dbN) {
         for (i=0; ; i++) {
           s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
           if (!s)
@@ -529,7 +541,8 @@ GWEN_STRINGLIST *GWEN_PathManager_GetPaths(const char *destLib,
 int GWEN_PathManager_FindFile(const char *destLib,
                               const char *pathName,
                               const char *fileName,
-                              GWEN_BUFFER *fbuf) {
+                              GWEN_BUFFER *fbuf)
+{
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -548,7 +561,7 @@ int GWEN_PathManager_FindFile(const char *destLib,
 
       /* check all paths */
       dbN=GWEN_DB_FindFirstGroup(dbT, "pair");
-      while(dbN) {
+      while (dbN) {
         for (i=0; ; i++) {
           s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
           if (!s)
@@ -589,10 +602,11 @@ int GWEN_PathManager_FindFile(const char *destLib,
 
 
 int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
-    const char *pathName,
-    const char *subFolderName,
-    GWEN_STRINGLIST *sl,
-    const char *mask) {
+                                                 const char *pathName,
+                                                 const char *subFolderName,
+                                                 GWEN_STRINGLIST *sl,
+                                                 const char *mask)
+{
   GWEN_DB_NODE *dbT;
 
   assert(gwen__paths);
@@ -611,7 +625,7 @@ int GWEN_PathManager_GetMatchingFilesRecursively(const char *destLib,
 
       /* check all paths */
       dbN=GWEN_DB_FindFirstGroup(dbT, "pair");
-      while(dbN) {
+      while (dbN) {
         for (i=0; ; i++) {
           s=GWEN_DB_GetCharValue(dbN, "path", i, 0);
           if (!s)
@@ -648,7 +662,8 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
                                        const char *destLib,
                                        const char *pathName,
                                        const char *keypath,
-                                       const char *varname) {
+                                       const char *varname)
+{
   HKEY hkey;
   TCHAR nbuffer[MAX_PATH];
   BYTE vbuffer[MAX_PATH];
@@ -684,7 +699,7 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
       return GWEN_PathManager_AddPath(callingLib,
                                       destLib,
                                       pathName,
-                                      (char*)vbuffer);
+                                      (char *)vbuffer);
     }
   } /* for */
 
@@ -702,7 +717,8 @@ int GWEN_PathManager_AddPathFromWinReg(GWEN_UNUSED const char *callingLib,
                                        GWEN_UNUSED const char *destLib,
                                        GWEN_UNUSED const char *pathName,
                                        GWEN_UNUSED const char *keypath,
-                                       GWEN_UNUSED const char *varname) {
+                                       GWEN_UNUSED const char *varname)
+{
   return 0;
 }
 

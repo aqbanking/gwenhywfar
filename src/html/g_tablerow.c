@@ -31,7 +31,8 @@ GWEN_INHERIT(HTML_GROUP, GROUP_TABLEROW)
 
 HTML_GROUP *HtmlGroup_TableRow_new(const char *groupName,
                                    HTML_GROUP *parent,
-                                   GWEN_XML_CONTEXT *ctx) {
+                                   GWEN_XML_CONTEXT *ctx)
+{
   HTML_GROUP *g;
   GROUP_TABLEROW *xg;
 
@@ -49,17 +50,19 @@ HTML_GROUP *HtmlGroup_TableRow_new(const char *groupName,
 
 
 
-void GWENHYWFAR_CB HtmlGroup_TableRow_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB HtmlGroup_TableRow_FreeData(void *bp, void *p)
+{
   GROUP_TABLEROW *xg;
 
-  xg=(GROUP_TABLEROW*) p;
+  xg=(GROUP_TABLEROW *) p;
 
   GWEN_FREE_OBJECT(xg);
 }
 
 
 
-int HtmlGroup_TableRow_GetColumns(const HTML_GROUP *g) {
+int HtmlGroup_TableRow_GetColumns(const HTML_GROUP *g)
+{
   GROUP_TABLEROW *xg;
 
   assert(g);
@@ -71,7 +74,8 @@ int HtmlGroup_TableRow_GetColumns(const HTML_GROUP *g) {
 
 
 
-int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
+int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName)
+{
   GROUP_TABLEROW *xg;
   HTML_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
@@ -168,7 +172,8 @@ int HtmlGroup_TableRow_StartTag(HTML_GROUP *g, const char *tagName) {
 
 
 
-void HtmlGroup_TableRow_SetRow(HTML_GROUP *g, int row) {
+void HtmlGroup_TableRow_SetRow(HTML_GROUP *g, int row)
+{
   GROUP_TABLEROW *xg;
 
   assert(g);

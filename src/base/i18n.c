@@ -72,7 +72,8 @@ static struct gwen_i18n_tabletype gwen_i18n___localetable[]= {
 
 
 
-static const char *gwen_i18n_transwinlocale(const char *s) {
+static const char *gwen_i18n_transwinlocale(const char *s)
+{
   char *cs;
   char *p;
   struct gwen_i18n_tabletype *tt;
@@ -81,7 +82,7 @@ static const char *gwen_i18n_transwinlocale(const char *s) {
 
   /* find complete */
   tt=gwen_i18n___localetable;
-  while(tt->win_name) {
+  while (tt->win_name) {
     if (strcasecmp(tt->win_name, cs)==0) {
       free(cs);
       return tt->nls_name;
@@ -94,7 +95,7 @@ static const char *gwen_i18n_transwinlocale(const char *s) {
     *p=0;
     /* find partial string */
     tt=gwen_i18n___localetable;
-    while(tt->win_name) {
+    while (tt->win_name) {
       if (strcasecmp(tt->win_name, cs)==0) {
         free(cs);
         return tt->nls_name;
@@ -108,7 +109,7 @@ static const char *gwen_i18n_transwinlocale(const char *s) {
     *p=0;
     /* find partial string */
     tt=gwen_i18n___localetable;
-    while(tt->win_name) {
+    while (tt->win_name) {
       if (strcasecmp(tt->win_name, cs)==0) {
         free(cs);
         return tt->nls_name;
@@ -126,7 +127,8 @@ static const char *gwen_i18n_transwinlocale(const char *s) {
 
 
 
-int GWEN_I18N_ModuleInit(void) {
+int GWEN_I18N_ModuleInit(void)
+{
   const char *localedir;
   GWEN_STRINGLIST *slist;
 
@@ -167,7 +169,8 @@ int GWEN_I18N_ModuleInit(void) {
 
 
 
-int GWEN_I18N_ModuleFini(void) {
+int GWEN_I18N_ModuleFini(void)
+{
   GWEN_StringList_free(gwen_i18n__localelist);
   free(gwen_i18n__currentlocale);
   return 0;
@@ -175,7 +178,8 @@ int GWEN_I18N_ModuleFini(void) {
 
 
 
-int GWEN_I18N_SetLocale(const char *s) {
+int GWEN_I18N_SetLocale(const char *s)
+{
   const char *realLocale;
   char *p;
   char *cs;
@@ -232,19 +236,22 @@ int GWEN_I18N_SetLocale(const char *s) {
 
 
 
-GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList(void) {
+GWEN_STRINGLIST *GWEN_I18N_GetCurrentLocaleList(void)
+{
   return gwen_i18n__localelist;
 }
 
 
 
-const char *GWEN_I18N_GetCurrentLocale(void) {
+const char *GWEN_I18N_GetCurrentLocale(void)
+{
   return gwen_i18n__currentlocale;
 }
 
 
 
-const char *GWEN_I18N_Translate(const char *txtdom, const char *text) {
+const char *GWEN_I18N_Translate(const char *txtdom, const char *text)
+{
 #ifdef HAVE_I18N
   const char *p;
 
@@ -272,7 +279,8 @@ const char *GWEN_I18N_Translate(const char *txtdom, const char *text) {
 
 
 
-int GWEN_I18N_BindTextDomain_Dir(const char *txtdom, const char *folder) {
+int GWEN_I18N_BindTextDomain_Dir(const char *txtdom, const char *folder)
+{
 #ifdef HAVE_I18N
   if (NULL==bindtextdomain(txtdom, folder)) {
     DBG_INFO(GWEN_LOGDOMAIN, "bindtextdomain(): %s", strerror(errno));
@@ -286,7 +294,8 @@ int GWEN_I18N_BindTextDomain_Dir(const char *txtdom, const char *folder) {
 
 
 
-int GWEN_I18N_BindTextDomain_Codeset(const char *txtdom, const char *cs) {
+int GWEN_I18N_BindTextDomain_Codeset(const char *txtdom, const char *cs)
+{
 #ifdef HAVE_I18N
   if (NULL==bind_textdomain_codeset(txtdom, cs)) {
     DBG_INFO(GWEN_LOGDOMAIN, "bind_textdomain_codeset(): %s", strerror(errno));

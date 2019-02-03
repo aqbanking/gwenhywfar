@@ -12,7 +12,8 @@
 
 
 
-int check_db1() {
+int check_db1()
+{
   GWEN_DB_NODE *cfg;
 
   cfg=GWEN_DB_Group_new("config");
@@ -27,7 +28,8 @@ int check_db1() {
 
 
 
-int check_db2() {
+int check_db2()
+{
   GWEN_DB_NODE *cfg;
   GWEN_DB_NODE *db1;
 
@@ -49,7 +51,8 @@ int check_db2() {
 
 
 
-int check_db3() {
+int check_db3()
+{
   GWEN_DB_NODE *cfg;
   GWEN_DB_NODE *db1;
   GWEN_DB_NODE *db2;
@@ -78,7 +81,8 @@ int check_db3() {
 
 
 
-int check_db4() {
+int check_db4()
+{
   GWEN_DB_NODE *cfg;
   GWEN_DB_NODE *db1;
   GWEN_DB_NODE *db2;
@@ -103,18 +107,18 @@ int check_db4() {
   }
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1111");
+                       "test1/test11/var111", "value1111");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db4: Could not get var [test1/test11/var111].\n");
+            "ERROR in db4: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db4: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db4: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
@@ -124,7 +128,8 @@ int check_db4() {
 
 
 
-int check_db5() {
+int check_db5()
+{
   GWEN_DB_NODE *cfg;
   GWEN_DB_NODE *db1;
   GWEN_DB_NODE *db2;
@@ -150,49 +155,49 @@ int check_db5() {
   }
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1111");
+                       "test1/test11/var111", "value1111");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db5: Could not get var [test1/test11/var111].\n");
+            "ERROR in db5: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db5: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db5: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1112");
+                       "test1/test11/var111", "value1112");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db5: Could not get var [test1/test11/var111].\n");
+            "ERROR in db5: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db5: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db5: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
   v2=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 1, NULL);
   if (v2==NULL) {
     fprintf(stderr,
-	    "ERROR in db5: Could not get var [test1/test11/var111].\n");
+            "ERROR in db5: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v2, "value1112")!=0) {
     fprintf(stderr,
-	    "ERROR in db5: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v2, "value1112");
+            "ERROR in db5: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v2, "value1112");
     return 2;
   }
 
@@ -203,7 +208,8 @@ int check_db5() {
 
 
 
-int check_db6() {
+int check_db6()
+{
   GWEN_DB_NODE *cfg;
   GWEN_DB_NODE *db1;
   GWEN_DB_NODE *db2;
@@ -229,73 +235,73 @@ int check_db6() {
   }
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1111");
+                       "test1/test11/var111", "value1111");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db6: Could not get var [test1/test11/var111].\n");
+            "ERROR in db6: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db6: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db6: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1112");
+                       "test1/test11/var111", "value1112");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db6: Could not get var [test1/test11/var111].\n");
+            "ERROR in db6: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db6: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db6: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
   v2=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 1, NULL);
   if (v2==NULL) {
     fprintf(stderr,
-	    "ERROR in db6: Could not get var [test1/test11/var111].\n");
+            "ERROR in db6: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v2, "value1112")!=0) {
     fprintf(stderr,
-	    "ERROR in db6: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v2, "value1112");
+            "ERROR in db6: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v2, "value1112");
     return 2;
   }
 
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "test1/test11/var111", "value1113");
+                       "test1/test11/var111", "value1113");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db6: Could not get var [test1/test11/var111].\n");
+            "ERROR in db6: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1113")!=0) {
     fprintf(stderr,
-	    "ERROR in db6: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1113");
+            "ERROR in db6: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1113");
     return 2;
   }
 
   v2=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 1, NULL);
   if (v2!=NULL) {
     fprintf(stderr,
-	    "ERROR in db6: Var [test1/test11/var111] should not exist.\n");
+            "ERROR in db6: Var [test1/test11/var111] should not exist.\n");
     return 2;
   }
 
@@ -306,7 +312,8 @@ int check_db6() {
 
 
 
-int check_db7() {
+int check_db7()
+{
   GWEN_DB_NODE *cfg;
   GWEN_DB_NODE *db1;
   GWEN_DB_NODE *db2;
@@ -334,49 +341,49 @@ int check_db7() {
   }
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1111");
+                       "test1/test11/var111", "value1111");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db7: Could not get var [test1/test11/var111].\n");
+            "ERROR in db7: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db7: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db7: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "test1/test11/var111", "value1112");
+                       "test1/test11/var111", "value1112");
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db7: Could not get var [test1/test11/var111].\n");
+            "ERROR in db7: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db7: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db7: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
   v2=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 1, NULL);
   if (v2==NULL) {
     fprintf(stderr,
-	    "ERROR in db7: Could not get var [test1/test11/var111].\n");
+            "ERROR in db7: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v2, "value1112")!=0) {
     fprintf(stderr,
-	    "ERROR in db7: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v2, "value1112");
+            "ERROR in db7: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v2, "value1112");
     return 2;
   }
 
@@ -386,63 +393,63 @@ int check_db7() {
 #endif
     char tmpfile[MAX_PATH];
     GWEN_Directory_GetTmpDirectory(tmpfile, MAX_PATH);
-    strncat(tmpfile, 
+    strncat(tmpfile,
 #ifdef OS_WIN32
-	    "\\"
+            "\\"
 #else
-	    "/"
+            "/"
 #endif
-	    "db1.conf", MAX_PATH - strlen(tmpfile));
+            "db1.conf", MAX_PATH - strlen(tmpfile));
 
     rv=GWEN_DB_WriteFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT);
-  if (rv) {
-    fprintf(stderr,
-	    "ERROR in db7: Could not write DB file (%d)\n", rv);
-    return 2;
-  }
+    if (rv) {
+      fprintf(stderr,
+              "ERROR in db7: Could not write DB file (%d)\n", rv);
+      return 2;
+    }
 
-  GWEN_DB_ClearGroup(cfg, NULL);
+    GWEN_DB_ClearGroup(cfg, NULL);
 
-  rv=GWEN_DB_ReadFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT);
-  if (rv) {
-    fprintf(stderr,
-	    "ERROR in db7: Could not read DB file (%d)\n", rv);
-    return 2;
-  }
+    rv=GWEN_DB_ReadFile(cfg, tmpfile, GWEN_DB_FLAGS_DEFAULT);
+    if (rv) {
+      fprintf(stderr,
+              "ERROR in db7: Could not read DB file (%d)\n", rv);
+      return 2;
+    }
   }
 
   v1=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 0, NULL);
   if (v1==NULL) {
     fprintf(stderr,
-	    "ERROR in db7: Could not get var [test1/test11/var111].\n");
+            "ERROR in db7: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v1, "value1111")!=0) {
     fprintf(stderr,
-	    "ERROR in db7: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v1, "value1111");
+            "ERROR in db7: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v1, "value1111");
     return 2;
   }
 
   v2=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 1, NULL);
   if (v2==NULL) {
     fprintf(stderr,
-	    "ERROR in db7: Could not get var [test1/test11/var111].\n");
+            "ERROR in db7: Could not get var [test1/test11/var111].\n");
     return 2;
   }
 
   if (strcmp(v2, "value1112")!=0) {
     fprintf(stderr,
-	    "ERROR in db7: Value for var [test1/test11/var111] does not "
-	    "match [%s]!=[%s].\n", v2, "value1112");
+            "ERROR in db7: Value for var [test1/test11/var111] does not "
+            "match [%s]!=[%s].\n", v2, "value1112");
     return 2;
   }
 
   v3=GWEN_DB_GetCharValue(cfg, "test1/test11/var111", 2, NULL);
   if (v3!=NULL) {
     fprintf(stderr,
-	    "ERROR in db7: Var [test1/test11/var111:2] not empty.\n");
+            "ERROR in db7: Var [test1/test11/var111:2] not empty.\n");
     return 2;
   }
 
@@ -454,7 +461,8 @@ int check_db7() {
 
 
 
-int check_db() {
+int check_db()
+{
   int errs=0;
   int chks=0;
 

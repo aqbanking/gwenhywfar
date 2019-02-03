@@ -142,7 +142,7 @@ uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
  */
 GWENHYWFAR_API DEPRECATED
 uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
-#endif	// ifndef NO_DEPRECATED_SYMBOLS
+#endif  // ifndef NO_DEPRECATED_SYMBOLS
 
 
 /**

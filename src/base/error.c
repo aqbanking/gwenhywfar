@@ -60,20 +60,23 @@
 
 
 
-int GWEN_Error_ModuleInit(void) {
+int GWEN_Error_ModuleInit(void)
+{
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Error_ModuleInit");
   return 0;
 }
 
 
 
-int GWEN_Error_ModuleFini(void) {
+int GWEN_Error_ModuleFini(void)
+{
   return 0;
 }
 
 
 
-int GWEN_Error_ToString(int c, char *buffer, int bsize) {
+int GWEN_Error_ToString(int c, char *buffer, int bsize)
+{
   const char *s;
 
   assert(buffer);
@@ -89,10 +92,11 @@ int GWEN_Error_ToString(int c, char *buffer, int bsize) {
 
 
 
-const char *GWEN_Error_SimpleToString(int i) {
+const char *GWEN_Error_SimpleToString(int i)
+{
   const char *s;
 
-  switch(i) {
+  switch (i) {
   case GWEN_SUCCESS:
     s=I18N("Ok");
     break;

@@ -23,7 +23,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_URL, GWEN_Url)
 
 
 
-GWEN_URL *GWEN_Url_new(void) {
+GWEN_URL *GWEN_Url_new(void)
+{
   GWEN_URL *st;
 
   GWEN_NEW_OBJECT(GWEN_URL, st)
@@ -34,7 +35,8 @@ GWEN_URL *GWEN_Url_new(void) {
 }
 
 
-void GWEN_Url_free(GWEN_URL *st) {
+void GWEN_Url_free(GWEN_URL *st)
+{
   if (st) {
     assert(st->_usage);
     if (--(st->_usage)==0) {
@@ -60,7 +62,8 @@ void GWEN_Url_free(GWEN_URL *st) {
 }
 
 
-GWEN_URL *GWEN_Url_dup(const GWEN_URL *d) {
+GWEN_URL *GWEN_Url_dup(const GWEN_URL *d)
+{
   GWEN_URL *st;
 
   assert(d);
@@ -86,7 +89,8 @@ GWEN_URL *GWEN_Url_dup(const GWEN_URL *d) {
 }
 
 
-int GWEN_Url_toDb(const GWEN_URL *st, GWEN_DB_NODE *db) {
+int GWEN_Url_toDb(const GWEN_URL *st, GWEN_DB_NODE *db)
+{
   assert(st);
   assert(db);
   if (st->protocol)
@@ -116,7 +120,8 @@ int GWEN_Url_toDb(const GWEN_URL *st, GWEN_DB_NODE *db) {
 }
 
 
-int GWEN_Url_ReadDb(GWEN_URL *st, GWEN_DB_NODE *db) {
+int GWEN_Url_ReadDb(GWEN_URL *st, GWEN_DB_NODE *db)
+{
   assert(st);
   assert(db);
   GWEN_Url_SetProtocol(st, GWEN_DB_GetCharValue(db, "protocol", 0, 0));
@@ -140,7 +145,8 @@ int GWEN_Url_ReadDb(GWEN_URL *st, GWEN_DB_NODE *db) {
 }
 
 
-GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db) {
+GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db)
+{
   GWEN_URL *st;
 
   assert(db);
@@ -153,13 +159,15 @@ GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db) {
 
 
 
-const char *GWEN_Url_GetProtocol(const GWEN_URL *st) {
+const char *GWEN_Url_GetProtocol(const GWEN_URL *st)
+{
   assert(st);
   return st->protocol;
 }
 
 
-void GWEN_Url_SetProtocol(GWEN_URL *st, const char *d) {
+void GWEN_Url_SetProtocol(GWEN_URL *st, const char *d)
+{
   assert(st);
   if (st->protocol)
     free(st->protocol);
@@ -173,13 +181,15 @@ void GWEN_Url_SetProtocol(GWEN_URL *st, const char *d) {
 
 
 
-const char *GWEN_Url_GetServer(const GWEN_URL *st) {
+const char *GWEN_Url_GetServer(const GWEN_URL *st)
+{
   assert(st);
   return st->server;
 }
 
 
-void GWEN_Url_SetServer(GWEN_URL *st, const char *d) {
+void GWEN_Url_SetServer(GWEN_URL *st, const char *d)
+{
   assert(st);
   if (st->server)
     free(st->server);
@@ -193,13 +203,15 @@ void GWEN_Url_SetServer(GWEN_URL *st, const char *d) {
 
 
 
-int GWEN_Url_GetPort(const GWEN_URL *st) {
+int GWEN_Url_GetPort(const GWEN_URL *st)
+{
   assert(st);
   return st->port;
 }
 
 
-void GWEN_Url_SetPort(GWEN_URL *st, int d) {
+void GWEN_Url_SetPort(GWEN_URL *st, int d)
+{
   assert(st);
   st->port=d;
   st->_modified=1;
@@ -208,13 +220,15 @@ void GWEN_Url_SetPort(GWEN_URL *st, int d) {
 
 
 
-const char *GWEN_Url_GetPath(const GWEN_URL *st) {
+const char *GWEN_Url_GetPath(const GWEN_URL *st)
+{
   assert(st);
   return st->path;
 }
 
 
-void GWEN_Url_SetPath(GWEN_URL *st, const char *d) {
+void GWEN_Url_SetPath(GWEN_URL *st, const char *d)
+{
   assert(st);
   if (st->path)
     free(st->path);
@@ -228,13 +242,15 @@ void GWEN_Url_SetPath(GWEN_URL *st, const char *d) {
 
 
 
-const char *GWEN_Url_GetUserName(const GWEN_URL *st) {
+const char *GWEN_Url_GetUserName(const GWEN_URL *st)
+{
   assert(st);
   return st->userName;
 }
 
 
-void GWEN_Url_SetUserName(GWEN_URL *st, const char *d) {
+void GWEN_Url_SetUserName(GWEN_URL *st, const char *d)
+{
   assert(st);
   if (st->userName)
     free(st->userName);
@@ -248,13 +264,15 @@ void GWEN_Url_SetUserName(GWEN_URL *st, const char *d) {
 
 
 
-const char *GWEN_Url_GetPassword(const GWEN_URL *st) {
+const char *GWEN_Url_GetPassword(const GWEN_URL *st)
+{
   assert(st);
   return st->password;
 }
 
 
-void GWEN_Url_SetPassword(GWEN_URL *st, const char *d) {
+void GWEN_Url_SetPassword(GWEN_URL *st, const char *d)
+{
   assert(st);
   if (st->password)
     free(st->password);
@@ -268,13 +286,15 @@ void GWEN_Url_SetPassword(GWEN_URL *st, const char *d) {
 
 
 
-GWEN_DB_NODE *GWEN_Url_GetVars(const GWEN_URL *st) {
+GWEN_DB_NODE *GWEN_Url_GetVars(const GWEN_URL *st)
+{
   assert(st);
   return st->vars;
 }
 
 
-void GWEN_Url_SetVars(GWEN_URL *st, GWEN_DB_NODE *d) {
+void GWEN_Url_SetVars(GWEN_URL *st, GWEN_DB_NODE *d)
+{
   assert(st);
   if (st->vars)
     GWEN_DB_Group_free(st->vars);
@@ -288,13 +308,15 @@ void GWEN_Url_SetVars(GWEN_URL *st, GWEN_DB_NODE *d) {
 
 
 
-const char *GWEN_Url_GetUrl(const GWEN_URL *st) {
+const char *GWEN_Url_GetUrl(const GWEN_URL *st)
+{
   assert(st);
   return st->url;
 }
 
 
-void GWEN_Url_SetUrl(GWEN_URL *st, const char *d) {
+void GWEN_Url_SetUrl(GWEN_URL *st, const char *d)
+{
   assert(st);
   if (st->url)
     free(st->url);
@@ -308,29 +330,34 @@ void GWEN_Url_SetUrl(GWEN_URL *st, const char *d) {
 
 
 
-int GWEN_Url_IsModified(const GWEN_URL *st) {
+int GWEN_Url_IsModified(const GWEN_URL *st)
+{
   assert(st);
   return st->_modified;
 }
 
 
-void GWEN_Url_SetModified(GWEN_URL *st, int i) {
+void GWEN_Url_SetModified(GWEN_URL *st, int i)
+{
   assert(st);
   st->_modified=i;
 }
 
 
-void GWEN_Url_Attach(GWEN_URL *st) {
+void GWEN_Url_Attach(GWEN_URL *st)
+{
   assert(st);
   st->_usage++;
 }
-GWEN_URL *GWEN_Url_List2__freeAll_cb(GWEN_URL *st, GWEN_UNUSED void *user_data) {
+GWEN_URL *GWEN_Url_List2__freeAll_cb(GWEN_URL *st, GWEN_UNUSED void *user_data)
+{
   GWEN_Url_free(st);
   return 0;
 }
 
 
-void GWEN_Url_List2_freeAll(GWEN_URL_LIST2 *stl) {
+void GWEN_Url_List2_freeAll(GWEN_URL_LIST2 *stl)
+{
   if (stl) {
     GWEN_Url_List2_ForEach(stl, GWEN_Url_List2__freeAll_cb, 0);
     GWEN_Url_List2_free(stl);
@@ -338,14 +365,15 @@ void GWEN_Url_List2_freeAll(GWEN_URL_LIST2 *stl) {
 }
 
 
-GWEN_URL_LIST *GWEN_Url_List_dup(const GWEN_URL_LIST *stl) {
+GWEN_URL_LIST *GWEN_Url_List_dup(const GWEN_URL_LIST *stl)
+{
   if (stl) {
     GWEN_URL_LIST *nl;
     GWEN_URL *e;
 
     nl=GWEN_Url_List_new();
     e=GWEN_Url_List_First(stl);
-    while(e) {
+    while (e) {
       GWEN_URL *ne;
 
       ne=GWEN_Url_dup(e);

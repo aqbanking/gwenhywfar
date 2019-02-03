@@ -24,8 +24,8 @@ static int GWEN_Crypt__TransformFromBCD(unsigned char *buffer,
                                         unsigned int *pinLength);
 
 static int GWEN_Crypt__TransformFromFPIN2(unsigned char *buffer,
-    unsigned int bufLength,
-    unsigned int *pinLength);
+                                          unsigned int bufLength,
+                                          unsigned int *pinLength);
 
 static int GWEN_Crypt__TransformFromBin(unsigned char *buffer,
                                         unsigned int bufLength,

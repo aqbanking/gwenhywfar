@@ -12,7 +12,8 @@ GWEN_INHERIT(BASECLASS, DERIVEDCLASS)
 
 
 
-BASECLASS *DerivedClass_new(const char *data) {
+BASECLASS *DerivedClass_new(const char *data)
+{
   BASECLASS *baseClass;
   DERIVEDCLASS *derivedClass;
 
@@ -40,17 +41,19 @@ BASECLASS *DerivedClass_new(const char *data) {
 /* the first pointer is a pointer to the base class (in our case BASECLASS)
  * the second is a pointer to the private data (here DERIVEDCLASS).
  * When this function is called the base object still exists. */
-void GWENHYWFAR_CB DerivedClass_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB DerivedClass_FreeData(void *bp, void *p)
+{
   DERIVEDCLASS *derivedClass;
 
-  derivedClass=(DERIVEDCLASS*) p;
+  derivedClass=(DERIVEDCLASS *) p;
   free(derivedClass->testData);
   GWEN_FREE_OBJECT(derivedClass);
 }
 
 
 
-const char *DerivedClass_GetTestData(const BASECLASS *baseClass) {
+const char *DerivedClass_GetTestData(const BASECLASS *baseClass)
+{
   DERIVEDCLASS *derivedClass;
 
   assert(baseClass);

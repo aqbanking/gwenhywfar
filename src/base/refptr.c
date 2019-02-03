@@ -37,7 +37,8 @@
 
 
 
-GWEN_REFPTR_POBJECT *GWEN_RefPtrObject_new(void *dp, GWEN_REFPTR_INFO *rpi) {
+GWEN_REFPTR_POBJECT *GWEN_RefPtrObject_new(void *dp, GWEN_REFPTR_INFO *rpi)
+{
   GWEN_REFPTR_POBJECT *rpo;
 
   GWEN_NEW_OBJECT(GWEN_REFPTR_POBJECT, rpo);
@@ -51,7 +52,8 @@ GWEN_REFPTR_POBJECT *GWEN_RefPtrObject_new(void *dp, GWEN_REFPTR_INFO *rpi) {
 
 
 
-void GWEN_RefPtrObject_free(GWEN_REFPTR_POBJECT *rpo) {
+void GWEN_RefPtrObject_free(GWEN_REFPTR_POBJECT *rpo)
+{
   if (rpo) {
     assert(rpo->refCount);
     if (--(rpo->refCount)==0) {
@@ -69,7 +71,8 @@ void GWEN_RefPtrObject_free(GWEN_REFPTR_POBJECT *rpo) {
 
 
 
-void GWEN_RefPtrObject_Attach(GWEN_REFPTR_POBJECT *rpo) {
+void GWEN_RefPtrObject_Attach(GWEN_REFPTR_POBJECT *rpo)
+{
   assert(rpo);
   assert(rpo->refCount);
   rpo->refCount++;
@@ -77,28 +80,32 @@ void GWEN_RefPtrObject_Attach(GWEN_REFPTR_POBJECT *rpo) {
 
 
 
-uint32_t GWEN_RefPtrInfo_GetFlags(const GWEN_REFPTR_INFO *rpi) {
+uint32_t GWEN_RefPtrInfo_GetFlags(const GWEN_REFPTR_INFO *rpi)
+{
   assert(rpi);
   return rpi->flags;
 }
 
 
 
-void GWEN_RefPtrInfo_SetFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl) {
+void GWEN_RefPtrInfo_SetFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl)
+{
   assert(rpi);
   rpi->flags=fl;
 }
 
 
 
-void GWEN_RefPtrInfo_AddFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl) {
+void GWEN_RefPtrInfo_AddFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl)
+{
   assert(rpi);
   rpi->flags|=fl;
 }
 
 
 
-void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl) {
+void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl)
+{
   assert(rpi);
   rpi->flags&=~fl;
 }
@@ -112,7 +119,8 @@ void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl) {
 
 
 
-GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new(void) {
+GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new(void)
+{
   GWEN_REFPTR_INFO *rpi;
 
   GWEN_NEW_OBJECT(GWEN_REFPTR_INFO, rpi);
@@ -123,7 +131,8 @@ GWEN_REFPTR_INFO *GWEN_RefPtrInfo_new(void) {
 
 
 
-void GWEN_RefPtrInfo_free(GWEN_REFPTR_INFO *rpi) {
+void GWEN_RefPtrInfo_free(GWEN_REFPTR_INFO *rpi)
+{
   if (rpi) {
     assert(rpi->refCount);
     if (--(rpi->refCount)==0) {
@@ -135,7 +144,8 @@ void GWEN_RefPtrInfo_free(GWEN_REFPTR_INFO *rpi) {
 
 
 
-void GWEN_RefPtrInfo_Attach(GWEN_REFPTR_INFO *rpi) {
+void GWEN_RefPtrInfo_Attach(GWEN_REFPTR_INFO *rpi)
+{
   assert(rpi);
   assert(rpi->refCount);
   rpi->refCount++;
@@ -144,7 +154,8 @@ void GWEN_RefPtrInfo_Attach(GWEN_REFPTR_INFO *rpi) {
 
 
 void GWEN_RefPtrInfo_SetFreeFn(GWEN_REFPTR_INFO *rpi,
-                               GWEN_REFPTR_INFO_FREE_FN f) {
+                               GWEN_REFPTR_INFO_FREE_FN f)
+{
   assert(rpi);
   rpi->freeFn=f;
 }
@@ -152,7 +163,8 @@ void GWEN_RefPtrInfo_SetFreeFn(GWEN_REFPTR_INFO *rpi,
 
 
 void GWEN_RefPtrInfo_SetDupFn(GWEN_REFPTR_INFO *rpi,
-                              GWEN_REFPTR_INFO_DUP_FN f) {
+                              GWEN_REFPTR_INFO_DUP_FN f)
+{
   assert(rpi);
   rpi->dupFn=f;
 }
@@ -169,7 +181,8 @@ void GWEN_RefPtrInfo_SetDupFn(GWEN_REFPTR_INFO *rpi,
 
 
 
-GWEN_REFPTR *GWEN_RefPtr_new(void *dp, GWEN_REFPTR_INFO *rpi) {
+GWEN_REFPTR *GWEN_RefPtr_new(void *dp, GWEN_REFPTR_INFO *rpi)
+{
   GWEN_REFPTR *rp;
 
   GWEN_NEW_OBJECT(GWEN_REFPTR, rp);
@@ -181,7 +194,8 @@ GWEN_REFPTR *GWEN_RefPtr_new(void *dp, GWEN_REFPTR_INFO *rpi) {
 
 
 
-void GWEN_RefPtr_free(GWEN_REFPTR *rp) {
+void GWEN_RefPtr_free(GWEN_REFPTR *rp)
+{
   if (rp) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing GWEN_RefPtr");
     GWEN_RefPtrObject_free(rp->objectPtr);
@@ -191,7 +205,8 @@ void GWEN_RefPtr_free(GWEN_REFPTR *rp) {
 
 
 
-GWEN_REFPTR *GWEN_RefPtr_dup(const GWEN_REFPTR *rp) {
+GWEN_REFPTR *GWEN_RefPtr_dup(const GWEN_REFPTR *rp)
+{
   GWEN_REFPTR *nrp;
 
   assert(rp);
@@ -203,7 +218,8 @@ GWEN_REFPTR *GWEN_RefPtr_dup(const GWEN_REFPTR *rp) {
 
 
 
-GWEN_REFPTR *GWEN_RefPtr_copy(const GWEN_REFPTR *rp) {
+GWEN_REFPTR *GWEN_RefPtr_copy(const GWEN_REFPTR *rp)
+{
   GWEN_REFPTR *nrp;
 
   assert(rp);
@@ -225,7 +241,8 @@ GWEN_REFPTR *GWEN_RefPtr_copy(const GWEN_REFPTR *rp) {
 
 
 
-void *GWEN_RefPtr_GetData(const GWEN_REFPTR *rp) {
+void *GWEN_RefPtr_GetData(const GWEN_REFPTR *rp)
+{
   if (!rp)
     return 0;
   if (rp->objectPtr) {
@@ -236,7 +253,8 @@ void *GWEN_RefPtr_GetData(const GWEN_REFPTR *rp) {
 
 
 
-void GWEN_RefPtr_SetData(GWEN_REFPTR *rp, void *dp, GWEN_REFPTR_INFO *rpi) {
+void GWEN_RefPtr_SetData(GWEN_REFPTR *rp, void *dp, GWEN_REFPTR_INFO *rpi)
+{
   assert(rp);
 
   if (rp->objectPtr) {
@@ -247,7 +265,8 @@ void GWEN_RefPtr_SetData(GWEN_REFPTR *rp, void *dp, GWEN_REFPTR_INFO *rpi) {
 
 
 
-uint32_t GWEN_RefPtr_GetFlags(const GWEN_REFPTR *rp) {
+uint32_t GWEN_RefPtr_GetFlags(const GWEN_REFPTR *rp)
+{
   assert(rp);
   if (rp->objectPtr)
     return rp->objectPtr->flags;
@@ -257,7 +276,8 @@ uint32_t GWEN_RefPtr_GetFlags(const GWEN_REFPTR *rp) {
 
 
 
-void GWEN_RefPtr_SetFlags(GWEN_REFPTR *rp, uint32_t fl) {
+void GWEN_RefPtr_SetFlags(GWEN_REFPTR *rp, uint32_t fl)
+{
   assert(rp);
   if (rp->objectPtr)
     rp->objectPtr->flags=fl;
@@ -268,7 +288,8 @@ void GWEN_RefPtr_SetFlags(GWEN_REFPTR *rp, uint32_t fl) {
 
 
 
-void GWEN_RefPtr_AddFlags(GWEN_REFPTR *rp, uint32_t fl) {
+void GWEN_RefPtr_AddFlags(GWEN_REFPTR *rp, uint32_t fl)
+{
   assert(rp);
   if (rp->objectPtr)
     rp->objectPtr->flags|=fl;
@@ -279,7 +300,8 @@ void GWEN_RefPtr_AddFlags(GWEN_REFPTR *rp, uint32_t fl) {
 
 
 
-void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, uint32_t fl) {
+void GWEN_RefPtr_DelFlags(GWEN_REFPTR *rp, uint32_t fl)
+{
   assert(rp);
   if (rp->objectPtr)
     rp->objectPtr->flags&=~fl;

@@ -62,7 +62,8 @@
 
 void *GWEN_Directory_HandlePathElement(const char *entry,
                                        void *data,
-                                       unsigned int flags) {
+                                       unsigned int flags)
+{
   char *p;
   struct stat st;
   int exists;
@@ -78,7 +79,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
 
     /* append backslash if entry only consists of a drive specification */
     len=strlen(entry);
-    if ( (len==2) && (entry[1] == ':') ) {
+    if ((len==2) && (entry[1] == ':')) {
       ebuf=GWEN_Buffer_new(0, len+2, 0, 1);
       GWEN_Buffer_AppendString(ebuf, entry);
       GWEN_Buffer_AppendByte(ebuf, '\\');
@@ -94,7 +95,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     return 0;
   }
 
-  buf=(GWEN_BUFFER*)data;
+  buf=(GWEN_BUFFER *)data;
   if (GWEN_Buffer_GetUsedBytes(buf) && !withDrive) {
     char c;
 
@@ -217,7 +218,8 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
 
 
 int GWEN_Directory_GetPath(const char *path,
-                           unsigned int flags) {
+                           unsigned int flags)
+{
   GWEN_BUFFER *buf;
   void *p;
 
@@ -238,7 +240,8 @@ int GWEN_Directory_GetPath(const char *path,
 
 
 int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
-                             int transformDriveElement) {
+                             int transformDriveElement)
+{
   const char *p;
 
   p=path;
@@ -256,7 +259,7 @@ int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
   }
 #endif
 
-  while(*p) {
+  while (*p) {
     if (*p=='/' || *p=='\\') {
       while (*p=='/' || *p=='\\')
         p++;
@@ -279,11 +282,12 @@ int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
 
 int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
                                    const char *filePath,
-                                   GWEN_BUFFER *fbuf) {
+                                   GWEN_BUFFER *fbuf)
+{
   GWEN_STRINGLISTENTRY *se;
 
   se=GWEN_StringList_FirstEntry(paths);
-  while(se) {
+  while (se) {
     GWEN_BUFFER *tbuf;
     FILE *f;
 
@@ -317,11 +321,12 @@ int GWEN_Directory_FindFileInPaths(const GWEN_STRINGLIST *paths,
 
 int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
                                    const char *filePath,
-                                   GWEN_BUFFER *fbuf) {
+                                   GWEN_BUFFER *fbuf)
+{
   GWEN_STRINGLISTENTRY *se;
 
   se=GWEN_StringList_FirstEntry(paths);
-  while(se) {
+  while (se) {
     GWEN_BUFFER *tbuf;
     FILE *f;
 
@@ -353,26 +358,27 @@ int GWEN_Directory_FindPathForFile(const GWEN_STRINGLIST *paths,
 
 
 
-int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size) {
+int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size)
+{
   const char *tmp_dir;
   assert(buffer);
 
   /* Copied from http://svn.gnome.org/viewcvs/glib/trunk/glib/gutils.c */
-  tmp_dir = getenv ("TMPDIR");
+  tmp_dir = getenv("TMPDIR");
   if (!tmp_dir)
-    tmp_dir = getenv ("TMP");
+    tmp_dir = getenv("TMP");
   if (!tmp_dir)
-    tmp_dir = getenv ("TEMP");
+    tmp_dir = getenv("TEMP");
 
   if (!tmp_dir) {
 #ifdef OS_WIN32
     tmp_dir = "C:\\";
 #else
     tmp_dir = "/tmp";
-#endif	/* !OS_WIN32 */
+#endif  /* !OS_WIN32 */
   }
 
-  strncpy (buffer, tmp_dir, size);
+  strncpy(buffer, tmp_dir, size);
   return 0;
 }
 
@@ -380,7 +386,8 @@ int GWEN_Directory_GetTmpDirectory(char *buffer, unsigned int size) {
 
 int GWEN_Directory_GetAllEntries(const char *folder,
                                  GWEN_STRINGLIST *sl,
-                                 const char *mask) {
+                                 const char *mask)
+{
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];
@@ -393,7 +400,7 @@ int GWEN_Directory_GetAllEntries(const char *folder,
     return rv;
   }
 
-  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+  while (0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
     if (strcmp(buffer, ".")!=0 &&
         strcmp(buffer, "..")!=0 &&
         (mask==NULL ||
@@ -409,8 +416,9 @@ int GWEN_Directory_GetAllEntries(const char *folder,
 
 
 int GWEN_Directory_GetFileEntriesWithType(const char *folder,
-    GWEN_STRINGLIST *sl,
-    const char *mask) {
+                                          GWEN_STRINGLIST *sl,
+                                          const char *mask)
+{
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];
@@ -430,7 +438,7 @@ int GWEN_Directory_GetFileEntriesWithType(const char *folder,
   GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
   pos=GWEN_Buffer_GetPos(pbuf);
 
-  while(0==GWEN_Directory_Read(d, buffer+1, sizeof(buffer)-2)) {
+  while (0==GWEN_Directory_Read(d, buffer+1, sizeof(buffer)-2)) {
     if (strcmp(buffer, ".")!=0 &&
         strcmp(buffer, "..")!=0 &&
         (mask==NULL ||
@@ -460,7 +468,8 @@ int GWEN_Directory_GetFileEntriesWithType(const char *folder,
 
 
 int GWEN_Directory_GetFileEntries(const char *folder, GWEN_STRINGLIST *sl,
-                                  const char *mask) {
+                                  const char *mask)
+{
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];
@@ -480,7 +489,7 @@ int GWEN_Directory_GetFileEntries(const char *folder, GWEN_STRINGLIST *sl,
   GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
   pos=GWEN_Buffer_GetPos(pbuf);
 
-  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+  while (0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
     if (strcmp(buffer, ".")!=0 &&
         strcmp(buffer, "..")!=0 &&
         (mask==NULL ||
@@ -505,7 +514,8 @@ int GWEN_Directory_GetFileEntries(const char *folder, GWEN_STRINGLIST *sl,
 
 
 int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
-                                 const char *mask) {
+                                 const char *mask)
+{
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];
@@ -525,7 +535,7 @@ int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
   GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
   pos=GWEN_Buffer_GetPos(pbuf);
 
-  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+  while (0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
     if (strcmp(buffer, ".")!=0 &&
         strcmp(buffer, "..")!=0 &&
         (mask==NULL ||
@@ -549,8 +559,9 @@ int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
 
 
 int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
-    GWEN_STRINGLIST *sl,
-    const char *mask) {
+                                               GWEN_STRINGLIST *sl,
+                                               const char *mask)
+{
   GWEN_DIRECTORY *d;
   int rv;
   char buffer[256];
@@ -574,7 +585,7 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
   GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S);
   pos=GWEN_Buffer_GetPos(pbuf);
 
-  while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer)-2)) {
+  while (0==GWEN_Directory_Read(d, buffer, sizeof(buffer)-2)) {
     if (strcmp(buffer, ".")!=0 &&
         strcmp(buffer, "..")!=0) {
       struct stat st;
@@ -601,7 +612,7 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(folderList);
-    while(se) {
+    while (se) {
       const char *s;
 
       s=GWEN_StringListEntry_Data(se);
@@ -618,7 +629,8 @@ int GWEN_Directory_GetMatchingFilesRecursively(const char *folder,
 
 
 
-int GWEN_Directory_GetAbsoluteFolderPath(const char *folder, GWEN_BUFFER *tbuf) {
+int GWEN_Directory_GetAbsoluteFolderPath(const char *folder, GWEN_BUFFER *tbuf)
+{
   char savedPwd[300];
   char dataPwd[300];
 

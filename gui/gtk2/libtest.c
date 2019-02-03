@@ -25,7 +25,8 @@
 
 
 
-int test1(int argc, char **argv) {
+int test1(int argc, char **argv)
+{
   GWEN_GUI *gui;
   int rv;
   GWEN_DIALOG *dlg;
@@ -38,8 +39,8 @@ int test1(int argc, char **argv) {
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 
-  gtk_set_locale ();
-  gtk_init (&argc, &argv);
+  gtk_set_locale();
+  gtk_init(&argc, &argv);
 
   /* create GUI */
   gui=Gtk2_Gui_new();
@@ -61,7 +62,8 @@ int test1(int argc, char **argv) {
 
 
 
-int test2(int argc, char **argv) {
+int test2(int argc, char **argv)
+{
   int rv;
   uint32_t id1;
   uint32_t id2;
@@ -69,8 +71,8 @@ int test2(int argc, char **argv) {
   uint64_t i2;
   GWEN_GUI *gui;
 
-  gtk_set_locale ();
-  gtk_init (&argc, &argv);
+  gtk_set_locale();
+  gtk_init(&argc, &argv);
 
   gui=Gtk2_Gui_new();
   GWEN_Gui_SetGui(gui);
@@ -123,7 +125,8 @@ int test2(int argc, char **argv) {
 
 
 
-int test3(int argc, char **argv) {
+int test3(int argc, char **argv)
+{
   GWEN_GUI *gui;
   int rv;
   GWEN_DIALOG *dlg;
@@ -136,8 +139,8 @@ int test3(int argc, char **argv) {
 
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 
-  gtk_set_locale ();
-  gtk_init (&argc, &argv);
+  gtk_set_locale();
+  gtk_init(&argc, &argv);
 
   /* create GUI */
   gui=Gtk2_Gui_new();
@@ -159,7 +162,8 @@ int test3(int argc, char **argv) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   if (argc>1) {
     if (strcasecmp(argv[1], "1")==0)
       return test1(argc, argv);

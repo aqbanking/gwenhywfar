@@ -26,7 +26,8 @@
 
 
 
-static int addToList(const char *fname, int recursive, GWEN_STRINGLIST *sl) {
+static int addToList(const char *fname, int recursive, GWEN_STRINGLIST *sl)
+{
   struct stat st;
   int rv;
 
@@ -64,7 +65,7 @@ static int addToList(const char *fname, int recursive, GWEN_STRINGLIST *sl) {
         return rv;
       }
 
-      while(0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
+      while (0==GWEN_Directory_Read(d, buffer, sizeof(buffer))) {
         if (strcmp(buffer, ".")!=0 &&
             strcmp(buffer, "..")!=0)
           GWEN_StringList_AppendString(sll, buffer, 0, 1);
@@ -79,7 +80,7 @@ static int addToList(const char *fname, int recursive, GWEN_STRINGLIST *sl) {
       GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
       pos=GWEN_Buffer_GetPos(tbuf);
       se=GWEN_StringList_FirstEntry(sll);
-      while(se) {
+      while (se) {
         const char *s;
 
         s=GWEN_StringListEntry_Data(se);
@@ -107,58 +108,59 @@ static int addToList(const char *fname, int recursive, GWEN_STRINGLIST *sl) {
 
 
 
-int add2Archive(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int add2Archive(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *aname;
   GWEN_SAR *sr;
   int rv;
   int recursive;
   int verbosity;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
-    GWEN_ArgsType_Char,               /* type */
-    "archive",                        /* name */
-    1,                                /* minnum */
-    1,                                /* maxnum */
-    "a",                              /* short option */
-    "archive",                        /* long option */
-    "Specify the archive file name",  /* short description */
-    "Specify the archive file name"   /* long description */
-  },
-  {
-    0, /* flags */
-    GWEN_ArgsType_Int,                /* type */
-    "recursive",                      /* name */
-    0,                                /* minnum */
-    1,                                /* maxnum */
-    "r",                              /* short option */
-    "recursive",                      /* long option */
-    "add folders recursively",        /* short description */
-    "add folders recursively"         /* long description */
-  },
-  {
-    0, /* flags */
-    GWEN_ArgsType_Int,                /* type */
-    "verbosity",                      /* name */
-    0,                                /* minnum */
-    10,                                /* maxnum */
-    "v",                              /* short option */
-    NULL,                             /* long option */
-    "set verbosity",                  /* short description */
-    "set verbosity"                   /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
+      GWEN_ArgsType_Char,               /* type */
+      "archive",                        /* name */
+      1,                                /* minnum */
+      1,                                /* maxnum */
+      "a",                              /* short option */
+      "archive",                        /* long option */
+      "Specify the archive file name",  /* short description */
+      "Specify the archive file name"   /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,                /* type */
+      "recursive",                      /* name */
+      0,                                /* minnum */
+      1,                                /* maxnum */
+      "r",                              /* short option */
+      "recursive",                      /* long option */
+      "add folders recursively",        /* short description */
+      "add folders recursively"         /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,                /* type */
+      "verbosity",                      /* name */
+      0,                                /* minnum */
+      10,                                /* maxnum */
+      "v",                              /* short option */
+      NULL,                             /* long option */
+      "set verbosity",                  /* short description */
+      "set verbosity"                   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -221,7 +223,7 @@ int add2Archive(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       const char *s;
 
       s=GWEN_StringListEntry_Data(se);

@@ -52,7 +52,8 @@ GWEN_INHERIT(GWEN_PLUGIN, GWEN_CONFIGMGR_PLUGIN)
 
 
 
-int GWEN_ConfigMgr_ModuleInit(void) {
+int GWEN_ConfigMgr_ModuleInit(void)
+{
   GWEN_PLUGIN_MANAGER *pm;
   int err;
   GWEN_STRINGLIST *sl;
@@ -73,7 +74,7 @@ int GWEN_ConfigMgr_ModuleInit(void) {
     pbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       GWEN_Buffer_AppendString(pbuf, GWEN_StringListEntry_Data(se));
       GWEN_Buffer_AppendString(pbuf, GWEN_DIR_SEPARATOR_S GWEN_CONFIGMGR_FOLDER);
       DBG_INFO(GWEN_LOGDOMAIN, "Adding plugin path [%s]",
@@ -92,7 +93,8 @@ int GWEN_ConfigMgr_ModuleInit(void) {
 
 
 
-int GWEN_ConfigMgr_ModuleFini(void) {
+int GWEN_ConfigMgr_ModuleFini(void)
+{
   GWEN_PLUGIN_MANAGER *pm;
 
   pm=GWEN_PluginManager_FindPluginManager(GWEN_CONFIGMGR_PLUGIN_NAME);
@@ -115,7 +117,8 @@ int GWEN_ConfigMgr_ModuleFini(void) {
 
 
 
-GWEN_CONFIGMGR *GWEN_ConfigMgr_new(const char *url) {
+GWEN_CONFIGMGR *GWEN_ConfigMgr_new(const char *url)
+{
   GWEN_CONFIGMGR *mgr;
 
   GWEN_NEW_OBJECT(GWEN_CONFIGMGR, mgr);
@@ -129,7 +132,8 @@ GWEN_CONFIGMGR *GWEN_ConfigMgr_new(const char *url) {
 
 
 
-void GWEN_ConfigMgr_free(GWEN_CONFIGMGR *mgr) {
+void GWEN_ConfigMgr_free(GWEN_CONFIGMGR *mgr)
+{
   if (mgr) {
     GWEN_INHERIT_FINI(GWEN_CONFIGMGR, mgr);
     free(mgr->url);
@@ -140,7 +144,8 @@ void GWEN_ConfigMgr_free(GWEN_CONFIGMGR *mgr) {
 
 
 GWEN_CONFIGMGR_GETGROUP_FN GWEN_ConfigMgr_SetGetGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_GETGROUP_FN f) {
+                                                        GWEN_CONFIGMGR_GETGROUP_FN f)
+{
   GWEN_CONFIGMGR_GETGROUP_FN of;
 
   assert(mgr);
@@ -153,7 +158,8 @@ GWEN_CONFIGMGR_GETGROUP_FN GWEN_ConfigMgr_SetGetGroupFn(GWEN_CONFIGMGR *mgr,
 
 
 GWEN_CONFIGMGR_SETGROUP_FN GWEN_ConfigMgr_SetSetGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_SETGROUP_FN f) {
+                                                        GWEN_CONFIGMGR_SETGROUP_FN f)
+{
   GWEN_CONFIGMGR_SETGROUP_FN of;
 
   assert(mgr);
@@ -166,7 +172,8 @@ GWEN_CONFIGMGR_SETGROUP_FN GWEN_ConfigMgr_SetSetGroupFn(GWEN_CONFIGMGR *mgr,
 
 
 GWEN_CONFIGMGR_LOCKGROUP_FN GWEN_ConfigMgr_SetLockGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_LOCKGROUP_FN f) {
+                                                          GWEN_CONFIGMGR_LOCKGROUP_FN f)
+{
   GWEN_CONFIGMGR_LOCKGROUP_FN of;
 
   assert(mgr);
@@ -179,7 +186,8 @@ GWEN_CONFIGMGR_LOCKGROUP_FN GWEN_ConfigMgr_SetLockGroupFn(GWEN_CONFIGMGR *mgr,
 
 
 GWEN_CONFIGMGR_UNLOCKGROUP_FN GWEN_ConfigMgr_SetUnlockGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_UNLOCKGROUP_FN f) {
+                                                              GWEN_CONFIGMGR_UNLOCKGROUP_FN f)
+{
   GWEN_CONFIGMGR_UNLOCKGROUP_FN of;
 
   assert(mgr);
@@ -192,7 +200,8 @@ GWEN_CONFIGMGR_UNLOCKGROUP_FN GWEN_ConfigMgr_SetUnlockGroupFn(GWEN_CONFIGMGR *mg
 
 
 GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_GETUNIQUEID_FN f) {
+                                                              GWEN_CONFIGMGR_GETUNIQUEID_FN f)
+{
   GWEN_CONFIGMGR_GETUNIQUEID_FN of;
 
   assert(mgr);
@@ -205,7 +214,8 @@ GWEN_CONFIGMGR_GETUNIQUEID_FN GWEN_ConfigMgr_SetGetUniqueIdFn(GWEN_CONFIGMGR *mg
 
 
 GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(GWEN_CONFIGMGR *mgr,
-                                                                        GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN f) {
+                                                                        GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN f)
+{
   GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN of;
 
   assert(mgr);
@@ -218,7 +228,8 @@ GWEN_CONFIGMGR_MKUNIQUEIDFROMID_FN GWEN_ConfigMgr_SetMkUniqueIdFromIdFn(GWEN_CON
 
 
 GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_DELETEGROUP_FN f) {
+                                                              GWEN_CONFIGMGR_DELETEGROUP_FN f)
+{
   GWEN_CONFIGMGR_DELETEGROUP_FN of;
 
   assert(mgr);
@@ -231,7 +242,8 @@ GWEN_CONFIGMGR_DELETEGROUP_FN GWEN_ConfigMgr_SetDeleteGroupFn(GWEN_CONFIGMGR *mg
 
 
 GWEN_CONFIGMGR_LISTGROUPS_FN GWEN_ConfigMgr_SetListGroupsFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_LISTGROUPS_FN f) {
+                                                            GWEN_CONFIGMGR_LISTGROUPS_FN f)
+{
   GWEN_CONFIGMGR_LISTGROUPS_FN of;
 
   assert(mgr);
@@ -244,7 +256,8 @@ GWEN_CONFIGMGR_LISTGROUPS_FN GWEN_ConfigMgr_SetListGroupsFn(GWEN_CONFIGMGR *mgr,
 
 
 GWEN_CONFIGMGR_LISTSUBGROUPS_FN GWEN_ConfigMgr_SetListSubGroupsFn(GWEN_CONFIGMGR *mgr,
-    GWEN_CONFIGMGR_LISTSUBGROUPS_FN f) {
+                                                                  GWEN_CONFIGMGR_LISTSUBGROUPS_FN f)
+{
   GWEN_CONFIGMGR_LISTSUBGROUPS_FN of;
 
   assert(mgr);
@@ -259,7 +272,8 @@ GWEN_CONFIGMGR_LISTSUBGROUPS_FN GWEN_ConfigMgr_SetListSubGroupsFn(GWEN_CONFIGMGR
 int GWEN_ConfigMgr_GetGroup(GWEN_CONFIGMGR *mgr,
                             const char *groupName,
                             const char *subGroupName,
-                            GWEN_DB_NODE **pDb) {
+                            GWEN_DB_NODE **pDb)
+{
   assert(mgr);
   if (mgr->getGroupFn)
     return mgr->getGroupFn(mgr, groupName, subGroupName, pDb);
@@ -272,7 +286,8 @@ int GWEN_ConfigMgr_GetGroup(GWEN_CONFIGMGR *mgr,
 int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
                             const char *groupName,
                             const char *subGroupName,
-                            GWEN_DB_NODE *db) {
+                            GWEN_DB_NODE *db)
+{
   assert(mgr);
   if (mgr->setGroupFn)
     return mgr->setGroupFn(mgr, groupName, subGroupName, db);
@@ -284,7 +299,8 @@ int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_LockGroup(GWEN_CONFIGMGR *mgr,
                              const char *groupName,
-                             const char *subGroupName) {
+                             const char *subGroupName)
+{
   assert(mgr);
   if (mgr->lockGroupFn)
     return mgr->lockGroupFn(mgr, groupName, subGroupName);
@@ -296,7 +312,8 @@ int GWEN_ConfigMgr_LockGroup(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
                                const char *groupName,
-                               const char *subGroupName) {
+                               const char *subGroupName)
+{
   assert(mgr);
   if (mgr->unlockGroupFn)
     return mgr->unlockGroupFn(mgr, groupName, subGroupName);
@@ -309,7 +326,8 @@ int GWEN_ConfigMgr_UnlockGroup(GWEN_CONFIGMGR *mgr,
 int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
                                const char *groupName,
                                char *buffer,
-                               uint32_t bufferLen) {
+                               uint32_t bufferLen)
+{
   assert(mgr);
   if (mgr->getUniqueIdFn)
     return mgr->getUniqueIdFn(mgr, groupName, buffer, bufferLen);
@@ -320,11 +338,12 @@ int GWEN_ConfigMgr_GetUniqueId(GWEN_CONFIGMGR *mgr,
 
 
 int GWEN_ConfigMgr_MkUniqueIdFromId(GWEN_CONFIGMGR *mgr,
-				    const char *groupName,
-				    uint32_t uid,
+                                    const char *groupName,
+                                    uint32_t uid,
                                     int doCheck,
-				    char *buffer,
-				    uint32_t bufferLen) {
+                                    char *buffer,
+                                    uint32_t bufferLen)
+{
   assert(mgr);
   if (mgr->mkUniqueIdFromIdFn)
     return mgr->mkUniqueIdFromIdFn(mgr, groupName, uid, doCheck, buffer, bufferLen);
@@ -336,7 +355,8 @@ int GWEN_ConfigMgr_MkUniqueIdFromId(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
                                const char *groupName,
-                               const char *subGroupName) {
+                               const char *subGroupName)
+{
   assert(mgr);
   if (mgr->deleteGroupFn)
     return mgr->deleteGroupFn(mgr, groupName, subGroupName);
@@ -347,7 +367,8 @@ int GWEN_ConfigMgr_DeleteGroup(GWEN_CONFIGMGR *mgr,
 
 
 int GWEN_ConfigMgr_ListGroups(GWEN_CONFIGMGR *mgr,
-                              GWEN_STRINGLIST *sl) {
+                              GWEN_STRINGLIST *sl)
+{
   assert(mgr);
   if (mgr->listGroupsFn)
     return mgr->listGroupsFn(mgr, sl);
@@ -358,7 +379,8 @@ int GWEN_ConfigMgr_ListGroups(GWEN_CONFIGMGR *mgr,
 
 int GWEN_ConfigMgr_ListSubGroups(GWEN_CONFIGMGR *mgr,
                                  const char *groupName,
-                                 GWEN_STRINGLIST *sl) {
+                                 GWEN_STRINGLIST *sl)
+{
   assert(mgr);
   if (mgr->listSubGroupsFn)
     return mgr->listSubGroupsFn(mgr, groupName, sl);
@@ -376,7 +398,8 @@ int GWEN_ConfigMgr_ListSubGroups(GWEN_CONFIGMGR *mgr,
 
 GWEN_PLUGIN *GWEN_ConfigMgr_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
                                        const char *name,
-                                       const char *fileName) {
+                                       const char *fileName)
+{
   GWEN_PLUGIN *pl;
   GWEN_CONFIGMGR_PLUGIN *xpl;
 
@@ -390,17 +413,19 @@ GWEN_PLUGIN *GWEN_ConfigMgr_Plugin_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWENHYWFAR_CB GWEN_ConfigMgr_Plugin_FreeData(GWEN_UNUSED void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_ConfigMgr_Plugin_FreeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CONFIGMGR_PLUGIN *xpl;
 
-  xpl=(GWEN_CONFIGMGR_PLUGIN*)p;
+  xpl=(GWEN_CONFIGMGR_PLUGIN *)p;
   GWEN_FREE_OBJECT(xpl);
 }
 
 
 
 void GWEN_ConfigMgr_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
-                                        GWEN_CONFIGMGR_PLUGIN_FACTORYFN f) {
+                                        GWEN_CONFIGMGR_PLUGIN_FACTORYFN f)
+{
   GWEN_CONFIGMGR_PLUGIN *xpl;
 
   assert(pl);
@@ -413,7 +438,8 @@ void GWEN_ConfigMgr_Plugin_SetFactoryFn(GWEN_PLUGIN *pl,
 
 
 GWEN_CONFIGMGR *GWEN_ConfigMgr_Plugin_Factory(GWEN_PLUGIN *pl,
-    const char *url) {
+                                              const char *url)
+{
   GWEN_CONFIGMGR_PLUGIN *xpl;
 
   assert(pl);
@@ -426,7 +452,8 @@ GWEN_CONFIGMGR *GWEN_ConfigMgr_Plugin_Factory(GWEN_PLUGIN *pl,
 
 
 
-GWEN_CONFIGMGR *GWEN_ConfigMgr_Factory(const char *url) {
+GWEN_CONFIGMGR *GWEN_ConfigMgr_Factory(const char *url)
+{
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CONFIGMGR *mgr=NULL;

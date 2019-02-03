@@ -31,9 +31,9 @@ struct COCOA_GUI_DIALOG {
   //BOOL modalSessionStarted;
   //NSModalSession session;
 
-  void* unmap_handler;
-  void* destroy_handler;
-  void* delete_handler;
+  void *unmap_handler;
+  void *destroy_handler;
+  void *delete_handler;
 
 };
 
@@ -41,31 +41,31 @@ static void GWENHYWFAR_CB CocoaGui_Dialog_FreeData(void *bp, void *p);
 
 
 static int CocoaGui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    int value,
-    int doSignal);
+                                          GWEN_WIDGET *w,
+                                          GWEN_DIALOG_PROPERTY prop,
+                                          int index,
+                                          int value,
+                                          int doSignal);
 
 
 static int CocoaGui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    int defaultValue);
+                                          GWEN_WIDGET *w,
+                                          GWEN_DIALOG_PROPERTY prop,
+                                          int index,
+                                          int defaultValue);
 
 static int CocoaGui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *value,
-    int doSignal);
+                                           GWEN_WIDGET *w,
+                                           GWEN_DIALOG_PROPERTY prop,
+                                           int index,
+                                           const char *value,
+                                           int doSignal);
 
 static const char *CocoaGui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
-    GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue);
+                                                   GWEN_WIDGET *w,
+                                                   GWEN_DIALOG_PROPERTY prop,
+                                                   int index,
+                                                   const char *defaultValue);
 
 
 static int CocoaGui_Dialog_SetupTree(GWEN_WIDGET *w);

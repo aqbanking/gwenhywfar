@@ -21,7 +21,8 @@
 
 
 
-int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname) {
+int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
+{
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_BUILDER *tb=NULL;
   TYPEMAKER2_TYPE *ty;
@@ -70,18 +71,18 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname) {
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       s=GWEN_StringListEntry_Data(se);
       if (s) {
-	GWEN_BUFFER *xbuf;
+        GWEN_BUFFER *xbuf;
 
-	xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	GWEN_Buffer_AppendString(xbuf, s);
-	GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
+        xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Buffer_AppendString(xbuf, s);
+        GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
         s=Typemaker2_TypeManager_GetLanguage(tym);
-	if (s && *s)
-	  GWEN_Buffer_AppendString(xbuf, s);
-	Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
+        if (s && *s)
+          GWEN_Buffer_AppendString(xbuf, s);
+        Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
         GWEN_Buffer_free(xbuf);
       }
       se=GWEN_StringListEntry_Next(se);
@@ -97,9 +98,9 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname) {
   }
 
   it=Typemaker2_Type_List2_First(tlist);
-  if(it) {
+  if (it) {
     ty=Typemaker2_Type_List2Iterator_Data(it);
-    while(ty) {
+    while (ty) {
       /* DEBUG */
 #if 0
       Typemaker2_TypeManager_Dump(tym, stderr, 2);
@@ -129,26 +130,26 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname) {
     s=GWEN_DB_GetCharValue(dbArgs, "publicFile", 0, NULL);
     if (s)
       Typemaker2_Builder_SetFileNamePublic(tb, s);
-  
+
     s=GWEN_DB_GetCharValue(dbArgs, "libraryFile", 0, NULL);
     if (s)
       Typemaker2_Builder_SetFileNameLibrary(tb, s);
-  
+
     s=GWEN_DB_GetCharValue(dbArgs, "protectedFile", 0, NULL);
     if (s)
       Typemaker2_Builder_SetFileNameProtected(tb, s);
-  
+
     s=GWEN_DB_GetCharValue(dbArgs, "privateFile", 0, NULL);
     if (s)
       Typemaker2_Builder_SetFileNamePrivate(tb, s);
-  
+
     s=GWEN_DB_GetCharValue(dbArgs, "codeFile", 0, NULL);
     if (s)
       Typemaker2_Builder_SetFileNameCode(tb, s);
 
     s = GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
     if (s)
-        Typemaker2_Builder_SetDestFolderName(tb, s);
+      Typemaker2_Builder_SetDestFolderName(tb, s);
 
     ty=Typemaker2_Type_List2_GetFront(tlist);
     rv=Typemaker2_Builder_WriteFiles(tb, ty, 0);
@@ -166,7 +167,8 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname) {
 
 
 
-int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
+int buildFile(GWEN_DB_NODE *dbArgs, const char *fname)
+{
   TYPEMAKER2_TYPEMANAGER *tym;
   TYPEMAKER2_BUILDER *tb=NULL;
   TYPEMAKER2_TYPE *ty;
@@ -213,18 +215,18 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       s=GWEN_StringListEntry_Data(se);
       if (s) {
-	GWEN_BUFFER *xbuf;
+        GWEN_BUFFER *xbuf;
 
-	xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	GWEN_Buffer_AppendString(xbuf, s);
-	GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
+        xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Buffer_AppendString(xbuf, s);
+        GWEN_Buffer_AppendString(xbuf, "/typemaker2/");
         s=Typemaker2_TypeManager_GetLanguage(tym);
-	if (s && *s)
-	  GWEN_Buffer_AppendString(xbuf, s);
-	Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
+        if (s && *s)
+          GWEN_Buffer_AppendString(xbuf, s);
+        Typemaker2_TypeManager_AddFolder(tym, GWEN_Buffer_GetStart(xbuf));
         GWEN_Buffer_free(xbuf);
       }
       se=GWEN_StringListEntry_Next(se);
@@ -254,7 +256,7 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
 
   s = GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
   if (s)
-      Typemaker2_Builder_SetDestFolderName(tb, s);
+    Typemaker2_Builder_SetDestFolderName(tb, s);
 
   ty=Typemaker2_TypeManager_LoadTypeFile(tym, fname);
   if (ty==NULL) {
@@ -285,7 +287,8 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname) {
 
 
 
-int build(GWEN_DB_NODE *dbArgs) {
+int build(GWEN_DB_NODE *dbArgs)
+{
   int i;
 
   for (i=0; i<99; i++) {
@@ -295,14 +298,14 @@ int build(GWEN_DB_NODE *dbArgs) {
     if (fileName) {
       int rv=buildFile2(dbArgs, fileName);
       if (rv != 0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Error building type from [%s]", fileName);
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error building type from [%s]", fileName);
         return 2;
       }
     }
     else {
       if (i==0) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "No input");
-	return 1;
+        DBG_ERROR(GWEN_LOGDOMAIN, "No input");
+        return 1;
       }
     }
   }

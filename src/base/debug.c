@@ -50,7 +50,8 @@ uint32_t GWEN_Debug_PrintDec(char *buffer,
                              uint32_t size,
                              uint32_t num,
                              int leadingZero,
-                             uint32_t length) {
+                             uint32_t length)
+{
   uint32_t i;
   uint32_t j;
   uint32_t k;
@@ -62,7 +63,7 @@ uint32_t GWEN_Debug_PrintDec(char *buffer,
   i=0;
   j=1000000000;
 
-  while(j) {
+  while (j) {
     k=num/j;
     numOr|=k;
     if (numOr || leadingZero || j==1) {
@@ -80,7 +81,7 @@ uint32_t GWEN_Debug_PrintDec(char *buffer,
 
     /* fill left up to length-(sizeof number) */
     k=length-i;
-    while(k) {
+    while (k) {
       if (j<size) {
         if (leadingZero)
           buffer[j]='0';
@@ -114,7 +115,8 @@ uint32_t GWEN_Debug_PrintHex(char *buffer,
                              uint32_t num,
                              int leadingZero,
                              int up,
-                             uint32_t length) {
+                             uint32_t length)
+{
   uint32_t i;
   uint32_t j;
   uint32_t k;
@@ -126,7 +128,7 @@ uint32_t GWEN_Debug_PrintHex(char *buffer,
   i=0;
   j=8;
 
-  while(j) {
+  while (j) {
     k=(num>>((j-1)*4))&0xf;
     numOr|=k;
     if (numOr || leadingZero || j==1) {
@@ -150,7 +152,7 @@ uint32_t GWEN_Debug_PrintHex(char *buffer,
 
     /* fill left up to length-(sizeof number) */
     k=length-i;
-    while(k) {
+    while (k) {
       if (j<size) {
         if (leadingZero)
           buffer[j]='0';
@@ -183,13 +185,14 @@ uint32_t GWEN_Debug_PrintHex(char *buffer,
 
 uint32_t GWEN_Debug_Snprintf(char *buffer,
                              uint32_t size,
-                             const char *fmt, ...) {
+                             const char *fmt, ...)
+{
   va_list arguments;
   uint32_t i;
 
   i=0;
   va_start(arguments, fmt);
-  while(*fmt) {
+  while (*fmt) {
     if (*fmt=='%') {
       fmt++;
       if (*fmt=='%') {
@@ -219,8 +222,8 @@ uint32_t GWEN_Debug_Snprintf(char *buffer,
         }
 
         /* read type */
-        switch(*fmt) {
-          /* decimal integer */
+        switch (*fmt) {
+        /* decimal integer */
         case 'c':
         case 'd': {
           int p;
@@ -271,10 +274,10 @@ uint32_t GWEN_Debug_Snprintf(char *buffer,
         case 's': {
           const char *p;
 
-          p=va_arg(arguments, const char*);
+          p=va_arg(arguments, const char *);
           if (!p)
             p="(null)";
-          while(*p) {
+          while (*p) {
             if (i<size)
               buffer[i]=*p;
             i++;
@@ -308,7 +311,8 @@ uint32_t GWEN_Debug_Snprintf(char *buffer,
 
 
 #ifdef NO_VARIADIC_MACROS
-void DBG_ERROR(const char *dbg_logger, const char *format, ...) {
+void DBG_ERROR(const char *dbg_logger, const char *format, ...)
+{
   va_list args;
   char dbg_buffer[256];
   va_start(args, format);
@@ -318,7 +322,8 @@ void DBG_ERROR(const char *dbg_logger, const char *format, ...) {
   va_end(args);
 }
 
-void DBG_WARN(const char *dbg_logger, const char *format, ...) {
+void DBG_WARN(const char *dbg_logger, const char *format, ...)
+{
   va_list args;
   char dbg_buffer[256];
   va_start(args, format);
@@ -328,7 +333,8 @@ void DBG_WARN(const char *dbg_logger, const char *format, ...) {
   va_end(args);
 }
 
-void DBG_NOTICE(const char *dbg_logger, const char *format, ...) {
+void DBG_NOTICE(const char *dbg_logger, const char *format, ...)
+{
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelNotice) {
     va_list args;
     char dbg_buffer[256];
@@ -340,7 +346,8 @@ void DBG_NOTICE(const char *dbg_logger, const char *format, ...) {
   }
 }
 
-void DBG_INFO(const char *dbg_logger, const char *format, ...) {
+void DBG_INFO(const char *dbg_logger, const char *format, ...)
+{
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelInfo) {
     va_list args;
     char dbg_buffer[256];
@@ -352,7 +359,8 @@ void DBG_INFO(const char *dbg_logger, const char *format, ...) {
   }
 }
 
-void DBG_DEBUG(const char *dbg_logger, const char *format, ...) {
+void DBG_DEBUG(const char *dbg_logger, const char *format, ...)
+{
 # ifndef DISABLE_DEBUGLOG
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelDebug) {
     va_list args;
@@ -366,7 +374,8 @@ void DBG_DEBUG(const char *dbg_logger, const char *format, ...) {
 # endif /* DISABLE_DEBUGLOG */
 }
 
-void DBG_VERBOUS(const char *dbg_logger, const char *format, ...) {
+void DBG_VERBOUS(const char *dbg_logger, const char *format, ...)
+{
 # ifndef DISABLE_DEBUGLOG
   if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevelVerbous) {
     va_list args;
@@ -388,10 +397,10 @@ void DBG_VERBOUS(const char *dbg_logger, const char *format, ...) {
 
 
 
-GWEN_MEMORY_DEBUG_ENTRY*
-GWEN_MemoryDebugEntry_new(GWEN_MEMORY_DEBUG_ENTRY_TYPE t,
-                          const char *wFile,
-                          int wLine) {
+GWEN_MEMORY_DEBUG_ENTRY *GWEN_MemoryDebugEntry_new(GWEN_MEMORY_DEBUG_ENTRY_TYPE t,
+                                                   const char *wFile,
+                                                   int wLine)
+{
   GWEN_MEMORY_DEBUG_ENTRY *e;
 
   assert(wFile);
@@ -405,7 +414,8 @@ GWEN_MemoryDebugEntry_new(GWEN_MEMORY_DEBUG_ENTRY_TYPE t,
 
 
 
-void GWEN_MemoryDebugEntry_free(GWEN_MEMORY_DEBUG_ENTRY *e) {
+void GWEN_MemoryDebugEntry_free(GWEN_MEMORY_DEBUG_ENTRY *e)
+{
   if (e) {
     free(e->file);
     GWEN_FREE_OBJECT(e);
@@ -415,7 +425,8 @@ void GWEN_MemoryDebugEntry_free(GWEN_MEMORY_DEBUG_ENTRY *e) {
 
 
 
-GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebugObject_new(const char *name) {
+GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebugObject_new(const char *name)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   assert(name);
@@ -426,12 +437,13 @@ GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebugObject_new(const char *name) {
 
 
 
-void GWEN_MemoryDebugObject_free(GWEN_MEMORY_DEBUG_OBJECT *o) {
+void GWEN_MemoryDebugObject_free(GWEN_MEMORY_DEBUG_OBJECT *o)
+{
   if (o) {
     GWEN_MEMORY_DEBUG_ENTRY *e;
 
     e=o->entries;
-    while(e) {
+    while (e) {
       GWEN_MEMORY_DEBUG_ENTRY *next;
 
       next=e->next;
@@ -445,11 +457,12 @@ void GWEN_MemoryDebugObject_free(GWEN_MEMORY_DEBUG_OBJECT *o) {
 
 
 
-GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebug__FindObject(const char *name) {
+GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebug__FindObject(const char *name)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   o=gwen_debug__memobjects;
-  while(o) {
+  while (o) {
     assert(o->name);
     if (strcasecmp(o->name, name)==0)
       break;
@@ -468,7 +481,8 @@ GWEN_MEMORY_DEBUG_OBJECT *GWEN_MemoryDebug__FindObject(const char *name) {
 void GWEN_MemoryDebug_Increment(const char *name,
                                 const char *wFile,
                                 int wLine,
-                                int attach) {
+                                int attach)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
   GWEN_MEMORY_DEBUG_ENTRY *e;
 
@@ -498,7 +512,8 @@ void GWEN_MemoryDebug_Increment(const char *name,
 
 void GWEN_MemoryDebug_Decrement(const char *name,
                                 const char *wFile,
-                                int wLine) {
+                                int wLine)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
   GWEN_MEMORY_DEBUG_ENTRY *e;
 
@@ -528,7 +543,8 @@ void GWEN_MemoryDebug_Decrement(const char *name,
 
 
 void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
-                                  uint32_t mode) {
+                                  uint32_t mode)
+{
 
   DBG_ERROR(0, "Object \"%s\" (count=%ld)",
             o->name, o->count);
@@ -537,11 +553,11 @@ void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
 
     if (mode!=GWEN_MEMORY_DEBUG_MODE_SHORT) {
       e=o->entries;
-      while(e) {
+      while (e) {
         const char *s;
 
         fprintf(stderr, " ");
-        switch(e->type) {
+        switch (e->type) {
         case GWEN_MemoryDebugEntryTypeCreate:
           s="created";
           break;
@@ -565,7 +581,8 @@ void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
 
 
 void GWEN_MemoryDebug_DumpObject(const char *name,
-                                 uint32_t mode) {
+                                 uint32_t mode)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   assert(name);
@@ -579,7 +596,8 @@ void GWEN_MemoryDebug_DumpObject(const char *name,
 
 
 
-long int GWEN_MemoryDebug_GetObjectCount(const char *name) {
+long int GWEN_MemoryDebug_GetObjectCount(const char *name)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   assert(name);
@@ -594,13 +612,14 @@ long int GWEN_MemoryDebug_GetObjectCount(const char *name) {
 
 
 
-void GWEN_MemoryDebug_Dump(uint32_t mode) {
+void GWEN_MemoryDebug_Dump(uint32_t mode)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   DBG_ERROR(0, "Gwenhywfar Memory Debugger Statistics:");
   DBG_ERROR(0, "====================================== begin\n");
   o=gwen_debug__memobjects;
-  while(o) {
+  while (o) {
     GWEN_MemoryDebug__DumpObject(o, mode);
     o=o->next;
   }
@@ -609,11 +628,12 @@ void GWEN_MemoryDebug_Dump(uint32_t mode) {
 
 
 
-void GWEN_MemoryDebug_CleanUp(void) {
+void GWEN_MemoryDebug_CleanUp(void)
+{
   GWEN_MEMORY_DEBUG_OBJECT *o;
 
   o=gwen_debug__memobjects;
-  while(o) {
+  while (o) {
     GWEN_MEMORY_DEBUG_OBJECT *next;
 
     next=o->next;

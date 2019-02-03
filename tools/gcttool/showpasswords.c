@@ -27,36 +27,37 @@
  */
 
 
-int showPasswords(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int showPasswords(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *file;
   GWEN_PASSWD_STORE *sto;
   GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *se;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "file",                       /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "f",                          /* short option */
-    "file",                       /* long option */
-    "Specify the password file",     /* short description */
-    "Specify the password file"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "file",                       /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "f",                          /* short option */
+      "file",                       /* long option */
+      "Specify the password file",     /* short description */
+      "Specify the password file"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -95,7 +96,7 @@ int showPasswords(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   }
 
   se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);
@@ -104,9 +105,9 @@ int showPasswords(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
       rv=GWEN_PasswordStore_GetPassword(sto, s, passwd, 1, sizeof(passwd)-1);
       if (rv<0) {
-	fprintf(stderr, "ERROR: Could not get password for token \"%s\": %d\n", s, rv);
-	GWEN_PasswordStore_free(sto);
-	return 3;
+        fprintf(stderr, "ERROR: Could not get password for token \"%s\": %d\n", s, rv);
+        GWEN_PasswordStore_free(sto);
+        return 3;
       }
       passwd[sizeof(passwd)-1]=0;
       fprintf(stdout, "\"%s\" -> \"%s\"\n", s, passwd);

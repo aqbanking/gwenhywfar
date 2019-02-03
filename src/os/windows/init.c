@@ -45,7 +45,8 @@
  */
 BOOL APIENTRY DllMain(HINSTANCE hInst,
                       DWORD reason,
-                      LPVOID reserved) {
+                      LPVOID reserved)
+{
   int err;
 
   switch (reason) {

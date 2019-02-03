@@ -41,7 +41,8 @@
 
 
 
-int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags) {
+int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags)
+{
   GWEN_BUFFER *buf;
   int rv;
 
@@ -52,7 +53,7 @@ int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags) {
     return rv;
   }
 
-  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf));
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf));
   GWEN_Buffer_free(buf);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
@@ -65,7 +66,8 @@ int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags) {
 
 int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_SYNCIO *sio,
-		   const char *where) {
+                   const char *where)
+{
   int isSys;
   int err;
   const char *d;
@@ -76,36 +78,54 @@ int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
   if (strcasecmp(nwhere, where)==0) {*/
   dn=GWEN_XMLNode_GetFirstData(node);
   if (!dn) {
-      DBG_ERROR(0, "Empty <header>");
-      return -1;
+    DBG_ERROR(0, "Empty <header>");
+    return -1;
   }
   d=GWEN_XMLNode_GetData(dn);
   if (!d) {
-      DBG_ERROR(0, "Empty <header>");
-      return -1;
+    DBG_ERROR(0, "Empty <header>");
+    return -1;
   }
   isSys=(strcasecmp(GWEN_XMLNode_GetProperty(node, "type", ""),
                     "sys")==0);
 
   err=GWEN_SyncIo_WriteString(sio, "#include ");
-  if (err) { DBG_ERROR_ERR(0, err); return -1;}
+  if (err) {
+    DBG_ERROR_ERR(0, err);
+    return -1;
+  }
   if (isSys) {
-      err=GWEN_SyncIo_WriteString(sio, "<");
-      if (err) { DBG_ERROR_ERR(0, err); return -1;}
+    err=GWEN_SyncIo_WriteString(sio, "<");
+    if (err) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
   }
   else {
-      err=GWEN_SyncIo_WriteString(sio, "\"");
-      if (err) { DBG_ERROR_ERR(0, err); return -1;}
+    err=GWEN_SyncIo_WriteString(sio, "\"");
+    if (err) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
   }
   err=GWEN_SyncIo_WriteString(sio, d);
-  if (err) { DBG_ERROR_ERR(0, err); return -1;}
+  if (err) {
+    DBG_ERROR_ERR(0, err);
+    return -1;
+  }
   if (isSys) {
-      err=GWEN_SyncIo_WriteLine(sio, ">");
-      if (err) { DBG_ERROR_ERR(0, err); return -1;}
+    err=GWEN_SyncIo_WriteLine(sio, ">");
+    if (err) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
   }
   else {
-      err=GWEN_SyncIo_WriteLine(sio, "\"");
-      if (err) { DBG_ERROR_ERR(0, err); return -1;}
+    err=GWEN_SyncIo_WriteLine(sio, "\"");
+    if (err) {
+      DBG_ERROR_ERR(0, err);
+      return -1;
+    }
   }
   /*} */
 
@@ -113,7 +133,8 @@ int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
 }
 
 
-void write_if_nonnull(GWEN_SYNCIO *sio, const char *str) {
+void write_if_nonnull(GWEN_SYNCIO *sio, const char *str)
+{
   if (str) {
     GWEN_SyncIo_WriteString(sio, str);
     GWEN_SyncIo_WriteString(sio, " ");
@@ -124,7 +145,8 @@ void write_if_nonnull(GWEN_SYNCIO *sio, const char *str) {
 int write_h_setget_c(ARGUMENTS *args,
                      GWEN_XMLNODE *node,
                      GWEN_SYNCIO *sio,
-                     const char *acc) {
+                     const char *acc)
+{
   GWEN_XMLNODE *n;
   int rv;
   const char *prefix;
@@ -143,7 +165,7 @@ int write_h_setget_c(ARGUMENTS *args,
     return -1;
   }
   n=GWEN_XMLNode_GetFirstTag(node);
-  while(n) {
+  while (n) {
     if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
       if (strcasecmp(GWEN_XMLNode_GetData(n), "group")==0) {
         const char *name;
@@ -159,15 +181,15 @@ int write_h_setget_c(ARGUMENTS *args,
           dn=GWEN_XMLNode_FindFirstTag(n, "descr", 0, 0);
           if (dn) {
             GWEN_SyncIo_WriteLine(sio, " *");
-	    if (write_xml_to_bio(dn, sio,
-				 GWEN_XML_FLAGS_SIMPLE |
-				 GWEN_XML_FLAGS_INDENT))
+            if (write_xml_to_bio(dn, sio,
+                                 GWEN_XML_FLAGS_SIMPLE |
+                                 GWEN_XML_FLAGS_INDENT))
               return -1;
           }
           GWEN_SyncIo_WriteLine(sio, "*/");
           GWEN_SyncIo_WriteLine(sio, "/*@{*/");
         }
-  
+
         rv=write_h_setget_c(args, n, sio, acc);
         if (rv)
           return rv;
@@ -178,9 +200,9 @@ int write_h_setget_c(ARGUMENTS *args,
 
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
-	if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", sacc),
-		       acc)==0) {
-	  int isPtr;
+        if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", sacc),
+                       acc)==0) {
+          int isPtr;
           const char *typ;
           const char *name;
           const char *mode;
@@ -194,7 +216,7 @@ int write_h_setget_c(ARGUMENTS *args,
             DBG_ERROR(0, "No name for element");
             return -1;
           }
-  
+
           typ=GWEN_XMLNode_GetProperty(n, "type", 0);
           if (!typ) {
             DBG_ERROR(0, "No type for element");
@@ -303,7 +325,7 @@ int write_h_setget_c(ARGUMENTS *args,
 
           if (strcasecmp(typ, "GWEN_STRINGLIST")==0) {
             /* special functions for string lists */
-	    write_if_nonnull(sio, args->domain);
+            write_if_nonnull(sio, args->domain);
             GWEN_SyncIo_WriteString(sio, "void ");
             GWEN_SyncIo_WriteString(sio, prefix);
             GWEN_SyncIo_WriteString(sio, "_Add");
@@ -313,7 +335,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_SyncIo_WriteString(sio, styp);
             GWEN_SyncIo_WriteLine(sio, " *st, const char *d, int chk);");
 
-	    write_if_nonnull(sio, args->domain);
+            write_if_nonnull(sio, args->domain);
             GWEN_SyncIo_WriteString(sio, "void ");
             GWEN_SyncIo_WriteString(sio, prefix);
             GWEN_SyncIo_WriteString(sio, "_Remove");
@@ -323,7 +345,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_SyncIo_WriteString(sio, styp);
             GWEN_SyncIo_WriteLine(sio, " *st, const char *d);");
 
-	    write_if_nonnull(sio, args->domain);
+            write_if_nonnull(sio, args->domain);
             GWEN_SyncIo_WriteString(sio, "void ");
             GWEN_SyncIo_WriteString(sio, prefix);
             GWEN_SyncIo_WriteString(sio, "_Clear");
@@ -333,7 +355,7 @@ int write_h_setget_c(ARGUMENTS *args,
             GWEN_SyncIo_WriteString(sio, styp);
             GWEN_SyncIo_WriteLine(sio, " *st);");
 
-	    write_if_nonnull(sio, args->domain);
+            write_if_nonnull(sio, args->domain);
             GWEN_SyncIo_WriteString(sio, "int ");
             GWEN_SyncIo_WriteString(sio, prefix);
             GWEN_SyncIo_WriteString(sio, "_Has");
@@ -347,8 +369,8 @@ int write_h_setget_c(ARGUMENTS *args,
         }
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "func")==0) {
-	if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", sacc),
-		       acc)==0) {
+        if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", sacc),
+                       acc)==0) {
           const char *typ;
           const char *name;
           const char *rettype;
@@ -362,7 +384,7 @@ int write_h_setget_c(ARGUMENTS *args,
             DBG_ERROR(0, "No name for element");
             return -1;
           }
-  
+
           typ=GWEN_XMLNode_GetProperty(n, "type", 0);
           if (!typ) {
             DBG_ERROR(0, "No type for element");
@@ -371,8 +393,8 @@ int write_h_setget_c(ARGUMENTS *args,
 
           rettype=GWEN_XMLNode_GetProperty(n, "return", 0);
           if (!rettype) {
-              DBG_ERROR(0, "No return type for function");
-              return -1;
+            DBG_ERROR(0, "No return type for function");
+            return -1;
           }
 
           isPtr=atoi(get_property(n, "ptr", "0"));
@@ -437,19 +459,19 @@ int write_h_setget_c(ARGUMENTS *args,
           GWEN_SyncIo_WriteChar(sio, toupper(*name));
           GWEN_SyncIo_WriteString(sio, name+1);
           GWEN_SyncIo_WriteString(sio, "(");
-  
+
           GWEN_SyncIo_WriteString(sio, styp);
           GWEN_SyncIo_WriteString(sio, " *st");
-  
+
           anode=GWEN_XMLNode_FindFirstTag(n, "arg", 0, 0);
           idx=0;
-          while(anode) {
+          while (anode) {
             const char *aname;
             const char *atype;
             int aisPtr;
-      
+
             GWEN_SyncIo_WriteString(sio, ", ");
-  
+
             aisPtr=atoi(GWEN_XMLNode_GetProperty(anode, "ptr", "0"));
             aname=GWEN_XMLNode_GetProperty(anode, "name", 0);
             if (!aname || !*aname) {
@@ -461,17 +483,17 @@ int write_h_setget_c(ARGUMENTS *args,
               DBG_ERROR(0, "No type for argument %d in function %s", idx, name);
               return -1;
             }
-      
+
             GWEN_SyncIo_WriteString(sio, atype);
             if (aisPtr)
               GWEN_SyncIo_WriteString(sio, "*");
             GWEN_SyncIo_WriteString(sio, " ");
             GWEN_SyncIo_WriteString(sio, aname);
-      
+
             idx++;
             anode=GWEN_XMLNode_FindNextTag(anode, "arg", 0, 0);
           }
-  
+
           GWEN_SyncIo_WriteLine(sio, ");");
 
         }
@@ -486,8 +508,9 @@ int write_h_setget_c(ARGUMENTS *args,
 
 
 int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
-		  GWEN_SYNCIO *sio,
-		  const char *acc) {
+                  GWEN_SYNCIO *sio,
+                  const char *acc)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(node, "subtypes", 0, 0);
@@ -515,93 +538,93 @@ int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
     GWEN_Buffer_AppendString(tid, "_");
     tpos=GWEN_Buffer_GetPos(tid);
 
-    while(n) {
+    while (n) {
       s=GWEN_XMLNode_GetProperty(n, "access", "public");
       if (strcasecmp(s, acc)==0) {
-	GWEN_XMLNODE *nn;
+        GWEN_XMLNODE *nn;
 
-	s=GWEN_XMLNode_GetProperty(n, "id", 0);
-	assert(s);
-	GWEN_Buffer_AppendString(tid, s);
-	s=GWEN_XMLNode_GetProperty(n, "prefix", 0);
-	assert(s);
-	GWEN_Buffer_AppendString(tprefix, s);
-  
-	GWEN_SyncIo_WriteLine(sio, "typedef enum {");
-	GWEN_SyncIo_WriteString(sio, "  ");
-	GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
-	GWEN_SyncIo_WriteString(sio, "Unknown=-1");
+        s=GWEN_XMLNode_GetProperty(n, "id", 0);
+        assert(s);
+        GWEN_Buffer_AppendString(tid, s);
+        s=GWEN_XMLNode_GetProperty(n, "prefix", 0);
+        assert(s);
+        GWEN_Buffer_AppendString(tprefix, s);
 
-	nn=GWEN_XMLNode_FindFirstTag(n, "values", 0, 0);
-	if (nn)
-	  nn=GWEN_XMLNode_FindFirstTag(nn, "value", 0, 0);
-	if (nn) {
-	  uint32_t vpos;
+        GWEN_SyncIo_WriteLine(sio, "typedef enum {");
+        GWEN_SyncIo_WriteString(sio, "  ");
+        GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
+        GWEN_SyncIo_WriteString(sio, "Unknown=-1");
 
-	  vpos=GWEN_Buffer_GetPos(tprefix);
-	  while(nn) {
-	    GWEN_XMLNODE *nnn;
+        nn=GWEN_XMLNode_FindFirstTag(n, "values", 0, 0);
+        if (nn)
+          nn=GWEN_XMLNode_FindFirstTag(nn, "value", 0, 0);
+        if (nn) {
+          uint32_t vpos;
+
+          vpos=GWEN_Buffer_GetPos(tprefix);
+          while (nn) {
+            GWEN_XMLNODE *nnn;
             GWEN_XMLNODE *dn;
 
-	    nnn=GWEN_XMLNode_GetFirstData(nn);
-	    if (!nnn) {
-	      DBG_ERROR(0, "No values in enum description for \"%s\"",
-			GWEN_Buffer_GetStart(tid));
-	      GWEN_Buffer_free(tid);
-	      GWEN_Buffer_free(tprefix);
-	      return -1;
-	    }
+            nnn=GWEN_XMLNode_GetFirstData(nn);
+            if (!nnn) {
+              DBG_ERROR(0, "No values in enum description for \"%s\"",
+                        GWEN_Buffer_GetStart(tid));
+              GWEN_Buffer_free(tid);
+              GWEN_Buffer_free(tprefix);
+              return -1;
+            }
             GWEN_SyncIo_WriteLine(sio, ",");
 
             dn=GWEN_XMLNode_FindFirstTag(nn, "descr", 0, 0);
             if (dn) {
               GWEN_SyncIo_WriteString(sio, "  /** ");
               if (write_xml_to_bio(dn, sio,
-                                             GWEN_XML_FLAGS_SIMPLE |
-                                             GWEN_XML_FLAGS_INDENT))
+                                   GWEN_XML_FLAGS_SIMPLE |
+                                   GWEN_XML_FLAGS_INDENT))
                 return -1;
               GWEN_SyncIo_WriteLine(sio, "  */");
             }
 
             GWEN_SyncIo_WriteString(sio, "  ");
-	    s=GWEN_XMLNode_GetData(nnn);
-	    assert(s);
-	    GWEN_Buffer_AppendByte(tprefix, toupper(*s));
-	    GWEN_Buffer_AppendString(tprefix, s+1);
-	    GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
-	    s=GWEN_XMLNode_GetProperty(nn, "value", 0);
-	    if (s) {
-	      GWEN_SyncIo_WriteString(sio, "=");
-	      GWEN_SyncIo_WriteString(sio, s);
-	    }
-  
-	    GWEN_Buffer_Crop(tprefix, 0, vpos);
-	    nn=GWEN_XMLNode_FindNextTag(nn, "value", 0, 0);
-	  }
-	}
-  
-	GWEN_SyncIo_WriteLine(sio, "");
-	GWEN_SyncIo_WriteString(sio, "} ");
-	GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tid));
-	GWEN_SyncIo_WriteLine(sio, ";");
-	GWEN_SyncIo_WriteLine(sio, "");
+            s=GWEN_XMLNode_GetData(nnn);
+            assert(s);
+            GWEN_Buffer_AppendByte(tprefix, toupper(*s));
+            GWEN_Buffer_AppendString(tprefix, s+1);
+            GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
+            s=GWEN_XMLNode_GetProperty(nn, "value", 0);
+            if (s) {
+              GWEN_SyncIo_WriteString(sio, "=");
+              GWEN_SyncIo_WriteString(sio, s);
+            }
 
-	write_if_nonnull(sio, args->domain);
-	GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tid));
-	GWEN_SyncIo_WriteString(sio, " ");
-	GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
-	GWEN_SyncIo_WriteLine(sio, "_fromString(const char *s);");
+            GWEN_Buffer_Crop(tprefix, 0, vpos);
+            nn=GWEN_XMLNode_FindNextTag(nn, "value", 0, 0);
+          }
+        }
 
-	write_if_nonnull(sio, args->domain);
-	GWEN_SyncIo_WriteString(sio, "const char *");
-	GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
-	GWEN_SyncIo_WriteString(sio, "_toString(");
-	GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tid));
-	GWEN_SyncIo_WriteLine(sio, " v);");
+        GWEN_SyncIo_WriteLine(sio, "");
+        GWEN_SyncIo_WriteString(sio, "} ");
+        GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tid));
+        GWEN_SyncIo_WriteLine(sio, ";");
+        GWEN_SyncIo_WriteLine(sio, "");
 
-	GWEN_Buffer_Crop(tprefix, 0, ppos);
-	GWEN_Buffer_Crop(tid, 0, tpos);
-	GWEN_SyncIo_WriteLine(sio, "");
+        write_if_nonnull(sio, args->domain);
+        GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tid));
+        GWEN_SyncIo_WriteString(sio, " ");
+        GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
+        GWEN_SyncIo_WriteLine(sio, "_fromString(const char *s);");
+
+        write_if_nonnull(sio, args->domain);
+        GWEN_SyncIo_WriteString(sio, "const char *");
+        GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tprefix));
+        GWEN_SyncIo_WriteString(sio, "_toString(");
+        GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(tid));
+        GWEN_SyncIo_WriteLine(sio, " v);");
+
+        GWEN_Buffer_Crop(tprefix, 0, ppos);
+        GWEN_Buffer_Crop(tid, 0, tpos);
+        GWEN_SyncIo_WriteLine(sio, "");
       } /* if access type matches */
       n=GWEN_XMLNode_FindNextTag(n, "type", "mode", "enum");
     } /* while n */
@@ -616,7 +639,8 @@ int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
                   GWEN_SYNCIO *sio,
-                  const char *acc) {
+                  const char *acc)
+{
   GWEN_XMLNODE *n;
   const char *styp;
 
@@ -627,7 +651,7 @@ int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
   }
 
   n=GWEN_XMLNode_FindFirstTag(node, "func", 0, 0);
-  while(n) {
+  while (n) {
     const char *sacc;
 
     sacc=get_struct_property(n, "access", "public");
@@ -646,21 +670,21 @@ int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
         DBG_ERROR(0, "No name for function");
         return -1;
       }
-  
+
       rettype=GWEN_XMLNode_GetProperty(n, "return", 0);
       if (!rettype) {
         DBG_ERROR(0, "No return type for function");
         return -1;
       }
-  
+
       prefix=get_struct_property(n, "prefix", 0);
       if (!prefix) {
         DBG_ERROR(0, "No prefix in struct");
         return -1;
       }
-  
+
       isPtr=atoi(get_property(n, "ptr", "0"));
-  
+
       typ=GWEN_XMLNode_GetProperty(n, "type", 0);
       if (!typ) {
         DBG_ERROR(0, "No type for function");
@@ -683,11 +707,11 @@ int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
 
       anode=GWEN_XMLNode_FindFirstTag(n, "arg", 0, 0);
       idx=0;
-      while(anode) {
+      while (anode) {
         const char *aname;
         const char *atype;
         int aisPtr;
-  
+
         GWEN_SyncIo_WriteString(sio, ", ");
 
         aisPtr=atoi(GWEN_XMLNode_GetProperty(anode, "ptr", "0"));
@@ -701,17 +725,17 @@ int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
           DBG_ERROR(0, "No type for argument %d in function %s", idx, name);
           return -1;
         }
-  
+
         GWEN_SyncIo_WriteString(sio, atype);
         GWEN_SyncIo_WriteString(sio, " ");
         if (aisPtr)
           GWEN_SyncIo_WriteString(sio, "*");
         GWEN_SyncIo_WriteString(sio, aname);
-  
+
         idx++;
         anode=GWEN_XMLNode_FindNextTag(anode, "arg", 0, 0);
       }
-  
+
       GWEN_SyncIo_WriteLine(sio, ");");
     }
 
@@ -730,7 +754,8 @@ int write_apidocrec_c(ARGUMENTS *args,
                       GWEN_XMLNODE *node,
                       GWEN_SYNCIO *sio,
                       const char *acc,
-                      int level) {
+                      int level)
+{
   GWEN_XMLNODE *n;
   int rv;
   const char *prefix;
@@ -747,7 +772,7 @@ int write_apidocrec_c(ARGUMENTS *args,
     return -1;
   }
   n=GWEN_XMLNode_GetFirstTag(node);
-  while(n) {
+  while (n) {
     if (GWEN_XMLNode_GetType(n)==GWEN_XMLNodeTypeTag) {
       if (strcasecmp(GWEN_XMLNode_GetData(n), "group")==0) {
         const char *name;
@@ -774,19 +799,19 @@ int write_apidocrec_c(ARGUMENTS *args,
         dn=GWEN_XMLNode_FindFirstTag(n, "descr", 0, 0);
         if (dn) {
           if (write_xml_to_bio(dn, sio,
-			       GWEN_XML_FLAGS_SIMPLE |
-			       GWEN_XML_FLAGS_INDENT)) {
+                               GWEN_XML_FLAGS_SIMPLE |
+                               GWEN_XML_FLAGS_INDENT)) {
             DBG_INFO(0, "here");
-	    return -1;
-	  }
+            return -1;
+          }
         }
         GWEN_SyncIo_WriteLine(sio, "</p>");
 
         rv=write_apidocrec_c(args, n, sio, acc, level+1);
-	if (rv) {
-	  DBG_INFO(0, "here (%d)", rv);
-	  return rv;
-	}
+        if (rv) {
+          DBG_INFO(0, "here (%d)", rv);
+          return rv;
+        }
       }
       else if (strcasecmp(GWEN_XMLNode_GetData(n), "elem")==0) {
         if (strcasecmp(GWEN_XMLNode_GetProperty(n, "access", "public"),
@@ -801,7 +826,7 @@ int write_apidocrec_c(ARGUMENTS *args,
             DBG_ERROR(0, "No name for element");
             return -1;
           }
-  
+
           typ=GWEN_XMLNode_GetProperty(n, "type", 0);
           if (!typ) {
             DBG_ERROR(0, "No type for element");
@@ -828,11 +853,11 @@ int write_apidocrec_c(ARGUMENTS *args,
           if (dn) {
             GWEN_SyncIo_WriteString(sio, "@short ");
             if (write_xml_to_bio(dn, sio,
-				 GWEN_XML_FLAGS_SIMPLE |
-				 GWEN_XML_FLAGS_INDENT)) {
-	      DBG_INFO(0, "here");
-	      return -1;
-	    }
+                                 GWEN_XML_FLAGS_SIMPLE |
+                                 GWEN_XML_FLAGS_INDENT)) {
+              DBG_INFO(0, "here");
+              return -1;
+            }
             GWEN_SyncIo_WriteLine(sio, "");
             GWEN_SyncIo_WriteLine(sio, "");
           }
@@ -840,13 +865,13 @@ int write_apidocrec_c(ARGUMENTS *args,
           GWEN_SyncIo_WriteLine(sio, "<p>");
           dn=GWEN_XMLNode_FindFirstTag(n, "descr", 0, 0);
           if (dn) {
-	    rv=write_xml_to_bio(dn, sio,
-				GWEN_XML_FLAGS_SIMPLE |
-				GWEN_XML_FLAGS_INDENT);
-	    if (rv) {
-	      DBG_INFO(0, "here (%d)", rv);
-	      return -1;
-	    }
+            rv=write_xml_to_bio(dn, sio,
+                                GWEN_XML_FLAGS_SIMPLE |
+                                GWEN_XML_FLAGS_INDENT);
+            if (rv) {
+              DBG_INFO(0, "here (%d)", rv);
+              return -1;
+            }
           }
           GWEN_SyncIo_WriteLine(sio, "</p>");
 
@@ -877,7 +902,8 @@ int write_apidocrec_c(ARGUMENTS *args,
 int write_apidoc_c(ARGUMENTS *args,
                    GWEN_XMLNODE *node,
                    GWEN_SYNCIO *sio,
-                   const char *acc) {
+                   const char *acc)
+{
   const char *prefix;
   const char *styp;
   GWEN_XMLNODE *dn;
@@ -900,7 +926,7 @@ int write_apidoc_c(ARGUMENTS *args,
   GWEN_SyncIo_WriteString(sio, styp);
   GWEN_SyncIo_WriteString(sio, "_");
   s=acc;
-  while(*s) {
+  while (*s) {
     GWEN_SyncIo_WriteChar(sio, toupper(*s));
     s++;
   }
@@ -917,8 +943,8 @@ int write_apidoc_c(ARGUMENTS *args,
   dn=GWEN_XMLNode_FindFirstTag(node, "descr", 0, 0);
   if (dn) {
     if (write_xml_to_bio(dn, sio,
-			 GWEN_XML_FLAGS_SIMPLE |
-			 GWEN_XML_FLAGS_INDENT)) {
+                         GWEN_XML_FLAGS_SIMPLE |
+                         GWEN_XML_FLAGS_INDENT)) {
       DBG_INFO(0, "here");
       return -1;
     }
@@ -938,7 +964,8 @@ int write_apidoc_c(ARGUMENTS *args,
 
 
 
-int write_files(ARGUMENTS *args, GWEN_XMLNODE *node) {
+int write_files(ARGUMENTS *args, GWEN_XMLNODE *node)
+{
   int rv;
   GWEN_XMLNODE *n;
 
@@ -977,13 +1004,14 @@ int write_files(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
 
 const char *get_function_name2(GWEN_XMLNODE *node, const char *ftype,
-                               const char *name) {
+                               const char *name)
+{
   GWEN_XMLNODE *n;
 
   /* find typedef for this type */
   n=node;
   /* get root */
-  while(GWEN_XMLNode_GetParent(n))
+  while (GWEN_XMLNode_GetParent(n))
     n=GWEN_XMLNode_GetParent(n);
 
   n=GWEN_XMLNode_FindFirstTag(n, "typedefs", 0, 0);
@@ -1005,7 +1033,8 @@ const char *get_function_name2(GWEN_XMLNODE *node, const char *ftype,
 
 
 
-const char *get_function_name(GWEN_XMLNODE *node, const char *ftype) {
+const char *get_function_name(GWEN_XMLNODE *node, const char *ftype)
+{
   GWEN_XMLNODE *n;
   const char *name;
 
@@ -1025,7 +1054,7 @@ const char *get_function_name(GWEN_XMLNODE *node, const char *ftype) {
   /* find typedef for this type */
   n=node;
   /* get root */
-  while(GWEN_XMLNode_GetParent(n))
+  while (GWEN_XMLNode_GetParent(n))
     n=GWEN_XMLNode_GetParent(n);
 
   n=GWEN_XMLNode_FindFirstTag(n, "typedefs", 0, 0);
@@ -1047,7 +1076,8 @@ const char *get_function_name(GWEN_XMLNODE *node, const char *ftype) {
 
 
 
-GWEN_XMLNODE *get_typedef(GWEN_XMLNODE *node, const char *name) {
+GWEN_XMLNODE *get_typedef(GWEN_XMLNODE *node, const char *name)
+{
   GWEN_XMLNODE *n;
   GWEN_XMLNODE *n2;
 
@@ -1055,7 +1085,7 @@ GWEN_XMLNODE *get_typedef(GWEN_XMLNODE *node, const char *name) {
   /* find typedef for this type */
   n=node;
   /* get root */
-  while(GWEN_XMLNode_GetParent(n))
+  while (GWEN_XMLNode_GetParent(n))
     n=GWEN_XMLNode_GetParent(n);
 
   n2=GWEN_XMLNode_FindFirstTag(n, "typedefs", 0, 0);
@@ -1086,7 +1116,8 @@ GWEN_XMLNODE *get_typedef(GWEN_XMLNODE *node, const char *name) {
 
 const char *get_property(GWEN_XMLNODE *node,
                          const char *pname,
-                         const char *defval) {
+                         const char *defval)
+{
   GWEN_XMLNODE *n;
   const char *name;
   const char *r;
@@ -1104,7 +1135,7 @@ const char *get_property(GWEN_XMLNODE *node,
   /* find typedef for this type */
   n=node;
   /* get root */
-  while(GWEN_XMLNode_GetParent(n))
+  while (GWEN_XMLNode_GetParent(n))
     n=GWEN_XMLNode_GetParent(n);
 
   n=GWEN_XMLNode_FindFirstTag(n, "typedefs", 0, 0);
@@ -1121,7 +1152,8 @@ const char *get_property(GWEN_XMLNODE *node,
 
 const char *get_struct_property(GWEN_XMLNODE *node,
                                 const char *pname,
-                                const char *defval) {
+                                const char *defval)
+{
   GWEN_XMLNODE *n;
 
   if (GWEN_XMLNode_GetType(node)==GWEN_XMLNodeTypeTag)
@@ -1139,11 +1171,12 @@ const char *get_struct_property(GWEN_XMLNODE *node,
 
 
 
-GWEN_XMLNODE *get_struct_node(GWEN_XMLNODE *node) {
-  while(node) {
+GWEN_XMLNODE *get_struct_node(GWEN_XMLNODE *node)
+{
+  while (node) {
     if (GWEN_XMLNode_GetType(node)==GWEN_XMLNodeTypeTag)
       if (strcasecmp(GWEN_XMLNode_GetData(node), "type")==0) {
-	return node;
+        return node;
       }
     node=GWEN_XMLNode_GetParent(node);
   }
@@ -1153,7 +1186,8 @@ GWEN_XMLNODE *get_struct_node(GWEN_XMLNODE *node) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   ARGUMENTS *args;
   int rv;
   FREEPARAM *inFile;
@@ -1182,7 +1216,7 @@ int main(int argc, char **argv) {
   }
 
   /* read all files */
-  while(inFile) {
+  while (inFile) {
     GWEN_XMLNODE *n;
 
     n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "inFile");

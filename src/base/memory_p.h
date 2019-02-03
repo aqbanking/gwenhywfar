@@ -73,7 +73,7 @@ struct GWEN_MEMORY__OBJECT_STRING {
   char *text;
 };
 
-GWEN_MEMORY__OBJECT_STRING*
+GWEN_MEMORY__OBJECT_STRING *
 GWEN_Memory__Object_String_new(const char *s);
 
 void GWEN_Memory__Object_String_free(GWEN_MEMORY__OBJECT_STRING *s);
@@ -97,9 +97,9 @@ struct GWEN_MEMORY__OBJECT {
 };
 
 GWEN_MEMORY__OBJECT *GWEN_Memory__Object_new(void *ptr,
-    size_t size,
-    const char *typeName,
-    const char *location);
+                                             size_t size,
+                                             const char *typeName,
+                                             const char *location);
 void GWEN_Memory__Object_free(GWEN_MEMORY__OBJECT *o);
 
 

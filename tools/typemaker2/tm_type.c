@@ -29,7 +29,8 @@ GWEN_LIST2_FUNCTIONS(TYPEMAKER2_TYPE, Typemaker2_Type);
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_Type_new() {
+TYPEMAKER2_TYPE *Typemaker2_Type_new()
+{
   TYPEMAKER2_TYPE *ty;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_TYPE, ty);
@@ -61,7 +62,8 @@ TYPEMAKER2_TYPE *Typemaker2_Type_new() {
 
 
 
-void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
+void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty)
+{
   if (ty) {
     assert(ty->refCount);
     if (ty->refCount==1) {
@@ -113,7 +115,8 @@ void Typemaker2_Type_free(TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_Attach(TYPEMAKER2_TYPE *ty) {
+void Typemaker2_Type_Attach(TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   ty->refCount++;
@@ -121,7 +124,8 @@ void Typemaker2_Type_Attach(TYPEMAKER2_TYPE *ty) {
 
 
 
-const char *Typemaker2_Type_GetName(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetName(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->name;
@@ -129,17 +133,21 @@ const char *Typemaker2_Type_GetName(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetName(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetName(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->name);
-  if (s && *s) ty->name=strdup(s);
-  else ty->name=NULL;
+  if (s && *s)
+    ty->name=strdup(s);
+  else
+    ty->name=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetDescription(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetDescription(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->descr;
@@ -147,17 +155,21 @@ const char *Typemaker2_Type_GetDescription(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetDescription(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetDescription(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->descr);
-  if (s && *s) ty->descr=strdup(s);
-  else ty->descr=NULL;
+  if (s && *s)
+    ty->descr=strdup(s);
+  else
+    ty->descr=NULL;
 }
 
 
 
-int Typemaker2_Type_GetType(const TYPEMAKER2_TYPE *ty) {
+int Typemaker2_Type_GetType(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -171,7 +183,8 @@ int Typemaker2_Type_GetType(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i) {
+void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->type=i;
@@ -179,7 +192,8 @@ void Typemaker2_Type_SetType(TYPEMAKER2_TYPE *ty, int i) {
 
 
 
-const char *Typemaker2_Type_GetAqDbType(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetAqDbType(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -191,17 +205,21 @@ const char *Typemaker2_Type_GetAqDbType(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetAqDbType(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetAqDbType(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->aqdb_type);
-  if (s && *s) ty->aqdb_type=strdup(s);
-  else ty->aqdb_type=NULL;
+  if (s && *s)
+    ty->aqdb_type=strdup(s);
+  else
+    ty->aqdb_type=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -210,17 +228,21 @@ const char *Typemaker2_Type_GetBaseFileName(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetBaseFileName(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->baseFileName);
-  if (s && *s) ty->baseFileName=strdup(s);
-  else ty->baseFileName=NULL;
+  if (s && *s)
+    ty->baseFileName=strdup(s);
+  else
+    ty->baseFileName=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetFreeHook(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetFreeHook(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -229,17 +251,21 @@ const char *Typemaker2_Type_GetFreeHook(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetFreeHook(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetFreeHook(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->freeHook);
-  if (s && *s) ty->freeHook=strdup(s);
-  else ty->freeHook=NULL;
+  if (s && *s)
+    ty->freeHook=strdup(s);
+  else
+    ty->freeHook=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetExtends(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetExtends(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->extends;
@@ -247,17 +273,21 @@ const char *Typemaker2_Type_GetExtends(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetExtends(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetExtends(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->extends);
-  if (s && *s) ty->extends=strdup(s);
-  else ty->extends=NULL;
+  if (s && *s)
+    ty->extends=strdup(s);
+  else
+    ty->extends=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetBaseType(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetBaseType(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -269,17 +299,21 @@ const char *Typemaker2_Type_GetBaseType(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetBaseType(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetBaseType(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->baseType);
-  if (s && *s) ty->baseType=strdup(s);
-  else ty->baseType=NULL;
+  if (s && *s)
+    ty->baseType=strdup(s);
+  else
+    ty->baseType=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetInherits(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetInherits(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -291,17 +325,21 @@ const char *Typemaker2_Type_GetInherits(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetInherits(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetInherits(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->inherits);
-  if (s && *s) ty->inherits=strdup(s);
-  else ty->inherits=NULL;
+  if (s && *s)
+    ty->inherits=strdup(s);
+  else
+    ty->inherits=NULL;
 }
 
 
 
-uint32_t Typemaker2_Type_GetFlags(const TYPEMAKER2_TYPE *ty) {
+uint32_t Typemaker2_Type_GetFlags(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -313,7 +351,8 @@ uint32_t Typemaker2_Type_GetFlags(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
+void Typemaker2_Type_SetFlags(TYPEMAKER2_TYPE *ty, uint32_t i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->flags=i;
@@ -321,7 +360,8 @@ void Typemaker2_Type_SetFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
 
 
 
-uint32_t Typemaker2_Type_GetSetFlags(const TYPEMAKER2_TYPE *ty) {
+uint32_t Typemaker2_Type_GetSetFlags(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -333,7 +373,8 @@ uint32_t Typemaker2_Type_GetSetFlags(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetSetFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
+void Typemaker2_Type_SetSetFlags(TYPEMAKER2_TYPE *ty, uint32_t i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->setFlags=i;
@@ -341,7 +382,8 @@ void Typemaker2_Type_SetSetFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
 
 
 
-uint32_t Typemaker2_Type_GetGetFlags(const TYPEMAKER2_TYPE *ty) {
+uint32_t Typemaker2_Type_GetGetFlags(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -353,7 +395,8 @@ uint32_t Typemaker2_Type_GetGetFlags(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetGetFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
+void Typemaker2_Type_SetGetFlags(TYPEMAKER2_TYPE *ty, uint32_t i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->getFlags=i;
@@ -361,7 +404,8 @@ void Typemaker2_Type_SetGetFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
 
 
 
-uint32_t Typemaker2_Type_GetDupFlags(const TYPEMAKER2_TYPE *ty) {
+uint32_t Typemaker2_Type_GetDupFlags(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -373,7 +417,8 @@ uint32_t Typemaker2_Type_GetDupFlags(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetDupFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
+void Typemaker2_Type_SetDupFlags(TYPEMAKER2_TYPE *ty, uint32_t i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->dupFlags=i;
@@ -381,7 +426,8 @@ void Typemaker2_Type_SetDupFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
 
 
 
-uint32_t Typemaker2_Type_GetCopyFlags(const TYPEMAKER2_TYPE *ty) {
+uint32_t Typemaker2_Type_GetCopyFlags(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -393,7 +439,8 @@ uint32_t Typemaker2_Type_GetCopyFlags(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetCopyFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
+void Typemaker2_Type_SetCopyFlags(TYPEMAKER2_TYPE *ty, uint32_t i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->copyFlags=i;
@@ -401,7 +448,8 @@ void Typemaker2_Type_SetCopyFlags(TYPEMAKER2_TYPE *ty, uint32_t i) {
 
 
 
-int Typemaker2_Type_GetAccess(const TYPEMAKER2_TYPE *ty) {
+int Typemaker2_Type_GetAccess(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -413,7 +461,8 @@ int Typemaker2_Type_GetAccess(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i) {
+void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->access=i;
@@ -421,7 +470,8 @@ void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i) {
 
 
 
-int Typemaker2_Type_GetUsePrivateConstructor(const TYPEMAKER2_TYPE *ty){
+int Typemaker2_Type_GetUsePrivateConstructor(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->usePrivateConstructor;
@@ -429,7 +479,8 @@ int Typemaker2_Type_GetUsePrivateConstructor(const TYPEMAKER2_TYPE *ty){
 
 
 
-void Typemaker2_Type_SetUsePrivateConstructor(TYPEMAKER2_TYPE *ty, int i){
+void Typemaker2_Type_SetUsePrivateConstructor(TYPEMAKER2_TYPE *ty, int i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->usePrivateConstructor=i;
@@ -437,7 +488,8 @@ void Typemaker2_Type_SetUsePrivateConstructor(TYPEMAKER2_TYPE *ty, int i){
 
 
 
-const char *Typemaker2_Type_GetDefaultValue(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetDefaultValue(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -449,17 +501,21 @@ const char *Typemaker2_Type_GetDefaultValue(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetDefaultValue(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetDefaultValue(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->defaultValue);
-  if (s && *s) ty->defaultValue=strdup(s);
-  else ty->defaultValue=NULL;
+  if (s && *s)
+    ty->defaultValue=strdup(s);
+  else
+    ty->defaultValue=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetPresetValue(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetPresetValue(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
 
@@ -471,17 +527,21 @@ const char *Typemaker2_Type_GetPresetValue(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetPresetValue(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetPresetValue(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->presetValue);
-  if (s && *s) ty->presetValue=strdup(s);
-  else ty->presetValue=NULL;
+  if (s && *s)
+    ty->presetValue=strdup(s);
+  else
+    ty->presetValue=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetIdentifier(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetIdentifier(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->identifier;
@@ -489,17 +549,21 @@ const char *Typemaker2_Type_GetIdentifier(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetIdentifier(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetIdentifier(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->identifier);
-  if (s && *s) ty->identifier=strdup(s);
-  else ty->identifier=NULL;
+  if (s && *s)
+    ty->identifier=strdup(s);
+  else
+    ty->identifier=NULL;
 }
 
 
 
-const char *Typemaker2_Type_GetPrefix(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetPrefix(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->prefix;
@@ -507,17 +571,21 @@ const char *Typemaker2_Type_GetPrefix(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetPrefix(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetPrefix(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->prefix);
-  if (s && *s) ty->prefix=strdup(s);
-  else ty->prefix=NULL;
+  if (s && *s)
+    ty->prefix=strdup(s);
+  else
+    ty->prefix=NULL;
 }
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_Type_GetExtendsPtr(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_TYPE *Typemaker2_Type_GetExtendsPtr(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->extendsPtr;
@@ -525,7 +593,8 @@ TYPEMAKER2_TYPE *Typemaker2_Type_GetExtendsPtr(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetExtendsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p) {
+void Typemaker2_Type_SetExtendsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p)
+{
   assert(ty);
   assert(ty->refCount);
   ty->extendsPtr=p;
@@ -533,7 +602,8 @@ void Typemaker2_Type_SetExtendsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p) {
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_Type_GetInheritsPtr(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_TYPE *Typemaker2_Type_GetInheritsPtr(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->inheritsPtr;
@@ -541,7 +611,8 @@ TYPEMAKER2_TYPE *Typemaker2_Type_GetInheritsPtr(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetInheritsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p) {
+void Typemaker2_Type_SetInheritsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p)
+{
   assert(ty);
   assert(ty->refCount);
   ty->inheritsPtr=p;
@@ -549,7 +620,8 @@ void Typemaker2_Type_SetInheritsPtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p) {
 
 
 
-TYPEMAKER2_TYPE *Typemaker2_Type_GetBaseTypePtr(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_TYPE *Typemaker2_Type_GetBaseTypePtr(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->baseTypePtr;
@@ -557,7 +629,8 @@ TYPEMAKER2_TYPE *Typemaker2_Type_GetBaseTypePtr(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetBaseTypePtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p) {
+void Typemaker2_Type_SetBaseTypePtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p)
+{
   assert(ty);
   assert(ty->refCount);
   ty->baseTypePtr=p;
@@ -565,7 +638,8 @@ void Typemaker2_Type_SetBaseTypePtr(TYPEMAKER2_TYPE *ty, TYPEMAKER2_TYPE *p) {
 
 
 
-TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->members;
@@ -573,7 +647,8 @@ TYPEMAKER2_MEMBER_LIST *Typemaker2_Type_GetMembers(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->headers;
@@ -581,7 +656,8 @@ TYPEMAKER2_HEADER_LIST *Typemaker2_Type_GetHeaders(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->enums;
@@ -589,7 +665,8 @@ TYPEMAKER2_ENUM_LIST *Typemaker2_Type_GetEnums(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->defines;
@@ -597,7 +674,8 @@ TYPEMAKER2_DEFINE_LIST *Typemaker2_Type_GetDefines(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_CODE_LIST *Typemaker2_Type_GetCodeDefs(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_CODE_LIST *Typemaker2_Type_GetCodeDefs(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->codeDefs;
@@ -605,7 +683,8 @@ TYPEMAKER2_CODE_LIST *Typemaker2_Type_GetCodeDefs(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->inlines;
@@ -613,7 +692,8 @@ TYPEMAKER2_INLINE_LIST *Typemaker2_Type_GetInlines(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->virtualFns;
@@ -621,7 +701,8 @@ TYPEMAKER2_VIRTUALFN_LIST *Typemaker2_Type_GetVirtualFns(const TYPEMAKER2_TYPE *
 
 
 
-TYPEMAKER2_SIGNAL_LIST *Typemaker2_Type_GetSignals(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_SIGNAL_LIST *Typemaker2_Type_GetSignals(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->signals;
@@ -629,7 +710,8 @@ TYPEMAKER2_SIGNAL_LIST *Typemaker2_Type_GetSignals(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->slots;
@@ -637,7 +719,8 @@ TYPEMAKER2_SLOT_LIST *Typemaker2_Type_GetSlots(const TYPEMAKER2_TYPE *ty) {
 
 
 
-TYPEMAKER2_GROUP_TREE *Typemaker2_Type_GetGroupTree(const TYPEMAKER2_TYPE *ty) {
+TYPEMAKER2_GROUP_TREE *Typemaker2_Type_GetGroupTree(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->groupTree;
@@ -645,7 +728,8 @@ TYPEMAKER2_GROUP_TREE *Typemaker2_Type_GetGroupTree(const TYPEMAKER2_TYPE *ty) {
 
 
 
-int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
+int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->nonVolatileMemberCount;
@@ -653,7 +737,8 @@ int Typemaker2_Type_GetNonVolatileMemberCount(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetNonVolatileMemberCount(TYPEMAKER2_TYPE *ty, int i) {
+void Typemaker2_Type_SetNonVolatileMemberCount(TYPEMAKER2_TYPE *ty, int i)
+{
   assert(ty);
   assert(ty->refCount);
   ty->nonVolatileMemberCount=i;
@@ -661,7 +746,8 @@ void Typemaker2_Type_SetNonVolatileMemberCount(TYPEMAKER2_TYPE *ty, int i) {
 
 
 
-const char *Typemaker2_Type_GetFieldCountId(const TYPEMAKER2_TYPE *ty) {
+const char *Typemaker2_Type_GetFieldCountId(const TYPEMAKER2_TYPE *ty)
+{
   assert(ty);
   assert(ty->refCount);
   return ty->fieldCountId;
@@ -669,19 +755,23 @@ const char *Typemaker2_Type_GetFieldCountId(const TYPEMAKER2_TYPE *ty) {
 
 
 
-void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s) {
+void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s)
+{
   assert(ty);
   assert(ty->refCount);
   free(ty->fieldCountId);
-  if (s) ty->fieldCountId=strdup(s);
-  else ty->fieldCountId=NULL;
+  if (s)
+    ty->fieldCountId=strdup(s);
+  else
+    ty->fieldCountId=NULL;
 }
 
 
 
 
 int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, TYPEMAKER2_GROUP *parentGroup,
-                                            const char *wantedLang) {
+                                            const char *wantedLang)
+{
   GWEN_XMLNODE *n;
 
   /* read members */
@@ -693,41 +783,41 @@ int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *n
     s=GWEN_XMLNode_GetData(n);
     if (s) {
       if (strcasecmp(s, "member")==0) {
-	TYPEMAKER2_MEMBER *tm;
-	int rv;
-  
-	tm=Typemaker2_Member_new();
-	rv=Typemaker2_Member_readXml(tm, n, wantedLang);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  Typemaker2_Member_free(tm);
-	  return rv;
-	}
-	/* set current parentGroup as group */
-	Typemaker2_Member_SetGroupPtr(tm, parentGroup);
+        TYPEMAKER2_MEMBER *tm;
+        int rv;
 
-	Typemaker2_Member_List_Add(tm, ty->members);
+        tm=Typemaker2_Member_new();
+        rv=Typemaker2_Member_readXml(tm, n, wantedLang);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          Typemaker2_Member_free(tm);
+          return rv;
+        }
+        /* set current parentGroup as group */
+        Typemaker2_Member_SetGroupPtr(tm, parentGroup);
+
+        Typemaker2_Member_List_Add(tm, ty->members);
       }
       else if (strcasecmp(s, "group")==0) {
-	TYPEMAKER2_GROUP *group;
-	int rv;
+        TYPEMAKER2_GROUP *group;
+        int rv;
 
-	/* create and read group */
-	group=Typemaker2_Group_new();
-	rv=Typemaker2_Group_readXml(group, n, wantedLang);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  Typemaker2_Group_free(group);
-	  return rv;
-	}
-	Typemaker2_Group_Tree_AddChild(parentGroup, group);
+        /* create and read group */
+        group=Typemaker2_Group_new();
+        rv=Typemaker2_Group_readXml(group, n, wantedLang);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          Typemaker2_Group_free(group);
+          return rv;
+        }
+        Typemaker2_Group_Tree_AddChild(parentGroup, group);
 
-	/* read sub-groups and -members */
-	rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, group, wantedLang);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+        /* read sub-groups and -members */
+        rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, group, wantedLang);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
       }
     }
 
@@ -740,7 +830,8 @@ int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *n
 
 
 
-int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang) {
+int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char *wantedLang)
+{
   GWEN_XMLNODE *langNode=NULL;
   GWEN_XMLNODE *n;
   const char *s;
@@ -802,14 +893,14 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "header", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_HEADER *th;
       int rv;
 
       th=Typemaker2_Header_new();
       rv=Typemaker2_Header_readXml(th, nn);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         Typemaker2_Header_free(th);
         return rv;
       }
@@ -861,20 +952,20 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "codedef", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_CODE *tc;
 
       tc=Typemaker2_Code_fromXml(nn);
       if (tc) {
         const char *s;
 
-	s=Typemaker2_Code_GetMemberFlagsMask(tc);
-	if (s && *s)
-	  Typemaker2_Code_SetMemberFlagsMaskInt(tc, Typemaker2_FlagsFromString(s));
+        s=Typemaker2_Code_GetMemberFlagsMask(tc);
+        if (s && *s)
+          Typemaker2_Code_SetMemberFlagsMaskInt(tc, Typemaker2_FlagsFromString(s));
 
-	s=Typemaker2_Code_GetMemberFlagsValue(tc);
-	if (s && *s)
-	  Typemaker2_Code_SetMemberFlagsValueInt(tc, Typemaker2_FlagsFromString(s));
+        s=Typemaker2_Code_GetMemberFlagsValue(tc);
+        if (s && *s)
+          Typemaker2_Code_SetMemberFlagsValueInt(tc, Typemaker2_FlagsFromString(s));
       }
 
       Typemaker2_Code_List_Add(tc, ty->codeDefs);
@@ -888,7 +979,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "inline", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_INLINE *ti;
 
       ti=Typemaker2_Inline_fromXml(nn);
@@ -903,7 +994,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "enum", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_ENUM *te;
       GWEN_XMLNODE *nnn;
 
@@ -911,12 +1002,12 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
       /* read items */
       nnn=GWEN_XMLNode_FindFirstTag(nn, "item", NULL, NULL);
-      while(nnn) {
-	TYPEMAKER2_ITEM *ti;
+      while (nnn) {
+        TYPEMAKER2_ITEM *ti;
 
-	ti=Typemaker2_Item_fromXml(nnn);
-	Typemaker2_Item_List_Add(ti, Typemaker2_Enum_GetItems(te));
-	nnn=GWEN_XMLNode_FindNextTag(nnn, "item", NULL, NULL);
+        ti=Typemaker2_Item_fromXml(nnn);
+        Typemaker2_Item_List_Add(ti, Typemaker2_Enum_GetItems(te));
+        nnn=GWEN_XMLNode_FindNextTag(nnn, "item", NULL, NULL);
       }
 
       Typemaker2_Enum_List_Add(te, ty->enums);
@@ -930,7 +1021,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "define", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_DEFINE *td;
       GWEN_XMLNODE *nnn;
 
@@ -938,12 +1029,12 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
       /* read items */
       nnn=GWEN_XMLNode_FindFirstTag(nn, "item", NULL, NULL);
-      while(nnn) {
-	TYPEMAKER2_ITEM *ti;
+      while (nnn) {
+        TYPEMAKER2_ITEM *ti;
 
-	ti=Typemaker2_Item_fromXml(nnn);
-	Typemaker2_Item_List_Add(ti, Typemaker2_Define_GetItems(td));
-	nnn=GWEN_XMLNode_FindNextTag(nnn, "item", NULL, NULL);
+        ti=Typemaker2_Item_fromXml(nnn);
+        Typemaker2_Item_List_Add(ti, Typemaker2_Define_GetItems(td));
+        nnn=GWEN_XMLNode_FindNextTag(nnn, "item", NULL, NULL);
       }
 
       Typemaker2_Define_List_Add(td, ty->defines);
@@ -957,15 +1048,15 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "fn", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_VIRTUALFN *vf;
       int rv;
 
       vf=Typemaker2_VirtualFn_new();
       rv=Typemaker2_VirtualFn_readXml(vf, nn);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	Typemaker2_VirtualFn_free(vf);
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        Typemaker2_VirtualFn_free(vf);
         return rv;
       }
       Typemaker2_VirtualFn_List_Add(vf, ty->virtualFns);
@@ -979,7 +1070,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "signal", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_SIGNAL *sig;
       GWEN_XMLNODE *nnn;
       int i;
@@ -1008,7 +1099,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
         nnnn=GWEN_XMLNode_FindFirstTag(nnn, "param", NULL, NULL);
         i=1;
-        while(nnnn && i<3) {
+        while (nnnn && i<3) {
           const char *s;
 
           s=GWEN_XMLNode_GetProperty(nnnn, "type", "none");
@@ -1032,7 +1123,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "slot", NULL, NULL);
-    while(nn) {
+    while (nn) {
       TYPEMAKER2_SLOT *slot;
       GWEN_XMLNODE *nnn;
       int i;
@@ -1062,7 +1153,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
         nnnn=GWEN_XMLNode_FindFirstTag(nnn, "param", NULL, NULL);
         i=1;
-        while(nnnn && i<3) {
+        while (nnnn && i<3) {
           const char *s;
 
           s=GWEN_XMLNode_GetProperty(nnnn, "type", "none");
@@ -1093,17 +1184,17 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     s=GWEN_XMLNode_GetCharValue(n, "flags", NULL);
     if (s && *s)
       Typemaker2_Type_SetFlags(ty, Typemaker2_TypeFlagsFromString(s));
-  
+
     /* read setflags */
     s=GWEN_XMLNode_GetCharValue(n, "setflags", NULL);
     if (s && *s)
       Typemaker2_Type_SetSetFlags(ty, Typemaker2_FlagsFromString(s));
-  
+
     /* read getflags */
     s=GWEN_XMLNode_GetCharValue(n, "getflags", NULL);
     if (s && *s)
       Typemaker2_Type_SetGetFlags(ty, Typemaker2_FlagsFromString(s));
-  
+
     /* read dupflags */
     s=GWEN_XMLNode_GetCharValue(n, "dupflags", NULL);
     if (s && *s)
@@ -1119,8 +1210,8 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     if (s && *s) {
       int i=Typemaker2_AccessFromString(s);
       if (i==TypeMaker2_Access_Unknown) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unknown access type [%s]", s);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unknown access type [%s]", s);
+        return GWEN_ERROR_BAD_DATA;
       }
       Typemaker2_Type_SetAccess(ty, i);
     }
@@ -1135,83 +1226,104 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
 
 
-void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
+void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent)
+{
   if (ty) {
     int i;
     TYPEMAKER2_MEMBER *tm;
     const char *s1, *s2;
 
-    for (i=0; i<indent; i++) fprintf(f, " ");
+    for (i=0; i<indent; i++)
+      fprintf(f, " ");
     fprintf(f, "Type\n");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Name      : %s\n", (ty->name)?(ty->name):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Identifier: %s\n", (ty->identifier)?(ty->identifier):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "AEDB Type : %s\n", (ty->aqdb_type)?(ty->aqdb_type):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Extends   : %s\n", (ty->extends)?(ty->extends):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     s1=ty->inherits;
     s2=Typemaker2_Type_GetInherits(ty);
     fprintf(f, "Inherits  : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "BaseType  : %s\n", (ty->baseType)?(ty->baseType):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Prefix    : %s\n", (ty->prefix)?(ty->prefix):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Access    : %d [%d]\n", ty->access, Typemaker2_Type_GetAccess(ty));
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Flags     : %08x [%08x]\n", ty->flags, Typemaker2_Type_GetFlags(ty));
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "SetFlags  : %08x [%08x]\n", ty->setFlags, Typemaker2_Type_GetSetFlags(ty));
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "GetFlags  : %08x [%08x]\n", ty->getFlags, Typemaker2_Type_GetGetFlags(ty));
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "DupFlags  : %08x [%08x]\n", ty->dupFlags, Typemaker2_Type_GetDupFlags(ty));
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "CopyFlags : %08x [%08x]\n", ty->copyFlags, Typemaker2_Type_GetCopyFlags(ty));
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     s1=ty->defaultValue;
     s2=Typemaker2_Type_GetDefaultValue(ty);
     fprintf(f, "Default   : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     s1=ty->presetValue;
     s2=Typemaker2_Type_GetPresetValue(ty);
     fprintf(f, "Preset    : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Members\n");
     tm=Typemaker2_Member_List_First(ty->members);
     if (tm==NULL) {
-      for (i=0; i<indent+4; i++) fprintf(f, " ");
+      for (i=0; i<indent+4; i++)
+        fprintf(f, " ");
       fprintf(f, "none\n");
     }
     else {
-      while(tm) {
-	Typemaker2_Member_Dump(tm, f, indent+4);
-	tm=Typemaker2_Member_List_Next(tm);
+      while (tm) {
+        Typemaker2_Member_Dump(tm, f, indent+4);
+        tm=Typemaker2_Member_List_Next(tm);
       }
     }
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Field Count Id: %s\n", (ty->fieldCountId)?(ty->fieldCountId):"<null>");
 
-    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    for (i=0; i<indent+2; i++)
+      fprintf(f, " ");
     fprintf(f, "Descript. : %s\n", (ty->descr)?(ty->descr):"<null>");
 
   }
@@ -1219,12 +1331,13 @@ void Typemaker2_Type_Dump(TYPEMAKER2_TYPE *ty, FILE *f, int indent) {
 
 
 
-TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s) {
+TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s)
+{
   TYPEMAKER2_ENUM *te;
 
   assert(ty);
   te=Typemaker2_Enum_List_First(ty->enums);
-  while(te) {
+  while (te) {
     const char *n;
 
     n=Typemaker2_Enum_GetId(te);
@@ -1240,7 +1353,8 @@ TYPEMAKER2_ENUM *Typemaker2_Type_FindEnum(TYPEMAKER2_TYPE *ty, const char *s) {
 
 TYPEMAKER2_CODE *Typemaker2_Type_FindCodeForMember(const TYPEMAKER2_TYPE *ty,
                                                    const TYPEMAKER2_MEMBER *tm,
-						   const char *id) {
+                                                   const char *id)
+{
   TYPEMAKER2_CODE *tc=NULL;
   uint32_t flags=0;
 
@@ -1250,7 +1364,7 @@ TYPEMAKER2_CODE *Typemaker2_Type_FindCodeForMember(const TYPEMAKER2_TYPE *ty,
   /* try code within member definition first, if any */
   if (tm) {
     tc=Typemaker2_Code_List_First(Typemaker2_Member_GetCodeDefs(tm));
-    while(tc) {
+    while (tc) {
       const char *s;
 
       s=Typemaker2_Code_GetId(tc);
@@ -1262,14 +1376,14 @@ TYPEMAKER2_CODE *Typemaker2_Type_FindCodeForMember(const TYPEMAKER2_TYPE *ty,
     }
   }
 
-  while(ty) {
+  while (ty) {
     tc=Typemaker2_Code_List_First(ty->codeDefs);
-    while(tc) {
+    while (tc) {
       const char *s;
 
       s=Typemaker2_Code_GetId(tc);
       if (s && strcasecmp(s, id)==0) {
-	if ((flags & Typemaker2_Code_GetMemberFlagsMaskInt(tc))==Typemaker2_Code_GetMemberFlagsValueInt(tc))
+        if ((flags & Typemaker2_Code_GetMemberFlagsMaskInt(tc))==Typemaker2_Code_GetMemberFlagsValueInt(tc))
           return tc;
       }
       tc=Typemaker2_Code_List_Next(tc);

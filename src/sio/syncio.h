@@ -170,8 +170,8 @@ int GWEN_SyncIo_WriteChar(GWEN_SYNCIO *sio, char s);
 
 GWENHYWFAR_API
 int GWEN_SyncIo_Helper_ReadFileToStringList(const char *fname,
-    int maxLines,
-    GWEN_STRINGLIST *sl);
+                                            int maxLines,
+                                            GWEN_STRINGLIST *sl);
 
 
 /**
@@ -209,14 +209,14 @@ typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_FLUSH_FN)(GWEN_SYNCIO *sio);
 
 
 typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_READ_FN)(GWEN_SYNCIO *sio,
-    uint8_t *buffer,
-    uint32_t size);
+                                                 uint8_t *buffer,
+                                                 uint32_t size);
 
 
 
 typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_WRITE_FN)(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size);
+                                                  const uint8_t *buffer,
+                                                  uint32_t size);
 /*@}*/
 
 

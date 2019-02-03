@@ -32,11 +32,12 @@
 
 
 
-int GWEN_ParserXml__Read(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_ELEMENT *eParent, GWEN_XMLNODE *node) {
+int GWEN_ParserXml__Read(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_ELEMENT *eParent, GWEN_XMLNODE *node)
+{
   GWEN_PARSER_ELEMENT *e=NULL;
   const char *s;
 
-  switch(GWEN_XMLNode_GetType(node)) {
+  switch (GWEN_XMLNode_GetType(node)) {
   case GWEN_XMLNodeTypeTag:
     e=GWEN_ParserElement_new();
     GWEN_ParserElement_SetType(e, GWEN_ParserElementType_Element);
@@ -72,7 +73,7 @@ int GWEN_ParserXml__Read(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_ELEMENT *ePar
       GWEN_ParserElement_Tree_Add(et, e);
 
     n=GWEN_XMLNode_GetChild(node);
-    while(n) {
+    while (n) {
       int rv;
 
       rv=GWEN_ParserXml__Read(et, e, n);
@@ -91,13 +92,15 @@ int GWEN_ParserXml__Read(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_ELEMENT *ePar
 
 
 
-int GWEN_ParserXml_Read(GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node) {
+int GWEN_ParserXml_Read(GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node)
+{
   return GWEN_ParserXml__Read(et, NULL, node);
 }
 
 
 
-int GWEN_ParserXml_ReadFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname) {
+int GWEN_ParserXml_ReadFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname)
+{
   int rv;
   GWEN_XMLNODE *rootNode;
   GWEN_XMLNODE *n;
@@ -111,7 +114,7 @@ int GWEN_ParserXml_ReadFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname) {
   }
 
   n=GWEN_XMLNode_GetChild(rootNode);
-  while(n) {
+  while (n) {
     int rv;
 
     rv=GWEN_ParserXml_Read(et, n);

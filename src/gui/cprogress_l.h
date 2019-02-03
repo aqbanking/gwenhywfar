@@ -16,11 +16,11 @@ GWEN_LIST_FUNCTION_DEFS(GWEN_GUI_CPROGRESS, GWEN_Gui_CProgress)
 
 
 GWEN_GUI_CPROGRESS *GWEN_Gui_CProgress_new(GWEN_GUI *gui,
-    uint32_t id,
-    uint32_t progressFlags,
-    const char *title,
-    const char *text,
-    uint64_t total);
+                                           uint32_t id,
+                                           uint32_t progressFlags,
+                                           const char *title,
+                                           const char *text,
+                                           uint64_t total);
 void GWEN_Gui_CProgress_free(GWEN_GUI_CPROGRESS *cp);
 
 

@@ -27,8 +27,9 @@
 
 
 
-int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     unsigned char x;
 
     x=(unsigned char)*src;
@@ -70,8 +71,9 @@ int GWEN_DB_EscapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
 
 
 
-int GWEN_DB_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf) {
-  while(*src) {
+int GWEN_DB_UnescapeToBufferTolerant(const char *src, GWEN_BUFFER *buf)
+{
+  while (*src) {
     int charHandled;
 
     charHandled=0;
@@ -121,7 +123,8 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
                        const char *fname,
                        const char *type,
                        GWEN_DB_NODE *params,
-                       uint32_t dbflags) {
+                       uint32_t dbflags)
+{
   GWEN_SYNCIO *sio;
   GWEN_DBIO *dbio;
   int rv;
@@ -157,7 +160,8 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
                         const char *fname,
                         const char *type,
                         GWEN_DB_NODE *params,
-                        uint32_t dbflags) {
+                        uint32_t dbflags)
+{
   int rv;
   GWEN_DBIO *dbio;
 
@@ -181,7 +185,8 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
 int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
                                 GWEN_FAST_BUFFER *fb,
                                 uint32_t dbflags,
-                                int insert) {
+                                int insert)
+{
   GWEN_DB_NODE *n;
   GWEN_DB_NODE *cn;
   int i;
@@ -191,10 +196,10 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
   lastWasVar=0;
 
   n=GWEN_DB_Node_List_First(node->children);
-  while(n) {
+  while (n) {
     if (!(n->nodeFlags & GWEN_DB_NODE_FLAGS_VOLATILE)) {
       DBG_VERBOUS(GWEN_LOGDOMAIN, "Writing node");
-      switch(n->typ) {
+      switch (n->typ) {
       case GWEN_DB_NodeType_Group:
         if (dbflags & GWEN_DB_FLAGS_WRITE_SUBGROUPS) {
           GWEN_BUFFER *tbuf;
@@ -302,14 +307,14 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
           typname=0;
           namewritten=0;
           values=0;
-          while(cn) {
+          while (cn) {
             char numbuffer[32];
             char *binbuffer=NULL;
             unsigned int bbsize;
             const char *pvalue=NULL;
             GWEN_BUFFER *vbuf=NULL;
 
-            switch(cn->typ) {
+            switch (cn->typ) {
             case GWEN_DB_NodeType_ValueChar:
               typname="char ";
               pvalue=cn->data.dataChar;
@@ -338,7 +343,7 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
 
             case GWEN_DB_NodeType_ValueBin:
               bbsize=cn->dataSize*2+1;
-              binbuffer=(char*)GWEN_Memory_malloc(bbsize);
+              binbuffer=(char *)GWEN_Memory_malloc(bbsize);
               assert(binbuffer);
               typname="bin  ";
               if (!GWEN_Text_ToHex(cn->data.dataBin,
@@ -491,7 +496,8 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
 
 int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
                               GWEN_FAST_BUFFER *fb,
-                              uint32_t dbflags) {
+                              uint32_t dbflags)
+{
   int rv;
 
   rv=GWEN_DB_WriteGroupToIoLayer(node, fb, dbflags, 0);
@@ -506,7 +512,8 @@ int GWEN_DB_WriteToFastBuffer(GWEN_DB_NODE *node,
 
 int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
                       GWEN_SYNCIO *sio,
-                      uint32_t dbflags) {
+                      uint32_t dbflags)
+{
   int rv;
   GWEN_FAST_BUFFER *fb;
 
@@ -525,7 +532,8 @@ int GWEN_DB_WriteToIo(GWEN_DB_NODE *node,
 
 
 
-int GWEN_DB_WriteFile(GWEN_DB_NODE *n, const char *fname, uint32_t dbflags) {
+int GWEN_DB_WriteFile(GWEN_DB_NODE *n, const char *fname, uint32_t dbflags)
+{
   int rv;
   GWEN_FSLOCK *lck=0;
   GWEN_SYNCIO *sio;
@@ -612,7 +620,8 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
                         uint32_t dbflags,
                         const char *typeName,
                         const char *varName,
-                        uint8_t *p) {
+                        uint8_t *p)
+{
   GWEN_DB_NODE_TYPE nodeType=GWEN_DB_NodeType_ValueChar;
   GWEN_DB_NODE *dbVar;
   GWEN_BUFFER *wbuf;
@@ -645,7 +654,7 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
     GWEN_DB_NODE *dbVal=NULL;
     const char *v;
 
-    while(*p && isspace(*p))
+    while (*p && isspace(*p))
       p++;
     if (!*p) {
       DBG_INFO(GWEN_LOGDOMAIN, "Missing value");
@@ -658,7 +667,7 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
       p++;
     }
 
-    while(*p) {
+    while (*p) {
       if (*p=='%') {
         uint8_t c;
         uint8_t cHex;
@@ -671,7 +680,8 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
           return GWEN_ERROR_BAD_DATA;
         }
         c=toupper(*p)-'0';
-        if (c>9) c-=7;
+        if (c>9)
+          c-=7;
         cHex=c<<4;
 
         p++;
@@ -681,7 +691,8 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
           return GWEN_ERROR_BAD_DATA;
         }
         c=toupper(*p)-'0';
-        if (c>9) c-=7;
+        if (c>9)
+          c-=7;
         cHex|=c;
         GWEN_Buffer_AppendByte(wbuf, cHex);
       }
@@ -744,7 +755,7 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
     GWEN_DB_Node_Append(dbVar, dbVal);
 
     /* skip blanks if any */
-    while(*p && isspace(*p))
+    while (*p && isspace(*p))
       p++;
     if (!*p || *p==';' || *p=='#')
       break;
@@ -765,7 +776,8 @@ int GWEN_DB__ReadValues(GWEN_DB_NODE *n,
 
 int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
                                GWEN_FAST_BUFFER *fb,
-                               uint32_t dbflags) {
+                               uint32_t dbflags)
+{
   GWEN_BUFFER *lbuf;
   GWEN_BUFFER *tbuf;
   int level=0;
@@ -802,8 +814,8 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
     }
     else {
       someLinesRead=1;
-      p=(uint8_t*)GWEN_Buffer_GetStart(lbuf);
-      while(*p && isspace(*p))
+      p=(uint8_t *)GWEN_Buffer_GetStart(lbuf);
+      while (*p && isspace(*p))
         p++;
       if (*p) {
         uint8_t *p1begin=NULL, *p1end=NULL;
@@ -829,12 +841,12 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
         else {
           p1begin=p;
           /* read first token */
-          while(*p && !isspace(*p) &&
-                *p!='{' &&
-                *p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
-                *p!='}' &&
-                *p!=',' &&
-                *p!=';')
+          while (*p && !isspace(*p) &&
+                 *p!='{' &&
+                 *p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
+                 *p!='}' &&
+                 *p!=',' &&
+                 *p!=';')
             p++;
           if (!*p) {
             DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token (first: \"%s\")", p1begin);
@@ -846,7 +858,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
           p1end=p;
 
           /* get to start of 2nd token */
-          while(*p && isspace(*p))
+          while (*p && isspace(*p))
             p++;
           if (!*p) {
             DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
@@ -860,7 +872,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 
             /* found start of group */
             *p1end=0;
-            rv=GWEN_DB_UnescapeToBufferTolerant((const char*)p1begin, tbuf);
+            rv=GWEN_DB_UnescapeToBufferTolerant((const char *)p1begin, tbuf);
             if (rv<0) {
               DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
               GWEN_Buffer_free(tbuf);
@@ -882,7 +894,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
             /* found short variable definition */
             *p1end=0;
             p++;
-            rv=GWEN_DB__ReadValues(n, dbflags, NULL, (const char*)p1begin, p);
+            rv=GWEN_DB__ReadValues(n, dbflags, NULL, (const char *)p1begin, p);
             if (rv) {
               DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
               GWEN_Buffer_free(tbuf);
@@ -899,13 +911,13 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
           else {
             /* 2nd token, so this should be a standard variable definition */
             p2begin=p;
-            while(*p &&
-                  !isspace(*p) &&
-                  *p!='{' &&
-                  *p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
-                  *p!='}' &&
-                  *p!=',' &&
-                  *p!=';')
+            while (*p &&
+                   !isspace(*p) &&
+                   *p!='{' &&
+                   *p!=((dbflags & GWEN_DB_FLAGS_USE_COLON)?':':'=') &&
+                   *p!='}' &&
+                   *p!=',' &&
+                   *p!=';')
               p++;
             if (!*p) {
               DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token [%s], [%s]", p1begin, p2begin);
@@ -915,7 +927,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
             }
             p2end=p;
             if (isspace(*p)) {
-              while(*p && isspace(*p))
+              while (*p && isspace(*p))
                 p++;
               if (!*p) {
                 DBG_INFO(GWEN_LOGDOMAIN, "Missing 2nd token");
@@ -934,7 +946,7 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 
             *p1end=0;
             *p2end=0;
-            rv=GWEN_DB__ReadValues(n, dbflags, (const char*)p1begin, (const char*)p2begin, p);
+            rv=GWEN_DB__ReadValues(n, dbflags, (const char *)p1begin, (const char *)p2begin, p);
             if (rv) {
               DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
               GWEN_Buffer_free(tbuf);
@@ -963,7 +975,8 @@ int GWEN_DB_ReadFromFastBuffer(GWEN_DB_NODE *n,
 
 
 
-int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n, GWEN_SYNCIO *sio, uint32_t dbflags) {
+int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n, GWEN_SYNCIO *sio, uint32_t dbflags)
+{
   GWEN_FAST_BUFFER *fb;
   int rv;
 
@@ -989,7 +1002,8 @@ int GWEN_DB_ReadFromIo(GWEN_DB_NODE *n, GWEN_SYNCIO *sio, uint32_t dbflags) {
 
 int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
                      const char *fname,
-                     uint32_t dbflags) {
+                     uint32_t dbflags)
+{
   GWEN_SYNCIO *sio;
   int rv;
 
@@ -1021,14 +1035,15 @@ int GWEN_DB_ReadFile(GWEN_DB_NODE *n,
 int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
                            const char *str,
                            int len,
-                           uint32_t dbflags) {
+                           uint32_t dbflags)
+{
   GWEN_SYNCIO *sio;
   int rv;
 
   if (len==0)
     len=strlen(str);
 
-  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t*) str, len);
+  sio=GWEN_SyncIo_Memory_fromBuffer((const uint8_t *) str, len);
   rv=GWEN_DB_ReadFromIo(n, sio, dbflags);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1045,7 +1060,8 @@ int GWEN_DB_ReadFromString(GWEN_DB_NODE *n,
 
 int GWEN_DB_WriteToBuffer(GWEN_DB_NODE *n,
                           GWEN_BUFFER *buf,
-                          uint32_t dbflags) {
+                          uint32_t dbflags)
+{
   GWEN_SYNCIO *sio;
   int rv;
 

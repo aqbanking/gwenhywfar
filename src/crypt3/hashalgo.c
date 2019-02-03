@@ -24,7 +24,8 @@ GWEN_LIST2_FUNCTIONS(GWEN_CRYPT_HASHALGO, GWEN_Crypt_HashAlgo)
 
 
 
-GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgoId_fromString(const char *s) {
+GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgoId_fromString(const char *s)
+{
   assert(s);
   if (strcasecmp(s, "none")==0)
     return GWEN_Crypt_HashAlgoId_None;
@@ -43,8 +44,9 @@ GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgoId_fromString(const char *s) {
 
 
 
-const char *GWEN_Crypt_HashAlgoId_toString(GWEN_CRYPT_HASHALGOID a) {
-  switch(a) {
+const char *GWEN_Crypt_HashAlgoId_toString(GWEN_CRYPT_HASHALGOID a)
+{
+  switch (a) {
   case GWEN_Crypt_HashAlgoId_None:
     return "none";
   case GWEN_Crypt_HashAlgoId_Sha1:
@@ -64,7 +66,8 @@ const char *GWEN_Crypt_HashAlgoId_toString(GWEN_CRYPT_HASHALGOID a) {
 
 
 
-GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_new(GWEN_CRYPT_HASHALGOID id) {
+GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_new(GWEN_CRYPT_HASHALGOID id)
+{
   GWEN_CRYPT_HASHALGO *a;
 
   GWEN_NEW_OBJECT(GWEN_CRYPT_HASHALGO, a);
@@ -77,7 +80,8 @@ GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_new(GWEN_CRYPT_HASHALGOID id) {
 
 
 
-void GWEN_Crypt_HashAlgo_Attach(GWEN_CRYPT_HASHALGO *a) {
+void GWEN_Crypt_HashAlgo_Attach(GWEN_CRYPT_HASHALGO *a)
+{
   assert(a);
   assert(a->refCount);
   a->refCount++;
@@ -85,7 +89,8 @@ void GWEN_Crypt_HashAlgo_Attach(GWEN_CRYPT_HASHALGO *a) {
 
 
 
-GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_fromDb(GWEN_DB_NODE *db) {
+GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_fromDb(GWEN_DB_NODE *db)
+{
   const char *s;
 
   assert(db);
@@ -117,7 +122,8 @@ GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_fromDb(GWEN_DB_NODE *db) {
 
 
 
-int GWEN_Crypt_HashAlgo_toDb(const GWEN_CRYPT_HASHALGO *a, GWEN_DB_NODE *db) {
+int GWEN_Crypt_HashAlgo_toDb(const GWEN_CRYPT_HASHALGO *a, GWEN_DB_NODE *db)
+{
   assert(a);
   assert(a->refCount);
 
@@ -134,13 +140,14 @@ int GWEN_Crypt_HashAlgo_toDb(const GWEN_CRYPT_HASHALGO *a, GWEN_DB_NODE *db) {
 
 
 
-GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_dup(const GWEN_CRYPT_HASHALGO *na) {
+GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_dup(const GWEN_CRYPT_HASHALGO *na)
+{
   GWEN_CRYPT_HASHALGO *a;
 
   assert(na);
   a=GWEN_Crypt_HashAlgo_new(na->id);
   if (na->pInitVector && na->lInitVector) {
-    a->pInitVector=(uint8_t*) malloc(na->lInitVector);
+    a->pInitVector=(uint8_t *) malloc(na->lInitVector);
     if (a->pInitVector==NULL) {
       GWEN_Crypt_HashAlgo_free(a);
       return NULL;
@@ -155,7 +162,8 @@ GWEN_CRYPT_HASHALGO *GWEN_Crypt_HashAlgo_dup(const GWEN_CRYPT_HASHALGO *na) {
 
 
 
-void GWEN_Crypt_HashAlgo_free(GWEN_CRYPT_HASHALGO *a) {
+void GWEN_Crypt_HashAlgo_free(GWEN_CRYPT_HASHALGO *a)
+{
   if (a) {
     assert(a->refCount);
     if (a->refCount==1) {
@@ -174,7 +182,8 @@ void GWEN_Crypt_HashAlgo_free(GWEN_CRYPT_HASHALGO *a) {
 
 
 
-GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_HASHALGO *a) {
+GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_HASHALGO *a)
+{
   assert(a);
   assert(a->refCount);
   return a->id;
@@ -182,7 +191,8 @@ GWEN_CRYPT_HASHALGOID GWEN_Crypt_HashAlgo_GetId(const GWEN_CRYPT_HASHALGO *a) {
 
 
 
-uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a) {
+uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a)
+{
   assert(a);
   assert(a->refCount);
   return a->pInitVector;
@@ -190,7 +200,8 @@ uint8_t *GWEN_Crypt_HashAlgo_GetInitVectorPtr(const GWEN_CRYPT_HASHALGO *a) {
 
 
 
-uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a) {
+uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a)
+{
   assert(a);
   assert(a->refCount);
   return a->lInitVector;
@@ -200,14 +211,15 @@ uint32_t GWEN_Crypt_HashAlgo_GetInitVectorLen(const GWEN_CRYPT_HASHALGO *a) {
 
 int GWEN_Crypt_HashAlgo_SetInitVector(GWEN_CRYPT_HASHALGO *a,
                                       const uint8_t *pv,
-                                      uint32_t lv) {
+                                      uint32_t lv)
+{
   uint8_t *nv=NULL;
 
   assert(a);
   assert(a->refCount);
 
   if (pv && lv) {
-    nv=(uint8_t*) malloc(lv);
+    nv=(uint8_t *) malloc(lv);
     if (nv==NULL)
       return GWEN_ERROR_MEMORY_FULL;
     memmove(nv, pv, lv);

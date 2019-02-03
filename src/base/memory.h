@@ -48,12 +48,12 @@ extern "C" {
  * and modified by me (Martin Preuss).
  */
 # if defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4)
-#   define GWEN_LOCATION_FUNCTION	__PRETTY_FUNCTION__
+#   define GWEN_LOCATION_FUNCTION __PRETTY_FUNCTION__
 # else
 #  if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-#   define GWEN_LOCATION_FUNCTION	__func__
+#   define GWEN_LOCATION_FUNCTION __func__
 #  else
-#   define GWEN_LOCATION_FUNCTION	((__const char *) "unknown function")
+#   define GWEN_LOCATION_FUNCTION ((__const char *) "unknown function")
 #  endif
 # endif
 

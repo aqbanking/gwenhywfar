@@ -124,10 +124,10 @@ extern "C" {
     }                          \
     else {                     \
       while(curr->next!=sr) {  \
-	curr=curr->next;       \
+  curr=curr->next;       \
       }                        \
       if (curr)                \
-	curr->next=sr->next;   \
+  curr->next=sr->next;   \
     }                          \
   }                            \
   sr->next=0;\

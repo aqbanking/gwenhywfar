@@ -42,12 +42,13 @@
 
 
 
-GWEN_IDMAP *GWEN_IdMap_new(GWEN_IDMAP_ALGO algo) {
+GWEN_IDMAP *GWEN_IdMap_new(GWEN_IDMAP_ALGO algo)
+{
   GWEN_IDMAP *map;
 
   GWEN_NEW_OBJECT(GWEN_IDMAP, map);
   map->algo=algo;
-  switch(algo) {
+  switch (algo) {
   case GWEN_IdMapAlgo_Hex4:
     GWEN_IdMapHex4_Extend(map);
     break;
@@ -63,7 +64,8 @@ GWEN_IDMAP *GWEN_IdMap_new(GWEN_IDMAP_ALGO algo) {
 
 
 
-void GWEN_IdMap_free(GWEN_IDMAP *map) {
+void GWEN_IdMap_free(GWEN_IDMAP *map)
+{
   assert(map);
   if (map->freeDataFn)
     map->freeDataFn(map);
@@ -74,7 +76,8 @@ void GWEN_IdMap_free(GWEN_IDMAP *map) {
 
 GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
                                     uint32_t id,
-                                    void *ptr) {
+                                    void *ptr)
+{
   assert(map);
   assert(ptr);
   assert(map->setPairFn);
@@ -84,7 +87,8 @@ GWEN_IDMAP_RESULT GWEN_IdMap_Insert(GWEN_IDMAP *map,
 
 
 GWEN_IDMAP_RESULT GWEN_IdMap_Remove(GWEN_IDMAP *map,
-                                    uint32_t id) {
+                                    uint32_t id)
+{
   assert(map);
   assert(map->setPairFn);
   return map->setPairFn(map, id, 0);
@@ -92,7 +96,8 @@ GWEN_IDMAP_RESULT GWEN_IdMap_Remove(GWEN_IDMAP *map,
 
 
 
-void *GWEN_IdMap_Find(GWEN_IDMAP *map, uint32_t id) {
+void *GWEN_IdMap_Find(GWEN_IDMAP *map, uint32_t id)
+{
   assert(map);
   assert(map->getPairFn);
   return map->getPairFn(map, id);
@@ -101,7 +106,8 @@ void *GWEN_IdMap_Find(GWEN_IDMAP *map, uint32_t id) {
 
 
 GWEN_IDMAP_RESULT GWEN_IdMap_GetFirst(const GWEN_IDMAP *map,
-                                      uint32_t *pid) {
+                                      uint32_t *pid)
+{
   assert(map);
   assert(map->findFirstFn);
   return map->findFirstFn(map, pid);
@@ -110,7 +116,8 @@ GWEN_IDMAP_RESULT GWEN_IdMap_GetFirst(const GWEN_IDMAP *map,
 
 
 GWEN_IDMAP_RESULT GWEN_IdMap_GetNext(const GWEN_IDMAP *map,
-                                     uint32_t *pid) {
+                                     uint32_t *pid)
+{
   assert(map);
   assert(map->findNextFn);
   return map->findNextFn(map, pid);
@@ -118,20 +125,22 @@ GWEN_IDMAP_RESULT GWEN_IdMap_GetNext(const GWEN_IDMAP *map,
 
 
 
-uint32_t GWEN_IdMap_GetSize(const GWEN_IDMAP *map) {
+uint32_t GWEN_IdMap_GetSize(const GWEN_IDMAP *map)
+{
   assert(map);
   return map->count;
 }
 
 
 
-void GWEN_IdMap_Clear(GWEN_IDMAP *map) {
+void GWEN_IdMap_Clear(GWEN_IDMAP *map)
+{
   assert(map);
   if (map->freeDataFn)
     map->freeDataFn(map);
   map->algoData=0;
 
-  switch(map->algo) {
+  switch (map->algo) {
   case GWEN_IdMapAlgo_Hex4:
     GWEN_IdMapHex4_Extend(map);
     break;
@@ -143,7 +152,8 @@ void GWEN_IdMap_Clear(GWEN_IDMAP *map) {
 
 
 
-void GWEN_IdMap_Dump(GWEN_IDMAP *map, FILE *f, int indent) {
+void GWEN_IdMap_Dump(GWEN_IDMAP *map, FILE *f, int indent)
+{
   assert(map);
   if (map->dumpFn)
     map->dumpFn(map, f, indent);
@@ -163,12 +173,13 @@ void GWEN_IdMap_Dump(GWEN_IDMAP *map, FILE *f, int indent) {
  */
 
 
-void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map) {
+void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map)
+{
   GWEN_IDMAP_HEX4 *xmap;
 
   GWEN_NEW_OBJECT(GWEN_IDMAP_HEX4, xmap);
   xmap->table=GWEN_IdMapHex4Map_new(0, 0);
-  map->algoData=(void*)xmap;
+  map->algoData=(void *)xmap;
   map->setPairFn=GWEN_IdMapHex4_Insert;
   map->getPairFn=GWEN_IdMapHex4_Find;
   map->findFirstFn=GWEN_IdMapHex4_FindFirst;
@@ -179,10 +190,11 @@ void GWEN_IdMapHex4_Extend(GWEN_IDMAP *map) {
 
 
 
-void GWEN_IdMapHex4_free(GWEN_IDMAP *map) {
+void GWEN_IdMapHex4_free(GWEN_IDMAP *map)
+{
   GWEN_IDMAP_HEX4 *xmap;
 
-  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  xmap=(GWEN_IDMAP_HEX4 *)map->algoData;
   GWEN_IdMapHex4Map_free(xmap->table);
   GWEN_FREE_OBJECT(xmap);
 }
@@ -190,7 +202,8 @@ void GWEN_IdMapHex4_free(GWEN_IDMAP *map) {
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4Map_new(GWEN_IDMAP_HEX4_TABLE *p,
-    int isPtrTable) {
+                                             int isPtrTable)
+{
   GWEN_IDMAP_HEX4_TABLE *t;
 
   GWEN_NEW_OBJECT(GWEN_IDMAP_HEX4_TABLE, t);
@@ -201,12 +214,13 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4Map_new(GWEN_IDMAP_HEX4_TABLE *p,
 
 
 
-void GWEN_IdMapHex4Map_free(GWEN_IDMAP_HEX4_TABLE *t) {
+void GWEN_IdMapHex4Map_free(GWEN_IDMAP_HEX4_TABLE *t)
+{
   if (t) {
     if (!(t->isPtrTable)) {
       int i;
 
-      for(i=0; i<16; i++) {
+      for (i=0; i<16; i++) {
         if (t->ptrs[i])
           GWEN_IdMapHex4Map_free(t->ptrs[i]);
       }
@@ -219,69 +233,70 @@ void GWEN_IdMapHex4Map_free(GWEN_IDMAP_HEX4_TABLE *t) {
 
 GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
                                         uint32_t id,
-                                        void *ptr) {
+                                        void *ptr)
+{
   GWEN_IDMAP_HEX4 *xmap;
   void **p;
   GWEN_IDMAP_HEX4_TABLE *t;
 
-  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  xmap=(GWEN_IDMAP_HEX4 *)map->algoData;
 
   t=xmap->table;
   p=&(t->ptrs[(id>>28) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 0);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 0);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>24) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 0);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 0);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>20) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 0);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 0);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>16) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 0);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 0);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>12) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 0);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 0);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>8) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 0);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 0);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>4) & 0xf]);
   if (!*p) {
     if (ptr==0)
       return GWEN_IdMapResult_NotFound;
-    *p=(void*)GWEN_IdMapHex4Map_new(t, 1);
+    *p=(void *)GWEN_IdMapHex4Map_new(t, 1);
   }
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[id & 0xf]);
   *p=ptr;
@@ -318,34 +333,35 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_Insert(GWEN_IDMAP *map,
 
 
 
-void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, uint32_t id) {
+void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, uint32_t id)
+{
   GWEN_IDMAP_HEX4 *xmap;
   GWEN_IDMAP_HEX4_TABLE *t;
 
-  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  xmap=(GWEN_IDMAP_HEX4 *)map->algoData;
 
   t=xmap->table;
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>28)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>28)&0xf]);
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>24)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>24)&0xf]);
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>20)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>20)&0xf]);
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>16)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>16)&0xf]);
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>12)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>12)&0xf]);
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>8)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>8)&0xf]);
   if (!t)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[(id>>4)&0xf]);
+  t=(GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[(id>>4)&0xf]);
   if (!t)
     return 0;
 
@@ -355,43 +371,44 @@ void *GWEN_IdMapHex4_Find(GWEN_IDMAP *map, uint32_t id) {
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetTable(GWEN_IDMAP_HEX4_TABLE *t,
-    uint32_t id) {
+                                                uint32_t id)
+{
   void **p;
 
   p=&(t->ptrs[(id>>28) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>24) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>20) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>16) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>12) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>8) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   p=&(t->ptrs[(id>>4) & 0xf]);
   if (!*p)
     return 0;
-  t=(GWEN_IDMAP_HEX4_TABLE*) *p;
+  t=(GWEN_IDMAP_HEX4_TABLE *) *p;
 
   return t;
 }
@@ -399,7 +416,8 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetTable(GWEN_IDMAP_HEX4_TABLE *t,
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
-    uint32_t *pid) {
+                                                     uint32_t *pid)
+{
   uint32_t id;
   int i;
 
@@ -417,7 +435,7 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
       else {
         GWEN_IDMAP_HEX4_TABLE *dt;
 
-        dt=GWEN_IdMapHex4__GetFirstTable((GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[i]),
+        dt=GWEN_IdMapHex4__GetFirstTable((GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[i]),
                                          &lid);
         if (dt) {
           *pid=lid;
@@ -432,8 +450,9 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetFirstTable(GWEN_IDMAP_HEX4_TABLE *t,
 
 
 GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
-    uint32_t *pid,
-    int incr) {
+                                                    uint32_t *pid,
+                                                    int incr)
+{
   uint32_t id;
 
   id=*pid;
@@ -463,7 +482,7 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
           GWEN_IDMAP_HEX4_TABLE *dt;
 
           lid=lid<<4;
-          dt=GWEN_IdMapHex4__GetNextTable((GWEN_IDMAP_HEX4_TABLE*)(t->ptrs[i]),
+          dt=GWEN_IdMapHex4__GetNextTable((GWEN_IDMAP_HEX4_TABLE *)(t->ptrs[i]),
                                           &lid, 0);
           if (dt) {
             *pid=lid;
@@ -482,13 +501,14 @@ GWEN_IDMAP_HEX4_TABLE *GWEN_IdMapHex4__GetNextTable(GWEN_IDMAP_HEX4_TABLE *t,
 
 
 GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(const GWEN_IDMAP *map,
-    uint32_t *pid) {
+                                           uint32_t *pid)
+{
 
   GWEN_IDMAP_HEX4_TABLE *t;
   GWEN_IDMAP_HEX4 *xmap;
   uint32_t id;
 
-  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  xmap=(GWEN_IDMAP_HEX4 *)map->algoData;
 
   t=GWEN_IdMapHex4__GetFirstTable(xmap->table, &id);
   if (t) {
@@ -502,12 +522,13 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindFirst(const GWEN_IDMAP *map,
 
 
 GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(const GWEN_IDMAP *map,
-    uint32_t *pid) {
+                                          uint32_t *pid)
+{
   GWEN_IDMAP_HEX4_TABLE *t;
   GWEN_IDMAP_HEX4 *xmap;
   uint32_t id;
 
-  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  xmap=(GWEN_IDMAP_HEX4 *)map->algoData;
 
   id=*pid;
 
@@ -525,7 +546,8 @@ GWEN_IDMAP_RESULT GWEN_IdMapHex4_FindNext(const GWEN_IDMAP *map,
 
 
 
-void GWEN_IdMapHex4__Dump(GWEN_IDMAP_HEX4_TABLE *tbl, FILE *f, int indent) {
+void GWEN_IdMapHex4__Dump(GWEN_IDMAP_HEX4_TABLE *tbl, FILE *f, int indent)
+{
   int i;
 
   for (i=0; i<16; i++) {
@@ -544,10 +566,11 @@ void GWEN_IdMapHex4__Dump(GWEN_IDMAP_HEX4_TABLE *tbl, FILE *f, int indent) {
 
 
 
-void GWEN_IdMapHex4_Dump(GWEN_IDMAP *map, FILE *f, int indent) {
+void GWEN_IdMapHex4_Dump(GWEN_IDMAP *map, FILE *f, int indent)
+{
   GWEN_IDMAP_HEX4 *xmap;
 
-  xmap=(GWEN_IDMAP_HEX4*)map->algoData;
+  xmap=(GWEN_IDMAP_HEX4 *)map->algoData;
   GWEN_IdMapHex4__Dump(xmap->table, f, indent);
 }
 

@@ -26,7 +26,8 @@
 
 HTML_GROUP *HtmlGroup_Table_new(const char *groupName,
                                 HTML_GROUP *parent,
-                                GWEN_XML_CONTEXT *ctx) {
+                                GWEN_XML_CONTEXT *ctx)
+{
   HTML_GROUP *g;
 
   /* create base group */
@@ -42,7 +43,8 @@ HTML_GROUP *HtmlGroup_Table_new(const char *groupName,
 
 
 
-int HtmlGroup_Table_StartTag(HTML_GROUP *g, const char *tagName) {
+int HtmlGroup_Table_StartTag(HTML_GROUP *g, const char *tagName)
+{
   HTML_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -81,7 +83,8 @@ int HtmlGroup_Table_StartTag(HTML_GROUP *g, const char *tagName) {
 
 
 
-int HtmlGroup_Table_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg) {
+int HtmlGroup_Table_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg)
+{
   //GWEN_XML_CONTEXT *ctx;
   const char *s;
 

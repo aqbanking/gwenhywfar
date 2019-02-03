@@ -75,7 +75,8 @@ GWEN_INHERIT_FUNCTIONS(GWEN_GUI)
 
 
 
-GWEN_GUI *GWEN_Gui_new(void) {
+GWEN_GUI *GWEN_Gui_new(void)
+{
   GWEN_GUI *gui;
 
   GWEN_NEW_OBJECT(GWEN_GUI, gui);
@@ -102,7 +103,8 @@ GWEN_GUI *GWEN_Gui_new(void) {
 
 
 
-void GWEN_Gui_free(GWEN_GUI *gui) {
+void GWEN_Gui_free(GWEN_GUI *gui)
+{
   if (gui) {
     assert(gui->refCount);
     if ((--gui->refCount)==0) {
@@ -125,7 +127,8 @@ void GWEN_Gui_free(GWEN_GUI *gui) {
 
 
 
-void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
+void GWEN_Gui_UseDialogs(GWEN_GUI *gui)
+{
   assert(gui);
   DBG_INFO(GWEN_LOGDOMAIN, "Using own callbacks in gui %p", gui);
   gui->progressStartFn=GWEN_Gui_Internal_ProgressStart;
@@ -141,7 +144,8 @@ void GWEN_Gui_UseDialogs(GWEN_GUI *gui) {
 
 
 
-void GWEN_Gui_Attach(GWEN_GUI *gui) {
+void GWEN_Gui_Attach(GWEN_GUI *gui)
+{
   assert(gui);
   assert(gui->refCount);
   gui->refCount++;
@@ -149,7 +153,8 @@ void GWEN_Gui_Attach(GWEN_GUI *gui) {
 
 
 
-void GWEN_Gui_SetGui(GWEN_GUI *gui) {
+void GWEN_Gui_SetGui(GWEN_GUI *gui)
+{
   if (gui)
     GWEN_Gui_Attach(gui);
   if (gwenhywfar_gui)
@@ -159,14 +164,16 @@ void GWEN_Gui_SetGui(GWEN_GUI *gui) {
 
 
 
-GWEN_GUI *GWEN_Gui_GetGui(void) {
+GWEN_GUI *GWEN_Gui_GetGui(void)
+{
   return gwenhywfar_gui;
 }
 
 
 
 int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
-                           const char *fromCs, const char *toCs) {
+                           const char *fromCs, const char *toCs)
+{
 #ifdef HAVE_ICONV
   int rv=0;
   iconv_t ic;
@@ -192,11 +199,11 @@ int GWEN_Gui_ConvertString(const char *text, size_t len, GWEN_BUFFER *tbuf,
     size_t space;
 
     /* convert */
-    pInbuf=(char*)text;
+    pInbuf=(char *)text;
     inLeft=len;
     outLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
     space=outLeft;
-retry:
+  retry:
     pOutbuf=GWEN_Buffer_GetPosPointer(tbuf);
     done=iconv(ic, &pInbuf, &inLeft, &pOutbuf, &outLeft);
     GWEN_Buffer_SetPos(tbuf, space-outLeft);
@@ -234,7 +241,8 @@ retry:
 
 
 
-int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWEN_BUFFER *tbuf) {
+int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWEN_BUFFER *tbuf)
+{
   int rv;
 
   rv=GWEN_Gui_ConvertString(text, len, tbuf, "UTF-8", gui->charSet);
@@ -249,7 +257,8 @@ int GWEN_Gui_ConvertFromUtf8(const GWEN_GUI *gui, const char *text, int len, GWE
 
 
 int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
-                       const char *fmt, ...) {
+                       const char *fmt, ...)
+{
   va_list args;
   int rv;
 
@@ -303,7 +312,8 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
 
 
 
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf) {
+int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf)
+{
 #ifdef HAVE_ICONV
   if (gwenhywfar_gui) {
     const char *fromCs;
@@ -326,7 +336,8 @@ int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf) {
 
 
 
-void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf) {
+void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf)
+{
   size_t len;
   const char *p;
 
@@ -362,7 +373,8 @@ void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbu
 
 
 GWEN_GUI_MESSAGEBOX_FN GWEN_Gui_SetMessageBoxFn(GWEN_GUI *gui,
-    GWEN_GUI_MESSAGEBOX_FN f) {
+                                                GWEN_GUI_MESSAGEBOX_FN f)
+{
   GWEN_GUI_MESSAGEBOX_FN of;
 
   assert(gui);
@@ -374,7 +386,8 @@ GWEN_GUI_MESSAGEBOX_FN GWEN_Gui_SetMessageBoxFn(GWEN_GUI *gui,
 
 
 GWEN_GUI_INPUTBOX_FN GWEN_Gui_SetInputBoxFn(GWEN_GUI *gui,
-    GWEN_GUI_INPUTBOX_FN f) {
+                                            GWEN_GUI_INPUTBOX_FN f)
+{
   GWEN_GUI_INPUTBOX_FN of;
 
   assert(gui);
@@ -386,7 +399,8 @@ GWEN_GUI_INPUTBOX_FN GWEN_Gui_SetInputBoxFn(GWEN_GUI *gui,
 
 
 GWEN_GUI_SHOWBOX_FN GWEN_Gui_SetShowBoxFn(GWEN_GUI *gui,
-    GWEN_GUI_SHOWBOX_FN f) {
+                                          GWEN_GUI_SHOWBOX_FN f)
+{
   GWEN_GUI_SHOWBOX_FN of;
 
   assert(gui);
@@ -398,7 +412,8 @@ GWEN_GUI_SHOWBOX_FN GWEN_Gui_SetShowBoxFn(GWEN_GUI *gui,
 
 
 GWEN_GUI_HIDEBOX_FN GWEN_Gui_SetHideBoxFn(GWEN_GUI *gui,
-    GWEN_GUI_HIDEBOX_FN f) {
+                                          GWEN_GUI_HIDEBOX_FN f)
+{
   GWEN_GUI_HIDEBOX_FN of;
 
   assert(gui);
@@ -409,8 +424,8 @@ GWEN_GUI_HIDEBOX_FN GWEN_Gui_SetHideBoxFn(GWEN_GUI *gui,
 
 
 
-GWEN_GUI_PROGRESS_START_FN
-GWEN_Gui_SetProgressStartFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_START_FN f) {
+GWEN_GUI_PROGRESS_START_FN GWEN_Gui_SetProgressStartFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_START_FN f)
+{
   GWEN_GUI_PROGRESS_START_FN of;
 
   assert(gui);
@@ -421,8 +436,8 @@ GWEN_Gui_SetProgressStartFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_START_FN f) {
 
 
 
-GWEN_GUI_PROGRESS_ADVANCE_FN
-GWEN_Gui_SetProgressAdvanceFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_ADVANCE_FN f) {
+GWEN_GUI_PROGRESS_ADVANCE_FN GWEN_Gui_SetProgressAdvanceFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_ADVANCE_FN f)
+{
   GWEN_GUI_PROGRESS_ADVANCE_FN of;
 
   assert(gui);
@@ -433,8 +448,8 @@ GWEN_Gui_SetProgressAdvanceFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_ADVANCE_FN f) {
 
 
 
-GWEN_GUI_PROGRESS_SETTOTAL_FN
-GWEN_Gui_SetProgressSetTotalFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_SETTOTAL_FN f) {
+GWEN_GUI_PROGRESS_SETTOTAL_FN GWEN_Gui_SetProgressSetTotalFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_SETTOTAL_FN f)
+{
   GWEN_GUI_PROGRESS_SETTOTAL_FN of;
 
   assert(gui);
@@ -445,8 +460,8 @@ GWEN_Gui_SetProgressSetTotalFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_SETTOTAL_FN f) {
 
 
 
-GWEN_GUI_PROGRESS_LOG_FN
-GWEN_Gui_SetProgressLogFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_LOG_FN f) {
+GWEN_GUI_PROGRESS_LOG_FN GWEN_Gui_SetProgressLogFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_LOG_FN f)
+{
   GWEN_GUI_PROGRESS_LOG_FN of;
 
   assert(gui);
@@ -457,8 +472,8 @@ GWEN_Gui_SetProgressLogFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_LOG_FN f) {
 
 
 
-GWEN_GUI_PROGRESS_END_FN
-GWEN_Gui_SetProgressEndFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_END_FN f) {
+GWEN_GUI_PROGRESS_END_FN GWEN_Gui_SetProgressEndFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_END_FN f)
+{
   GWEN_GUI_PROGRESS_END_FN of;
 
   assert(gui);
@@ -470,7 +485,8 @@ GWEN_Gui_SetProgressEndFn(GWEN_GUI *gui, GWEN_GUI_PROGRESS_END_FN f) {
 
 
 GWEN_GUI_PRINT_FN GWEN_Gui_SetPrintFn(GWEN_GUI *gui,
-                                      GWEN_GUI_PRINT_FN f) {
+                                      GWEN_GUI_PRINT_FN f)
+{
   GWEN_GUI_PRINT_FN of;
 
   assert(gui);
@@ -482,7 +498,8 @@ GWEN_GUI_PRINT_FN GWEN_Gui_SetPrintFn(GWEN_GUI *gui,
 
 
 GWEN_GUI_GETPASSWORD_FN GWEN_Gui_SetGetPasswordFn(GWEN_GUI *gui,
-    GWEN_GUI_GETPASSWORD_FN f) {
+                                                  GWEN_GUI_GETPASSWORD_FN f)
+{
   GWEN_GUI_GETPASSWORD_FN of;
 
   assert(gui);
@@ -493,9 +510,9 @@ GWEN_GUI_GETPASSWORD_FN GWEN_Gui_SetGetPasswordFn(GWEN_GUI *gui,
 
 
 
-GWEN_GUI_SETPASSWORDSTATUS_FN
-GWEN_Gui_SetSetPasswordStatusFn(GWEN_GUI *gui,
-                                GWEN_GUI_SETPASSWORDSTATUS_FN f) {
+GWEN_GUI_SETPASSWORDSTATUS_FN GWEN_Gui_SetSetPasswordStatusFn(GWEN_GUI *gui,
+                                                              GWEN_GUI_SETPASSWORDSTATUS_FN f)
+{
   GWEN_GUI_SETPASSWORDSTATUS_FN of;
 
   assert(gui);
@@ -507,7 +524,8 @@ GWEN_Gui_SetSetPasswordStatusFn(GWEN_GUI *gui,
 
 
 GWEN_GUI_LOG_HOOK_FN GWEN_Gui_SetLogHookFn(GWEN_GUI *gui,
-    GWEN_GUI_LOG_HOOK_FN f) {
+                                           GWEN_GUI_LOG_HOOK_FN f)
+{
   GWEN_GUI_LOG_HOOK_FN of;
 
   assert(gui);
@@ -520,7 +538,8 @@ GWEN_GUI_LOG_HOOK_FN GWEN_Gui_SetLogHookFn(GWEN_GUI *gui,
 
 
 GWEN_GUI_WAITFORSOCKETS_FN GWEN_Gui_SetWaitForSocketsFn(GWEN_GUI *gui,
-    GWEN_GUI_WAITFORSOCKETS_FN f) {
+                                                        GWEN_GUI_WAITFORSOCKETS_FN f)
+{
   GWEN_GUI_WAITFORSOCKETS_FN of;
 
   assert(gui);
@@ -532,7 +551,8 @@ GWEN_GUI_WAITFORSOCKETS_FN GWEN_Gui_SetWaitForSocketsFn(GWEN_GUI *gui,
 
 
 
-GWEN_GUI_CHECKCERT_FN GWEN_Gui_SetCheckCertFn(GWEN_GUI *gui, GWEN_GUI_CHECKCERT_FN f) {
+GWEN_GUI_CHECKCERT_FN GWEN_Gui_SetCheckCertFn(GWEN_GUI *gui, GWEN_GUI_CHECKCERT_FN f)
+{
   GWEN_GUI_CHECKCERT_FN of;
 
   assert(gui);
@@ -544,7 +564,8 @@ GWEN_GUI_CHECKCERT_FN GWEN_Gui_SetCheckCertFn(GWEN_GUI *gui, GWEN_GUI_CHECKCERT_
 
 
 
-GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DIALOG_FN f) {
+GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DIALOG_FN f)
+{
   GWEN_GUI_EXEC_DIALOG_FN of;
 
   assert(gui);
@@ -556,7 +577,8 @@ GWEN_GUI_EXEC_DIALOG_FN GWEN_Gui_SetExecDialogFn(GWEN_GUI *gui, GWEN_GUI_EXEC_DI
 
 
 
-GWEN_GUI_OPEN_DIALOG_FN GWEN_Gui_SetOpenDialogFn(GWEN_GUI *gui, GWEN_GUI_OPEN_DIALOG_FN f) {
+GWEN_GUI_OPEN_DIALOG_FN GWEN_Gui_SetOpenDialogFn(GWEN_GUI *gui, GWEN_GUI_OPEN_DIALOG_FN f)
+{
   GWEN_GUI_OPEN_DIALOG_FN of;
 
   assert(gui);
@@ -568,7 +590,8 @@ GWEN_GUI_OPEN_DIALOG_FN GWEN_Gui_SetOpenDialogFn(GWEN_GUI *gui, GWEN_GUI_OPEN_DI
 
 
 
-GWEN_GUI_CLOSE_DIALOG_FN GWEN_Gui_SetCloseDialogFn(GWEN_GUI *gui, GWEN_GUI_CLOSE_DIALOG_FN f) {
+GWEN_GUI_CLOSE_DIALOG_FN GWEN_Gui_SetCloseDialogFn(GWEN_GUI *gui, GWEN_GUI_CLOSE_DIALOG_FN f)
+{
   GWEN_GUI_CLOSE_DIALOG_FN of;
 
   assert(gui);
@@ -580,7 +603,8 @@ GWEN_GUI_CLOSE_DIALOG_FN GWEN_Gui_SetCloseDialogFn(GWEN_GUI *gui, GWEN_GUI_CLOSE
 
 
 
-GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALOG_FN f) {
+GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALOG_FN f)
+{
   GWEN_GUI_RUN_DIALOG_FN of;
 
   assert(gui);
@@ -592,8 +616,8 @@ GWEN_GUI_RUN_DIALOG_FN GWEN_Gui_SetRunDialogFn(GWEN_GUI *gui, GWEN_GUI_RUN_DIALO
 
 
 
-GWEN_GUI_READ_DIALOG_PREFS_FN
-GWEN_Gui_SetReadDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_READ_DIALOG_PREFS_FN f) {
+GWEN_GUI_READ_DIALOG_PREFS_FN GWEN_Gui_SetReadDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_READ_DIALOG_PREFS_FN f)
+{
   GWEN_GUI_READ_DIALOG_PREFS_FN of;
 
   assert(gui);
@@ -605,8 +629,8 @@ GWEN_Gui_SetReadDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_READ_DIALOG_PREFS_FN f) {
 
 
 
-GWEN_GUI_WRITE_DIALOG_PREFS_FN
-GWEN_Gui_SetWriteDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_WRITE_DIALOG_PREFS_FN f) {
+GWEN_GUI_WRITE_DIALOG_PREFS_FN GWEN_Gui_SetWriteDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_WRITE_DIALOG_PREFS_FN f)
+{
   GWEN_GUI_WRITE_DIALOG_PREFS_FN of;
 
   assert(gui);
@@ -618,7 +642,8 @@ GWEN_Gui_SetWriteDialogPrefsFn(GWEN_GUI *gui, GWEN_GUI_WRITE_DIALOG_PREFS_FN f) 
 
 
 
-GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f) {
+GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_FILENAME_FN f)
+{
   GWEN_GUI_GET_FILENAME_FN of;
 
   assert(gui);
@@ -630,7 +655,8 @@ GWEN_GUI_GET_FILENAME_FN GWEN_Gui_SetGetFileNameFn(GWEN_GUI *gui, GWEN_GUI_GET_F
 
 
 
-GWEN_GUI_GETSYNCIO_FN GWEN_Gui_SetGetSyncIoFn(GWEN_GUI *gui, GWEN_GUI_GETSYNCIO_FN f) {
+GWEN_GUI_GETSYNCIO_FN GWEN_Gui_SetGetSyncIoFn(GWEN_GUI *gui, GWEN_GUI_GETSYNCIO_FN f)
+{
   GWEN_GUI_GETSYNCIO_FN of;
 
   assert(gui);
@@ -642,9 +668,9 @@ GWEN_GUI_GETSYNCIO_FN GWEN_Gui_SetGetSyncIoFn(GWEN_GUI *gui, GWEN_GUI_GETSYNCIO_
 
 
 
-GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN
-GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
-                                     GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN f) {
+GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
+                                                                         GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN f)
+{
   GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN of;
 
   assert(gui);
@@ -657,43 +683,51 @@ GWEN_Gui_SetKeyDataFromTextOpenSslFn(GWEN_GUI *gui,
 
 
 
-uint32_t GWEN_Gui_GetFlags(const GWEN_GUI *gui) {
+uint32_t GWEN_Gui_GetFlags(const GWEN_GUI *gui)
+{
   assert(gui);
   return gui->flags;
 }
 
 
 
-void GWEN_Gui_SetFlags(GWEN_GUI *gui, uint32_t fl) {
+void GWEN_Gui_SetFlags(GWEN_GUI *gui, uint32_t fl)
+{
   assert(gui);
   gui->flags=fl;
 }
 
 
 
-void GWEN_Gui_AddFlags(GWEN_GUI *gui, uint32_t fl) {
+void GWEN_Gui_AddFlags(GWEN_GUI *gui, uint32_t fl)
+{
   assert(gui);
   gui->flags|=fl;
 }
 
 
 
-void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl) {
+void GWEN_Gui_SubFlags(GWEN_GUI *gui, uint32_t fl)
+{
   assert(gui);
   gui->flags&=~fl;
 }
 
 
 
-void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name) {
+void GWEN_Gui_SetName(GWEN_GUI *gui, const char *name)
+{
   free(gui->name);
-  if (name) gui->name=strdup(name);
-  else gui->name=NULL;
+  if (name)
+    gui->name=strdup(name);
+  else
+    gui->name=NULL;
 }
 
 
 
-const char *GWEN_Gui_GetName(void) {
+const char *GWEN_Gui_GetName(void)
+{
   if (gwenhywfar_gui)
     return gwenhywfar_gui->name;
   return NULL;
@@ -701,7 +735,8 @@ const char *GWEN_Gui_GetName(void) {
 
 
 
-const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui) {
+const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui)
+{
   if (gui)
     return gui->charSet;
   return NULL;
@@ -709,7 +744,8 @@ const char *GWEN_Gui_GetCharSet(const GWEN_GUI *gui) {
 
 
 
-void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s) {
+void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s)
+{
   const char *cs;
 
   assert(gui);
@@ -771,7 +807,8 @@ void GWEN_Gui_SetCharSet(GWEN_GUI *gui, const char *s) {
 
 
 
-GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui) {
+GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui)
+{
   if (gui)
     return gui->passwdStore;
   return NULL;
@@ -779,7 +816,8 @@ GWEN_PASSWD_STORE *GWEN_Gui_GetPasswdStore(const GWEN_GUI *gui) {
 
 
 
-void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto) {
+void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto)
+{
   if (gui) {
     if (gui->passwdStore && gui->passwdStore!=sto)
       GWEN_PasswordStore_free(gui->passwdStore);
@@ -795,7 +833,8 @@ void GWEN_Gui_SetPasswdStore(GWEN_GUI *gui, GWEN_PASSWD_STORE *sto) {
 
 void GWEN_Gui_SetPasswordDb(GWEN_GUI *gui,
                             GWEN_DB_NODE *dbPasswords,
-                            int persistent) {
+                            int persistent)
+{
   GWEN_DB_Group_free(gui->dbPasswords);
   gui->dbPasswords=dbPasswords;
   gui->persistentPasswords=persistent;
@@ -803,7 +842,8 @@ void GWEN_Gui_SetPasswordDb(GWEN_GUI *gui,
 
 
 
-GWEN_DB_NODE *GWEN_Gui_GetPasswordDb(const GWEN_GUI *gui) {
+GWEN_DB_NODE *GWEN_Gui_GetPasswordDb(const GWEN_GUI *gui)
+{
   return gui->dbPasswords;
 }
 
@@ -824,7 +864,8 @@ int GWEN_Gui_MessageBox(uint32_t flags,
                         const char *b1,
                         const char *b2,
                         const char *b3,
-                        uint32_t guiid) {
+                        uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->messageBoxFn)
     return gwenhywfar_gui->messageBoxFn(gwenhywfar_gui,
                                         flags,
@@ -836,7 +877,8 @@ int GWEN_Gui_MessageBox(uint32_t flags,
 
 
 
-void GWEN_Gui_ShowError(const char *title, const char *fmt, ...) {
+void GWEN_Gui_ShowError(const char *title, const char *fmt, ...)
+{
   va_list list;
   char msgbuffer[2048];
   int rv;
@@ -865,7 +907,8 @@ int GWEN_Gui_InputBox(uint32_t flags,
                       char *buffer,
                       int minLen,
                       int maxLen,
-                      uint32_t guiid) {
+                      uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->inputBoxFn)
     return gwenhywfar_gui->inputBoxFn(gwenhywfar_gui,
                                       flags,
@@ -881,7 +924,8 @@ int GWEN_Gui_InputBox(uint32_t flags,
 uint32_t GWEN_Gui_ShowBox(uint32_t flags,
                           const char *title,
                           const char *text,
-                          uint32_t guiid) {
+                          uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->showBoxFn)
     return gwenhywfar_gui->showBoxFn(gwenhywfar_gui,
                                      flags,
@@ -893,7 +937,8 @@ uint32_t GWEN_Gui_ShowBox(uint32_t flags,
 
 
 
-void GWEN_Gui_HideBox(uint32_t id) {
+void GWEN_Gui_HideBox(uint32_t id)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->hideBoxFn)
     return gwenhywfar_gui->hideBoxFn(gwenhywfar_gui, id);
 }
@@ -904,7 +949,8 @@ uint32_t GWEN_Gui_ProgressStart(uint32_t progressFlags,
                                 const char *title,
                                 const char *text,
                                 uint64_t total,
-                                uint32_t guiid) {
+                                uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->progressStartFn)
     return gwenhywfar_gui->progressStartFn(gwenhywfar_gui,
                                            progressFlags,
@@ -917,21 +963,23 @@ uint32_t GWEN_Gui_ProgressStart(uint32_t progressFlags,
 
 
 
-int GWEN_Gui_ProgressAdvance(uint32_t id, uint32_t progress) {
+int GWEN_Gui_ProgressAdvance(uint32_t id, uint32_t progress)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->progressAdvanceFn)
     return gwenhywfar_gui->progressAdvanceFn(gwenhywfar_gui,
-           id,
-           progress);
+                                             id,
+                                             progress);
   return 0;
 }
 
 
 
-int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total) {
+int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->progressSetTotalFn)
     return gwenhywfar_gui->progressSetTotalFn(gwenhywfar_gui,
-           id,
-           total);
+                                              id,
+                                              total);
   return 0;
 }
 
@@ -939,7 +987,8 @@ int GWEN_Gui_ProgressSetTotal(uint32_t id, uint64_t total) {
 
 int GWEN_Gui_ProgressLog(uint32_t id,
                          GWEN_LOGGER_LEVEL level,
-                         const char *text) {
+                         const char *text)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->progressLogFn)
     return gwenhywfar_gui->progressLogFn(gwenhywfar_gui,
                                          id, level, text);
@@ -950,7 +999,8 @@ int GWEN_Gui_ProgressLog(uint32_t id,
 
 int GWEN_Gui_ProgressLog2(uint32_t id,
                           GWEN_LOGGER_LEVEL level,
-                          const char *fmt, ...) {
+                          const char *fmt, ...)
+{
   va_list list;
   char msgbuffer[2048];
   int rv;
@@ -968,7 +1018,8 @@ int GWEN_Gui_ProgressLog2(uint32_t id,
 
 
 
-int GWEN_Gui_ProgressEnd(uint32_t id) {
+int GWEN_Gui_ProgressEnd(uint32_t id)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->progressEndFn)
     return gwenhywfar_gui->progressEndFn(gwenhywfar_gui, id);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -980,7 +1031,8 @@ int GWEN_Gui_Print(const char *docTitle,
                    const char *docType,
                    const char *descr,
                    const char *text,
-                   uint32_t guiid) {
+                   uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->printFn)
     return gwenhywfar_gui->printFn(gwenhywfar_gui,
                                    docTitle,
@@ -1002,7 +1054,8 @@ int GWEN_Gui_GetPassword(uint32_t flags,
                          int maxLen,
                          GWEN_GUI_PASSWORD_METHOD methodId,
                          GWEN_DB_NODE *methodParams,
-                         uint32_t guiid) {
+                         uint32_t guiid)
+{
   if (gwenhywfar_gui) {
     if (gwenhywfar_gui->getPasswordFn)
       return gwenhywfar_gui->getPasswordFn(gwenhywfar_gui,
@@ -1034,17 +1087,19 @@ int GWEN_Gui_GetPassword(uint32_t flags,
 int GWEN_Gui_SetPasswordStatus(const char *token,
                                const char *pin,
                                GWEN_GUI_PASSWORD_STATUS status,
-                               uint32_t guiid) {
+                               uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->setPasswordStatusFn)
     return gwenhywfar_gui->setPasswordStatusFn(gwenhywfar_gui,
-           token, pin, status, guiid);
+                                               token, pin, status, guiid);
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
 int GWEN_Gui_LogHook(const char *logDomain,
-                     GWEN_LOGGER_LEVEL priority, const char *s) {
+                     GWEN_LOGGER_LEVEL priority, const char *s)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->logHookFn) {
     if (priority>=GWEN_LoggerLevel_Debug &&
         logDomain &&
@@ -1079,7 +1134,8 @@ int GWEN_Gui_LogHook(const char *logDomain,
 int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
                             GWEN_SOCKET_LIST2 *writeSockets,
                             uint32_t guiid,
-                            int msecs) {
+                            int msecs)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->waitForSocketsFn)
     return gwenhywfar_gui->waitForSocketsFn(gwenhywfar_gui, readSockets, writeSockets, guiid, msecs);
   else {
@@ -1110,7 +1166,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
                                "Waiting for data to become available",
                                wt,
                                0);
-    while(1) {
+    while (1) {
       GWEN_SOCKETSET *rset;
       GWEN_SOCKETSET *wset;
       GWEN_SOCKET_LIST2_ITERATOR *sit;
@@ -1127,7 +1183,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
           s=GWEN_Socket_List2Iterator_Data(sit);
           assert(s);
 
-          while(s) {
+          while (s) {
             GWEN_SocketSet_AddSocket(rset, s);
             s=GWEN_Socket_List2Iterator_Next(sit);
           }
@@ -1144,7 +1200,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
           s=GWEN_Socket_List2Iterator_Data(sit);
           assert(s);
 
-          while(s) {
+          while (s) {
             GWEN_SocketSet_AddSocket(wset, s);
             s=GWEN_Socket_List2Iterator_Next(sit);
           }
@@ -1201,7 +1257,8 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
 
 
 
-int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid) {
+int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->checkCertFn)
     return gwenhywfar_gui->checkCertFn(gwenhywfar_gui, cd, sio, guiid);
   else
@@ -1212,7 +1269,8 @@ int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t g
 
 int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
                                             const GWEN_SSLCERTDESCR *cd,
-                                            GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid) {
+                                            GWEN_UNUSED GWEN_SYNCIO *sio, uint32_t guiid)
+{
   int rv;
   int isError;
   const char *hashMd5;
@@ -1401,18 +1459,20 @@ int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_UNUSED GWEN_GUI *gui,
 
 int GWEN_Gui_KeyDataFromText_OpenSSL(const char *text,
                                      unsigned char *buffer,
-                                     unsigned int bufLength) {
+                                     unsigned int bufLength)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->keyDataFromTextOpenSslFn)
     return gwenhywfar_gui->keyDataFromTextOpenSslFn(gwenhywfar_gui,
-           text,
-           buffer,
-           bufLength);
+                                                    text,
+                                                    buffer,
+                                                    bufLength);
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
-int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
+int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->execDialogFn)
     return gwenhywfar_gui->execDialogFn(gwenhywfar_gui, dlg, guiid);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1420,7 +1480,8 @@ int GWEN_Gui_ExecDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 
-int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
+int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->openDialogFn)
     return gwenhywfar_gui->openDialogFn(gwenhywfar_gui, dlg, guiid);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1428,7 +1489,8 @@ int GWEN_Gui_OpenDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 
-int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg) {
+int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->closeDialogFn)
     return gwenhywfar_gui->closeDialogFn(gwenhywfar_gui, dlg);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1436,7 +1498,8 @@ int GWEN_Gui_CloseDialog(GWEN_DIALOG *dlg) {
 
 
 
-int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int untilEnd) {
+int GWEN_Gui_RunDialog(GWEN_DIALOG *dlg, int untilEnd)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->runDialogFn)
     return gwenhywfar_gui->runDialogFn(gwenhywfar_gui, dlg, untilEnd);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1450,7 +1513,8 @@ int GWEN_Gui_GetFileName(const char *caption,
                          uint32_t flags,
                          const char *patterns,
                          GWEN_BUFFER *pathBuffer,
-                         uint32_t guiid) {
+                         uint32_t guiid)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->getFileNameFn)
     return gwenhywfar_gui->getFileNameFn(gwenhywfar_gui,
                                          caption,
@@ -1466,7 +1530,8 @@ int GWEN_Gui_GetFileName(const char *caption,
 
 int GWEN_Gui_ReadDialogPrefs(const char *groupName,
                              const char *altName,
-                             GWEN_DB_NODE **pDb) {
+                             GWEN_DB_NODE **pDb)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->readDialogPrefsFn)
     return gwenhywfar_gui->readDialogPrefsFn(gwenhywfar_gui, groupName, altName, pDb);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1475,7 +1540,8 @@ int GWEN_Gui_ReadDialogPrefs(const char *groupName,
 
 
 int GWEN_Gui_WriteDialogPrefs(const char *groupName,
-                              GWEN_DB_NODE *db) {
+                              GWEN_DB_NODE *db)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->writeDialogPrefsFn)
     return gwenhywfar_gui->writeDialogPrefsFn(gwenhywfar_gui, groupName, db);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1486,7 +1552,8 @@ int GWEN_Gui_WriteDialogPrefs(const char *groupName,
 int GWEN_Gui_GetSyncIo(const char *url,
                        const char *defaultProto,
                        int defaultPort,
-                       GWEN_SYNCIO **pSio) {
+                       GWEN_SYNCIO **pSio)
+{
   if (gwenhywfar_gui && gwenhywfar_gui->getSyncIoFn)
     return gwenhywfar_gui->getSyncIoFn(gwenhywfar_gui, url, defaultProto, defaultPort, pSio);
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -1505,7 +1572,8 @@ int GWEN_Gui_GetSyncIo(const char *url,
 
 
 
-int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
+int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd)
+{
   GWEN_PROGRESS_DATA *highest=NULL;
   GWEN_PROGRESS_DATA *t;
   GWEN_DIALOG *dlg=NULL;
@@ -1513,7 +1581,7 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
   assert(gwenhywfar_gui);
 
   t=pd;
-  while(t) {
+  while (t) {
     highest=t;
     t=GWEN_ProgressData_Tree_GetParent(t);
   }
@@ -1566,7 +1634,8 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd) {
 
 
 
-void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd) {
+void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd)
+{
   if (GWEN_ProgressData_GetShown(pd)==0) {
     if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_DELAY) {
       double dt;
@@ -1594,11 +1663,12 @@ void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd) {
 
 
 uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
-    uint32_t progressFlags,
-    const char *title,
-    const char *text,
-    uint64_t total,
-    uint32_t guiid) {
+                                         uint32_t progressFlags,
+                                         const char *title,
+                                         const char *text,
+                                         uint64_t total,
+                                         uint32_t guiid)
+{
   GWEN_PROGRESS_DATA *pdParent=NULL;
   GWEN_PROGRESS_DATA *pd;
   uint32_t id;
@@ -1639,7 +1709,8 @@ uint32_t GWEN_Gui_Internal_ProgressStart(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
+int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid)
+{
   GWEN_PROGRESS_DATA *pd;
   uint32_t parentPid=0;
 
@@ -1669,7 +1740,7 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
     previousPd=GWEN_ProgressData_Tree_GetParent(pd);
     if (previousPd)
       parentPid=GWEN_ProgressData_GetId(previousPd);
-    while(previousPd) {
+    while (previousPd) {
       if (GWEN_ProgressData_GetShown(previousPd))
         break;
       previousPd=GWEN_ProgressData_Tree_GetParent(previousPd);
@@ -1755,7 +1826,8 @@ int GWEN_Gui_Internal_ProgressEnd(GWEN_GUI *gui, uint32_t pid) {
 
 
 
-int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress) {
+int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress)
+{
   GWEN_PROGRESS_DATA *pd;
   int aborted=0;
 
@@ -1805,7 +1877,8 @@ int GWEN_Gui_Internal_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t prog
 
 
 
-int GWEN_Gui_Internal_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total) {
+int GWEN_Gui_Internal_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total)
+{
   GWEN_PROGRESS_DATA *pd;
   int aborted=0;
 
@@ -1854,7 +1927,8 @@ int GWEN_Gui_Internal_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t tot
 int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
                                   uint32_t pid,
                                   GWEN_LOGGER_LEVEL level,
-                                  const char *text) {
+                                  const char *text)
+{
   assert(gui);
 
   /* only show messages with log level lower or equal threshold */
@@ -1915,7 +1989,8 @@ int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
                                char *buffer,
                                int minLen,
                                int maxLen,
-                               uint32_t guiid) {
+                               uint32_t guiid)
+{
   GWEN_DIALOG *dlg;
   int rv;
 
@@ -1956,7 +2031,8 @@ int GWEN_Gui_Internal_MessageBox(GWEN_GUI *gui,
                                  const char *b1,
                                  const char *b2,
                                  const char *b3,
-                                 uint32_t guiid) {
+                                 uint32_t guiid)
+{
   GWEN_DIALOG *dlg;
   int rv;
 
@@ -1978,7 +2054,8 @@ uint32_t GWEN_Gui_Internal_ShowBox(GWEN_GUI *gui,
                                    uint32_t flags,
                                    const char *title,
                                    const char *text,
-                                   uint32_t guiid) {
+                                   uint32_t guiid)
+{
   GWEN_DIALOG *dlg;
   int rv;
   uint32_t id;
@@ -2007,12 +2084,13 @@ uint32_t GWEN_Gui_Internal_ShowBox(GWEN_GUI *gui,
 
 
 
-void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
+void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id)
+{
   GWEN_DIALOG *dlg;
 
   if (id) {
     dlg=GWEN_Dialog_List_First(gui->activeDialogs);
-    while(dlg) {
+    while (dlg) {
       if (GWEN_Dialog_GetGuiId(dlg)==id)
         break;
       dlg=GWEN_Dialog_List_Next(dlg);
@@ -2036,10 +2114,11 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id) {
 
 
 int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
-    const char *url,
-    const char *defaultProto,
-    int defaultPort,
-    GWEN_SYNCIO **pSio) {
+                                              const char *url,
+                                              const char *defaultProto,
+                                              int defaultPort,
+                                              GWEN_SYNCIO **pSio)
+{
   GWEN_URL *u;
   const char *s;
   int port;
@@ -2173,7 +2252,8 @@ int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
 
 
 
-static int GWEN_Gui__HashPair(const char *token, const char *pin, GWEN_BUFFER *buf) {
+static int GWEN_Gui__HashPair(const char *token, const char *pin, GWEN_BUFFER *buf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -2181,9 +2261,9 @@ static int GWEN_Gui__HashPair(const char *token, const char *pin, GWEN_BUFFER *b
   md=GWEN_MDigest_Md5_new();
   rv=GWEN_MDigest_Begin(md);
   if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)token, strlen(token));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *)token, strlen(token));
   if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)pin, strlen(pin));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *)pin, strlen(pin));
   if (rv==0)
     rv=GWEN_MDigest_End(md);
   if (rv<0) {
@@ -2192,7 +2272,7 @@ static int GWEN_Gui__HashPair(const char *token, const char *pin, GWEN_BUFFER *b
     return rv;
   }
 
-  GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
+  GWEN_Text_ToHexBuffer((const char *)GWEN_MDigest_GetDigestPtr(md),
                         GWEN_MDigest_GetDigestSize(md),
                         buf,
                         0, 0, 0);
@@ -2213,7 +2293,8 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
                                                        int maxLen,
                                                        GWEN_GUI_PASSWORD_METHOD methodId,
                                                        GWEN_DB_NODE *methodParams,
-                                                       uint32_t guiid) {
+                                                       uint32_t guiid)
+{
   if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
       (flags & GWEN_GUI_INPUT_FLAGS_DIRECT) ||
       (gui->dbPasswords==NULL)
@@ -2359,10 +2440,11 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
 
 
 static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
-    const char *token,
-    const char *pin,
-    GWEN_GUI_PASSWORD_STATUS status,
-    GWEN_UNUSED uint32_t guiid) {
+                                                             const char *token,
+                                                             const char *pin,
+                                                             GWEN_GUI_PASSWORD_STATUS status,
+                                                             GWEN_UNUSED uint32_t guiid)
+{
   if (token==NULL && pin==NULL && status==GWEN_Gui_PasswordStatus_Remove) {
     /* complete cleaning is requested */
     if (gui->passwdStore)
@@ -2404,14 +2486,16 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
 
 
 
-GWEN_LOGGER_LEVEL GWEN_Gui_GetMinProgressLogLevel(const GWEN_GUI *gui) {
+GWEN_LOGGER_LEVEL GWEN_Gui_GetMinProgressLogLevel(const GWEN_GUI *gui)
+{
   assert(gui);
   return gui->minProgressLogLevel;
 }
 
 
 
-void GWEN_Gui_SetMinProgressLogLevel(GWEN_GUI *gui, GWEN_LOGGER_LEVEL ll) {
+void GWEN_Gui_SetMinProgressLogLevel(GWEN_GUI *gui, GWEN_LOGGER_LEVEL ll)
+{
   assert(gui);
   gui->minProgressLogLevel=ll;
 }

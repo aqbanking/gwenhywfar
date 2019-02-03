@@ -39,7 +39,8 @@ GWEN_INHERIT(GWEN_CRYPT_TOKEN, GWEN_CRYPT_TOKEN_FILE)
 
 
 
-int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid) {
+int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid)
+{
   int fd;
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_FSLOCK_RESULT lres;
@@ -51,7 +52,8 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid) {
 
   fname = GWEN_Crypt_Token_GetTokenName(ct);
   if (!fname) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "No name of the crypt token set - maybe you need to set the key file as token name? Cannot lock token.");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "No name of the crypt token set - maybe you need to set the key file as token name? Cannot lock token.");
     return GWEN_ERROR_IO;
   }
 
@@ -141,7 +143,8 @@ int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid) {
 
 
 
-int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_FSLOCK_RESULT lres;
   struct stat st;
@@ -211,7 +214,8 @@ int GWEN_Crypt_TokenFile__CloseFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
 
   assert(ct);
@@ -230,7 +234,8 @@ int GWEN_Crypt_TokenFile__Read(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-int GWEN_Crypt_TokenFile__Write(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid) {
+int GWEN_Crypt_TokenFile__Write(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
 
   assert(ct);
@@ -255,7 +260,8 @@ int GWEN_Crypt_TokenFile__Write(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid) {
 
 
 
-int GWEN_Crypt_TokenFile__ReadFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_TokenFile__ReadFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -294,7 +300,8 @@ int GWEN_Crypt_TokenFile__ReadFile(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-int GWEN_Crypt_TokenFile__WriteFile(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid) {
+int GWEN_Crypt_TokenFile__WriteFile(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -330,7 +337,8 @@ int GWEN_Crypt_TokenFile__WriteFile(GWEN_CRYPT_TOKEN *ct, int cr, uint32_t gid) 
 
 
 
-int GWEN_Crypt_TokenFile__ReloadIfNeeded(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWEN_Crypt_TokenFile__ReloadIfNeeded(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   struct stat st;
 
@@ -367,7 +375,8 @@ int GWEN_Crypt_TokenFile__ReloadIfNeeded(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
 
 
 
-void GWEN_Crypt_TokenFile_AddContext(GWEN_CRYPT_TOKEN *ct, GWEN_CRYPT_TOKEN_CONTEXT *ctx) {
+void GWEN_Crypt_TokenFile_AddContext(GWEN_CRYPT_TOKEN *ct, GWEN_CRYPT_TOKEN_CONTEXT *ctx)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
 
   assert(ct);
@@ -381,7 +390,8 @@ void GWEN_Crypt_TokenFile_AddContext(GWEN_CRYPT_TOKEN *ct, GWEN_CRYPT_TOKEN_CONT
 
 
 
-GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenFile_GetContext(GWEN_CRYPT_TOKEN *ct, int idx) {
+GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenFile_GetContext(GWEN_CRYPT_TOKEN *ct, int idx)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
 
@@ -390,7 +400,7 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenFile_GetContext(GWEN_CRYPT_TOKEN *ct, 
   assert(lct);
 
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (idx==0)
       return ctx;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -403,7 +413,8 @@ GWEN_CRYPT_TOKEN_CONTEXT *GWEN_Crypt_TokenFile_GetContext(GWEN_CRYPT_TOKEN *ct, 
 
 
 GWEN_CRYPT_TOKEN_FILE_READ_FN GWEN_Crypt_TokenFile_SetReadFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_FILE_READ_FN f) {
+                                                             GWEN_CRYPT_TOKEN_FILE_READ_FN f)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_FILE_READ_FN of;
 
@@ -420,7 +431,8 @@ GWEN_CRYPT_TOKEN_FILE_READ_FN GWEN_Crypt_TokenFile_SetReadFn(GWEN_CRYPT_TOKEN *c
 
 
 GWEN_CRYPT_TOKEN_FILE_WRITE_FN GWEN_Crypt_TokenFile_SetWriteFn(GWEN_CRYPT_TOKEN *ct,
-    GWEN_CRYPT_TOKEN_FILE_WRITE_FN f) {
+                                                               GWEN_CRYPT_TOKEN_FILE_WRITE_FN f)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_FILE_WRITE_FN of;
 
@@ -436,7 +448,8 @@ GWEN_CRYPT_TOKEN_FILE_WRITE_FN GWEN_Crypt_TokenFile_SetWriteFn(GWEN_CRYPT_TOKEN 
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   struct stat st;
   int fd;
@@ -499,7 +512,8 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Create(GWEN_CRYPT_TOKEN *ct, uint32_t gid
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED int admin, uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED int admin, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -518,7 +532,8 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Open(GWEN_CRYPT_TOKEN *ct, GWEN_UNUSED in
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   int rv;
 
@@ -543,9 +558,10 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile_Close(GWEN_CRYPT_TOKEN *ct, int abandon, 
 
 
 int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
-    uint32_t *pIdList,
-    uint32_t *pCount,
-    uint32_t gid) {
+                                                     uint32_t *pIdList,
+                                                     uint32_t *pCount,
+                                                     uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -565,7 +581,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
   /* count keys */
   i=0;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     i+=GWEN_CRYPT_TOKEN_CONTEXT_KEYS;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
   }
@@ -584,7 +600,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
   *pCount=i;
   i=0;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     int j;
 
     for (j=1; j<=GWEN_CRYPT_TOKEN_CONTEXT_KEYS; j++)
@@ -599,11 +615,11 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
 
 
 
-const GWEN_CRYPT_TOKEN_KEYINFO* GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-                                 uint32_t id,
-                                 uint32_t flags,
-                                 uint32_t gid) {
+const GWEN_CRYPT_TOKEN_KEYINFO *GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+                                                                               uint32_t id,
+                                                                               uint32_t flags,
+                                                                               uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_TOKEN_KEYINFO *ki;
@@ -623,7 +639,7 @@ GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
   i=id>>16;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -635,7 +651,7 @@ GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
     return NULL;
   }
 
-  switch(id & 0xffff) {
+  switch (id & 0xffff) {
   case 1:
     ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
     break;
@@ -673,11 +689,11 @@ GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
 
 #if 0
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-                                 uint32_t id,
-                                 const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-                                 uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+                                                   uint32_t id,
+                                                   const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                                                   uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -701,7 +717,7 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
   i=id>>16;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -715,7 +731,7 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
   nki=GWEN_Crypt_Token_KeyInfo_dup(ki);
   assert(nki);
-  switch(id & 0xffff) {
+  switch (id & 0xffff) {
   case 1:
     GWEN_CTF_Context_SetLocalSignKeyInfo(ctx, nki);
     key=GWEN_CTF_Context_GetLocalSignKey(ctx);
@@ -767,7 +783,7 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
       GWEN_Crypt_Key_SetKeyVersion(nkey, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
 
     /* replace public key */
-    switch(id & 0xffff) {
+    switch (id & 0xffff) {
     case 3: /* remote sign key */
       GWEN_CTF_Context_SetRemoteSignKey(ctx, nkey);
       break;
@@ -811,11 +827,11 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 #endif
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
-                                 uint32_t id,
-                                 const GWEN_CRYPT_TOKEN_KEYINFO *ski,
-                                 uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
+                                                   uint32_t id,
+                                                   const GWEN_CRYPT_TOKEN_KEYINFO *ski,
+                                                   uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -840,7 +856,7 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
   i=id>>16;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -852,7 +868,7 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  switch(id & 0xffff) {
+  switch (id & 0xffff) {
   case 1:
     ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
     key=GWEN_CTF_Context_GetLocalSignKey(ctx);
@@ -954,7 +970,7 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
       GWEN_Crypt_Key_SetKeyVersion(nkey, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
 
     /* replace public key */
-    switch(id & 0xffff) {
+    switch (id & 0xffff) {
     case 3: /* remote sign key */
       GWEN_CTF_Context_SetRemoteSignKey(ctx, nkey);
       break;
@@ -1000,8 +1016,8 @@ GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int rv;
@@ -1028,7 +1044,7 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
 
   i=id>>16;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1146,11 +1162,11 @@ GWEN_Crypt_TokenFile__ActivateKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gi
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
-                                       uint32_t *pIdList,
-                                       uint32_t *pCount,
-                                       uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
+                                                         uint32_t *pIdList,
+                                                         uint32_t *pCount,
+                                                         uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -1170,7 +1186,7 @@ GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
   /* count keys */
   i=0;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     i++;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
   }
@@ -1189,7 +1205,7 @@ GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
 
   i=1;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     *(pIdList++)=i;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
     i++;
@@ -1200,10 +1216,10 @@ GWEN_Crypt_TokenFile__GetContextIdList(GWEN_CRYPT_TOKEN *ct,
 
 
 
-const GWEN_CRYPT_TOKEN_CONTEXT* GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
-                                 uint32_t id,
-                                 uint32_t gid) {
+const GWEN_CRYPT_TOKEN_CONTEXT *GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
+                                                                               uint32_t id,
+                                                                               uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int rv;
@@ -1225,7 +1241,7 @@ GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
   }
 
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (GWEN_Crypt_Token_Context_GetId(ctx)==id)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1241,11 +1257,11 @@ GWEN_Crypt_TokenFile__GetContext(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
-                                 uint32_t id,
-                                 const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
-                                 uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
+                                                   uint32_t id,
+                                                   const GWEN_CRYPT_TOKEN_CONTEXT *nctx,
+                                                   uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int rv;
@@ -1268,7 +1284,7 @@ GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
   }
 
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (GWEN_Crypt_Token_Context_GetId(ctx)==id)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1299,7 +1315,8 @@ GWEN_Crypt_TokenFile__SetContext(GWEN_CRYPT_TOKEN *ct,
 
 
 
-GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid) {
+GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int i;
@@ -1318,7 +1335,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, 
 
   i=id>>16;
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1330,7 +1347,7 @@ GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, 
     return NULL;
   }
 
-  switch(id & 0xffff) {
+  switch (id & 0xffff) {
   case 1:
     return GWEN_CTF_Context_GetLocalSignKey(ctx);
   case 2:
@@ -1351,16 +1368,16 @@ GWEN_CRYPT_KEY *GWEN_Crypt_TokenFile__GetKey(GWEN_CRYPT_TOKEN *ct, uint32_t id, 
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
-                           uint32_t keyId,
-                           GWEN_CRYPT_PADDALGO *a,
-                           const uint8_t *pInData,
-                           uint32_t inLen,
-                           uint8_t *pSignatureData,
-                           uint32_t *pSignatureLen,
-                           uint32_t *pSeqCounter,
-                           uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
+                                             uint32_t keyId,
+                                             GWEN_CRYPT_PADDALGO *a,
+                                             const uint8_t *pInData,
+                                             uint32_t inLen,
+                                             uint8_t *pSignatureData,
+                                             uint32_t *pSignatureLen,
+                                             uint32_t *pSeqCounter,
+                                             uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1391,7 +1408,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     DBG_ERROR(GWEN_LOGDOMAIN, "Token has no context");
     return GWEN_ERROR_NOT_FOUND;
   }
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     DBG_ERROR(GWEN_LOGDOMAIN, "Checking token %d (i==%d)",
@@ -1429,7 +1446,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     uint32_t modLen;
     GWEN_MDIGEST *md;
 
-    switch(keyId & 0xffff) {
+    switch (keyId & 0xffff) {
     case 1:
       ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
       break;
@@ -1450,7 +1467,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     modPtr=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
     modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
     nbits=modLen*8;
-    while(modLen && *modPtr==0) {
+    while (modLen && *modPtr==0) {
       nbits-=8;
       modLen--;
       modPtr++;
@@ -1477,7 +1494,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     md=GWEN_MDigest_Sha256_new();
     GWEN_Buffer_AllocRoom(srcBuf, modLen);
 
-    rv=GWEN_Padd_AddPkcs1Pss((uint8_t*) GWEN_Buffer_GetStart(srcBuf),
+    rv=GWEN_Padd_AddPkcs1Pss((uint8_t *) GWEN_Buffer_GetStart(srcBuf),
                              GWEN_Buffer_GetMaxUnsegmentedWrite(srcBuf),
                              nbits,
                              pInData, inLen,
@@ -1494,7 +1511,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     GWEN_Buffer_AdjustUsedBytes(srcBuf);
   }
   else {
-    GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
+    GWEN_Buffer_AppendBytes(srcBuf, (const char *)pInData, inLen);
 
     /* padd according to given algo */
     rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
@@ -1507,7 +1524,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
   /* sign with key */
   rv=GWEN_Crypt_Key_Sign(k,
-                         (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+                         (const uint8_t *)GWEN_Buffer_GetStart(srcBuf),
                          GWEN_Buffer_GetUsedBytes(srcBuf),
                          pSignatureData,
                          pSignatureLen);
@@ -1521,7 +1538,7 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
     GWEN_CRYPT_TOKEN_KEYINFO *ki;
 
     /* signature sequence counter is to be incremented */
-    switch(keyId & 0xffff) {
+    switch (keyId & 0xffff) {
     case 1:
       ki=GWEN_CTF_Context_GetLocalSignKeyInfo(ctx);
       break;
@@ -1556,16 +1573,16 @@ GWEN_Crypt_TokenFile__Sign(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
-                             uint32_t keyId,
-                             GWEN_CRYPT_PADDALGO *a,
-                             const uint8_t *pInData,
-                             uint32_t inLen,
-                             const uint8_t *pSignatureData,
-                             uint32_t signatureLen,
-                             uint32_t seqCounter,
-                             uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
+                                               uint32_t keyId,
+                                               GWEN_CRYPT_PADDALGO *a,
+                                               const uint8_t *pInData,
+                                               uint32_t inLen,
+                                               const uint8_t *pSignatureData,
+                                               uint32_t signatureLen,
+                                               uint32_t seqCounter,
+                                               uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1592,7 +1609,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
   /* get context */
   i=(keyId>>16);
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1630,7 +1647,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
     rv=GWEN_Crypt_Key_Encipher(k,
                                pSignatureData, signatureLen,
-                               (uint8_t*)GWEN_Buffer_GetStart(tbuf),
+                               (uint8_t *)GWEN_Buffer_GetStart(tbuf),
                                &l);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1661,7 +1678,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       modPtr=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
       modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
       nbits=modLen*8;
-      while(modLen && *modPtr==0) {
+      while (modLen && *modPtr==0) {
         nbits-=8;
         modLen--;
         modPtr++;
@@ -1686,7 +1703,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
       }
 
       md=GWEN_MDigest_Sha256_new();
-      rv=GWEN_Padd_VerifyPkcs1Pss((const uint8_t*) GWEN_Buffer_GetStart(tbuf),
+      rv=GWEN_Padd_VerifyPkcs1Pss((const uint8_t *) GWEN_Buffer_GetStart(tbuf),
                                   GWEN_Buffer_GetUsedBytes(tbuf),
                                   nbits,
                                   pInData, inLen,
@@ -1726,7 +1743,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 
     /* copy to a buffer for padding */
     srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
-    GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
+    GWEN_Buffer_AppendBytes(srcBuf, (const char *)pInData, inLen);
 
     /* padd according to given algo */
     rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
@@ -1738,7 +1755,7 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 
     /* verify with key */
     rv=GWEN_Crypt_Key_Verify(k,
-                             (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+                             (const uint8_t *)GWEN_Buffer_GetStart(srcBuf),
                              GWEN_Buffer_GetUsedBytes(srcBuf),
                              pSignatureData,
                              signatureLen);
@@ -1787,15 +1804,15 @@ GWEN_Crypt_TokenFile__Verify(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
-                               uint32_t keyId,
-                               GWEN_CRYPT_PADDALGO *a,
-                               const uint8_t *pInData,
-                               uint32_t inLen,
-                               uint8_t *pOutData,
-                               uint32_t *pOutLen,
-                               uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
+                                                 uint32_t keyId,
+                                                 GWEN_CRYPT_PADDALGO *a,
+                                                 const uint8_t *pInData,
+                                                 uint32_t inLen,
+                                                 uint8_t *pOutData,
+                                                 uint32_t *pOutLen,
+                                                 uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1820,7 +1837,7 @@ GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
   /* get context */
   i=(keyId>>16);
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1848,7 +1865,7 @@ GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
 
   /* copy to a buffer for padding */
   srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
-  GWEN_Buffer_AppendBytes(srcBuf, (const char*)pInData, inLen);
+  GWEN_Buffer_AppendBytes(srcBuf, (const char *)pInData, inLen);
   GWEN_Buffer_Rewind(srcBuf);
 
   /* padd according to given algo */
@@ -1861,7 +1878,7 @@ GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
 
   /* encipher with key */
   rv=GWEN_Crypt_Key_Encipher(k,
-                             (const uint8_t*)GWEN_Buffer_GetStart(srcBuf),
+                             (const uint8_t *)GWEN_Buffer_GetStart(srcBuf),
                              GWEN_Buffer_GetUsedBytes(srcBuf),
                              pOutData,
                              pOutLen);
@@ -1876,15 +1893,15 @@ GWEN_Crypt_TokenFile__Encipher(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
-                               uint32_t keyId,
-                               GWEN_CRYPT_PADDALGO *a,
-                               const uint8_t *pInData,
-                               uint32_t inLen,
-                               uint8_t *pOutData,
-                               uint32_t *pOutLen,
-                               uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
+                                                 uint32_t keyId,
+                                                 GWEN_CRYPT_PADDALGO *a,
+                                                 const uint8_t *pInData,
+                                                 uint32_t inLen,
+                                                 uint8_t *pOutData,
+                                                 uint32_t *pOutLen,
+                                                 uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   GWEN_CRYPT_KEY *k;
@@ -1910,7 +1927,7 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
   /* get context */
   i=(keyId>>16);
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -1941,7 +1958,7 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
   rv=GWEN_Crypt_Key_Decipher(k,
                              pInData, inLen,
-                             (uint8_t*)GWEN_Buffer_GetStart(tbuf), &l);
+                             (uint8_t *)GWEN_Buffer_GetStart(tbuf), &l);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -1974,11 +1991,11 @@ GWEN_Crypt_TokenFile__Decipher(GWEN_CRYPT_TOKEN *ct,
 
 
 
-int GWENHYWFAR_CB
-GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
-                                  uint32_t keyId,
-                                  const GWEN_CRYPT_CRYPTALGO *a,
-                                  uint32_t gid) {
+int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
+                                                    uint32_t keyId,
+                                                    const GWEN_CRYPT_CRYPTALGO *a,
+                                                    uint32_t gid)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
   GWEN_CRYPT_KEY *pubKey;
   GWEN_CRYPT_KEY *secKey;
@@ -2023,7 +2040,7 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
   /* get context */
   i=(keyId>>16);
   ctx=GWEN_Crypt_Token_Context_List_First(lct->contextList);
-  while(ctx) {
+  while (ctx) {
     if (i==0)
       break;
     ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
@@ -2184,10 +2201,11 @@ GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 
 
 GWENHYWFAR_CB
-void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p) {
+void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p)
+{
   GWEN_CRYPT_TOKEN_FILE *lct;
 
-  lct=(GWEN_CRYPT_TOKEN_FILE*) p;
+  lct=(GWEN_CRYPT_TOKEN_FILE *) p;
   GWEN_Crypt_Token_Context_List_free(lct->contextList);
 
   GWEN_FREE_OBJECT(lct);
@@ -2196,7 +2214,8 @@ void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenFile_new(const char *typeName,
-                                           const char *tokenName) {
+                                           const char *tokenName)
+{
   GWEN_CRYPT_TOKEN *ct;
   GWEN_CRYPT_TOKEN_FILE *lct;
 

@@ -125,7 +125,7 @@ GWENHYWFAR_API
 int GWEN_SocketSet_RemoveSocket(GWEN_SOCKETSET *ssp,
                                 const GWEN_SOCKET *sp);
 GWENHYWFAR_API int GWEN_SocketSet_HasSocket(GWEN_SOCKETSET *ssp,
-    const GWEN_SOCKET *sp);
+                                            const GWEN_SOCKET *sp);
 GWENHYWFAR_API int GWEN_SocketSet_GetSocketCount(GWEN_SOCKETSET *ssp);
 
 /*@}*/

@@ -29,13 +29,14 @@ int Gtk2Gui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
                                        GWEN_DIALOG_PROPERTY prop,
                                        int index,
                                        int value,
-                                       int doSignal) {
+                                       int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     gtk_widget_set_sensitive(GTK_WIDGET(g), (value==0)?FALSE:TRUE);
     return 0;
@@ -61,13 +62,14 @@ static GWENHYWFAR_CB
 int Gtk2Gui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
                                        GWEN_DIALOG_PROPERTY prop,
                                        int index,
-                                       int defaultValue) {
+                                       int defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
   assert(g);
 
-  switch(prop) {
+  switch (prop) {
   case GWEN_DialogProperty_Enabled:
     return (gtk_widget_get_sensitive(GTK_WIDGET(g))==TRUE)?1:0;
 
@@ -92,7 +94,8 @@ int Gtk2Gui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
                                         int index,
                                         const char *value,
-                                        int doSignal) {
+                                        int doSignal)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -107,10 +110,11 @@ int Gtk2Gui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-const char* Gtk2Gui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
-    GWEN_DIALOG_PROPERTY prop,
-    int index,
-    const char *defaultValue) {
+const char *Gtk2Gui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
+                                                GWEN_DIALOG_PROPERTY prop,
+                                                int index,
+                                                const char *defaultValue)
+{
   GtkWidget *g;
 
   g=GTK_WIDGET(GWEN_Widget_GetImplData(w, GTK2_DIALOG_WIDGET_REAL));
@@ -125,7 +129,8 @@ const char* Gtk2Gui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
 
 
 static GWENHYWFAR_CB
-int Gtk2Gui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+int Gtk2Gui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
+{
   GTK2_GRIDLAYOUT_WIDGET *xw;
   GtkWidget *g;
   GtkWidget *gChild;
@@ -190,17 +195,19 @@ int Gtk2Gui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 
 
 static GWENHYWFAR_CB
-void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p) {
+void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p)
+{
   GTK2_GRIDLAYOUT_WIDGET *xw;
 
-  xw=(GTK2_GRIDLAYOUT_WIDGET*) p;
+  xw=(GTK2_GRIDLAYOUT_WIDGET *) p;
 
   GWEN_FREE_OBJECT(xw);
 }
 
 
 
-int Gtk2Gui_WGridLayout_Setup(GWEN_WIDGET *w) {
+int Gtk2Gui_WGridLayout_Setup(GWEN_WIDGET *w)
+{
   GtkWidget *g;
   uint32_t flags;
   GWEN_WIDGET *wParent;
@@ -229,8 +236,8 @@ int Gtk2Gui_WGridLayout_Setup(GWEN_WIDGET *w) {
 
   g=gtk_table_new(xw->allocatedRows, xw->allocatedColumns, FALSE);
 
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void*) g);
-  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void*) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void *) g);
+  GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_CONTENT, (void *) g);
 
   GWEN_Widget_SetSetIntPropertyFn(w, Gtk2Gui_WGridLayout_SetIntProperty);
   GWEN_Widget_SetGetIntPropertyFn(w, Gtk2Gui_WGridLayout_GetIntProperty);

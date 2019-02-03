@@ -69,7 +69,8 @@ GWEN_LIST_FUNCTIONS(GWEN_XMLNODE_NAMESPACE, GWEN_XMLNode_NameSpace)
 
 
 
-GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value) {
+GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value)
+{
   GWEN_XMLPROPERTY *p;
 
   GWEN_NEW_OBJECT(GWEN_XMLPROPERTY, p);
@@ -82,7 +83,8 @@ GWEN_XMLPROPERTY *GWEN_XMLProperty_new(const char *name, const char *value) {
 
 
 
-void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p) {
+void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p)
+{
   if (p) {
     GWEN_Memory_dealloc(p->name);
     GWEN_Memory_dealloc(p->value);
@@ -93,7 +95,8 @@ void GWEN_XMLProperty_free(GWEN_XMLPROPERTY *p) {
 
 
 
-GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p) {
+GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p)
+{
   GWEN_XMLPROPERTY *pp;
 
   pp=GWEN_XMLProperty_new(p->name, p->value);
@@ -105,24 +108,28 @@ GWEN_XMLPROPERTY *GWEN_XMLProperty_dup(const GWEN_XMLPROPERTY *p) {
 
 
 
-void GWEN_XMLProperty_add(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head) {
+void GWEN_XMLProperty_add(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head)
+{
   GWEN_LIST_ADD(GWEN_XMLPROPERTY, p, head);
 }
 
 
 
-void GWEN_XMLProperty_insert(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head) {
+void GWEN_XMLProperty_insert(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head)
+{
   GWEN_LIST_INSERT(GWEN_XMLPROPERTY, p, head);
 }
 
 
-void GWEN_XMLProperty_del(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head) {
+void GWEN_XMLProperty_del(GWEN_XMLPROPERTY *p, GWEN_XMLPROPERTY **head)
+{
   GWEN_LIST_DEL(GWEN_XMLPROPERTY, p, head);
 }
 
 
-void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p) {
-  while(p) {
+void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p)
+{
+  while (p) {
     GWEN_XMLPROPERTY *next;
 
     next=p->next;
@@ -134,7 +141,8 @@ void GWEN_XMLProperty_freeAll(GWEN_XMLPROPERTY *p) {
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data) {
+GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data)
+{
   GWEN_XMLNODE *n;
 
   GWEN_NEW_OBJECT(GWEN_XMLNODE, n);
@@ -149,7 +157,8 @@ GWEN_XMLNODE *GWEN_XMLNode_new(GWEN_XMLNODE_TYPE t, const char *data) {
 }
 
 
-void GWEN_XMLNode_free(GWEN_XMLNODE *n) {
+void GWEN_XMLNode_free(GWEN_XMLNODE *n)
+{
   if (n) {
     GWEN_LIST_FINI(GWEN_XMLNODE, n);
     GWEN_XMLProperty_freeAll(n->properties);
@@ -163,8 +172,9 @@ void GWEN_XMLNode_free(GWEN_XMLNODE *n) {
 }
 
 
-void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n) {
-  while(n) {
+void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n)
+{
+  while (n) {
     GWEN_XMLNODE *next;
 
     next=GWEN_XMLNode_List_Next(n);
@@ -174,7 +184,8 @@ void GWEN_XMLNode_freeAll(GWEN_XMLNODE *n) {
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n)
+{
   GWEN_XMLNODE *nn, *cn, *ncn;
   const GWEN_XMLPROPERTY *p;
   const GWEN_XMLNODE_NAMESPACE *nns;
@@ -186,7 +197,7 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n) {
 
   /* duplicate properties */
   p=n->properties;
-  while(p) {
+  while (p) {
     GWEN_XMLPROPERTY *np;
 
     np=GWEN_XMLProperty_dup(p);
@@ -196,7 +207,7 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n) {
 
   /* duplicate children */
   cn=GWEN_XMLNode_List_First(n->children);
-  while(cn) {
+  while (cn) {
     ncn=GWEN_XMLNode_dup(cn);
     GWEN_XMLNode_AddChild(nn, ncn);
     cn=GWEN_XMLNode_Next(cn);
@@ -204,7 +215,7 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n) {
 
   /* duplicate headers */
   cn=GWEN_XMLNode_List_First(n->headers);
-  while(cn) {
+  while (cn) {
     ncn=GWEN_XMLNode_dup(cn);
     GWEN_XMLNode_AddHeader(nn, ncn);
     cn=GWEN_XMLNode_Next(cn);
@@ -212,7 +223,7 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n) {
 
   /* duplicate namespaces */
   nns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-  while(nns) {
+  while (nns) {
     GWEN_XMLNODE_NAMESPACE *nnns;
 
     nnns=GWEN_XMLNode_NameSpace_dup(nns);
@@ -226,13 +237,14 @@ GWEN_XMLNODE *GWEN_XMLNode_dup(const GWEN_XMLNODE *n) {
 
 
 const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n, const char *name,
-                                     const char *defaultValue) {
+                                     const char *defaultValue)
+{
   GWEN_XMLPROPERTY *p;
 
   assert(n);
   assert(name);
   p=n->properties;
-  while(p) {
+  while (p) {
     assert(p->name);
     if (strcasecmp(p->name, name)==0)
       break;
@@ -249,13 +261,14 @@ const char *GWEN_XMLNode_GetProperty(const GWEN_XMLNODE *n, const char *name,
 
 
 int GWEN_XMLNode_GetIntProperty(const GWEN_XMLNODE *n, const char *name,
-                                int defaultValue) {
+                                int defaultValue)
+{
   GWEN_XMLPROPERTY *p;
 
   assert(n);
   assert(name);
   p=n->properties;
-  while(p) {
+  while (p) {
     assert(p->name);
     if (strcasecmp(p->name, name)==0)
       break;
@@ -276,11 +289,12 @@ int GWEN_XMLNode_GetIntProperty(const GWEN_XMLNODE *n, const char *name,
 
 void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
                                const char *name, const char *value,
-                               int doInsert) {
+                               int doInsert)
+{
   GWEN_XMLPROPERTY *p;
 
   p=n->properties;
-  while(p) {
+  while (p) {
     assert(p->name);
     if (strcasecmp(p->name, name)==0)
       break;
@@ -306,14 +320,16 @@ void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
 
 
 void GWEN_XMLNode_SetProperty(GWEN_XMLNODE *n,
-                              const char *name, const char *value) {
+                              const char *name, const char *value)
+{
   GWEN_XMLNode__SetProperty(n, name, value, 0);
 }
 
 
 
 void GWEN_XMLNode_SetIntProperty(GWEN_XMLNODE *n,
-                                 const char *name, int value) {
+                                 const char *name, int value)
+{
   char numbuf[256];
 
   snprintf(numbuf, sizeof(numbuf)-1, "%i", value);
@@ -323,14 +339,16 @@ void GWEN_XMLNode_SetIntProperty(GWEN_XMLNODE *n,
 
 
 
-void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n) {
+void GWEN_XMLNode_IncUsage(GWEN_XMLNODE *n)
+{
   assert(n);
   n->usage++;
 }
 
 
 
-void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n) {
+void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n)
+{
   assert(n);
   if (n->usage==0) {
     DBG_WARN(GWEN_LOGDOMAIN, "Node usage already is zero");
@@ -341,20 +359,23 @@ void GWEN_XMLNode_DecUsage(GWEN_XMLNODE *n) {
 
 
 
-uint32_t GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n) {
+uint32_t GWEN_XMLNode_GetUsage(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->usage;
 }
 
 
 
-const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n) {
+const char *GWEN_XMLNode_GetData(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->data;
 }
 
 
-void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data) {
+void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data)
+{
   assert(n);
   GWEN_Memory_dealloc(n->data);
   if (data)
@@ -365,14 +386,16 @@ void GWEN_XMLNode_SetData(GWEN_XMLNODE *n, const char *data) {
 
 
 
-const char *GWEN_XMLNode_GetNamespace(const GWEN_XMLNODE *n) {
+const char *GWEN_XMLNode_GetNamespace(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->nameSpace;
 }
 
 
 
-void GWEN_XMLNode_SetNamespace(GWEN_XMLNODE *n, const char *s) {
+void GWEN_XMLNode_SetNamespace(GWEN_XMLNODE *n, const char *s)
+{
   assert(n);
   GWEN_Memory_dealloc(n->nameSpace);
   if (s)
@@ -383,19 +406,22 @@ void GWEN_XMLNode_SetNamespace(GWEN_XMLNODE *n, const char *s) {
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetChild(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetChild(const GWEN_XMLNODE *n)
+{
   assert(n);
   return GWEN_XMLNode_List_First(n->children);
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetParent(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetParent(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->parent;
 }
 
 
-void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child) {
+void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child)
+{
   assert(n);
   GWEN_XMLNode_List_Add(child, n->children);
   child->parent=n;
@@ -404,14 +430,15 @@ void GWEN_XMLNode_AddChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child) {
 
 
 void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
-                                  int copythem) {
+                                  int copythem)
+{
   GWEN_XMLNODE *ch;
 
   assert(n);
   assert(nn);
 
   ch=GWEN_XMLNode_GetChild(nn);
-  while(ch) {
+  while (ch) {
     GWEN_XMLNODE *nc;
 
     nc=GWEN_XMLNode_Next(ch);
@@ -428,19 +455,22 @@ void GWEN_XMLNode_AddChildrenOnly(GWEN_XMLNODE *n, GWEN_XMLNODE *nn,
 
 
 
-GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE_TYPE GWEN_XMLNode_GetType(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->type;
 }
 
 
-GWEN_XMLNODE *GWEN_XMLNode_Next(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_Next(const GWEN_XMLNODE *n)
+{
   assert(n);
   return GWEN_XMLNode_List_Next(n);
 }
 
 
-void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind) {
+void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind)
+{
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
   int i;
@@ -448,7 +478,7 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind) {
 
   assert(n);
 
-  for(i=0; i<ind; i++)
+  for (i=0; i<ind; i++)
     fprintf(stderr, " ");
 
   simpleTag=0;
@@ -479,11 +509,11 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind) {
     fprintf(stderr, ">\n");
     if (!simpleTag) {
       c=GWEN_XMLNode_GetChild(n);
-      while(c) {
+      while (c) {
         GWEN_XMLNode_Dump(c, ind+2);
         c=GWEN_XMLNode_Next(c);
       }
-      for(i=0; i<ind; i++)
+      for (i=0; i<ind; i++)
         fprintf(stderr, " ");
       if (n->data)
         fprintf(stderr, "</%s>\n", n->data);
@@ -511,14 +541,15 @@ void GWEN_XMLNode_Dump(const GWEN_XMLNODE *n, int ind) {
 
 
 GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *node,
-                                    GWEN_XMLNODE_TYPE t, const char *data) {
+                                    GWEN_XMLNODE_TYPE t, const char *data)
+{
   GWEN_XMLNODE *n;
 
   assert(node);
   assert(data);
 
   n=GWEN_XMLNode_GetChild(node);
-  while(n) {
+  while (n) {
     if (n->type==t)
       if (n->data)
         if (strcasecmp(n->data, data)==0)
@@ -536,7 +567,8 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNode(const GWEN_XMLNODE *node,
 
 
 
-void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child) {
+void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child)
+{
   assert(n);
   assert(child);
   GWEN_XMLNode_List_Del(child);
@@ -545,7 +577,8 @@ void GWEN_XMLNode_UnlinkChild(GWEN_XMLNODE *n, GWEN_XMLNODE *child) {
 
 
 
-void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n) {
+void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n)
+{
   assert(n);
   GWEN_XMLNode_List_Clear(n->children);
 }
@@ -554,7 +587,8 @@ void GWEN_XMLNode_RemoveChildren(GWEN_XMLNODE *n) {
 
 void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
                                  const GWEN_XMLNODE *sn,
-                                 int overwrite) {
+                                 int overwrite)
+{
   const GWEN_XMLPROPERTY *sp;
   GWEN_XMLPROPERTY *tp;
 
@@ -562,13 +596,13 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
   assert(sn);
 
   sp=sn->properties;
-  while(sp) {
+  while (sp) {
     GWEN_XMLPROPERTY *np;
 
     assert(sp->name);
     tp=tn->properties;
     /* lookup property in target */
-    while(tp) {
+    while (tp) {
 
       assert(tp->name);
       if (strcasecmp(tp->name, sp->name)==0) {
@@ -598,12 +632,13 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
-    GWEN_XMLNODE_TYPE t) {
+                                          GWEN_XMLNODE_TYPE t)
+{
   GWEN_XMLNODE *nn;
 
   assert(n);
   nn=GWEN_XMLNode_GetChild(n);
-  while(nn) {
+  while (nn) {
     if (nn->type==t)
       return nn;
     nn=GWEN_XMLNode_Next(nn);
@@ -614,9 +649,10 @@ GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
-    GWEN_XMLNODE_TYPE t) {
+                                         GWEN_XMLNODE_TYPE t)
+{
   assert(n);
-  while(n) {
+  while (n) {
     if (n->type==t)
       return (GWEN_XMLNODE *)n;
     n=GWEN_XMLNode_Next(n);
@@ -626,13 +662,15 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextOfType(const GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstTag(const GWEN_XMLNODE *n)
+{
   return GWEN_XMLNode_GetFirstOfType(n, GWEN_XMLNodeTypeTag);
 }
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(const GWEN_XMLNODE *n)
+{
   GWEN_XMLNODE *next;
 
   next=GWEN_XMLNode_Next(n);
@@ -643,13 +681,15 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextTag(const GWEN_XMLNODE *n) {
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetFirstData(const GWEN_XMLNODE *n)
+{
   return GWEN_XMLNode_GetFirstOfType(n, GWEN_XMLNodeTypeData);
 }
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetNextData(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetNextData(const GWEN_XMLNODE *n)
+{
   GWEN_XMLNODE *next;
 
   next=GWEN_XMLNode_Next(n);
@@ -663,8 +703,9 @@ GWEN_XMLNODE *GWEN_XMLNode_GetNextData(const GWEN_XMLNODE *n) {
 GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
                                    const char *tname,
                                    const char *pname,
-                                   const char *pvalue) {
-  while(n) {
+                                   const char *pvalue)
+{
+  while (n) {
     if (-1!=GWEN_Text_ComparePattern(n->data, tname, 0)) {
       if (pname) {
         const char *p;
@@ -672,18 +713,18 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
         p=GWEN_XMLNode_GetProperty(n, pname, 0);
         if (p) {
           if (!pvalue)
-            return (GWEN_XMLNODE*)n;
+            return (GWEN_XMLNODE *)n;
           if (-1!=GWEN_Text_ComparePattern(pvalue, p, 0))
-            return (GWEN_XMLNODE*)n;
+            return (GWEN_XMLNODE *)n;
         }
         else {
           /* return this node if pvalue is 0 an the property does not exist */
           if (!pvalue)
-            return (GWEN_XMLNODE*)n;
+            return (GWEN_XMLNODE *)n;
         }
       } /* if pname */
       else
-        return (GWEN_XMLNODE*)n;
+        return (GWEN_XMLNODE *)n;
     }
     n=GWEN_XMLNode_GetNextTag(n);
   } /* while */
@@ -695,7 +736,8 @@ GWEN_XMLNODE *GWEN_XMLNode_FindTag(const GWEN_XMLNODE *n,
 GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(const GWEN_XMLNODE *n,
                                         const char *tname,
                                         const char *pname,
-                                        const char *pvalue) {
+                                        const char *pvalue)
+{
   GWEN_XMLNODE *nn;
 
   nn=GWEN_XMLNode_GetFirstTag(n);
@@ -712,7 +754,8 @@ GWEN_XMLNODE *GWEN_XMLNode_FindFirstTag(const GWEN_XMLNODE *n,
 GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(const GWEN_XMLNODE *n,
                                        const char *tname,
                                        const char *pname,
-                                       const char *pvalue) {
+                                       const char *pvalue)
+{
   GWEN_XMLNODE *nn;
 
   nn=GWEN_XMLNode_GetNextTag(n);
@@ -728,13 +771,14 @@ GWEN_XMLNODE *GWEN_XMLNode_FindNextTag(const GWEN_XMLNODE *n,
 
 const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
                                       const char *name,
-                                      const char *defValue) {
+                                      const char *defValue)
+{
   GWEN_XMLNODE *nn;
 
   if (name && *name) {
     nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
 
-    while(nn) {
+    while (nn) {
       GWEN_XMLNODE *dn;
 
       dn=GWEN_XMLNode_GetFirstData(nn);
@@ -760,8 +804,9 @@ const char *GWEN_XMLNode_GetCharValue(const GWEN_XMLNODE *n,
 
 
 const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
-    const char *name,
-    const char *defValue) {
+                                               const char *name,
+                                               const char *defValue)
+{
   GWEN_XMLNODE *nn=0;
   GWEN_STRINGLIST *langl;
 
@@ -770,14 +815,14 @@ const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
     GWEN_STRINGLISTENTRY *se;
 
     se=GWEN_StringList_FirstEntry(langl);
-    while(se) {
+    while (se) {
       const char *l;
 
       l=GWEN_StringListEntry_Data(se);
       DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
       assert(l);
       nn=GWEN_XMLNode_FindFirstTag(n, name, "lang", l);
-      while(nn) {
+      while (nn) {
         GWEN_XMLNODE *dn;
 
         dn=GWEN_XMLNode_GetFirstData(nn);
@@ -793,7 +838,7 @@ const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
 
   /* otherwise try without locale */
   nn=GWEN_XMLNode_FindFirstTag(n, name, 0, 0);
-  while(nn) {
+  while (nn) {
     GWEN_XMLNODE *dn;
 
     dn=GWEN_XMLNode_GetFirstData(nn);
@@ -811,7 +856,8 @@ const char *GWEN_XMLNode_GetLocalizedCharValue(const GWEN_XMLNODE *n,
 
 void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
                                const char *name,
-                               const char *value) {
+                               const char *value)
+{
   if (name && *name) {
     GWEN_XMLNODE *nn;
 
@@ -836,7 +882,8 @@ void GWEN_XMLNode_SetCharValue(GWEN_XMLNODE *n,
 
 int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
                              const char *name,
-                             int defValue) {
+                             int defValue)
+{
   const char *p;
   int res;
 
@@ -852,7 +899,8 @@ int GWEN_XMLNode_GetIntValue(const GWEN_XMLNODE *n,
 
 void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
                               const char *name,
-                              int value) {
+                              int value)
+{
   char numbuf[32];
 
   snprintf(numbuf, sizeof(numbuf)-1, "%d", value);
@@ -864,7 +912,8 @@ void GWEN_XMLNode_SetIntValue(GWEN_XMLNODE *n,
 
 int GWEN_XMLNode_SetCharValueByPath(GWEN_XMLNODE *n, uint32_t flags,
                                     const char *name,
-                                    const char *value) {
+                                    const char *value)
+{
   GWEN_XMLNODE *nn;
 
   nn=GWEN_XMLNode_GetNodeByXPath(n, name, 0);
@@ -890,8 +939,9 @@ int GWEN_XMLNode_SetCharValueByPath(GWEN_XMLNODE *n, uint32_t flags,
 
 
 const char *GWEN_XMLNode_GetCharValueByPath(GWEN_XMLNODE *n,
-    const char *name,
-    const char *defValue) {
+                                            const char *name,
+                                            const char *defValue)
+{
   GWEN_XMLNODE *nn;
 
   nn=GWEN_XMLNode_GetNodeByXPath(n, name, 0);
@@ -912,7 +962,8 @@ const char *GWEN_XMLNode_GetCharValueByPath(GWEN_XMLNODE *n,
 
 int GWEN_XMLNode_SetIntValueByPath(GWEN_XMLNODE *n, uint32_t flags,
                                    const char *name,
-                                   int value) {
+                                   int value)
+{
   char numbuf[32];
   int rv;
 
@@ -933,7 +984,8 @@ int GWEN_XMLNode_SetIntValueByPath(GWEN_XMLNODE *n, uint32_t flags,
 
 int GWEN_XMLNode_GetIntValueByPath(GWEN_XMLNODE *n,
                                    const char *name,
-                                   int defValue) {
+                                   int defValue)
+{
   const char *p;
   int res;
 
@@ -950,7 +1002,8 @@ int GWEN_XMLNode_GetIntValueByPath(GWEN_XMLNODE *n,
 
 
 
-GWEN_XMLPROPERTY *GWEN_XMLNode_GetFirstProperty(const GWEN_XMLNODE *n) {
+GWEN_XMLPROPERTY *GWEN_XMLNode_GetFirstProperty(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->properties;
 }
@@ -958,7 +1011,8 @@ GWEN_XMLPROPERTY *GWEN_XMLNode_GetFirstProperty(const GWEN_XMLNODE *n) {
 
 
 GWEN_XMLPROPERTY *GWEN_XMLNode_GetNextProperty(const GWEN_XMLNODE *n,
-    const GWEN_XMLPROPERTY *pr) {
+                                               const GWEN_XMLPROPERTY *pr)
+{
   assert(n);
   assert(pr);
   return pr->next;
@@ -966,14 +1020,16 @@ GWEN_XMLPROPERTY *GWEN_XMLNode_GetNextProperty(const GWEN_XMLNODE *n,
 
 
 
-const char *GWEN_XMLProperty_GetName(const GWEN_XMLPROPERTY *pr) {
+const char *GWEN_XMLProperty_GetName(const GWEN_XMLPROPERTY *pr)
+{
   assert(pr);
   return pr->name;
 }
 
 
 
-const char *GWEN_XMLProperty_GetValue(const GWEN_XMLPROPERTY *pr) {
+const char *GWEN_XMLProperty_GetValue(const GWEN_XMLPROPERTY *pr)
+{
   assert(pr);
   return pr->value;
 }
@@ -981,13 +1037,14 @@ const char *GWEN_XMLProperty_GetValue(const GWEN_XMLPROPERTY *pr) {
 
 
 int GWEN_XMLNode_IsChildOf(const GWEN_XMLNODE *parent,
-                           const GWEN_XMLNODE *child) {
+                           const GWEN_XMLNODE *child)
+{
   GWEN_XMLNODE *n;
 
   if (!child || !parent || child==parent)
     return 0;
   n=child->parent;
-  while(n) {
+  while (n) {
     if (n==parent)
       return 1;
     n=n->parent;
@@ -999,7 +1056,8 @@ int GWEN_XMLNode_IsChildOf(const GWEN_XMLNODE *parent,
 
 int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
                           const GWEN_XMLNODE *n2,
-                          GWEN_BUFFER *nbuf) {
+                          GWEN_BUFFER *nbuf)
+{
   GWEN_BUFFER *lbuf;
   const GWEN_XMLNODE *ln1;
   const GWEN_XMLNODE *ln2;
@@ -1011,13 +1069,13 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
 
   if (!n1) {
     n1=n2;
-    while(n1->parent)
+    while (n1->parent)
       n1=n1->parent;
   }
 
   if (!n2) {
     n2=n1;
-    while(n2->parent)
+    while (n2->parent)
       n2=n2->parent;
   }
 
@@ -1032,7 +1090,7 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
   ln1=n1->parent;
   if (ln1) {
     GWEN_Buffer_AppendString(lbuf, "../");
-    while(ln1) {
+    while (ln1) {
       if (ln1==n2) {
         /* found n2 */
         GWEN_Buffer_AppendBuffer(nbuf, lbuf);
@@ -1060,7 +1118,7 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
   GWEN_Buffer_Reset(lbuf);
 
   ln2=n2;
-  while(ln2) {
+  while (ln2) {
     GWEN_XMLNODE *tn;
     int idx;
     char idxbuf[32];
@@ -1074,7 +1132,7 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
     if (tn) {
       tn=GWEN_XMLNode_FindFirstTag(tn, ln2->data, 0, 0);
 
-      while(tn) {
+      while (tn) {
         if (tn==ln2)
           break;
         idx++;
@@ -1100,15 +1158,16 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
 
 
 
-void* GWEN_XMLNode_HandlePath(const char *entry,
+void *GWEN_XMLNode_HandlePath(const char *entry,
                               void *data,
                               int idx,
-                              uint32_t flags) {
+                              uint32_t flags)
+{
   GWEN_XMLNODE *n;
   GWEN_XMLNODE *nn;
   int i;
 
-  n=(GWEN_XMLNODE*)data;
+  n=(GWEN_XMLNODE *)data;
 
   if (flags & GWEN_PATH_FLAGS_VARIABLE) {
     DBG_ERROR(GWEN_LOGDOMAIN,
@@ -1117,7 +1176,7 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
   }
 
   if (flags & GWEN_PATH_FLAGS_ROOT) {
-    while(n->parent)
+    while (n->parent)
       n=n->parent;
     if (*entry=='/')
       entry++;
@@ -1165,7 +1224,7 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
   /* find the node */
   i=idx;
   nn=GWEN_XMLNode_FindFirstTag(n, entry, 0, 0);
-  while(nn && i--) {
+  while (nn && i--) {
     nn=GWEN_XMLNode_FindNextTag(nn, entry, 0, 0);
   }
 
@@ -1210,24 +1269,27 @@ void* GWEN_XMLNode_HandlePath(const char *entry,
 
 
 GWEN_XMLNODE *GWEN_XMLNode_GetNodeByXPath(GWEN_XMLNODE *n,
-    const char *path,
-    uint32_t flags) {
-  return (GWEN_XMLNODE*)GWEN_Path_HandleWithIdx(path,
-         (void*)n,
-         flags,
-         GWEN_XMLNode_HandlePath);
+                                          const char *path,
+                                          uint32_t flags)
+{
+  return (GWEN_XMLNODE *)GWEN_Path_HandleWithIdx(path,
+                                                 (void *)n,
+                                                 flags,
+                                                 GWEN_XMLNode_HandlePath);
 }
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_GetHeader(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE *GWEN_XMLNode_GetHeader(const GWEN_XMLNODE *n)
+{
   assert(n);
   return GWEN_XMLNode_List_First(n->headers);
 }
 
 
 
-void GWEN_XMLNode_AddHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh) {
+void GWEN_XMLNode_AddHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh)
+{
   assert(n);
   assert(nh);
   GWEN_XMLNode_List_Add(nh, n->headers);
@@ -1235,7 +1297,8 @@ void GWEN_XMLNode_AddHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh) {
 
 
 
-void GWEN_XMLNode_DelHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh) {
+void GWEN_XMLNode_DelHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh)
+{
   assert(n);
   assert(nh);
   GWEN_XMLNode_List_Del(nh);
@@ -1243,14 +1306,16 @@ void GWEN_XMLNode_DelHeader(GWEN_XMLNODE *n, GWEN_XMLNODE *nh) {
 
 
 
-void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *n) {
+void GWEN_XMLNode_ClearHeaders(GWEN_XMLNODE *n)
+{
   assert(n);
   GWEN_XMLNode_List_Clear(n->headers);
 }
 
 
 
-GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n) {
+GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n)
+{
   assert(n);
   return n->nameSpaces;
 }
@@ -1258,12 +1323,13 @@ GWEN_XMLNODE_NAMESPACE_LIST *GWEN_XMLNode_GetNameSpaces(const GWEN_XMLNODE *n) {
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByName(const GWEN_XMLNODE *n,
-    const char *s) {
+                                                         const char *s)
+{
   GWEN_XMLNODE_NAMESPACE *ns;
 
   assert(n);
   ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-  while(ns) {
+  while (ns) {
     const char *d;
 
     d=GWEN_XMLNode_NameSpace_GetName(ns);
@@ -1278,12 +1344,13 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByName(const GWEN_XMLNODE *n,
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByUrl(const GWEN_XMLNODE *n,
-    const char *s) {
+                                                        const char *s)
+{
   GWEN_XMLNODE_NAMESPACE *ns;
 
   assert(n);
   ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-  while(ns) {
+  while (ns) {
     const char *d;
 
     d=GWEN_XMLNode_NameSpace_GetUrl(ns);
@@ -1297,7 +1364,8 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_FindNameSpaceByUrl(const GWEN_XMLNODE *n,
 
 
 
-void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns) {
+void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns)
+{
   assert(n);
   assert(ns);
   GWEN_XMLNode_NameSpace_List_Add(GWEN_XMLNode_NameSpace_dup(ns), n->nameSpaces);
@@ -1315,7 +1383,8 @@ void GWEN_XMLNode_AddNameSpace(GWEN_XMLNODE *n, const GWEN_XMLNODE_NAMESPACE *ns
 
 int GWEN_XML_AddNameSpace(GWEN_STRINGLIST2 *sl,
                           const char *prefix,
-                          const char *name) {
+                          const char *name)
+{
   GWEN_BUFFER *nbuf;
   int rv;
 
@@ -1333,7 +1402,8 @@ int GWEN_XML_AddNameSpace(GWEN_STRINGLIST2 *sl,
 
 
 const char *GWEN_XML_FindNameSpaceByPrefix(GWEN_STRINGLIST2 *sl,
-    const char *s) {
+                                           const char *s)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
 
   it=GWEN_StringList2_First(sl);
@@ -1342,7 +1412,7 @@ const char *GWEN_XML_FindNameSpaceByPrefix(GWEN_STRINGLIST2 *sl,
 
     t=GWEN_StringList2Iterator_Data(it);
     assert(t);
-    while(t) {
+    while (t) {
       const char *p;
 
       p=strchr(t, ':');
@@ -1359,7 +1429,8 @@ const char *GWEN_XML_FindNameSpaceByPrefix(GWEN_STRINGLIST2 *sl,
 
 
 const char *GWEN_XML_FindNameSpaceByName(GWEN_STRINGLIST2 *sl,
-    const char *s) {
+                                         const char *s)
+{
   GWEN_STRINGLIST2_ITERATOR *it;
 
   it=GWEN_StringList2_First(sl);
@@ -1368,7 +1439,7 @@ const char *GWEN_XML_FindNameSpaceByName(GWEN_STRINGLIST2 *sl,
 
     t=GWEN_StringList2Iterator_Data(it);
     assert(t);
-    while(t) {
+    while (t) {
       const char *p;
 
       p=strchr(t, ':');
@@ -1389,7 +1460,8 @@ const char *GWEN_XML_FindNameSpaceByName(GWEN_STRINGLIST2 *sl,
 
 const char *GWEN_XML_FindNameSpace(GWEN_STRINGLIST2 *sl,
                                    const char *prefix,
-                                   const char *name) {
+                                   const char *name)
+{
   GWEN_BUFFER *nbuf;
   GWEN_STRINGLIST2_ITERATOR *it;
 
@@ -1405,7 +1477,7 @@ const char *GWEN_XML_FindNameSpace(GWEN_STRINGLIST2 *sl,
 
     t=GWEN_StringList2Iterator_Data(it);
     assert(t);
-    while(t) {
+    while (t) {
       const char *p;
 
       p=strchr(t, ':');
@@ -1429,7 +1501,8 @@ const char *GWEN_XML_FindNameSpace(GWEN_STRINGLIST2 *sl,
 
 int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
                                        GWEN_STRINGLIST2 *sl,
-                                       const char *currentNameSpace) {
+                                       const char *currentNameSpace)
+{
   GWEN_XMLPROPERTY *pr;
   GWEN_XMLNODE *nn;
   char *localNameSpace;
@@ -1438,7 +1511,7 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
 
   /* remove all unnecessary namespace declarations from this node */
   pr=n->properties;
-  while(pr) {
+  while (pr) {
     GWEN_XMLPROPERTY *prNext;
 
     prNext=pr->next;
@@ -1517,7 +1590,7 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
 
   /* do the same on all sub nodes */
   nn=GWEN_XMLNode_GetFirstTag(n);
-  while(nn) {
+  while (nn) {
     int rv;
 
     rv=GWEN_XMLNode__CheckNameSpaceDecls1(nn, sl,
@@ -1538,7 +1611,8 @@ int GWEN_XMLNode__CheckNameSpaceDecls1(GWEN_XMLNODE *n,
 
 int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
                                        const char *prefix,
-                                       const char *nspace) {
+                                       const char *nspace)
+{
   GWEN_XMLPROPERTY *pr;
   const char *p;
   int inUse;
@@ -1558,7 +1632,7 @@ int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
     if (!inUse) {
       /* check all attributes for prefixes */
       pr=n->properties;
-      while(pr) {
+      while (pr) {
         p=strchr(pr->name, ':');
         if (p) {
           if (strncasecmp(pr->name, prefix, p-pr->name)==0) {
@@ -1614,7 +1688,8 @@ int GWEN_XMLNode__CheckAndSetNameSpace(GWEN_XMLNODE *n,
 
 int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
                                 const char *prefix,
-                                const char *nspace) {
+                                const char *nspace)
+{
   GWEN_XMLNODE *nn;
   int rv;
 
@@ -1623,7 +1698,7 @@ int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
     return rv;
 
   nn=GWEN_XMLNode_GetFirstTag(n);
-  while(nn) {
+  while (nn) {
     rv=GWEN_XMLNode__CheckAndSetNameSpace(nn, prefix, nspace);
     if (rv==-1)
       return rv;
@@ -1642,7 +1717,8 @@ int GWEN_XMLNode__SetNameSpaces(GWEN_XMLNODE *n,
 
 
 
-int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n) {
+int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n)
+{
   GWEN_XMLPROPERTY *pr;
   GWEN_XMLNODE *nn;
   int rv;
@@ -1650,7 +1726,7 @@ int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n) {
   /* move all namespace declarations from this node to the nodes
    * of first use */
   pr=n->properties;
-  while(pr) {
+  while (pr) {
     GWEN_XMLPROPERTY *prNext;
 
     prNext=pr->next;
@@ -1675,7 +1751,7 @@ int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n) {
 
   /* do the same on all sub nodes */
   nn=GWEN_XMLNode_GetFirstTag(n);
-  while(nn) {
+  while (nn) {
     rv=GWEN_XMLNode__CheckNameSpaceDecls3(nn);
     if (rv) {
       return rv;
@@ -1689,7 +1765,8 @@ int GWEN_XMLNode__CheckNameSpaceDecls3(GWEN_XMLNODE *n) {
 
 
 
-int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n) {
+int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n)
+{
   const char *ns;
   int rv;
   GWEN_STRINGLIST2 *sl;
@@ -1712,7 +1789,8 @@ int GWEN_XMLNode_NormalizeNameSpaces(GWEN_XMLNODE *n) {
 
 
 
-int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
+int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n)
+{
   if (n && n->type==GWEN_XMLNodeTypeTag && n->data) {
     GWEN_XMLNODE *nn;
     GWEN_XMLPROPERTY *pp;
@@ -1725,7 +1803,7 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
         int len=p-n->data;
         char *s;
 
-        n->nameSpace=(char*)GWEN_Memory_malloc(len);
+        n->nameSpace=(char *)GWEN_Memory_malloc(len);
         assert(n->nameSpace);
         memmove(n->nameSpace, n->data, len);
         n->nameSpace[len-1]=0;
@@ -1736,7 +1814,7 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
     }
 
     pp=n->properties;
-    while(pp) {
+    while (pp) {
       if (pp->nameSpace==0) {
         char *p;
 
@@ -1745,7 +1823,7 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
           int len=p-pp->name;
           char *s;
 
-          pp->nameSpace=(char*)GWEN_Memory_malloc(len);
+          pp->nameSpace=(char *)GWEN_Memory_malloc(len);
           assert(pp->nameSpace);
           memmove(pp->nameSpace, pp->name, len);
           pp->nameSpace[len-1]=0;
@@ -1759,7 +1837,7 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
     }
 
     nn=GWEN_XMLNode_List_First(n->children);
-    while(nn) {
+    while (nn) {
       int rv;
 
       rv=GWEN_XMLNode_StripNamespaces(nn);
@@ -1782,7 +1860,8 @@ int GWEN_XMLNode_StripNamespaces(GWEN_XMLNODE *n) {
 
 
 
-GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new(void) {
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new(void)
+{
   GWEN_XMLNODE_PATH *p;
 
   GWEN_NEW_OBJECT(GWEN_XMLNODE_PATH, p);
@@ -1791,7 +1870,8 @@ GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_new(void) {
 
 
 
-GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np) {
+GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np)
+{
   GWEN_XMLNODE_PATH *p;
   unsigned int i;
 
@@ -1805,14 +1885,16 @@ GWEN_XMLNODE_PATH *GWEN_XMLNode_Path_dup(const GWEN_XMLNODE_PATH *np) {
 
 
 
-void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np) {
+void GWEN_XMLNode_Path_free(GWEN_XMLNODE_PATH *np)
+{
   GWEN_FREE_OBJECT(np);
 }
 
 
 
 int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
-                           GWEN_XMLNODE *n) {
+                           GWEN_XMLNODE *n)
+{
   unsigned int i;
 
   if (np->pos>=GWEN_XML_MAX_DEPTH) {
@@ -1831,7 +1913,8 @@ int GWEN_XMLNode_Path_Dive(GWEN_XMLNODE_PATH *np,
 
 
 
-GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np) {
+GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np)
+{
   if (np->pos==0) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Root reached");
     return 0;
@@ -1842,7 +1925,8 @@ GWEN_XMLNODE *GWEN_XMLNode_Path_Surface(GWEN_XMLNODE_PATH *np) {
 
 
 
-void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np) {
+void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np)
+{
   unsigned int i;
 
   if (np->pos==0) {
@@ -1865,7 +1949,8 @@ void GWEN_XMLNode_Path_Dump(GWEN_XMLNODE_PATH *np) {
 
 
 GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
-    const char *url) {
+                                                   const char *url)
+{
   GWEN_XMLNODE_NAMESPACE *ns;
 
   GWEN_NEW_OBJECT(GWEN_XMLNODE_NAMESPACE, ns);
@@ -1881,7 +1966,8 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_new(const char *name,
 
 
 
-void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns) {
+void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns)
+{
   if (ns) {
     GWEN_LIST_FINI(GWEN_XMLNODE_NAMESPACE, ns);
     free(ns->url);
@@ -1892,7 +1978,8 @@ void GWEN_XMLNode_NameSpace_free(GWEN_XMLNODE_NAMESPACE *ns) {
 
 
 
-GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_dup(const GWEN_XMLNODE_NAMESPACE *ns) {
+GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_dup(const GWEN_XMLNODE_NAMESPACE *ns)
+{
   GWEN_XMLNODE_NAMESPACE *nns;
 
   assert(ns);
@@ -1902,14 +1989,16 @@ GWEN_XMLNODE_NAMESPACE *GWEN_XMLNode_NameSpace_dup(const GWEN_XMLNODE_NAMESPACE 
 
 
 
-const char *GWEN_XMLNode_NameSpace_GetName(const GWEN_XMLNODE_NAMESPACE *ns) {
+const char *GWEN_XMLNode_NameSpace_GetName(const GWEN_XMLNODE_NAMESPACE *ns)
+{
   assert(ns);
   return ns->name;
 }
 
 
 
-const char *GWEN_XMLNode_NameSpace_GetUrl(const GWEN_XMLNODE_NAMESPACE *ns) {
+const char *GWEN_XMLNode_NameSpace_GetUrl(const GWEN_XMLNODE_NAMESPACE *ns)
+{
   assert(ns);
   return ns->url;
 }

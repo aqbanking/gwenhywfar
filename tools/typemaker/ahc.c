@@ -33,7 +33,8 @@
 
 
 
-int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
+int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node)
+{
   int rv;
   const char *f;
   GWEN_BUFFER *fname;
@@ -83,19 +84,19 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   GWEN_Buffer_AppendString(fname, ".h");
 
   sio=GWEN_SyncIo_File_new(GWEN_Buffer_GetStart(fname),
-			   GWEN_SyncIo_File_CreationMode_CreateAlways);
+                           GWEN_SyncIo_File_CreationMode_CreateAlways);
   GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_GREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+                       GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_GWRITE);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_ERROR(0, "open(%s): %s",
-	      GWEN_Buffer_GetStart(fname),
-	      strerror(errno));
+              GWEN_Buffer_GetStart(fname),
+              strerror(errno));
     GWEN_Buffer_free(fname);
     GWEN_SyncIo_free(sio);
     return -1;
@@ -111,7 +112,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
   s=f;
-  while(*s) {
+  while (*s) {
     GWEN_Buffer_AppendByte(hbuf, toupper(*s));
     s++;
   }
@@ -169,11 +170,11 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
     GWEN_SyncIo_WriteLine(sio, "/* pre-headers */");
     nn=GWEN_XMLNode_GetFirstTag(n);
-    while(nn) {
+    while (nn) {
       rv=write_hp_group_c(args, nn, sio);
       if (rv) {
-	GWEN_Buffer_free(hbuf);
-	return -1;
+        GWEN_Buffer_free(hbuf);
+        return -1;
       }
       nn=GWEN_XMLNode_GetNextTag(nn);
     } /* while */
@@ -186,12 +187,12 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
     GWEN_SyncIo_WriteLine(sio, "/* headers */");
     nn=GWEN_XMLNode_GetFirstTag(n);
-    while(nn) {
+    while (nn) {
       rv=write_hp_group_c(args, nn, sio);
       if (rv) {
-	GWEN_Buffer_free(hbuf);
-	DBG_INFO(0, "here (%d)", rv);
-	return -1;
+        GWEN_Buffer_free(hbuf);
+        DBG_INFO(0, "here (%d)", rv);
+        return -1;
       }
       nn=GWEN_XMLNode_GetNextTag(nn);
     } /* while */
@@ -244,8 +245,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
     if (dupAcc && strcasecmp(dupAcc, "none")!=0) {
       if (args->domain) {
-	GWEN_SyncIo_WriteString(sio, args->domain);
-	GWEN_SyncIo_WriteString(sio, " ");
+        GWEN_SyncIo_WriteString(sio, args->domain);
+        GWEN_SyncIo_WriteString(sio, " ");
       }
       GWEN_SyncIo_WriteString(sio, id);
       GWEN_SyncIo_WriteString(sio, "_LIST *");
@@ -274,8 +275,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_SyncIo_WriteLine(sio, "");
 
     GWEN_SyncIo_WriteLine(sio,
-                              "/** Destroys all objects stored in the given "
-                              "LIST2 and the list itself");
+                          "/** Destroys all objects stored in the given "
+                          "LIST2 and the list itself");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -296,12 +297,12 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
     GWEN_SyncIo_WriteLine(sio, "/* post-headers */");
     nn=GWEN_XMLNode_GetFirstTag(n);
-    while(nn) {
+    while (nn) {
       rv=write_hp_group_c(args, nn, sio);
       if (rv) {
-	GWEN_Buffer_free(hbuf);
+        GWEN_Buffer_free(hbuf);
         DBG_INFO(0, "here (%d)", rv);
-	return -1;
+        return -1;
       }
       nn=GWEN_XMLNode_GetNextTag(nn);
     } /* while */
@@ -311,7 +312,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   if (strcasecmp(constAcc, "public")==0) {
     GWEN_SyncIo_WriteLine(sio,
-			      "/** Creates a new object.");
+                          "/** Creates a new object.");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -330,8 +331,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   /* FromDb */
   if (strcasecmp(fromDbAcc, "public")==0) {
     GWEN_SyncIo_WriteLine(sio,
-			      "/** Creates an object from the data in the"
-			      " given GWEN_DB_NODE");
+                          "/** Creates an object from the data in the"
+                          " given GWEN_DB_NODE");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -350,8 +351,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
   /* dup */
   if (strcasecmp(dupAcc, "public")==0) {
     GWEN_SyncIo_WriteLine(sio,
-			      "/** Creates and returns a deep copy of the"
-			      "given object.");
+                          "/** Creates and returns a deep copy of the"
+                          "given object.");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -371,7 +372,7 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
   if (strcasecmp(nacc, "public")==0) {
     GWEN_SyncIo_WriteLine(sio,
-                              "/** Destroys the given object.");
+                          "/** Destroys the given object.");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -384,9 +385,9 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_SyncIo_WriteLine(sio, " *st);");
 
     GWEN_SyncIo_WriteLine(sio,
-                              "/** Increments the usage counter of the "
-                              "given object, so an additional free() is"
-                              " needed to destroy the object.");
+                          "/** Increments the usage counter of the "
+                          "given object, so an additional free() is"
+                          " needed to destroy the object.");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -413,8 +414,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
     /* ToDb */
     GWEN_SyncIo_WriteLine(sio,
-                              "/** Stores an object in the"
-                              " given GWEN_DB_NODE");
+                          "/** Stores an object in the"
+                          " given GWEN_DB_NODE");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -427,8 +428,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_SyncIo_WriteLine(sio, "*st, GWEN_DB_NODE *db);");
 
     GWEN_SyncIo_WriteLine(sio,
-                              "/** Returns 0 if this object has not been"
-                              " modified, !=0 otherwise");
+                          "/** Returns 0 if this object has not been"
+                          " modified, !=0 otherwise");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -441,8 +442,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
     GWEN_SyncIo_WriteLine(sio, " *st);");
 
     GWEN_SyncIo_WriteLine(sio,
-                              "/** Sets the modified state of the given "
-                              "object");
+                          "/** Sets the modified state of the given "
+                          "object");
     GWEN_SyncIo_WriteLine(sio, "*/");
     if (args->domain) {
       GWEN_SyncIo_WriteString(sio, args->domain);
@@ -537,7 +538,8 @@ int write_ha_file_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
 
 
 
-int write_ha_files_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
+int write_ha_files_c(ARGUMENTS *args, GWEN_XMLNODE *node)
+{
   GWEN_XMLNODE *n;
   int rv;
 
@@ -550,7 +552,7 @@ int write_ha_files_c(ARGUMENTS *args, GWEN_XMLNODE *node) {
       rv=write_ha_file_c(args, n);
       if (rv) {
         DBG_INFO(0, "here (%d)", rv);
-	return rv;
+        return rv;
       }
     }
     n=GWEN_XMLNode_FindNextTag(n, "type", 0, 0);

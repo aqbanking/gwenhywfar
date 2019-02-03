@@ -38,7 +38,7 @@ extern "C" {
 #include <gwenhywfar/buffer.h>
 
 
-typedef void GWENHYWFAR_CB (*GWEN_LOGGERFUNCTIONLOG)(const char *s);
+typedef void GWENHYWFAR_CB(*GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
 typedef enum {
   GWEN_LoggerType_Console,
@@ -146,7 +146,7 @@ GWENHYWFAR_API int GWEN_Logger_IsEnabled(const char *logDomain);
  * @param l maximum level to be logged
  */
 GWENHYWFAR_API void GWEN_Logger_SetLevel(const char *logDomain,
-    GWEN_LOGGER_LEVEL l);
+                                         GWEN_LOGGER_LEVEL l);
 
 /**
  * Returns the current log level.
@@ -161,7 +161,7 @@ GWENHYWFAR_API int GWEN_Logger_GetLevel(const char *logDomain);
  * @author Martin Preuss<martin@libchipcard.de>
  */
 GWENHYWFAR_API void GWEN_Logger_SetIdent(const char *logDomain,
-    const char *id);
+                                         const char *id);
 
 /**
  * Set the name of the file to be used when logging to a file.
@@ -176,7 +176,7 @@ void GWEN_Logger_SetFilename(const char *logDomain, const char *name);
  */
 GWENHYWFAR_API
 GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(const char *logDomain,
-    GWEN_LOGGERFUNCTIONLOG fn);
+                                                  GWEN_LOGGERFUNCTIONLOG fn);
 
 /**
  * Transforms an ASCII string to a level value.

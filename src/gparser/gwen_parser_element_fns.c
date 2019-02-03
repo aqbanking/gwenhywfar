@@ -28,7 +28,8 @@
 
 
 
-GWEN_PARSER_ELEMENT *GWEN_ParserElement_fromXml(GWEN_XMLNODE *node) {
+GWEN_PARSER_ELEMENT *GWEN_ParserElement_fromXml(GWEN_XMLNODE *node)
+{
   GWEN_PARSER_ELEMENT *e;
   const char *s;
   int i;
@@ -77,7 +78,8 @@ GWEN_PARSER_ELEMENT *GWEN_ParserElement_fromXml(GWEN_XMLNODE *node) {
 
 
 
-int GWEN_ParserElement_toXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node) {
+int GWEN_ParserElement_toXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node)
+{
 
   GWEN_XMLNode_SetProperty(node, "name", GWEN_ParserElementType_toString(e->elementType));
 
@@ -103,7 +105,8 @@ int GWEN_ParserElement_toXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node) {
 
 
 
-int GWEN_ParserElement_Tree__ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_ELEMENT *eParent, GWEN_XMLNODE *node) {
+int GWEN_ParserElement_Tree__ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_ELEMENT *eParent, GWEN_XMLNODE *node)
+{
   GWEN_PARSER_ELEMENT *e;
   GWEN_XMLNODE *n;
 
@@ -124,7 +127,7 @@ int GWEN_ParserElement_Tree__ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_E
 
   /* read sub-elements */
   n=GWEN_XMLNode_FindFirstTag(node, "element", NULL, NULL);
-  while(n) {
+  while (n) {
     int rv;
 
     rv=GWEN_ParserElement_Tree__ReadXml(et, e, n);
@@ -140,7 +143,8 @@ int GWEN_ParserElement_Tree__ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_PARSER_E
 
 
 
-int GWEN_ParserElement_Tree_ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node) {
+int GWEN_ParserElement_Tree_ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node)
+{
   return GWEN_ParserElement_Tree__ReadXml(et, NULL, node);
 }
 
@@ -148,7 +152,8 @@ int GWEN_ParserElement_Tree_ReadXml(GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *
 
 
 
-int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname) {
+int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname)
+{
   int rv;
   GWEN_XMLNODE *rootNode;
   GWEN_XMLNODE *n;
@@ -166,7 +171,7 @@ int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_FindFirstTag(n, "element", NULL, NULL);
-    while(nn) {
+    while (nn) {
       int rv;
 
       rv=GWEN_ParserElement_Tree_ReadXml(et, nn);
@@ -187,7 +192,8 @@ int GWEN_ParserElement_Tree_ReadXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char
 
 
 
-int GWEN_ParserElement_Tree__WriteXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node) {
+int GWEN_ParserElement_Tree__WriteXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE *node)
+{
   const GWEN_PARSER_ELEMENT *eChild;
   GWEN_XMLNODE *n;
   int rv;
@@ -201,7 +207,7 @@ int GWEN_ParserElement_Tree__WriteXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE
   }
 
   eChild=GWEN_ParserElement_Tree_GetFirstChild(e);
-  while(eChild) {
+  while (eChild) {
     rv=GWEN_ParserElement_Tree__WriteXml(eChild, n);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -217,12 +223,13 @@ int GWEN_ParserElement_Tree__WriteXml(const GWEN_PARSER_ELEMENT *e, GWEN_XMLNODE
 
 
 
-int GWEN_ParserElement_Tree_WriteXml(const GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node) {
+int GWEN_ParserElement_Tree_WriteXml(const GWEN_PARSER_ELEMENT_TREE *et, GWEN_XMLNODE *node)
+{
   const GWEN_PARSER_ELEMENT *e;
   int rv;
 
   e=GWEN_ParserElement_Tree_GetFirst(et);
-  while(e) {
+  while (e) {
     rv=GWEN_ParserElement_Tree__WriteXml(e, node);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -236,7 +243,8 @@ int GWEN_ParserElement_Tree_WriteXml(const GWEN_PARSER_ELEMENT_TREE *et, GWEN_XM
 
 
 
-int GWEN_ParserElement_Tree_WriteXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname) {
+int GWEN_ParserElement_Tree_WriteXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const char *fname)
+{
   int rv;
   GWEN_XMLNODE *rootNode;
   GWEN_XMLNODE *n;
@@ -270,46 +278,57 @@ int GWEN_ParserElement_Tree_WriteXmlFile(GWEN_PARSER_ELEMENT_TREE *et, const cha
 
 
 
-void GWEN_ParserElement_Dump(const GWEN_PARSER_ELEMENT *e, int indent) {
+void GWEN_ParserElement_Dump(const GWEN_PARSER_ELEMENT *e, int indent)
+{
   int i;
 
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "Element \"%s\"\n", GWEN_ParserElementType_toString(e->elementType));
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- Name     : \"%s\"\n", (e->name)?(e->name):"-?-");
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- DbName   : \"%s\"\n", (e->dbName)?(e->dbName):"-?-");
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- Type     : \"%s\"\n", (e->type)?(e->type):"-?-");
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- MinOccurs: %d\n", e->minOccurs);
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- MaxOccurs: %d\n", e->maxOccurs);
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- MinSize  : %d\n", e->minSize);
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- MaxSize  : %d\n", e->maxSize);
 
-  for (i=0; i<indent+1; i++) fprintf(stderr, " ");
+  for (i=0; i<indent+1; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "- Data     : \"%s\"\n", (e->data)?(e->data):"-?-");
 
 }
 
 
 
-void GWEN_ParserElement_DumpWithChildren(const GWEN_PARSER_ELEMENT *e, int indent) {
+void GWEN_ParserElement_DumpWithChildren(const GWEN_PARSER_ELEMENT *e, int indent)
+{
   const GWEN_PARSER_ELEMENT *eChild;
 
   GWEN_ParserElement_Dump(e, indent);
   eChild=GWEN_ParserElement_Tree_GetFirstChild(e);
-  while(eChild) {
+  while (eChild) {
     GWEN_ParserElement_DumpWithChildren(eChild, indent+2);
     eChild=GWEN_ParserElement_Tree_GetNext(eChild);
   }
@@ -317,15 +336,17 @@ void GWEN_ParserElement_DumpWithChildren(const GWEN_PARSER_ELEMENT *e, int inden
 
 
 
-void GWEN_ParserElement_Tree_Dump(const GWEN_PARSER_ELEMENT_TREE *et, int indent) {
+void GWEN_ParserElement_Tree_Dump(const GWEN_PARSER_ELEMENT_TREE *et, int indent)
+{
   const GWEN_PARSER_ELEMENT *e;
   int i;
 
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "ParserElement tree:\n");
 
   e=GWEN_ParserElement_Tree_GetFirst(et);
-  while(e) {
+  while (e) {
     GWEN_ParserElement_DumpWithChildren(e, indent+2);
     e=GWEN_ParserElement_Tree_GetNext(e);
   }

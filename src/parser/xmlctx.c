@@ -49,7 +49,8 @@ GWEN_INHERIT_FUNCTIONS(GWEN_XML_CONTEXT)
 
 
 
-GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags) {
+GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags)
+{
   GWEN_XML_CONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWEN_XML_CONTEXT, ctx);
@@ -63,7 +64,8 @@ GWEN_XML_CONTEXT *GWEN_XmlCtx_new(uint32_t flags) {
 
 
 
-void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx) {
+void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx)
+{
   if (ctx) {
     assert(ctx->_refCount);
     if (ctx->_refCount==1) {
@@ -78,7 +80,8 @@ void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx) {
 
 
 
-void GWEN_XmlCtx_Attach(GWEN_XML_CONTEXT *ctx) {
+void GWEN_XmlCtx_Attach(GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   assert(ctx->_refCount);
   ctx->_refCount++;
@@ -86,42 +89,48 @@ void GWEN_XmlCtx_Attach(GWEN_XML_CONTEXT *ctx) {
 
 
 
-uint32_t GWEN_XmlCtx_GetFlags(const GWEN_XML_CONTEXT *ctx) {
+uint32_t GWEN_XmlCtx_GetFlags(const GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   return ctx->flags;
 }
 
 
 
-void GWEN_XmlCtx_SetFlags(GWEN_XML_CONTEXT *ctx, uint32_t f) {
+void GWEN_XmlCtx_SetFlags(GWEN_XML_CONTEXT *ctx, uint32_t f)
+{
   assert(ctx);
   ctx->flags=f;
 }
 
 
 
-int GWEN_XmlCtx_GetDepth(const GWEN_XML_CONTEXT *ctx) {
+int GWEN_XmlCtx_GetDepth(const GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   return ctx->depth;
 }
 
 
 
-void GWEN_XmlCtx_SetDepth(GWEN_XML_CONTEXT *ctx, int i) {
+void GWEN_XmlCtx_SetDepth(GWEN_XML_CONTEXT *ctx, int i)
+{
   assert(ctx);
   ctx->depth=i;
 }
 
 
 
-void GWEN_XmlCtx_IncDepth(GWEN_XML_CONTEXT *ctx) {
+void GWEN_XmlCtx_IncDepth(GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   ctx->depth++;
 }
 
 
 
-int GWEN_XmlCtx_DecDepth(GWEN_XML_CONTEXT *ctx) {
+int GWEN_XmlCtx_DecDepth(GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   if (ctx->depth<1)
     return -1;
@@ -131,49 +140,56 @@ int GWEN_XmlCtx_DecDepth(GWEN_XML_CONTEXT *ctx) {
 
 
 
-uint32_t GWEN_XmlCtx_GetFinishedElement(const GWEN_XML_CONTEXT *ctx) {
+uint32_t GWEN_XmlCtx_GetFinishedElement(const GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   return ctx->finishedElements;
 }
 
 
 
-void GWEN_XmlCtx_IncFinishedElement(GWEN_XML_CONTEXT *ctx) {
+void GWEN_XmlCtx_IncFinishedElement(GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   ctx->finishedElements++;
 }
 
 
 
-void GWEN_XmlCtx_ResetFinishedElement(GWEN_XML_CONTEXT *ctx) {
+void GWEN_XmlCtx_ResetFinishedElement(GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   ctx->finishedElements=0;
 }
 
 
 
-void GWEN_XmlCtx_SetCurrentNode(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *n) {
+void GWEN_XmlCtx_SetCurrentNode(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *n)
+{
   assert(ctx);
   ctx->currentNode=n;
 }
 
 
 
-GWEN_XMLNODE *GWEN_XmlCtx_GetCurrentNode(const GWEN_XML_CONTEXT *ctx) {
+GWEN_XMLNODE *GWEN_XmlCtx_GetCurrentNode(const GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   return ctx->currentNode;
 }
 
 
 
-void GWEN_XmlCtx_SetCurrentHeader(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *n) {
+void GWEN_XmlCtx_SetCurrentHeader(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *n)
+{
   assert(ctx);
   ctx->currentHeader=n;
 }
 
 
 
-GWEN_XMLNODE *GWEN_XmlCtx_GetCurrentHeader(const GWEN_XML_CONTEXT *ctx) {
+GWEN_XMLNODE *GWEN_XmlCtx_GetCurrentHeader(const GWEN_XML_CONTEXT *ctx)
+{
   assert(ctx);
   return ctx->currentHeader;
 }
@@ -181,7 +197,8 @@ GWEN_XMLNODE *GWEN_XmlCtx_GetCurrentHeader(const GWEN_XML_CONTEXT *ctx) {
 
 
 GWEN_XMLCTX_STARTTAG_FN GWEN_XmlCtx_SetStartTagFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_STARTTAG_FN f) {
+                                                  GWEN_XMLCTX_STARTTAG_FN f)
+{
   GWEN_XMLCTX_STARTTAG_FN of;
 
   assert(ctx);
@@ -193,7 +210,8 @@ GWEN_XMLCTX_STARTTAG_FN GWEN_XmlCtx_SetStartTagFn(GWEN_XML_CONTEXT *ctx,
 
 
 GWEN_XMLCTX_ENDTAG_FN GWEN_XmlCtx_SetEndTagFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_ENDTAG_FN f) {
+                                              GWEN_XMLCTX_ENDTAG_FN f)
+{
   GWEN_XMLCTX_ENDTAG_FN of;
 
   assert(ctx);
@@ -205,7 +223,8 @@ GWEN_XMLCTX_ENDTAG_FN GWEN_XmlCtx_SetEndTagFn(GWEN_XML_CONTEXT *ctx,
 
 
 GWEN_XMLCTX_ADDDATA_FN GWEN_XmlCtx_SetAddDataFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_ADDDATA_FN f) {
+                                                GWEN_XMLCTX_ADDDATA_FN f)
+{
   GWEN_XMLCTX_ADDDATA_FN of;
 
   assert(ctx);
@@ -217,7 +236,8 @@ GWEN_XMLCTX_ADDDATA_FN GWEN_XmlCtx_SetAddDataFn(GWEN_XML_CONTEXT *ctx,
 
 
 GWEN_XMLCTX_ADDATTR_FN GWEN_XmlCtx_SetAddAttrFn(GWEN_XML_CONTEXT *ctx,
-    GWEN_XMLCTX_ADDATTR_FN f) {
+                                                GWEN_XMLCTX_ADDATTR_FN f)
+{
   GWEN_XMLCTX_ADDATTR_FN of;
 
   assert(ctx);
@@ -228,9 +248,9 @@ GWEN_XMLCTX_ADDATTR_FN GWEN_XmlCtx_SetAddAttrFn(GWEN_XML_CONTEXT *ctx,
 
 
 
-GWEN_XMLCTX_ADDCOMMENT_FN
-GWEN_XmlCtx_SetAddCommentFn(GWEN_XML_CONTEXT *ctx,
-                            GWEN_XMLCTX_ADDCOMMENT_FN f) {
+GWEN_XMLCTX_ADDCOMMENT_FN GWEN_XmlCtx_SetAddCommentFn(GWEN_XML_CONTEXT *ctx,
+                                                      GWEN_XMLCTX_ADDCOMMENT_FN f)
+{
   GWEN_XMLCTX_ADDCOMMENT_FN of;
 
   assert(ctx);
@@ -242,7 +262,8 @@ GWEN_XmlCtx_SetAddCommentFn(GWEN_XML_CONTEXT *ctx,
 
 
 
-int GWEN_XmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
+int GWEN_XmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName)
+{
   assert(ctx);
 
   if (ctx->startTagFn)
@@ -255,7 +276,8 @@ int GWEN_XmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 
 
 
-int GWEN_XmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
+int GWEN_XmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing)
+{
   assert(ctx);
 
   if (ctx->endTagFn)
@@ -268,7 +290,8 @@ int GWEN_XmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
 
 
-int GWEN_XmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
+int GWEN_XmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   assert(ctx);
 
   if (ctx->addDataFn)
@@ -281,7 +304,8 @@ int GWEN_XmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 
-int GWEN_XmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
+int GWEN_XmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   assert(ctx);
 
   if (ctx->addCommentFn)
@@ -296,7 +320,8 @@ int GWEN_XmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 int GWEN_XmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
                         const char *attrName,
-                        const char *attrData) {
+                        const char *attrData)
+{
   assert(ctx);
 
   if (ctx->addAttrFn)
@@ -315,7 +340,8 @@ int GWEN_XmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
 
 
 
-GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n, uint32_t flags) {
+GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n, uint32_t flags)
+{
   GWEN_XML_CONTEXT *ctx;
 
   ctx=GWEN_XmlCtx_new(flags);
@@ -334,7 +360,8 @@ GWEN_XML_CONTEXT *GWEN_XmlCtxStore_new(GWEN_XMLNODE *n, uint32_t flags) {
 
 
 
-int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
+int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName)
+{
   GWEN_XMLNODE *currNode;
   GWEN_XMLNODE *newNode;
 
@@ -380,7 +407,7 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
       else {
         newNode=currNode;
 
-        while( (newNode=GWEN_XMLNode_GetParent(newNode)) ) {
+        while ((newNode=GWEN_XMLNode_GetParent(newNode))) {
           GWEN_XmlCtx_DecDepth(ctx);
           s=GWEN_XMLNode_GetData(newNode);
           if (strcasecmp(s, tagName)==0)
@@ -425,7 +452,8 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 
 
 
-int GWEN_XmlCtxStore_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
+int GWEN_XmlCtxStore_EndTag(GWEN_XML_CONTEXT *ctx, int closing)
+{
   GWEN_XMLNODE *currNode;
 
   currNode=GWEN_XmlCtx_GetCurrentHeader(ctx);
@@ -461,7 +489,8 @@ int GWEN_XmlCtxStore_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
 
 
-int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
+int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   GWEN_XMLNODE *currNode;
   GWEN_BUFFER *buf;
   uint32_t flags;
@@ -490,21 +519,21 @@ int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
     uint8_t *lastBlankPos;
     uint32_t bStart=0;
 
-    dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
+    dst=(uint8_t *)GWEN_Buffer_GetStart(buf);
     src=dst;
     if (!(flags & GWEN_XML_FLAGS_KEEP_BLANKS)) {
       if (flags & GWEN_XML_FLAGS_KEEP_CNTRL) {
-        while(*src && (*src==32 || *src==9))
+        while (*src && (*src==32 || *src==9))
           src++;
       }
       else {
-        while(*src && *src<33)
+        while (*src && *src<33)
           src++;
       }
     }
 
     p=src;
-    bStart=src-((uint8_t*)GWEN_Buffer_GetStart(buf));
+    bStart=src-((uint8_t *)GWEN_Buffer_GetStart(buf));
     size=GWEN_Buffer_GetUsedBytes(buf)-bStart;
     lastWasBlank=0;
     lastBlankPos=0;
@@ -537,7 +566,7 @@ int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
     if (lastBlankPos!=0)
       dst=lastBlankPos;
 
-    size=dst-(uint8_t*)GWEN_Buffer_GetStart(buf);
+    size=dst-(uint8_t *)GWEN_Buffer_GetStart(buf);
     GWEN_Buffer_Crop(buf, 0, size);
   }
 
@@ -556,7 +585,8 @@ int GWEN_XmlCtxStore_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 
-int GWEN_XmlCtxStore_AddComment(GWEN_UNUSED GWEN_XML_CONTEXT *ctx, GWEN_UNUSED const char *data) {
+int GWEN_XmlCtxStore_AddComment(GWEN_UNUSED GWEN_XML_CONTEXT *ctx, GWEN_UNUSED const char *data)
+{
   return 0;
 }
 
@@ -564,7 +594,8 @@ int GWEN_XmlCtxStore_AddComment(GWEN_UNUSED GWEN_XML_CONTEXT *ctx, GWEN_UNUSED c
 
 int GWEN_XmlCtxStore_AddAttr(GWEN_XML_CONTEXT *ctx,
                              const char *attrName,
-                             const char *attrData) {
+                             const char *attrData)
+{
   GWEN_XMLNODE *currNode;
 
   currNode=GWEN_XmlCtx_GetCurrentHeader(ctx);

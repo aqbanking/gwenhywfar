@@ -26,7 +26,8 @@ GWEN_LIST_FUNCTIONS(TYPEMAKER2_HEADER, Typemaker2_Header)
 
 
 
-TYPEMAKER2_HEADER *Typemaker2_Header_new() {
+TYPEMAKER2_HEADER *Typemaker2_Header_new()
+{
   TYPEMAKER2_HEADER *th;
 
   GWEN_NEW_OBJECT(TYPEMAKER2_HEADER, th);
@@ -38,7 +39,8 @@ TYPEMAKER2_HEADER *Typemaker2_Header_new() {
 
 
 
-void Typemaker2_Header_free(TYPEMAKER2_HEADER *th) {
+void Typemaker2_Header_free(TYPEMAKER2_HEADER *th)
+{
   if (th) {
     assert(th->refCount);
     if (th->refCount==1) {
@@ -54,7 +56,8 @@ void Typemaker2_Header_free(TYPEMAKER2_HEADER *th) {
 
 
 
-void Typemaker2_Header_Attach(TYPEMAKER2_HEADER *th) {
+void Typemaker2_Header_Attach(TYPEMAKER2_HEADER *th)
+{
   assert(th);
   assert(th->refCount);
   th->refCount++;
@@ -62,7 +65,8 @@ void Typemaker2_Header_Attach(TYPEMAKER2_HEADER *th) {
 
 
 
-const char *Typemaker2_Header_GetFileName(const TYPEMAKER2_HEADER *th) {
+const char *Typemaker2_Header_GetFileName(const TYPEMAKER2_HEADER *th)
+{
   assert(th);
   assert(th->refCount);
   return th->fileName;
@@ -70,17 +74,21 @@ const char *Typemaker2_Header_GetFileName(const TYPEMAKER2_HEADER *th) {
 
 
 
-void Typemaker2_Header_SetFileName(TYPEMAKER2_HEADER *th, const char *s) {
+void Typemaker2_Header_SetFileName(TYPEMAKER2_HEADER *th, const char *s)
+{
   assert(th);
   assert(th->refCount);
   free(th->fileName);
-  if (s) th->fileName=strdup(s);
-  else th->fileName=NULL;
+  if (s)
+    th->fileName=strdup(s);
+  else
+    th->fileName=NULL;
 }
 
 
 
-int Typemaker2_Header_GetType(const TYPEMAKER2_HEADER *th) {
+int Typemaker2_Header_GetType(const TYPEMAKER2_HEADER *th)
+{
   assert(th);
   assert(th->refCount);
   return th->type;
@@ -88,7 +96,8 @@ int Typemaker2_Header_GetType(const TYPEMAKER2_HEADER *th) {
 
 
 
-void Typemaker2_Header_SetType(TYPEMAKER2_HEADER *th, int i) {
+void Typemaker2_Header_SetType(TYPEMAKER2_HEADER *th, int i)
+{
   assert(th);
   assert(th->refCount);
   th->type=i;
@@ -96,7 +105,8 @@ void Typemaker2_Header_SetType(TYPEMAKER2_HEADER *th, int i) {
 
 
 
-int Typemaker2_Header_GetLocation(const TYPEMAKER2_HEADER *th) {
+int Typemaker2_Header_GetLocation(const TYPEMAKER2_HEADER *th)
+{
   assert(th);
   assert(th->refCount);
   return th->location;
@@ -104,7 +114,8 @@ int Typemaker2_Header_GetLocation(const TYPEMAKER2_HEADER *th) {
 
 
 
-void Typemaker2_Header_SetLocation(TYPEMAKER2_HEADER *th, int i) {
+void Typemaker2_Header_SetLocation(TYPEMAKER2_HEADER *th, int i)
+{
   assert(th);
   assert(th->refCount);
   th->location=i;
@@ -112,7 +123,8 @@ void Typemaker2_Header_SetLocation(TYPEMAKER2_HEADER *th, int i) {
 
 
 
-int Typemaker2_Header_readXml(TYPEMAKER2_HEADER *th, GWEN_XMLNODE *node) {
+int Typemaker2_Header_readXml(TYPEMAKER2_HEADER *th, GWEN_XMLNODE *node)
+{
   const char *s;
   GWEN_XMLNODE *n;
 

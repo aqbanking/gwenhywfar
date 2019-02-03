@@ -34,7 +34,8 @@
 
 
 
-GWEN_MUTEX *GWEN_Mutex_new(void) {
+GWEN_MUTEX *GWEN_Mutex_new(void)
+{
   GWEN_MUTEX *mtx;
 
   GWEN_NEW_OBJECT(GWEN_MUTEX, mtx);
@@ -45,7 +46,8 @@ GWEN_MUTEX *GWEN_Mutex_new(void) {
 
 
 
-void GWEN_Mutex_free(GWEN_MUTEX *mtx) {
+void GWEN_Mutex_free(GWEN_MUTEX *mtx)
+{
   if (mtx) {
     DeleteCriticalSection(&(mtx->criticalSection));
     GWEN_FREE_OBJECT(mtx);
@@ -54,14 +56,16 @@ void GWEN_Mutex_free(GWEN_MUTEX *mtx) {
 
 
 
-int GWEN_Mutex_Lock(GWEN_MUTEX *mtx) {
+int GWEN_Mutex_Lock(GWEN_MUTEX *mtx)
+{
   EnterCriticalSection(&(mtx->criticalSection));
   return 0;
 }
 
 
 
-int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx) {
+int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx)
+{
   LeaveCriticalSection(&(mtx->criticalSection));
   return 0;
 }

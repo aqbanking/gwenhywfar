@@ -177,11 +177,11 @@ extern "C" {
 
 
 
-typedef void* (*GWEN_PATHHANDLERPTR)(const char *entry,
+typedef void *(*GWEN_PATHHANDLERPTR)(const char *entry,
                                      void *data,
                                      uint32_t flags);
 
-typedef void* (*GWEN_PATHIDXHANDLERPTR)(const char *entry,
+typedef void *(*GWEN_PATHIDXHANDLERPTR)(const char *entry,
                                         void *data,
                                         int idx,
                                         uint32_t flags);

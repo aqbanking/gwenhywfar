@@ -331,7 +331,7 @@
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_SelectionState (rw): Selection state of the item given by
- *     @c index (see @ref GWEN_Dialog_SetIntProperty). 
+ *     @c index (see @ref GWEN_Dialog_SetIntProperty).
  *   </li>
  *   <li>
  *     GWEN_DialogProperty_SortDirection (rw): Sorting direction of the column given

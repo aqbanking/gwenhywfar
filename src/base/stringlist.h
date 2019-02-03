@@ -68,10 +68,10 @@ GWENHYWFAR_API
 unsigned int GWEN_StringList_Count(const GWEN_STRINGLIST *sl);
 
 GWENHYWFAR_API GWEN_STRINGLISTENTRY *GWEN_StringListEntry_new(const char *s,
-    int take);
+                                                              int take);
 GWENHYWFAR_API void GWEN_StringListEntry_ReplaceString(GWEN_STRINGLISTENTRY *e,
-    const char *s,
-    int take);
+                                                       const char *s,
+                                                       int take);
 GWENHYWFAR_API void GWEN_StringListEntry_free(GWEN_STRINGLISTENTRY *sl);
 GWENHYWFAR_API void GWEN_StringList_AppendEntry(GWEN_STRINGLIST *sl,
                                                 GWEN_STRINGLISTENTRY *se);
@@ -128,16 +128,16 @@ GWENHYWFAR_API int GWEN_StringList_AppendString(GWEN_STRINGLIST *sl,
  * does not already exist
  */
 GWENHYWFAR_API int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
-    const char *s,
-    int take,
-    int checkDouble);
+                                                const char *s,
+                                                int take,
+                                                int checkDouble);
 
 /**
  * Removes a given string from the stringlist.
  * @return 0 if not found, !=0 if found and removed
  */
 GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
-    const char *s);
+                                                const char *s);
 
 /**
  * Checks whether the given string already exists within in the
@@ -145,7 +145,7 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
  * @return !=0 if found, 0 otherwise
  */
 GWENHYWFAR_API int GWEN_StringList_HasString(const GWEN_STRINGLIST *sl,
-    const char *s);
+                                             const char *s);
 
 /**
  * Returns the position of the given string within the stringlist.

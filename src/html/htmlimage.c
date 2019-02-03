@@ -22,7 +22,8 @@ GWEN_INHERIT_FUNCTIONS(HTML_IMAGE)
 GWEN_LIST_FUNCTIONS(HTML_IMAGE, HtmlImage)
 
 
-HTML_IMAGE *HtmlImage_new(void) {
+HTML_IMAGE *HtmlImage_new(void)
+{
   HTML_IMAGE *img;
 
   GWEN_NEW_OBJECT(HTML_IMAGE, img);
@@ -35,7 +36,8 @@ HTML_IMAGE *HtmlImage_new(void) {
 
 
 
-void HtmlImage_free(HTML_IMAGE *img) {
+void HtmlImage_free(HTML_IMAGE *img)
+{
   if (img) {
     assert(img->refCount);
     if (img->refCount>1)
@@ -53,7 +55,8 @@ void HtmlImage_free(HTML_IMAGE *img) {
 
 
 
-void HtmlImage_Attach(HTML_IMAGE *img) {
+void HtmlImage_Attach(HTML_IMAGE *img)
+{
   assert(img);
   assert(img->refCount);
   img->refCount++;
@@ -61,7 +64,8 @@ void HtmlImage_Attach(HTML_IMAGE *img) {
 
 
 
-const char *HtmlImage_GetImageName(const HTML_IMAGE *img) {
+const char *HtmlImage_GetImageName(const HTML_IMAGE *img)
+{
   assert(img);
   assert(img->refCount);
   return img->imageName;
@@ -69,17 +73,21 @@ const char *HtmlImage_GetImageName(const HTML_IMAGE *img) {
 
 
 
-void HtmlImage_SetImageName(HTML_IMAGE *img, const char *s) {
+void HtmlImage_SetImageName(HTML_IMAGE *img, const char *s)
+{
   assert(img);
   assert(img->refCount);
   free(img->imageName);
-  if (s) img->imageName=strdup(s);
-  else img->imageName=NULL;
+  if (s)
+    img->imageName=strdup(s);
+  else
+    img->imageName=NULL;
 }
 
 
 
-int HtmlImage_GetWidth(const HTML_IMAGE *img) {
+int HtmlImage_GetWidth(const HTML_IMAGE *img)
+{
   assert(img);
   assert(img->refCount);
   return img->width;
@@ -87,7 +95,8 @@ int HtmlImage_GetWidth(const HTML_IMAGE *img) {
 
 
 
-void HtmlImage_SetWidth(HTML_IMAGE *img, int i) {
+void HtmlImage_SetWidth(HTML_IMAGE *img, int i)
+{
   assert(img);
   assert(img->refCount);
   img->width=i;
@@ -95,7 +104,8 @@ void HtmlImage_SetWidth(HTML_IMAGE *img, int i) {
 
 
 
-int HtmlImage_GetHeight(const HTML_IMAGE *img) {
+int HtmlImage_GetHeight(const HTML_IMAGE *img)
+{
   assert(img);
   assert(img->refCount);
   return img->height;
@@ -103,7 +113,8 @@ int HtmlImage_GetHeight(const HTML_IMAGE *img) {
 
 
 
-void HtmlImage_SetHeight(HTML_IMAGE *img, int i) {
+void HtmlImage_SetHeight(HTML_IMAGE *img, int i)
+{
   assert(img);
   assert(img->refCount);
   img->height=i;

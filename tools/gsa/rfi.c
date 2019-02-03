@@ -19,7 +19,8 @@
 
 
 
-int releaseFillIn(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int releaseFillIn(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *name;
   const char *arch;
@@ -37,62 +38,62 @@ int releaseFillIn(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   int rv;
   GWEN_BUFFER *cbuf;
   char ubuf[512];
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
-    GWEN_ArgsType_Char,               /* type */
-    "infile",                         /* name */
-    1,                                /* minnum */
-    1,                                /* maxnum */
-    "i",                              /* short option */
-    "infile",                         /* long option */
-    "Specify the input version file",  /* short description */
-    "Specify the input version file"   /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
-    GWEN_ArgsType_Char,               /* type */
-    "changeLogFile",                    /* name */
-    1,                                /* minnum */
-    1,                                /* maxnum */
-    "c",                              /* short option */
-    "changelog",                        /* long option */
-    "Specify the changelog file",  /* short description */
-    "Specify the changelog file"   /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
-    GWEN_ArgsType_Char,               /* type */
-    "url",                            /* name */
-    1,                                /* minnum */
-    1,                                /* maxnum */
-    "u",                              /* short option */
-    "url",                            /* long option */
-    "Specify the URL of the update server",  /* short description */
-    "Specify the URL of the update server"   /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
-    GWEN_ArgsType_Char,               /* type */
-    "outfile",                        /* name */
-    1,                                /* minnum */
-    1,                                /* maxnum */
-    "o",                              /* short option */
-    "outfile",                         /* long option */
-    "Specify the output version file",  /* short description */
-    "Specify the output version file"   /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
+      GWEN_ArgsType_Char,               /* type */
+      "infile",                         /* name */
+      1,                                /* minnum */
+      1,                                /* maxnum */
+      "i",                              /* short option */
+      "infile",                         /* long option */
+      "Specify the input version file",  /* short description */
+      "Specify the input version file"   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
+      GWEN_ArgsType_Char,               /* type */
+      "changeLogFile",                    /* name */
+      1,                                /* minnum */
+      1,                                /* maxnum */
+      "c",                              /* short option */
+      "changelog",                        /* long option */
+      "Specify the changelog file",  /* short description */
+      "Specify the changelog file"   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
+      GWEN_ArgsType_Char,               /* type */
+      "url",                            /* name */
+      1,                                /* minnum */
+      1,                                /* maxnum */
+      "u",                              /* short option */
+      "url",                            /* long option */
+      "Specify the URL of the update server",  /* short description */
+      "Specify the URL of the update server"   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT,     /* flags */
+      GWEN_ArgsType_Char,               /* type */
+      "outfile",                        /* name */
+      1,                                /* minnum */
+      1,                                /* maxnum */
+      "o",                              /* short option */
+      "outfile",                         /* long option */
+      "Specify the output version file",  /* short description */
+      "Specify the output version file"   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -168,10 +169,10 @@ int releaseFillIn(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
   /* create URL entry */
   snprintf(ubuf, sizeof(ubuf)-1, "%s/%s-%s-%s-%d.%d.%d.%d-%d.sar.gz",
-	   url,
-	   name, sys, arch,
-	   vMajor, vMinor, vPatchLevel, vBuild,
-	   maturityLevel);
+           url,
+           name, sys, arch,
+           vMajor, vMinor, vPatchLevel, vBuild,
+           maturityLevel);
   ubuf[sizeof(ubuf)-1]=0;
   GWEN_DB_SetCharValue(dbVersion, GWEN_DB_FLAGS_OVERWRITE_VARS, "url", ubuf);
 

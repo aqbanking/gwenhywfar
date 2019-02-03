@@ -109,7 +109,7 @@ GWENHYWFAR_API GWEN_URL *GWEN_Url_new(void);
 GWENHYWFAR_API GWEN_URL *GWEN_Url_fromDb(GWEN_DB_NODE *db);
 /** Creates and returns a deep copy of thegiven object.
 */
-GWENHYWFAR_API GWEN_URL *GWEN_Url_dup(const GWEN_URL*st);
+GWENHYWFAR_API GWEN_URL *GWEN_Url_dup(const GWEN_URL *st);
 /** Destroys the given object.
 */
 GWENHYWFAR_API void GWEN_Url_free(GWEN_URL *st);
@@ -121,7 +121,7 @@ GWENHYWFAR_API void GWEN_Url_Attach(GWEN_URL *st);
 GWENHYWFAR_API int GWEN_Url_ReadDb(GWEN_URL *st, GWEN_DB_NODE *db);
 /** Stores an object in the given GWEN_DB_NODE
 */
-GWENHYWFAR_API int GWEN_Url_toDb(const GWEN_URL*st, GWEN_DB_NODE *db);
+GWENHYWFAR_API int GWEN_Url_toDb(const GWEN_URL *st, GWEN_DB_NODE *db);
 /** Returns 0 if this object has not been modified, !=0 otherwise
 */
 GWENHYWFAR_API int GWEN_Url_IsModified(const GWEN_URL *st);

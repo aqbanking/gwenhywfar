@@ -13,7 +13,8 @@ GWEN_INHERIT_FUNCTIONS(BASECLASS)
 
 
 
-BASECLASS *BaseClass_new() {
+BASECLASS *BaseClass_new()
+{
   BASECLASS *baseClass;
 
   /* this macro simply allocates memory for a BASECLASS object and
@@ -30,7 +31,8 @@ BASECLASS *BaseClass_new() {
 
 
 
-void BaseClass_free(BASECLASS *baseClass) {
+void BaseClass_free(BASECLASS *baseClass)
+{
   if (baseClass) {
     /* this macro calls the cleanup functions of all registered private
      * data pointers (if any) */

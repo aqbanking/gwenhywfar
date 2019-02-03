@@ -49,7 +49,7 @@ struct GWEN_MEMORY_DEBUG_ENTRY {
   char *file;
   int line;
 };
-GWEN_MEMORY_DEBUG_ENTRY*
+GWEN_MEMORY_DEBUG_ENTRY *
 GWEN_MemoryDebugEntry_new(GWEN_MEMORY_DEBUG_ENTRY_TYPE t,
                           const char *wFile,
                           int wLine);

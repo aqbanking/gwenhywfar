@@ -26,7 +26,8 @@
 
 
 
-int setKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int setKey(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *ttype;
   const char *tname;
@@ -36,84 +37,84 @@ int setKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   int keyNum;
   int keyVer;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "keyId",                      /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "k",                          /* short option */
-    "key",                        /* long option */
-    "Key id (0 for any)",         /* short description */
-    "Key id (0 for any)"          /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "keyNum",                      /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                          /* short option */
-    "keynum",                        /* long option */
-    "Key number",               /* short description */
-    "Key number"                /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "keyVer",                      /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                          /* short option */
-    "keyver",                        /* long option */
-    "Key version",               /* short description */
-    "Key version"                /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "seq",                         /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "s",                          /* short option */
-    "seq",                        /* long option */
-    "New sequence counter value",         /* short description */
-    "New sequence counter value"          /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "ttype",                    /* long option */
-    "Specify the crypt token type",     /* short description */
-    "Specify the crypt token type"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tname",                    /* long option */
-    "Specify the crypt token name",     /* short description */
-    "Specify the crypt token name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "keyId",                      /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "k",                          /* short option */
+      "key",                        /* long option */
+      "Key id (0 for any)",         /* short description */
+      "Key id (0 for any)"          /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "keyNum",                      /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                          /* short option */
+      "keynum",                        /* long option */
+      "Key number",               /* short description */
+      "Key number"                /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "keyVer",                      /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                          /* short option */
+      "keyver",                        /* long option */
+      "Key version",               /* short description */
+      "Key version"                /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "seq",                         /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "s",                          /* short option */
+      "seq",                        /* long option */
+      "New sequence counter value",         /* short description */
+      "New sequence counter value"          /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "ttype",                    /* long option */
+      "Specify the crypt token type",     /* short description */
+      "Specify the crypt token type"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tname",                    /* long option */
+      "Specify the crypt token name",     /* short description */
+      "Specify the crypt token name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -166,37 +167,37 @@ int setKey(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     const GWEN_CRYPT_TOKEN_KEYINFO *ki;
 
     ki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId,
-				   GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER,
-				   0);
+                                   GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER,
+                                   0);
     if (ki) {
       GWEN_CRYPT_TOKEN_KEYINFO *nki;
 
       nki=GWEN_Crypt_Token_KeyInfo_dup(ki);
       if (seq!=-1) {
-	GWEN_Crypt_Token_KeyInfo_SetSignCounter(nki, seq);
-	fprintf(stderr, "Setting signature counter\n");
+        GWEN_Crypt_Token_KeyInfo_SetSignCounter(nki, seq);
+        fprintf(stderr, "Setting signature counter\n");
       }
 
       if (keyNum!=-1) {
         fprintf(stderr, "Setting key number\n");
-	GWEN_Crypt_Token_KeyInfo_AddFlags(nki,
-					  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
-	GWEN_Crypt_Token_KeyInfo_SetKeyNumber(nki, keyNum);
+        GWEN_Crypt_Token_KeyInfo_AddFlags(nki,
+                                          GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER);
+        GWEN_Crypt_Token_KeyInfo_SetKeyNumber(nki, keyNum);
       }
 
       if (keyVer!=-1) {
-	fprintf(stderr, "Setting key version\n");
-	GWEN_Crypt_Token_KeyInfo_AddFlags(nki,
-					  GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION);
-	GWEN_Crypt_Token_KeyInfo_SetKeyVersion(nki, keyVer);
+        fprintf(stderr, "Setting key version\n");
+        GWEN_Crypt_Token_KeyInfo_AddFlags(nki,
+                                          GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION);
+        GWEN_Crypt_Token_KeyInfo_SetKeyVersion(nki, keyVer);
       }
 
       /* store key info */
       rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, nki, 0);
       GWEN_Crypt_Token_KeyInfo_free(nki);
       if (rv) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Unable to set modify key information (%d)", rv);
-	return 4;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Unable to set modify key information (%d)", rv);
+        return 4;
       }
     }
   }

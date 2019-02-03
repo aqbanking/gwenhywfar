@@ -8,7 +8,8 @@
 #import "CocoaButton.h"
 
 
-@interface CocoaCheckboxButton : CocoaButton {
+@interface CocoaCheckboxButton : CocoaButton
+{
 
 }
 

@@ -21,7 +21,8 @@ GWEN_LIST_FUNCTIONS(GWEN_SAR_FILEHEADER, GWEN_SarFileHeader)
 GWEN_LIST2_FUNCTIONS(GWEN_SAR_FILEHEADER, GWEN_SarFileHeader)
 
 
-GWEN_SAR_FILEHEADER_FTYPE GWEN_SarFileHeader_FType_fromString(const char *p_s) {
+GWEN_SAR_FILEHEADER_FTYPE GWEN_SarFileHeader_FType_fromString(const char *p_s)
+{
   if (p_s && *p_s) {
     if (strcasecmp(p_s, "none")==0)
       return GWEN_SarFileHeader_FType_None;
@@ -35,7 +36,8 @@ GWEN_SAR_FILEHEADER_FTYPE GWEN_SarFileHeader_FType_fromString(const char *p_s) {
   return GWEN_SarFileHeader_FType_Unknown;
 }
 
-GWEN_SAR_FILEHEADER_STATUS GWEN_SarFileHeader_Status_fromString(const char *p_s) {
+GWEN_SAR_FILEHEADER_STATUS GWEN_SarFileHeader_Status_fromString(const char *p_s)
+{
   if (p_s && *p_s) {
     if (strcasecmp(p_s, "active")==0)
       return GWEN_SarFileHeader_Status_Active;
@@ -45,25 +47,36 @@ GWEN_SAR_FILEHEADER_STATUS GWEN_SarFileHeader_Status_fromString(const char *p_s)
   return GWEN_SarFileHeader_Status_Unknown;
 }
 
-const char *GWEN_SarFileHeader_FType_toString(GWEN_SAR_FILEHEADER_FTYPE p_i) {
-  switch(p_i) {
-    case GWEN_SarFileHeader_FType_None: return "none";
-    case GWEN_SarFileHeader_FType_File: return "file";
-    case GWEN_SarFileHeader_FType_Dir: return "dir";
-    case GWEN_SarFileHeader_FType_SymLink: return "symLink";
-    default: return "unknown";
+const char *GWEN_SarFileHeader_FType_toString(GWEN_SAR_FILEHEADER_FTYPE p_i)
+{
+  switch (p_i) {
+  case GWEN_SarFileHeader_FType_None:
+    return "none";
+  case GWEN_SarFileHeader_FType_File:
+    return "file";
+  case GWEN_SarFileHeader_FType_Dir:
+    return "dir";
+  case GWEN_SarFileHeader_FType_SymLink:
+    return "symLink";
+  default:
+    return "unknown";
   }
 }
 
-const char *GWEN_SarFileHeader_Status_toString(GWEN_SAR_FILEHEADER_STATUS p_i) {
-  switch(p_i) {
-    case GWEN_SarFileHeader_Status_Active: return "active";
-    case GWEN_SarFileHeader_Status_Deleted: return "deleted";
-    default: return "unknown";
+const char *GWEN_SarFileHeader_Status_toString(GWEN_SAR_FILEHEADER_STATUS p_i)
+{
+  switch (p_i) {
+  case GWEN_SarFileHeader_Status_Active:
+    return "active";
+  case GWEN_SarFileHeader_Status_Deleted:
+    return "deleted";
+  default:
+    return "unknown";
   }
 }
 
-GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_new(void) {
+GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_new(void)
+{
   GWEN_SAR_FILEHEADER *p_struct;
 
   GWEN_NEW_OBJECT(GWEN_SAR_FILEHEADER, p_struct)
@@ -89,31 +102,34 @@ GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_new(void) {
   return p_struct;
 }
 
-void GWEN_SarFileHeader_free(GWEN_SAR_FILEHEADER *p_struct) {
+void GWEN_SarFileHeader_free(GWEN_SAR_FILEHEADER *p_struct)
+{
   if (p_struct) {
-  assert(p_struct->_refCount);
-  if (p_struct->_refCount==1) {
-    GWEN_LIST_FINI(GWEN_SAR_FILEHEADER, p_struct)
-  /* members */
-    free(p_struct->path);
-    GWEN_Time_free(p_struct->atime);
-    GWEN_Time_free(p_struct->mtime);
-    GWEN_Time_free(p_struct->ctime);
-    p_struct->_refCount=0;
-    GWEN_FREE_OBJECT(p_struct);
-  }
-  else
-    p_struct->_refCount--;
+    assert(p_struct->_refCount);
+    if (p_struct->_refCount==1) {
+      GWEN_LIST_FINI(GWEN_SAR_FILEHEADER, p_struct)
+      /* members */
+      free(p_struct->path);
+      GWEN_Time_free(p_struct->atime);
+      GWEN_Time_free(p_struct->mtime);
+      GWEN_Time_free(p_struct->ctime);
+      p_struct->_refCount=0;
+      GWEN_FREE_OBJECT(p_struct);
+    }
+    else
+      p_struct->_refCount--;
   }
 }
 
-void GWEN_SarFileHeader_Attach(GWEN_SAR_FILEHEADER *p_struct) {
+void GWEN_SarFileHeader_Attach(GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   assert(p_struct->_refCount);
   p_struct->_refCount++;
 }
 
-GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_dup(const GWEN_SAR_FILEHEADER *p_src) {
+GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_dup(const GWEN_SAR_FILEHEADER *p_src)
+{
   GWEN_SAR_FILEHEADER *p_struct;
 
   assert(p_src);
@@ -187,8 +203,9 @@ GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_dup(const GWEN_SAR_FILEHEADER *p_src) {
   return p_struct;
 }
 
-GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_copy(GWEN_SAR_FILEHEADER *p_struct, const GWEN_SAR_FILEHEADER *p_src) {
-    assert(p_struct);
+GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_copy(GWEN_SAR_FILEHEADER *p_struct, const GWEN_SAR_FILEHEADER *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "status" */
   p_struct->status=p_src->status;
@@ -259,107 +276,128 @@ GWEN_SAR_FILEHEADER *GWEN_SarFileHeader_copy(GWEN_SAR_FILEHEADER *p_struct, cons
   return p_struct;
 }
 
-int GWEN_SarFileHeader_GetStatus(const GWEN_SAR_FILEHEADER *p_struct) {
+int GWEN_SarFileHeader_GetStatus(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->status;
 }
 
-uint32_t GWEN_SarFileHeader_GetFlags(const GWEN_SAR_FILEHEADER *p_struct) {
+uint32_t GWEN_SarFileHeader_GetFlags(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->flags;
 }
 
-const char *GWEN_SarFileHeader_GetPath(const GWEN_SAR_FILEHEADER *p_struct) {
+const char *GWEN_SarFileHeader_GetPath(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->path;
 }
 
-int GWEN_SarFileHeader_GetFileType(const GWEN_SAR_FILEHEADER *p_struct) {
+int GWEN_SarFileHeader_GetFileType(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->fileType;
 }
 
-uint32_t GWEN_SarFileHeader_GetPermissions(const GWEN_SAR_FILEHEADER *p_struct) {
+uint32_t GWEN_SarFileHeader_GetPermissions(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->permissions;
 }
 
-const GWEN_TIME *GWEN_SarFileHeader_GetAtime(const GWEN_SAR_FILEHEADER *p_struct) {
+const GWEN_TIME *GWEN_SarFileHeader_GetAtime(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->atime;
 }
 
-const GWEN_TIME *GWEN_SarFileHeader_GetMtime(const GWEN_SAR_FILEHEADER *p_struct) {
+const GWEN_TIME *GWEN_SarFileHeader_GetMtime(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->mtime;
 }
 
-const GWEN_TIME *GWEN_SarFileHeader_GetCtime(const GWEN_SAR_FILEHEADER *p_struct) {
+const GWEN_TIME *GWEN_SarFileHeader_GetCtime(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->ctime;
 }
 
-uint64_t GWEN_SarFileHeader_GetFileSize(const GWEN_SAR_FILEHEADER *p_struct) {
+uint64_t GWEN_SarFileHeader_GetFileSize(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->fileSize;
 }
 
-uint64_t GWEN_SarFileHeader_GetHeaderStartPos(const GWEN_SAR_FILEHEADER *p_struct) {
+uint64_t GWEN_SarFileHeader_GetHeaderStartPos(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->headerStartPos;
 }
 
-uint64_t GWEN_SarFileHeader_GetHeaderSize(const GWEN_SAR_FILEHEADER *p_struct) {
+uint64_t GWEN_SarFileHeader_GetHeaderSize(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->headerSize;
 }
 
-uint64_t GWEN_SarFileHeader_GetDataPos(const GWEN_SAR_FILEHEADER *p_struct) {
+uint64_t GWEN_SarFileHeader_GetDataPos(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->dataPos;
 }
 
-uint64_t GWEN_SarFileHeader_GetDataSize(const GWEN_SAR_FILEHEADER *p_struct) {
+uint64_t GWEN_SarFileHeader_GetDataSize(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->dataSize;
 }
 
-uint64_t GWEN_SarFileHeader_GetHashPos(const GWEN_SAR_FILEHEADER *p_struct) {
+uint64_t GWEN_SarFileHeader_GetHashPos(const GWEN_SAR_FILEHEADER *p_struct)
+{
   assert(p_struct);
   return p_struct->hashPos;
 }
 
-void GWEN_SarFileHeader_SetStatus(GWEN_SAR_FILEHEADER *p_struct, int p_src) {
+void GWEN_SarFileHeader_SetStatus(GWEN_SAR_FILEHEADER *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->status=p_src;
 }
 
-void GWEN_SarFileHeader_AddStatus(GWEN_SAR_FILEHEADER *p_struct, int p_src) {
+void GWEN_SarFileHeader_AddStatus(GWEN_SAR_FILEHEADER *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->status|=p_src;
 }
 
-void GWEN_SarFileHeader_SubStatus(GWEN_SAR_FILEHEADER *p_struct, int p_src) {
+void GWEN_SarFileHeader_SubStatus(GWEN_SAR_FILEHEADER *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->status&=~p_src;
 }
 
-void GWEN_SarFileHeader_SetFlags(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src) {
+void GWEN_SarFileHeader_SetFlags(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags=p_src;
 }
 
-void GWEN_SarFileHeader_AddFlags(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src) {
+void GWEN_SarFileHeader_AddFlags(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags|=p_src;
 }
 
-void GWEN_SarFileHeader_SubFlags(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src) {
+void GWEN_SarFileHeader_SubFlags(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags&=~p_src;
 }
 
-void GWEN_SarFileHeader_SetPath(GWEN_SAR_FILEHEADER *p_struct, const char *p_src) {
+void GWEN_SarFileHeader_SetPath(GWEN_SAR_FILEHEADER *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->path) {
     free(p_struct->path);
@@ -372,27 +410,32 @@ void GWEN_SarFileHeader_SetPath(GWEN_SAR_FILEHEADER *p_struct, const char *p_src
   }
 }
 
-void GWEN_SarFileHeader_SetFileType(GWEN_SAR_FILEHEADER *p_struct, int p_src) {
+void GWEN_SarFileHeader_SetFileType(GWEN_SAR_FILEHEADER *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->fileType=p_src;
 }
 
-void GWEN_SarFileHeader_SetPermissions(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src) {
+void GWEN_SarFileHeader_SetPermissions(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->permissions=p_src;
 }
 
-void GWEN_SarFileHeader_AddPermissions(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src) {
+void GWEN_SarFileHeader_AddPermissions(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->permissions|=p_src;
 }
 
-void GWEN_SarFileHeader_SubPermissions(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src) {
+void GWEN_SarFileHeader_SubPermissions(GWEN_SAR_FILEHEADER *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->permissions&=~p_src;
 }
 
-void GWEN_SarFileHeader_SetAtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src) {
+void GWEN_SarFileHeader_SetAtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src)
+{
   assert(p_struct);
   if (p_struct->atime) {
     GWEN_Time_free(p_struct->atime);
@@ -400,7 +443,8 @@ void GWEN_SarFileHeader_SetAtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src
   p_struct->atime=p_src;
 }
 
-void GWEN_SarFileHeader_SetMtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src) {
+void GWEN_SarFileHeader_SetMtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src)
+{
   assert(p_struct);
   if (p_struct->mtime) {
     GWEN_Time_free(p_struct->mtime);
@@ -408,7 +452,8 @@ void GWEN_SarFileHeader_SetMtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src
   p_struct->mtime=p_src;
 }
 
-void GWEN_SarFileHeader_SetCtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src) {
+void GWEN_SarFileHeader_SetCtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src)
+{
   assert(p_struct);
   if (p_struct->ctime) {
     GWEN_Time_free(p_struct->ctime);
@@ -416,45 +461,52 @@ void GWEN_SarFileHeader_SetCtime(GWEN_SAR_FILEHEADER *p_struct, GWEN_TIME *p_src
   p_struct->ctime=p_src;
 }
 
-void GWEN_SarFileHeader_SetFileSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src) {
+void GWEN_SarFileHeader_SetFileSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src)
+{
   assert(p_struct);
   p_struct->fileSize=p_src;
 }
 
-void GWEN_SarFileHeader_SetHeaderStartPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src) {
+void GWEN_SarFileHeader_SetHeaderStartPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src)
+{
   assert(p_struct);
   p_struct->headerStartPos=p_src;
 }
 
-void GWEN_SarFileHeader_SetHeaderSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src) {
+void GWEN_SarFileHeader_SetHeaderSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src)
+{
   assert(p_struct);
   p_struct->headerSize=p_src;
 }
 
-void GWEN_SarFileHeader_SetDataPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src) {
+void GWEN_SarFileHeader_SetDataPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src)
+{
   assert(p_struct);
   p_struct->dataPos=p_src;
 }
 
-void GWEN_SarFileHeader_SetDataSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src) {
+void GWEN_SarFileHeader_SetDataSize(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src)
+{
   assert(p_struct);
   p_struct->dataSize=p_src;
 }
 
-void GWEN_SarFileHeader_SetHashPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src) {
+void GWEN_SarFileHeader_SetHashPos(GWEN_SAR_FILEHEADER *p_struct, uint64_t p_src)
+{
   assert(p_struct);
   p_struct->hashPos=p_src;
 }
 
 /* list1 functions */
-GWEN_SAR_FILEHEADER_LIST *GWEN_SarFileHeader_List_dup(const GWEN_SAR_FILEHEADER_LIST *p_src) {
+GWEN_SAR_FILEHEADER_LIST *GWEN_SarFileHeader_List_dup(const GWEN_SAR_FILEHEADER_LIST *p_src)
+{
   GWEN_SAR_FILEHEADER_LIST *p_dest;
   GWEN_SAR_FILEHEADER *p_elem;
 
   assert(p_src);
   p_dest=GWEN_SarFileHeader_List_new();
   p_elem=GWEN_SarFileHeader_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     GWEN_SAR_FILEHEADER *p_cpy;
 
     p_cpy=GWEN_SarFileHeader_dup(p_elem);

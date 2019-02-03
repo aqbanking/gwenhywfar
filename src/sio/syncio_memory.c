@@ -47,7 +47,8 @@ GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_MEMORY)
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Memory_new(GWEN_BUFFER *buffer, int take) {
+GWEN_SYNCIO *GWEN_SyncIo_Memory_new(GWEN_BUFFER *buffer, int take)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_MEMORY *xio;
 
@@ -74,7 +75,8 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_new(GWEN_BUFFER *buffer, int take) {
 
 
 
-GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size) {
+GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size)
+{
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO_MEMORY *xio;
 
@@ -88,7 +90,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size) {
   /* adapt size, if necessary */
   if (size==-1) {
     if (buffer)
-      size=strlen((const char*) buffer)+1;
+      size=strlen((const char *) buffer)+1;
     else
       size=0;
   }
@@ -96,7 +98,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size) {
   xio->buffer=GWEN_Buffer_new(0, size, 0, 1);
   xio->own=1;
   if (buffer && size>0) {
-    GWEN_Buffer_AppendBytes(xio->buffer, (const char*) buffer, size);
+    GWEN_Buffer_AppendBytes(xio->buffer, (const char *) buffer, size);
     GWEN_Buffer_Rewind(xio->buffer);
   }
   GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
@@ -105,10 +107,11 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size) {
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Memory_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB GWEN_SyncIo_Memory_FreeData(void *bp, void *p)
+{
   GWEN_SYNCIO_MEMORY *xio;
 
-  xio=(GWEN_SYNCIO_MEMORY*) p;
+  xio=(GWEN_SYNCIO_MEMORY *) p;
   if (xio->buffer && xio->own)
     GWEN_Buffer_free(xio->buffer);
   GWEN_FREE_OBJECT(xio);
@@ -116,7 +119,8 @@ void GWENHYWFAR_CB GWEN_SyncIo_Memory_FreeData(void *bp, void *p) {
 
 
 
-GWEN_BUFFER *GWEN_SyncIo_Memory_GetBuffer(const GWEN_SYNCIO *sio) {
+GWEN_BUFFER *GWEN_SyncIo_Memory_GetBuffer(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_MEMORY *xio;
 
   assert(sio);
@@ -128,7 +132,8 @@ GWEN_BUFFER *GWEN_SyncIo_Memory_GetBuffer(const GWEN_SYNCIO *sio) {
 
 
 
-GWEN_BUFFER *GWEN_SyncIo_Memory_TakeBuffer(const GWEN_SYNCIO *sio) {
+GWEN_BUFFER *GWEN_SyncIo_Memory_TakeBuffer(const GWEN_SYNCIO *sio)
+{
   GWEN_SYNCIO_MEMORY *xio;
   GWEN_BUFFER *buf;
 
@@ -149,8 +154,9 @@ GWEN_BUFFER *GWEN_SyncIo_Memory_TakeBuffer(const GWEN_SYNCIO *sio) {
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Memory_Read(GWEN_SYNCIO *sio,
-    uint8_t *buffer,
-    uint32_t size) {
+                                          uint8_t *buffer,
+                                          uint32_t size)
+{
   GWEN_SYNCIO_MEMORY *xio;
   uint32_t bytesLeft;
 
@@ -180,8 +186,9 @@ int GWENHYWFAR_CB GWEN_SyncIo_Memory_Read(GWEN_SYNCIO *sio,
 
 
 int GWENHYWFAR_CB GWEN_SyncIo_Memory_Write(GWEN_SYNCIO *sio,
-    const uint8_t *buffer,
-    uint32_t size) {
+                                           const uint8_t *buffer,
+                                           uint32_t size)
+{
   GWEN_SYNCIO_MEMORY *xio;
 
   assert(sio);
@@ -196,7 +203,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Memory_Write(GWEN_SYNCIO *sio,
   if (size) {
     int rv;
 
-    rv=GWEN_Buffer_AppendBytes(xio->buffer, (const char*) buffer, size);
+    rv=GWEN_Buffer_AppendBytes(xio->buffer, (const char *) buffer, size);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;

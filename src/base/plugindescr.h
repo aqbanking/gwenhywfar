@@ -73,7 +73,7 @@ void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd);
 
 
 GWENHYWFAR_API
-GWEN_PLUGIN_DESCRIPTION*
+GWEN_PLUGIN_DESCRIPTION *
 GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
@@ -89,7 +89,7 @@ void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd);
  * you want the XML node to survive the description.
  */
 GWENHYWFAR_API
-GWEN_XMLNODE*
+GWEN_XMLNODE *
 GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
@@ -106,23 +106,23 @@ GWENHYWFAR_API
 const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
-const char*
+const char *
 GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd);
 
 GWENHYWFAR_API
@@ -153,9 +153,9 @@ void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
 GWENHYWFAR_API DEPRECATED
 int
 GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-    const char *s,
-    GWEN_BUFFER *buf);
-#endif	// ifndef NO_DEPRECATED_SYMBOLS
+                                            const char *s,
+                                            GWEN_BUFFER *buf);
+#endif  // ifndef NO_DEPRECATED_SYMBOLS
 
 GWENHYWFAR_API
 int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
