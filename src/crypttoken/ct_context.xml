@@ -208,6 +208,20 @@
         <flags>none</flags>
         <access>public</access>
       </member>
+      
+      <member name="signKeyNum" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="signKeyVer" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
 
       <member name="verifyKeyId" type="uint32_t" maxlen="8">
         <default>0</default>
@@ -229,8 +243,36 @@
         <flags>none</flags>
         <access>public</access>
       </member>
+      
+      <member name="decipherKeyNum" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="decipherKeyVer" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
 
       <member name="authSignKeyId" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+      
+      <member name="authSignKeyNum" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
+
+      <member name="authSignKeyVer" type="uint32_t" maxlen="8">
         <default>0</default>
         <preset>0</preset>
         <flags>none</flags>

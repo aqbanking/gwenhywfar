@@ -34,6 +34,18 @@ extern "C" {
 <p>Set this property with @ref GWEN_Crypt_Token_Context_SetSignKeyId(), get it with @ref GWEN_Crypt_Token_Context_GetSignKeyId().</p>
 
 
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_signKeyNum
+<h2>signKeyNum</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetSignKeyNum(), get it with @ref GWEN_Crypt_Token_Context_GetSignKeyNum().</p>
+
+
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_signKeyVer
+<h2>signKeyVer</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetSignKeyVer(), get it with @ref GWEN_Crypt_Token_Context_GetSignKeyVer().</p>
+
+
 @anchor GWEN_CRYPT_TOKEN_CONTEXT_verifyKeyId
 <h2>verifyKeyId</h2>
 
@@ -52,10 +64,34 @@ extern "C" {
 <p>Set this property with @ref GWEN_Crypt_Token_Context_SetDecipherKeyId(), get it with @ref GWEN_Crypt_Token_Context_GetDecipherKeyId().</p>
 
 
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_decipherKeyNum
+<h2>decipherKeyNum</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetDecipherKeyNum(), get it with @ref GWEN_Crypt_Token_Context_GetDecipherKeyNum().</p>
+
+
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_decipherKeyVer
+<h2>decipherKeyVer</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetDecipherKeyVer(), get it with @ref GWEN_Crypt_Token_Context_GetDecipherKeyVer().</p>
+
+
 @anchor GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyId
 <h2>authSignKeyId</h2>
 
 <p>Set this property with @ref GWEN_Crypt_Token_Context_SetAuthSignKeyId(), get it with @ref GWEN_Crypt_Token_Context_GetAuthSignKeyId().</p>
+
+
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyNum
+<h2>authSignKeyNum</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetAuthSignKeyNum(), get it with @ref GWEN_Crypt_Token_Context_GetAuthSignKeyNum().</p>
+
+
+@anchor GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyVer
+<h2>authSignKeyVer</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_Context_SetAuthSignKeyVer(), get it with @ref GWEN_Crypt_Token_Context_GetAuthSignKeyVer().</p>
 
 
 @anchor GWEN_CRYPT_TOKEN_CONTEXT_authVerifyKeyId
@@ -215,6 +251,16 @@ GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetId(const GWEN_CRYPT_TOKEN_CO
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
+ * Use this function to get the member "signKeyNum" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_signKeyNum)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetSignKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "signKeyVer" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_signKeyVer)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetSignKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
  * Use this function to get the member "verifyKeyId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_verifyKeyId)
 */
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetVerifyKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
@@ -230,9 +276,29 @@ GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetEncipherKeyId(const GWEN_CRY
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
+ * Use this function to get the member "decipherKeyNum" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_decipherKeyNum)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "decipherKeyVer" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_decipherKeyVer)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetDecipherKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
  * Use this function to get the member "authSignKeyId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyId)
 */
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyId(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "authSignKeyNum" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyNum)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyNum(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
+
+/** Getter.
+ * Use this function to get the member "authSignKeyVer" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyVer)
+*/
+GWENHYWFAR_API uint32_t GWEN_Crypt_Token_Context_GetAuthSignKeyVer(const GWEN_CRYPT_TOKEN_CONTEXT *p_struct);
 
 /** Getter.
  * Use this function to get the member "authVerifyKeyId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authVerifyKeyId)
@@ -325,6 +391,16 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetId(GWEN_CRYPT_TOKEN_CONTEXT *p_s
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
 
 /** Setter.
+ * Use this function to set the member "signKeyNum" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_signKeyNum)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetSignKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "signKeyVer" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_signKeyVer)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetSignKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
  * Use this function to set the member "verifyKeyId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_verifyKeyId)
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetVerifyKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
@@ -340,9 +416,29 @@ GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetEncipherKeyId(GWEN_CRYPT_TOKEN_C
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetDecipherKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
 
 /** Setter.
+ * Use this function to set the member "decipherKeyNum" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_decipherKeyNum)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetDecipherKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "decipherKeyVer" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_decipherKeyVer)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetDecipherKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
  * Use this function to set the member "authSignKeyId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyId)
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetAuthSignKeyId(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "authSignKeyNum" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyNum)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetAuthSignKeyNum(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "authSignKeyVer" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authSignKeyVer)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_Context_SetAuthSignKeyVer(GWEN_CRYPT_TOKEN_CONTEXT *p_struct, uint32_t p_src);
 
 /** Setter.
  * Use this function to set the member "authVerifyKeyId" (see @ref GWEN_CRYPT_TOKEN_CONTEXT_authVerifyKeyId)

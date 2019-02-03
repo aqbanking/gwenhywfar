@@ -21,10 +21,16 @@ struct GWEN_CRYPT_TOKEN_CONTEXT {
   int _refCount;
   uint32_t id;
   uint32_t signKeyId;
+  uint32_t signKeyNum;
+  uint32_t signKeyVer;
   uint32_t verifyKeyId;
   uint32_t encipherKeyId;
   uint32_t decipherKeyId;
+  uint32_t decipherKeyNum;
+  uint32_t decipherKeyVer;
   uint32_t authSignKeyId;
+  uint32_t authSignKeyNum;
+  uint32_t authSignKeyVer;
   uint32_t authVerifyKeyId;
   uint32_t tempSignKeyId;
   uint32_t keyHashNum;
