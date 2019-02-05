@@ -383,6 +383,13 @@
         <setflags>const omit dup</setflags>
         <getflags>const omit</getflags>
       </member>
+      
+      <member name="certType" type="uint8_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>none</flags>
+        <access>public</access>
+      </member>
 
     </members>
     

@@ -30,6 +30,7 @@ struct GWEN_CRYPT_TOKEN_KEYINFO {
   uint32_t keyVersion;
   uint32_t signCounter;
   GWEN_BUFFER *certificate;
+  uint8_t certType;
 };
 
 /** Private constructor. */

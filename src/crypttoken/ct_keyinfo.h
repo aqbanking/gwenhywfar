@@ -87,6 +87,12 @@ extern "C" {
 
 <p>Set this property with @ref GWEN_Crypt_Token_KeyInfo_SetCertificate(), get it with @ref GWEN_Crypt_Token_KeyInfo_GetCertificate().</p>
 
+
+@anchor GWEN_CRYPT_TOKEN_KEYINFO_certType
+<h2>certType</h2>
+
+<p>Set this property with @ref GWEN_Crypt_Token_KeyInfo_SetCertType(), get it with @ref GWEN_Crypt_Token_KeyInfo_GetCertType().</p>
+
 */
 
 /* define GWEN_CRYPT_TOKEN_KEYFLAGS */
@@ -191,6 +197,11 @@ GWENHYWFAR_API uint32_t GWEN_Crypt_Token_KeyInfo_GetKeyVersion(const GWEN_CRYPT_
 */
 GWENHYWFAR_API uint32_t GWEN_Crypt_Token_KeyInfo_GetSignCounter(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct);
 
+/** Getter.
+ * Use this function to get the member "certType" (see @ref GWEN_CRYPT_TOKEN_KEYINFO_certType)
+*/
+GWENHYWFAR_API uint8_t GWEN_Crypt_Token_KeyInfo_GetCertType(const GWEN_CRYPT_TOKEN_KEYINFO *p_struct);
+
 /** Setter.
  * Use this function to set the member "id" (see @ref GWEN_CRYPT_TOKEN_KEYINFO_id)
 */
@@ -240,6 +251,11 @@ GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetKeyVersion(GWEN_CRYPT_TOKEN_KEYI
  * Use this function to set the member "signCounter" (see @ref GWEN_CRYPT_TOKEN_KEYINFO_signCounter)
 */
 GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetSignCounter(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, uint32_t p_src);
+
+/** Setter.
+ * Use this function to set the member "certType" (see @ref GWEN_CRYPT_TOKEN_KEYINFO_certType)
+*/
+GWENHYWFAR_API void GWEN_Crypt_Token_KeyInfo_SetCertType(GWEN_CRYPT_TOKEN_KEYINFO *p_struct, uint8_t p_src);
 
 /* list1 functions */
 GWENHYWFAR_API GWEN_CRYPT_TOKEN_KEYINFO_LIST *GWEN_Crypt_Token_KeyInfo_List_dup(const GWEN_CRYPT_TOKEN_KEYINFO_LIST
