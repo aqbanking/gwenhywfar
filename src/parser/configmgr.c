@@ -171,6 +171,21 @@ GWEN_CONFIGMGR_SETGROUP_FN GWEN_ConfigMgr_SetSetGroupFn(GWEN_CONFIGMGR *mgr,
 
 
 
+GWEN_CONFIGMGR_HASGROUP_FN GWEN_ConfigMgr_SetHasGroupFn(GWEN_CONFIGMGR *mgr,
+                                                        GWEN_CONFIGMGR_HASGROUP_FN f)
+{
+  GWEN_CONFIGMGR_HASGROUP_FN of;
+
+  assert(mgr);
+  of=mgr->hasGroupFn;
+  mgr->hasGroupFn=f;
+
+  return of;
+
+}
+
+
+
 GWEN_CONFIGMGR_LOCKGROUP_FN GWEN_ConfigMgr_SetLockGroupFn(GWEN_CONFIGMGR *mgr,
                                                           GWEN_CONFIGMGR_LOCKGROUP_FN f)
 {
@@ -291,6 +306,19 @@ int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
   assert(mgr);
   if (mgr->setGroupFn)
     return mgr->setGroupFn(mgr, groupName, subGroupName, db);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int GWEN_ConfigMgr_HasGroup(GWEN_CONFIGMGR *mgr,
+                            const char *groupName,
+                            const char *subGroupName)
+{
+  assert(mgr);
+  if (mgr->hasGroupFn)
+    return mgr->hasGroupFn(mgr, groupName, subGroupName);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }

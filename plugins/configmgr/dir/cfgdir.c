@@ -53,6 +53,7 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_Factory(GWEN_UNUSED GWEN_PLUGIN *pl, const cha
   cfg=GWEN_ConfigMgrDir_new(url);
   GWEN_ConfigMgr_SetGetGroupFn(cfg, GWEN_ConfigMgrDir_GetGroup);
   GWEN_ConfigMgr_SetSetGroupFn(cfg, GWEN_ConfigMgrDir_SetGroup);
+  GWEN_ConfigMgr_SetHasGroupFn(cfg, GWEN_ConfigMgrDir_HasGroup);
   GWEN_ConfigMgr_SetLockGroupFn(cfg, GWEN_ConfigMgrDir_LockGroup);
   GWEN_ConfigMgr_SetUnlockGroupFn(cfg, GWEN_ConfigMgrDir_UnlockGroup);
   GWEN_ConfigMgr_SetGetUniqueIdFn(cfg, GWEN_ConfigMgrDir_GetUniqueId);
@@ -521,6 +522,37 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
   }
 
   GWEN_Buffer_free(nbuf);
+  return 0;
+}
+
+
+
+int GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
+                               const char *groupName,
+                               const char *subGroupName)
+{
+  GWEN_BUFFER *nbuf;
+  GWEN_CONFIGMGR_DIR *xcfg;
+  int rv;
+
+  assert(cfg);
+  xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
+  assert(xcfg);
+
+  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_ConfigMgrDir_AddGroupFileName(cfg, groupName, subGroupName, nbuf);
+
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(nbuf),
+                            GWEN_PATH_FLAGS_CHECKROOT |
+                            GWEN_PATH_FLAGS_NAMEMUSTEXIST |
+                            GWEN_PATH_FLAGS_VARIABLE);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not access [%s]: %d",
+             GWEN_Buffer_GetStart(nbuf), rv);
+    GWEN_Buffer_free(nbuf);
+    return rv;
+  }
+
   return 0;
 }
 

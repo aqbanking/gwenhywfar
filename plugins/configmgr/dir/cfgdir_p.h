@@ -63,6 +63,10 @@ int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *mgr,
                                const char *subGroupName,
                                GWEN_DB_NODE *db);
 
+int GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
+                               const char *groupName,
+                               const char *subGroupName);
+
 int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *mgr,
                                 const char *groupName,
                                 const char *subGroupName);

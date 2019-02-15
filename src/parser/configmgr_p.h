@@ -45,6 +45,8 @@ struct GWEN_CONFIGMGR {
   GWEN_CONFIGMGR_LISTGROUPS_FN listGroupsFn;
   GWEN_CONFIGMGR_LISTSUBGROUPS_FN listSubGroupsFn;
 
+  GWEN_CONFIGMGR_HASGROUP_FN hasGroupFn;
+
   char *url;
 };
 

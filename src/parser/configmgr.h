@@ -73,6 +73,11 @@ int GWEN_ConfigMgr_SetGroup(GWEN_CONFIGMGR *mgr,
                             GWEN_DB_NODE *db);
 
 GWENHYWFAR_API
+int GWEN_ConfigMgr_HasGroup(GWEN_CONFIGMGR *mgr,
+                            const char *groupName,
+                            const char *subGroupName);
+
+GWENHYWFAR_API
 int GWEN_ConfigMgr_LockGroup(GWEN_CONFIGMGR *mgr,
                              const char *groupName,
                              const char *subGroupName);

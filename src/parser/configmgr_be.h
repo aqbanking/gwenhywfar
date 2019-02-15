@@ -46,6 +46,10 @@ typedef int (*GWEN_CONFIGMGR_SETGROUP_FN)(GWEN_CONFIGMGR *mgr,
                                           const char *subGroupName,
                                           GWEN_DB_NODE *db);
 
+typedef int (*GWEN_CONFIGMGR_HASGROUP_FN)(GWEN_CONFIGMGR *mgr,
+                                          const char *groupName,
+                                          const char *subGroupName);
+
 typedef int (*GWEN_CONFIGMGR_LOCKGROUP_FN)(GWEN_CONFIGMGR *mgr,
                                            const char *groupName,
                                            const char *subGroupName);
@@ -86,6 +90,11 @@ GWEN_CONFIGMGR_GETGROUP_FN GWEN_ConfigMgr_SetGetGroupFn(GWEN_CONFIGMGR *mgr,
 GWENHYWFAR_API
 GWEN_CONFIGMGR_SETGROUP_FN GWEN_ConfigMgr_SetSetGroupFn(GWEN_CONFIGMGR *mgr,
                                                         GWEN_CONFIGMGR_SETGROUP_FN f);
+
+GWENHYWFAR_API
+GWEN_CONFIGMGR_HASGROUP_FN GWEN_ConfigMgr_SetHasGroupFn(GWEN_CONFIGMGR *mgr,
+                                                        GWEN_CONFIGMGR_HASGROUP_FN f);
+
 
 GWENHYWFAR_API
 GWEN_CONFIGMGR_LOCKGROUP_FN GWEN_ConfigMgr_SetLockGroupFn(GWEN_CONFIGMGR *mgr,
