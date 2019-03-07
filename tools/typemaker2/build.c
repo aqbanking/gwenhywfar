@@ -58,7 +58,7 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
 
   s = GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
   if (s)
-      Typemaker2_Builder_SetDestFolderName(tb, s);
+    Typemaker2_Builder_SetDestFolderName(tb, s);
 
 
   Typemaker2_Builder_SetSourceFileName(tb, fname);

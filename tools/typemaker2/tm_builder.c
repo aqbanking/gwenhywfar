@@ -730,9 +730,9 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
     GWEN_Buffer_AppendString(xbuf, "_");
     s=strrchr(fileName, GWEN_DIR_SEPARATOR);
     if (s && *s)
-        GWEN_Buffer_AppendString(xbuf, s+1);
+      GWEN_Buffer_AppendString(xbuf, s+1);
     else
-        GWEN_Buffer_AppendString(xbuf, fileName);
+      GWEN_Buffer_AppendString(xbuf, fileName);
     p=GWEN_Buffer_GetStart(xbuf);
     while (*p) {
       if (*p=='.')
