@@ -29,6 +29,7 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
   GWEN_STRINGLIST *sl;
   TYPEMAKER2_TYPE_LIST2 *tlist;
   TYPEMAKER2_TYPE_LIST2_ITERATOR *it;
+  int noDefs=0;
   const char *s;
   int i;
   int rv;
@@ -63,6 +64,8 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
 
   Typemaker2_Builder_SetSourceFileName(tb, fname);
 
+  noDefs=GWEN_DB_GetIntValue(dbArgs, "noDefs", 0, 0);
+
   for (i=0; i<99; i++) {
     s=GWEN_DB_GetCharValue(dbArgs, "include", i, NULL);
     if (s && *s)
@@ -95,6 +98,10 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
     GWEN_StringList_free(sl);
   }
 
+  s=GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
+  if (s)
+    Typemaker2_Builder_SetDestFolderName(tb, s);
+
   tlist=Typemaker2_Type_List2_new();
   rv=Typemaker2_TypeManager_LoadTypeFile2(tym, fname, tlist);
   if (rv<0) {
@@ -119,10 +126,12 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
       }
 
       /* only write typedef files */
-      rv=Typemaker2_Builder_WriteFiles(tb, ty, 1);
-      if (rv<0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
-        return 2;
+      if (!noDefs) {
+        rv=Typemaker2_Builder_WriteFiles(tb, ty, TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_DEFS);
+        if (rv<0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return 2;
+        }
       }
 
 
@@ -152,12 +161,8 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
     if (s)
       Typemaker2_Builder_SetFileNameCode(tb, s);
 
-    s = GWEN_DB_GetCharValue(dbArgs, "destFolder", 0, NULL);
-    if (s)
-      Typemaker2_Builder_SetDestFolderName(tb, s);
-
     ty=Typemaker2_Type_List2_GetFront(tlist);
-    rv=Typemaker2_Builder_WriteFiles(tb, ty, 0);
+    rv=Typemaker2_Builder_WriteFiles(tb, ty, TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_TYPE);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
       return 2;
@@ -171,7 +176,7 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
 }
 
 
-
+#if 0
 int buildFile(GWEN_DB_NODE *dbArgs, const char *fname)
 {
   TYPEMAKER2_TYPEMANAGER *tym;
@@ -281,7 +286,9 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname)
     return 2;
   }
 
-  rv=Typemaker2_Builder_WriteFiles(tb, ty, 0);
+  rv=Typemaker2_Builder_WriteFiles(tb, ty,
+                                   TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_DEFS |
+                                   TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_TYPE);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
     return 2;
@@ -289,6 +296,7 @@ int buildFile(GWEN_DB_NODE *dbArgs, const char *fname)
 
   return 0;
 }
+#endif
 
 
 

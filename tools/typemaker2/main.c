@@ -132,6 +132,17 @@ int main(int argc, char **argv)
       "Only write def files (*.tm2)",
       "Only write def files (*.tm2)"
     },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,              /* type */
+      "noDefs",                       /* name */
+      0,                              /* minnum */
+      1,                              /* maxnum */
+      NULL,                           /* short option */
+      "no-defs",                      /* long option */
+      "Dont write def files (*.tm2)",
+      "Dont write def files (*.tm2)"
+    },
 
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */

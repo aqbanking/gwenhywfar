@@ -19,6 +19,9 @@
 #include <gwenhywfar/buffer.h>
 
 
+#define TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_DEFS 0x0001
+#define TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_TYPE 0x0002
+
 
 typedef struct TYPEMAKER2_BUILDER TYPEMAKER2_BUILDER;
 GWEN_INHERIT_FUNCTION_DEFS(TYPEMAKER2_BUILDER)
@@ -79,7 +82,7 @@ void Typemaker2_Builder_SetBuildFn(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_BUILDER_BU
 
 
 int Typemaker2_Builder_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
-int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, int defsOnly);
+int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, uint32_t writeFlags);
 
 int Typemaker2_Builder_MakeTypeList1(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 int Typemaker2_Builder_MakeTypeList2(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
