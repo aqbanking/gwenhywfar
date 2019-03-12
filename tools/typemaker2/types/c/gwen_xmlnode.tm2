@@ -1,0 +1,116 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="gwen_xmlnode" type="pointer" lang="c" >
+    <identifier>GWEN_XMLNODE</identifier>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
+
+
+    <codedefs>
+
+      <codedef id="construct">
+        <code>
+          $(dst)=$(preset);
+        </code>
+      </codedef>
+
+      <codedef id="destruct">
+        <code>
+          GWEN_XMLNode_free($(src));
+          $(src)=NULL;
+        </code>
+      </codedef>
+
+      <codedef id="assign">
+        <code>
+          $(dst)=$(src);
+        </code>
+      </codedef>
+
+      <codedef id="dup">
+        <code>
+        $(dst)=GWEN_XMLNode_dup($(src));
+        </code>
+      </codedef>
+
+      <codedef id="compare">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="toXml">
+        <code>
+          if ($(src)){
+            GWEN_XMLNODE *cpy;
+            GWEN_XMLNODE *newNode;
+            
+            cpy=GWEN_XMLNode_dup($(src));
+            newNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, $(name));
+            GWEN_XMLNode_AddChild(newNode, cpy);
+            GWEN_XMLNode_AddChild($(db), newNode);
+          }
+        </code>
+      </codedef>
+
+      <codedef id="fromXml">
+        <code>
+          {
+            GWEN_XMLNODE *n;
+            
+            n=GWEN_XMLNode_GetFirstTag($(src));
+            if (n)
+              $(dst)=GWEN_XMLNode_dup(n);
+          }
+        </code>
+      </codedef>
+
+      <codedef id="toDb">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromDb">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toHashString">
+        <code>
+        </code>
+      </codedef>
+
+    </codedefs>
+
+
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <preset>NULL</preset>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+  
+  </typedef>
+
+</tm2>

@@ -27,7 +27,10 @@ dist_typedata_DATA=\
   gwen_bindata.tm2 \
   double_array.tm2 \
   gwen_stringlist2.tm2 \
-  gwen_db_node.tm2
+  gwen_db_node.tm2 \
+  gwen_xmlnode.tm2 \
+  gwen_xmlnode_list.tm2 \
+  gwen_xmlnode_list2.tm2
 
 
 sources:
