@@ -1112,7 +1112,7 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
     /* append path to n1 */
     GWEN_Buffer_AppendBuffer(nbuf, lbuf);
   }
-  DBG_ERROR(GWEN_LOGDOMAIN, "Path so far: %s", GWEN_Buffer_GetStart(lbuf));
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Path so far: %s", GWEN_Buffer_GetStart(lbuf));
 
   /* get path to n2 */
   GWEN_Buffer_Reset(lbuf);
