@@ -1188,6 +1188,7 @@ int testBase64(int argc, char **argv)
   if (fwrite(GWEN_Buffer_GetStart(dst),
              GWEN_Buffer_GetUsedBytes(dst), 1, f)!=1) {
     perror("fwrite");
+    fclose(f);
     return 4;
   }
   if (fclose(f)) {
@@ -1246,6 +1247,7 @@ int testBase64_2(int argc, char **argv)
     i=fread(buffer, 1, sizeof(buffer), f);
     if (i<1) {
       perror("fread");
+      fclose(f);
       return 2;
     }
     GWEN_Buffer_AppendBytes(src, buffer, i);

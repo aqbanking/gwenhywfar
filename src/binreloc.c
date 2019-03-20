@@ -255,8 +255,13 @@ _br_find_exe_for_symbol(const void *symbol, BrInitError *error)
     /* Transform the addresses into a string in the form of 0xdeadbeef,
      * then transform that into a pointer. */
     if (address_string_len < len + 3) {
+      char *tmp_address_string;
+
       address_string_len = len + 3;
-      address_string = (char *) realloc(address_string, address_string_len);
+      tmp_address_string = (char *) realloc(address_string, address_string_len);
+      if (tmp_address_string==NULL)
+        free(address_string);
+      address_string = tmp_address_string;
     }
 
     memcpy(address_string, "0x", 2);

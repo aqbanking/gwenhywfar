@@ -890,6 +890,7 @@ void GWEN_Gui_ShowError(const char *title, const char *fmt, ...)
     DBG_WARN(GWEN_LOGDOMAIN, "Internal buffer too small for message, truncating (%d>%d)",
              rv, (int)(sizeof(msgbuffer)));
   }
+  va_end(list);
 
   GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
                       GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
@@ -1012,6 +1013,7 @@ int GWEN_Gui_ProgressLog2(uint32_t id,
     DBG_WARN(GWEN_LOGDOMAIN, "Internal buffer too small for message, truncating (%d>%d)",
              rv, (int)(sizeof(msgbuffer)));
   }
+  va_end(list);
 
   return GWEN_Gui_ProgressLog(id, level, msgbuffer);
 }
