@@ -5,8 +5,8 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@/gwenhywfar5
-pkgincludedir=@includedir@/gwenhywfar
+includedir=@gwenhywfar_headerdir@
+pkgincludedir=@gwenhywfar_headerdir@
 datarootdir=@datarootdir@
 datadir=@datadir@
 bindir=@bindir@
