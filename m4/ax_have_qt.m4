@@ -84,6 +84,10 @@ AC_DEFUN([AX_HAVE_QT],
     am_have_qt_makefile=`mktemp`
     # http://qt-project.org/doc/qt-5/qmake-variable-reference.html#qt
     cat > $am_have_qt_pro << EOF
+win32 {
+    CONFIG -= debug_and_release
+    CONFIG += release
+}
 qtHaveModule(axcontainer):       QT += axcontainer
 qtHaveModule(axserver):          QT += axserver
 qtHaveModule(concurrent):        QT += concurrent
