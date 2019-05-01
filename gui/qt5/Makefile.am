@@ -69,6 +69,7 @@ libtest_SOURCES=libtest.cpp
 libtest_LDADD=libgwengui-qt5.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(QT_LIBS) \
   $(top_builddir)/gui/cpp/libgwengui-cpp.la \
   $(builddir)/../testdialogs/libgwengui-test.la
+libgwengui_qt5_la_LDFLAGS = -no-undefined
 
 SUFFIXES = .ui .ui.hpp .ui.cpp .moc
 
