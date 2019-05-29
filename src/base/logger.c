@@ -289,7 +289,8 @@ int GWEN_Logger_Open(const char *logDomain,
 
   lg->open=1;
 
-  return GWEN_Logger_Log(logDomain, GWEN_LoggerLevel_Debug, "started");
+  GWEN_Logger_Log(logDomain, GWEN_LoggerLevel_Debug, "started");
+  return 0;
 }
 
 
@@ -549,12 +550,12 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
 
 
-int GWEN_Logger_Log(const char *logDomain,
-                    GWEN_LOGGER_LEVEL priority, const char *s)
+void GWEN_Logger_Log(const char *logDomain,
+                     GWEN_LOGGER_LEVEL priority, const char *s)
 {
   if (!GWEN_Gui_LogHook(logDomain, priority, s)) {
     const char *p;
-    int rv;
+    /*int rv;*/
     unsigned int i;
     GWEN_BUFFER *mbuf;
     GWEN_LOGGER *lg;
@@ -563,11 +564,11 @@ int GWEN_Logger_Log(const char *logDomain,
     assert(lg);
 
     if (!lg->enabled)
-      return 1;
+      return /*1*/;
 
     if (priority>lg->logLevel)
       /* priority too low, don't log */
-      return 0;
+      return /*0*/;
 
     /* temporarily disable logging to avoid endless loops */
     lg->enabled=0;
@@ -582,10 +583,10 @@ int GWEN_Logger_Log(const char *logDomain,
     }
 
     /* now log each line */
-    rv=0;
+    /*rv=0;*/
     p=GWEN_Buffer_GetStart(mbuf);
     while (*p) {
-      rv|=GWEN_Logger__Log(lg, priority, p);
+      GWEN_Logger__Log(lg, priority, p);
       while (*p)
         p++;
       p++;
@@ -593,10 +594,10 @@ int GWEN_Logger_Log(const char *logDomain,
     GWEN_Buffer_free(mbuf);
     /* reenable logging */
     lg->enabled=1;
-    return rv;
+    return /*rv*/;
   }
   else
-    return 0;
+    return /*0*/;
 }
 
 

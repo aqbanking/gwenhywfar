@@ -121,8 +121,8 @@ GWENHYWFAR_API int GWEN_Logger_IsOpen(const char *logDomain);
  * @param s string to log. This string is cut at all occurences of a newline
  * character thus splitting it into multiple log lines if necessary
  */
-GWENHYWFAR_API int GWEN_Logger_Log(const char *logDomain,
-                                   GWEN_LOGGER_LEVEL priority, const char *s);
+GWENHYWFAR_API void GWEN_Logger_Log(const char *logDomain,
+                                    GWEN_LOGGER_LEVEL priority, const char *s);
 
 /**
  * Enables or disables logging.
