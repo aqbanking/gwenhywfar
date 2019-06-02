@@ -755,6 +755,14 @@ int GWEN_Gui_Print(const char *docTitle,
  * The function @ref GWEN_Gui_SetPasswordStatus() is used to communicate the status of a password.
  * So if this function here uses a password cache then the callback for @ref GWEN_Gui_SetPasswordStatus()
  * should also be implemented.
+ *
+ * NOTE:
+ * AqBanking uses GWEN_Gui_PasswordMethod_OpticalHHD as methodId for all optical TAN input methods like
+ * "chipTAN optisch" and others. To determine which optical method is actually requested see the DB group "tanMethod"
+ * inside the methodParams parameter; e.g. the variable "tanMethod/methodId" contains the id of the method to use
+ * (e.g. "HHD1.3.0OPT", "HHD1.3.0QR" etc.). The data to send to the TAN generator can be found in the toplevel variable
+ * "challenge".
+ *
  * @param flags flags, see @ref GWEN_GUI_INPUT_FLAGS_CONFIRM ff.
  * @param token unique identification for the password or pin. This can be used to read the password from a cache or file.
  * @param title title of the input box
@@ -766,7 +774,7 @@ int GWEN_Gui_Print(const char *docTitle,
  * This means that if you want to ask the user for a PIN of at most 4
  * characters you need to supply a buffer of at least @b 5 bytes and provide
  * a 5 as maxLen.
- * @param methodId Id of the pin/password/tan entry
+ * @param methodId Id of the pin/password/tan entry.
  * @param methodParams additional parameters for the pin/password/tan entry, content depends on
  * the methodId (my be NULL for simple text input)
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
