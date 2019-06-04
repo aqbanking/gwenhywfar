@@ -758,10 +758,9 @@ int GWEN_Gui_Print(const char *docTitle,
  *
  * NOTE:
  * AqBanking uses GWEN_Gui_PasswordMethod_OpticalHHD as methodId for all optical TAN input methods like
- * "chipTAN optisch" and others. To determine which optical method is actually requested see the DB group "tanMethod"
- * inside the methodParams parameter; e.g. the variable "tanMethod/methodId" contains the id of the method to use
- * (e.g. "HHD1.3.0OPT", "HHD1.3.0QR" etc.). The data to send to the TAN generator can be found in the toplevel variable
- * "challenge".
+ * "chipTAN optisch" and others. To determine which optical method is actually requested see the DB variable
+ * "tanMethodId" inside the methodParams parameter.
+ * The data to send to the TAN generator can be found in the toplevel variable "challenge".
  *
  * @param flags flags, see @ref GWEN_GUI_INPUT_FLAGS_CONFIRM ff.
  * @param token unique identification for the password or pin. This can be used to read the password from a cache or file.
