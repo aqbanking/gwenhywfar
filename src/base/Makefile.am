@@ -1,4 +1,5 @@
 INCLUDES= -I$(gwenhywfar_symlinkdir) \
+ -I$(top_srcdir) \
  -I$(top_srcdir)/src/ \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/gui \
@@ -146,5 +147,12 @@ types: $(typefiles) typedefs
 
 typedefs: $(typefiles)
 	typemaker2 --defs-only -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $(typefiles)
+
+
+
+splint:
+	for f in $(libbase_la_SOURCES); do \
+	  splint $(INCLUDES) $(DEFS) +enumint -unrecogcomments +posixlib -predboolint +boolint -boolops $$f ; \
+	done
 
 

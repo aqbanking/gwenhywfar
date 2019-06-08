@@ -269,7 +269,7 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i)
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Position %d outside buffer boundaries (%d bytes)",
-                i, bf->bufferSize);
+                i, (int) (bf->bufferSize));
       return GWEN_ERROR_BUFFER_OVERFLOW;
     }
   }
@@ -329,7 +329,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size)
     if (nsize>bf->hardLimit) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Size is beyond hard limit (%d>%d)",
-                nsize, bf->hardLimit);
+                (int) nsize, (int)(bf->hardLimit));
       if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
         abort();
       }
@@ -550,7 +550,7 @@ int GWEN_Buffer_AdjustUsedBytes(GWEN_BUFFER *bf)
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Pointer outside buffer size (%d bytes)",
-              bf->bufferSize);
+              (int)(bf->bufferSize));
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
 }
