@@ -190,6 +190,14 @@ void GWEN_Tree_Insert(GWEN_TREE *l, GWEN_TREE_ELEMENT *el);
 GWENHYWFAR_API
 void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el);
 
+
+/** Replaces a tree element with another one, so the replacement takes the place of the given element.
+ * The given element to replace is unlinked in the process and can be free'd.
+ * The replacement MUST NOT be part of any tree.
+ */
+GWENHYWFAR_API
+void GWEN_Tree_Replace(GWEN_TREE_ELEMENT *elToReplace, GWEN_TREE_ELEMENT *elReplacement);
+
 /** Adds (appends) the second list to the end of the first
  * list. (This operation is also called "append" or "concatenate"
  * elsewhere.)
@@ -310,6 +318,7 @@ GWEN_TREE_ELEMENT *_tree_element;
   decl void pr##_Tree_Add(t##_TREE *list, t *element); \
   decl void pr##_Tree_Insert(t##_TREE *list, t *element); \
   decl void pr##_Tree_Del(t *element); \
+  decl void pr##_Tree_Replace(t *elToReplace, t *elReplacement); \
   \
   decl void pr##_Tree_AddChild(t *where, t *element); \
   decl void pr##_Tree_InsertChild(t *where, t *element); \
@@ -413,6 +422,14 @@ GWEN_TREE_ELEMENT *_tree_element;
     assert(element->_tree_element);\
     GWEN_Tree_Del(element->_tree_element); \
   }\
+  \
+  void pr##_Tree_Replace(t *elToReplace, t *elReplacement) { \
+    assert(elToReplace); \
+    assert(elToReplace->_tree_element);\
+    assert(elReplacement); \
+    assert(elReplacement->_tree_element);\
+    GWEN_Tree_Replace(elToReplace->_tree_element, elReplacement->_tree_element); \
+  } \
   \
   t* pr##_Tree_GetFirst(const t##_TREE *l) { \
     if (l) return (t*)GWEN_Tree_GetFirst(l);\

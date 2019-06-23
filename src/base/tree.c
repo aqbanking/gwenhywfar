@@ -170,6 +170,67 @@ void GWEN_Tree_Del(GWEN_TREE_ELEMENT *el)
 
 
 
+void GWEN_Tree_Replace(GWEN_TREE_ELEMENT *elToReplace, GWEN_TREE_ELEMENT *elReplacement)
+{
+  GWEN_TREE *l;
+
+  l=elToReplace->treePtr;
+
+  if (l==0) {
+    /* not part of any list */
+    DBG_ERROR(GWEN_LOGDOMAIN, "Element is not part of any tree");
+    assert(0);
+  }
+  else {
+    if (elReplacement->treePtr!=NULL) {
+      /* replacement already is a part of another tree */
+      DBG_ERROR(GWEN_LOGDOMAIN, "Replacement element already is part of a tree");
+      assert(0);
+    }
+    else {
+      elReplacement->nextElement=NULL;
+      elReplacement->prevElement=NULL;
+      elReplacement->parent=NULL;
+
+      elReplacement->treePtr=elToReplace->treePtr;
+
+      /* relink with previous */
+      if (elToReplace->prevElement)
+	elToReplace->prevElement->nextElement=elReplacement;
+
+      /* relink with next */
+      if (elToReplace->nextElement)
+	elToReplace->nextElement->prevElement=elReplacement;
+
+      /* relink with tree */
+      if (l->firstElement==elToReplace)
+	l->firstElement=elReplacement;
+      if (l->lastElement==elToReplace)
+	l->lastElement=elReplacement;
+      l->count-=(elToReplace->count)+1;
+      l->count+=(elReplacement->count)+1;
+
+      /* relink with parent */
+      if (elToReplace->parent) {
+	elReplacement->parent=elToReplace->parent;
+	if (elToReplace->parent->firstChild==elToReplace)
+	  elToReplace->parent->firstChild=elToReplace;
+	if (elToReplace->parent->lastChild==elToReplace)
+	  elToReplace->parent->lastChild=elToReplace;
+	elToReplace->count-=(elToReplace->count)+1;
+	elToReplace->count+=(elReplacement->count)+1;
+      }
+
+      elToReplace->nextElement=NULL;
+      elToReplace->prevElement=NULL;
+      elToReplace->parent=NULL;
+      elToReplace->treePtr=NULL;
+    }
+  }
+}
+
+
+
 void GWEN_Tree_AddChild(GWEN_TREE_ELEMENT *where, GWEN_TREE_ELEMENT *el)
 {
   if (el->treePtr) {
