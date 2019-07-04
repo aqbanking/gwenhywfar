@@ -144,6 +144,8 @@ uint32_t Typemaker2_TypeFlagsFromString(const char *t)
         flags|=TYPEMAKER2_TYPEFLAGS_NOCOPY;
       else if (strcasecmp(s, "with_constlist2")==0)
         flags|=TYPEMAKER2_TYPEFLAGS_WITH_CONSTLIST2;
+      else if (strcasecmp(s, "with_tree2")==0)
+        flags|=TYPEMAKER2_TYPEFLAGS_WITH_TREE2;
 
       se=GWEN_StringListEntry_Next(se);
     }

@@ -59,6 +59,7 @@ noinst_HEADERS=\
  idmap_p.h \
  memcache_p.h \
  tree_p.h \
+ tree2_p.h \
  pointerlist_p.h \
  multicache_p.h \
  param_p.h
@@ -95,6 +96,7 @@ iheader_HEADERS=\
  fastbuffer.h \
  memcache.h \
  tree.h \
+ tree2.h \
  pointerlist.h \
  multicache.h \
  bindata.h \
@@ -128,6 +130,7 @@ libbase_la_SOURCES=\
  fastbuffer.c \
  memcache.c \
  tree.c \
+ tree2.c \
  pointerlist.c \
  multicache.c \
  param.c
