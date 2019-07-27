@@ -55,6 +55,16 @@
 
       <codedef id="toDb">
         <code>
+          {
+            int i=0;
+            int result=0;
+            
+            for (i=0; i &lt; $(maxlen); i++) {
+              result=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, "$(name)", $(src)[i]);
+            }
+            
+            $(retval)=result;
+          }
         </code>
       </codedef>
 
@@ -62,6 +72,19 @@
 
       <codedef id="fromDb">
         <code>
+          {
+            int i;
+            
+            memset($(dst), 0, ($(maxlen))*sizeof(uint8_t));
+            for (i=0; i &lt; $(maxlen); i++) {
+              int v;
+              
+              v=GWEN_DB_GetIntValue($(db), "$(name)", 0, 0);
+              if (v==0)
+                break;
+              $(dst)[i]=v;
+            }
+          }
         </code>
       </codedef>
 
