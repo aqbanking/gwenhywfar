@@ -94,7 +94,7 @@
             for (i=0; i &lt; $(maxlen); i++) {
               int v;
               
-              v=GWEN_DB_GetIntValue($(db), "$(name)", 0, 0);
+              v=GWEN_DB_GetIntValue($(db), "$(name)", i, 0);
               if (v==0)
                 break;
               $(dst)[i]=v;
