@@ -8,6 +8,7 @@ dist_typedata_DATA=\
   double.tm2 \
   int.tm2 \
   int_base.tm2 \
+  int_array.tm2 \
   gwen_buffer.tm2 \
   gwen_date.tm2 \
   gwen_idlist64.tm2 \
