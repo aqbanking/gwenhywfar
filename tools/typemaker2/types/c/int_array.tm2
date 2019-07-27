@@ -1,0 +1,190 @@
+<?xml?>
+
+<tm2>
+
+  <typedef id="int_array" type="array" basetype="int" lang="c" >
+    <identifier>int</identifier>
+
+    <codedefs>
+
+      <codedef id="construct">
+        <code>
+          memset($(dst), 0, ($(maxlen))*sizeof(int));
+        </code>
+      </codedef>
+
+      <codedef id="destruct">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="assign">
+        <code>
+          $(dst)=$(src);
+        </code>
+      </codedef>
+
+      <codedef id="dup">
+        <code>
+          memmove($(dst), $(src), ($(maxlen))*sizeof(int));
+        </code>
+      </codedef>
+
+      <codedef id="compare">
+        <code>
+          if (*($(dst)) &amp;&amp; *($(src))) {
+            int i=0;
+            int result=0;
+            
+            while(i &lt; $(maxlen)) {
+              if ( $(src)[i] &lt; $(dst)[i]) {
+                result=-1;
+                break;
+              }
+              else if ( $(src)[i] &gt; $(dst)[i]) {
+                result=1;
+                break;
+              }
+              i++;
+            }
+            $(retval)=result;
+          }
+          else if ($(src))
+            $(retval)=1;
+          else if ($(dst))
+            $(retval)=-1;
+          else
+            $(retval)=0;
+        </code>
+      </codedef>
+
+      <codedef id="toXml">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="fromXml">
+        <code>
+        </code>
+      </codedef>
+
+      <codedef id="toDb">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromDb">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromObject">
+        <code>
+        </code>
+      </codedef>
+
+
+
+      <codedef id="toHashString">
+        <code>
+        </code>
+      </codedef>
+
+    </codedefs>
+
+
+
+    <inlines>
+
+      <inline loc="end" access="public">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(api) $(member_basetype_type) $(struct_prefix)_Get$(nameWithCapital)At(const $(struct_type) *p_struct, int idx);
+        </content>
+      </inline>
+   
+      <inline loc="code">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(member_basetype_type) $(struct_prefix)_Get$(nameWithCapital)At(const $(struct_type) *p_struct, int idx) {
+             if (p_struct &amp;&amp; (idx &lt; $(maxlen)))
+               return p_struct->$(name)[idx];
+
+             return 0;
+           }
+        </content>
+      </inline>
+
+
+      <inline loc="end" access="public">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(api) int $(struct_prefix)_Set$(nameWithCapital)At($(struct_type) *p_struct, int idx, $(member_basetype_type) v);
+        </content>
+      </inline>
+   
+      <inline loc="code">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           int $(struct_prefix)_Set$(nameWithCapital)At($(struct_type) *p_struct, int idx, $(member_basetype_type) v) {
+             if (p_struct &amp;&amp; (idx &lt; $(maxlen))) {
+                p_struct->$(name)[idx]=v;
+               return 0;
+             }
+             return GWEN_ERROR_INVALID;
+           }
+        </content>
+      </inline>
+
+
+      <inline loc="end" access="public">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           $(api) void $(struct_prefix)_Preset$(nameWithCapital)($(struct_type) *p_struct, $(member_basetype_type) v);
+        </content>
+      </inline>
+   
+      <inline loc="code">
+        <typeFlagsMask></typeFlagsMask>
+        <typeFlagsValue></typeFlagsValue>
+        <content>
+           void $(struct_prefix)_Preset$(nameWithCapital)($(struct_type) *p_struct, $(member_basetype_type) v) {
+             int i;
+             
+             for(i=0; i &lt; $(maxlen); i++)
+               p_struct->$(name)[i]=v;
+           }
+        </content>
+      </inline>
+
+    </inlines>
+
+
+
+    <defaults>
+      <!-- defaults flags etc for member declarations of this type -->
+      <default>NULL</default>
+      <setflags>const dup</setflags>
+      <getflags>const</getflags>
+      <dupflags>const</dupflags>
+    </defaults>
+    
+  </typedef>
+
+</tm2>
