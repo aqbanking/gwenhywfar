@@ -111,7 +111,7 @@ int doBuildDefs(GWEN_DB_NODE *dbArgs, const char *fname) {
 #endif
 
       /* only write typedef files */
-      rv=Typemaker2_Builder_WriteFiles(tb, ty, 1);
+      rv=Typemaker2_Builder_WriteFiles(tb, ty, TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_DEFS);
       if (rv<0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
         return 2;

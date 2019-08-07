@@ -665,8 +665,8 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
     else
         GWEN_Buffer_AppendString(xbuf, fileName);
     p=GWEN_Buffer_GetStart(xbuf);
-    while(*p) {
-      if (*p=='.')
+    while (*p) {
+      if (!isalnum(*p))
 	*p='_';
       else
 	*p=toupper(*p);
@@ -1142,7 +1142,8 @@ int Typemaker2_Builder_DetermineOutFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_
 
 
 
-int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, int defsOnly) {
+int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, uint32_t writeFlags)
+{
   const char *fname;
   int rv;
 
@@ -1152,7 +1153,7 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, i
     return rv;
   }
 
-  if (defsOnly) {
+  if (writeFlags & TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_TYPE) {
     if (GWEN_StringList_Count(tb->declarationsPublic)) {
       fname=tb->fileNamePublic;
       assert(fname);
@@ -1215,166 +1216,166 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, i
   }
 
   /* write typedef file */
-  if (1) {
-    const char *s;
-    char *t;
-    GWEN_BUFFER *tbuf;
+  if (writeFlags & TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_DEFS) {
+    if (1) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
 
-    s=Typemaker2_Type_GetName(ty);
-    if (s==NULL || *s==0) {
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
 	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+	GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while (*t) {
+	*t=tolower(*t);
+	t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, ".tm2");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      rv=Typemaker2_Builder_WriteTypedefFile(tb, ty, fname);
+      GWEN_Buffer_free(tbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (tb->destFolder) {
-      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
-      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-    }
-    GWEN_Buffer_AppendString(tbuf, s);
-    t=GWEN_Buffer_GetStart(tbuf);
-    while(*t) {
-      *t=tolower(*t);
-      t++;
-    }
-    GWEN_Buffer_AppendString(tbuf, ".tm2");
-    fname=GWEN_Buffer_GetStart(tbuf);
-    rv=Typemaker2_Builder_WriteTypedefFile(tb, ty, fname);
-    GWEN_Buffer_free(tbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
 
+    /* write typedef file for list1 */
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
 
-  /* write typedef file for list1 */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST1) {
-    const char *s;
-    char *t;
-    GWEN_BUFFER *tbuf;
-
-    s=Typemaker2_Type_GetName(ty);
-    if (s==NULL || *s==0) {
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
 	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+	GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while (*t) {
+	*t=tolower(*t);
+	t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_list.tm2");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      rv=Typemaker2_Builder_WriteTypedefFile_List1(tb, ty, fname);
+      GWEN_Buffer_free(tbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (tb->destFolder) {
-      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
-      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-    }
-    GWEN_Buffer_AppendString(tbuf, s);
-    t=GWEN_Buffer_GetStart(tbuf);
-    while(*t) {
-      *t=tolower(*t);
-      t++;
-    }
-    GWEN_Buffer_AppendString(tbuf, "_list.tm2");
-    fname=GWEN_Buffer_GetStart(tbuf);
-    rv=Typemaker2_Builder_WriteTypedefFile_List1(tb, ty, fname);
-    GWEN_Buffer_free(tbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
 
-  /* write typedef file for list2 */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2) {
-    const char *s;
-    char *t;
-    GWEN_BUFFER *tbuf;
+    /* write typedef file for list2 */
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_LIST2) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
 
-    s=Typemaker2_Type_GetName(ty);
-    if (s==NULL || *s==0) {
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
 	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+	GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while (*t) {
+	*t=tolower(*t);
+	t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_list2.tm2");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      rv=Typemaker2_Builder_WriteTypedefFile_List2(tb, ty, fname);
+      GWEN_Buffer_free(tbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (tb->destFolder) {
-      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
-      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-    }
-    GWEN_Buffer_AppendString(tbuf, s);
-    t=GWEN_Buffer_GetStart(tbuf);
-    while(*t) {
-      *t=tolower(*t);
-      t++;
-    }
-    GWEN_Buffer_AppendString(tbuf, "_list2.tm2");
-    fname=GWEN_Buffer_GetStart(tbuf);
-    rv=Typemaker2_Builder_WriteTypedefFile_List2(tb, ty, fname);
-    GWEN_Buffer_free(tbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
 
-  /* write typedef file for tree */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
-    const char *s;
-    char *t;
-    GWEN_BUFFER *tbuf;
+    /* write typedef file for tree */
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_TREE) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
 
-    s=Typemaker2_Type_GetName(ty);
-    if (s==NULL || *s==0) {
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
 	return GWEN_ERROR_BAD_DATA;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+	GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while (*t) {
+	*t=tolower(*t);
+	t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_tree.tm2");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      rv=Typemaker2_Builder_WriteTypedefFile_Tree(tb, ty, fname);
+      GWEN_Buffer_free(tbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (tb->destFolder) {
-      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
-      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-    }
-    GWEN_Buffer_AppendString(tbuf, s);
-    t=GWEN_Buffer_GetStart(tbuf);
-    while(*t) {
-      *t=tolower(*t);
-      t++;
-    }
-    GWEN_Buffer_AppendString(tbuf, "_tree.tm2");
-    fname=GWEN_Buffer_GetStart(tbuf);
-    rv=Typemaker2_Builder_WriteTypedefFile_Tree(tb, ty, fname);
-    GWEN_Buffer_free(tbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
 
-  /* write typedef file for idmap */
-  if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_IDMAP) {
-    const char *s;
-    char *t;
-    GWEN_BUFFER *tbuf;
+    /* write typedef file for idmap */
+    if (Typemaker2_Type_GetFlags(ty) & TYPEMAKER2_TYPEFLAGS_WITH_IDMAP) {
+      const char *s;
+      char *t;
+      GWEN_BUFFER *tbuf;
 
-    s=Typemaker2_Type_GetName(ty);
-    if (s==NULL || *s==0) {
+      s=Typemaker2_Type_GetName(ty);
+      if (s==NULL || *s==0) {
 	DBG_ERROR(GWEN_LOGDOMAIN, "Type has no name");
 	return GWEN_ERROR_BAD_DATA;
-    }
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (tb->destFolder) {
-      GWEN_Buffer_AppendString(tbuf, tb->destFolder);
-      GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
-    }
-    GWEN_Buffer_AppendString(tbuf, s);
-    t=GWEN_Buffer_GetStart(tbuf);
-    while(*t) {
-      *t=tolower(*t);
-      t++;
-    }
-    GWEN_Buffer_AppendString(tbuf, "_idmap.tm2");
-    fname=GWEN_Buffer_GetStart(tbuf);
-    rv=Typemaker2_Builder_WriteTypedefFile_IdMap(tb, ty, fname);
-    GWEN_Buffer_free(tbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+      }
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (tb->destFolder) {
+	GWEN_Buffer_AppendString(tbuf, tb->destFolder);
+	GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      GWEN_Buffer_AppendString(tbuf, s);
+      t=GWEN_Buffer_GetStart(tbuf);
+      while (*t) {
+	*t=tolower(*t);
+	t++;
+      }
+      GWEN_Buffer_AppendString(tbuf, "_idmap.tm2");
+      fname=GWEN_Buffer_GetStart(tbuf);
+      rv=Typemaker2_Builder_WriteTypedefFile_IdMap(tb, ty, fname);
+      GWEN_Buffer_free(tbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
   }
-
 
   return 0;
 }
