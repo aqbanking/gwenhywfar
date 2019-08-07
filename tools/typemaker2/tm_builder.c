@@ -326,9 +326,10 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
     TYPEMAKER2_TYPE *mty;
 
     s=Typemaker2_Member_GetName(tm);
-    if (s && *s)
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", s);
+    if (s && *s) {
+      GWEN_BUFFER *tbuf;
 
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", s);
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Buffer_AppendByte(tbuf, toupper(*s));
       GWEN_Buffer_AppendString(tbuf, s+1);
