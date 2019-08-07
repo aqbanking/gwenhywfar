@@ -118,7 +118,7 @@
             while(elem) {
               GWEN_DB_NODE *dbElem;
               
-              dbElem=GWEN_DB_GetGroup(dbDest, GWEN_PATH_FLAGS_CREATE_GROUP, "element");
+              dbElem=GWEN_DB_GetGroup(dbDest, GWEN_PATH_FLAGS_CREATE_GROUP, "$(element_name)");
               assert(dbElem);
               $(retval)=$(member_basetype_prefix)_toDb(elem, dbElem);
               if ($(retval)&lt;0) {
@@ -144,14 +144,14 @@
               GWEN_DB_NODE *dbT;
               
               t=$(member_prefix)_new();
-              dbT=GWEN_DB_FindFirstGroup(dbSource, "element");
+              dbT=GWEN_DB_FindFirstGroup(dbSource, "$(element_name)");
               while(dbT) {
                 $(member_basetype_type) *elem;
                 
                 elem=$(member_basetype_prefix)_fromDb(dbT);
                 if (elem)
                   $(member_prefix)_Add(elem, t);
-                dbT=GWEN_DB_FindNextGroup(dbT, "element");
+                dbT=GWEN_DB_FindNextGroup(dbT, "$(element_name)");
               }
               $(dst)=t;
             }

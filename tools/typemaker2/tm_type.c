@@ -793,7 +793,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
    * For <typedef> elements the flags are stored in the <defaults> group. */
   s=GWEN_XMLNode_GetCharValue(langNode, "flags", NULL);
   if (s && *s)
-    Typemaker2_Type_SetFlags(ty, Typemaker2_FlagsFromString(s));
+    Typemaker2_Type_SetFlags(ty, Typemaker2_TypeFlagsFromString(s));
 
   /* read headers */
   n=GWEN_XMLNode_FindFirstTag(langNode, "headers", NULL, NULL);
@@ -1091,7 +1091,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
     /* read flags */
     s=GWEN_XMLNode_GetCharValue(n, "flags", NULL);
     if (s && *s)
-      Typemaker2_Type_SetFlags(ty, Typemaker2_FlagsFromString(s));
+      Typemaker2_Type_SetFlags(ty, Typemaker2_TypeFlagsFromString(s));
   
     /* read setflags */
     s=GWEN_XMLNode_GetCharValue(n, "setflags", NULL);
