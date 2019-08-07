@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,6 +26,7 @@ GWEN_LIST_FUNCTION_DEFS(TYPEMAKER2_MEMBER, Typemaker2_Member);
 #include "tm_enum.h"
 #include "tm_define.h"
 #include "tm_group.h"
+#include "tm_code.h"
 
 
 TYPEMAKER2_MEMBER *Typemaker2_Member_new();
@@ -38,6 +39,9 @@ void Typemaker2_Member_SetName(TYPEMAKER2_MEMBER *tm, const char *s);
 
 const char *Typemaker2_Member_GetTypeName(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetTypeName(TYPEMAKER2_MEMBER *tm, const char *s);
+
+const char *Typemaker2_Member_GetElementName(const TYPEMAKER2_MEMBER *tm);
+void Typemaker2_Member_SetElementName(TYPEMAKER2_MEMBER *tm, const char *s);
 
 const char *Typemaker2_Member_GetDescription(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetDescription(TYPEMAKER2_MEMBER *tm, const char *s);
@@ -96,7 +100,9 @@ void Typemaker2_Member_SetAqDbType(TYPEMAKER2_MEMBER *tm, const char *s);
 int Typemaker2_Member_GetMemberPosition(const TYPEMAKER2_MEMBER *tm);
 void Typemaker2_Member_SetMemberPosition(TYPEMAKER2_MEMBER *tm, int i);
 
-int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node);
+TYPEMAKER2_CODE_LIST *Typemaker2_Member_GetCodeDefs(const TYPEMAKER2_MEMBER *tm);
+
+int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node, const char *wantedLang);
 
 
 void Typemaker2_Member_Dump(TYPEMAKER2_MEMBER *tm, FILE *f, int indent);

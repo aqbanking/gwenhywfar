@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -35,6 +35,8 @@ TYPEMAKER2_MEMBER *Typemaker2_Member_new() {
   tm->refCount=1;
   GWEN_LIST_INIT(TYPEMAKER2_MEMBER, tm);
 
+  tm->codeDefs=Typemaker2_Code_List_new();
+
   return tm;
 }
 
@@ -45,8 +47,10 @@ void Typemaker2_Member_free(TYPEMAKER2_MEMBER *tm) {
     assert(tm->refCount);
     if (tm->refCount==1) {
       GWEN_LIST_FINI(TYPEMAKER2_MEMBER, tm);
+      Typemaker2_Code_List_free(tm->codeDefs);
       free(tm->name);
       free(tm->typeName);
+      free(tm->elementName);
       free(tm->descr);
       free(tm->fieldId);
       free(tm->defaultValue);
@@ -105,6 +109,24 @@ void Typemaker2_Member_SetTypeName(TYPEMAKER2_MEMBER *tm, const char *s) {
   free(tm->typeName);
   if (s && *s) tm->typeName=strdup(s);
   else tm->typeName=NULL;
+}
+
+
+
+const char *Typemaker2_Member_GetElementName(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->elementName;
+}
+
+
+
+void Typemaker2_Member_SetElementName(TYPEMAKER2_MEMBER *tm, const char *s) {
+  assert(tm);
+  assert(tm->refCount);
+  free(tm->elementName);
+  if (s && *s) tm->elementName=strdup(s);
+  else tm->elementName=NULL;
 }
 
 
@@ -465,12 +487,26 @@ void Typemaker2_Member_SetMemberPosition(TYPEMAKER2_MEMBER *tm, int i) {
 
 
 
-int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
+TYPEMAKER2_CODE_LIST *Typemaker2_Member_GetCodeDefs(const TYPEMAKER2_MEMBER *tm) {
+  assert(tm);
+  assert(tm->refCount);
+  return tm->codeDefs;
+}
+
+
+
+int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node, const char *wantedLang) {
   const char *s;
+  GWEN_XMLNODE *langNode=NULL;
   GWEN_XMLNODE *nn;
 
   assert(tm);
   assert(tm->refCount);
+
+  if (wantedLang)
+    langNode=GWEN_XMLNode_FindFirstTag(node, "lang", "id", wantedLang);
+  if (langNode==NULL)
+    langNode=node;
 
   s=GWEN_XMLNode_GetProperty(node, "name", NULL);
   if (s==NULL) {
@@ -485,6 +521,9 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
     return GWEN_ERROR_BAD_DATA;
   }
   Typemaker2_Member_SetTypeName(tm, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "elementName", NULL);
+  Typemaker2_Member_SetElementName(tm, s);
 
   s=GWEN_XMLNode_GetProperty(node, "enum", NULL);
   Typemaker2_Member_SetEnumId(tm, s);
@@ -572,6 +611,34 @@ int Typemaker2_Member_readXml(TYPEMAKER2_MEMBER *tm, GWEN_XMLNODE *node) {
     GWEN_Buffer_free(tbuf);
   }
 
+  /* read codedefs */
+  nn=GWEN_XMLNode_FindFirstTag(langNode, "codedefs", NULL, NULL);
+  if (nn) {
+    GWEN_XMLNODE *nnn;
+
+    nnn=GWEN_XMLNode_FindFirstTag(nn, "codedef", NULL, NULL);
+    while(nnn) {
+      TYPEMAKER2_CODE *tc;
+
+      tc=Typemaker2_Code_fromXml(nnn);
+      if (tc) {
+        const char *s;
+
+	s=Typemaker2_Code_GetMemberFlagsMask(tc);
+	if (s && *s)
+	  Typemaker2_Code_SetMemberFlagsMaskInt(tc, Typemaker2_FlagsFromString(s));
+
+	s=Typemaker2_Code_GetMemberFlagsValue(tc);
+	if (s && *s)
+	  Typemaker2_Code_SetMemberFlagsValueInt(tc, Typemaker2_FlagsFromString(s));
+      }
+
+      Typemaker2_Code_List_Add(tc, tm->codeDefs);
+      nnn=GWEN_XMLNode_FindNextTag(nnn, "codedef", NULL, NULL);
+    }
+  }
+
+
   return 0;
 }
 
@@ -586,44 +653,47 @@ void Typemaker2_Member_Dump(TYPEMAKER2_MEMBER *tm, FILE *f, int indent) {
     fprintf(f, "Member\n");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Name     : %s\n", (tm->name)?(tm->name):"<null>");
+    fprintf(f, "Name        : %s\n", (tm->name)?(tm->name):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Typename : %s\n", (tm->typeName)?(tm->typeName):"<null>");
+    fprintf(f, "Typename    : %s\n", (tm->typeName)?(tm->typeName):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Field Id : %s\n", (tm->fieldId)?(tm->fieldId):"<null>");
+    fprintf(f, "Elementname : %s\n", (tm->elementName)?(tm->elementName):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Access   : %d  [%d]\n", tm->access, Typemaker2_Member_GetAccess(tm));
+    fprintf(f, "Field Id    : %s\n", (tm->fieldId)?(tm->fieldId):"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Flags    : %08x [%08x]\n", tm->flags, Typemaker2_Member_GetFlags(tm));
+    fprintf(f, "Access      : %d  [%d]\n", tm->access, Typemaker2_Member_GetAccess(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "SetFlags : %08x [%08x]\n", tm->setFlags, Typemaker2_Member_GetSetFlags(tm));
+    fprintf(f, "Flags       : %08x [%08x]\n", tm->flags, Typemaker2_Member_GetFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "GetFlags : %08x [%08x]\n", tm->getFlags, Typemaker2_Member_GetGetFlags(tm));
+    fprintf(f, "SetFlags    : %08x [%08x]\n", tm->setFlags, Typemaker2_Member_GetSetFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "DupFlags : %08x [%08x]\n", tm->dupFlags, Typemaker2_Member_GetDupFlags(tm));
+    fprintf(f, "GetFlags    : %08x [%08x]\n", tm->getFlags, Typemaker2_Member_GetGetFlags(tm));
+
+    for (i=0; i<indent+2; i++) fprintf(f, " ");
+    fprintf(f, "DupFlags    : %08x [%08x]\n", tm->dupFlags, Typemaker2_Member_GetDupFlags(tm));
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     s1=tm->defaultValue;
     s2=Typemaker2_Member_GetDefaultValue(tm);
-    fprintf(f, "Default  : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
+    fprintf(f, "Default     : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
     s1=tm->presetValue;
     s2=Typemaker2_Member_GetPresetValue(tm);
-    fprintf(f, "Preset   : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
+    fprintf(f, "Preset      : %s [%s]\n", s1?s1:"<null>", s2?s2:"<null>");
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Position : %d\n", tm->memberPosition);
+    fprintf(f, "Position    : %d\n", tm->memberPosition);
 
     for (i=0; i<indent+2; i++) fprintf(f, " ");
-    fprintf(f, "Descript.: %s\n", (tm->descr)?(tm->descr):"<null>");
+    fprintf(f, "Description : %s\n", (tm->descr)?(tm->descr):"<null>");
 
   }
 }

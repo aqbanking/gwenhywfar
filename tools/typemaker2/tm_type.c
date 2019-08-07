@@ -680,7 +680,8 @@ void Typemaker2_Type_SetFieldCountId(TYPEMAKER2_TYPE *ty, const char *s) {
 
 
 
-int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, TYPEMAKER2_GROUP *parentGroup) {
+int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, TYPEMAKER2_GROUP *parentGroup,
+                                            const char *wantedLang) {
   GWEN_XMLNODE *n;
 
   /* read members */
@@ -696,7 +697,7 @@ int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *n
 	int rv;
   
 	tm=Typemaker2_Member_new();
-	rv=Typemaker2_Member_readXml(tm, n);
+	rv=Typemaker2_Member_readXml(tm, n, wantedLang);
 	if (rv<0) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	  Typemaker2_Member_free(tm);
@@ -713,7 +714,7 @@ int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *n
 
 	/* create and read group */
 	group=Typemaker2_Group_new();
-	rv=Typemaker2_Group_readXml(group, n);
+	rv=Typemaker2_Group_readXml(group, n, wantedLang);
 	if (rv<0) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	  Typemaker2_Group_free(group);
@@ -722,7 +723,7 @@ int Typemaker2_Type_readMembersAndGroupsXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *n
 	Typemaker2_Group_Tree_AddChild(parentGroup, group);
 
 	/* read sub-groups and -members */
-	rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, group);
+	rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, group, wantedLang);
 	if (rv<0) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	  return rv;
@@ -847,7 +848,7 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
   if (n) {
     int rv;
 
-    rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, rootGroup);
+    rv=Typemaker2_Type_readMembersAndGroupsXml(ty, n, rootGroup, wantedLang);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -1245,6 +1246,21 @@ TYPEMAKER2_CODE *Typemaker2_Type_FindCodeForMember(const TYPEMAKER2_TYPE *ty,
 
   if (tm)
     flags=Typemaker2_Member_GetFlags(tm);
+
+  /* try code within member definition first, if any */
+  if (tm) {
+    tc=Typemaker2_Code_List_First(Typemaker2_Member_GetCodeDefs(tm));
+    while(tc) {
+      const char *s;
+
+      s=Typemaker2_Code_GetId(tc);
+      if (s && strcasecmp(s, id)==0) {
+        if ((flags & Typemaker2_Code_GetMemberFlagsMaskInt(tc))==Typemaker2_Code_GetMemberFlagsValueInt(tc))
+          return tc;
+      }
+      tc=Typemaker2_Code_List_Next(tc);
+    }
+  }
 
   while(ty) {
     tc=Typemaker2_Code_List_First(ty->codeDefs);

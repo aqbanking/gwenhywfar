@@ -84,6 +84,35 @@
 
       <codedef id="toDb">
         <code>
+          {
+            GWEN_DB_NODE *dbDest;
+            $(member_basetype_type)_LIST2_ITERATOR *it;
+            
+            $(retval)=0;
+            
+            dbDest=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_OVERWRITE_GROUPS, "$(name)");
+            assert(dbDest);
+            
+            it=$(member_prefix)_First($(src));
+            if (it) {
+              $(member_basetype_type) *elem;
+              
+              elem=$(member_prefix)Iterator_Data(it);
+              while(elem) {
+                GWEN_DB_NODE *dbElem;
+                
+                dbElem=GWEN_DB_GetGroup(dbDest, GWEN_PATH_FLAGS_CREATE_GROUP, "$(element_name)");
+                assert(dbElem);
+                $(retval)=$(member_basetype_prefix)_toDb(elem, dbElem);
+                if ($(retval)&lt;0) {
+                  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", $(retval));
+                  break;
+                }
+                elem=$(member_prefix)Iterator_Next(it);
+              }
+              $(member_prefix)Iterator_free(it);
+            }
+          }
         </code>
       </codedef>
 
@@ -91,6 +120,29 @@
 
       <codedef id="fromDb">
         <code>
+          {
+            GWEN_DB_NODE *dbSource;
+            
+            dbSource=GWEN_DB_GetGroup($(db), GWEN_PATH_FLAGS_NAMEMUSTEXIST, "$(name)");
+            if (dbSource) {
+              $(member_type) *t;
+              GWEN_DB_NODE *dbT;
+              
+              t=$(member_prefix)_new();
+              dbT=GWEN_DB_FindFirstGroup(dbSource, "$(element_name)");
+              while(dbT) {
+                $(member_basetype_type) *elem;
+                
+                elem=$(member_basetype_prefix)_fromDb(dbT);
+                if (elem)
+                  $(member_prefix)_PushBack(t, elem);
+                dbT=GWEN_DB_FindNextGroup(dbT, "$(element_name)");
+              }
+              $(dst)=t;
+            }
+            else
+              $(dst)=$(preset);
+          }
         </code>
       </codedef>
 

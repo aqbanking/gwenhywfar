@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,6 +20,7 @@ struct TYPEMAKER2_MEMBER {
 
   char *name;
   char *typeName;
+  char *elementName;
 
   char *descr;
 
@@ -47,6 +48,7 @@ struct TYPEMAKER2_MEMBER {
 
   TYPEMAKER2_GROUP *groupPtr;
 
+  TYPEMAKER2_CODE_LIST *codeDefs;
 
   int refCount;
 

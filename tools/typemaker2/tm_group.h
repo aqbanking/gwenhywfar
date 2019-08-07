@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,7 +30,7 @@ void Typemaker2_Group_SetTitle(TYPEMAKER2_GROUP *gr, const char *s);
 const char *Typemaker2_Group_GetDescription(TYPEMAKER2_GROUP *gr);
 void Typemaker2_Group_SetDescription(TYPEMAKER2_GROUP *gr, const char *s);
 
-int Typemaker2_Group_readXml(TYPEMAKER2_GROUP *gr, GWEN_XMLNODE *node);
+int Typemaker2_Group_readXml(TYPEMAKER2_GROUP *gr, GWEN_XMLNODE *node, const char *wantedLang);
 
 
 
