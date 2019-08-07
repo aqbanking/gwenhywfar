@@ -24,7 +24,30 @@
 #include <ctype.h>
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static void setCharValueWithTypePrefix(GWEN_DB_NODE *db, const char *prefix, const char *varName, const char *value);
+static void addMemberInfoToCallDb(TYPEMAKER2_BUILDER *tb,
+				  TYPEMAKER2_TYPE *ty,
+				  TYPEMAKER2_MEMBER *tm,
+				  GWEN_DB_NODE *db,
+				  int withTypePrefix);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 GWEN_INHERIT_FUNCTIONS(TYPEMAKER2_BUILDER)
+
 
 
 TYPEMAKER2_BUILDER *Typemaker2_Builder_new()
@@ -344,6 +367,7 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
   /* set some type vars */
   if (ty) {
     TYPEMAKER2_TYPE *bty;
+    TYPEMAKER2_MEMBER_LIST *tml;
 
     s=Typemaker2_Type_GetIdentifier(ty);
     if (s && *s)
@@ -363,93 +387,24 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
       if (s && *s)
         GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "basetype_prefix", s);
     }
+
+    tml=Typemaker2_Type_GetMembers(ty);
+    if (tml) {
+      TYPEMAKER2_MEMBER *tmm;
+
+      tmm=Typemaker2_Member_List_First(tml);
+      while(tmm) {
+	/* write members with prefix */
+	addMemberInfoToCallDb(tb, ty, tmm, db, 1);
+	tmm=Typemaker2_Member_List_Next(tmm);
+      }
+    }
   }
 
   /* set some member vars */
-  if (tm) {
-    char numbuf[32];
-    TYPEMAKER2_TYPE *mty;
-
-    s=Typemaker2_Member_GetName(tm);
-    if (s && *s) {
-      GWEN_BUFFER *tbuf;
-
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", s);
-
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
-      GWEN_Buffer_AppendString(tbuf, s+1);
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "nameWithCapital", GWEN_Buffer_GetStart(tbuf));
-      GWEN_Buffer_free(tbuf);
-    }
-
-    s=Typemaker2_Member_GetElementName(tm);
-    if (s && *s)
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "element_name", s);
-    else
-      /* default behaviour is to use the name "element" for list members in GWEN_DBs */
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "element_name", "element");
-
-    s=Typemaker2_Member_GetDefaultValue(tm);
-    if (s && *s)
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "default", s);
-
-    s=Typemaker2_Member_GetPresetValue(tm);
-    if (s && *s)
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "preset", s);
-
-    if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE)) {
-      /* set field number for toObject/fromObject */
-      s=Typemaker2_Member_GetFieldId(tm);
-      if (s && *s)
-        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fieldid", s);
-    }
-
-    /* maxlen */
-    snprintf(numbuf, sizeof(numbuf)-1, "%d", Typemaker2_Member_GetMaxLen(tm));
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxlen", numbuf);
-
-    /* set basetype stuff */
-    mty=Typemaker2_Member_GetTypePtr(tm);
-    assert(mty);
-    if (mty) {
-      TYPEMAKER2_TYPE *bty;
-
-      s=Typemaker2_Type_GetIdentifier(mty);
-      if (s && *s)
-        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "member_type", s);
-
-      s=Typemaker2_Type_GetPrefix(mty);
-      if (s && *s)
-        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "member_prefix", s);
-
-      bty=Typemaker2_Type_GetBaseTypePtr(mty);
-      if (bty) {
-        s=Typemaker2_Type_GetIdentifier(bty);
-        if (s && *s)
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "member_basetype_type", s);
-
-        s=Typemaker2_Type_GetPrefix(bty);
-        if (s && *s)
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "member_basetype_prefix", s);
-      }
-    }
-
-    /* set enum-specific stuff */
-    if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
-      TYPEMAKER2_ENUM *te;
-
-      te=Typemaker2_Member_GetEnumPtr(tm);
-      if (te) {
-        s=Typemaker2_Enum_GetFromStringFn(te);
-        if (s && *s)
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "enum_fromstring_fn", s);
-        s=Typemaker2_Enum_GetToStringFn(te);
-        if (s && *s)
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "enum_tostring_fn", s);
-      }
-    }
-  }
+  if (tm)
+    /* write specific member without prefix */
+    addMemberInfoToCallDb(tb, ty, tm, db, 0);
 
   /* set src and dst */
   if (src && *src)
@@ -463,6 +418,106 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "buffer", "p_buffer");
 
   return db;
+}
+
+
+
+void addMemberInfoToCallDb(TYPEMAKER2_BUILDER *tb,
+			   TYPEMAKER2_TYPE *ty,
+			   TYPEMAKER2_MEMBER *tm,
+			   GWEN_DB_NODE *db,
+			   int withTypePrefix)
+{
+  const char *s;
+  const char *prefix=NULL;
+  char numbuf[32];
+  TYPEMAKER2_TYPE *mty;
+
+  s=Typemaker2_Member_GetName(tm);
+  if (withTypePrefix)
+    prefix=s;
+
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+
+    setCharValueWithTypePrefix(db, prefix, "name", s);
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+    GWEN_Buffer_AppendString(tbuf, s+1);
+    setCharValueWithTypePrefix(db, prefix, "nameWithCapital", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  s=Typemaker2_Member_GetElementName(tm);
+  if (s && *s)
+    setCharValueWithTypePrefix(db, prefix, "element_name", s);
+  else
+    /* default behaviour is to use the name "element" for list members in GWEN_DBs */
+    setCharValueWithTypePrefix(db, prefix, "element_name", "element");
+
+  setCharValueWithTypePrefix(db, prefix, "default", Typemaker2_Member_GetDefaultValue(tm));
+
+  setCharValueWithTypePrefix(db, prefix, "preset", Typemaker2_Member_GetPresetValue(tm));
+
+  if (!(Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_VOLATILE)) {
+    /* set field number for toObject/fromObject */
+    s=Typemaker2_Member_GetFieldId(tm);
+    if (s && *s)
+      setCharValueWithTypePrefix(db, prefix, "fieldid", s);
+  }
+
+  /* maxlen */
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", Typemaker2_Member_GetMaxLen(tm));
+  setCharValueWithTypePrefix(db, prefix, "maxlen", numbuf);
+
+  /* set basetype stuff */
+  mty=Typemaker2_Member_GetTypePtr(tm);
+  assert(mty);
+  if (mty) {
+    TYPEMAKER2_TYPE *bty;
+
+    setCharValueWithTypePrefix(db, prefix, "member_type", Typemaker2_Type_GetIdentifier(mty));
+    setCharValueWithTypePrefix(db, prefix, "member_prefix", Typemaker2_Type_GetPrefix(mty));
+
+    bty=Typemaker2_Type_GetBaseTypePtr(mty);
+    if (bty) {
+      setCharValueWithTypePrefix(db, prefix, "member_basetype_type", Typemaker2_Type_GetIdentifier(bty));
+      setCharValueWithTypePrefix(db, prefix, "member_basetype_prefix", Typemaker2_Type_GetPrefix(bty));
+    }
+  }
+
+  /* set enum-specific stuff */
+  if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
+    TYPEMAKER2_ENUM *te;
+
+    te=Typemaker2_Member_GetEnumPtr(tm);
+    if (te) {
+      setCharValueWithTypePrefix(db, prefix, "enum_fromstring_fn", Typemaker2_Enum_GetFromStringFn(te));
+      setCharValueWithTypePrefix(db, prefix, "enum_tostring_fn", Typemaker2_Enum_GetToStringFn(te));
+    }
+  }
+}
+
+
+
+void setCharValueWithTypePrefix(GWEN_DB_NODE *db, const char *prefix, const char *varName, const char *value)
+{
+  if (value) {
+    if (prefix && *prefix) {
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(tbuf, prefix);
+      GWEN_Buffer_AppendString(tbuf, ".");
+      GWEN_Buffer_AppendString(tbuf, varName);
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(tbuf), value);
+      GWEN_Buffer_free(tbuf);
+    }
+    else {
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, varName, value);
+    }
+  }
 }
 
 
