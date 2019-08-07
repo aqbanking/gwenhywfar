@@ -17,6 +17,7 @@
       <codedef id="destruct">
         <code>
           $(member_prefix)_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 

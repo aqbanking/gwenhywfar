@@ -18,6 +18,7 @@
       <codedef id="destruct">
         <code>
           GWEN_Buffer_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 

@@ -18,6 +18,7 @@
       <codedef id="destruct">
         <code>
           GWEN_StringList2_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 

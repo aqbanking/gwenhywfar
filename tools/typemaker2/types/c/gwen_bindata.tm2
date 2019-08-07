@@ -19,9 +19,9 @@
         <code>
           if ($(src).length &amp;&amp; $(src).pointer) {
             free($(src).pointer);
-            $(src).pointer=NULL;
-            $(src).length=0;
           }
+          $(src).pointer=NULL;
+          $(src).length=0;
         </code>
       </codedef>
 

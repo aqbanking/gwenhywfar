@@ -2,7 +2,10 @@
 
 <tm2>
 
-  <typedef id="tree_base" type="pointer" lang="c" >
+  <typedef id="gwen_db_node" type="pointer" lang="c" >
+    <identifier>GWEN_DB_NODE</identifier>
+    <aqdb_type>AQDB_DataType_String</aqdb_type>
+
 
     <codedefs>
 
@@ -14,7 +17,7 @@
 
       <codedef id="destruct">
         <code>
-          $(member_prefix)_free($(src));
+          GWEN_DB_Group_free($(src));
           $(src)=NULL;
         </code>
       </codedef>
@@ -27,6 +30,7 @@
 
       <codedef id="dup">
         <code>
+        $(dst)=GWEN_DB_Group_dup($(src));
         </code>
       </codedef>
 
@@ -69,6 +73,41 @@
 
 
 
+      <codedef id="toDb">
+        <code>
+          if ($(src)){
+            GWEN_DB_NODE *dbCopy;
+
+            dbCopy=GWEN_DB_GetGroup($(db), GWEN_DB_FLAGS_DEFAULT, "$(name)");
+            assert(dbCopy);
+            $(retval)=GWEN_DB_AddGroupChildren(dbCopy, $(src));
+          }
+          else {
+            GWEN_DB_DeleteGroup($(db), "$(name)");
+            $(retval)=0;
+          }
+        </code>
+      </codedef>
+
+
+
+      <codedef id="fromDb">
+        <code>
+          {
+            GWEN_DB_NODE *dbSrc;
+
+            dbSrc=GWEN_DB_GetGroup($(db), GWEN_PATH_FLAGS_NAMEMUSTEXIST, "$(name)");
+            if (dbSrc)  {
+              $(dst)=GWEN_DB_Group_dup(dbSrc);
+            }
+            else
+              $(dst)=NULL;
+          }
+        </code>
+      </codedef>
+
+
+
       <codedef id="toObject">
         <code>
         </code>
@@ -83,18 +122,14 @@
 
 
 
-      <codedef id="toDb">
+      <codedef id="toHashString">
         <code>
+          if ($(src)) {
+            GWEN_Buffer_AppendString($(buffer), GWEN_Date_GetString($(src)));
+            GWEN_DB_WriteToBuffer($(src), $(buffer),  GWEN_DB_FLAGS_DEFAULT);
+          }
         </code>
       </codedef>
-
-
-
-      <codedef id="fromDb">
-        <code>
-        </code>
-      </codedef>
-
 
     </codedefs>
 

@@ -18,6 +18,7 @@
       <codedef id="destruct">
         <code>
           GWEN_Date_free($(src));
+          $(src)=NULL;
         </code>
       </codedef>
 
