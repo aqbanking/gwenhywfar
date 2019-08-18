@@ -1321,7 +1321,6 @@ AC_CONFIG_FILES([Doxyfile
                  src/os/windows/Makefile
                  src/os/windows/system.h
                  src/parser/Makefile
-                 src/gparser/Makefile
                  src/sar/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
