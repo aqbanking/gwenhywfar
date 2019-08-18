@@ -9,7 +9,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=$(visibility_cflags)
 
 SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar
-DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar gparser
+DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
