@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008-2017 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,6 +29,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 #include <gwenhywfar/url.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/syncio.h>
+#include <gwenhywfar/inetsocket.h>
 
 
 #ifndef NO_DEPRECATED_SYMBOLS
@@ -44,6 +45,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_HTTP_SESSION, GWENHYWFAR_API)
 #endif // ifndef NO_DEPRECATED_SYMBOLS
 
 #define GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE   0x00000010
+
+#define GWEN_HTTP_SESSION_FLAGS_PASSIVE                   0x00000020 /* server session */
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,8 +64,33 @@ extern "C" {
  */
 /*@{*/
 
+/**
+ * Create a client HTTP session (i.e. used to connect to a server).
+ *
+ * The caller is responsible for freeing the object returned (if any).
+ *
+ * @return session object (NULL on error)
+ * @param url URL of the server to connect to later
+ * @param defaultProto default protocol if not specified by the given url (e.g. "https")
+ * @param defaultPort default TCP port if not specified by the given url
+ */
 GWENHYWFAR_API
 GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProto, int defaultPort);
+
+
+/**
+ * Create a server HTTP session using the given socket.
+ *
+ * The caller is responsible for freeing the object returned (if any).
+ *
+ * @return session object (NULL on error)
+ * @param sk socket (received via @ref GWEN_Socket_Accept), taken over
+ * @param proto protocol used by this server session (either "http" or "https")
+ * @param port port used by this server session (in ost cases 80 for HTTP, 443 for HTTPS)
+ */
+GWENHYWFAR_API
+GWEN_HTTP_SESSION *GWEN_HttpSession_fromSocketPassive(GWEN_SOCKET *sk, const char *proto, int port);
+
 
 GWENHYWFAR_API
 void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess);

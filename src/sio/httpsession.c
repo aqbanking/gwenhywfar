@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Feb 15 2008
-    copyright   : (C) 2008-2017 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,6 +19,7 @@
 #include "i18n_l.h"
 
 #include <gwenhywfar/syncio.h>
+#include <gwenhywfar/syncio_socket.h>
 #include <gwenhywfar/syncio_tls.h>
 #include <gwenhywfar/syncio_http.h>
 #include <gwenhywfar/syncio_file.h>
@@ -49,6 +50,46 @@ GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProt
   if (defaultProto)
     sess->defaultProtocol=strdup(defaultProto);
   sess->defaultPort=defaultPort;
+
+  return sess;
+}
+
+
+
+GWEN_HTTP_SESSION *GWEN_HttpSession_fromSocketPassive(GWEN_SOCKET *sk, const char *proto, int port)
+{
+  GWEN_HTTP_SESSION *sess;
+  GWEN_SYNCIO *baseSio;
+  GWEN_SYNCIO *sio;
+
+  GWEN_NEW_OBJECT(GWEN_HTTP_SESSION, sess);
+  assert(sess);
+  sess->usage=1;
+  GWEN_INHERIT_INIT(GWEN_HTTP_SESSION, sess);
+
+  baseSio=GWEN_SyncIo_Socket_TakeOver(sk);
+  if (baseSio==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on GWEN_SyncIo_Socket_TakeOver()");
+    GWEN_HttpSession_free(sess);
+    return NULL;
+  }
+
+  /* extend syncio to support the given protocol */
+  sio=GWEN_Gui_ExtendSyncIo(NULL, proto, port, baseSio);
+  if (sio==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on GWEN_Gui_ExtendSyncIo()");
+    GWEN_HttpSession_free(sess);
+    return NULL;
+  }
+
+  sess->syncIo=sio;
+  sess->flags|=GWEN_HTTP_SESSION_FLAGS_PASSIVE;
+
+  /* add PASSIVE flag to every syncIO in the chain */
+  while(sio) {
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PASSIVE);
+    sio=GWEN_SyncIo_GetBaseIo(sio);
+  }
 
   return sess;
 }
@@ -230,40 +271,53 @@ void GWEN_HttpSession_SetHttpVMinor(GWEN_HTTP_SESSION *sess, int i)
 
 int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
 {
-  GWEN_SYNCIO *sio;
   GWEN_SYNCIO *sioTls;
   GWEN_DB_NODE *db;
   int rv;
 
-  rv=GWEN_Gui_GetSyncIo(sess->url,
-                        (sess->defaultProtocol)?(sess->defaultProtocol):"http",
-                        sess->defaultPort,
-                        &sio);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (!(sess->flags & GWEN_HTTP_SESSION_FLAGS_PASSIVE)) {  /* client mode */
+    GWEN_SYNCIO *sio;
+
+    rv=GWEN_Gui_GetSyncIo(sess->url,
+                          (sess->defaultProtocol)?(sess->defaultProtocol):"http",
+                          sess->defaultPort,
+                          &sio);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    if (strcasecmp(GWEN_SyncIo_GetTypeName(sio), GWEN_SYNCIO_HTTP_TYPE)!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "URL does not lead to a HTTP layer");
+      GWEN_SyncIo_free(sio);
+      return GWEN_ERROR_INVALID;
+    }
+
+    /* allow derived classes to modify the given GWEN_SIO */
+    rv=GWEN_HttpSession_InitSyncIo(sess, sio);
+    if (rv<0 && rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+    sess->syncIo=sio;
   }
 
-  if (strcasecmp(GWEN_SyncIo_GetTypeName(sio), GWEN_SYNCIO_HTTP_TYPE)!=0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "URL does not lead to a HTTP layer");
-    GWEN_SyncIo_free(sio);
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* allow derived classes to modify the given GWEN_SIO */
-  rv=GWEN_HttpSession_InitSyncIo(sess, sio);
-  if (rv<0 && rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    GWEN_SyncIo_free(sio);
-    return rv;
+  if (sess->syncIo==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No SYNCIO object, SNH!");
+    return GWEN_ERROR_INTERNAL;
   }
 
   /* prepare TLS layer */
-  sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
+  sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sess->syncIo, GWEN_SYNCIO_TLS_TYPE);
   if (sioTls) {
-    GWEN_SyncIo_AddFlags(sioTls,
-                         GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT|
-                         GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
+    if (!(sess->flags & GWEN_HTTP_SESSION_FLAGS_PASSIVE)) {  /* client mode */
+      GWEN_SyncIo_AddFlags(sioTls,
+                           GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT|
+                           GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS);
+    }
+    else { /* server mode */
+    }
 
     if (sess->flags & GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE) {
       /* make TLS layer ignore problem of premature connection termination */
@@ -273,7 +327,7 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
 
 
   /* prepare HTTP out header */
-  db=GWEN_SyncIo_Http_GetDbHeaderOut(sio);
+  db=GWEN_SyncIo_Http_GetDbHeaderOut(sess->syncIo);
   if (sess->flags & GWEN_HTTP_SESSION_FLAGS_NO_CACHE) {
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "Pragma", "no-cache");
@@ -289,8 +343,6 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
                          "User-Agent", sess->httpUserAgent);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Connection", "close");
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-length", 0);
-
-  sess->syncIo=sio;
 
   return 0;
 }

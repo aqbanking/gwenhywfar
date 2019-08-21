@@ -2115,48 +2115,54 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id)
 
 
 
-GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(GWEN_GUI *gui,
-				   const char *url,
+GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
 				   const char *defaultProto,
 				   int defaultPort,
 				   GWEN_SYNCIO *baseSio)
 {
-  GWEN_URL *u;
-  const char *s;
-  int port;
-  const char *addr;
+  GWEN_GUI *gui;
+  GWEN_URL *u=NULL;
+  const char *sProtocol=NULL;
+  int port=0;
+  const char *addr=NULL;
+
+  gui=GWEN_Gui_GetGui();
+  assert(gui);
 
   if (!(url && *url)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Empty URL");
     return NULL;
   }
 
-  u=GWEN_Url_fromString(url);
-  if (u==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid URL [%s]", url);
-    return NULL;
+  if (url && *url) {
+    u=GWEN_Url_fromString(url);
+    if (u==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid URL [%s]", url);
+      return NULL;
+    }
+
+    /* determine protocol and port */
+    sProtocol=GWEN_Url_GetProtocol(u);
+    if (!(sProtocol && *sProtocol))
+      sProtocol=defaultProto;
+    port=GWEN_Url_GetPort(u);
+    if (port<1)
+      port=defaultPort;
+    addr=GWEN_Url_GetServer(u);
+    if (!(addr && *addr)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Missing server in URL [%s]", url);
+      GWEN_Url_free(u);
+      return NULL;
+    }
   }
 
-  /* determine protocol and port */
-  s=GWEN_Url_GetProtocol(u);
-  if (!(s && *s))
-    s=defaultProto;
-  if (!(s && *s))
-    s="http";
-  port=GWEN_Url_GetPort(u);
-  if (port<1)
-    port=defaultPort;
+  if (!(sProtocol && *sProtocol))
+    sProtocol="http";
   if (port<1)
     port=80;
-  addr=GWEN_Url_GetServer(u);
-  if (!(addr && *addr)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing server in URL [%s]", url);
-    GWEN_Url_free(u);
-    return NULL;
-  }
 
-  if (strcasecmp(s, "http")==0 ||
-      strcasecmp(s, "https")==0) {
+  if (strcasecmp(sProtocol, "http")==0 ||
+      strcasecmp(sProtocol, "https")==0) {
     GWEN_SYNCIO *sio;
     GWEN_SYNCIO *baseLayer;
     GWEN_DB_NODE *db;
@@ -2165,7 +2171,7 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(GWEN_GUI *gui,
 
     baseLayer=baseSio;
 
-    if (strcasecmp(s, "https")==0) {
+    if (strcasecmp(sProtocol, "https")==0) {
       /* create TLS layer */
       sio=GWEN_SyncIo_Tls_new(baseLayer);
       if (sio==NULL) {
@@ -2174,7 +2180,8 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(GWEN_GUI *gui,
         GWEN_Url_free(u);
 	return NULL;
       }
-      GWEN_SyncIo_Tls_SetRemoteHostName(sio, addr);
+      if (addr)
+        GWEN_SyncIo_Tls_SetRemoteHostName(sio, addr);
       baseLayer=sio;
     }
 
@@ -2222,7 +2229,7 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(GWEN_GUI *gui,
   }
   else {
     /* just return raw base layer */
-    DBG_ERROR(GWEN_LOGDOMAIN, "Protocol \"%s\" not supported, returning raw base layer.", s?s:"(empty)");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Protocol \"%s\" not supported, returning raw base layer.", sProtocol?sProtocol:"(empty)");
     return baseSio;
   }
 }
@@ -2283,7 +2290,7 @@ int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
   GWEN_SyncIo_Socket_SetPort(sio, port);
   baseLayer=sio;
 
-  sio=GWEN_Gui_ExtendSyncIo(gui, url, defaultProto, defaultPort, baseLayer);
+  sio=GWEN_Gui_ExtendSyncIo(url, defaultProto, defaultPort, baseLayer);
   if (sio==NULL) {
     DBG_INFO(GWEN_LOGDOMAIN, "here");
     GWEN_SyncIo_free(baseLayer);
