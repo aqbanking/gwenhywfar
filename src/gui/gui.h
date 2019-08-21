@@ -1056,6 +1056,32 @@ GWENHYWFAR_API GWEN_LOGGER_LEVEL GWEN_Gui_GetMinProgressLogLevel(const GWEN_GUI 
 GWENHYWFAR_API void GWEN_Gui_SetMinProgressLogLevel(GWEN_GUI *gui, GWEN_LOGGER_LEVEL ll);
 
 
+
+/**
+ * Stack sync io layers above the given base layer.
+ *
+ * This is a convenience function to extend a base layer (e.g. created by @ref GWEN_SyncIo_Socket_new)
+ * to support HTTP or HTTPS over the given base layer.
+ *
+ * You can use this function to allow for e.g. HTTPS over a socket created by
+ * functions @ref GWEN_Socket_Accept and @ref GWEN_SyncIo_Socket_TakeOver.
+ *
+ * The caller is responsible for freeing the object returned (if any).
+ *
+ * @return syncio object supporting the given protocol (e.g. HTTP, HTTPS), NULL on error
+ * @param url url to which the caller wants to connect to. You should call @ref GWEN_Url_fromString()
+ *   to get the information required to determine the protocol and destination.
+ * @param defaultProto default protocol name if not specified by the url (e.g. "http", "https")
+ * @param defaultPort default port if not specified by the url
+ * @param baseSio base layer to extend (e.g. created by @ref GWEN_SyncIo_Socket_new)
+ */
+GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(GWEN_GUI *gui,
+				   const char *url,
+				   const char *defaultProto,
+				   int defaultPort,
+				   GWEN_SYNCIO *baseSio);
+
+
 #ifdef __cplusplus
 }
 #endif
