@@ -486,6 +486,21 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
                          const char *val);
 
 
+
+/**
+ * @return 0 on success, nonzero on error
+ * @param n db node
+ * @param flags see @ref GWEN_DB_FLAGS_OVERWRITE_VARS and others which
+ * can all be OR-combined to form the flags to use.
+ * @param path path and name of the variable
+ * @param val The integer value to be stored as string value in the DB
+ */
+int GWEN_DB_SetCharValueFromInt(GWEN_DB_NODE *n,
+                                uint32_t flags,
+                                const char *path,
+                                int val);
+
+
 /**
  * Adds the given char value to the given variable if it not already exists
  * (depending on the arguments senseCase and check).

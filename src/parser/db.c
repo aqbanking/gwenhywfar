@@ -122,6 +122,24 @@ GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data)
 
 
 
+GWEN_DB_NODE *GWEN_DB_ValueChar_newFromInt(int v)
+{
+  GWEN_DB_NODE *n;
+  char numbuffer[64];
+  int rv;
+
+  rv=snprintf(numbuffer, sizeof(numbuffer)-1, "%d", v);
+  if (rv>=sizeof(numbuffer)) {
+  }
+  numbuffer[sizeof(numbuffer)-1]=0;
+
+  n=GWEN_DB_Node_new(GWEN_DB_NodeType_ValueChar);
+  n->data.dataChar=GWEN_Memory_strdup(numbuffer);
+  return n;
+}
+
+
+
 GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data)
 {
   GWEN_DB_NODE *n;
@@ -976,6 +994,43 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
   }
 
   nv=GWEN_DB_ValueChar_new(val);
+
+  /* delete contents of this variable if wanted */
+  if (flags & GWEN_DB_FLAGS_OVERWRITE_VARS) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Clearing variable \"%s\"", path);
+    GWEN_DB_ClearNode(nn);
+  }
+
+  /* add previously created value */
+  if (flags & GWEN_DB_FLAGS_INSERT)
+    GWEN_DB_Node_Insert(nn, nv);
+  else
+    GWEN_DB_Node_Append(nn, nv);
+  DBG_VERBOUS(GWEN_LOGDOMAIN,
+              "Added char value \"%s\" to variable \"%s\"", val, path);
+
+  return 0;
+}
+
+
+
+int GWEN_DB_SetCharValueFromInt(GWEN_DB_NODE *n,
+                                uint32_t flags,
+                                const char *path,
+                                int val)
+{
+  GWEN_DB_NODE *nn;
+  GWEN_DB_NODE *nv;
+
+  /* select/create node */
+  nn=GWEN_DB_GetNode(n, path, flags | GWEN_PATH_FLAGS_VARIABLE);
+  if (!nn) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Path \"%s\" not available",
+		path);
+    return 1;
+  }
+
+  nv=GWEN_DB_ValueChar_newFromInt(val);
 
   /* delete contents of this variable if wanted */
   if (flags & GWEN_DB_FLAGS_OVERWRITE_VARS) {

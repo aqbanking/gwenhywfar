@@ -69,6 +69,7 @@ static GWEN_DB_NODE *GWEN_DB_ValueBin_new(const void *data,
 static GWEN_DB_NODE *GWEN_DB_ValueInt_new(int data);
 
 static GWEN_DB_NODE *GWEN_DB_ValueChar_new(const char *data);
+static GWEN_DB_NODE *GWEN_DB_ValueChar_newFromInt(int v);
 
 static GWEN_DB_NODE *GWEN_DB_ValuePtr_new(void *data);
 
