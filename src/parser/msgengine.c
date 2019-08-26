@@ -3592,15 +3592,23 @@ int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
 
   esc=0;
   while (GWEN_Buffer_GetBytesLeft(msgbuf)) {
+    int nc;
+
     if (esc) {
       esc=0;
+      /* skip byte */
+      nc=GWEN_Buffer_ReadByte(msgbuf);
+      if (nc<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", nc);
+        return -1;
+      }
     }
     else {
       int i;
       unsigned char c;
 
       i=GWEN_Buffer_ReadByte(msgbuf);
-      if (i==-1) {
+      if (i<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "called from here");
         return 0;
       }
@@ -3613,12 +3621,11 @@ int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
         char lbuffer[16];
         char *p;
         int l;
-        int nc;
 
         p=lbuffer;
         while (1) {
           nc=GWEN_Buffer_ReadByte(msgbuf);
-          if (nc==-1) {
+          if (nc<0) {
             DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
             return -1;
           }
