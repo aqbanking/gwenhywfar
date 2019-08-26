@@ -1026,7 +1026,7 @@ int GWEN_DB_SetCharValueFromInt(GWEN_DB_NODE *n,
   nn=GWEN_DB_GetNode(n, path, flags | GWEN_PATH_FLAGS_VARIABLE);
   if (!nn) {
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Path \"%s\" not available",
-		path);
+                path);
     return 1;
   }
 

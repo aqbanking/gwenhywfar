@@ -86,7 +86,7 @@ GWEN_HTTP_SESSION *GWEN_HttpSession_fromSocketPassive(GWEN_SOCKET *sk, const cha
   sess->flags|=GWEN_HTTP_SESSION_FLAGS_PASSIVE;
 
   /* add PASSIVE flag to every syncIO in the chain */
-  while(sio) {
+  while (sio) {
     GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PASSIVE);
     sio=GWEN_SyncIo_GetBaseIo(sio);
   }

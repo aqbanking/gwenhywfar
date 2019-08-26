@@ -196,29 +196,29 @@ void GWEN_Tree_Replace(GWEN_TREE_ELEMENT *elToReplace, GWEN_TREE_ELEMENT *elRepl
 
       /* relink with previous */
       if (elToReplace->prevElement)
-	elToReplace->prevElement->nextElement=elReplacement;
+        elToReplace->prevElement->nextElement=elReplacement;
 
       /* relink with next */
       if (elToReplace->nextElement)
-	elToReplace->nextElement->prevElement=elReplacement;
+        elToReplace->nextElement->prevElement=elReplacement;
 
       /* relink with tree */
       if (l->firstElement==elToReplace)
-	l->firstElement=elReplacement;
+        l->firstElement=elReplacement;
       if (l->lastElement==elToReplace)
-	l->lastElement=elReplacement;
+        l->lastElement=elReplacement;
       l->count-=(elToReplace->count)+1;
       l->count+=(elReplacement->count)+1;
 
       /* relink with parent */
       if (elToReplace->parent) {
-	elReplacement->parent=elToReplace->parent;
-	if (elToReplace->parent->firstChild==elToReplace)
-	  elToReplace->parent->firstChild=elToReplace;
-	if (elToReplace->parent->lastChild==elToReplace)
-	  elToReplace->parent->lastChild=elToReplace;
-	elToReplace->count-=(elToReplace->count)+1;
-	elToReplace->count+=(elReplacement->count)+1;
+        elReplacement->parent=elToReplace->parent;
+        if (elToReplace->parent->firstChild==elToReplace)
+          elToReplace->parent->firstChild=elToReplace;
+        if (elToReplace->parent->lastChild==elToReplace)
+          elToReplace->parent->lastChild=elToReplace;
+        elToReplace->count-=(elToReplace->count)+1;
+        elToReplace->count+=(elReplacement->count)+1;
       }
 
       elToReplace->nextElement=NULL;

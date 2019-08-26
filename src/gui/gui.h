@@ -1076,9 +1076,9 @@ GWENHYWFAR_API void GWEN_Gui_SetMinProgressLogLevel(GWEN_GUI *gui, GWEN_LOGGER_L
  * @param baseSio base layer to extend (e.g. created by @ref GWEN_SyncIo_Socket_new)
  */
 GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
-				   const char *defaultProto,
-				   int defaultPort,
-				   GWEN_SYNCIO *baseSio);
+                                   const char *defaultProto,
+                                   int defaultPort,
+                                   GWEN_SYNCIO *baseSio);
 
 
 #ifdef __cplusplus

@@ -269,7 +269,7 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i)
     else {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Position %d outside buffer boundaries (%d bytes)",
-                i, (int) (bf->bufferSize));
+                i, (int)(bf->bufferSize));
       return GWEN_ERROR_BUFFER_OVERFLOW;
     }
   }

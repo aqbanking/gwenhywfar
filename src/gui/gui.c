@@ -2116,9 +2116,9 @@ void GWEN_Gui_Internal_HideBox(GWEN_GUI *gui, uint32_t id)
 
 
 GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
-				   const char *defaultProto,
-				   int defaultPort,
-				   GWEN_SYNCIO *baseSio)
+                                   const char *defaultProto,
+                                   int defaultPort,
+                                   GWEN_SYNCIO *baseSio)
 {
   GWEN_GUI *gui;
   GWEN_URL *u=NULL;
@@ -2178,7 +2178,7 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
         DBG_INFO(GWEN_LOGDOMAIN, "here");
         GWEN_SyncIo_free(baseLayer);
         GWEN_Url_free(u);
-	return NULL;
+        return NULL;
       }
       if (addr)
         GWEN_SyncIo_Tls_SetRemoteHostName(sio, addr);
