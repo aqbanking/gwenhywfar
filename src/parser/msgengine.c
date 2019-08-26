@@ -3552,7 +3552,7 @@ int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
       unsigned char c;
 
       i=GWEN_Buffer_ReadByte(msgbuf);
-      if (i==-1) {
+      if (i<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "called from here");
         return 0;
       }
