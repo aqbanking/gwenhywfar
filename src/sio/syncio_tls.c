@@ -420,17 +420,34 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
      */
     int trustFileSet=0;
 
-# ifndef OS_WIN32
     /* try to find OpenSSL certificates */
     if (trustFileSet==0) {
+
+#if OS_WIN32
+      char defaultPath[2*MAX_PATH+1];
+      const char *defaultFile = "ca-bundle.crt";
+
+      if (GWEN_Directory_GetPrefixDirectory(defaultPath, sizeof(defaultPath))) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: could not get install prefix");
+          return GWEN_ERROR_GENERIC;
+      }
+      if (strcat_s(defaultPath, sizeof(defaultPath), "\\share\\gwenhywfar")) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: no memory on creating search path");
+          return GWEN_ERROR_GENERIC;
+      }
+#else
+      const char *defaultPath = "/etc/ssl/certs";
+      const char *defaultFile = "ca-certificates.crt";
+#endif
+
       GWEN_STRINGLIST *paths;
       GWEN_BUFFER *nbuf;
 
       paths=GWEN_StringList_new();
-      GWEN_StringList_AppendString(paths, "/etc/ssl/certs", 0, 0);
+      GWEN_StringList_AppendString(paths, defaultPath, 0, 0);
 
       nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=GWEN_Directory_FindFileInPaths(paths, "ca-certificates.crt", nbuf);
+      rv=GWEN_Directory_FindFileInPaths(paths, defaultFile, nbuf);
       GWEN_StringList_free(paths);
       if (rv==0) {
         DBG_INFO(GWEN_LOGDOMAIN,
@@ -453,7 +470,6 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio) {
       }
       GWEN_Buffer_free(nbuf);
     }
-# endif
 
 
 # ifndef OS_WIN32
