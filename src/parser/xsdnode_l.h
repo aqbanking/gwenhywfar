@@ -28,12 +28,12 @@
 #include <gwenhywfar/xsdnode.h>
 
 
-typedef int (*GWEN_XSDNODE_READ_FN)(GWEN_XSD_NODE *xsdNode,
-                                    GWEN_XMLNODE *xmlNode,
-                                    GWEN_DB_NODE *db);
-typedef int (*GWEN_XSDNODE_WRITE_FN)(GWEN_XSD_NODE *xsdNode,
-                                     GWEN_XMLNODE *xmlNode,
-                                     GWEN_DB_NODE *db);
+typedef int GWENHYWFAR_CB (*GWEN_XSDNODE_READ_FN)(GWEN_XSD_NODE *xsdNode,
+                                                  GWEN_XMLNODE *xmlNode,
+                                                  GWEN_DB_NODE *db);
+typedef int GWENHYWFAR_CB (*GWEN_XSDNODE_WRITE_FN)(GWEN_XSD_NODE *xsdNode,
+                                                   GWEN_XMLNODE *xmlNode,
+                                                   GWEN_DB_NODE *db);
 
 GWEN_XSDNODE_READ_FN GWEN_XsdNode_SetReadFn(GWEN_XSD_NODE *xsdNode,
     GWEN_XSDNODE_READ_FN fn);

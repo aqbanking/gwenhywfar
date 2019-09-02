@@ -44,16 +44,16 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_XML_CONTEXT, GWENHYWFAR_API)
 
 
 
-typedef int (*GWEN_XMLCTX_STARTTAG_FN)(GWEN_XML_CONTEXT *ctx,
-                                       const char *tagName);
-typedef int (*GWEN_XMLCTX_ENDTAG_FN)(GWEN_XML_CONTEXT *ctx, int closing);
-typedef int (*GWEN_XMLCTX_ADDDATA_FN)(GWEN_XML_CONTEXT *ctx,
-                                      const char *data);
-typedef int (*GWEN_XMLCTX_ADDCOMMENT_FN)(GWEN_XML_CONTEXT *ctx,
-    const char *data);
-typedef int (*GWEN_XMLCTX_ADDATTR_FN)(GWEN_XML_CONTEXT *ctx,
-                                      const char *attrName,
-                                      const char *attrData);
+typedef int GWENHYWFAR_CB (*GWEN_XMLCTX_STARTTAG_FN)(GWEN_XML_CONTEXT *ctx,
+                                                     const char *tagName);
+typedef int GWENHYWFAR_CB (*GWEN_XMLCTX_ENDTAG_FN)(GWEN_XML_CONTEXT *ctx, int closing);
+typedef int GWENHYWFAR_CB (*GWEN_XMLCTX_ADDDATA_FN)(GWEN_XML_CONTEXT *ctx,
+                                                    const char *data);
+typedef int GWENHYWFAR_CB (*GWEN_XMLCTX_ADDCOMMENT_FN)(GWEN_XML_CONTEXT *ctx,
+                                                       const char *data);
+typedef int GWENHYWFAR_CB (*GWEN_XMLCTX_ADDATTR_FN)(GWEN_XML_CONTEXT *ctx,
+                                                    const char *attrName,
+                                                    const char *attrData);
 
 
 

@@ -31,21 +31,21 @@
 #include "idmap.h"
 
 
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_SETPAIR_FN)(GWEN_IDMAP *map,
-    uint32_t id,
-    void *ptr);
-typedef void* (*GWEN_IDMAP_GETPAIR_FN)(GWEN_IDMAP *map,
-                                       uint32_t id);
+typedef GWEN_IDMAP_RESULT GWENHYWFAR_CB (*GWEN_IDMAP_SETPAIR_FN)(GWEN_IDMAP *map,
+                                                                 uint32_t id,
+                                                                 void *ptr);
+typedef void* GWENHYWFAR_CB (*GWEN_IDMAP_GETPAIR_FN)(GWEN_IDMAP *map,
+                                                     uint32_t id);
 
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDFIRST_FN)(const GWEN_IDMAP *map,
-    uint32_t *pid);
-typedef GWEN_IDMAP_RESULT (*GWEN_IDMAP_FINDNEXT_FN)(const GWEN_IDMAP *map,
-    uint32_t *pid);
+typedef GWEN_IDMAP_RESULT GWENHYWFAR_CB (*GWEN_IDMAP_FINDFIRST_FN)(const GWEN_IDMAP *map,
+                                                                   uint32_t *pid);
+typedef GWEN_IDMAP_RESULT GWENHYWFAR_CB (*GWEN_IDMAP_FINDNEXT_FN)(const GWEN_IDMAP *map,
+                                                                  uint32_t *pid);
 
-typedef void (*GWEN_IDMAP_DUMP_FN)(GWEN_IDMAP *map, FILE *f, int indent);
+typedef void GWENHYWFAR_CB (*GWEN_IDMAP_DUMP_FN)(GWEN_IDMAP *map, FILE *f, int indent);
 
 
-typedef void (*GWEN_IDMAP_FREEDATA_FN)(GWEN_IDMAP *map);
+typedef void GWENHYWFAR_CB (*GWEN_IDMAP_FREEDATA_FN)(GWEN_IDMAP *map);
 
 
 struct GWEN_IDMAP {

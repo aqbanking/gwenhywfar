@@ -148,8 +148,8 @@ void GWEN_RefPtrInfo_DelFlags(GWEN_REFPTR_INFO *rpi, uint32_t fl);
  *
  */
 /*@{*/
-typedef void (*GWEN_REFPTR_INFO_FREE_FN)(void *dp);
-typedef void* (*GWEN_REFPTR_INFO_DUP_FN)(void *dp);
+typedef void GWENHYWFAR_CB (*GWEN_REFPTR_INFO_FREE_FN)(void *dp);
+typedef void* GWENHYWFAR_CB (*GWEN_REFPTR_INFO_DUP_FN)(void *dp);
 /*@}*/
 
 
