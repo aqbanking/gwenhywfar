@@ -58,6 +58,16 @@
 GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_TLS)
 
 
+#ifndef OS_WIN32
+const char *SYNCIO_TLS_SYSTEM_CERTFILES[]={
+  "/etc/ssl/certs/ca-certificates.crt",
+  "/etc/ssl/ca-bundle.pem",
+  NULL};
+#endif
+
+
+
+
 GWEN_SYNCIO *GWEN_SyncIo_Tls_new(GWEN_SYNCIO *baseIo)
 {
   GWEN_SYNCIO *sio;
@@ -442,7 +452,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     rv=gnutls_priority_set_direct(xio->session, custom_ciphers, &errPos);
     if (rv!=GNUTLS_E_SUCCESS) {
       DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_priority_set_direct using '%s' failed: %s (%d) [%s]",
-                custom_ciphers, gnutls_strerror(rv), rv, errPos?errPos:"");
+		custom_ciphers, gnutls_strerror(rv), rv, errPos?errPos:"");
       gnutls_deinit(xio->session);
       return GWEN_ERROR_GENERIC;
     }
@@ -476,13 +486,13 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
   /* possibly set key file and cert file */
   if (xio->localCertFile && xio->localKeyFile) {
     rv=gnutls_certificate_set_x509_key_file(xio->credentials,
-                                            xio->localCertFile,
-                                            xio->localKeyFile,
-                                            GNUTLS_X509_FMT_PEM);
+					    xio->localCertFile,
+					    xio->localKeyFile,
+					    GNUTLS_X509_FMT_PEM);
     if (rv<0) {
       if (rv) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: %d (%s)", rv, gnutls_strerror(rv));
-        gnutls_certificate_free_credentials(xio->credentials);
+	DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: %d (%s)", rv, gnutls_strerror(rv));
+	gnutls_certificate_free_credentials(xio->credentials);
         gnutls_deinit(xio->session);
         return GWEN_ERROR_GENERIC;
       }
@@ -502,11 +512,12 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     int trustFileSet=0;
 
     /* try to find OpenSSL certificates */
+# ifdef OS_WIN32
     if (trustFileSet==0) {
-
-#if OS_WIN32
       char defaultPath[2*MAX_PATH+1];
       const char *defaultFile = "ca-bundle.crt";
+      GWEN_STRINGLIST *paths;
+      GWEN_BUFFER *nbuf;
 
       if (GWEN_Directory_GetPrefixDirectory(defaultPath, sizeof(defaultPath))) {
           DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: could not get install prefix");
@@ -516,13 +527,6 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
           DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_key_file: no memory on creating search path");
           return GWEN_ERROR_GENERIC;
       }
-#else
-      const char *defaultPath = "/etc/ssl/certs";
-      const char *defaultFile = "ca-certificates.crt";
-#endif
-
-      GWEN_STRINGLIST *paths;
-      GWEN_BUFFER *nbuf;
 
       paths=GWEN_StringList_new();
       GWEN_StringList_AppendString(paths, defaultPath, 0, 0);
@@ -551,20 +555,52 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
       }
       GWEN_Buffer_free(nbuf);
     }
+# endif
 
 
 # ifndef OS_WIN32
+    /* try to finde certificate bundle */
+    if (trustFileSet==0) {
+      int i;
+      const char *sCertFile=NULL;
+
+      for (i=0; ; i++) {
+	sCertFile=SYNCIO_TLS_SYSTEM_CERTFILES[i];
+	if (sCertFile==NULL)
+	  break;
+	if (0==GWEN_Directory_GetPath(sCertFile, GWEN_PATH_FLAGS_NAMEMUSTEXIST)) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Found system-wide cert bundle in %s", sCertFile);
+	  break;
+	}
+      }
+
+      if (sCertFile && *sCertFile) {
+	rv=gnutls_certificate_set_x509_trust_file(xio->credentials, sCertFile, GNUTLS_X509_FMT_PEM);
+	if (rv<=0) {
+	  DBG_WARN(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_trust_file(%s): %d (%s)", sCertFile, rv, gnutls_strerror(rv));
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Added %d trusted certs from [%s]", rv, sCertFile);
+	  trustFileSet=1;
+	}
+      }
+      else {
+	DBG_ERROR(GWEN_LOGDOMAIN, "No system-wide certificate bundle found.");
+      }
+    }
+
+
     /* try to find ca-certificates (at least available on Debian systems) */
     if (trustFileSet==0) {
       rv=GWEN_Directory_GetPath("/usr/share/ca-certificates", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
       if (rv>=0) {
-        rv=GWEN_SyncIo_Tls_AddCaCertFolder(sio, "/usr/share/ca-certificates");
-        if (rv<=0) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-        }
-        else {
-          trustFileSet=1;
-        }
+	rv=GWEN_SyncIo_Tls_AddCaCertFolder(sio, "/usr/share/ca-certificates");
+	if (rv<=0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	}
+	else {
+	  trustFileSet=1;
+	}
       }
     }
 
