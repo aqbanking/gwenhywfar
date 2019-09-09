@@ -568,7 +568,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
 	sCertFile=SYNCIO_TLS_SYSTEM_CERTFILES[i];
 	if (sCertFile==NULL)
 	  break;
-	if (0==GWEN_Directory_GetPath(sCertFile, GWEN_PATH_FLAGS_NAMEMUSTEXIST)) {
+	if (0==GWEN_Directory_GetPath(sCertFile, GWEN_PATH_FLAGS_NAMEMUSTEXIST | GWEN_PATH_FLAGS_VARIABLE)) {
 	  DBG_INFO(GWEN_LOGDOMAIN, "Found system-wide cert bundle in %s", sCertFile);
 	  break;
 	}
