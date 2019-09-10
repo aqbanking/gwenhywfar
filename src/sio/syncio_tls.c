@@ -511,6 +511,19 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
      */
     int trustFileSet=0;
 
+
+    if (trustFileSet==0) {
+      /* Adds the system's default trusted CAs in order to verify client or server certificates. */
+      rv=gnutls_certificate_set_x509_system_trust(xio->credentials);
+      if (rv<=0) {
+	DBG_WARN(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_system_trust): %d (%s)", rv, gnutls_strerror(rv));
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "Added %d default trusted certs from system", rv);
+	trustFileSet=1;
+      }
+    }
+
     /* try to find OpenSSL certificates */
 # ifdef OS_WIN32
     if (trustFileSet==0) {
@@ -588,7 +601,6 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
 	DBG_ERROR(GWEN_LOGDOMAIN, "No system-wide certificate bundle found.");
       }
     }
-
 
     /* try to find ca-certificates (at least available on Debian systems) */
     if (trustFileSet==0) {
