@@ -516,7 +516,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
       /* Adds the system's default trusted CAs in order to verify client or server certificates. */
       rv=gnutls_certificate_set_x509_system_trust(xio->credentials);
       if (rv<=0) {
-	DBG_WARN(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_system_trust): %d (%s)", rv, gnutls_strerror(rv));
+	DBG_WARN(GWEN_LOGDOMAIN, "gnutls_certificate_set_x509_system_trust: %d (%s)", rv, gnutls_strerror(rv));
       }
       else {
 	DBG_INFO(GWEN_LOGDOMAIN, "Added %d default trusted certs from system", rv);
