@@ -29,7 +29,7 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=4
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=13
+GWENHYWFAR_VERSION_PATCHLEVEL=14
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="beta"
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="beta"
 #
 GWENHYWFAR_SO_CURRENT="78"
 GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="13"
+GWENHYWFAR_SO_REVISION="14"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -322,7 +322,7 @@ fi
 
 AC_MSG_CHECKING(whether system-wide trusted certificates should be set)
 AC_ARG_ENABLE(system-certs,
-  [  --enable-system-certs         use system-wide certificates (default=no)],
+  [  --enable-system-certs         use system-wide certificates (default=yes)],
   enable_system_certs="$enableval",
   enable_system_certs="yes")
 AC_MSG_RESULT($enable_system_certs)
