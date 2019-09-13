@@ -1987,8 +1987,6 @@ int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 
 	  valType=GWEN_DB_GetVariableType(db, name);
 
-	  DBG_ERROR(0, "Checking variable \"%s\":%d (%d)", name, index, valType);
-
           switch (valType) { /* GWEN_DB_GetVariableType */
           case GWEN_DB_NodeType_ValueInt:
             valueInt=GWEN_DB_GetIntValue(db, name, index, 0);
