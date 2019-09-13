@@ -62,6 +62,12 @@
 #define GWEN_DB_NODE_FLAGS_GROUP          0x80000000
 
 
+
+static int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName);
+
+
+
+
 GWEN_LIST_FUNCTIONS(GWEN_DB_NODE, GWEN_DB_Node)
 
 
@@ -1929,8 +1935,6 @@ void GWEN_DB_VariableRename(GWEN_DB_NODE *n, const char *newname)
 
 
 
-
-
 int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 {
   const char *p;
@@ -1946,39 +1950,54 @@ int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 
         p++;
         pStart=p;
-        while (*p && *p!=')')
-          p++;
-        if (*p!=')') {
+	while (*p && *p!=')')
+	  p++;
+	if (*p!=')') {
           DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
           return GWEN_ERROR_BAD_DATA;
         }
         else {
           int len;
-          char *name;
+	  char *name=NULL;
+	  char index=0;
+          char *rawName;
           const char *valueString;
           int valueInt;
           char numbuf[32];
           int rv;
+          GWEN_DB_NODE_TYPE valType;
 
           len=p-pStart;
           if (len<1) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
             return GWEN_ERROR_BAD_DATA;
           }
-          name=(char *) malloc(len+1);
-          assert(name);
-          memmove(name, pStart, len);
-          name[len]=0;
+	  rawName=(char *) malloc(len+1);
+          assert(rawName);
+          memmove(rawName, pStart, len);
+          rawName[len]=0;
 
-          switch (GWEN_DB_GetVariableType(db, name)) {
+	  index=_splitVariableNameInNameAndIndex(rawName, &name);
+	  if (index<0) {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid variable name \"%s\"", rawName);
+	    free(rawName);
+	    return index;
+	  }
+	  free(rawName);
+
+	  valType=GWEN_DB_GetVariableType(db, name);
+
+	  DBG_ERROR(0, "Checking variable \"%s\":%d (%d)", name, index, valType);
+
+          switch (valType) { /* GWEN_DB_GetVariableType */
           case GWEN_DB_NodeType_ValueInt:
-            valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
+            valueInt=GWEN_DB_GetIntValue(db, name, index, 0);
             rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
             if (rv>=0)
               GWEN_Buffer_AppendString(dbuf, numbuf);
             break;
           case GWEN_DB_NodeType_ValueChar:
-            valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
+            valueString=GWEN_DB_GetCharValue(db, name, index, NULL);
             if (valueString)
               GWEN_Buffer_AppendString(dbuf, valueString);
 #if 0 /* just replace with empty value */
@@ -2050,6 +2069,52 @@ int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 
   return 0;
 }
+
+
+
+int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName)
+{
+  const char *p;
+  const char *pStart;
+  int len;
+  char *name=NULL;
+  char index=0;
+
+  p=s;
+  pStart=p;
+  while (*p && *p!='[')
+    p++;
+
+  len=p-pStart;
+  if (len<1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+    return GWEN_ERROR_BAD_DATA;
+  }
+  name=(char *) malloc(len+1);
+  assert(name);
+  memmove(name, pStart, len);
+  name[len]=0;
+
+  if (*p=='[') {
+    /* we have an index */
+    p++;
+    pStart=p;
+    while(*p && *p!=']' && isdigit(*p)) {
+      index*=10;
+      index+=(*p)-'0';
+      p++;
+    }
+    if (*p!=']') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad index specification in variable name");
+      free(name);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  *pVariableName=name;
+  return index;
+}
+
 
 
 
