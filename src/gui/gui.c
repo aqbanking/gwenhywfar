@@ -2229,7 +2229,7 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
   }
   else {
     /* just return raw base layer */
-    DBG_ERROR(GWEN_LOGDOMAIN, "Protocol \"%s\" not supported, returning raw base layer.", sProtocol?sProtocol:"(empty)");
+    DBG_INFO(GWEN_LOGDOMAIN, "No special handling of protocol \"%s\", returning raw base layer.", sProtocol?sProtocol:"(empty)");
     return baseSio;
   }
 }
