@@ -69,6 +69,13 @@ void GWEN_XmlCtx_SetFlags(GWEN_XML_CONTEXT *ctx, uint32_t f);
 
 
 GWENHYWFAR_API
+const char *GWEN_XmlCtx_GetEncoding(const GWEN_XML_CONTEXT *ctx);
+
+GWENHYWFAR_API
+void GWEN_XmlCtx_SetEncoding(GWEN_XML_CONTEXT *ctx, const char *encoding);
+
+
+GWENHYWFAR_API
 uint32_t GWEN_XmlCtx_GetFinishedElement(const GWEN_XML_CONTEXT *ctx);
 
 GWENHYWFAR_API
