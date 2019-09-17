@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Feb 16 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -40,38 +40,20 @@ GWEN_DIALOG *GWEN_DlgProgress_new(void)
 {
   GWEN_DIALOG *dlg;
   GWEN_DLGPROGRESS *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
-  dlg=GWEN_Dialog_new("dlg_gwen_progress");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("dlg_gwen_progress",
+                                        GWEN_PM_LIBNAME,
+                                        GWEN_PM_SYSDATADIR,
+                                        "gwenhywfar/dialogs/dlg_progress.dlg");
+  if (dlg==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here");
+    return NULL;
+  }
   GWEN_NEW_OBJECT(GWEN_DLGPROGRESS, xdlg);
-
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, GWEN_DLGPROGRESS, dlg, xdlg,
                        GWEN_DlgProgress_FreeData);
 
   GWEN_Dialog_SetSignalHandler(dlg, GWEN_DlgProgress_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-                               "gwenhywfar/dialogs/dlg_progress.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   xdlg->logBufferTxt=GWEN_Buffer_new(0, 256, 0, 1);
   xdlg->logBufferHtml=GWEN_Buffer_new(0, 256, 0, 1);
