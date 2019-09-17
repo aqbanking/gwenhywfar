@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed Jan 20 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -127,6 +127,23 @@ typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
 
 GWENHYWFAR_API
 GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId);
+
+
+/**
+ * Create a dialog and try to load its definition file.
+ *
+ * @return pointer to dialog object created and loaded
+ * @param dialogId name of the dialog to create
+ * @param pmLibName library name as registered with GWEN_PATHMANAGER (used for @ref GWEN_PathManager_FindFile)
+ * @param pmDataDir datapath name as registered with GWEN_PATHMANAGER (used for @ref GWEN_PathManager_FindFile)
+ * @param fileName name of the file to load (relative to the destination, e.g. "aqbanking/backends/aqhbci/dialogs/dlg_ddvcard.dlg")
+ */
+GWENHYWFAR_API
+GWEN_DIALOG *GWEN_Dialog_CreateAndLoadWithPath(const char *dialogId,
+                                               const char *pmLibName,
+                                               const char *pmDataDir,
+                                               const char *fileName);
+
 
 GWENHYWFAR_API
 void GWEN_Dialog_free(GWEN_DIALOG *dlg);

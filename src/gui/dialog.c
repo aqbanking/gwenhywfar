@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed Jan 20 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -83,6 +83,53 @@ GWEN_DIALOG *GWEN_Dialog_new(const char *dialogId)
 
   return dlg;
 }
+
+
+
+GWEN_DIALOG *GWEN_Dialog_CreateAndLoadWithPath(const char *dialogId,
+                                               const char *pmLibName,
+                                               const char *pmDataDir,
+                                               const char *fileName)
+{
+  GWEN_DIALOG *dlg;
+  GWEN_BUFFER *fbuf;
+  int rv;
+
+  assert(dialogId);
+  assert(pmLibName);
+  assert(pmDataDir);
+  assert(fileName);
+
+  dlg=GWEN_Dialog_new(dialogId);
+  if (dlg==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not create dialog");
+    return NULL;
+  }
+
+  /* get path of dialog description file */
+  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_PathManager_FindFile(pmLibName, pmDataDir, fileName, fbuf);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    GWEN_Buffer_free(fbuf);
+    GWEN_Dialog_free(dlg);
+    return NULL;
+  }
+
+  /* read dialog from dialog description file */
+  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d).", rv);
+    GWEN_Buffer_free(fbuf);
+    GWEN_Dialog_free(dlg);
+    return NULL;
+  }
+  DBG_INFO(GWEN_LOGDOMAIN, "Dialog \"%s\" loaded from \"%s\"", dialogId, GWEN_Buffer_GetStart(fbuf));
+  GWEN_Buffer_free(fbuf);
+
+  return dlg;
+}
+
 
 
 
