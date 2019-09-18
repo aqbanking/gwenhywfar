@@ -14,6 +14,13 @@ sysconfdir=@sysconfdir@
 
 # Particular variables of gwenhywfar
 plugindir=@gwenhywfar_plugindir@
+headerdir=@gwenhywfar_headerdir@/gwenhywfar
+vmajor=@GWENHYWFAR_VERSION_MAJOR@
+vminor=@GWENHYWFAR_VERSION_MINOR@
+vpatchlevel=@GWENHYWFAR_VERSION_PATCHLEVEL@
+vbuild=@GWENHYWFAR_VERSION_BUILD@
+vtag=@GWENHYWFAR_VERSION_TAG@
+vstring=@GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@.@GWENHYWFAR_VERSION_PATCHLEVEL@
 
 # Human-readable name
 Name: gwenhywfar
