@@ -64,7 +64,7 @@ if test "$enable_gwenhywfar" != "no"; then
       AC_MSG_RESULT([not found ])
       AC_MSG_ERROR([
 *** The library Gwenhywfar was not found. Obtain it from 
-*** http://www.aquamaniac.de . 
+*** https://www.aquamaniac.de .
 *** If it is already installed (including the -devel package), 
 *** you might need to specify the location with the 
 *** option --with-gwen-dir=DIR.])
@@ -117,20 +117,20 @@ if test "$enable_gwenhywfar" != "no"; then
     AC_MSG_RESULT([found $gwen_versionstring])
     if test "$vma" -gt "$gwen_vmajor"; then
       AC_MSG_ERROR([Your Gwenhywfar version is way too old.
-      Please update from http://www.aquamaniac.de])
+      Please update from https://www.aquamaniac.de])
     elif test "$vma" = "$gwen_vmajor"; then
       if test "$vmi" -gt "$gwen_vminor"; then
         AC_MSG_ERROR([Your Gwenhywfar version is too old.
-          Please update from http://www.aquamaniac.de])
+          Please update from https://www.aquamaniac.de])
       elif test "$vmi" = "$gwen_vminor"; then
           if test "$vpl" -gt "$gwen_vpatchlevel"; then
             AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old.
-            Please update from http://www.aquamaniac.de])
+            Please update from https://www.aquamaniac.de])
           elif test "$vpl" = "$gwen_vpatchlevel"; then
             if test "$vbld" -gt "$gwen_vbuild"; then
               AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old. 
-  Please update to the latest SVN version. Instructions for accessing 
-  SVN can be found on http://www.aquamaniac.de])
+  Please update to the latest git version. Instructions for accessing
+  git can be found on https://www.aquamaniac.de])
              fi
            fi
       fi
