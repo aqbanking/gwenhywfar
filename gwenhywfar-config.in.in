@@ -1,49 +1,42 @@
 # $Id$
 # Author of this file: Martin Preuss<martin@libchipcard.de>
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-includedir=@includedir@
-bindir=@bindir@
-
-libdir=@libdir@
-
 result=""
 
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result -I@gwenhywfar_headerdir@"
+	    result="$result `@PKG_CONFIG@  --cflags gwenhywfar`"
 	    ;;
 	--libraries)
-	    result="$result @gwenhywfar_ldflags@ @gwenhywfar_libs@"
+	    result="$result `@PKG_CONFIG@ --libs gwenhywfar`"
 	    ;;
 	--bindir)
-	    result="$result @gwenhywfar_bindir@"
+	    result="$result `@PKG_CONFIG@  --variable=bindir gwenhywfar`"
 	    ;;
 	--headers)
-	    result="$result @gwenhywfar_headerdir@/gwenhywfar"
+	    result="`$result @PKG_CONFIG@  --variable=headerdir gwenhywfar`"
 	    ;;
 	--plugins)
-	    result="$result @gwenhywfar_plugindir@"
+	    result="$result `@PKG_CONFIG@  --variable=plugindir gwenhywfar`"
 	    ;;
 	--vmajor)
-	    result="$result @GWENHYWFAR_VERSION_MAJOR@"
+	    result="$result `@PKG_CONFIG@  --variable=vmajor gwenhywfar`"
 	    ;;
 	--vminor)
-	    result="$result @GWENHYWFAR_VERSION_MINOR@"
+	    result="$result `@PKG_CONFIG@  --variable=vminor gwenhywfar`"
 	    ;;
 	--vpatchlevel)
-	    result="$result @GWENHYWFAR_VERSION_PATCHLEVEL@"
+	    result="$result `@PKG_CONFIG@  --variable=vpatchlevel gwenhywfar`"
 	    ;;
 	--vbuild)
-	    result="$result @GWENHYWFAR_VERSION_BUILD@"
+	    result="$result `@PKG_CONFIG@  --variable=vbuild gwenhywfar`"
 	    ;;
 	--vtag)
-	    result="$result @GWENHYWFAR_VERSION_TAG@"
+	    result="$result `@PKG_CONFIG@  --variable=vtag gwenhywfar`"
 	    ;;
         --vstring)
-	    result="$result @GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@.@GWENHYWFAR_VERSION_PATCHLEVEL@"
+	    result="$result `@PKG_CONFIG@  --variable=vstring gwenhywfar`"
             ;;
         --has-crypt)
 	    # Keep this argument in order not to completely break
