@@ -25,7 +25,7 @@ if test -z "$4"; then vbld="0"; else vbld="$4"; fi
 
 AC_MSG_CHECKING(if gwenhywfar support desired)
 AC_ARG_ENABLE(gwenhywfar,
-  [  --enable-gwenhywfar      enable gwenhywfar support (default=yes)],
+  [  --enable-gwenhywfar     enable gwenhywfar support (default=yes)],
   enable_gwenhywfar="$enableval",
   enable_gwenhywfar="yes")
 AC_MSG_RESULT($enable_gwenhywfar)
@@ -40,66 +40,46 @@ gwenhywfar_includes=""
 gwenhywfar_has_crypt="yes"
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
-  AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
-                            uses gwenhywfar from given dir],
-    [lcc_dir="$withval"
-     user_dir=yes
-    ],
-    [lcc_dir="${prefix} \
-	     /usr/local \
-             /usr \
-	     /gwen \
-             /sw \
-             /"
-     user_dir=no
-    ])
+  AC_ARG_WITH(gwen-dir,
+    [  --with-gwen-dir=DIR     obsolete - set PKG_CONFIG_PATH environment variable instead],
+    [AC_MSG_RESULT([obsolete configure option '--with-gwen-dir' used])
+     AC_MSG_ERROR([
+*** Configure switch '--with-gwen-dir' is obsolete.
+*** If you want to use gwenhywfar from a non-system location
+*** then locate the file 'gwenhywfar.pc' and add its parent directory
+*** to environment variable PKG_CONFIG_PATH. For example
+*** configure <options> PKG_CONFIG_PATH="<path-to-gwenhywfar.pc's-dir>:\${PKG_CONFIG_PATH}"])],
+    [])
 
-  for li in $lcc_dir; do
-      if test -x "$li/bin/xmlmerge"; then
-          gwenhywfar_dir="$li";
-          break
-      fi
-  done
-  if test -z "$gwenhywfar_dir"; then
-      AC_MSG_RESULT([not found ])
+  $PKG_CONFIG --exists gwenhywfar
+  result=$?
+  if test $result -ne 0; then
+      AC_MSG_RESULT(not found)
       AC_MSG_ERROR([
-*** The library Gwenhywfar was not found. Obtain it from 
-*** https://www.aquamaniac.de .
-*** If it is already installed (including the -devel package), 
-*** you might need to specify the location with the 
-*** option --with-gwen-dir=DIR.])
+*** Package gwenhywfar was not found in the pkg-config search path.
+*** Perhaps you should add the directory containing `gwenhywfar.pc'
+*** to the PKG_CONFIG_PATH environment variable])
   else
-      dnl If gwen-dir was set by user, assume gwenhywfar.pc is not in
-      dnl pgk-config's default search path
-      if test "x$user_dir" = "xyes"; then
-          gwen_pc=$(find "$gwenhywfar_dir" -name gwenhywfar.pc)
-          if test -z "$gwen_pc"; then
-              AC_MSG_ERROR([
-*** The directory passed via --with-gwen-dir doesn't seem to be
-*** a proper gwen installation directory. It's missing the gwenhywfar.pc file.])
-          else
-              gwen_pc_dir=$(dirname "$gwen_pc")
-              save_path="$PKG_CONFIG_PATH"
-              export PKG_CONFIG_PATH="$gwen_pc_dir"
-          fi
-      fi
+      gwenhywfar_dir="`$PKG_CONFIG --variable=prefix gwenhywfar`"
       AC_MSG_RESULT($gwenhywfar_dir)
-      AC_MSG_CHECKING(for gwen libs)
-      gwenhywfar_libs="`$PKG_CONFIG --libs gwenhywfar`"
-      AC_MSG_RESULT($gwenhywfar_libs)
-      AC_MSG_CHECKING(for gwen includes)
-      gwenhywfar_includes="`$PKG_CONFIG --cflags gwenhywfar`"
-      AC_MSG_RESULT($gwenhywfar_includes)
-      AC_MSG_CHECKING(for gwen binary tools)
-      gwenhywfar_bindir="`$PKG_CONFIG --variable=bindir gwenhywfar`"
-      AC_MSG_RESULT($gwenhywfar_bindir)
-      AC_MSG_CHECKING(for gwen plugins)
-      gwenhywfar_plugins="`$PKG_CONFIG --variable=plugindir gwenhywfar`"
-      AC_MSG_RESULT($gwenhywfar_plugins)
-      AC_MSG_CHECKING(for gwen headers)
-      gwenhywfar_headers="`$PKG_CONFIG --variable=headerdir gwenhywfar`"
-      AC_MSG_RESULT($gwenhywfar_headers)
   fi
+
+  AC_MSG_CHECKING(for gwen libs)
+  gwenhywfar_libs="`$PKG_CONFIG --libs gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_libs)
+  AC_MSG_CHECKING(for gwen includes)
+  gwenhywfar_includes="`$PKG_CONFIG --cflags gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_includes)
+  AC_MSG_CHECKING(for gwen binary tools)
+  gwenhywfar_bindir="`$PKG_CONFIG --variable=bindir gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_bindir)
+  AC_MSG_CHECKING(for gwen plugins)
+  gwenhywfar_plugins="`$PKG_CONFIG --variable=plugindir gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_plugins)
+  AC_MSG_CHECKING(for gwen headers)
+  gwenhywfar_headers="`$PKG_CONFIG --variable=headerdir gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_headers)
+
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
     [  --enable-gwenhywfar-test   enable gwenhywfar-test (default=yes)],
