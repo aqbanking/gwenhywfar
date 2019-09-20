@@ -36,6 +36,7 @@ struct GWEN_XML_CONTEXT {
   GWEN_INHERIT_ELEMENT(GWEN_XML_CONTEXT)
 
   uint32_t flags;
+  char *encoding;
   GWEN_XMLNODE *currentNode;
   GWEN_XMLNODE *currentHeader;
 

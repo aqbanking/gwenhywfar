@@ -29,10 +29,12 @@
 int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
                                 GWEN_FAST_BUFFER *fb,
                                 uint32_t flags,
+                                const char *encoding,
                                 unsigned int ind)
 {
   GWEN_XMLPROPERTY *p;
   GWEN_XMLNODE *c;
+  GWEN_BUFFER *buf;
   int i;
   int simpleTag;
   int rv;
@@ -40,11 +42,13 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
 #define CHECK_ERROR(rv) \
   if (rv<0) {\
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);\
+    GWEN_Buffer_free(buf);\
     return rv;\
   }
 
   assert(n);
 
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
   simpleTag=0;
   if (n->type==GWEN_XMLNodeTypeTag) {
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
@@ -109,8 +113,12 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       if (p->value) {
         GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
         CHECK_ERROR(rv);
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, p->value, -1);
+        rv=GWEN_Text_ConvertCharset("UTF-8", encoding,
+                                    p->value, strlen(p->value), buf);
         CHECK_ERROR(rv);
+        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
+        CHECK_ERROR(rv);
+        GWEN_Buffer_Reset(buf);
         GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
         CHECK_ERROR(rv);
       }
@@ -138,7 +146,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (!simpleTag) {
       c=GWEN_XMLNode_GetChild(n);
       while (c) {
-        rv=GWEN_XMLNode__WriteToStream(c, fb, flags, ind+2);
+        rv=GWEN_XMLNode__WriteToStream(c, fb, flags, encoding, ind+2);
         CHECK_ERROR(rv);
         c=GWEN_XMLNode_Next(c);
       }
@@ -181,8 +189,12 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
         }
       }
 
-      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
+      rv=GWEN_Text_ConvertCharset("UTF-8", encoding,
+                                  n->data, strlen(n->data), buf);
       CHECK_ERROR(rv);
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
+      CHECK_ERROR(rv);
+      GWEN_Buffer_Reset(buf);
       if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
         GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
         CHECK_ERROR(rv);
@@ -201,8 +213,12 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<!--", -1);
       CHECK_ERROR(rv);
       if (n->data) {
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
+        rv=GWEN_Text_ConvertCharset("UTF-8", encoding,
+                                    n->data, strlen(n->data), buf);
         CHECK_ERROR(rv);
+        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
+        CHECK_ERROR(rv);
+        GWEN_Buffer_Reset(buf);
       }
       GWEN_FASTBUFFER_WRITELINE(fb, rv, "-->");
       CHECK_ERROR(rv);
@@ -212,6 +228,7 @@ int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown tag type (%d)", n->type);
   }
 
+  GWEN_Buffer_free(buf);
   return 0;
 #undef CHECK_ERROR
 }
@@ -241,7 +258,8 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
     while (nn) {
       const GWEN_XMLNODE *next;
 
-      rv=GWEN_XMLNode__WriteToStream(nn, fb, GWEN_XmlCtx_GetFlags(ctx), 0);
+      rv=GWEN_XMLNode__WriteToStream(nn, fb, flags,
+                                     GWEN_XmlCtx_GetEncoding(ctx), 0);
       if (rv<0) {
         DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         GWEN_FastBuffer_free(fb);
@@ -257,6 +275,14 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
           GWEN_FastBuffer_free(fb);
           return err;
         }
+      }
+      if (strcmp(GWEN_XMLNode_GetData(nn), "?xml")==0) {
+        const char *encoding;
+
+        encoding=GWEN_XMLNode_GetProperty(nn, "encoding", NULL);
+        if (encoding && strcasecmp(encoding, "UTF-8")==0)
+          encoding=NULL;
+        GWEN_XmlCtx_SetEncoding(ctx, encoding);
       }
 
       nn=next;
@@ -278,7 +304,8 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
   while (nn) {
     const GWEN_XMLNODE *next;
 
-    if (GWEN_XMLNode__WriteToStream(nn, fb, GWEN_XmlCtx_GetFlags(ctx), 0))
+    if (GWEN_XMLNode__WriteToStream(nn, fb, flags,
+                                    GWEN_XmlCtx_GetEncoding(ctx), 0))
       return -1;
     next=GWEN_XMLNode_Next(nn);
     if (next) {
@@ -415,8 +442,20 @@ int GWEN_XML__ReadData(GWEN_XML_CONTEXT *ctx,
 
   if (GWEN_Buffer_GetUsedBytes(dbuf)) {
     int rv;
-    const char *s;
+    uint32_t len;
+    char *s;
 
+    len=GWEN_Buffer_GetUsedBytes(dbuf);
+    s=strdup(GWEN_Buffer_GetStart(dbuf));
+    assert(s);
+    GWEN_Buffer_Reset(dbuf);
+    rv=GWEN_Text_ConvertCharset(GWEN_XmlCtx_GetEncoding(ctx), "UTF-8",
+                                s, len, dbuf);
+    free(s);
+    if (rv) {
+      GWEN_Buffer_free(dbuf);
+      return rv;
+    }
     s=GWEN_Buffer_GetStart(dbuf);
     if (*s) {
       rv=GWEN_XmlCtx_AddData(ctx, s);
@@ -533,7 +572,20 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
             p=GWEN_Buffer_GetStart(cbuf);
             p+=GWEN_Buffer_GetUsedBytes(cbuf)-3;
             if (strcmp(p, "-->")==0) {
+              uint32_t len;
+
               *p=0;
+              len=GWEN_Buffer_GetUsedBytes(cbuf)-3;
+              p=strdup(GWEN_Buffer_GetStart(cbuf));
+              assert(p);
+              GWEN_Buffer_Reset(cbuf);
+              rv=GWEN_Text_ConvertCharset(GWEN_XmlCtx_GetEncoding(ctx), "UTF-8",
+                                          p, len, cbuf);
+              free(p);
+              if (rv) {
+                GWEN_Buffer_free(cbuf);
+                return rv;
+              }
               rv=GWEN_XmlCtx_AddComment(ctx, GWEN_Buffer_GetStart(cbuf));
               if (rv) {
                 GWEN_Buffer_free(cbuf);
@@ -663,6 +715,7 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
       if (uc=='=') {
         /* read attribute value if there is an equation mark */
         int inQuote=0;
+        uint32_t len;
 
         vbuf=GWEN_Buffer_new(0, 256, 0, 1);
         for (;;) {
@@ -718,9 +771,24 @@ int GWEN_XML__ReadTag(GWEN_XML_CONTEXT *ctx,
           return GWEN_ERROR_BAD_DATA;
         }
 
-        if (GWEN_Buffer_GetUsedBytes(vbuf)==0) {
+        len=GWEN_Buffer_GetUsedBytes(vbuf);
+        if (len==0) {
           GWEN_Buffer_free(vbuf);
           vbuf=NULL;
+        }
+        else {
+          char *s;
+
+          s=strdup(GWEN_Buffer_GetStart(vbuf));
+          GWEN_Buffer_Reset(vbuf);
+          rv=GWEN_Text_ConvertCharset(GWEN_XmlCtx_GetEncoding(ctx), "UTF-8",
+                                      s, len, vbuf);
+          free(s);
+          if (rv) {
+            GWEN_Buffer_free(vbuf);
+            GWEN_Buffer_free(nbuf);
+            return rv;
+          }
         }
       }
       rv=GWEN_XmlCtx_AddAttr(ctx,

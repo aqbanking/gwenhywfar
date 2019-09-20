@@ -105,6 +105,32 @@ void GWEN_XmlCtx_SetFlags(GWEN_XML_CONTEXT *ctx, uint32_t f)
 
 
 
+const char *GWEN_XmlCtx_GetEncoding(const GWEN_XML_CONTEXT *ctx)
+{
+  assert(ctx);
+  return ctx->encoding;
+}
+
+
+
+void GWEN_XmlCtx_SetEncoding(GWEN_XML_CONTEXT *ctx, const char *encoding)
+{
+  char *s;
+
+  assert(ctx);
+  if (encoding) {
+    s=strdup(encoding);
+    assert(s);
+  }
+  else
+    s=NULL;
+  if (ctx->encoding)
+    free(ctx->encoding);
+  ctx->encoding=s;
+}
+
+
+
 int GWEN_XmlCtx_GetDepth(const GWEN_XML_CONTEXT *ctx)
 {
   assert(ctx);
@@ -600,6 +626,13 @@ int GWEN_XmlCtxStore_AddAttr(GWEN_XML_CONTEXT *ctx,
 
   currNode=GWEN_XmlCtx_GetCurrentHeader(ctx);
   if (currNode) {
+    if ((strcmp(GWEN_XMLNode_GetData(currNode), "?xml")==0)
+        && (strcmp(attrName, "encoding")==0)) {
+      if (strcasecmp(attrData, "UTF-8")==0)
+        GWEN_XmlCtx_SetEncoding(ctx, NULL);
+      else
+        GWEN_XmlCtx_SetEncoding(ctx, attrData);
+    }
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Setting attribute of header [%s]: [%s]=[%s]",
                 GWEN_XMLNode_GetData(currNode), attrName, attrData);
     GWEN_XMLNode_SetProperty(currNode, attrName, attrData);

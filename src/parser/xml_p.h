@@ -94,6 +94,7 @@ static void GWEN_XMLNode__SetProperty(GWEN_XMLNODE *n,
 static int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
                                        GWEN_FAST_BUFFER *fb,
                                        uint32_t flags,
+                                       const char *encoding,
                                        unsigned int ind);
 
 
