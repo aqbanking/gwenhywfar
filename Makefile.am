@@ -46,9 +46,9 @@ cmakeconfig_DATA = gwenhywfar-config.cmake gwenhywfar-config-version.cmake
 CLEANFILES = gwenhywfar-config $(PACKAGE).tag listdoc.h
 DISTCLEANFILES = gwenhywfar-config.in
 
-clean-local: clean-local-check
-.PHONY: clean-local
-clean-local-check:
+distclean-local: distclean-local-check
+.PHONY: distclean-local
+distclean-local-check:
 	rm -rf apidoc gwenhywfar5
 
 listdoc.h: $(top_builddir)/admin/mklistdoc
