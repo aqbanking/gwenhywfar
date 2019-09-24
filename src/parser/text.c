@@ -2002,7 +2002,7 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
 
       ic=iconv_open(toCharset, fromCharset);
       if (ic==((iconv_t)-1)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Charset \"%s\" or \"%s\" not available",
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Charset \"%s\" or \"%s\" not available or equal",
                   fromCharset, toCharset);
       }
       else {
