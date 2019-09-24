@@ -123,7 +123,9 @@ GWEN_SIO_TLS_CHECKCERT_FN GWEN_SyncIo_Tls_SetCheckCertFn(GWEN_SYNCIO *sio, GWEN_
 
 
 
-int GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+GWENHYWFAR_CB int
+GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio,
+				       const GWEN_SSLCERTDESCR *cert)
 {
   GWEN_SYNCIO_TLS *xio;
 
