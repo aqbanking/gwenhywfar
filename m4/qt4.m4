@@ -112,7 +112,7 @@ AC_ARG_WITH(qt4-libs,
 # Shared library suffix. On linux this was set as
 # shrext_cmds='.so'; but on darwin it is actually a text command.
 eval std_shrext=\"$shrext_cmds\"
-if test -n "${std_shrext}"; then
+if test -z "${std_shrext}"; then
    std_shrext='.so'
 fi
 
@@ -121,6 +121,8 @@ qt_libname="QtGui"
 # This is the name of the qt library to search for.
 if test "x$OSYSTEM" = "xosx"; then
    qt_searchname="lib${qt_libname}.4.dylib"
+elif test "x$host" = "xi686-w64-mingw32" || test "x$host" = "xx86_64-w64-mingw32"; then
+   qt_searchname="lib${qt_libname}4${std_shrext}.a"
 else
    qt_searchname="lib${qt_libname}${std_shrext}.4"
 fi
@@ -129,7 +131,11 @@ fi
 if test -z "$qt4_libs"; then
    AQ_SEARCH_FOR_PATH([$qt_searchname],[$local_qt4_libs])
    if test -n "$found_dir" ; then
+     if test "x$host" = "xi686-w64-mingw32" || test "x$host" = "xx86_64-w64-mingw32"; then
+       qt4_libs="-L$found_dir -l${qt_libname}4 -lQtCore4 -no-undefined"
+     else
      qt4_libs="-L$found_dir -l${qt_libname} -lQtCore"
+   fi
    fi
 fi
 
