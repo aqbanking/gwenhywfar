@@ -256,6 +256,14 @@ const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle);
 
 
 /**
+ * This function provides the functionality of strndup() which is not
+ * available on Windows (uses strndup() on all other systems).
+ */
+GWENHYWFAR_API
+char *GWEN_Text_strndup(const char *s, size_t n);
+
+
+/**
  * This function compares two string and returns the number of matches or
  * -1 on error.
  * @param w string to compare

@@ -2052,3 +2052,28 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
   return 0;
 }
 
+
+
+/* On windows use brilliant implementation from comment number 7 on site
+ * https://stackoverflow.com/questions/46013382/c-strndup-implicit-declaration
+ * placed into public domain by the author
+ */
+char *GWEN_Text_strndup(const char *s, size_t n) {
+#ifdef OS_WIN32
+  char *p;
+
+  p=memchr(s, '\0', n);
+  if (p!=NULL)
+    n=p-s;
+  p=malloc(n+1);
+  if (p!=NULL) {
+    memcpy(p, s, n);
+    p[n] = '\0';
+  }
+  return p;
+#else
+  return strndup(s, n);
+#endif
+}
+
+
