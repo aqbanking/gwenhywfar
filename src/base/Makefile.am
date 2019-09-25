@@ -45,8 +45,6 @@ noinst_HEADERS=\
  list1_p.h \
  logger_l.h \
  logger_p.h \
- memory_l.h \
- memory_p.h \
  pathmanager_l.h \
  pathmanager_p.h \
  plugindescr_p.h \

@@ -672,12 +672,6 @@ int testXML(int argc, char **argv)
   GWEN_XMLNode_Dump(n, 2);
   GWEN_XMLNode_free(n);
 
-  fprintf(stderr, "Memory before collection:\n");
-  GWEN_Memory_Dump();
-  GWEN_Memory_Collect();
-  fprintf(stderr, "Memory after collection:\n");
-  GWEN_Memory_Dump();
-
   return 0;
 }
 
@@ -1800,11 +1794,6 @@ int testMem(int argc, char **argv)
   fprintf(stderr, "String: %s\n", s);
   free(s);
   GWEN_XMLNode_free(n);
-  fprintf(stderr, "Memory before collection:\n");
-  GWEN_Memory_Dump();
-  GWEN_Memory_Collect();
-  fprintf(stderr, "Memory after collection:\n");
-  GWEN_Memory_Dump();
   return 0;
 }
 

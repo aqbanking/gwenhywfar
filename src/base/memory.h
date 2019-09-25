@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,12 +27,6 @@
 #define GWENHYWFAR_MEMORY_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/types.h>
-#include <gwenhywfar/error.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 
 
 
@@ -44,36 +35,14 @@ extern "C" {
 #endif
 
 
-/* this is taken from the system header file assert.h and
- * and modified by me (Martin Preuss).
- */
-# if defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4)
-#   define GWEN_LOCATION_FUNCTION __PRETTY_FUNCTION__
-# else
-#  if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-#   define GWEN_LOCATION_FUNCTION __func__
-#  else
-#   define GWEN_LOCATION_FUNCTION ((__const char *) "unknown function")
-#  endif
-# endif
 
+GWENHYWFAR_API void *GWEN_Memory_malloc(size_t dsize);
+GWENHYWFAR_API void GWEN_Memory_dealloc(void *p);
 
-GWENHYWFAR_API
-void *GWEN_Memory_malloc(size_t dsize);
-GWENHYWFAR_API
-void GWEN_Memory_dealloc(void *p);
+GWENHYWFAR_API void *GWEN_Memory_realloc(void *oldp, size_t nsize);
 
-GWENHYWFAR_API
-void *GWEN_Memory_realloc(void *oldp, size_t nsize);
+GWENHYWFAR_API char *GWEN_Memory_strdup(const char *s);
 
-GWENHYWFAR_API
-char *GWEN_Memory_strdup(const char *s);
-
-GWENHYWFAR_API
-void GWEN_Memory_Collect(void);
-
-GWENHYWFAR_API
-void GWEN_Memory_Dump(void);
 
 
 #define GWEN_MEM_NEW(typ, memptr) \

@@ -42,7 +42,6 @@
 #include "base/logger_l.h"
 
 #include "base/error_l.h"
-#include "base/memory_l.h"
 #include "base/pathmanager_l.h"
 #include "base/plugin_l.h"
 #include "base/i18n_l.h"
@@ -94,9 +93,6 @@ int GWEN_Init(void)
   int err;
 
   if (gwen_is_initialized==0) {
-    err=GWEN_Memory_ModuleInit();
-    if (err)
-      return err;
     err=GWEN_Logger_ModuleInit();
     if (err)
       return err;
@@ -390,13 +386,6 @@ int GWEN_Fini(void)
       err=lerr;
       DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
                 "Could not deinitialze module Logger");
-    }
-
-    lerr=GWEN_Memory_ModuleFini();
-    if (lerr) {
-      err=lerr;
-      DBG_ERROR(GWEN_LOGDOMAIN, "GWEN_Fini: "
-                "Could not deinitialze module Memory");
     }
 
     gnutls_global_deinit();
