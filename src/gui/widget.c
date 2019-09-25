@@ -584,6 +584,8 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s)
       else if (strcasecmp(wstart, "noWordWrap")==0)
         fl|=GWEN_WIDGET_FLAGS_NO_WORDWRAP;
     }
+    if (copy)
+      free(copy);
   }
 
   return fl;

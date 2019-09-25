@@ -139,8 +139,9 @@ void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p)
   xdlg=(GWEN_DLGINPUT *) p;
 
   if (xdlg->response) {
-    memset(xdlg->response, 0, strlen(xdlg->response));
-    xdlg->response=NULL;
+      memset(xdlg->response, 0, strlen(xdlg->response));
+      free(xdlg->response);
+      xdlg->response=NULL;
   }
   free(xdlg->title);
   free(xdlg->text);
@@ -240,6 +241,7 @@ void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg)
 
   if (xdlg->response) {
     memset(xdlg->response, 0, strlen(xdlg->response));
+    free(xdlg->response);
     xdlg->response=NULL;
   }
 

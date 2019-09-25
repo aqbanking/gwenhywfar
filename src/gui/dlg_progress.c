@@ -282,6 +282,9 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
     GWEN_Buffer_AppendString(xdlg->logBufferHtml, "??:??:??");
   GWEN_Buffer_AppendString(xdlg->logBufferHtml, "</td><td>");
 
+  if (ti)
+    GWEN_Time_free(ti);
+
   if (level<=GWEN_LoggerLevel_Error)
     col="red";
   else if (level==GWEN_LoggerLevel_Warning)
