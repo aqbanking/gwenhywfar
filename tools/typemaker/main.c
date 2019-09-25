@@ -208,7 +208,7 @@ int write_h_setget_c(ARGUMENTS *args,
           const char *mode;
           const char *tmode;
           int isConst;
-          int doCopy;
+          /*int doCopy;*/
           GWEN_XMLNODE *tnode;
 
           name=GWEN_XMLNode_GetProperty(n, "name", 0);
@@ -225,7 +225,7 @@ int write_h_setget_c(ARGUMENTS *args,
 
           isPtr=atoi(get_property(n, "ptr", "0"));
           isConst=atoi(get_property(n, "const", "1"));
-          doCopy=atoi(get_property(n, "copy", "1"));
+          /*doCopy=atoi(get_property(n, "copy", "1"));*/
           mode=GWEN_XMLNode_GetProperty(n, "mode", "single");
           if (strcasecmp(mode, "single")!=0)
             isPtr=1;
@@ -376,7 +376,7 @@ int write_h_setget_c(ARGUMENTS *args,
           const char *rettype;
           GWEN_XMLNODE *anode;
           int isPtr;
-          int isVoid;
+          /*int isVoid;*/
           int idx;
 
           name=GWEN_XMLNode_GetProperty(n, "name", 0);
@@ -398,7 +398,7 @@ int write_h_setget_c(ARGUMENTS *args,
           }
 
           isPtr=atoi(get_property(n, "ptr", "0"));
-          isVoid=(!isPtr && strcasecmp(rettype, "void")==0);
+          /*isVoid=(!isPtr && strcasecmp(rettype, "void")==0);*/
 
           /* getter */
           GWEN_SyncIo_WriteLine(sio, "/**");

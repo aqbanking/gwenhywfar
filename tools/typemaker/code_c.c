@@ -2782,7 +2782,7 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node)
   int rv;
   const char *f;
   GWEN_BUFFER *fname;
-  const char *nacc;
+  /*const char *nacc;*/
   GWEN_SYNCIO *sio;
   int err;
   const char *id;
@@ -2807,7 +2807,7 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node)
     return -1;
   }
 
-  nacc=get_struct_property(node, "access", "public");
+  /*nacc=get_struct_property(node, "access", "public");*/
 
   fname=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(fname, f);

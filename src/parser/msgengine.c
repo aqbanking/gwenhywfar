@@ -2261,7 +2261,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
 {
   GWEN_XMLNODE *n;
   //int isFirstElement;
-  int omittedElements;
+  /*int omittedElements;*/
   int rv;
 
   /* setup data */
@@ -2342,7 +2342,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
   /* now handle all child entries */
   n=GWEN_XMLNode_GetChild(node);
   //isFirstElement=1;
-  omittedElements=0;
+  /*omittedElements=0;*/
   while (n) {
     int t;
     unsigned int minnum;
@@ -2359,7 +2359,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
 
     lflags=flags;
 
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Omitted elements: %d", omittedElements);
+    /*DBG_DEBUG(GWEN_LOGDOMAIN, "Omitted elements: %d", omittedElements);*/
     t=GWEN_XMLNode_GetType(n);
     if (t==GWEN_XMLNodeTypeTag) {
       const char *typ;
@@ -2382,7 +2382,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
           return -1;
         else {
           //isFirstElement=0;
-          omittedElements=0;
+          /*omittedElements=0;*/
         }
       }
       else if (strcasecmp(typ, "VALUES")==0) {

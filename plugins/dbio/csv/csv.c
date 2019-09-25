@@ -340,7 +340,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
 {
   GWEN_DB_NODE *colgr;
   int delimiter;
-  int quote;
+  /*int quote;*/
   const char *p;
   const char *groupName;
   int err;
@@ -377,7 +377,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
     delimiter=p[0];
   delimiters[0]=delimiter;
   delimiters[1]=0;
-  quote=GWEN_DB_GetIntValue(cfg, "quote", 0, 1);
+  /*quote=GWEN_DB_GetIntValue(cfg, "quote", 0, 1);*/
   fixedWidth=GWEN_DB_GetIntValue(cfg, "fixedWidth", 0, 0);
   condense=GWEN_DB_GetIntValue(cfg, "condense", 0, 0);
   groupName=GWEN_DB_GetCharValue(cfg, "group", 0, "line");
