@@ -47,6 +47,8 @@ void *GWEN_Memory_malloc(size_t wsize)
 
   p=malloc(wsize);
   if (p==NULL) {
+    fprintf(stderr, "GWEN error: Not allocated %lu bytes (memory full?)\n",
+            (unsigned long int) wsize);
   }
   assert(p);
   return p;
