@@ -273,21 +273,34 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
   else {
     GWEN_BUFFER *tbuf;
     GWEN_BUFFER *outbuf;
-    size_t space;
+    int bufLen;
+    size_t spaceNeeded;
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    space=vsnprintf(GWEN_Buffer_GetStart(tbuf), 256, fmt, args);
-    if (space>=256) {
-      GWEN_Buffer_AllocRoom(tbuf, space);
+    bufLen=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf)-1;
+    spaceNeeded=vsnprintf(GWEN_Buffer_GetStart(tbuf), bufLen, fmt, args);
+    if (spaceNeeded==(size_t) -1) {
+      fprintf(stderr, "GWEN INTERNAL ERROR: vsnprintf returned -1?\n");
+      return EOF;
+    }
+    if (spaceNeeded>=bufLen) {
+      GWEN_Buffer_AllocRoom(tbuf, spaceNeeded+1);
+      bufLen=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf)-1;
       va_end(args);
       va_start(args, fmt);
-      vsprintf(GWEN_Buffer_GetStart(tbuf), fmt, args);
+      //vsprintf(GWEN_Buffer_GetStart(tbuf), fmt, args);
+      spaceNeeded=vsnprintf(GWEN_Buffer_GetStart(tbuf), bufLen, fmt, args);
+      if (spaceNeeded>=bufLen) {
+	fprintf(stderr, "GWEN INTERNAL ERROR: Still not enough space (%lu >=%lu)? SNH!\n",
+		(long unsigned int) spaceNeeded, (long unsigned int) bufLen);
+	assert(spaceNeeded<bufLen);
+      }
     }
-    GWEN_Buffer_IncrementPos(tbuf, space);
+    GWEN_Buffer_IncrementPos(tbuf, spaceNeeded);
     GWEN_Buffer_AdjustUsedBytes(tbuf);
 
-    outbuf=GWEN_Buffer_new(0, 2*space, 0, 1);
-    rv=GWEN_Gui_ConvertString(GWEN_Buffer_GetStart(tbuf), space,
+    outbuf=GWEN_Buffer_new(0, 2*spaceNeeded, 0, 1);
+    rv=GWEN_Gui_ConvertString(GWEN_Buffer_GetStart(tbuf), spaceNeeded,
                               outbuf, "UTF-8", gui->charSet);
     if (rv) {
       GWEN_Buffer_free(outbuf);
@@ -298,7 +311,7 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
 
     /* let's try to return the same value as fprintf() would */
     if (fputs(GWEN_Buffer_GetStart(outbuf), stderr)!=EOF)
-      rv=space;
+      rv=spaceNeeded;
     else
       rv=EOF;
 
