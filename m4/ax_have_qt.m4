@@ -1,5 +1,5 @@
 # ===========================================================================
-#        https://www.gnu.org/software/autoconf-archive/ax_have_qt.html
+#        http://www.gnu.org/software/autoconf-archive/ax_have_qt.html
 # ===========================================================================
 #
 # SYNOPSIS
@@ -30,6 +30,12 @@
 #   the meta object compiler and the user interface compiler both, and
 #   finally the variable QTDIR as Qt likes to see it defined.
 #
+#   Also the usually unneeded var
+#
+#   QT_QMAKE
+#
+#   to qmake is defined.
+#
 #   Example lines for Makefile.in:
 #
 #     CXXFLAGS = @QT_CXXFLAGS@
@@ -53,7 +59,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 14
+#serial 12
 
 AU_ALIAS([BNV_HAVE_QT], [AX_HAVE_QT])
 AC_DEFUN([AX_HAVE_QT],
@@ -62,9 +68,15 @@ AC_DEFUN([AX_HAVE_QT],
   AC_REQUIRE([AC_PATH_X])
   AC_REQUIRE([AC_PATH_XTRA])
 
+  AC_ARG_WITH(qt5-qmake,
+    [  --with-qt5-qmake=FILE    uses given qmake],
+    [QT_QMAKE="$withval"],
+    [QT_QMAKE="qmake"]
+  )
+
   AC_MSG_CHECKING(for Qt)
   # If we have Qt5 or later in the path, we're golden
-  ver=`qmake --version | grep -o "Qt version ."`
+  ver=`$QT_QMAKE --version | grep -o "Qt version ."`
   if test "$ver" ">" "Qt version 4"; then
     have_qt=yes
     # This pro file dumps qmake's variables, but it only works on Qt 5 or later
@@ -72,26 +84,63 @@ AC_DEFUN([AX_HAVE_QT],
     am_have_qt_makefile=`mktemp`
     # http://qt-project.org/doc/qt-5/qmake-variable-reference.html#qt
     cat > $am_have_qt_pro << EOF
+qtHaveModule(axcontainer):       QT += axcontainer
+qtHaveModule(axserver):          QT += axserver
+qtHaveModule(concurrent):        QT += concurrent
 qtHaveModule(core):              QT += core
+qtHaveModule(dbus):              QT += dbus
+qtHaveModule(declarative):       QT += declarative
+qtHaveModule(designer):          QT += designer
 qtHaveModule(gui):               QT += gui
-qtHaveModule(widgets):       QT += widgets
+qtHaveModule(help):              QT += help
+qtHaveModule(multimedia):        QT += multimedia
+qtHaveModule(multimediawidgets): QT += multimediawidgets
+qtHaveModule(network):           QT += network
+qtHaveModule(opengl):            QT += opengl
+qtHaveModule(printsupport):      QT += printsupport
+qtHaveModule(qml):               QT += qml
+qtHaveModule(qmltest):           QT += qmltest
+qtHaveModule(x11extras):         QT += x11extras
+qtHaveModule(script):            QT += script
+qtHaveModule(scripttools):       QT += scripttools
+qtHaveModule(sensors):           QT += sensors
+qtHaveModule(serialport):        QT += serialport
+qtHaveModule(sql):               QT += sql
+qtHaveModule(svg):               QT += svg
+qtHaveModule(testlib):           QT += testlib
+qtHaveModule(uitools):           QT += uitools
+qtHaveModule(webkit):            QT += webkit
+qtHaveModule(webkitwidgets):     QT += webkitwidgets
+qtHaveModule(xml):               QT += xml
+qtHaveModule(xmlpatterns):       QT += xmlpatterns
+qtHaveModule(widgets):           QT += widgets
 percent.target = %
 percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
 EOF
-    qmake $am_have_qt_pro -o $am_have_qt_makefile
-    QT_CXXFLAGS=`make --directory=$(dirname $am_have_qt_makefile) -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
-    QT_LIBS=`make --directory=$(dirname $am_have_qt_makefile) -s -f $am_have_qt_makefile LIBS`
+    $QT_QMAKE $am_have_qt_pro -o $am_have_qt_makefile
+    QT_CXXFLAGS=`make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
+    QT_LIBS=`make -s -f $am_have_qt_makefile LIBS`
     rm $am_have_qt_pro $am_have_qt_makefile
 
     # Look for specific tools in $PATH
-    QT_MOC=`which moc`
-    QT_UIC=`which uic`
+    AC_ARG_WITH(qt5-moc,
+      [  --with-qt5-moc=FILE      uses given qt moc],
+      [QT_MOC="$withval"],
+      [QT_MOC=`which moc`]
+    )
+
+    AC_ARG_WITH(qt5-uic,
+      [  --with-qt5-uic=FILE      uses given qt uic],
+      [QT_UIC="$withval"],
+      [QT_UIC=`which uic`]
+    )
+
     QT_LRELEASE=`which lrelease`
     QT_LUPDATE=`which lupdate`
 
     # Get Qt version from qmake
-    QT_DIR=`qmake --version | grep -o -E /.+`
+    QT_DIR=`$QT_QMAKE --version | grep -o -E /.+`
 
     # All variables are defined, report the result
     AC_MSG_RESULT([$have_qt:
