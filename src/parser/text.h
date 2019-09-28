@@ -363,6 +363,20 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
 
 
 
+
+
+typedef int GWENHYWFAR_CB(*GWEN_TEXT_REPLACE_VARS_CB)(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf);
+
+
+/**
+ * Read the given string and replace every variable in that string ( noted as "$(varname)") with the
+ * value of the mentioned variable. Uses a callback to actually retrieve the data.
+ */
+GWENHYWFAR_API
+int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VARS_CB fn, void *ptr);
+
+
+
 #ifdef __cplusplus
 }
 #endif

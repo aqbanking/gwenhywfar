@@ -70,6 +70,24 @@ static const GWEN_TEXT_ESCAPE_ENTRY gwen_text__xml_escape_chars[]= {
 
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName, int *pMaxLen);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+
 char *GWEN_Text_GetWord(const char *src,
                         const char *delims,
                         char *buffer,
@@ -2075,5 +2093,147 @@ char *GWEN_Text_strndup(const char *s, size_t n) {
   return strndup(s, n);
 #endif
 }
+
+
+
+
+int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VARS_CB fn, void *ptr)
+{
+  const char *p;
+
+  p=s;
+  while (*p) {
+    if (*p=='$') {
+      p++;
+      if (*p=='$')
+        GWEN_Buffer_AppendByte(dbuf, '$');
+      else if (*p=='(') {
+        const char *pStart;
+
+        p++;
+        pStart=p;
+	while (*p && *p!=')')
+	  p++;
+	if (*p!=')') {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
+          return GWEN_ERROR_BAD_DATA;
+        }
+        else {
+          int len;
+	  char *name=NULL;
+	  char index=0;
+          char *rawName;
+          int rv;
+	  int maxLen=-1;
+
+          len=p-pStart;
+          if (len<1) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+            return GWEN_ERROR_BAD_DATA;
+          }
+	  rawName=(char *) malloc(len+1);
+          assert(rawName);
+          memmove(rawName, pStart, len);
+          rawName[len]=0;
+
+	  index=_splitVariableNameInNameAndIndex(rawName, &name, &maxLen);
+	  if (index<0) {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid variable name \"%s\"", rawName);
+	    free(rawName);
+	    return index;
+	  }
+	  free(rawName);
+
+          rv=fn(ptr, name, index, maxLen, dbuf);
+          if (rv<0) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	    free(name);
+	    return rv;
+	  }
+	  free(name);
+	}
+      }
+      else {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
+        return GWEN_ERROR_BAD_DATA;
+      }
+      p++;
+    }
+    else {
+      GWEN_Buffer_AppendByte(dbuf, *p);
+      p++;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName, int *pMaxLen)
+{
+  const char *p;
+  const char *pStart;
+  int len;
+  char *name=NULL;
+  int index=0;
+  int maxLen=0;
+
+  p=s;
+  pStart=p;
+  while (*p && *p!='[' && *p!=':')
+    p++;
+
+  len=p-pStart;
+  if (len<1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+    return GWEN_ERROR_BAD_DATA;
+  }
+  name=(char *) malloc(len+1);
+  assert(name);
+  memmove(name, pStart, len);
+  name[len]=0;
+
+  if (*p=='[') {
+    /* we have an index */
+    p++;
+    pStart=p;
+    while(*p && *p!=']' && isdigit(*p)) {
+      index*=10;
+      index+=(*p)-'0';
+      p++;
+    }
+    if (*p!=']') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad index specification in variable name");
+      free(name);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  if (*p==':') {
+
+    /* we might have a maxlen field */
+    p++;
+    pStart=p;
+    while(*p && isdigit(*p)) {
+      maxLen*=10;
+      maxLen+=(*p)-'0';
+      p++;
+    }
+    if (*p) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad maximum length specification in variable name");
+      free(name);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+
+  *pVariableName=name;
+  if (maxLen)
+    *pMaxLen=maxLen;
+  else
+    *pMaxLen=-1;
+  return index;
+}
+
 
 
