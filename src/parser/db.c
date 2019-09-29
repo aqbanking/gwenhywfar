@@ -1963,13 +1963,29 @@ int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
 {
   GWEN_DB_NODE *db;
+  int rv;
+
+  db=(GWEN_DB_NODE*) cbPtr;
+  rv=GWEN_DB_WriteVarValueToBuffer(db, name, index, dstBuf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int GWEN_DB_WriteVarValueToBuffer(GWEN_DB_NODE *db, const char *name, int index, GWEN_BUFFER *dstBuf)
+{
   const char *valueString;
   int valueInt;
   char numbuf[32];
   int rv;
   GWEN_DB_NODE_TYPE valType;
 
-  db=(GWEN_DB_NODE*) cbPtr;
+  assert(db);
 
   valType=GWEN_DB_GetVariableType(db, name);
   switch (valType) { /* GWEN_DB_GetVariableType */
@@ -1985,8 +2001,9 @@ int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BU
       GWEN_Buffer_AppendString(dstBuf, valueString);
     break;
 
+  case GWEN_DB_NodeType_Unknown:
   default:
-    break;
+    return GWEN_ERROR_NO_DATA;
   }
 
   return 0;

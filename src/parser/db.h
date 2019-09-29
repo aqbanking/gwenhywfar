@@ -627,6 +627,21 @@ int GWEN_DB_SetPtrValue(GWEN_DB_NODE *n,
                         uint32_t flags,
                         const char *path,
                         void *val);
+
+
+/**
+ * @return 0 if okay, error code on error (GWEN_ERROR_NO_DATA if the variable doesn't exist or has no value)
+ * @param n db node
+ * @param path path and name of the variable
+ * @param index number of value to read (if there are multiple values in the variable, 0 being the first)
+ * @param dstBuf buffer to write the value into
+ *
+ * @return 0 on success, nonzero on error
+ */
+GWENHYWFAR_API
+int GWEN_DB_WriteVarValueToBuffer(GWEN_DB_NODE *n, const char *path, int index, GWEN_BUFFER *dstBuf);
+
+
 /*@}*/
 
 
