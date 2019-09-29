@@ -249,14 +249,14 @@ public:
       QString t;
       int n=0;
       QStringList sl;
-      QTreeWidgetItem *item;
+      /*QTreeWidgetItem *item;*/
 
       str=text;
       while(!(t=str.section('\t', n, n)).isEmpty()) {
         sl+=t;
         n++;
       }
-      item=new QTreeWidgetItem(qw, sl);
+      /*item=*/new QTreeWidgetItem(qw, sl);
       return 0;
     }
 

@@ -31,7 +31,7 @@ public:
     QSizePolicy::Policy vpolicy=QSizePolicy::Minimum;
     const char *s;
     QString text;
-    QT5_GuiDialog *qtDialog;
+    /*QT5_GuiDialog *qtDialog;*/
 
     flags=GWEN_Widget_GetFlags(_widget);
     wParent=GWEN_Widget_Tree_GetParent(_widget);
