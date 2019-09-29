@@ -2124,7 +2124,10 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
 	  char index=0;
           char *rawName;
           int rv;
-	  int maxLen=-1;
+          int maxLen=-1;
+          uint32_t posBeforeFn;
+          uint32_t posAfterFn;
+          uint32_t charsAdded;
 
           len=p-pStart;
           if (len<1) {
@@ -2144,14 +2147,20 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
 	  }
 	  free(rawName);
 
+          posBeforeFn=GWEN_Buffer_GetPos(dbuf);
           rv=fn(ptr, name, index, maxLen, dbuf);
-          if (rv<0) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	    free(name);
-	    return rv;
-	  }
-	  free(name);
-	}
+          if (rv<0 && rv!=GWEN_ERROR_NO_DATA) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            free(name);
+            return rv;
+          }
+          free(name);
+          posAfterFn=GWEN_Buffer_GetPos(dbuf);
+          charsAdded=posAfterFn-posBeforeFn;
+          if (maxLen>0 && charsAdded>maxLen) {
+            GWEN_Buffer_Crop(dbuf, 0, posBeforeFn+maxLen);
+          }
+        }
       }
       else {
         DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
