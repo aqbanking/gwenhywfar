@@ -79,10 +79,10 @@ int Gtk2Gui_WHLine_GetIntProperty(GWEN_WIDGET *w,
 int Gtk2Gui_WHLine_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   g=gtk_hseparator_new();

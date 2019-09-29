@@ -185,18 +185,18 @@ static void Gtk2Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer
 int Gtk2Gui_WSpinBox_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
-  const char *s;
-  uint32_t flags;
+  /*const char *s;*/
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
   W_SPINBOX *xw;
-  gulong changed_handler_id;
+  /*gulong changed_handler_id;*/
 
   GWEN_NEW_OBJECT(W_SPINBOX, xw);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_SPINBOX, w, xw, Gtk2Gui_WSpinBox_FreeData);
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
-  s=GWEN_Widget_GetText(w, 0);
+  /*s=GWEN_Widget_GetText(w, 0);*/
 
   xw->adjustment=GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 100.0, 1.0, 5.0, 5.0));
   g=gtk_spin_button_new(xw->adjustment, 1.0, 0);
@@ -208,10 +208,10 @@ int Gtk2Gui_WSpinBox_Setup(GWEN_WIDGET *w)
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WSpinBox_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WSpinBox_GetCharProperty);
 
-  changed_handler_id=g_signal_connect(g,
-                                      "value-changed",
-                                      G_CALLBACK(Gtk2Gui_WSpinBox_Changed_handler),
-                                      w);
+  /*changed_handler_id=*/g_signal_connect(g,
+                                          "value-changed",
+                                          G_CALLBACK(Gtk2Gui_WSpinBox_Changed_handler),
+                                          w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

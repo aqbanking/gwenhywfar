@@ -257,7 +257,7 @@ int Gtk2Gui_WComboBox_Setup(GWEN_WIDGET *w)
   GtkListStore *store;
   uint32_t flags;
   GWEN_WIDGET *wParent;
-  gulong changed_handler_id;
+  /*gulong changed_handler_id;*/
 
   flags=GWEN_Widget_GetFlags(w);
   wParent=GWEN_Widget_Tree_GetParent(w);
@@ -287,10 +287,10 @@ int Gtk2Gui_WComboBox_Setup(GWEN_WIDGET *w)
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WComboBox_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WComboBox_GetCharProperty);
 
-  changed_handler_id=g_signal_connect(g,
-                                      "changed",
-                                      G_CALLBACK(changed_handler),
-                                      w);
+  /*changed_handler_id=*/g_signal_connect(g,
+                                          "changed",
+                                          G_CALLBACK(changed_handler),
+                                          w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

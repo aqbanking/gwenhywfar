@@ -215,17 +215,17 @@ static void GWENHYWFAR_CB Gtk2Gui_WProgressBar_FreeData(void *bp, void *p)
 int Gtk2Gui_WProgressBar_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
-  const char *s;
-  uint32_t flags;
+  /*const char *s;*/
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
   W_PROGRESSBAR *xw;
 
   GWEN_NEW_OBJECT(W_PROGRESSBAR, xw);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, W_PROGRESSBAR, w, xw, Gtk2Gui_WProgressBar_FreeData);
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
-  s=GWEN_Widget_GetText(w, 0);
+  /*s=GWEN_Widget_GetText(w, 0);*/
 
   g=gtk_progress_bar_new();
   GWEN_Widget_SetImplData(w, GTK2_DIALOG_WIDGET_REAL, (void *) g);

@@ -546,12 +546,12 @@ int Gtk2Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf)
 
   if (p && p2) {
     int startPos;
-    int endPos;
+    /*int endPos;*/
 
     p2+=7; /* skip "</html>" */
 
     startPos=(p-text);
-    endPos=(p2-text);
+    /*endPos=(p2-text);*/
 
     /* append stuff before startPos */
     if (startPos)

@@ -183,9 +183,9 @@ int Gtk2Gui_WDialog_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
   const char *s;
-  uint32_t flags;
+  /*uint32_t flags;*/
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   s=GWEN_Widget_GetText(w, 0);
 
   g=gtk_window_new(GTK_WINDOW_TOPLEVEL);

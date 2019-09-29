@@ -143,10 +143,10 @@ int Gtk2Gui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
 int Gtk2Gui_WHLayout_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
 
 #if 0

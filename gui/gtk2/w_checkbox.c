@@ -168,11 +168,11 @@ int Gtk2Gui_WCheckBox_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
   const char *s;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
-  gulong toggled_handler_id;
+  /*gulong toggled_handler_id;*/
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
   s=GWEN_Widget_GetText(w, 0);
 
@@ -190,10 +190,10 @@ int Gtk2Gui_WCheckBox_Setup(GWEN_WIDGET *w)
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WCheckBox_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WCheckBox_GetCharProperty);
 
-  toggled_handler_id=g_signal_connect(g,
-                                      "toggled",
-                                      G_CALLBACK(Gtk2Gui_WCheckBox_Toggled_handler),
-                                      w);
+  /*toggled_handler_id=*/g_signal_connect(g,
+                                          "toggled",
+                                          G_CALLBACK(Gtk2Gui_WCheckBox_Toggled_handler),
+                                          w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

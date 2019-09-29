@@ -169,10 +169,10 @@ int Gtk2Gui_WScrollArea_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
   GtkWidget *gContent;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   /* create widget */

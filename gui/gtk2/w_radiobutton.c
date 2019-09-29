@@ -168,13 +168,13 @@ int Gtk2Gui_WRadioButton_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
   const char *s;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
   GWEN_WIDGET *wT;
-  gulong toggled_handler_id;
+  /*gulong toggled_handler_id;*/
   int groupId;
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
   groupId=GWEN_Widget_GetGroupId(w);
 
@@ -214,10 +214,10 @@ int Gtk2Gui_WRadioButton_Setup(GWEN_WIDGET *w)
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WRadioButton_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WRadioButton_GetCharProperty);
 
-  toggled_handler_id=g_signal_connect(g,
-                                      "toggled",
-                                      G_CALLBACK(Gtk2Gui_WRadioButton_Toggled_handler),
-                                      w);
+  /*toggled_handler_id=*/g_signal_connect(g,
+                                          "toggled",
+                                          G_CALLBACK(Gtk2Gui_WRadioButton_Toggled_handler),
+                                          w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

@@ -255,7 +255,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       GType types[W_LISTBOX_MAX_TYPES];
       GtkListStore *sto;
       int i;
-      const char *s;
+      /*const char *s;*/
       GtkTreeViewColumn *col;
       char *vcopy;
       char *p;
@@ -265,7 +265,7 @@ int Gtk2Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
       for (i=0; i<cols; i++)
         types[i]=G_TYPE_STRING;
       sto=gtk_list_store_newv(cols, types);
-      s=value;
+      /*s=value;*/
 
       /* clear current headers in tree view */
       while ((col=gtk_tree_view_get_column(GTK_TREE_VIEW(g), 0)))
@@ -503,11 +503,11 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
   GtkWidget *gScroll;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
-  gulong changed_handler_id;
+  /*gulong changed_handler_id;*/
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
 
   gScroll=gtk_scrolled_window_new(NULL, NULL);
@@ -527,10 +527,10 @@ int Gtk2Gui_WListBox_Setup(GWEN_WIDGET *w)
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WListBox_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WListBox_GetCharProperty);
 
-  changed_handler_id=g_signal_connect(g,
-                                      "cursor-changed",
-                                      G_CALLBACK(Gtk2Gui_WListBox_CursorChanged_handler),
-                                      w);
+  /*changed_handler_id=*/g_signal_connect(g,
+                                          "cursor-changed",
+                                          G_CALLBACK(Gtk2Gui_WListBox_CursorChanged_handler),
+                                          w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

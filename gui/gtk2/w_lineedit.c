@@ -189,8 +189,8 @@ int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w)
   const char *s;
   uint32_t flags;
   GWEN_WIDGET *wParent;
-  gulong deleted_text_handler_id;
-  gulong inserted_text_handler_id;
+  /*gulong deleted_text_handler_id;*/
+  /*gulong inserted_text_handler_id;*/
   gboolean text_is_visible;
 
   flags=GWEN_Widget_GetFlags(w);
@@ -212,15 +212,15 @@ int Gtk2Gui_WLineEdit_Setup(GWEN_WIDGET *w)
   GWEN_Widget_SetSetCharPropertyFn(w, Gtk2Gui_WLineEdit_SetCharProperty);
   GWEN_Widget_SetGetCharPropertyFn(w, Gtk2Gui_WLineEdit_GetCharProperty);
 
-  deleted_text_handler_id=g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
-                                           "deleted-text",
-                                           G_CALLBACK(Gtk2Gui_WLineEdit_Deleted_text_handler),
-                                           w);
+  /*deleted_text_handler_id=*/g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
+                                               "deleted-text",
+                                               G_CALLBACK(Gtk2Gui_WLineEdit_Deleted_text_handler),
+                                               w);
 
-  inserted_text_handler_id=g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
-                                            "inserted-text",
-                                            G_CALLBACK(Gtk2Gui_WLineEdit_Inserted_text_handler),
-                                            w);
+  /*inserted_text_handler_id=*/g_signal_connect(gtk_entry_get_buffer(GTK_ENTRY(g)),
+                                                "inserted-text",
+                                                G_CALLBACK(Gtk2Gui_WLineEdit_Inserted_text_handler),
+                                                w);
 
   if (wParent)
     GWEN_Widget_AddChildGuiWidget(wParent, w);

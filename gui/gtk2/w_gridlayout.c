@@ -209,7 +209,7 @@ void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p)
 int Gtk2Gui_WGridLayout_Setup(GWEN_WIDGET *w)
 {
   GtkWidget *g;
-  uint32_t flags;
+  /*uint32_t flags;*/
   GWEN_WIDGET *wParent;
   GTK2_GRIDLAYOUT_WIDGET *xw;
   int rows;
@@ -218,7 +218,7 @@ int Gtk2Gui_WGridLayout_Setup(GWEN_WIDGET *w)
   GWEN_NEW_OBJECT(GTK2_GRIDLAYOUT_WIDGET, xw);
   GWEN_INHERIT_SETDATA(GWEN_WIDGET, GTK2_GRIDLAYOUT_WIDGET, w, xw, Gtk2Gui_WGridLayout_FreeData);
 
-  flags=GWEN_Widget_GetFlags(w);
+  /*flags=GWEN_Widget_GetFlags(w);*/
   wParent=GWEN_Widget_Tree_GetParent(w);
   cols=GWEN_Widget_GetColumns(w);
   rows=GWEN_Widget_GetRows(w);
