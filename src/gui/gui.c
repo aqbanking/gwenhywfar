@@ -2228,6 +2228,8 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
     }
     else
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "url", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "command", "GET");
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", "HTTP/1.0");
 

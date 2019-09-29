@@ -102,6 +102,7 @@ void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p)
   free(xio->localTrustFile);
   free(xio->dhParamFile);
   free(xio->hostName);
+  GWEN_SslCertDescr_free(xio->peerCertDescr);
   GWEN_FREE_OBJECT(xio);
 }
 

@@ -70,6 +70,8 @@ void GWEN_XmlCtx_free(GWEN_XML_CONTEXT *ctx)
     assert(ctx->_refCount);
     if (ctx->_refCount==1) {
       GWEN_INHERIT_FINI(GWEN_XML_CONTEXT, ctx);
+      if (ctx->encoding)
+	free(ctx->encoding);
       ctx->_refCount=0;
       GWEN_FREE_OBJECT(ctx);
     }

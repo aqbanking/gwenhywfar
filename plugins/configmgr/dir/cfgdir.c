@@ -552,6 +552,7 @@ int GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
     GWEN_Buffer_free(nbuf);
     return rv;
   }
+  GWEN_Buffer_free(nbuf);
 
   return 0;
 }
