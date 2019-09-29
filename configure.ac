@@ -29,10 +29,10 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=4
 GWENHYWFAR_VERSION_MINOR=99
-GWENHYWFAR_VERSION_PATCHLEVEL=19
+GWENHYWFAR_VERSION_PATCHLEVEL=20
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="rc3"
+GWENHYWFAR_VERSION_TAG="rc4"
 
 
 
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="rc3"
 #
 GWENHYWFAR_SO_CURRENT="78"
 GWENHYWFAR_SO_AGE="0"
-GWENHYWFAR_SO_REVISION="19"
+GWENHYWFAR_SO_REVISION="20"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -1382,7 +1382,7 @@ AC_OUTPUT
 # create header directory, make symlinks
 #
 HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui src/html"
-HEADER_DIRS="${HEADER_DIRS} src/parser src/gparser src/sar"
+HEADER_DIRS="${HEADER_DIRS} src/parser src/sar"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
