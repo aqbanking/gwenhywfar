@@ -170,7 +170,7 @@ int Gtk3Gui_WRadioButton_Setup(GWEN_WIDGET *w)
   const char *s;
   GWEN_WIDGET *wParent;
   GWEN_WIDGET *wT;
-  gulong toggled_handler_id;
+  /*gulong toggled_handler_id;*/
   int groupId;
 
   wParent=GWEN_Widget_Tree_GetParent(w);
