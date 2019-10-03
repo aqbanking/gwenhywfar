@@ -1960,7 +1960,7 @@ int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 
 
 
-int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
+int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
 {
   GWEN_DB_NODE *db;
   int rv;
