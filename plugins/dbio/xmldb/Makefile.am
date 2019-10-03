@@ -1,6 +1,6 @@
 EXTRA_DIST=ressource.rc.in README
 
-INCLUDES= -I$(gwenhywfar_symlinkdir) \
+AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \

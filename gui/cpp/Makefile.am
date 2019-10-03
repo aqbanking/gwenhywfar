@@ -1,6 +1,5 @@
-INCLUDES=-I$(gwenhywfar_symlinkdir) $(fox_includes) -Ihtml
-
-AM_CPPFLAGS= @visibility_cflags@
+AM_CPPFLAGS=-I$(gwenhywfar_symlinkdir) $(fox_includes) -Ihtml \
+  @visibility_cflags@
 DEFS+=-DBUILDING_CPP_GUI -DPACKAGE=\"$(PACKAGE)\"
 
 lib_LTLIBRARIES=libgwengui-cpp.la

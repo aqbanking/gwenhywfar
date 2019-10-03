@@ -1,6 +1,5 @@
-INCLUDES=-I$(gwenhywfar_symlinkdir) $(qt4_includes)
-
-AM_CPPFLAGS= @visibility_cflags@
+AM_CPPFLAGS=-I$(gwenhywfar_symlinkdir) $(qt4_includes) \
+  @visibility_cflags@
 DEFS=-DBUILDING_QT4_GUI
 
 pkgconfigdir = $(libdir)/pkgconfig

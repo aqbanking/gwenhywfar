@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir) $(ssl_includes)
+AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir) $(ssl_includes)
 
 #EXTRA_DIST=
 

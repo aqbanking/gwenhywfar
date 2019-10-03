@@ -1,6 +1,6 @@
 EXTRA_DIST=README ressource.rc.in
 
-INCLUDES= -I$(gwenhywfar_symlinkdir) \
+AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \

@@ -1,4 +1,4 @@
-INCLUDES= -I$(gwenhywfar_symlinkdir) $(GPG_ERROR_CFLAGS)
+AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) $(GPG_ERROR_CFLAGS)
 
 EXTRA_DIST=README
 

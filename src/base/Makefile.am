@@ -1,4 +1,4 @@
-INCLUDES= -I$(gwenhywfar_symlinkdir) \
+AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir) \
  -I$(top_srcdir)/src/ \
  -I$(top_srcdir)/src/base \
@@ -153,7 +153,7 @@ typedefs: $(typefiles)
 
 splint:
 	for f in $(libbase_la_SOURCES); do \
-	  splint $(INCLUDES) $(DEFS) +enumint -unrecogcomments +posixlib -predboolint +boolint -boolops $$f ; \
+	  splint $(AM_CPPFLAGS) $(DEFS) +enumint -unrecogcomments +posixlib -predboolint +boolint -boolops $$f ; \
 	done
 
 

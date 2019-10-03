@@ -1,4 +1,4 @@
-INCLUDES=-I$(gwenhywfar_symlinkdir)
+AM_CPPFLAGS=-I$(gwenhywfar_symlinkdir)
 
 ABSMEDIAPATH=$(abs_srcdir)
 

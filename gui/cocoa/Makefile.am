@@ -1,6 +1,5 @@
-INCLUDES=-I$(gwenhywfar_symlinkdir) $(COCOA_CFLAGS)
-
-AM_CPPFLAGS= @visibility_cflags@
+AM_CPPFLAGS=-I$(gwenhywfar_symlinkdir) $(COCOA_CFLAGS) \
+  @visibility_cflags@
 DEFS+=-DBUILDING_COCOA_GUI -DPACKAGE=\"$(PACKAGE)\"
 
 #AM_OBJCFLAGS= -x objective-c

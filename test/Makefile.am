@@ -1,4 +1,4 @@
-INCLUDES= -I$(gwenhywfar_symlinkdir) \
+AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  $(LIBGNUTLS_CFLAGS) $(GPG_ERROR_CFLAGS) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \

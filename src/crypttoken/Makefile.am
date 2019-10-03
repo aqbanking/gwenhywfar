@@ -1,4 +1,4 @@
-INCLUDES= -I$(gwenhywfar_symlinkdir) \
+AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt3 \
  -I$(top_srcdir)/src/io \

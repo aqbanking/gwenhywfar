@@ -1,4 +1,4 @@
-INCLUDES=@all_includes@ -I$(gwenhywfar_symlinkdir)
+AM_CPPFLAGS=@all_includes@ -I$(gwenhywfar_symlinkdir)
 
 EXTRA_DIST=test.xml
 

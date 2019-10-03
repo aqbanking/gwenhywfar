@@ -1,6 +1,5 @@
-INCLUDES=-I$(gwenhywfar_symlinkdir) $(GTK2_CFLAGS)
-
-AM_CPPFLAGS= @visibility_cflags@
+AM_CPPFLAGS=-I$(gwenhywfar_symlinkdir) $(GTK2_CFLAGS) \
+  @visibility_cflags@
 DEFS+=-DBUILDING_GTK2_GUI -DPACKAGE=\"$(PACKAGE)\"
 
 pkgconfigdir = $(libdir)/pkgconfig
