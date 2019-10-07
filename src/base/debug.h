@@ -112,11 +112,12 @@ void DBG_ERROR(const char *logdomain, const char *format, ...);
 
 #define DBG_ERROR_ERR(dbg_logger, dbg_err) {\
  char dbg_buffer[300]; \
- char dbg_errbuff[300]; \
+ char dbg_errbuff[256]; \
+ \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
- __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
-  dbg_buffer[sizeof(dbg_buffer)-1]=0; \
+          __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
+ dbg_buffer[sizeof(dbg_buffer)-1]=0; \
  GWEN_Logger_Log(dbg_logger, GWEN_LoggerLevel_Error, dbg_buffer);};
 
 #ifndef NO_VARIADIC_MACROS
