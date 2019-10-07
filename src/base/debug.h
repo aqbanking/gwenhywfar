@@ -139,7 +139,7 @@ void DBG_WARN(const char *logdomain, const char *format, ...);
 
 #define DBG_WARN_ERR(dbg_logger, dbg_err) {\
  char dbg_buffer[300]; \
- char dbg_errbuff[300]; \
+ char dbg_errbuff[256]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
@@ -166,7 +166,7 @@ void DBG_NOTICE(const char *logdomain, const char *format, ...);
 #define DBG_NOTICE_ERR(dbg_logger, dbg_err) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Notice) {\
  char dbg_buffer[300]; \
- char dbg_errbuff[300]; \
+ char dbg_errbuff[256]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
