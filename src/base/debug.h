@@ -96,7 +96,7 @@ uint32_t GWEN_Debug_Snprintf(char *buffer,
 #ifndef NO_VARIADIC_MACROS
 # define DBG_ERROR(dbg_logger, format, args...) {\
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Error) {\
-   char dbg_buffer[256]; \
+   char dbg_buffer[300]; \
     \
    if (snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
        __FILE__":%5d: " format  , __LINE__ , ## args)>0) { \
@@ -111,8 +111,8 @@ void DBG_ERROR(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
 #define DBG_ERROR_ERR(dbg_logger, dbg_err) {\
- char dbg_buffer[256]; \
- char dbg_errbuff[256]; \
+ char dbg_buffer[300]; \
+ char dbg_errbuff[300]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
@@ -122,7 +122,7 @@ void DBG_ERROR(const char *logdomain, const char *format, ...);
 #ifndef NO_VARIADIC_MACROS
 # define DBG_WARN(dbg_logger, format, args...) {\
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Warning) {\
-   char dbg_buffer[256]; \
+   char dbg_buffer[300]; \
     \
    if (snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
        __FILE__":%5d: " format  , __LINE__ , ## args)>0) { \
@@ -137,8 +137,8 @@ void DBG_WARN(const char *logdomain, const char *format, ...);
 #endif /* #ifndef NO_VARIADIC_MACROS */
 
 #define DBG_WARN_ERR(dbg_logger, dbg_err) {\
- char dbg_buffer[256]; \
- char dbg_errbuff[256]; \
+ char dbg_buffer[300]; \
+ char dbg_errbuff[300]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
@@ -149,7 +149,7 @@ void DBG_WARN(const char *logdomain, const char *format, ...);
 #ifndef NO_VARIADIC_MACROS
 # define DBG_NOTICE(dbg_logger, format, args...) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Notice) {\
-   char dbg_buffer[256]; \
+   char dbg_buffer[300]; \
     \
    if (snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
        __FILE__":%5d: " format  , __LINE__ , ## args)>0) { \
@@ -164,8 +164,8 @@ void DBG_NOTICE(const char *logdomain, const char *format, ...);
 
 #define DBG_NOTICE_ERR(dbg_logger, dbg_err) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Notice) {\
- char dbg_buffer[256]; \
- char dbg_errbuff[256]; \
+ char dbg_buffer[300]; \
+ char dbg_errbuff[300]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
@@ -176,7 +176,7 @@ void DBG_NOTICE(const char *logdomain, const char *format, ...);
 #ifndef NO_VARIADIC_MACROS
 # define DBG_INFO(dbg_logger, format, args...) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Info) {\
-   char dbg_buffer[256]; \
+   char dbg_buffer[300]; \
     \
    if (snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
        __FILE__":%5d: " format  , __LINE__ , ## args)>0) { \
@@ -191,8 +191,8 @@ void DBG_INFO(const char *logdomain, const char *format, ...);
 
 #define DBG_INFO_ERR(dbg_logger, dbg_err) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Info) {\
- char dbg_buffer[256]; \
- char dbg_errbuff[256]; \
+ char dbg_buffer[300]; \
+ char dbg_errbuff[300]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
@@ -207,7 +207,7 @@ void DBG_INFO(const char *logdomain, const char *format, ...);
 # ifndef NO_VARIADIC_MACROS
 #  define DBG_DEBUG(dbg_logger, format, args...) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Debug) {\
- char dbg_buffer[256]; \
+ char dbg_buffer[300]; \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: " format  , __LINE__ , ## args); \
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
@@ -215,7 +215,7 @@ void DBG_INFO(const char *logdomain, const char *format, ...);
 
 #  define DBG_VERBOUS(dbg_logger, format, args...) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Verbous) {\
- char dbg_buffer[256]; \
+ char dbg_buffer[300]; \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: " format  , __LINE__ , ## args); \
   dbg_buffer[sizeof(dbg_buffer)-1]=0; \
@@ -224,8 +224,8 @@ void DBG_INFO(const char *logdomain, const char *format, ...);
 
 # define DBG_DEBUG_ERR(dbg_logger, dbg_err) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Debug) {\
- char dbg_buffer[256]; \
- char dbg_errbuff[256]; \
+ char dbg_buffer[300]; \
+ char dbg_errbuff[300]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
@@ -234,8 +234,8 @@ void DBG_INFO(const char *logdomain, const char *format, ...);
 
 # define DBG_VERBOUS_ERR(dbg_logger, dbg_err) \
  if (GWEN_Logger_GetLevel(dbg_logger)>=GWEN_LoggerLevel_Verbous) {\
- char dbg_buffer[256]; \
- char dbg_errbuff[256]; \
+ char dbg_buffer[300]; \
+ char dbg_errbuff[300]; \
  GWEN_Error_ToString(dbg_err,dbg_errbuff, sizeof(dbg_errbuff)); \
  snprintf(dbg_buffer, sizeof(dbg_buffer)-1,\
  __FILE__":%5d: %s" , __LINE__ , dbg_errbuff); \
