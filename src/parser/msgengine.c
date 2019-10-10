@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Jul 04 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,6 +27,8 @@
 #endif
 
 #define DISABLE_DEBUGLOG
+/*#define HEAVY_DEBUG_MSGENGINE*/
+
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <msgengine_p.h>
@@ -40,6 +42,22 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
+
+
+
+
+static int _groupReadElement(GWEN_MSGENGINE *e,
+			     GWEN_BUFFER *msgbuf,
+			     GWEN_XMLNODE *n,
+			     GWEN_XMLNODE *rnode,
+			     GWEN_DB_NODE *gr,
+			     char currentDelimiter,
+			     char currentTerminator,
+			     const char *delimiters,
+			     uint32_t flags);
+
+
+
 
 
 GWEN_INHERIT_FUNCTIONS(GWEN_MSGENGINE)
@@ -3055,7 +3073,6 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
   //unsigned int maxsize;
   unsigned int minnum;
   unsigned int maxnum;
-  const char *name;
   const char *p;
   char delimiter;
   char terminator;
@@ -3066,26 +3083,16 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
   /* get some settings */
   if (rnode) {
     /* get delimiter */
-    p=GWEN_XMLNode_GetProperty(rnode,
-                               "delimiter",
-                               GWEN_XMLNode_GetProperty(node,
-                                                        "delimiter",
-                                                        ""));
+    p=GWEN_XMLNode_GetProperty(rnode, "delimiter", GWEN_XMLNode_GetProperty(node, "delimiter", ""));
     delimiter=*p;
 
     /* get terminating char, if any */
-    p=GWEN_XMLNode_GetProperty(rnode,
-                               "terminator",
-                               GWEN_XMLNode_GetProperty(node,
-                                                        "terminator",
-                                                        ""));
+    p=GWEN_XMLNode_GetProperty(rnode, "terminator", GWEN_XMLNode_GetProperty(node, "terminator", ""));
     terminator=*p;
   }
   else {
     /* get delimiter */
-    p=GWEN_XMLNode_GetProperty(node,
-                               "delimiter",
-                               "");
+    p=GWEN_XMLNode_GetProperty(node, "delimiter", "");
     delimiter=*p;
 
     /* get terminating char, if any */
@@ -3100,8 +3107,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
   if (terminator)
     GWEN_Buffer_AppendByte(delimBuffer, terminator);
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Delimiters are \"%s\" and \"%c\"",
-            delimiters, delimiter);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Delimiters are \"%s\" and \"%c\"", delimiters, delimiter);
 
   n=GWEN_XMLNode_GetChild(node);
   while (n) {
@@ -3113,202 +3119,21 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
       type=GWEN_XMLNode_GetData(n);
 
-      /*
+#ifdef HEAVY_DEBUG_MSGENGINE
       DBG_NOTICE(GWEN_LOGDOMAIN, "Reading group from here :");
-      GWEN_Text_DumpString(GWEN_Buffer_GetStart(msgbuf)+
-                           GWEN_Buffer_GetPos(msgbuf),
-                           GWEN_Buffer_GetUsedBytes(msgbuf)-
-                           GWEN_Buffer_GetPos(msgbuf),
-                           stderr, 3);
-      */
+      GWEN_Text_DumpString(GWEN_Buffer_GetStart(msgbuf)+ GWEN_Buffer_GetPos(msgbuf),
+                           GWEN_Buffer_GetUsedBytes(msgbuf)-GWEN_Buffer_GetPos(msgbuf),
+                           3);
+#endif
       if (strcasecmp(type, "ELEM")==0) {
-        unsigned int loopNr;
+	int rv;
 
-        /* get some sizes */
-        //minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize","0"));
-        //maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize","0"));
-        minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
-        maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum", "1"));
-        name=GWEN_XMLNode_GetProperty(n, "name", 0);
-
-        loopNr=0;
-        abortLoop=0;
-        while ((maxnum==0 || loopNr<maxnum) && !abortLoop) {
-          int c;
-
-          DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading %s", name);
-          if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
-            break;
-          c=GWEN_Buffer_PeekByte(msgbuf);
-          if (c==-1) {
-            DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
-            GWEN_Buffer_free(delimBuffer);
-            return -1;
-          }
-
-          DBG_VERBOUS(GWEN_LOGDOMAIN,
-                      "Checking delimiter at pos %x "
-                      "(whether \"%c\" is in \"%s\")",
-                      GWEN_Buffer_GetPos(msgbuf),
-                      c, GWEN_Buffer_GetStart(delimBuffer));
-          if (c && strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
-            abortLoop=1;
-            DBG_VERBOUS(GWEN_LOGDOMAIN,
-                        "Found delimiter (\"%c\" is in \"%s\")",
-                        c, GWEN_Buffer_GetStart(delimBuffer));
-          } /* if delimiter found */
-          else {
-            /* current char is not a delimiter */
-            if (name==0) {
-              DBG_VERBOUS(GWEN_LOGDOMAIN, "no name");
-            }
-            else {
-              /* name is given */
-              int rv;
-              const char *dtype;
-              GWEN_BUFFER *vbuf;
-
-              DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading value from pos %x",
-                          GWEN_Buffer_GetPos(msgbuf));
-              vbuf=GWEN_Buffer_new(0,
-                                   GWEN_MSGENGINE_MAX_VALUE_LEN,
-                                   0, 0);
-              /*
-              DBG_ERROR(GWEN_LOGDOMAIN, "Reading value from here:\n");
-              GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
-              GWEN_Buffer_GetBytesLeft(msgbuf),
-              stderr, 1);*/
-
-              rv=GWEN_MsgEngine__ReadValue(e,
-                                           msgbuf,
-                                           n,
-                                           rnode,
-                                           vbuf,
-                                           GWEN_Buffer_GetStart(delimBuffer),
-                                           //":+'",
-                                           flags);
-              if (rv==1) {
-                DBG_INFO(GWEN_LOGDOMAIN, "Empty value");
-              }
-              else if (rv==-1) {
-                DBG_INFO(GWEN_LOGDOMAIN, "Error parsing node \"%s\" (%s)",
-                         name,
-                         type);
-                GWEN_Buffer_free(vbuf);
-                GWEN_Buffer_free(delimBuffer);
-                return -1;
-              }
-
-              GWEN_Buffer_Rewind(vbuf);
-
-              /* special handling for binary data */
-              dtype=GWEN_XMLNode_GetProperty(n, "type", "");
-              if (GWEN_MsgEngine__IsBinTyp(e, dtype)) {
-                if (atoi(GWEN_XMLNode_GetProperty(n, "readbin", "1")) &&
-                    e->binTypeReadPtr) {
-                  rv=e->binTypeReadPtr(e, n, gr, vbuf);
-                }
-                else
-                  rv=1;
-                if (rv==-1) {
-                  DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
-                  GWEN_Buffer_free(vbuf);
-                  GWEN_Buffer_free(delimBuffer);
-                  return -1;
-                }
-                else if (rv==1) {
-                  /* bin type not handled, so handle it myself */
-                  if (GWEN_DB_SetBinValue(gr,
-                                          GWEN_DB_FLAGS_DEFAULT,
-                                          name,
-                                          GWEN_Buffer_GetStart(vbuf),
-                                          GWEN_Buffer_GetUsedBytes(vbuf))) {
-                    DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
-                    GWEN_Buffer_free(vbuf);
-                    GWEN_Buffer_free(delimBuffer);
-                    return -1;
-                  }
-                }
-              } /* if type is bin */
-              else if (GWEN_MsgEngine__IsIntTyp(e, dtype)) {
-                int z;
-
-                if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
-                  DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer",
-                           name);
-                  GWEN_Buffer_free(delimBuffer);
-                  return -1;
-                }
-                if (GWEN_DB_SetIntValue(gr,
-                                        GWEN_DB_FLAGS_DEFAULT,
-                                        name, z)) {
-                  DBG_INFO(GWEN_LOGDOMAIN, "Could not set int value for \"%s\"", name);
-                  GWEN_Buffer_free(delimBuffer);
-                  return -1;
-                }
-              } /* if type is int */
-              else {
-                DBG_DEBUG(GWEN_LOGDOMAIN, "Value is \"%s\"",
-                          GWEN_Buffer_GetStart(vbuf));
-                if (GWEN_DB_SetCharValue(gr,
-                                         GWEN_DB_FLAGS_DEFAULT,
-                                         name,
-                                         GWEN_Buffer_GetStart(vbuf))) {
-                  DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
-                  GWEN_Buffer_free(delimBuffer);
-                  return -1;
-                }
-              } /* if !bin */
-
-              GWEN_Buffer_free(vbuf);
-            } /* if name is given */
-          } /* if current char is not a delimiter */
-
-          if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
-            if (delimiter) {
-              if (GWEN_Buffer_PeekByte(msgbuf)==delimiter) {
-                GWEN_Buffer_IncrementPos(msgbuf, 1);
-                if (abortLoop && maxnum) {
-                  uint32_t loopOpt=loopNr+1;
-
-                  if (maxnum-loopOpt>GWEN_Buffer_GetBytesLeft(msgbuf))
-                    /* Suspicious but not necessarily invalid, let's see */
-                    maxnum=loopOpt+GWEN_Buffer_GetBytesLeft(msgbuf);
-                  for (; loopOpt<maxnum; loopOpt++) {
-                    if (GWEN_Buffer_PeekByte(msgbuf)!=delimiter)
-                      break;
-                    GWEN_Buffer_IncrementPos(msgbuf, 1);
-                  }
-                  if (loopOpt+1==maxnum && terminator) {
-                    if (GWEN_Buffer_PeekByte(msgbuf)==terminator) {
-                      GWEN_Buffer_IncrementPos(msgbuf, 1);
-                      loopOpt++;
-                    }
-                  }
-                  if (loopOpt<maxnum) {
-                    DBG_ERROR(GWEN_LOGDOMAIN,
-                              "Delimiting character missing (pos=%d [%x]) "
-                              "expecting \"%c\", got \"%c\")",
-                              GWEN_Buffer_GetPos(msgbuf),
-                              GWEN_Buffer_GetPos(msgbuf),
-                              delimiter,
-                              GWEN_Buffer_PeekByte(msgbuf));
-                    GWEN_XMLNode_Dump(n, 2);
-                    GWEN_Buffer_free(delimBuffer);
-                    return -1;
-                  }
-                }
-              }
-            }
-          }
-          loopNr++;
-        } /* while */
-        if (loopNr<minnum) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (too few ELEM repeats)");
-          GWEN_XMLNode_Dump(n, 2);
-          GWEN_Buffer_free(delimBuffer);
-          return -1;
-        }
+	rv=_groupReadElement(e, msgbuf, n, rnode, gr, delimiter, terminator, GWEN_Buffer_GetStart(delimBuffer), flags);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  GWEN_Buffer_free(delimBuffer);
+	  return rv;
+	}
         n=GWEN_XMLNode_Next(n);
       } /* if ELEM */
       else if (strcasecmp(type, "VALUES")==0) {
@@ -3326,6 +3151,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
         unsigned int gversion;
         unsigned int loopNr;
 
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading group");
         minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
         maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum", "1"));
         gversion=atoi(GWEN_XMLNode_GetProperty(n, "version", "0"));
@@ -3337,8 +3163,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
           gn=n;
         }
         else {
-          gn=GWEN_MsgEngine_FindNodeByProperty(e, type, "id",
-                                               gversion, gtype);
+	  gn=GWEN_MsgEngine_FindNodeByProperty(e, type, "id", gversion, gtype);
           if (!gn) {
             DBG_INFO(GWEN_LOGDOMAIN, "Definition for type \"%s\" not found", type);
             GWEN_Buffer_free(delimBuffer);
@@ -3363,12 +3188,9 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
             gname=GWEN_XMLNode_GetProperty(n, "name", 0);
             if (gname) {
               DBG_DEBUG(GWEN_LOGDOMAIN, "Creating group \"%s\"", gname);
-              gcfg=GWEN_DB_GetGroup(gr,
-                                    GWEN_PATH_FLAGS_CREATE_GROUP,
-                                    gname);
+              gcfg=GWEN_DB_GetGroup(gr, GWEN_PATH_FLAGS_CREATE_GROUP, gname);
               if (!gcfg) {
-                DBG_ERROR(GWEN_LOGDOMAIN, "Could not select group \"%s\"",
-                          gname);
+                DBG_ERROR(GWEN_LOGDOMAIN, "Could not select group \"%s\"", gname);
                 GWEN_Buffer_free(delimBuffer);
                 return -1;
               }
@@ -3492,6 +3314,191 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
   GWEN_Buffer_free(delimBuffer);
   return 0;
 }
+
+
+
+int _groupReadElement(GWEN_MSGENGINE *e,
+		      GWEN_BUFFER *msgbuf,
+		      GWEN_XMLNODE *n,
+		      GWEN_XMLNODE *rnode,
+		      GWEN_DB_NODE *gr,
+		      char currentDelimiter,
+		      char currentTerminator,
+		      const char *delimiters,
+		      uint32_t flags){
+  unsigned int loopNr;
+  unsigned int minnum;
+  unsigned int maxnum;
+  const char *name;
+  int abortLoop;
+  
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading element");
+  
+  /* get some sizes */
+  //minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize","0"));
+  //maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize","0"));
+  minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
+  maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum", "1"));
+  name=GWEN_XMLNode_GetProperty(n, "name", 0);
+  
+  loopNr=0;
+  abortLoop=0;
+  while ((maxnum==0 || loopNr<maxnum) && !abortLoop) {
+    int c;
+  
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading %s", name);
+    if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
+      break;
+    c=GWEN_Buffer_PeekByte(msgbuf);
+    if (c==-1) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
+      return -1;
+    }
+  
+    DBG_VERBOUS(GWEN_LOGDOMAIN,
+                "Checking delimiter at pos %x "
+                "(whether \"%c\" is in \"%s\")",
+                GWEN_Buffer_GetPos(msgbuf),
+                c, delimiters);
+    if (c && strchr(delimiters, c)) {
+      abortLoop=1;
+      DBG_VERBOUS(GWEN_LOGDOMAIN,
+                  "Found delimiter (\"%c\" is in \"%s\")",
+                  c, delimiters);
+    } /* if delimiter found */
+    else {
+      /* current char is not a delimiter */
+      if (name==0) {
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "no name");
+      }
+      else {
+        /* name is given */
+        int rv;
+        const char *dtype;
+        GWEN_BUFFER *vbuf;
+  
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading value from pos %x", GWEN_Buffer_GetPos(msgbuf));
+	vbuf=GWEN_Buffer_new(0, GWEN_MSGENGINE_MAX_VALUE_LEN, 0, 0);
+#ifdef HEAVY_DEBUG_MSGENGINE
+        DBG_ERROR(GWEN_LOGDOMAIN, "Reading value from here:\n");
+        GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
+                             GWEN_Buffer_GetBytesLeft(msgbuf),
+                             1);
+#endif
+
+        rv=GWEN_MsgEngine__ReadValue(e, msgbuf, n, rnode, vbuf, delimiters, flags);
+        if (rv==1) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Empty value");
+        }
+        else if (rv==-1) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Error parsing node \"%s\" (ELEM)", name);
+          GWEN_Buffer_free(vbuf);
+          return -1;
+        }
+  
+        GWEN_Buffer_Rewind(vbuf);
+  
+        /* special handling for binary data */
+        dtype=GWEN_XMLNode_GetProperty(n, "type", "");
+        if (GWEN_MsgEngine__IsBinTyp(e, dtype)) {
+          if (atoi(GWEN_XMLNode_GetProperty(n, "readbin", "1")) && e->binTypeReadPtr) {
+            rv=e->binTypeReadPtr(e, n, gr, vbuf);
+          }
+          else
+            rv=1;
+          if (rv==-1) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
+            GWEN_Buffer_free(vbuf);
+            return -1;
+          }
+          else if (rv==1) {
+            /* bin type not handled, so handle it myself */
+            if (GWEN_DB_SetBinValue(gr,
+                                    GWEN_DB_FLAGS_DEFAULT,
+                                    name,
+                                    GWEN_Buffer_GetStart(vbuf),
+                                    GWEN_Buffer_GetUsedBytes(vbuf))) {
+              DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
+              GWEN_Buffer_free(vbuf);
+              return -1;
+            }
+          }
+        } /* if type is bin */
+        else if (GWEN_MsgEngine__IsIntTyp(e, dtype)) {
+          int z;
+  
+          if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
+	    DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer", name);
+            return -1;
+          }
+	  if (GWEN_DB_SetIntValue(gr, GWEN_DB_FLAGS_DEFAULT, name, z)) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Could not set int value for \"%s\"", name);
+            return -1;
+          }
+        } /* if type is int */
+        else {
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Value is \"%s\"", GWEN_Buffer_GetStart(vbuf));
+          if (GWEN_DB_SetCharValue(gr,
+                                   GWEN_DB_FLAGS_DEFAULT,
+                                   name,
+                                   GWEN_Buffer_GetStart(vbuf))) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
+            return -1;
+          }
+        } /* if !bin */
+  
+        GWEN_Buffer_free(vbuf);
+      } /* if name is given */
+    } /* if current char is not a delimiter */
+  
+    if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
+      if (currentDelimiter) {
+	if (GWEN_Buffer_PeekByte(msgbuf)==currentDelimiter) {
+          GWEN_Buffer_IncrementPos(msgbuf, 1);
+          if (abortLoop && maxnum) {
+            uint32_t loopOpt=loopNr+1;
+  
+            if (maxnum-loopOpt>GWEN_Buffer_GetBytesLeft(msgbuf))
+              /* Suspicious but not necessarily invalid, let's see */
+              maxnum=loopOpt+GWEN_Buffer_GetBytesLeft(msgbuf);
+            for (; loopOpt<maxnum; loopOpt++) {
+              if (GWEN_Buffer_PeekByte(msgbuf)!=currentDelimiter)
+                break;
+              GWEN_Buffer_IncrementPos(msgbuf, 1);
+            }
+            if (loopOpt+1==maxnum && currentTerminator) {
+              if (GWEN_Buffer_PeekByte(msgbuf)==currentTerminator) {
+                GWEN_Buffer_IncrementPos(msgbuf, 1);
+                loopOpt++;
+              }
+            }
+            if (loopOpt<maxnum) {
+              DBG_ERROR(GWEN_LOGDOMAIN,
+                        "Delimiting character missing (pos=%d [%x]) "
+                        "expecting \"%c\", got \"%c\")",
+                        GWEN_Buffer_GetPos(msgbuf),
+                        GWEN_Buffer_GetPos(msgbuf),
+                        currentDelimiter,
+                        GWEN_Buffer_PeekByte(msgbuf));
+              GWEN_XMLNode_Dump(n, 2);
+              return -1;
+            }
+          }
+        }
+      }
+    }
+    loopNr++;
+  } /* while */
+  if (loopNr<minnum) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (too few ELEM repeats)");
+    GWEN_XMLNode_Dump(n, 2);
+    return -1;
+  }
+
+  return 0;
+}
+
+
 
 
 
