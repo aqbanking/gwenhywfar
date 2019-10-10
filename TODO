@@ -9,7 +9,6 @@ tm2:
 
 
 xml:
-  - read encodings from XML header and convert text accordingly
   - add argument to file reader/writer code which contains the target
     encoding
 
