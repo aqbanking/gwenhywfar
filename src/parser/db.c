@@ -1184,7 +1184,7 @@ int GWEN_DB_GetIntValue(GWEN_DB_NODE *n,
     assert(p);
     if (sscanf(p, "%d", &res)!=1) {
       DBG_INFO(GWEN_LOGDOMAIN,
-               "String [%s] in node is not an int value", p);
+               "String [%s] in node [%s] is not an int value", p, path);
       return defVal;
     }
     return res;
