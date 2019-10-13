@@ -150,7 +150,7 @@ int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
     return GWEN_ERROR_COULD_NOT_RESOLVE;
   }
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %08x",
-              name, (int)*p);
+              name, *p);
   return 0;
 }
 
@@ -161,7 +161,7 @@ int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
                                         const char *name)
 {
   GWEN_BUFFER *buffer;
-  unsigned int pos;
+  /*unsigned int pos;*/
   unsigned int i;
   int err;
 
@@ -174,7 +174,7 @@ int GWEN_LibLoader__OpenLibraryWithPath(GWEN_LIBLOADER *h,
     GWEN_Buffer_AppendByte(buffer, '\\'); /* Use backslash: This is windows! */
   }
   /* remember current position */
-  pos=GWEN_Buffer_GetPos(buffer);
+  /*pos=GWEN_Buffer_GetPos(buffer);*/
   /* append name of the library to load */
   GWEN_Buffer_AppendString(buffer, name);
   i=strlen(name);

@@ -36,6 +36,7 @@
 #include <string.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
+#include <direct.h> /* for _mkdir */
 
 
 
