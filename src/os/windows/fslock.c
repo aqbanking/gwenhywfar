@@ -142,7 +142,9 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl)
 
   if (fl->lockCount==0) {
     int fd;
+#ifdef HAVE_LINK
     int linkCount;
+#endif
     struct stat st;
 
     fd=open(fl->uniqueLockFilename, O_CREAT|O_TRUNC|O_RDWR, S_IRUSR|S_IWUSR);
@@ -162,9 +164,10 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl)
       remove(fl->uniqueLockFilename);
       return GWEN_FSLock_ResultError;
     }
-    linkCount=(int)(st.st_nlink);
 
 #ifdef HAVE_LINK
+    linkCount=(int)(st.st_nlink);
+
     /* create a hard link to the new unique file with the name of the
      * real lock file. This is guaranteed to be atomic even on NFS */
     if (link(fl->uniqueLockFilename, fl->baseLockFilename)) {

@@ -55,6 +55,7 @@ static char *gwen_i18n__currentlocale=0;
 
 
 #ifdef OS_WIN32
+# ifdef HAVE_I18N
 
 struct gwen_i18n_tabletype {
   const char *win_name;
@@ -123,6 +124,7 @@ static const char *gwen_i18n_transwinlocale(const char *s)
 }
 
 
+# endif
 #endif
 
 
