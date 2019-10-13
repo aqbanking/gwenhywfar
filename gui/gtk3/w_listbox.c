@@ -398,7 +398,6 @@ const char *Gtk3Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
       GList *le;
       GWEN_BUFFER *tbuf;
       int cnt=0;
-      const char *result;
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       le=g_list_first(cols);
@@ -417,9 +416,7 @@ const char *Gtk3Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
       GWEN_Buffer_free(tbuf);
 
       g_list_free(cols);
-      result=GWEN_Widget_GetText(w, GTK3_DIALOG_STRING_TITLE);
-      gtk_tree_path_free(path);
-      return result;
+      return GWEN_Widget_GetText(w, GTK3_DIALOG_STRING_TITLE);
     }
     return defaultValue;
   }
