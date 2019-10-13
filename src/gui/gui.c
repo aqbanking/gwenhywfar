@@ -269,7 +269,7 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
   rv=vfprintf(stream, fmt, args);
 #else
   if (!gui->charSet)
-    rv=vfprintf(stderr, fmt, args);
+    rv=vfprintf(stream, fmt, args);
   else {
     GWEN_BUFFER *tbuf;
     GWEN_BUFFER *outbuf;

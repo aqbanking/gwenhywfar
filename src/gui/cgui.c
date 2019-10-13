@@ -208,7 +208,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
   outLeft=maxLen;
 #endif
 
-  /* if possible, disable echo from stdin to stderr during password
+  /* if possible, disable echo from stdin to stdout during password
    * entry */
 #if HAVE_DECL_SIGPROCMASK
   sigemptyset(&snew);
@@ -225,10 +225,10 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
     tcsetattr(fileno(stdin), TCSAFLUSH, &NewInAttr);
     AttrInChanged = !0;
   }
-  if (0 == tcgetattr(fileno(stderr), &OldOutAttr)) {
+  if (0 == tcgetattr(fileno(stdout), &OldOutAttr)) {
     NewOutAttr = OldOutAttr;
     NewOutAttr.c_lflag &= ~ICANON;
-    tcsetattr(fileno(stderr), TCSAFLUSH, &NewOutAttr);
+    tcsetattr(fileno(stdout), TCSAFLUSH, &NewOutAttr);
     AttrOutChanged = !0;
   }
 #endif
@@ -259,7 +259,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
     }
     else if (done==(size_t)-1) {
       if (errno==E2BIG || errno==EILSEQ) {
-        GWEN_Gui_StdPrintf(gui, stderr, "\007");
+        GWEN_Gui_StdPrintf(gui, stdout, "\007");
         continue;
       }
       DBG_ERROR(GWEN_LOGDOMAIN, "Unrecoverable error in conversion: %s",
@@ -284,7 +284,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
         do
           pos--;
         while ((buffer[pos]&0xC0)==0x80 && pos);
-        GWEN_Gui_StdPrintf(gui, stderr, "%c %c", 8, 8);
+        GWEN_Gui_StdPrintf(gui, stdout, "%c %c", 8, 8);
       }
       pOutbuf=buffer+pos;
     }
@@ -311,12 +311,12 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
         }
         else {
           /* too few characters */
-          GWEN_Gui_StdPrintf(gui, stderr, "\007");
+          GWEN_Gui_StdPrintf(gui, stdout, "\007");
           pOutbuf=buffer+pos;
         }
       }
       else {
-        GWEN_Gui_StdPrintf(gui, stderr, "\n");
+        GWEN_Gui_StdPrintf(gui, stdout, "\n");
         buffer[pos]=0;
         rv=0;
         break;
@@ -331,26 +331,26 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
       if ((flags & GWEN_GUI_INPUT_FLAGS_NUMERIC) &&
           !isdigit(chr)) {
         /* bad character */
-        GWEN_Gui_StdPrintf(gui, stderr, "\007");
+        GWEN_Gui_StdPrintf(gui, stdout, "\007");
         pOutbuf=buffer+pos;
       }
       else {
         if (flags & GWEN_GUI_INPUT_FLAGS_SHOW) {
           *pOutbuf=0;
-          GWEN_Gui_StdPrintf(gui, stderr, "%s", buffer+pos);
+          GWEN_Gui_StdPrintf(gui, stdout, "%s", buffer+pos);
         }
         else
 #ifndef HAVE_ICONV
           /* Do not print stars for continuation bytes */
           if ((chr&0xC0)!=0x80)
 #endif
-            GWEN_Gui_StdPrintf(gui, stderr, "*");
+            GWEN_Gui_StdPrintf(gui, stdout, "*");
         pos=pOutbuf-buffer;
       }
     }
     else {
       /* buffer full */
-      GWEN_Gui_StdPrintf(gui, stderr, "\007");
+      GWEN_Gui_StdPrintf(gui, stdout, "\007");
       pOutbuf=buffer+pos;
     }
   } /* for */
@@ -358,7 +358,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #ifdef HAVE_TERMIOS_H
   /* re-enable echo (if previously disabled) */
   if (AttrOutChanged)
-    tcsetattr(fileno(stderr), TCSADRAIN, &OldOutAttr);
+    tcsetattr(fileno(stdout), TCSADRAIN, &OldOutAttr);
   if (AttrInChanged)
     tcsetattr(fileno(stdin), TCSADRAIN, &OldInAttr);
 #endif
@@ -393,7 +393,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
 
   if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
     if (GWEN_GUI_MSG_FLAGS_SEVERITY_IS_DANGEROUS(flags)) {
-      GWEN_Gui_StdPrintf(gui, stderr,
+      GWEN_Gui_StdPrintf(gui, stdout,
                          "Got the following dangerous message:\n%s\n",
                          GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
@@ -409,44 +409,44 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
     }
   }
 
-  GWEN_Gui_StdPrintf(gui, stderr, "===== %s =====\n", title);
-  GWEN_Gui_StdPrintf(gui, stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
+  GWEN_Gui_StdPrintf(gui, stdout, "===== %s =====\n", title);
+  GWEN_Gui_StdPrintf(gui, stdout, "%s\n", GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   tbuf=0;
 
   if (b1) {
-    GWEN_Gui_StdPrintf(gui, stderr, "(1) %s", b1);
+    GWEN_Gui_StdPrintf(gui, stdout, "(1) %s", b1);
     if (b2) {
-      GWEN_Gui_StdPrintf(gui, stderr, "  (2) %s", b2);
+      GWEN_Gui_StdPrintf(gui, stdout, "  (2) %s", b2);
       if (b3) {
-        GWEN_Gui_StdPrintf(gui, stderr, "  (3) %s", b3);
+        GWEN_Gui_StdPrintf(gui, stdout, "  (3) %s", b3);
       }
     }
-    GWEN_Gui_StdPrintf(gui, stderr, "\n");
+    GWEN_Gui_StdPrintf(gui, stdout, "\n");
   }
-  GWEN_Gui_StdPrintf(gui, stderr, "Please enter your choice: ");
+  GWEN_Gui_StdPrintf(gui, stdout, "Please enter your choice: ");
   for (;;) {
     c=GWEN_Gui_CGui__readCharFromStdin(0);
     if (c==EOF) {
-      GWEN_Gui_StdPrintf(gui, stderr, "Aborted.\n");
+      GWEN_Gui_StdPrintf(gui, stdout, "Aborted.\n");
       return GWEN_ERROR_USER_ABORTED;
     }
     if (!b1 && c==13)
       return 0;
     if (c=='1' && b1) {
-      GWEN_Gui_StdPrintf(gui, stderr, "1\n");
+      GWEN_Gui_StdPrintf(gui, stdout, "1\n");
       return 1;
     }
     else if (c=='2' && b2) {
-      GWEN_Gui_StdPrintf(gui, stderr, "2\n");
+      GWEN_Gui_StdPrintf(gui, stdout, "2\n");
       return 2;
     }
     else if (c=='3' && b3) {
-      GWEN_Gui_StdPrintf(gui, stderr, "3\n");
+      GWEN_Gui_StdPrintf(gui, stdout, "3\n");
       return 3;
     }
     else {
-      GWEN_Gui_StdPrintf(gui, stderr, "%c", 7);
+      GWEN_Gui_StdPrintf(gui, stdout, "%c", 7);
     }
   } /* for */
 
@@ -470,8 +470,8 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Gui_GetRawText(gui, text, tbuf);
 
-  GWEN_Gui_StdPrintf(gui, stderr, "===== %s =====\n", title);
-  GWEN_Gui_StdPrintf(gui, stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
+  GWEN_Gui_StdPrintf(gui, stdout, "===== %s =====\n", title);
+  GWEN_Gui_StdPrintf(gui, stdout, "%s\n", GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   tbuf=0;
 
@@ -484,21 +484,21 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
       return GWEN_ERROR_INVALID;
     }
     for (;;) {
-      GWEN_Gui_StdPrintf(gui, stderr, "Input: ");
+      GWEN_Gui_StdPrintf(gui, stdout, "Input: ");
       rv=GWEN_Gui_CGui__input(gui, flags, lbuffer, minLen, maxLen, guiid);
       if (rv) {
         free(lbuffer);
         return rv;
       }
 
-      GWEN_Gui_StdPrintf(gui, stderr, "Again: ");
+      GWEN_Gui_StdPrintf(gui, stdout, "Again: ");
       rv=GWEN_Gui_CGui__input(gui, flags, buffer, minLen, maxLen, guiid);
       if (rv) {
         free(lbuffer);
         return rv;
       }
       if (strcmp(lbuffer, buffer)!=0) {
-        GWEN_Gui_StdPrintf(gui, stderr,
+        GWEN_Gui_StdPrintf(gui, stdout,
                            "ERROR: Entries do not match, please try (again or abort)\n");
       }
       else {
@@ -510,7 +510,7 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
     free(lbuffer);
   }
   else {
-    GWEN_Gui_StdPrintf(gui, stderr, "Input: ");
+    GWEN_Gui_StdPrintf(gui, stdout, "Input: ");
     rv=GWEN_Gui_CGui__input(gui, flags, buffer, minLen, maxLen, guiid);
   }
 
@@ -541,8 +541,8 @@ uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Gui_GetRawText(gui, text, tbuf);
 
-  GWEN_Gui_StdPrintf(gui, stderr, "===== %s =====\n", title);
-  GWEN_Gui_StdPrintf(gui, stderr, "%s\n", GWEN_Buffer_GetStart(tbuf));
+  GWEN_Gui_StdPrintf(gui, stdout, "===== %s =====\n", title);
+  GWEN_Gui_StdPrintf(gui, stdout, "%s\n", GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   tbuf=0;
 

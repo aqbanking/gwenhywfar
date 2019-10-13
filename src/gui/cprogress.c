@@ -47,7 +47,7 @@ GWEN_GUI_CPROGRESS *GWEN_Gui_CProgress_new(GWEN_GUI *gui,
   cp->logBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   if (!(cp->flags & GWEN_GUI_PROGRESS_DELAY)) {
-    GWEN_Gui_StdPrintf(gui, stderr, "===== %s =====\n", title);
+    GWEN_Gui_StdPrintf(gui, stdout, "===== %s =====\n", title);
     cp->shown=1;
   }
 
@@ -158,7 +158,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
     t1=time(0);
     if (difftime(t1, cp->startTime)>GWEN_GUI_DELAY_SECS) {
       if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
-        GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: Started.\n", cp->title);
+        GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Started.\n", cp->title);
       cp->shown=1;
     }
   }
@@ -170,14 +170,14 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
       if (cp->shown) {
         if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
           if (cp->total==GWEN_GUI_PROGRESS_NONE)
-            GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: %llu\n", cp->title,
+            GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu\n", cp->title,
                                (long long unsigned)progress);
           else
-            GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: %llu of %llu\n",
+            GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu of %llu\n",
                                cp->title,
                                (long long unsigned)progress,
                                (long long unsigned)cp->total);
-        }
+	}
       }
       cp->current=progress;
     }
@@ -202,7 +202,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
       /* set blocking mode to what we found before modification */
       fcntl(fileno(stdin), F_SETFL, fl);
       if (chr==GWEN_GUI_CPROGRESS_CHAR_ABORT) {
-        GWEN_Gui_StdPrintf(cp->gui, stderr, "------> ABORTED BY USER\n");
+        GWEN_Gui_StdPrintf(cp->gui, stdout, "------> ABORTED BY USER\n");
         cp->aborted=1;
         return GWEN_ERROR_USER_ABORTED;
       }
@@ -234,7 +234,7 @@ int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
       /* Just in case the buffer has been reallocated */
       t=GWEN_Buffer_GetStart(tbuf);
     }
-    GWEN_Gui_StdPrintf(cp->gui, stderr, "%s", t);
+    GWEN_Gui_StdPrintf(cp->gui, stdout, "%s", t);
 
     GWEN_Buffer_AppendString(cp->logBuf, t);
     GWEN_Buffer_free(tbuf);
@@ -253,7 +253,7 @@ int GWEN_Gui_CProgress_End(GWEN_GUI_CPROGRESS *cp)
 
   if (cp->shown) {
     if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
-      GWEN_Gui_StdPrintf(cp->gui, stderr, "%s: Finished.\n", cp->title);
+      GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Finished.\n", cp->title);
   }
   if (cp->aborted)
     return GWEN_ERROR_USER_ABORTED;
