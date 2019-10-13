@@ -19,6 +19,7 @@
 #include <string.h>
 
 
+static GWEN_LOGGER_LEVEL CProgressLevel = GWEN_LoggerLevel_Unknown;
 
 GWEN_LIST_FUNCTIONS(GWEN_GUI_CPROGRESS, GWEN_Gui_CProgress)
 
@@ -46,8 +47,23 @@ GWEN_GUI_CPROGRESS *GWEN_Gui_CProgress_new(GWEN_GUI *gui,
   cp->total=total;
   cp->logBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+  if (GWEN_LoggerLevel_Unknown == CProgressLevel) {
+    const char *s;
+
+    CProgressLevel=GWEN_LoggerLevel_Warning;
+    s=getenv("GWEN_CPROGRESS_LOGLEVEL");
+    if (s) {
+      GWEN_LOGGER_LEVEL ll;
+
+      ll=GWEN_Logger_Name2Level(s);
+      if (GWEN_LoggerLevel_Unknown != ll)
+       CProgressLevel=ll;
+    }
+  }
+
   if (!(cp->flags & GWEN_GUI_PROGRESS_DELAY)) {
-    GWEN_Gui_StdPrintf(gui, stdout, "===== %s =====\n", title);
+    if (GWEN_LoggerLevel_Info <= CProgressLevel)
+      GWEN_Gui_StdPrintf(gui, stdout, "===== %s =====\n", title);
     cp->shown=1;
   }
 
@@ -158,7 +174,8 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
     t1=time(0);
     if (difftime(t1, cp->startTime)>GWEN_GUI_DELAY_SECS) {
       if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
-        GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Started.\n", cp->title);
+	if (GWEN_LoggerLevel_Notice <= CProgressLevel)
+          GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Started.\n", cp->title);
       cp->shown=1;
     }
   }
@@ -169,14 +186,16 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
     if (progress!=cp->current) {
       if (cp->shown) {
         if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
-          if (cp->total==GWEN_GUI_PROGRESS_NONE)
-            GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu\n", cp->title,
-                               (long long unsigned)progress);
-          else
-            GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu of %llu\n",
-                               cp->title,
-                               (long long unsigned)progress,
-                               (long long unsigned)cp->total);
+          if (GWEN_LoggerLevel_Notice <= CProgressLevel) {
+            if (cp->total==GWEN_GUI_PROGRESS_NONE)
+              GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu\n", cp->title,
+                                 (long long unsigned)progress);
+            else
+              GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu of %llu\n",
+                                 cp->title,
+                                 (long long unsigned)progress,
+                                 (long long unsigned)cp->total);
+	  }
 	}
       }
       cp->current=progress;
@@ -202,7 +221,8 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
       /* set blocking mode to what we found before modification */
       fcntl(fileno(stdin), F_SETFL, fl);
       if (chr==GWEN_GUI_CPROGRESS_CHAR_ABORT) {
-        GWEN_Gui_StdPrintf(cp->gui, stdout, "------> ABORTED BY USER\n");
+        if (GWEN_LoggerLevel_Warning <= CProgressLevel)
+          GWEN_Gui_StdPrintf(cp->gui, stdout, "------> ABORTED BY USER\n");
         cp->aborted=1;
         return GWEN_ERROR_USER_ABORTED;
       }
@@ -216,7 +236,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
 
 
 int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
-                           GWEN_UNUSED GWEN_LOGGER_LEVEL level,
+                           GWEN_LOGGER_LEVEL level,
                            const char *text)
 {
   assert(cp);
@@ -234,7 +254,8 @@ int GWEN_Gui_CProgress_Log(GWEN_GUI_CPROGRESS *cp,
       /* Just in case the buffer has been reallocated */
       t=GWEN_Buffer_GetStart(tbuf);
     }
-    GWEN_Gui_StdPrintf(cp->gui, stdout, "%s", t);
+    if (level <= CProgressLevel)
+      GWEN_Gui_StdPrintf(cp->gui, stdout, "%s", t);
 
     GWEN_Buffer_AppendString(cp->logBuf, t);
     GWEN_Buffer_free(tbuf);
@@ -253,7 +274,8 @@ int GWEN_Gui_CProgress_End(GWEN_GUI_CPROGRESS *cp)
 
   if (cp->shown) {
     if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
-      GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Finished.\n", cp->title);
+      if (GWEN_LoggerLevel_Notice <= CProgressLevel)
+        GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Finished.\n", cp->title);
   }
   if (cp->aborted)
     return GWEN_ERROR_USER_ABORTED;
