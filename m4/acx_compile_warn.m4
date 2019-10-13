@@ -51,7 +51,7 @@ if test ${GCC}x = yesx; then
   GCC_VERSION=`${CC} -dumpversion`
   if test `echo ${GCC_VERSION} | cut -d. -f1` -ge 3; then
      # This is gcc >= 3.x.x
-     if test `echo ${GCC_VERSION} | cut -d. -f2` -ge 4; then
+     if test `echo ${GCC_VERSION} | cut -d. -f2 | cut -d- -f1` -ge 4; then
 	# This is gcc >= 3.4.x
 	CFLAGS="${CFLAGS} -Wdeclaration-after-statement"
      fi
