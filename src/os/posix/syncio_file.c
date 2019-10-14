@@ -412,8 +412,8 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
 
   rv=lseek(xio->fd, pos, w);
   if (rv==-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "lseek(%s, %lli): %s",
-              xio->path, (long long int) pos, strerror(errno));
+    DBG_ERROR(GWEN_LOGDOMAIN, "lseek(%s, %" PRIi64 "): %s",
+              xio->path, (int64_t) pos, strerror(errno));
     return GWEN_ERROR_IO;
   }
   return rv;

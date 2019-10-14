@@ -188,13 +188,14 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
         if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE)) {
           if (GWEN_LoggerLevel_Notice <= CProgressLevel) {
             if (cp->total==GWEN_GUI_PROGRESS_NONE)
-              GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu\n", cp->title,
-                                 (long long unsigned)progress);
+              GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %" PRIu64 "\n", cp->title,
+                                 (uint64_t)progress);
             else
-              GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %llu of %llu\n",
+              GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: %" PRIu64
+                                 " of %" PRIu64 "\n",
                                  cp->title,
-                                 (long long unsigned)progress,
-                                 (long long unsigned)cp->total);
+                                 (uint64_t)progress,
+                                 (uint64_t)cp->total);
 	  }
 	}
       }
