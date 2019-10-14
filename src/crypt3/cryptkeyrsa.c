@@ -84,6 +84,20 @@ static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name
   return 0;
 }
 
+/* We need a printf format specifier for "size_t" but <inttypes.h>
+ * does not have one. So in this one single exception we define our
+ * own, inspired from here:
+ * https://stackoverflow.com/questions/44382862/how-to-printf-a-size-t-without-warning-in-mingw-w64-gcc-7-1
+ */
+#ifdef _WIN32
+#  ifdef _WIN64
+#    define PRI_SIZET PRIu64
+#  else
+#    define PRI_SIZET PRIu32
+#  endif
+#else
+#  define PRI_SIZET "zd"
+#endif
 
 
 int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
@@ -106,7 +120,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     snprintf(buffer, sizeof(buffer)-1,
              "(genkey\n"
              " (rsa\n"
-             "  (nbits %zd:%d)\n"
+             "  (nbits %" PRI_SIZET ":%d)\n"
              "  (rsa-use-e 5:65537)\n"
              " ))",
              strlen(numbuf),
@@ -116,7 +130,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     snprintf(buffer, sizeof(buffer)-1,
              "(genkey\n"
              " (rsa\n"
-             "  (nbits %zd:%d)\n"
+             "  (nbits %" PRI_SIZET ":%d)\n"
              "  (rsa-use-e 1:0)\n"
              " ))",
              strlen(numbuf),
