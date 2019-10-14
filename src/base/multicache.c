@@ -509,12 +509,18 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc)
       GWEN_MultiCache_Type_List_free(mc->typeList);
 
       DBG_NOTICE(GWEN_LOGDOMAIN,
-                 "MultiCache usage: %lld hits, %lld misses, %lld drops, %lld mb max memory used from %lld mb (%d %%)",
-                 (unsigned long long int) mc->cacheHits,
-                 (unsigned long long int) mc->cacheMisses,
-                 (unsigned long long int) mc->cacheDrops,
-                 (unsigned long long int)((mc->maxSizeUsed)/(1024*1024)),
-                 (unsigned long long int)((mc->maxSize)/(1024*1024)),
+                 "MultiCache usage: "
+                 "%" PRIu64 " hits, "
+                 "%" PRIu64 " misses, "
+                 "%" PRIu64 " drops, "
+                 "%" PRIu64 " mb max memory used from "
+                 "%" PRIu64 " mb "
+                 "(%d %%)",
+                 (uint64_t) mc->cacheHits,
+                 (uint64_t) mc->cacheMisses,
+                 (uint64_t) mc->cacheDrops,
+                 (uint64_t)((mc->maxSizeUsed)/(1024*1024)),
+                 (uint64_t)((mc->maxSize)/(1024*1024)),
                  (int)((mc->maxSizeUsed)*100.0/mc->maxSize));
 
       mc->_refCount=0;

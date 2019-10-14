@@ -357,9 +357,9 @@ int64_t GWEN_SyncIo_File_Seek(GWEN_SYNCIO *sio, int64_t pos, GWEN_SYNCIO_FILE_WH
     rv=GetLastError();
     if (rv!=NO_ERROR) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-                "Error seeking in file[%s] at %llu: %d",
+                "Error seeking in file[%s] at %" PRIi64 ": %d",
                 xio->path,
-                (unsigned long long) pos,
+                (int64_t) pos,
                 (int)rv);
       return GWEN_ERROR_IO;
     }

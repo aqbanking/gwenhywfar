@@ -149,8 +149,8 @@ int GWEN_LibLoader_Resolve(GWEN_LIBLOADER *h,
               name);
     return GWEN_ERROR_COULD_NOT_RESOLVE;
   }
-  DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %08x",
-              name, *p);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Resolved symbol \"%s\": %" PRIx64,
+              name, (uint64_t)*p);
   return 0;
 }
 
