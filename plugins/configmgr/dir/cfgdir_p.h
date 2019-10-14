@@ -53,51 +53,51 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url);
 GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(void *bp, void *p);
 
 
-int GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *mgr,
-                               const char *groupName,
-                               const char *subGroupName,
-                               GWEN_DB_NODE **pDb);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *mgr,
+                                             const char *groupName,
+                                             const char *subGroupName,
+                                             GWEN_DB_NODE **pDb);
 
-int GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *mgr,
-                               const char *groupName,
-                               const char *subGroupName,
-                               GWEN_DB_NODE *db);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *mgr,
+                                             const char *groupName,
+                                             const char *subGroupName,
+                                             GWEN_DB_NODE *db);
 
-int GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
-                               const char *groupName,
-                               const char *subGroupName);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
+                                             const char *groupName,
+                                             const char *subGroupName);
 
-int GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *mgr,
-                                const char *groupName,
-                                const char *subGroupName);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *mgr,
+                                              const char *groupName,
+                                              const char *subGroupName);
 
-int GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *mgr,
-                                  const char *groupName,
-                                  const char *subGroupName);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *mgr,
+                                                const char *groupName,
+                                                const char *subGroupName);
 
-int GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *mgr,
-                                  const char *groupName,
-                                  char *buffer,
-                                  uint32_t bufferLen);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *mgr,
+                                                const char *groupName,
+                                                char *buffer,
+                                                uint32_t bufferLen);
 
-int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
-                                       const char *groupName,
-                                       uint32_t uid,
-                                       int doCheck,
-                                       char *buffer,
-                                       uint32_t bufferLen);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
+                                                     const char *groupName,
+                                                     uint32_t uid,
+                                                     int doCheck,
+                                                     char *buffer,
+                                                     uint32_t bufferLen);
 
 
-int GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *mgr,
-                                  const char *groupName,
-                                  const char *subGroupName);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *mgr,
+                                                const char *groupName,
+                                                const char *subGroupName);
 
-int GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *mgr,
-                                 GWEN_STRINGLIST *sl);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *mgr,
+                                               GWEN_STRINGLIST *sl);
 
-int GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *mgr,
-                                    const char *groupName,
-                                    GWEN_STRINGLIST *sl);
+int GWENHYWFAR_CB GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *mgr,
+                                                  const char *groupName,
+                                                  GWEN_STRINGLIST *sl);
 
 
 void GWEN_ConfigMgrDir_AddGroupDirName(GWEN_CONFIGMGR *cfg,
