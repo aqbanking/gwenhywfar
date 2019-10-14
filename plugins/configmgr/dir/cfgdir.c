@@ -704,8 +704,16 @@ int GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
   xcfg=GWEN_INHERIT_GETDATA(GWEN_CONFIGMGR, GWEN_CONFIGMGR_DIR, cfg);
   assert(xcfg);
 
-  snprintf(ubuf, sizeof(ubuf)-1, "%08x", uid);
-  ubuf[sizeof(ubuf)-1]=0;
+  rv=snprintf(ubuf, sizeof(ubuf)-1, "%08x", uid);
+  if (rv>=sizeof(ubuf)-1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Id longer than %d (%d)? SNH!", (int) (sizeof(ubuf)-1), rv);
+    return GWEN_ERROR_INTERNAL;
+  }
+  else if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on snprintf: %d", rv);
+    return GWEN_ERROR_INTERNAL;
+  }
+  ubuf[rv]=0;
 
   if (doCheck) {
     GWEN_BUFFER *nbuf;
