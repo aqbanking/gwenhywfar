@@ -50,7 +50,6 @@
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
 
 
-#if 0
 int GWEN_Process_ModuleInit(void)
 {
   return 0;
@@ -72,7 +71,6 @@ int GWEN_Process_ModuleFini(void)
   } /* while */
   return 0;
 }
-#endif
 
 
 

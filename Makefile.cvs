@@ -28,11 +28,12 @@ all_warnings=\
 # -Wcast-qual -Wfloat-equal -Wswitch-enum -Wformat-nonliteral -Wformat=2   //disable this for now
 
 c_warnings=\
- -Wbad-function-cast  -Wmissing-declarations -Wmissing-parameter-type  \
+ -Wbad-function-cast  -Wmissing-parameter-type  \
  -Wnested-externs \
  -Wdeclaration-after-statement -Wpointer-sign
 
-# -Wc++-compat disable this for now
+# disable this for now
+# -Wc++-compat -Wmissing-declarations
 
 cplusplus_warnings=\
  -Wc++0x-compat -Wno-invalid-offsetof
@@ -86,7 +87,7 @@ mp:
 	automake --add-missing
 	autoconf
 	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" \
-	 CFLAGS="-O0 -ggdb -Wall $(all_warnings) $(c_warnings)" \
+	 CFLAGS="-O0 -ggdb -Wall $(c_warnings)" \
 	 ./configure \
 	   INSTALL="/usr/bin/install -p" \
 	   --with-guis="gtk2 gtk3 fox16 qt5" \

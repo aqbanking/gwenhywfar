@@ -78,7 +78,6 @@ uint32_t GWEN_InetAddr_GetCapabilities(void)
 
 
 
-#if 0
 int GWEN_InetAddr_ModuleInit(void)
 {
   return 0;
@@ -90,7 +89,6 @@ int GWEN_InetAddr_ModuleFini(void)
 {
   return 0;
 }
-#endif
 
 
 

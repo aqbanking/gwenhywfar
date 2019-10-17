@@ -44,7 +44,6 @@
 
 
 
-#if 0
 int GWEN_LibLoader_ModuleInit(void)
 {
   return 0;
@@ -55,7 +54,6 @@ int GWEN_LibLoader_ModuleFini(void)
 {
   return 0;
 }
-#endif
 
 
 
