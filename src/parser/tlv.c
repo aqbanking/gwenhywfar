@@ -513,7 +513,7 @@ int GWEN_TLV_WriteHeader(unsigned int tagType,
     }
 
     /* write tag length */
-    if (tagLength>0xffffffffLL) {
+    if (tagLength>0xffffffffL) {
       /* five byte size */
       GWEN_Buffer_AppendByte(mbuf, 0x85);
       GWEN_Buffer_AppendByte(mbuf, ((tagLength>>32) & 0xff));
@@ -620,6 +620,8 @@ static void hex2char(char byte, char *character)
     case 15:
       character[i]='F';
       break;
+    default: /* can't get here, this is just to keep the compiler happy */
+      break;
     }
   }
 }
@@ -629,7 +631,7 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
   int tlv_len=0;
   unsigned int tag_len=0;
   uint32_t data_len;
-  char byte;
+  uint8_t byte;
   int isConstructed;
   int anotherByte;
   char tag[128];
@@ -698,15 +700,28 @@ uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len)
 {
   uint32_t data_len=0;
   uint32_t tlv_len=0;
-  char byte;
-  int anotherByte;
+  int rv;
+  uint8_t byte;
+  uint8_t anotherByte;
 
   /* get first byte */
-  byte = GWEN_Buffer_ReadByte(mbuf);
+  rv=GWEN_Buffer_ReadByte(mbuf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    abort();
+    return 0;
+  }
+  byte=(uint8_t) rv;
   tlv_len++;
   anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
   while (anotherByte) {
-    byte = GWEN_Buffer_ReadByte(mbuf);
+    rv=GWEN_Buffer_ReadByte(mbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      abort();
+      return 0;
+    }
+    byte=(uint8_t) rv;
     tlv_len++;
     anotherByte= byte > 127;
   }
@@ -717,7 +732,13 @@ uint32_t GWEN_TLV_ParseLength(GWEN_BUFFER *mbuf, uint32_t *tag_len_len)
     assert(byte!=0xFF);
     data_len=0;
     while (numLengthBytes--) {
-      byte = GWEN_Buffer_ReadByte(mbuf);
+      rv=GWEN_Buffer_ReadByte(mbuf);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        abort();
+        return 0;
+      }
+      byte=(uint8_t) rv;
       tlv_len++;
       data_len<<=8;
       data_len+=(uint32_t)byte;
