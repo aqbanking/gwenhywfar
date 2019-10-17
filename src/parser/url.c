@@ -21,6 +21,8 @@ GWEN_LIST_FUNCTIONS(GWEN_URL, GWEN_Url)
 GWEN_LIST2_FUNCTIONS(GWEN_URL, GWEN_Url)
 
 
+static GWEN_URL *GWEN_Url_List2__freeAll_cb(GWEN_URL *st, GWEN_UNUSED void *user_data);
+
 
 
 GWEN_URL *GWEN_Url_new(void)

@@ -742,7 +742,6 @@ int GWEN_MsgEngine__GetInline(GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__WriteElement(GWEN_MSGENGINE *e,
                                  GWEN_BUFFER *gbuf,
                                  GWEN_XMLNODE *node,
-                                 GWEN_XMLNODE *rnode,
                                  GWEN_DB_NODE *gr,
                                  int loopNr,
                                  int isOptional,
@@ -1817,7 +1816,6 @@ int GWEN_MsgEngine__WriteGroup(GWEN_MSGENGINE *e,
           rv=GWEN_MsgEngine__WriteElement(e,
                                           gbuf,
                                           n,
-                                          rnode,
                                           gr,
                                           loopNr,
                                           loopNr>=minnum ||
@@ -2273,7 +2271,6 @@ int GWEN_MsgEngine__ShowElement(GWEN_UNUSED GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                               const char *path,
                               GWEN_XMLNODE *node,
-                              GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
                               uint32_t flags)
 {
@@ -2466,12 +2463,7 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
             npath=path;
 
           /* write group */
-          if (GWEN_MsgEngine__ShowGroup(e,
-                                        npath,
-                                        gn,
-                                        n,
-                                        sl,
-                                        lflags)) {
+          if (GWEN_MsgEngine__ShowGroup(e, npath, gn, sl, lflags)) {
             DBG_INFO(GWEN_LOGDOMAIN, "Could not show group \"%s\"", gtype);
             return -1;
           }
@@ -2532,7 +2524,6 @@ int GWEN_MsgEngine_ShowMessage(GWEN_MSGENGINE *e,
   if (GWEN_MsgEngine__ShowGroup(e,
                                 "",
                                 group,
-                                0,
                                 sl,
                                 flags)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error showing group \"%s\"", msgName);
@@ -2613,7 +2604,6 @@ int GWEN_MsgEngine__ListElement(GWEN_UNUSED GWEN_MSGENGINE *e,
 int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
                               const char *path,
                               GWEN_XMLNODE *node,
-                              GWEN_XMLNODE *rnode,
                               GWEN_STRINGLIST *sl,
                               GWEN_XMLNODE *listNode,
                               uint32_t flags)
@@ -2781,13 +2771,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
         GWEN_XMLNode_AddChild(listNode, nn);
 
         /* write group */
-        if (GWEN_MsgEngine__ListGroup(e,
-                                      npath,
-                                      gn,
-                                      n,
-                                      sl,
-                                      nn,
-                                      lflags)) {
+        if (GWEN_MsgEngine__ListGroup(e, npath, gn, sl, nn, lflags)) {
           DBG_INFO(GWEN_LOGDOMAIN, "Could not list group \"%s\"", gtype);
           return -1;
         }
@@ -2826,13 +2810,7 @@ GWEN_XMLNODE *GWEN_MsgEngine_ListMessage(GWEN_MSGENGINE *e,
   listNode=GWEN_XMLNode_dup(group);
   GWEN_XMLNode_RemoveChildren(listNode);
 
-  if (GWEN_MsgEngine__ListGroup(e,
-                                "",
-                                group,
-                                0,
-                                sl,
-                                listNode,
-                                flags)) {
+  if (GWEN_MsgEngine__ListGroup(e, "", group, sl, listNode, flags)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error showing group \"%s\"", msgName);
     GWEN_StringList_free(sl);
     GWEN_XMLNode_free(listNode);
@@ -2958,7 +2936,7 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
       br=0;
       while (GWEN_Buffer_GetBytesLeft(msgbuf) &&
-             (size==0 || br<size)) {
+             (size==0 || br<(int)size)) {
         int c;
 
         c=GWEN_Buffer_ReadByte(msgbuf);

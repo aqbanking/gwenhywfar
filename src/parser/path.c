@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Sep 09 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -33,6 +33,23 @@
 #include "gwenhywfar/misc.h"
 #include "gwenhywfar/text.h"
 #include <ctype.h>
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static void *GWEN_Path_AppendPathElement(const char *entry, void *data, unsigned int flags);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
 
 
 
@@ -212,7 +229,6 @@ void *GWEN_Path_HandleWithIdx(const char *path,
   } /* while */
 
   while (*path) {
-    char *p;
     int idx;
 
     idx=0;
@@ -232,6 +248,8 @@ void *GWEN_Path_HandleWithIdx(const char *path,
 
     /* now buffer contains the element, check for index */
     if (!(flags & GWEN_PATH_FLAGS_NO_IDX)) {
+      char *p;
+
       p=strchr(GWEN_Buffer_GetStart(buf1), '[');
       if (p) {
         char *p2;
@@ -367,9 +385,7 @@ void *GWEN_Path_HandleWithIdx(const char *path,
 
 
 
-void *GWEN_Path_AppendPathElement(const char *entry,
-                                  void *data,
-                                  unsigned int flags)
+void *GWEN_Path_AppendPathElement(const char *entry, void *data, unsigned int flags)
 {
   GWEN_BUFFER *ebuf;
 

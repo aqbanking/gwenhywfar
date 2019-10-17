@@ -85,7 +85,7 @@ const void *GWEN_Tag16_GetTagData(const GWEN_TAG16 *tlv)
 
 
 
-GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, int isBerTlv)
+GWEN_TAG16 *GWEN_Tag16_fromBuffer(GWEN_BUFFER *mbuf, GWEN_UNUSED int isBerTlv)
 {
   const char *p;
   unsigned int tagType;

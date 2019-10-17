@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -77,6 +77,15 @@ static const GWEN_TEXT_ESCAPE_ENTRY gwen_text__xml_escape_chars[]= {
  */
 
 static int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName, int *pMaxLen);
+static int _cmpSegment(const char *w, unsigned int *wpos,
+                       const char *p, unsigned int *ppos,
+                       int sensecase,
+                       unsigned int *matches);
+static int _findSegment(const char *w, unsigned int *wpos,
+                        const char *p, unsigned int *ppos,
+                        int sensecase,
+                        unsigned int *matches);
+static double _checkSimilarity(const char *s1, const char *s2, int ign);
 
 
 
@@ -1106,10 +1115,10 @@ const char *GWEN_Text_StrCaseStr(const char *haystack, const char *needle)
 
 
 
-int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
-                          const char *p, unsigned int *ppos,
-                          int sensecase,
-                          unsigned int *matches)
+int _cmpSegment(const char *w, unsigned int *wpos,
+                const char *p, unsigned int *ppos,
+                int sensecase,
+                unsigned int *matches)
 {
   char a;
   char b;
@@ -1172,10 +1181,10 @@ int GWEN_Text__cmpSegment(const char *w, unsigned int *wpos,
 
 
 
-int GWEN_Text__findSegment(const char *w, unsigned int *wpos,
-                           const char *p, unsigned int *ppos,
-                           int sensecase,
-                           unsigned int *matches)
+int _findSegment(const char *w, unsigned int *wpos,
+                 const char *p, unsigned int *ppos,
+                 int sensecase,
+                 unsigned int *matches)
 {
   unsigned int lwpos, lppos, lmatches;
   unsigned wlength;
@@ -1188,7 +1197,7 @@ int GWEN_Text__findSegment(const char *w, unsigned int *wpos,
     *ppos=lppos;
     *wpos=lwpos;
     *matches=lmatches;
-    if (GWEN_Text__cmpSegment(w, wpos, p, ppos, sensecase, matches))
+    if (_cmpSegment(w, wpos, p, ppos, sensecase, matches))
       return 1;
     lwpos++;
   }
@@ -1207,7 +1216,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase)
   plength=strlen(p);
 
   /* compare until first occurrence of '*' */
-  if (!GWEN_Text__cmpSegment(w, &wpos, p, &ppos, sensecase, &matches)) {
+  if (!_cmpSegment(w, &wpos, p, &ppos, sensecase, &matches)) {
     return -1;
   }
 
@@ -1221,7 +1230,7 @@ int GWEN_Text_ComparePattern(const char *w, const char *p, int sensecase)
     if (ppos>=plength)
       return matches;
     /* find next matching segment */
-    if (!GWEN_Text__findSegment(w, &wpos, p, &ppos, sensecase, &matches)) {
+    if (!_findSegment(w, &wpos, p, &ppos, sensecase, &matches)) {
       return -1;
     }
   } /* while */
@@ -1668,7 +1677,7 @@ int GWEN_Text_DoubleToBuffer(double num, GWEN_BUFFER *buf)
   free(currentLocale);
 #endif
 
-  if (rv<1 || rv>=sizeof(numbuf))
+  if (rv<1 || rv>=(int)sizeof(numbuf))
     return -1;
   GWEN_Buffer_AppendString(buf, numbuf);
   return 0;
@@ -1699,7 +1708,7 @@ int GWEN_Text_StringToDouble(const char *s, double *num)
 
 
 
-double GWEN_Text__CheckSimilarity(const char *s1, const char *s2, int ign)
+double _checkSimilarity(const char *s1, const char *s2, int ign)
 {
   int nboth;
   int nmatch;
@@ -1778,8 +1787,8 @@ double GWEN_Text_CheckSimilarity(const char *s1, const char *s2, int ign)
 {
   double pc1, pc2;
 
-  pc1=GWEN_Text__CheckSimilarity(s1, s2, ign);
-  pc2=GWEN_Text__CheckSimilarity(s2, s1, ign);
+  pc1=_checkSimilarity(s1, s2, ign);
+  pc2=_checkSimilarity(s2, s1, ign);
   if (pc2>pc1)
     return pc2;
   return pc1;
@@ -2157,7 +2166,7 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
           free(name);
           posAfterFn=GWEN_Buffer_GetPos(dbuf);
           charsAdded=posAfterFn-posBeforeFn;
-          if (maxLen>0 && charsAdded>maxLen) {
+          if (maxLen>0 && (int)charsAdded>maxLen) {
             GWEN_Buffer_Crop(dbuf, 0, posBeforeFn+maxLen);
           }
         }

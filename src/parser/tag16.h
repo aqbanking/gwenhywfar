@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: tag16_l.h 790 2005-07-23 09:32:08Z aquamaniac $
     begin       : Sun Jun 13 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
