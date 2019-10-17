@@ -1,4 +1,7 @@
 
+sio:
+ - ssl_cert_descr -> typemaker2
+
 tm2:
   - inline loc="struct" -> insert fields into the struct definition
 
