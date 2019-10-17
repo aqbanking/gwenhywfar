@@ -174,9 +174,6 @@ GWEN_StringList2Iterator_DataRefPtr(GWEN_STRINGLIST2_ITERATOR *li);
 GWENHYWFAR_API void GWEN_StringList2_Dump(const GWEN_STRINGLIST2 *sl2);
 
 
-GWENHYWFAR_API int GWEN_StringList2_toXml(GWEN_STRINGLIST2 *sl2, GWEN_XMLNODE *node);
-
-
 GWENHYWFAR_API unsigned int GWEN_StringList2_GetCount(const GWEN_STRINGLIST2 *l);
 
 

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri Jun 02 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,9 +26,9 @@
 
 typedef struct MACRO_DEF MACRO_DEF;
 struct MACRO_DEF {
-  char *macroName;
-  char *tmplFileName;
-  char *fileSuffix;
+  const char *macroName;
+  const char *tmplFileName;
+  const char *fileSuffix;
 };
 
 
@@ -104,6 +101,31 @@ int verbosity=0;
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static MACRO_STRUCT *MacroStruct_new(MACRO_DEF *macroDef, const char *typeName, const char *typePrefix);
+/*static void MacroStruct_free(MACRO_STRUCT *m);*/
+static int scanLine(MACRO_DEF *macroDef, char *buffer, MACRO_STRUCT **m);
+static int scanLineForAllMacros(char *buffer, MACRO_STRUCT **m);
+static MACRO_STRUCT *scanForMacros(const char *fname);
+static int transformF(FILE *inFile, FILE *outFile, const char *outFileName, MACRO_STRUCT *m);
+static int transform(const char *inFile, const char *outFile, MACRO_STRUCT *m);
+static int processFile(const char *fname);
+int main(int argc, char **argv);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+
 MACRO_STRUCT *MacroStruct_new(MACRO_DEF *macroDef,
                               const char *typeName,
                               const char *typePrefix)
@@ -123,6 +145,7 @@ MACRO_STRUCT *MacroStruct_new(MACRO_DEF *macroDef,
 
 
 
+#if 0
 void MacroStruct_free(MACRO_STRUCT *m)
 {
   if (m) {
@@ -131,7 +154,7 @@ void MacroStruct_free(MACRO_STRUCT *m)
     free(m);
   }
 }
-
+#endif
 
 
 
@@ -549,7 +572,7 @@ int processFile(const char *fname)
                     "%s/%s",
                     templatePath,
                     cm->macroDef->tmplFileName);
-        if (rv<1 || rv>=sizeof(tmplBuffer)) {
+        if (rv<1 || rv>=(int)sizeof(tmplBuffer)) {
           fprintf(stderr, "Internal error: buffer too small [processFile]\n");
           return 3;
         }

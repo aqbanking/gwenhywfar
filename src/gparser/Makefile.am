@@ -5,7 +5,7 @@ INCLUDES= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/parser @all_includes@
 
-AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+AM_CFLAGS=@visibility_cflags@ @WERROR@ -DBUILDING_GWENHYWFAR
 
 typefiles=gwen_parser_element.xml
 

@@ -6,7 +6,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/html \
  -I$(top_srcdir)/src/parser $(all_includes)
 
-AM_CFLAGS=$(visibility_cflags)
+AM_CFLAGS=$(visibility_cflags) @WERROR@
 
 SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar
 DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar

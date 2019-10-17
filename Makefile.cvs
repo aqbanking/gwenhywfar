@@ -6,9 +6,9 @@ WIN32_INSTALL_DIR=/home/martin/install/win32
 all_warnings=\
  -Wextra  -Wall  -Waddress \
  -Waggregate-return  -Warray-bounds \
- -Wcast-qual -Wchar-subscripts -Wclobbered  -Wcomment \
+ -Wchar-subscripts -Wclobbered  -Wcomment \
  -Wcoverage-mismatch  -Wno-deprecated-declarations -Wdisabled-optimization  \
- -Wempty-body  -Wno-endif-labels -Wfloat-equal  -Wformat \
+ -Wempty-body  -Wno-endif-labels -Wformat \
  -Wformat=2 -Wno-format-extra-args -Wformat-nonliteral -Wformat-security  \
  -Wformat-y2k -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration \
  -Wimplicit-int -Wimport  -Wno-import  -Winit-self  -Winline \
@@ -19,16 +19,19 @@ all_warnings=\
  -Wparentheses  -Wpointer-arith  -Wno-pointer-to-int-cast -Wno-variadic-macros \
  -Wredundant-decls -Wreturn-type -Wsequence-point  -Wshadow -Wsign-compare  \
  -Wstack-protector -Wstrict-aliasing \
- -Wswitch -Wswitch-default  -Wswitch-enum \
+ -Wswitch -Wswitch-default  \
  -Wtrigraphs  -Wtype-limits  -Wundef  -Wuninitialized -Wunknown-pragmas  \
  -Wno-pragmas -Wunused  -Wunused-function -Wunused-label \
  -Wunused-parameter -Wunused-value  -Wunused-variable \
  -Wvla -Wvolatile-register-var  -Wwrite-strings \
+# -Wcast-qual -Wfloat-equal -Wswitch-enum  //disable this for now
 
 c_warnings=\
  -Wbad-function-cast  -Wmissing-declarations -Wmissing-parameter-type  \
  -Wnested-externs \
- -Wdeclaration-after-statement -Wpointer-sign -Wc++-compat
+ -Wdeclaration-after-statement -Wpointer-sign
+
+# -Wc++-compat disable this for now
 
 cplusplus_warnings=\
  -Wc++0x-compat -Wno-invalid-offsetof
@@ -81,13 +84,32 @@ mp:
 	autoheader
 	automake --add-missing
 	autoconf
-	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" CFLAGS="-O0 -ggdb -Wall" ./configure \
-	  INSTALL="/usr/bin/install -p" \
-	  --with-guis="gtk2 gtk3 fox16 qt5" \
-	  --disable-static \
-	  --enable-full-doc \
-	  --prefix=/usr/local \
-	  --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
+	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" \
+	 CFLAGS="-O0 -ggdb -Wall $(all_warnings) $(c_warnings)" \
+	 ./configure \
+	   INSTALL="/usr/bin/install -p" \
+	   --with-guis="gtk2 gtk3 fox16 qt5" \
+	   --disable-static \
+	   --enable-full-doc \
+	   --prefix=/usr/local \
+	   --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
+
+mp-werror:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	automake --add-missing
+	autoconf
+	CXXFLAGS="-O0 -ggdb -Wall $(cplusplus_warnings)" \
+	 CFLAGS="-O0 -ggdb -Wall $(all_warnings) $(c_warnings)" \
+	 ./configure \
+	   INSTALL="/usr/bin/install -p" \
+	   --with-guis="gtk2 gtk3 fox16 qt5" \
+	   --disable-static \
+	   --enable-full-doc \
+	   --enable-error-on-warning \
+	   --prefix=/usr/local \
+	   --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
 
 mp-opt:
 	libtoolize -f --automake

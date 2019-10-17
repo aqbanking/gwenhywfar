@@ -92,6 +92,7 @@ static int GWEN_SyncIo_Http_ReadBody(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t
 
 static int GWEN_SyncIo_Http_ParseStatus(GWEN_SYNCIO *sio, char *buffer);
 static int GWEN_SyncIo_Http_ParseCommand(GWEN_SYNCIO *sio, const char *buffer);
+static int GWEN_SyncIo_Http_ParseHeader(GWEN_SYNCIO *sio, char *buf);
 
 static void GWEN_SyncIo_Http_SetReadIdle(GWEN_SYNCIO *sio);
 

@@ -22,6 +22,9 @@ GWEN_LIST2_FUNCTIONS(GWEN_SSLCERTDESCR, GWEN_SslCertDescr)
 
 
 
+static GWEN_SSLCERTDESCR *GWEN_SslCertDescr_List2__freeAll_cb(GWEN_SSLCERTDESCR *st, void *user_data);
+
+
 
 GWEN_SSLCERTDESCR *GWEN_SslCertDescr_new(void)
 {
@@ -616,7 +619,7 @@ void GWEN_SslCertDescr_Attach(GWEN_SSLCERTDESCR *st)
   assert(st);
   st->_usage++;
 }
-GWEN_SSLCERTDESCR *GWEN_SslCertDescr_List2__freeAll_cb(GWEN_SSLCERTDESCR *st, void *user_data)
+GWEN_SSLCERTDESCR *GWEN_SslCertDescr_List2__freeAll_cb(GWEN_SSLCERTDESCR *st, GWEN_UNUSED void *user_data)
 {
   GWEN_SslCertDescr_free(st);
   return 0;

@@ -77,7 +77,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Http_new(GWEN_SYNCIO *baseIo)
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Http_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_SyncIo_Http_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_SYNCIO_HTTP *xio;
 
@@ -385,7 +385,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Http_Write(GWEN_SYNCIO *sio,
 
   if (xio->writeMode==GWEN_SyncIo_Http_Mode_Body) {
     if ((xio->currentWriteBodySize!=-1) &&
-        (size>xio->currentWriteBodySize)) {
+        ((int)size>xio->currentWriteBodySize)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Size is beyond total body size (%d)!", size);
       xio->writeMode=GWEN_SyncIo_Http_Mode_Error;
       return GWEN_ERROR_INVALID;
@@ -910,7 +910,7 @@ int GWEN_SyncIo_Http_ReadChunk(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
   /* we want to read binary data transparently */
   GWEN_SyncIo_AddFlags(baseIo, GWEN_SYNCIO_FLAGS_TRANSPARENT);
 
-  if (size>xio->currentReadChunkSize)
+  if ((int)size>xio->currentReadChunkSize)
     size=xio->currentReadChunkSize;
 
   rv=GWEN_SyncIo_Read(baseIo, buffer, size);
@@ -968,7 +968,7 @@ int GWEN_SyncIo_Http_ReadBody(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
   GWEN_SyncIo_AddFlags(baseIo, GWEN_SYNCIO_FLAGS_TRANSPARENT);
 
   if ((xio->currentReadBodySize>=0) &&
-      (size>xio->currentReadBodySize)) {
+      ((int)size>xio->currentReadBodySize)) {
     DBG_INFO(GWEN_LOGDOMAIN, "Adjusting read body size from %d to %d",
              size, xio->currentReadBodySize);
     size=xio->currentReadBodySize;

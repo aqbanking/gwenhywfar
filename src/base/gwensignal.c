@@ -376,8 +376,7 @@ void GWEN_Signal_List2_freeAll(GWEN_SIGNAL_LIST2 *slist)
 
 
 
-GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
-                                             void *user_data)
+GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig, void *user_data)
 {
   if ((void *)sig==user_data)
     return sig;
@@ -386,8 +385,7 @@ GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
 
 
 
-int GWEN_Signal_List2_HasSignal(GWEN_SIGNAL_LIST2 *slist,
-                                const GWEN_SIGNAL *sig)
+int GWEN_Signal_List2_HasSignal(GWEN_SIGNAL_LIST2 *slist, GWEN_SIGNAL *sig)
 {
   if (GWEN_Signal_List2_ForEach(slist, GWEN_Signal__List2_hasSignal_cb,
                                 (void *)sig))
@@ -617,11 +615,9 @@ GWEN_SLOT *GWEN_Slot__List2_hasSlot_cb(GWEN_SLOT *slot,
 
 
 
-int GWEN_Slot_List2_HasSlot(GWEN_SLOT_LIST2 *slist,
-                            const GWEN_SLOT *slot)
+int GWEN_Slot_List2_HasSlot(GWEN_SLOT_LIST2 *slist, GWEN_SLOT *slot)
 {
-  if (GWEN_Slot_List2_ForEach(slist, GWEN_Slot__List2_hasSlot_cb,
-                              (void *)slot))
+  if (GWEN_Slot_List2_ForEach(slist, GWEN_Slot__List2_hasSlot_cb, (void *)slot))
     return 1;
   return 0;
 }

@@ -49,10 +49,8 @@ struct GWEN_SIGNAL {
 };
 
 GWEN_SIGNAL *GWEN_Signal__List2_freeAll_cb(GWEN_SIGNAL *sig, void *user_data);
-GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig,
-                                             void *user_data);
-int GWEN_Signal_List2_HasSignal(GWEN_SIGNAL_LIST2 *slist,
-                                const GWEN_SIGNAL *sig);
+GWEN_SIGNAL *GWEN_Signal__List2_hasSignal_cb(GWEN_SIGNAL *sig, void *user_data);
+int GWEN_Signal_List2_HasSignal(GWEN_SIGNAL_LIST2 *slist, GWEN_SIGNAL *sig);
 
 void GWEN_Signal_Attach(GWEN_SIGNAL *sig);
 
@@ -71,7 +69,7 @@ struct GWEN_SLOT {
 
 GWEN_SLOT *GWEN_Slot__List2_freeAll_cb(GWEN_SLOT *slot, void *user_data);
 GWEN_SLOT *GWEN_Slot__List2_hasSlot_cb(GWEN_SLOT *slot, void *user_data);
-int GWEN_Slot_List2_HasSlot(GWEN_SLOT_LIST2 *slist, const GWEN_SLOT *slot);
+int GWEN_Slot_List2_HasSlot(GWEN_SLOT_LIST2 *slist, GWEN_SLOT *slot);
 void GWEN_Slot_Attach(GWEN_SLOT *slot);
 
 

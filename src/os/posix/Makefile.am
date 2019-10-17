@@ -1,13 +1,11 @@
 AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
- -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/sio \
- -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src \
  -I$(top_srcdir)/src/parser @all_includes@
 
-AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+AM_CFLAGS=@visibility_cflags@ @WERROR@ -DBUILDING_GWENHYWFAR
 
 EXTRA_DIST=README
 

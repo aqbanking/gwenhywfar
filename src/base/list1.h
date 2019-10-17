@@ -393,7 +393,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
   \
   void pr##_List_Clear(t##_LIST *l) { \
     t* el; \
-    while( (el=GWEN_List1_GetFirst(l)) ) {\
+    while( (el=(t*) GWEN_List1_GetFirst(l)) ) {\
       pr##_List_Del(el);\
       pr##_free(el);\
     } /* while */ \

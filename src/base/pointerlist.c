@@ -222,7 +222,7 @@ void GWEN_PointerList_free(GWEN_POINTERLIST *idl)
 void GWEN_PointerList_AddTable(GWEN_POINTERLIST *idl, GWEN_POINTERLIST_TABLE *idt)
 {
   GWEN_POINTERLIST_TABLE **tablePtr;
-  int idx;
+  uint32_t idx;
 
   assert(idl);
 
@@ -261,7 +261,7 @@ int GWEN_PointerList_AddPtr(GWEN_POINTERLIST *idl, void *ptr)
 {
   GWEN_POINTERLIST_TABLE *idt=NULL;
   GWEN_POINTERLIST_TABLE **tablePtr;
-  int idx;
+  uint32_t idx;
 
   assert(idl);
 
@@ -296,7 +296,7 @@ int GWEN_PointerList_DelPtr(GWEN_POINTERLIST *idl, void *ptr)
   if (idl->pIdTablePointers) {
     GWEN_POINTERLIST_TABLE *idt=NULL;
     GWEN_POINTERLIST_TABLE **tablePtr;
-    int idx;
+    uint32_t idx;
 
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
@@ -319,7 +319,7 @@ int GWEN_PointerList_HasPtr(const GWEN_POINTERLIST *idl, void *ptr)
   if (idl->pIdTablePointers) {
     GWEN_POINTERLIST_TABLE *idt=NULL;
     GWEN_POINTERLIST_TABLE **tablePtr;
-    int idx;
+    uint32_t idx;
 
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
@@ -337,7 +337,7 @@ void GWEN_PointerList_Clean(GWEN_POINTERLIST *idl)
 {
   GWEN_POINTERLIST_TABLE *idt=NULL;
   GWEN_POINTERLIST_TABLE **tablePtr;
-  int idx;
+  uint32_t idx;
 
   for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
     idt=*tablePtr;
@@ -355,7 +355,7 @@ void GWEN_PointerList_Clear(GWEN_POINTERLIST *idl)
   if (idl->pIdTablePointers) {
     GWEN_POINTERLIST_TABLE *idt=NULL;
     GWEN_POINTERLIST_TABLE **tablePtr;
-    int idx;
+    uint32_t idx;
 
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
@@ -376,7 +376,7 @@ void GWEN_PointerList_Clear(GWEN_POINTERLIST *idl)
 GWEN_POINTERLIST *GWEN_PointerList_dup(const GWEN_POINTERLIST *idl)
 {
   GWEN_POINTERLIST *nidl;
-  int idx;
+  uint32_t idx;
 
   nidl=GWEN_PointerList_new();
   nidl->tableStep=idl->tableStep;
@@ -418,7 +418,7 @@ void *GWEN_PointerList_GetFirstPtr(const GWEN_POINTERLIST *idl, uint64_t *pos)
 {
   GWEN_POINTERLIST_TABLE *idt=NULL;
   GWEN_POINTERLIST_TABLE **tablePtr;
-  int idx;
+  uint32_t idx;
   int idIndex=0;
 
   *pos=0;
@@ -452,7 +452,7 @@ void *GWEN_PointerList_GetNextPtr(const GWEN_POINTERLIST *idl, uint64_t *pos)
     uint64_t tableIdx=*pos % GWEN_POINTERLIST_TABLE_MAXENTRIES;
     GWEN_POINTERLIST_TABLE **tablePtr;
     int idIndex=0;
-    int idx;
+    uint32_t idx;
 
     if (tableNum>idl->idTableCount) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Table number out of range");

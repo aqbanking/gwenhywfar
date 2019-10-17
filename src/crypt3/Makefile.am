@@ -4,7 +4,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/parser $(LIBGCRYPT_CFLAGS) $(GPG_ERROR_CFLAGS) @all_includes@
 
-AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+AM_CFLAGS=@visibility_cflags@ @WERROR@ -DBUILDING_GWENHYWFAR
 
 #typefiles=crypttoken.xml
 

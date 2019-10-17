@@ -5,13 +5,95 @@
  * Better edit the mentioned source file instead.
  **********************************************************/
 
-#ifndef PARAM_H
-#define PARAM_H
+#ifndef GWEN_PARAM_PARAM_H
+#define GWEN_PARAM_PARAM_H
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** @page P_GWEN_PARAM Structure GWEN_PARAM
+<p>This page describes the properties of GWEN_PARAM.</p>
+
+
+
+<h1>GWEN_PARAM</h1>
+
+
+
+@anchor GWEN_PARAM_name
+<h2>name</h2>
+
+<p>Set this property with @ref GWEN_Param_SetName(), get it with @ref GWEN_Param_GetName().</p>
+
+
+@anchor GWEN_PARAM_flags
+<h2>flags</h2>
+
+<p>Set this property with @ref GWEN_Param_SetFlags(), get it with @ref GWEN_Param_GetFlags().</p>
+
+
+@anchor GWEN_PARAM_type
+<h2>type</h2>
+
+<p>Set this property with @ref GWEN_Param_SetType(), get it with @ref GWEN_Param_GetType().</p>
+
+
+@anchor GWEN_PARAM_dataType
+<h2>dataType</h2>
+
+<p>Set this property with @ref GWEN_Param_SetDataType(), get it with @ref GWEN_Param_GetDataType().</p>
+
+
+@anchor GWEN_PARAM_shortDescription
+<h2>shortDescription</h2>
+
+<p>Set this property with @ref GWEN_Param_SetShortDescription(), get it with @ref GWEN_Param_GetShortDescription().</p>
+
+
+@anchor GWEN_PARAM_longDescription
+<h2>longDescription</h2>
+
+<p>Set this property with @ref GWEN_Param_SetLongDescription(), get it with @ref GWEN_Param_GetLongDescription().</p>
+
+
+@anchor GWEN_PARAM_currentValue
+<h2>currentValue</h2>
+
+<p>Set this property with @ref GWEN_Param_SetCurrentValue(), get it with @ref GWEN_Param_GetCurrentValue().</p>
+
+
+@anchor GWEN_PARAM_defaultValue
+<h2>defaultValue</h2>
+
+<p>Set this property with @ref GWEN_Param_SetDefaultValue(), get it with @ref GWEN_Param_GetDefaultValue().</p>
+
+
+@anchor GWEN_PARAM_choices
+<h2>choices</h2>
+
+<p>Set this property with @ref GWEN_Param_SetChoices(), get it with @ref GWEN_Param_GetChoices().</p>
+
+
+@anchor GWEN_PARAM_internalIntValue
+<h2>internalIntValue</h2>
+
+<p>Set this property with @ref GWEN_Param_SetInternalIntValue(), get it with @ref GWEN_Param_GetInternalIntValue().</p>
+
+
+@anchor GWEN_PARAM_internalFloatValue
+<h2>internalFloatValue</h2>
+
+<p>Set this property with @ref GWEN_Param_SetInternalFloatValue(), get it with @ref GWEN_Param_GetInternalFloatValue().</p>
+
+
+@anchor GWEN_PARAM_runtimeFlags
+<h2>runtimeFlags</h2>
+
+<p>Set this property with @ref GWEN_Param_SetRuntimeFlags(), get it with @ref GWEN_Param_GetRuntimeFlags().</p>
+
+*/
 
 /* define GWEN_PARAM_RTFLAGS */
 
@@ -35,6 +117,7 @@ typedef struct GWEN_PARAM GWEN_PARAM;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_PARAM, GWEN_Param, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_PARAM, GWEN_Param, GWENHYWFAR_API)
 GWEN_TREE_FUNCTION_LIB_DEFS(GWEN_PARAM, GWEN_Param, GWENHYWFAR_API)
+
 
 
 typedef enum {
@@ -78,62 +161,62 @@ GWENHYWFAR_API GWEN_PARAM *GWEN_Param_dup(const GWEN_PARAM *p_struct);
 GWENHYWFAR_API GWEN_PARAM *GWEN_Param_copy(GWEN_PARAM *p_struct, const GWEN_PARAM *p_src);
 
 /** Getter.
- * Use this function to get the member "name"
+ * Use this function to get the member "name" (see @ref GWEN_PARAM_name)
 */
 GWENHYWFAR_API const char *GWEN_Param_GetName(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "flags"
+ * Use this function to get the member "flags" (see @ref GWEN_PARAM_flags)
 */
 GWENHYWFAR_API uint32_t GWEN_Param_GetFlags(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "type"
+ * Use this function to get the member "type" (see @ref GWEN_PARAM_type)
 */
 GWENHYWFAR_API GWEN_PARAM_TYPE GWEN_Param_GetType(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "dataType"
+ * Use this function to get the member "dataType" (see @ref GWEN_PARAM_dataType)
 */
 GWENHYWFAR_API GWEN_PARAM_DATATYPE GWEN_Param_GetDataType(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "shortDescription"
+ * Use this function to get the member "shortDescription" (see @ref GWEN_PARAM_shortDescription)
 */
 GWENHYWFAR_API const char *GWEN_Param_GetShortDescription(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "longDescription"
+ * Use this function to get the member "longDescription" (see @ref GWEN_PARAM_longDescription)
 */
 GWENHYWFAR_API const char *GWEN_Param_GetLongDescription(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "currentValue"
+ * Use this function to get the member "currentValue" (see @ref GWEN_PARAM_currentValue)
 */
 GWENHYWFAR_API const char *GWEN_Param_GetCurrentValue(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "defaultValue"
+ * Use this function to get the member "defaultValue" (see @ref GWEN_PARAM_defaultValue)
 */
 GWENHYWFAR_API const char *GWEN_Param_GetDefaultValue(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "choices"
+ * Use this function to get the member "choices" (see @ref GWEN_PARAM_choices)
 */
 GWENHYWFAR_API GWEN_STRINGLIST2 *GWEN_Param_GetChoices(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "runtimeFlags"
+ * Use this function to get the member "runtimeFlags" (see @ref GWEN_PARAM_runtimeFlags)
 */
 GWENHYWFAR_API uint32_t GWEN_Param_GetRuntimeFlags(const GWEN_PARAM *p_struct);
 
 /** Setter.
- * Use this function to set the member "name"
+ * Use this function to set the member "name" (see @ref GWEN_PARAM_name)
 */
 GWENHYWFAR_API void GWEN_Param_SetName(GWEN_PARAM *p_struct, const char *p_src);
 
 /** Setter.
- * Use this function to set the member "flags"
+ * Use this function to set the member "flags" (see @ref GWEN_PARAM_flags)
 */
 GWENHYWFAR_API void GWEN_Param_SetFlags(GWEN_PARAM *p_struct, uint32_t p_src);
 
@@ -148,42 +231,42 @@ GWENHYWFAR_API void GWEN_Param_AddFlags(GWEN_PARAM *p_struct, uint32_t p_src);
 GWENHYWFAR_API void GWEN_Param_SubFlags(GWEN_PARAM *p_struct, uint32_t p_src);
 
 /** Setter.
- * Use this function to set the member "type"
+ * Use this function to set the member "type" (see @ref GWEN_PARAM_type)
 */
 GWENHYWFAR_API void GWEN_Param_SetType(GWEN_PARAM *p_struct, GWEN_PARAM_TYPE  p_src);
 
 /** Setter.
- * Use this function to set the member "dataType"
+ * Use this function to set the member "dataType" (see @ref GWEN_PARAM_dataType)
 */
 GWENHYWFAR_API void GWEN_Param_SetDataType(GWEN_PARAM *p_struct, GWEN_PARAM_DATATYPE  p_src);
 
 /** Setter.
- * Use this function to set the member "shortDescription"
+ * Use this function to set the member "shortDescription" (see @ref GWEN_PARAM_shortDescription)
 */
 GWENHYWFAR_API void GWEN_Param_SetShortDescription(GWEN_PARAM *p_struct, const char *p_src);
 
 /** Setter.
- * Use this function to set the member "longDescription"
+ * Use this function to set the member "longDescription" (see @ref GWEN_PARAM_longDescription)
 */
 GWENHYWFAR_API void GWEN_Param_SetLongDescription(GWEN_PARAM *p_struct, const char *p_src);
 
 /** Setter.
- * Use this function to set the member "currentValue"
+ * Use this function to set the member "currentValue" (see @ref GWEN_PARAM_currentValue)
 */
 GWENHYWFAR_API void GWEN_Param_SetCurrentValue(GWEN_PARAM *p_struct, const char *p_src);
 
 /** Setter.
- * Use this function to set the member "defaultValue"
+ * Use this function to set the member "defaultValue" (see @ref GWEN_PARAM_defaultValue)
 */
 GWENHYWFAR_API void GWEN_Param_SetDefaultValue(GWEN_PARAM *p_struct, const char *p_src);
 
 /** Setter.
- * Use this function to set the member "choices"
+ * Use this function to set the member "choices" (see @ref GWEN_PARAM_choices)
 */
 GWENHYWFAR_API void GWEN_Param_SetChoices(GWEN_PARAM *p_struct, GWEN_STRINGLIST2 *p_src);
 
 /** Setter.
- * Use this function to set the member "runtimeFlags"
+ * Use this function to set the member "runtimeFlags" (see @ref GWEN_PARAM_runtimeFlags)
 */
 GWENHYWFAR_API void GWEN_Param_SetRuntimeFlags(GWEN_PARAM *p_struct, uint32_t p_src);
 
@@ -219,6 +302,9 @@ GWENHYWFAR_API GWEN_PARAM *GWEN_Param_fromXml(GWEN_XMLNODE *p_db);
 GWENHYWFAR_API GWEN_PARAM *GWEN_Param_List_GetByName(const GWEN_PARAM_LIST *p_list,  const char *p_cmp);
 
 GWENHYWFAR_API GWEN_PARAM *GWEN_Param_Tree_GetByName(const GWEN_PARAM_TREE *p_tree,  const char *p_cmp);
+
+/* end-headers */
+
 
 #ifdef __cplusplus
 }

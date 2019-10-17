@@ -567,6 +567,7 @@ void GWEN_MemoryDebug__DumpObject(GWEN_MEMORY_DEBUG_OBJECT *o,
         case GWEN_MemoryDebugEntryTypeFree:
           s="freed";
           break;
+        case GWEN_MemoryDebugEntryTypeUnknown:
         default:
           s="<unknown action>";
           break;

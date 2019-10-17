@@ -273,7 +273,7 @@ void GWEN_IdList64_free(GWEN_IDLIST64 *idl)
 void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt)
 {
   GWEN_IDTABLE64 **tablePtr;
-  int idx;
+  uint32_t idx;
 
   assert(idl);
 
@@ -370,7 +370,7 @@ int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id)
   if (idl->pIdTablePointers) {
     GWEN_IDTABLE64 *idt=NULL;
     GWEN_IDTABLE64 **tablePtr;
-    int idx;
+    uint32_t idx;
 
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
@@ -393,7 +393,7 @@ int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id)
   if (idl->pIdTablePointers) {
     GWEN_IDTABLE64 *idt=NULL;
     GWEN_IDTABLE64 **tablePtr;
-    int idx;
+    uint32_t idx;
 
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
@@ -411,7 +411,7 @@ void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl)
 {
   GWEN_IDTABLE64 *idt=NULL;
   GWEN_IDTABLE64 **tablePtr;
-  int idx;
+  uint32_t idx;
 
   for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
     idt=*tablePtr;
@@ -429,7 +429,7 @@ void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl)
   if (idl->pIdTablePointers) {
     GWEN_IDTABLE64 *idt=NULL;
     GWEN_IDTABLE64 **tablePtr;
-    int idx;
+    uint32_t idx;
 
     for (idx=0, tablePtr=idl->pIdTablePointers; idx<idl->idTableCount; idx++, tablePtr++) {
       idt=*tablePtr;
@@ -545,7 +545,7 @@ int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl)
 GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl)
 {
   GWEN_IDLIST64 *nidl;
-  int idx;
+  uint32_t idx;
 
   nidl=GWEN_IdList64_new();
 
@@ -586,7 +586,7 @@ uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos)
 {
   GWEN_IDTABLE64 *idt=NULL;
   GWEN_IDTABLE64 **tablePtr;
-  int idx;
+  uint32_t idx;
   int idIndex=0;
 
   *pos=0;
@@ -620,7 +620,7 @@ uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos)
     uint64_t tableIdx=*pos % GWEN_IDTABLE64_MAXENTRIES;
     GWEN_IDTABLE64 **tablePtr;
     int idIndex=0;
-    int idx;
+    uint32_t idx;
 
     if (tableNum>idl->idTableCount) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Table number out of range");

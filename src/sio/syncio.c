@@ -493,8 +493,6 @@ int GWEN_SyncIo_Helper_PartiallyReadFile(const char *fName, uint8_t *buffer, uin
   /* read file */
   todo=size;
   while (todo) {
-    int rv;
-
     do {
       rv=GWEN_SyncIo_Read(sio, buffer, todo);
     }

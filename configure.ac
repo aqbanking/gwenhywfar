@@ -30,7 +30,7 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=4
 GWENHYWFAR_VERSION_MINOR=99
 GWENHYWFAR_VERSION_PATCHLEVEL=23
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="rc7"
 
@@ -1064,6 +1064,29 @@ then
   visibility_cflags="-fvisibility=hidden"
 fi
 AC_SUBST(visibility_cflags)
+
+
+
+###-------------------------------------------------------------------------
+#
+# check for werror
+#
+AC_MSG_CHECKING(if CFLAG -Werror is to be used)
+AC_ARG_ENABLE(error-on-warning,
+  [  --enable-error-on-warning             treat compiler warnings as errors (default=no)],
+  enable_werror="$enableval",
+  enable_werror="no")
+AC_MSG_RESULT($enable_werror)
+
+WERROR=""
+if test "$enable_werror" != "no"; then
+  WERROR="-Werror"
+fi
+AC_SUBST(WERROR)
+
+
+# Debug arguments for compilation
+ACX_COMPILE_WARN()
 
 
 

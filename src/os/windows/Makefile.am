@@ -5,7 +5,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/parser @all_includes@
 
-AM_CFLAGS=@visibility_cflags@ -DBUILDING_GWENHYWFAR
+AM_CFLAGS=@visibility_cflags@ @WERROR@ -DBUILDING_GWENHYWFAR
 
 # We need to skip -I$(top_srcdir)/src/os here and instead specify the
 # include path directly in the C files because when we add that

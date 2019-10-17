@@ -96,7 +96,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Socket_TakeOver(GWEN_SOCKET *socket)
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Socket_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_SyncIo_Socket_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_SYNCIO_SOCKET *xio;
 
@@ -390,7 +390,6 @@ int GWENHYWFAR_CB GWEN_SyncIo_Socket_Write(GWEN_SYNCIO *sio,
   while (rv==GWEN_ERROR_INTERRUPTED);
 
   if (rv==GWEN_ERROR_TIMEOUT) {
-    int rv;
     GWEN_SOCKET_LIST2 *sl;
 
     sl=GWEN_Socket_List2_new();

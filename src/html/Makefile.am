@@ -1,6 +1,6 @@
 AM_CPPFLAGS=-I$(gwenhywfar_symlinkdir) \
   @visibility_cflags@
-AM_CFLAGS=@visibility_cflags@ 
+AM_CFLAGS=@visibility_cflags@ @WERROR@
 DEFS+=-DPACKAGE=\"$(PACKAGE)\" -DBUILDING_GWENHYWFAR
 
 

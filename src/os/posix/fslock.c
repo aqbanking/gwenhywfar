@@ -173,8 +173,6 @@ GWEN_FSLOCK_RESULT GWEN_FSLock__Lock(GWEN_FSLOCK *fl)
                fl->baseLockFilename,
                strerror(errno));
       if (lnerr==EPERM) {
-        int fd;
-
         /* link() is not supported on the destination filesystem, try it the
          * traditional way. This should be ok, since the only FS which does
          * not handle the O_EXCL flag properly is NFS, and NFS would not

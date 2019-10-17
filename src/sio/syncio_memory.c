@@ -107,7 +107,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Memory_fromBuffer(const uint8_t *buffer, int size)
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Memory_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_SyncIo_Memory_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_SYNCIO_MEMORY *xio;
 

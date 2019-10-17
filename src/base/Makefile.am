@@ -3,15 +3,13 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/ \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/gui \
- -I$(top_srcdir)/src/io \
- -I$(top_srcdir)/src/ipc \
  -I$(top_srcdir)/src/parser
 
 # Don't include src/os above because its process.h conflicts with the
 # system's <process.h>, at least for gcc3.2 on mingw32
 # -I$(top_srcdir)/src/os 
 
-AM_CFLAGS=@PROFILING_CFLAGS@ @visibility_cflags@  -DBUILDING_GWENHYWFAR
+AM_CFLAGS=@PROFILING_CFLAGS@ @visibility_cflags@ @WERROR@  -DBUILDING_GWENHYWFAR
 
 DEFS+=-DGWEN_BUFFER_DEFAULT_HARDLIMIT='@gwenhywfar_buffer_hardlimit@'
 

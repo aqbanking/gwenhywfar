@@ -69,7 +69,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Buffered_new(GWEN_SYNCIO *baseIo)
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Buffered_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_SyncIo_Buffered_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_SYNCIO_BUFFERED *xio;
 

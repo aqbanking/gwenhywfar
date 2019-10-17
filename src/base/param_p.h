@@ -5,10 +5,10 @@
  * Better edit the mentioned source file instead.
  **********************************************************/
 
-#ifndef PARAM_P_H
-#define PARAM_P_H
+#ifndef GWEN_PARAM_PARAM_P_H
+#define GWEN_PARAM_PARAM_P_H
 
-#include "param.h"
+#include "./param.h"
 
 
 #ifdef __cplusplus
@@ -34,22 +34,22 @@ struct GWEN_PARAM {
 };
 
 /** Getter.
- * Use this function to get the member "internalIntValue"
+ * Use this function to get the member "internalIntValue" (see @ref GWEN_PARAM_internalIntValue)
 */
 int GWEN_Param_GetInternalIntValue(const GWEN_PARAM *p_struct);
 
 /** Getter.
- * Use this function to get the member "internalFloatValue"
+ * Use this function to get the member "internalFloatValue" (see @ref GWEN_PARAM_internalFloatValue)
 */
 double GWEN_Param_GetInternalFloatValue(const GWEN_PARAM *p_struct);
 
 /** Setter.
- * Use this function to set the member "internalIntValue"
+ * Use this function to set the member "internalIntValue" (see @ref GWEN_PARAM_internalIntValue)
 */
 void GWEN_Param_SetInternalIntValue(GWEN_PARAM *p_struct, int p_src);
 
 /** Setter.
- * Use this function to set the member "internalFloatValue"
+ * Use this function to set the member "internalFloatValue" (see @ref GWEN_PARAM_internalFloatValue)
 */
 void GWEN_Param_SetInternalFloatValue(GWEN_PARAM *p_struct, double p_src);
 

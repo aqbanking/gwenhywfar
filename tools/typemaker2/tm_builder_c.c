@@ -5108,6 +5108,14 @@ static int _buildEnumToString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
         ti=Typemaker2_Item_List_Next(ti);
       }
+
+      /* handle "unknown" */
+      GWEN_Buffer_AppendString(tbuf, "    case ");
+      if (prefix)
+	GWEN_Buffer_AppendString(tbuf, prefix);
+      GWEN_Buffer_AppendString(tbuf, "Unknown:\n");
+
+      /* handle default */
       GWEN_Buffer_AppendString(tbuf, "    default: return \"unknown\";\n");
       GWEN_Buffer_AppendString(tbuf, "  }\n");
       GWEN_Buffer_AppendString(tbuf, "}\n");

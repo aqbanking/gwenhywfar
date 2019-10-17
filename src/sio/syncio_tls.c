@@ -92,7 +92,7 @@ GWEN_SYNCIO *GWEN_SyncIo_Tls_new(GWEN_SYNCIO *baseIo)
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_SyncIo_Tls_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_SYNCIO_TLS *xio;
 
@@ -829,7 +829,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
     return GWEN_ERROR_NO_DATA;
   }
 
-  for (i=0; i<cert_list_size; i++) {
+  for (i=0; i<(int) cert_list_size; i++) {
     gnutls_x509_crt_t cert;
     time_t t;
 

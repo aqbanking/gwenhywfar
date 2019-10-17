@@ -96,6 +96,7 @@ static void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio);
 
 static int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
 
+static int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio);
 
 #endif
 
