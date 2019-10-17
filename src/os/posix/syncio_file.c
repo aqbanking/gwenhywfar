@@ -155,7 +155,7 @@ const char *GWEN_SyncIo_File_GetPath(const GWEN_SYNCIO *sio)
 
 
 
-void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_SyncIo_File_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_SYNCIO_FILE *xio;
 

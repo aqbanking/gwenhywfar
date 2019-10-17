@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Jul 07 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -94,7 +94,7 @@ void GWEN_Date_setJulian(GWEN_DATE *gd, int julian)
            "%04d%02d%02d",
            gd->year, gd->month, gd->day);
   gd->asString[sizeof(gd->asString)-1]=0;
-  if (sizeof(gd->asString)-1 < len)
+  if ((int)(sizeof(gd->asString)-1) < len)
     DBG_ERROR(GWEN_LOGDOMAIN, "truncated date string [%s]", gd->asString);
 }
 
@@ -601,6 +601,10 @@ void GWEN_Date__fillTmplChars(const GWEN_DATE *t, GWEN_DATE_TMPLCHAR_LIST *ll)
       case 6:
         s=I18N("Saturday");
         break;
+      default:
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Invalid week day (%2d)", GWEN_Date_WeekDay(t));
+        s=NULL;
+        break;
       }
       assert(s);
       e->content=strdup(s);
@@ -786,6 +790,9 @@ GWEN_DATE *GWEN_Date_GetThisQuarterYearStart(const GWEN_DATE *dt)
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 7, 1);
   case 3:
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 10, 1);
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid quarter (%d)", m);
+    break;
   }
 
   return NULL;
@@ -807,6 +814,9 @@ GWEN_DATE *GWEN_Date_GetThisQuarterYearEnd(const GWEN_DATE *dt)
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 9, 30);
   case 3:
     return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), 12, 31);
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid quarter (%d)", m);
+    break;
   }
 
   return NULL;

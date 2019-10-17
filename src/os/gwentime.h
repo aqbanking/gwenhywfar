@@ -190,11 +190,13 @@ GWENHYWFAR_API int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
                                                   int *month,
                                                   int *year);
 
+#if 0
 /**
  * Returns this date as a struct tm (see ctime(3)) in the local time
  * zone.
  */
 GWENHYWFAR_API struct tm GWEN_Time_toTm(const GWEN_TIME *t);
+#endif
 
 /**
  * Returns this date as a time_t value (see time(2)).

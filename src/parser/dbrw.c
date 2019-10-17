@@ -300,7 +300,7 @@ int GWEN_DB_WriteGroupToIoLayer(GWEN_DB_NODE *node,
       case GWEN_DB_NodeType_Var:
         cn=GWEN_DB_Node_List_First(n->children);
         if (cn) {
-          char *typname;
+          const char *typname;
           int namewritten;
           int values;
 

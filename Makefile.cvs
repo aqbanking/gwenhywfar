@@ -9,7 +9,7 @@ all_warnings=\
  -Wchar-subscripts -Wclobbered  -Wcomment \
  -Wcoverage-mismatch  -Wno-deprecated-declarations -Wdisabled-optimization  \
  -Wempty-body  -Wno-endif-labels -Wformat \
- -Wformat=2 -Wno-format-extra-args -Wformat-nonliteral -Wformat-security  \
+ -Wno-format-extra-args -Wformat-security  \
  -Wformat-y2k -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration \
  -Wimplicit-int -Wimport  -Wno-import  -Winit-self  -Winline \
  -Wno-int-to-pointer-cast -Winvalid-pch \
@@ -23,8 +23,9 @@ all_warnings=\
  -Wtrigraphs  -Wtype-limits  -Wundef  -Wuninitialized -Wunknown-pragmas  \
  -Wno-pragmas -Wunused  -Wunused-function -Wunused-label \
  -Wunused-parameter -Wunused-value  -Wunused-variable \
- -Wvla -Wvolatile-register-var  -Wwrite-strings \
-# -Wcast-qual -Wfloat-equal -Wswitch-enum  //disable this for now
+ -Wvla -Wvolatile-register-var  -Wwrite-strings
+
+# -Wcast-qual -Wfloat-equal -Wswitch-enum -Wformat-nonliteral -Wformat=2   //disable this for now
 
 c_warnings=\
  -Wbad-function-cast  -Wmissing-declarations -Wmissing-parameter-type  \

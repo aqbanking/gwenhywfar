@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Jul 07 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -43,7 +43,7 @@ struct GWEN_DATE {
 
 
 typedef struct GWEN_DATE_TMPLCHAR GWEN_DATE_TMPLCHAR;
-GWEN_LIST_FUNCTION_DEFS(GWEN_DATE_TMPLCHAR, GWEN_TimeTmplChar)
+GWEN_LIST_FUNCTION_DEFS(GWEN_DATE_TMPLCHAR, GWEN_DateTmplChar)
 struct GWEN_DATE_TMPLCHAR {
   GWEN_LIST_ELEMENT(GWEN_DATE_TMPLCHAR)
   char character;

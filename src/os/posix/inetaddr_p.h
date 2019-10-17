@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,7 +23,7 @@
  ***************************************************************************/
 
 /**
- * @file chameleon/inetaddr_p.h
+ * @file inetaddr_p.h
  * @short This file contains the internet address handling module
  */
 
@@ -58,6 +55,8 @@ GWENHYWFAR_API struct GWEN_INETADDRESSSTRUCT {
   int size;
   struct sockaddr *address;
 };
+
+
 
 
 #ifdef __cplusplus

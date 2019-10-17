@@ -1,9 +1,6 @@
 /***************************************************************************
-  $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri Nov 22 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -47,18 +44,18 @@
 
 
 
-
+#if 0
 int GWEN_LibLoader_ModuleInit(void)
 {
   return 0;
 }
 
 
-
 int GWEN_LibLoader_ModuleFini(void)
 {
   return 0;
 }
+#endif
 
 
 

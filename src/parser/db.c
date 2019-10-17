@@ -146,7 +146,7 @@ GWEN_DB_NODE *GWEN_DB_ValueChar_newFromInt(int v)
   int rv;
 
   rv=snprintf(numbuffer, sizeof(numbuffer)-1, "%d", v);
-  if (rv>=sizeof(numbuffer)) {
+  if (rv>=(int)sizeof(numbuffer)) {
   }
   numbuffer[sizeof(numbuffer)-1]=0;
 
@@ -1960,7 +1960,7 @@ int GWEN_DB_ReplaceVars(GWEN_DB_NODE *db, const char *s, GWEN_BUFFER *dbuf)
 
 
 
-int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
+int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, GWEN_UNUSED int maxLen, GWEN_BUFFER *dstBuf)
 {
   GWEN_DB_NODE *db;
   int rv;

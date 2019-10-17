@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Sun Nov 23 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,6 +41,21 @@
 
 
 GWEN_LIST_FUNCTIONS(GWEN_TIME_TMPLCHAR, GWEN_TimeTmplChar)
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static GWEN_TIME *GWEN_Time__fromString(const char *s, const char *tmpl, int inUtc);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -620,6 +632,7 @@ int GWEN_Time_GetBrokenDownUtcDate(const GWEN_TIME *t,
 
 
 
+#if 0
 /* TODO: compiler says "function returns an aggregate" */
 struct tm GWEN_Time_toTm(const GWEN_TIME *t)
 {
@@ -631,6 +644,8 @@ struct tm GWEN_Time_toTm(const GWEN_TIME *t)
   tb=localtime(&tt);
   return *tb;
 }
+#endif
+
 
 time_t GWEN_Time_toTime_t(const GWEN_TIME *t)
 {

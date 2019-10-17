@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sun Nov 23 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -57,6 +57,23 @@
 #endif
 
 #define DISABLE_DEBUGLOG
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static void *GWEN_Directory_HandlePathElement(const char *entry, void *data, unsigned int flags);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -240,6 +257,9 @@ int GWEN_Directory_GetPath(const char *path,
 
 
 int GWEN_Directory_OsifyPath(const char *path, GWEN_BUFFER *pbuf,
+#ifndef OS_WIN32
+                             GWEN_UNUSED
+#endif
                              int transformDriveElement)
 {
   const char *p;

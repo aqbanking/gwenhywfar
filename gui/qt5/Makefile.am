@@ -24,7 +24,6 @@ libgwengui_qt5_la_SOURCES=\
   qt5dialogbox.cpp \
   qt5_gui.cpp \
   qt5_gui_dialog.cpp
-libgwengui_qt5_la_LDFLAGS = -no-undefined
 
 nodist_libgwengui_qt5_la_SOURCES=
 

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -55,6 +52,23 @@ static int GWEN_INETADDR__Counter=0;
 #endif
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int GWEN_InetAddr_TranslateHError(int herr);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 uint32_t GWEN_InetAddr_GetCapabilities(void)
 {
   return
@@ -64,6 +78,7 @@ uint32_t GWEN_InetAddr_GetCapabilities(void)
 
 
 
+#if 0
 int GWEN_InetAddr_ModuleInit(void)
 {
   return 0;
@@ -75,6 +90,7 @@ int GWEN_InetAddr_ModuleFini(void)
 {
   return 0;
 }
+#endif
 
 
 

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Dec 27 2003
-    copyright   : (C) 2003-2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -50,6 +50,7 @@
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
 
 
+#if 0
 int GWEN_Process_ModuleInit(void)
 {
   return 0;
@@ -71,6 +72,7 @@ int GWEN_Process_ModuleFini(void)
   } /* while */
   return 0;
 }
+#endif
 
 
 
