@@ -4,7 +4,9 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/html \
- -I$(top_srcdir)/src/parser $(all_includes)
+ -I$(top_srcdir)/src/parser \
+ $(LIBGNUTLS_CFLAGS) \
+ $(all_includes)
 
 AM_CFLAGS=$(visibility_cflags) @WERROR@
 
