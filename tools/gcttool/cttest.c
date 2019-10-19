@@ -412,7 +412,6 @@ int main(int argc, char **argv)
   int rv;
   int err;
   GWEN_GUI *gui;
-  const char *localedir;
   GWEN_STRINGLIST *slist;
   const GWEN_ARGS args[]= {
     {
@@ -463,11 +462,13 @@ int main(int argc, char **argv)
     GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, GWEN_PM_LOCALEDIR);
 
   assert(GWEN_StringList_Count(slist) > 0);
-  localedir = GWEN_StringList_FirstString(slist);
 #ifdef HAVE_I18N
-  setlocale(LC_ALL, "");
-  if (bindtextdomain(PACKAGE, localedir)==0)
-    fprintf(stderr, "Error binding locale\n");
+  {
+    const char *localedir = GWEN_StringList_FirstString(slist);
+    setlocale(LC_ALL, "");
+    if (bindtextdomain(PACKAGE, localedir)==0)
+        fprintf(stderr, "Error binding locale\n");
+  }
 #endif
   GWEN_StringList_free(slist);
 
