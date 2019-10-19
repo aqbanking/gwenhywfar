@@ -47,6 +47,20 @@
 #include <string.h>
 #include <errno.h>
 
+/* We need a printf format specifier for "size_t" but <inttypes.h>
+ * does not have one. So in this one single exception we define our
+ * own, inspired from here:
+ * https://stackoverflow.com/questions/44382862/how-to-printf-a-size-t-without-warning-in-mingw-w64-gcc-7-1
+ */
+#ifdef _WIN32
+#  ifdef _WIN64
+#    define PRI_SIZET PRIu64
+#  else
+#    define PRI_SIZET PRIu32
+#  endif
+#else
+#  define PRI_SIZET "zd"
+#endif
 
 
 GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
@@ -87,7 +101,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
       s++;
     } /* while */
     if (!i) {
-      DBG_ERROR(0, "Groupname is too long (limit is %zd chars)",
+      DBG_ERROR(0, "Groupname is too long (limit is %" PRI_SIZET " chars)",
                 sizeof(name)-1);
       return 0;
     }
@@ -116,7 +130,7 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
     s++;
   } /* while */
   if (!i) {
-    DBG_ERROR(0, "Name is too long (limit is %zd chars)", sizeof(name)-1);
+    DBG_ERROR(0, "Name is too long (limit is %" PRI_SIZET " chars)", sizeof(name)-1);
     return 0;
   }
   *p=0;
