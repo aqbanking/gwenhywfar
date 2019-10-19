@@ -2364,7 +2364,7 @@ int testXmlDbImport(int argc, char **argv)
 
 
 
-int testSignalsFunc(GWEN_SLOT *slot,
+int GWENHYWFAR_CB testSignalsFunc(GWEN_SLOT *slot,
                     void *userData,
                     void *pArg1,
                     void *pArg2,
