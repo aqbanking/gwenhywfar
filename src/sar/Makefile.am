@@ -65,17 +65,17 @@ clean_build_files:
 
 format_build_files:
 	for f in $(built_sources) $(build_headers); do \
-	  astyle -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $$f; \
+	  $(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $$f; \
 	done
 
 
 %.c: %.xml
 	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $<
-	astyle -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
+	$(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
 
 %.h: %.xml
 	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $<
-	astyle -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
+	$(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
 
 
 SUFFIXES = .xml .c

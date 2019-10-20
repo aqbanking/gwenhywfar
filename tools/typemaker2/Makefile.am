@@ -80,7 +80,7 @@ sources:
 	done
 
 indent:  $(BUILT_SOURCES)
-	astyle \
+	$(ASTYLE) \
 	  --style=gnu \
 	  --indent=spaces=2 \
 	  --min-conditional-indent=0 \

@@ -69,7 +69,7 @@ typedefs: $(typefiles)
 
 format_build_files:
 	for f in $(built_sources) $(build_headers); do \
-	  astyle --style=linux -s2 --min-conditional-indent=0 --indent-labels --pad-oper --suffix=none $$f; \
+	  $(ASTYLE) --style=linux -s2 --min-conditional-indent=0 --indent-labels --pad-oper --suffix=none $$f; \
 	done
 
 

@@ -216,6 +216,9 @@ AC_PROG_AWK
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
 AC_CHECK_PROG(SED,sed,sed)
 
+# Check for the tool "astyle", but if not found, replace its program call by the no-op "echo" instead
+AC_CHECK_PROG(ASTYLE, astyle, astyle, echo)
+
 ###-------------------------------------------------------------------------
 #
 # Checks for libraries.

@@ -62,7 +62,7 @@ clean_build_files:
 
 format_build_files:
 	for f in $(built_sources) $(build_headers); do \
-	  astyle -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $$f; \
+	  $(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $$f; \
 	done
 
 
