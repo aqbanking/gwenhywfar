@@ -281,11 +281,11 @@ int GWEN_XMLNode_WriteToStream(const GWEN_XMLNODE *n,
 
         encoding=GWEN_XMLNode_GetProperty(nn, "encoding", NULL);
         if (encoding) {
-            if (strcasecmp(encoding, "UTF-8")==0 ||
-                strcasecmp(encoding, "UTF8")==0)
-	      encoding=NULL;
-	    GWEN_XmlCtx_SetEncoding(ctx, encoding);
-	}
+          if (strcasecmp(encoding, "UTF-8")==0 ||
+              strcasecmp(encoding, "UTF8")==0)
+            encoding=NULL;
+          GWEN_XmlCtx_SetEncoding(ctx, encoding);
+        }
       }
 
       nn=next;

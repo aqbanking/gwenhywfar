@@ -2365,11 +2365,11 @@ int testXmlDbImport(int argc, char **argv)
 
 
 int GWENHYWFAR_CB testSignalsFunc(GWEN_SLOT *slot,
-                    void *userData,
-                    void *pArg1,
-                    void *pArg2,
-                    int iArg3,
-                    int iArg4)
+                                  void *userData,
+                                  void *pArg1,
+                                  void *pArg2,
+                                  int iArg3,
+                                  int iArg4)
 {
   const char *text1;
   const char *text2;

@@ -428,9 +428,9 @@ GWEN_FSLOCK *GWEN_ConfigMgrDir_FindLock(GWEN_CONFIGMGR *cfg, const char *fname)
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
-                               const char *groupName,
-                               const char *subGroupName,
-                               GWEN_DB_NODE **pDb)
+                                             const char *groupName,
+                                             const char *subGroupName,
+                                             GWEN_DB_NODE **pDb)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
@@ -476,9 +476,9 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
-                               const char *groupName,
-                               const char *subGroupName,
-                               GWEN_DB_NODE *db)
+                                             const char *groupName,
+                                             const char *subGroupName,
+                                             GWEN_DB_NODE *db)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
@@ -528,8 +528,8 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_SetGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
-                               const char *groupName,
-                               const char *subGroupName)
+                                             const char *groupName,
+                                             const char *subGroupName)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
@@ -560,8 +560,8 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_HasGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
-                                const char *groupName,
-                                const char *subGroupName)
+                                              const char *groupName,
+                                              const char *subGroupName)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
@@ -614,8 +614,8 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_LockGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
-                                  const char *groupName,
-                                  const char *subGroupName)
+                                                const char *groupName,
+                                                const char *subGroupName)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
@@ -659,9 +659,9 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_UnlockGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
-                                  const char *groupName,
-                                  char *buffer,
-                                  uint32_t bufferLen)
+                                                const char *groupName,
+                                                char *buffer,
+                                                uint32_t bufferLen)
 {
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -690,11 +690,11 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetUniqueId(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
-                                       const char *groupName,
-                                       uint32_t uid,
-                                       int doCheck,
-                                       char *buffer,
-                                       uint32_t bufferLen)
+                                                     const char *groupName,
+                                                     uint32_t uid,
+                                                     int doCheck,
+                                                     char *buffer,
+                                                     uint32_t bufferLen)
 {
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -706,7 +706,7 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
 
   rv=snprintf(ubuf, sizeof(ubuf)-1, "%08x", uid);
   if (rv>=sizeof(ubuf)-1) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Id longer than %d (%d)? SNH!", (int) (sizeof(ubuf)-1), rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Id longer than %d (%d)? SNH!", (int)(sizeof(ubuf)-1), rv);
     return GWEN_ERROR_INTERNAL;
   }
   else if (rv<0) {
@@ -752,8 +752,8 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_MkUniqueIdFromId(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
-                                  const char *groupName,
-                                  const char *subGroupName)
+                                                const char *groupName,
+                                                const char *subGroupName)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;
@@ -810,7 +810,7 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_DeleteGroup(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
-                                 GWEN_STRINGLIST *sl)
+                                               GWEN_STRINGLIST *sl)
 {
   GWEN_CONFIGMGR_DIR *xcfg;
   int rv;
@@ -833,8 +833,8 @@ int GWENHYWFAR_CB GWEN_ConfigMgrDir_ListGroups(GWEN_CONFIGMGR *cfg,
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_ListSubGroups(GWEN_CONFIGMGR *cfg,
-                                    const char *groupName,
-                                    GWEN_STRINGLIST *sl)
+                                                  const char *groupName,
+                                                  GWEN_STRINGLIST *sl)
 {
   GWEN_BUFFER *nbuf;
   GWEN_CONFIGMGR_DIR *xcfg;

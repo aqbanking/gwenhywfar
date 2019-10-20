@@ -467,7 +467,7 @@ int main(int argc, char **argv)
     const char *localedir = GWEN_StringList_FirstString(slist);
     setlocale(LC_ALL, "");
     if (bindtextdomain(PACKAGE, localedir)==0)
-        fprintf(stderr, "Error binding locale\n");
+      fprintf(stderr, "Error binding locale\n");
   }
 #endif
   GWEN_StringList_free(slist);

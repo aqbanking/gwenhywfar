@@ -937,7 +937,7 @@ int GWEN_Padd_UnpaddWithZkaFromMultipleOf(GWEN_BUFFER *buf, int y)
     return -1;
   }
   lastpos--;
-  p=(const uint8_t*)GWEN_Buffer_GetStart(buf)+lastpos;
+  p=(const uint8_t *)GWEN_Buffer_GetStart(buf)+lastpos;
 
   while (*p==0x00) {
     paddLength++;

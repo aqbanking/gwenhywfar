@@ -5112,7 +5112,7 @@ static int _buildEnumToString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
       /* handle "unknown" */
       GWEN_Buffer_AppendString(tbuf, "    case ");
       if (prefix)
-	GWEN_Buffer_AppendString(tbuf, prefix);
+        GWEN_Buffer_AppendString(tbuf, prefix);
       GWEN_Buffer_AppendString(tbuf, "Unknown:\n");
 
       /* handle default */

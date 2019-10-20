@@ -91,8 +91,8 @@ void GWEN_Date_setJulian(GWEN_DATE *gd, int julian)
   gd->julian=julian;
 
   len=snprintf(gd->asString, sizeof(gd->asString)-1,
-           "%04d%02d%02d",
-           gd->year, gd->month, gd->day);
+               "%04d%02d%02d",
+               gd->year, gd->month, gd->day);
   gd->asString[sizeof(gd->asString)-1]=0;
   if ((int)(sizeof(gd->asString)-1) < len)
     DBG_ERROR(GWEN_LOGDOMAIN, "truncated date string [%s]", gd->asString);

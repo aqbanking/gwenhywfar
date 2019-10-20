@@ -1965,7 +1965,7 @@ int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, GWEN_
   GWEN_DB_NODE *db;
   int rv;
 
-  db=(GWEN_DB_NODE*) cbPtr;
+  db=(GWEN_DB_NODE *) cbPtr;
   rv=GWEN_DB_WriteVarValueToBuffer(db, name, index, dstBuf);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);

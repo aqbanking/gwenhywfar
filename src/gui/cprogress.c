@@ -57,7 +57,7 @@ GWEN_GUI_CPROGRESS *GWEN_Gui_CProgress_new(GWEN_GUI *gui,
 
       ll=GWEN_Logger_Name2Level(s);
       if (GWEN_LoggerLevel_Unknown != ll)
-       CProgressLevel=ll;
+        CProgressLevel=ll;
     }
   }
 
@@ -174,7 +174,7 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
     t1=time(0);
     if (difftime(t1, cp->startTime)>GWEN_GUI_DELAY_SECS) {
       if (!(GWEN_Gui_GetFlags(cp->gui) & GWEN_GUI_FLAGS_NONINTERACTIVE))
-	if (GWEN_LoggerLevel_Notice <= CProgressLevel)
+        if (GWEN_LoggerLevel_Notice <= CProgressLevel)
           GWEN_Gui_StdPrintf(cp->gui, stdout, "%s: Started.\n", cp->title);
       cp->shown=1;
     }
@@ -196,8 +196,8 @@ int GWEN_Gui_CProgress_Advance(GWEN_GUI_CPROGRESS *cp, uint64_t progress)
                                  cp->title,
                                  (uint64_t)progress,
                                  (uint64_t)cp->total);
-	  }
-	}
+          }
+        }
       }
       cp->current=progress;
     }

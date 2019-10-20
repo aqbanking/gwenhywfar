@@ -291,9 +291,9 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
       //vsprintf(GWEN_Buffer_GetStart(tbuf), fmt, args);
       spaceNeeded=vsnprintf(GWEN_Buffer_GetStart(tbuf), bufLen, fmt, args);
       if (spaceNeeded>=bufLen) {
-	fprintf(stderr, "GWEN INTERNAL ERROR: Still not enough space (%lu >=%lu)? SNH!\n",
-		(long unsigned int) spaceNeeded, (long unsigned int) bufLen);
-	assert(spaceNeeded<bufLen);
+        fprintf(stderr, "GWEN INTERNAL ERROR: Still not enough space (%lu >=%lu)? SNH!\n",
+                (long unsigned int) spaceNeeded, (long unsigned int) bufLen);
+        assert(spaceNeeded<bufLen);
       }
     }
     GWEN_Buffer_IncrementPos(tbuf, spaceNeeded);
@@ -2244,7 +2244,8 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
   }
   else {
     /* just return raw base layer */
-    DBG_INFO(GWEN_LOGDOMAIN, "No special handling of protocol \"%s\", returning raw base layer.", sProtocol?sProtocol:"(empty)");
+    DBG_INFO(GWEN_LOGDOMAIN, "No special handling of protocol \"%s\", returning raw base layer.",
+             sProtocol?sProtocol:"(empty)");
     return baseSio;
   }
 }

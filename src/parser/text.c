@@ -2085,7 +2085,8 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
  * https://stackoverflow.com/questions/46013382/c-strndup-implicit-declaration
  * placed into public domain by the author
  */
-char *GWEN_Text_strndup(const char *s, size_t n) {
+char *GWEN_Text_strndup(const char *s, size_t n)
+{
 #ifdef OS_WIN32
   char *p;
 
@@ -2121,16 +2122,16 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
 
         p++;
         pStart=p;
-	while (*p && *p!=')')
-	  p++;
-	if (*p!=')') {
+        while (*p && *p!=')')
+          p++;
+        if (*p!=')') {
           DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
           return GWEN_ERROR_BAD_DATA;
         }
         else {
           int len;
-	  char *name=NULL;
-	  char index=0;
+          char *name=NULL;
+          char index=0;
           char *rawName;
           int rv;
           int maxLen=-1;
@@ -2143,18 +2144,18 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
             DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
             return GWEN_ERROR_BAD_DATA;
           }
-	  rawName=(char *) malloc(len+1);
+          rawName=(char *) malloc(len+1);
           assert(rawName);
           memmove(rawName, pStart, len);
           rawName[len]=0;
 
-	  index=_splitVariableNameInNameAndIndex(rawName, &name, &maxLen);
-	  if (index<0) {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid variable name \"%s\"", rawName);
-	    free(rawName);
-	    return index;
-	  }
-	  free(rawName);
+          index=_splitVariableNameInNameAndIndex(rawName, &name, &maxLen);
+          if (index<0) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Invalid variable name \"%s\"", rawName);
+            free(rawName);
+            return index;
+          }
+          free(rawName);
 
           posBeforeFn=GWEN_Buffer_GetPos(dbuf);
           rv=fn(ptr, name, index, maxLen, dbuf);
@@ -2216,7 +2217,7 @@ int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName, int *p
     /* we have an index */
     p++;
     pStart=p;
-    while(*p && *p!=']' && isdigit(*p)) {
+    while (*p && *p!=']' && isdigit(*p)) {
       index*=10;
       index+=(*p)-'0';
       p++;
@@ -2233,7 +2234,7 @@ int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName, int *p
     /* we might have a maxlen field */
     p++;
     pStart=p;
-    while(*p && isdigit(*p)) {
+    while (*p && isdigit(*p)) {
       maxLen*=10;
       maxLen+=(*p)-'0';
       p++;

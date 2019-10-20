@@ -47,14 +47,14 @@
 
 
 static int _groupReadElement(GWEN_MSGENGINE *e,
-			     GWEN_BUFFER *msgbuf,
-			     GWEN_XMLNODE *n,
-			     GWEN_XMLNODE *rnode,
-			     GWEN_DB_NODE *gr,
-			     char currentDelimiter,
-			     char currentTerminator,
-			     const char *delimiters,
-			     uint32_t flags);
+                             GWEN_BUFFER *msgbuf,
+                             GWEN_XMLNODE *n,
+                             GWEN_XMLNODE *rnode,
+                             GWEN_DB_NODE *gr,
+                             char currentDelimiter,
+                             char currentTerminator,
+                             const char *delimiters,
+                             uint32_t flags);
 
 
 
@@ -3104,14 +3104,14 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                            3);
 #endif
       if (strcasecmp(type, "ELEM")==0) {
-	int rv;
+        int rv;
 
-	rv=_groupReadElement(e, msgbuf, n, rnode, gr, delimiter, terminator, GWEN_Buffer_GetStart(delimBuffer), flags);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Buffer_free(delimBuffer);
-	  return rv;
-	}
+        rv=_groupReadElement(e, msgbuf, n, rnode, gr, delimiter, terminator, GWEN_Buffer_GetStart(delimBuffer), flags);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(delimBuffer);
+          return rv;
+        }
         n=GWEN_XMLNode_Next(n);
       } /* if ELEM */
       else if (strcasecmp(type, "VALUES")==0) {
@@ -3141,7 +3141,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
           gn=n;
         }
         else {
-	  gn=GWEN_MsgEngine_FindNodeByProperty(e, type, "id", gversion, gtype);
+          gn=GWEN_MsgEngine_FindNodeByProperty(e, type, "id", gversion, gtype);
           if (!gn) {
             DBG_INFO(GWEN_LOGDOMAIN, "Definition for type \"%s\" not found", type);
             GWEN_Buffer_free(delimBuffer);
@@ -3296,34 +3296,35 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
 
 
 int _groupReadElement(GWEN_MSGENGINE *e,
-		      GWEN_BUFFER *msgbuf,
-		      GWEN_XMLNODE *n,
-		      GWEN_XMLNODE *rnode,
-		      GWEN_DB_NODE *gr,
-		      char currentDelimiter,
-		      char currentTerminator,
-		      const char *delimiters,
-		      uint32_t flags){
+                      GWEN_BUFFER *msgbuf,
+                      GWEN_XMLNODE *n,
+                      GWEN_XMLNODE *rnode,
+                      GWEN_DB_NODE *gr,
+                      char currentDelimiter,
+                      char currentTerminator,
+                      const char *delimiters,
+                      uint32_t flags)
+{
   unsigned int loopNr;
   unsigned int minnum;
   unsigned int maxnum;
   const char *name;
   int abortLoop;
-  
+
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading element");
-  
+
   /* get some sizes */
   //minsize=atoi(GWEN_XMLNode_GetProperty(n, "minsize","0"));
   //maxsize=atoi(GWEN_XMLNode_GetProperty(n, "maxsize","0"));
   minnum=atoi(GWEN_XMLNode_GetProperty(n, "minnum", "1"));
   maxnum=atoi(GWEN_XMLNode_GetProperty(n, "maxnum", "1"));
   name=GWEN_XMLNode_GetProperty(n, "name", 0);
-  
+
   loopNr=0;
   abortLoop=0;
   while ((maxnum==0 || loopNr<maxnum) && !abortLoop) {
     int c;
-  
+
     DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading %s", name);
     if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
       break;
@@ -3332,7 +3333,7 @@ int _groupReadElement(GWEN_MSGENGINE *e,
       DBG_DEBUG(GWEN_LOGDOMAIN, "called from here");
       return -1;
     }
-  
+
     DBG_VERBOUS(GWEN_LOGDOMAIN,
                 "Checking delimiter at pos %x "
                 "(whether \"%c\" is in \"%s\")",
@@ -3354,9 +3355,9 @@ int _groupReadElement(GWEN_MSGENGINE *e,
         int rv;
         const char *dtype;
         GWEN_BUFFER *vbuf;
-  
+
         DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading value from pos %x", GWEN_Buffer_GetPos(msgbuf));
-	vbuf=GWEN_Buffer_new(0, GWEN_MSGENGINE_MAX_VALUE_LEN, 0, 0);
+        vbuf=GWEN_Buffer_new(0, GWEN_MSGENGINE_MAX_VALUE_LEN, 0, 0);
 #ifdef HEAVY_DEBUG_MSGENGINE
         DBG_ERROR(GWEN_LOGDOMAIN, "Reading value from here:\n");
         GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
@@ -3369,13 +3370,13 @@ int _groupReadElement(GWEN_MSGENGINE *e,
           DBG_INFO(GWEN_LOGDOMAIN, "Empty value");
         }
         else if (rv==-1) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "Error parsing node \"%s\" (ELEM)", name);
+          DBG_INFO(GWEN_LOGDOMAIN, "Error parsing node \"%s\" (ELEM)", name);
           GWEN_Buffer_free(vbuf);
           return -1;
         }
-  
+
         GWEN_Buffer_Rewind(vbuf);
-  
+
         /* special handling for binary data */
         dtype=GWEN_XMLNode_GetProperty(n, "type", "");
         if (GWEN_MsgEngine__IsBinTyp(e, dtype)) {
@@ -3404,12 +3405,12 @@ int _groupReadElement(GWEN_MSGENGINE *e,
         } /* if type is bin */
         else if (GWEN_MsgEngine__IsIntTyp(e, dtype)) {
           int z;
-  
+
           if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer", name);
+            DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer", name);
             return -1;
           }
-	  if (GWEN_DB_SetIntValue(gr, GWEN_DB_FLAGS_DEFAULT, name, z)) {
+          if (GWEN_DB_SetIntValue(gr, GWEN_DB_FLAGS_DEFAULT, name, z)) {
             DBG_INFO(GWEN_LOGDOMAIN, "Could not set int value for \"%s\"", name);
             return -1;
           }
@@ -3424,18 +3425,18 @@ int _groupReadElement(GWEN_MSGENGINE *e,
             return -1;
           }
         } /* if !bin */
-  
+
         GWEN_Buffer_free(vbuf);
       } /* if name is given */
     } /* if current char is not a delimiter */
-  
+
     if (GWEN_Buffer_GetBytesLeft(msgbuf)) {
       if (currentDelimiter) {
-	if (GWEN_Buffer_PeekByte(msgbuf)==currentDelimiter) {
+        if (GWEN_Buffer_PeekByte(msgbuf)==currentDelimiter) {
           GWEN_Buffer_IncrementPos(msgbuf, 1);
           if (abortLoop && maxnum) {
             uint32_t loopOpt=loopNr+1;
-  
+
             if (maxnum-loopOpt>GWEN_Buffer_GetBytesLeft(msgbuf))
               /* Suspicious but not necessarily invalid, let's see */
               maxnum=loopOpt+GWEN_Buffer_GetBytesLeft(msgbuf);

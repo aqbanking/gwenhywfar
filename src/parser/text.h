@@ -365,7 +365,8 @@ int GWEN_Text_ConvertCharset(const char *fromCharset,
 
 
 
-typedef int GWENHYWFAR_CB(*GWEN_TEXT_REPLACE_VARS_CB)(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf);
+typedef int GWENHYWFAR_CB(*GWEN_TEXT_REPLACE_VARS_CB)(void *cbPtr, const char *name, int index, int maxLen,
+                                                      GWEN_BUFFER *dstBuf);
 
 
 /**

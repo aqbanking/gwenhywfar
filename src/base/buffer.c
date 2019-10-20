@@ -352,7 +352,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size)
     }
 
     /* store new size and pointer */
-    bf->realPtr=(char*)p;
+    bf->realPtr=(char *)p;
     bf->ptr=bf->realPtr+reserved;
     bf->realBufferSize=nsize;
     bf->bufferSize+=noffs;
