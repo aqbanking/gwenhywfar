@@ -60,6 +60,10 @@ types: $(typefiles)
 	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $(typefiles)
 
 
+typedefs: $(typefiles)
+	typemaker2 --defs-only -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $(typefiles)
+
+
 clean_build_files:
 	rm -f $(built_sources) $(build_headers)
 
@@ -68,15 +72,4 @@ format_build_files:
 	  $(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --pad=oper -a --suffix=none $$f; \
 	done
 
-
-%.c: %.xml
-	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $<
-	$(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
-
-%.h: %.xml
-	typemaker2 -I $(top_srcdir)/tools/typemaker2/types/c -I $(srcdir) --destfolder="$(srcdir)" -D GWENHYWFAR_API $<
-	$(ASTYLE) -s2 --min-conditional-indent=0 --indent-labels --suffix=none $@
-
-
-SUFFIXES = .xml .c
 
