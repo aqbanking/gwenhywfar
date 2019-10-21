@@ -676,7 +676,7 @@ int GWEN_Sar_AddAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh, G
 
   return 0;
 #else
-# warning "Function readlink() is not available"
+/*# warning "Function readlink() is not available"*/
   DBG_ERROR(GWEN_LOGDOMAIN, "Function readlink() is not available");
   return GWEN_ERROR_IO;
 #endif
@@ -1593,7 +1593,7 @@ int GWEN_Sar_ExtractAndDigestFileLink(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *f
 
   return 0;
 #else
-# warning "Function symlink() is not available"
+/*# warning "Function symlink() is not available"*/
   DBG_ERROR(GWEN_LOGDOMAIN, "Function symlink() is not available");
   return GWEN_ERROR_IO;
 #endif
