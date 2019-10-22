@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2019-10-21 17:08+0200\n"
-"PO-Revision-Date: 2013-03-09 10:39+0100\n"
+"PO-Revision-Date: 2019-10-22 22:18+0200\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
 "Language: de_DE\n"
@@ -213,12 +213,12 @@ msgstr "Verbunden mit \"%s\""
 #: src/sio/syncio_tls.c:454
 #, c-format
 msgid "TLS: SSL cipher priority list: %s"
-msgstr ""
+msgstr "TLS: SSL Ciphers Prioritätenliste: %s"
 
 #. use default ciphers from GnuTLS
 #: src/sio/syncio_tls.c:464
 msgid "Using GnuTLS default ciphers."
-msgstr ""
+msgstr "Verwende GnuTLS Default Ciphers."
 
 #: src/sio/syncio_tls.c:808 src/sio/syncio_tls.c:1076
 msgid "Signer not found"
@@ -267,11 +267,11 @@ msgstr "Zertifikat ist gültig"
 #: src/sio/syncio_tls.c:1284
 #, c-format
 msgid "TLS: SSL-Ciphers negotiated: %s"
-msgstr ""
+msgstr "TLS: SSL-Ciphers ausgehandelt: %s"
 
 #: src/sio/syncio_tls.c:1295
 msgid "TLS: Warning - The server has chosen unsafe SSL-Ciphers!"
-msgstr ""
+msgstr "TLS: Achtung - der Server hat unsichere SSL-Ciphers gewählt."
 
 #: src/sio/syncio_tls.c:1358
 msgid ""
@@ -778,7 +778,7 @@ msgid "Waiting for Data"
 msgstr "Auf Daten warten"
 
 #: src/gui/gui.c:1312
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The following certificate has been received:\n"
 "Name         : %s\n"
@@ -804,23 +804,22 @@ msgid ""
 "table> <p>  Do you wish to accept this certificate? </p></html>"
 msgstr ""
 "Das folgende Zertifikat wurde empfangen:\n"
-"Name        : %s\n"
-"Organisation: %s\n"
-"Abteilung   : %s\n"
-"Staat       : %s\n"
-"Stadt       : %s\n"
-"Bundesland  : %s\n"
-"Gültig ab   : %s\n"
-"Gültig bis  : %s\n"
-"Hash        : %s\n"
-"Status      : %s\n"
-"Wollen Sie dieses Zertifikat akzeptieren? <html><p>Das folgende Zertifikat "
-"wurde empfangen:</p> <table>  <tr><td>Name</td><td>%s</td></tr>  "
-"<tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Abteilung</td><td>%s</"
-"td></tr>  <tr><td>Staat</td><td>%s</td></tr>  <tr><td>Stadt</td><td>%s</td></"
-"tr>  <tr><td>Bundesland</td><td>%s</td></tr>  <tr><td>G&uuml;ltig ab</td><td>"
-"%s</td></tr>  <tr><td>G&uuml;ltig bis</td><td>%s</td></tr>  <tr><td>Hash</"
-"td><td>%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </table> "
+"Name         : %s\n"
+"Organisation : %s\n"
+"Abteilung    : %s\n"
+"Staat        : %s\n"
+"Stadt        : %s\n"
+"Bundesland   : %s\n"
+"Gültig ab    : %s\n"
+"Gültig bis   : %s\n"
+"Hash (MD5)   : %s\\n\n"
+"Hash (SHA1)  : %s\\n\n"
+"Hash (SHA512): %s\\n\n"
+"Status       : %s\n"
+"Wollen Sie dieses Zertifikat akzeptieren? <html><p>Das folgende Zertifikat wurde empfangen:</p> <table>  <tr><td>Name</td><td>%s</td></tr>  <tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Abteilung</td><td>%s</td></tr>  <tr><td>Staat</td><td>%s</td></tr>  <tr><td>Stadt</td><td>%s</td></tr>  <tr><td>Bundesland</td><td>%s</td></tr>  <tr><td>G&uuml;ltig ab</td><td>%s</td></tr>  <tr><td>G&uuml;ltig bis</td><td>%s</td></tr>\n"
+"<tr><td>Hash (MD5)</td><td>%s</td></tr>  <tr><td>Hash (SHA1)</td><td>%s</td></tr>\n"
+"<tr><td>Hash (SHA512)</td><td>%s</td></tr>\n"
+"<tr><td>Status</td><td>%s%s%s</td></tr> </table>\n"
 "<p>Wollen Sie dieses Zertifikat akzeptieren?</p></html>"
 
 #. TRANSLATORS: This string is used as a template string to
@@ -1153,6 +1152,9 @@ msgid ""
 "    Display passwords store in a GWEN_PASSWD_STORE file\n"
 "\n"
 msgstr ""
+"  showpasswords:\n"
+"    Zeige die Passwörter, die in einer GWEN_PASSWD_STORE Datei gespeichert sind\n"
+"\n"
 
 #: tools/gsa/main.c:132
 msgid "GWEN's Simple Archiver"
@@ -1292,9 +1294,3 @@ msgstr "Eine Implementierung von ConfigManager mit Dateien"
 #: plugins/configmgr/dir/dir.xml:9
 msgid "ConfigManager implementation using files."
 msgstr "Eine Implementierung von ConfigManager mit Dateien."
-
-#~ msgid "Retrying to connect (non-SSLv3)"
-#~ msgstr "Erneuter Verbindungsaufbau wird versucht (ohne SSLv3)"
-
-#~ msgid "Retrying to connect (SSLv3)"
-#~ msgstr "Erneuter Verbindungsaufbau wird versucht (mit SSLv3)"
