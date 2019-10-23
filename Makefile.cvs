@@ -30,7 +30,8 @@ all_warnings=\
 c_warnings=\
  -Wbad-function-cast  -Wmissing-parameter-type  \
  -Wnested-externs \
- -Wdeclaration-after-statement -Wpointer-sign
+ -Wdeclaration-after-statement -Wpointer-sign \
+ -Wunused-parameter
 
 # disable this for now
 # -Wc++-compat -Wmissing-declarations
