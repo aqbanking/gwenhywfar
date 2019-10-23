@@ -47,19 +47,24 @@ static int _groupReadGroup(GWEN_MSGENGINE *e,
 			   uint32_t flags);
 static int _groupReadElement(GWEN_MSGENGINE *e,
                              GWEN_BUFFER *msgbuf,
-                             GWEN_XMLNODE *n,
-                             GWEN_XMLNODE *rnode,
+			     GWEN_XMLNODE *n,
                              GWEN_DB_NODE *dbData,
                              char currentDelimiter,
                              char currentTerminator,
                              const char *delimiters,
                              uint32_t flags);
 
+static int _readSingleElement(GWEN_MSGENGINE *e,
+			      GWEN_BUFFER *msgbuf,
+			      GWEN_XMLNODE *n,
+			      GWEN_DB_NODE *dbData,
+			      const char *delimiters,
+			      uint32_t flags);
+
 static int _skipRestOfSegment(GWEN_MSGENGINE *e, GWEN_BUFFER *mbuf, GWEN_DB_NODE *dbSegmentHead, uint32_t flags);
 static int _readValue(GWEN_MSGENGINE *e,
 		      GWEN_BUFFER *msgbuf,
 		      GWEN_XMLNODE *xmlNode,
-		      GWEN_XMLNODE *rnode,
 		      GWEN_BUFFER *vbuf,
 		      const char *delimiters,
 		      uint32_t flags);
@@ -380,7 +385,7 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
                            3);
 #endif
       if (strcasecmp(type, "ELEM")==0) {
-	rv=_groupReadElement(e, msgbuf, n, xmlReferencingNode, dbData,
+	rv=_groupReadElement(e, msgbuf, n, dbData,
 			     delimiter, terminator, GWEN_Buffer_GetStart(delimBuffer),
 			     flags);
         if (rv<0) {
@@ -463,6 +468,160 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
   GWEN_Buffer_free(delimBuffer);
   return 0;
 }
+
+
+
+int _groupReadGroupOrElement(GWEN_MSGENGINE *e,
+			     GWEN_BUFFER *msgbuf,
+			     GWEN_XMLNODE *xmlNode,
+			     GWEN_DB_NODE *dbData,
+			     char currentDelimiter,
+			     char currentTerminator,
+			     const char *delimiters,
+			     uint32_t flags)
+{
+  const char *sEntryType;
+  unsigned int minnum;
+  unsigned int maxnum;
+  unsigned int loopNr;
+  
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading entry");
+  minnum=GWEN_XMLNode_GetIntProperty(xmlNode, "minnum", 1);
+  maxnum=GWEN_XMLNode_GetIntProperty(xmlNode, "maxnum", 1);
+
+  sEntryType=GWEN_XMLNode_GetData(xmlNode);
+
+  loopNr=0;
+  while (GWEN_Buffer_GetBytesLeft(msgbuf) && (maxnum==0 || loopNr<maxnum)) {
+    int c;
+    int rv;
+
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Reading entry type %s[%d]", sEntryType, loopNr);
+
+    c=GWEN_Buffer_PeekByte(msgbuf);
+    if ((currentTerminator && c==currentTerminator) ||
+	(strchr(delimiters, c) && !(currentDelimiter && c==currentDelimiter)))
+      /* terminator or higher level delimiter found, we're done */
+      break;
+
+    if (strcasecmp(sEntryType, "GROUP")==0) {
+      rv=0; // TODO: _readSingleGroupEntry()
+    }
+    else if (strcasecmp(sEntryType, "ELEM")==0) {
+      rv=_readSingleElement(e, msgbuf, xmlNode, dbData, delimiters, flags);
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "Unhandled type \"%s\", ignoring", sEntryType);
+      rv=0;
+    }
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    }
+    loopNr++;
+  }
+
+  if (minnum && loopNr<minnum) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Premature end of message (too few repeats, %d found, %d expected)",
+	      loopNr, minnum);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
+
+
+
+int _readSingleElement(GWEN_MSGENGINE *e,
+		       GWEN_BUFFER *msgbuf,
+		       GWEN_XMLNODE *n,
+		       GWEN_DB_NODE *dbData,
+		       const char *delimiters,
+		       uint32_t flags)
+{
+  const char *name;
+  int rv;
+  GWEN_BUFFER *vbuf;
+
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading element");
+
+  /* get some sizes */
+  name=GWEN_XMLNode_GetProperty(n, "name", 0);
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading value \"%s\" from pos %x", name?name:"<unnamed>", GWEN_Buffer_GetPos(msgbuf));
+
+  vbuf=GWEN_Buffer_new(0, GWEN_MSGENGINE_MAX_VALUE_LEN, 0, 0);
+#ifdef HEAVY_DEBUG_MSGENGINE
+  DBG_ERROR(GWEN_LOGDOMAIN, "Reading value from here:\n");
+  GWEN_Text_DumpString(GWEN_Buffer_GetPosPointer(msgbuf),
+		       GWEN_Buffer_GetBytesLeft(msgbuf),
+		       1);
+#endif
+
+  rv=_readValue(e, msgbuf, n, vbuf, delimiters, flags);
+  if (rv==1) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Empty value");
+  }
+  else if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error parsing xmlNode \"%s\" (ELEM)", name);
+    GWEN_Buffer_free(vbuf);
+    return rv;
+  }
+
+  GWEN_Buffer_Rewind(vbuf);
+  if (GWEN_Buffer_GetUsedBytes(vbuf)) {
+    const char *dtype;
+
+    /* special handling for binary data */
+    dtype=GWEN_XMLNode_GetProperty(n, "type", "");
+    if (GWEN_MsgEngine__IsBinTyp(e, dtype)) {
+      if (GWEN_XMLNode_GetIntProperty(n, "readbin", 1) && e->binTypeReadPtr) {
+	rv=e->binTypeReadPtr(e, n, dbData, vbuf);
+      }
+      else
+	rv=1;
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Called from here");
+	GWEN_Buffer_free(vbuf);
+	return GWEN_ERROR_GENERIC;
+      }
+      else if (rv==1) {
+	/* bin type not handled, so handle it myself */
+	if (name && *name)
+	  GWEN_DB_SetBinValue(dbData,
+			      GWEN_DB_FLAGS_DEFAULT,
+			      name,
+			      GWEN_Buffer_GetStart(vbuf),
+			      GWEN_Buffer_GetUsedBytes(vbuf));
+      }
+    } /* if type is bin */
+    else if (GWEN_MsgEngine__IsIntTyp(e, dtype)) {
+      int z;
+
+      if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer", name);
+	return GWEN_ERROR_GENERIC;
+      }
+      if (name && *name)
+	GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_DEFAULT, name, z);
+    } /* if type is int */
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Value is \"%s\"", GWEN_Buffer_GetStart(vbuf));
+      if (name && *name)
+	GWEN_DB_SetCharValue(dbData,
+			     GWEN_DB_FLAGS_DEFAULT,
+			     name,
+			     GWEN_Buffer_GetStart(vbuf));
+    } /* if !bin */
+  } /* if data in vbuffer */
+  GWEN_Buffer_free(vbuf);
+
+  return 0;
+}
+
+
+
+
+
 
 
 
@@ -596,7 +755,6 @@ int _groupReadGroup(GWEN_MSGENGINE *e,
 int _groupReadElement(GWEN_MSGENGINE *e,
                       GWEN_BUFFER *msgbuf,
                       GWEN_XMLNODE *n,
-                      GWEN_XMLNODE *xmlReferencingNode,
                       GWEN_DB_NODE *dbData,
                       char currentDelimiter,
                       char currentTerminator,
@@ -663,7 +821,7 @@ int _groupReadElement(GWEN_MSGENGINE *e,
                              1);
 #endif
 
-        rv=_readValue(e, msgbuf, n, xmlReferencingNode, vbuf, delimiters, flags);
+        rv=_readValue(e, msgbuf, n, vbuf, delimiters, flags);
         if (rv==1) {
           DBG_INFO(GWEN_LOGDOMAIN, "Empty value");
         }
@@ -780,7 +938,6 @@ int _groupReadElement(GWEN_MSGENGINE *e,
 int _readValue(GWEN_MSGENGINE *e,
 	       GWEN_BUFFER *msgbuf,
 	       GWEN_XMLNODE *xmlNode,
-	       GWEN_XMLNODE *xmlReferencingNode,
 	       GWEN_BUFFER *vbuf,
 	       const char *delimiters,
 	       uint32_t flags)
@@ -859,7 +1016,7 @@ int _readValue(GWEN_MSGENGINE *e,
     /* add trust data to msgEngine */
     const char *descr;
 
-    trustLevel=GWEN_MsgEngine_GetHighestTrustLevel(xmlNode, xmlReferencingNode);
+    trustLevel=GWEN_MsgEngine_GetHighestTrustLevel(xmlNode, NULL);
     if (trustLevel) {
       unsigned int ustart;
 
