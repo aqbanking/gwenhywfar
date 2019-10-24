@@ -672,31 +672,8 @@ AM_PATH_GPG_ERROR
 #
 # check for libgnutls
 #
-case "$OS_TYPE" in
-  windows)
-    LIBGNUTLS_CFLAGS=""
-    LIBGNUTLS_LIBS="-lgnutls -lgpg-error"
-    # we use 1.6.3 or higher, so we do have gnutls_transport_set_error
-    HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"
-    AC_SUBST(LIBGNUTLS_CFLAGS)
-    AC_SUBST(LIBGNUTLS_LIBS)
-    ;;
 
-  *)
-    PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
-    # check for 1.6 or higher
-    oldlibs="$LIBS"
-    LIBS="${LIBGNUTLS_LIBS}"
-    AC_CHECK_LIB(gnutls,gnutls_transport_set_errno,
-      [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="yes"],
-      [HAVE_GNUTLS_TRANSPORT_SET_ERRNO="no"])
-    LIBS="$oldlibs"
-  ;;
-esac
-if test "x${HAVE_GNUTLS_TRANSPORT_SET_ERRNO}" = "xyes"; then
-  AC_DEFINE(HAVE_GNUTLS_TRANSPORT_SET_ERRNO, 1, [only in gnutls>=1.6])
-fi
-
+PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
 
 
 ###-------------------------------------------------------------------------

@@ -1166,17 +1166,11 @@ ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len)
   rv=GWEN_SyncIo_Read(baseIo, buf, len);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-#ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
     gnutls_transport_set_errno(xio->session, errno);
-#endif
     return (ssize_t)-1;
   }
 
-#ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
   gnutls_transport_set_errno(xio->session, 0);
-#else
-  errno=0;
-#endif
   DBG_VERBOUS(GWEN_LOGDOMAIN, "TLS PULL: returning %d bytes", rv);
   /*GWEN_Text_DumpString(buf, rv, 2);*/
   return rv;
@@ -1203,15 +1197,11 @@ ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t l
   rv=GWEN_SyncIo_Write(baseIo, buf, len);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-#ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
     gnutls_transport_set_errno(xio->session, errno);
-#endif
     return (ssize_t)-1;
   }
 
-#ifdef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
   gnutls_transport_set_errno(xio->session, 0);
-#endif
   DBG_VERBOUS(GWEN_LOGDOMAIN, "TLS PUSH: returning %d bytes", rv);
   /*GWEN_Text_DumpString(buf, rv, 2);*/
   return rv;
