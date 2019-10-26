@@ -13,10 +13,7 @@ cmakeconfig_DATA = gwengui-qt5-config.cmake gwengui-qt5-config-version.cmake
 lib_LTLIBRARIES=libgwengui-qt5.la
 noinst_PROGRAMS=libtest
 
-noinst_HEADERS=\
-  qt5dialogbox.hpp \
-  qt5_gui_dialog.hpp \
-  qt5_gui_dialog.hpp
+noinst_HEADERS=
 
 libgwengui_qt5_la_LIBADD=$(QT_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname) $(builddir)/../cpp/libgwengui-cpp.la
 libgwengui_qt5_la_LDFLAGS=-no-undefined
@@ -32,7 +29,9 @@ nodist_noinst_HEADERS=
 
 iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-qt5
 iheader_HEADERS=\
- qt5_gui.hpp
+ qt5_gui.hpp \
+ qt5_gui_dialog.hpp \
+ qt5dialogbox.hpp
 
 MOC_FILES=\
   qt5dialogbox.moc

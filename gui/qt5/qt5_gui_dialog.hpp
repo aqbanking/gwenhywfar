@@ -30,7 +30,7 @@ class QT5_DialogBox;
 #define QT5_DIALOG_WIDGET_LAYOUT 2
 
 
-class QT5_GuiDialog: public CppDialog {
+class QT5GUI_API QT5_GuiDialog: public CppDialog {
 public:
   QT5_GuiDialog(QT5_Gui *gui, GWEN_DIALOG *dlg);
   virtual ~QT5_GuiDialog();
