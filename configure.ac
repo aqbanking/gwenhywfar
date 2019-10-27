@@ -418,7 +418,7 @@ case "$OS_TYPE" in
 
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
-	all_libraries="${all_libraries} -lwsock32 -lintl"
+	all_libraries="${all_libraries} -lwsock32"
     	;;
     *)
     	AC_MSG_ERROR(**** Unknown operating system type)
@@ -737,10 +737,13 @@ if test "$OS_TYPE" != "windows"; then
   i18n_libs="$LIBS"
   LIBS="$oldlibs"
 else
-  i18n_libs="-lintl"
+  if test "$HAVE_I18N" != "no"; then
+    i18n_libs="-lintl"
+    all_libraries="${all_libraries} -lintl"
+  fi
 fi
 
-if test "$HAVE_I18N" != "NO"; then
+if test "$HAVE_I18N" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
 fi
 
