@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdint.h>
 #ifndef OS_WIN32
 # include <unistd.h>
 #endif
@@ -3081,7 +3082,7 @@ int testGnutls(int argc, char **argv)
     return GWEN_ERROR_GENERIC;
   }
 
-  gnutls_transport_set_ptr(session, (gnutls_transport_ptr_t)sd);
+  gnutls_transport_set_ptr(session, (gnutls_transport_ptr_t)(intptr_t)sd);
 
   DBG_ERROR(0, "ping");
   rv=gnutls_handshake(session);
