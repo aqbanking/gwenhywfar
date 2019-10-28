@@ -46,7 +46,6 @@ static int _groupReadElement(GWEN_MSGENGINE *e,
                              const char *delimiters,
                              uint32_t flags);
 
-static int _skipRestOfSegment(GWEN_MSGENGINE *e, GWEN_BUFFER *mbuf, GWEN_DB_NODE *dbSegmentHead, uint32_t flags);
 static int _readValue(GWEN_MSGENGINE *e,
 		      GWEN_BUFFER *msgbuf,
 		      GWEN_XMLNODE *node,
@@ -54,6 +53,7 @@ static int _readValue(GWEN_MSGENGINE *e,
 		      GWEN_BUFFER *vbuf,
 		      const char *delimiters,
 		      uint32_t flags);
+
 static int _readBinDataLength(GWEN_BUFFER *msgbuf);
 static int _readBinDataIntoBuffer(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf);
 static int _readNonBinDataIntoBuffer(GWEN_BUFFER *msgbuf, char escapeChar, const char *delimiters, int fixedSize, GWEN_BUFFER *vbuf);
@@ -94,94 +94,132 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
                                GWEN_DB_NODE *gr,
                                uint32_t flags)
 {
-  unsigned int segments=0;
+  unsigned int segments;
+
+  segments=0;
 
   while (GWEN_Buffer_GetBytesLeft(mbuf)) {
     GWEN_XMLNODE *node;
-    unsigned int posSegmentStart;
-    const char *sSegmentCode;
-    GWEN_DB_NODE *dbSegmentHead;
+    unsigned int posBak;
+    const char *p;
+    GWEN_DB_NODE *tmpdb;
     int segVer;
 
     /* find head segment description */
-    dbSegmentHead=GWEN_DB_Group_new("dbSegmentHead");
+    tmpdb=GWEN_DB_Group_new("tmpdb");
     node=GWEN_MsgEngine_FindGroupByProperty(e, "id", 0, "SegHead");
     if (node==0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Segment description not found");
-      GWEN_DB_Group_free(dbSegmentHead);
+      GWEN_DB_Group_free(tmpdb);
       return GWEN_ERROR_GENERIC;
     }
 
     /* parse head segment */
-    posSegmentStart=GWEN_Buffer_GetPos(mbuf);
-    if (GWEN_MsgEngine_ParseMessage(e, node, mbuf, dbSegmentHead, flags)) {
+    posBak=GWEN_Buffer_GetPos(mbuf);
+    if (GWEN_MsgEngine_ParseMessage(e, node, mbuf, tmpdb, flags)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing segment head");
-      GWEN_DB_Group_free(dbSegmentHead);
+      GWEN_DB_Group_free(tmpdb);
       return GWEN_ERROR_GENERIC;
     }
 
     /* get segment code */
-    segVer=GWEN_DB_GetIntValue(dbSegmentHead, "version", 0, 0);
-    sSegmentCode=GWEN_DB_GetCharValue(dbSegmentHead, "code", 0, 0);
-    if (!sSegmentCode) {
+    segVer=GWEN_DB_GetIntValue(tmpdb, "version", 0, 0);
+    p=GWEN_DB_GetCharValue(tmpdb, "code", 0, 0);
+    if (!p) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No segment code for %s ? This seems to be a bad msg...", gtype);
-      GWEN_Buffer_SetPos(mbuf, posSegmentStart);
-      DBG_ERROR(GWEN_LOGDOMAIN, "Full message (pos=%04x)", posSegmentStart);
+      GWEN_Buffer_SetPos(mbuf, posBak);
+      DBG_ERROR(GWEN_LOGDOMAIN, "Full message (pos=%04x)", posBak);
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), 1);
-      GWEN_DB_Dump(dbSegmentHead, 1);
-      GWEN_DB_Group_free(dbSegmentHead);
+      GWEN_DB_Dump(tmpdb, 1);
+      GWEN_DB_Group_free(tmpdb);
       return GWEN_ERROR_GENERIC;
     }
 
     /* try to find corresponding XML node */
-    node=GWEN_MsgEngine_FindNodeByProperty(e, gtype, "code", segVer, sSegmentCode);
+    node=GWEN_MsgEngine_FindNodeByProperty(e, gtype, "code", segVer, p);
     if (node==0) {
-      int rv;
+      unsigned int ustart;
 
-      rv=_skipRestOfSegment(e, mbuf, dbSegmentHead, flags);
-      if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_DB_Group_free(dbSegmentHead);
-	return rv;
+      ustart=GWEN_Buffer_GetPos(mbuf);
+      ustart++; /* skip delimiter */
+
+      /* node not found, skip it */
+      DBG_NOTICE(GWEN_LOGDOMAIN,
+		 "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d), skipping",
+                 p,
+                 GWEN_DB_GetIntValue(tmpdb, "seq", 0, -1),
+                 GWEN_DB_GetIntValue(tmpdb, "version", 0, -1),
+                 GWEN_DB_GetIntValue(tmpdb, "ref", 0, -1));
+      if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error skipping segment \"%s\"", p);
+        GWEN_DB_Group_free(tmpdb);
+        return GWEN_ERROR_GENERIC;
       }
+      if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
+        unsigned int usize;
+
+        usize=GWEN_Buffer_GetPos(mbuf)-ustart-1;
+#if 0
+        GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart, usize, stderr, 1);
+#endif
+        if (GWEN_MsgEngine_AddTrustInfo(e,
+                                        GWEN_Buffer_GetStart(mbuf)+ustart,
+                                        usize,
+                                        p,
+                                        GWEN_MsgEngineTrustLevelHigh,
+                                        ustart)) {
+          DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+          GWEN_DB_Group_free(tmpdb);
+          return GWEN_ERROR_GENERIC;
+        }
+      } /* if trustInfo handling wanted */
     }
     else {
-      /* ok, node available, get the corresponding description and parse the segment */
+      /* ok, node available, get the corresponding description and parse
+       * the segment */
       const char *id;
       GWEN_DB_NODE *storegrp;
+      unsigned int startPos;
 
       /* restore start position, since the segment head is part of a full
        * description, so we need to restart reading from the very begin */
-      GWEN_Buffer_SetPos(mbuf, posSegmentStart);
+      GWEN_Buffer_SetPos(mbuf, posBak);
 
       /* create group in DB for this segment */
-      id=GWEN_XMLNode_GetProperty(node, "id", sSegmentCode);
+      id=GWEN_XMLNode_GetProperty(node, "id", p);
       storegrp=GWEN_DB_GetGroup(gr, GWEN_PATH_FLAGS_CREATE_GROUP, id);
       assert(storegrp);
 
       /* store the start position of this segment within the DB */
-      GWEN_DB_SetIntValue(storegrp, GWEN_DB_FLAGS_OVERWRITE_VARS, "segment/pos", posSegmentStart);
+      startPos=GWEN_Buffer_GetPos(mbuf);
+      GWEN_DB_SetIntValue(storegrp,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/pos",
+                          startPos);
 
       /* parse the segment */
       if (GWEN_MsgEngine_ParseMessage(e, node, mbuf, storegrp, flags)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing segment \"%s\" at %d (%x)",
-                  sSegmentCode,
-                  GWEN_Buffer_GetPos(mbuf)-posSegmentStart,
-                  GWEN_Buffer_GetPos(mbuf)-posSegmentStart);
-        GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+posSegmentStart,
-                             GWEN_Buffer_GetUsedBytes(mbuf)-posSegmentStart,
-			     1);
+                  p,
+                  GWEN_Buffer_GetPos(mbuf)-startPos,
+                  GWEN_Buffer_GetPos(mbuf)-startPos);
+        GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
+                             GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
+                             1);
         DBG_ERROR(GWEN_LOGDOMAIN, "Stored data so far:");
         GWEN_DB_Dump(storegrp, 2);
-        GWEN_DB_Group_free(dbSegmentHead);
+        GWEN_DB_Group_free(tmpdb);
         return GWEN_ERROR_GENERIC;
       }
 
       /* store segment size within DB */
-      GWEN_DB_SetIntValue(storegrp, GWEN_DB_FLAGS_OVERWRITE_VARS, "segment/length", GWEN_Buffer_GetPos(mbuf)-posSegmentStart);
+      GWEN_DB_SetIntValue(storegrp,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "segment/length",
+                          GWEN_Buffer_GetPos(mbuf)-startPos);
       segments++;
     }
-    GWEN_DB_Group_free(dbSegmentHead);
+    GWEN_DB_Group_free(tmpdb);
   } /* while */
 
   /* done */
@@ -193,49 +231,6 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
     DBG_INFO(GWEN_LOGDOMAIN, "No segments parsed.");
     return 1;
   }
-}
-
-
-
-int _skipRestOfSegment(GWEN_MSGENGINE *e, GWEN_BUFFER *mbuf, GWEN_DB_NODE *dbSegmentHead, uint32_t flags)
-{
-  unsigned int ustart;
-  const char *sSegmentName;
-
-  sSegmentName=GWEN_DB_GetCharValue(dbSegmentHead, "code", 0, "<unnamed>");
-  ustart=GWEN_Buffer_GetPos(mbuf);
-  ustart++; /* skip delimiter */
-  
-  /* node not found, skip it */
-  DBG_NOTICE(GWEN_LOGDOMAIN,
-	     "Unknown segment \"%s\" (Segnum=%d, version=%d, ref=%d), skipping",
-	     sSegmentName,
-	     GWEN_DB_GetIntValue(dbSegmentHead, "seq", 0, -1),
-	     GWEN_DB_GetIntValue(dbSegmentHead, "version", 0, -1),
-	     GWEN_DB_GetIntValue(dbSegmentHead, "ref", 0, -1));
-  if (GWEN_MsgEngine_SkipSegment(e, mbuf, '?', '\'')) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error skipping segment \"%s\"", sSegmentName);
-    return GWEN_ERROR_GENERIC;
-  }
-  if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
-    unsigned int usize;
-  
-    usize=GWEN_Buffer_GetPos(mbuf)-ustart-1;
-  #if 0
-    GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart, usize, stderr, 1);
-  #endif
-    if (GWEN_MsgEngine_AddTrustInfo(e,
-				    GWEN_Buffer_GetStart(mbuf)+ustart,
-				    usize,
-				    sSegmentName,
-				    GWEN_MsgEngineTrustLevelHigh,
-				    ustart)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-      return GWEN_ERROR_GENERIC;
-    }
-  } /* if trustInfo handling wanted */
-
-  return 0;
 }
 
 
@@ -274,28 +269,34 @@ int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
         esc=1;
       }
       else if (c=='@') {
-	int l;
-
 	/* skip binary data */
-	l=_readBinDataLength(msgbuf);
-	if (l<0) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected (invalid length)");
-	  return GWEN_ERROR_GENERIC;
-	}
-    
-	/* read closing @ */
-	c=GWEN_Buffer_ReadByte(msgbuf);
-	if (c!='@') {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected (missing closing @)");
-	  return GWEN_ERROR_GENERIC;
-	}
-    
-	if (GWEN_Buffer_GetBytesLeft(msgbuf) < (unsigned) l) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (binary beyond end)");
-	  return GWEN_ERROR_GENERIC;
-	}
-	if (l>0)
-	  GWEN_Buffer_IncrementPos(msgbuf, l);
+        char lbuffer[16];
+        char *p;
+        int l;
+
+        p=lbuffer;
+        while (1) {
+          nc=GWEN_Buffer_ReadByte(msgbuf);
+          if (nc<0) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
+            return -1;
+          }
+          if (nc=='@')
+            break;
+          *p=nc;
+          p++;
+        } /* while */
+        *p=0;
+        if (sscanf(lbuffer, "%d", &l)!=1) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Bad number format");
+          return -1;
+        }
+        if (GWEN_Buffer_GetUsedBytes(msgbuf)-GWEN_Buffer_GetPos(msgbuf)
+            < (unsigned) l) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (binary beyond end)");
+          return -1;
+        }
+        GWEN_Buffer_IncrementPos(msgbuf, l);
       }
       else if (c==delimiter) {/* segment-end */
         return 0;
@@ -305,7 +306,7 @@ int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
   } /* while */
 
   DBG_ERROR(GWEN_LOGDOMAIN, "End of segment not found");
-  return GWEN_ERROR_BAD_DATA;
+  return -1;
 }
 
 
