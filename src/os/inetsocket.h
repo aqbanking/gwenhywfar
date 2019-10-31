@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Tue Oct 02 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
@@ -62,6 +59,7 @@ extern "C" {
 
 /** @name Error Codes */
 /*@{*/
+/*@TODO: remove this */
 #define GWEN_SOCKET_ERROR_TYPE "Socket"
 #define GWEN_SOCKET_ERROR_BAD_SOCKETTYPE (-1)
 #define GWEN_SOCKET_ERROR_NOT_OPEN       (-2)
@@ -376,7 +374,7 @@ int GWEN_Socket_SetReuseAddress(GWEN_SOCKET *sp, int fl);
 /**
  * This function should only be used if it is absolutely necessary,
  * because it might not be supported by every system.
- * Hoever, it is currently supported by all systems on which the
+ * However, it is currently supported by all systems on which the
  * Berkeley Socket API is used (e.g. most if not all POSIX systems,
  * in this implementation also WIN32).
  * What you can do with the value returned depends very much on the

@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Tue Oct 02 2002
     copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
@@ -55,6 +52,7 @@ extern "C" {
 
 /** @name Error Codes */
 /*@{*/
+/*@TODO: remove this */
 #define GWEN_INETADDR_ERROR_TYPE "InetAddr"
 #define GWEN_INETADDR_ERROR_MEMORY_FULL          1
 #define GWEN_INETADDR_ERROR_BAD_ADDRESS          2
