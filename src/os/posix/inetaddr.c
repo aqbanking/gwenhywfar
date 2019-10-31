@@ -345,12 +345,16 @@ int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
   switch (ia->af) {
   case GWEN_AddressFamilyIP: {
     struct sockaddr_in *aptr;
+    unsigned int sNameLen;
 
     aptr=(struct sockaddr_in *)(ia->address);
     s=inet_ntoa(aptr->sin_addr);
     assert(s);
-    if (strlen(s)+1>bsize)
+    sNameLen=strlen(s);
+    if (sNameLen+1>bsize) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (%u > %u)", (int) sNameLen+1, bsize);
       return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
     strcpy(buffer, s);
     break;
   }
@@ -363,8 +367,10 @@ int GWEN_InetAddr_GetAddress(const GWEN_INETADDRESS *ia,
     s=aptr->sun_path;
     i=ia->size;
     i-=sizeof(aptr->sun_family);
-    if (i+1>(int)bsize)
+    if (i+1>(int)bsize) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (%u > %u)", (int) i+1, bsize);
       return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
     memmove(buffer, s, i);
     buffer[i]=0;
     break;
