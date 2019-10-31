@@ -92,6 +92,18 @@ GWENHYWFAR_API
 GWEN_HTTP_SESSION *GWEN_HttpSession_fromSocketPassive(GWEN_SOCKET *sk, const char *proto, int port);
 
 
+/**
+ * Create a server HTTP session using the given syncio.
+ *
+ * The caller is responsible for freeing the object returned (if any).
+ *
+ * @return session object (NULL on error)
+ * @param sio synIo object, taken over
+ */
+GWENHYWFAR_API
+GWEN_HTTP_SESSION *GWEN_HttpSession_fromSyncIoPassive(GWEN_SYNCIO *sio);
+
+
 GWENHYWFAR_API
 void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess);
 

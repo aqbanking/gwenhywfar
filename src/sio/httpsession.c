@@ -96,6 +96,29 @@ GWEN_HTTP_SESSION *GWEN_HttpSession_fromSocketPassive(GWEN_SOCKET *sk, const cha
 
 
 
+GWEN_HTTP_SESSION *GWEN_HttpSession_fromSyncIoPassive(GWEN_SYNCIO *sio)
+{
+  GWEN_HTTP_SESSION *sess;
+
+  GWEN_NEW_OBJECT(GWEN_HTTP_SESSION, sess);
+  assert(sess);
+  sess->usage=1;
+  GWEN_INHERIT_INIT(GWEN_HTTP_SESSION, sess);
+
+  sess->syncIo=sio;
+  sess->flags|=GWEN_HTTP_SESSION_FLAGS_PASSIVE;
+
+  /* add PASSIVE flag to every syncIO in the chain */
+  while (sio) {
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PASSIVE);
+    sio=GWEN_SyncIo_GetBaseIo(sio);
+  }
+
+  return sess;
+}
+
+
+
 void GWEN_HttpSession_Attach(GWEN_HTTP_SESSION *sess)
 {
   assert(sess);
