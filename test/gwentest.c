@@ -32,6 +32,7 @@
 #include <gwenhywfar/syncio_file.h>
 #include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/syncio_http.h>
+#include <gwenhywfar/syncio_socket.h>
 #include <gwenhywfar/syncio_tls.h>
 #include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/smalltresor.h>
@@ -3306,6 +3307,190 @@ int testHttpSession(int argc, char **argv)
 
 
 
+GWEN_SOCKET *createListeningSocket(const char *sAddr, int port)
+{
+  int rv;
+  GWEN_INETADDRESS *addrServer;
+  GWEN_SOCKET *skServer;
+
+  addrServer=GWEN_InetAddr_new(GWEN_AddressFamilyIP);
+  rv=GWEN_InetAddr_SetAddress(addrServer, sAddr);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_InetAddr_SetAddress(): %d\n", rv);
+    return NULL;
+  }
+
+  rv=GWEN_InetAddr_SetPort(addrServer, port);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_InetAddr_SetPort(): %d\n", rv);
+    return NULL;
+  }
+
+  skServer=GWEN_Socket_new(GWEN_SocketTypeTCP);
+  rv=GWEN_Socket_Open(skServer);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_Socket_Open(): %d\n", rv);
+    return NULL;
+  }
+  GWEN_Socket_SetReuseAddress(skServer, 1);
+
+  rv=GWEN_Socket_Bind(skServer, addrServer);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_Socket_Bind(): %d\n", rv);
+    return NULL;
+  }
+
+  rv=GWEN_Socket_Listen(skServer, 10);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_Socket_Listen(): %d\n", rv);
+    return NULL;
+  }
+
+  return skServer;
+}
+
+
+
+int testSocketServer(int argc, char **argv)
+{
+  GWEN_GUI *gui;
+  const char *urlString;
+  GWEN_HTTP_SESSION *sess;
+  int port;
+  int rv;
+  GWEN_SOCKET *skServer;
+  GWEN_SOCKET *skClient=NULL;
+  GWEN_INETADDRESS *addrClient=NULL;
+
+  if (argc<3) {
+    fprintf(stderr, "%s %s PORT\n", argv[0], argv[1]);
+    return 1;
+  }
+  port=atoi(argv[2]);
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  skServer=createListeningSocket("127.0.0.1", port);
+  if (skServer==NULL) {
+    fprintf(stderr, "ERROR: createListeningSocketServer()\n");
+    return 2;
+  }
+
+  rv=GWEN_Socket_Accept(skServer, &addrClient, &skClient);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_Socket_Accept(): %d\n", rv);
+    return 2;
+  }
+  else {
+    char sPeerAddr[256];
+
+    fprintf(stdout, "Received a connection\n");
+    rv=GWEN_InetAddr_GetAddress(addrClient, sPeerAddr, sizeof(sPeerAddr)-1);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: GWEN_InetAddr_GetAddress(): %d\n", rv);
+      return 2;
+    }
+    sPeerAddr[sizeof(sPeerAddr)-1]=0;
+    fprintf(stdout, " Peer addr=%s (%d)\n", sPeerAddr, GWEN_InetAddr_GetPort(addrClient));
+    GWEN_Socket_Close(skClient);
+    GWEN_Socket_free(skClient);
+    GWEN_InetAddr_free(addrClient);
+  }
+
+  GWEN_Socket_Close(skServer);
+  GWEN_Socket_free(skServer);
+
+  return 0;
+}
+
+
+
+int testTlsServer(int argc, char **argv)
+{
+  GWEN_GUI *gui;
+  const char *urlString;
+  GWEN_HTTP_SESSION *sess;
+  int port;
+  int rv;
+  GWEN_SOCKET *skServer;
+  GWEN_SOCKET *skClient=NULL;
+  GWEN_INETADDRESS *addrClient=NULL;
+
+  if (argc<3) {
+    fprintf(stderr, "%s %s PORT\n", argv[0], argv[1]);
+    return 1;
+  }
+  port=atoi(argv[2]);
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  skServer=createListeningSocket("127.0.0.1", port);
+  if (skServer==NULL) {
+    fprintf(stderr, "ERROR: createListeningSocketServer()\n");
+    return 2;
+  }
+
+  rv=GWEN_Socket_Accept(skServer, &addrClient, &skClient);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_Socket_Accept(): %d\n", rv);
+    return 2;
+  }
+  else {
+    char sPeerAddr[256];
+    GWEN_SYNCIO *sioBase;
+    GWEN_SYNCIO *sioTls;
+
+    fprintf(stdout, "Received a connection\n");
+    rv=GWEN_InetAddr_GetAddress(addrClient, sPeerAddr, sizeof(sPeerAddr)-1);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: GWEN_InetAddr_GetAddress(): %d\n", rv);
+      return 2;
+    }
+    sPeerAddr[sizeof(sPeerAddr)-1]=0;
+    fprintf(stdout, " Peer addr=%s (%d)\n", sPeerAddr, GWEN_InetAddr_GetPort(addrClient));
+
+    sioBase=GWEN_SyncIo_Socket_TakeOver(skClient);
+    if (sioBase==NULL) {
+      fprintf(stderr, "No syncIo socket created.\n");
+      return 2;
+    }
+    fprintf(stdout, " SyncIo socket created.\n");
+    GWEN_SyncIo_AddFlags(sioBase, GWEN_SYNCIO_FLAGS_PASSIVE);
+
+    sioTls=GWEN_SyncIo_Tls_new(sioBase);
+    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_FLAGS_PASSIVE);
+    fprintf(stdout, " SyncIo TLS created.\n");
+
+    GWEN_SyncIo_Tls_SetLocalCertFile(sioTls, "./testcert.pem");
+    GWEN_SyncIo_Tls_SetLocalKeyFile(sioTls, "./testkey.pem");
+
+    fprintf(stdout, " Connecting.\n");
+    rv=GWEN_SyncIo_Connect(sioTls);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: GWEN_SyncIo_Connect(): %d\n", rv);
+      return 2;
+    }
+
+    fprintf(stdout, " TLS connection established\n");
+
+    GWEN_SyncIo_Disconnect(sioTls);
+    GWEN_SyncIo_free(sioTls);
+
+    GWEN_InetAddr_free(addrClient);
+  }
+
+  GWEN_Socket_Close(skServer);
+  GWEN_Socket_free(skServer);
+
+  return 0;
+}
+
+
+
 int testDES(int argc, char **argv)
 {
   GWEN_CRYPT_KEY *skey;
@@ -5243,157 +5428,6 @@ int testCSV(int argc, char **argv)
 }
 
 
-#ifdef TEST_GPARSER
-int testParser1(int argc, char **argv)
-{
-  int rv;
-  GWEN_GUI *gui;
-  GWEN_PARSER_ELEMENT_TREE *et;
-
-  gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetGui(gui);
-
-  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
-
-  et=GWEN_ParserElement_Tree_new();
-  rv=GWEN_ParserElement_Tree_ReadXmlFile(et, "test-def.xml");
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
-    return rv;
-  }
-
-  GWEN_ParserElement_Tree_Dump(et, 2);
-
-  return 0;
-}
-
-
-
-int testParser2(int argc, char **argv)
-{
-  int rv;
-  GWEN_GUI *gui;
-  GWEN_PARSER_ELEMENT_TREE *et;
-
-  gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetGui(gui);
-
-  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
-
-  et=GWEN_ParserElement_Tree_new();
-  rv=GWEN_ParserXml_ReadFile(et, "test-element.xml");
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
-    return rv;
-  }
-
-  GWEN_ParserElement_Tree_Dump(et, 2);
-
-  return 0;
-}
-
-
-
-int testParser3(int argc, char **argv)
-{
-  int rv;
-  GWEN_GUI *gui;
-  GWEN_PARSER_ELEMENT_TREE *dt;
-  GWEN_PARSER_ELEMENT_TREE *et;
-
-  gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetGui(gui);
-
-  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
-
-  dt=GWEN_ParserElement_Tree_new();
-  rv=GWEN_ParserElement_Tree_ReadXmlFile(dt, "test-def.xml");
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
-    return rv;
-  }
-
-  fprintf(stderr, "============== Definitions tree: =================\n");
-  GWEN_ParserElement_Tree_Dump(dt, 2);
-
-
-  et=GWEN_ParserElement_Tree_new();
-  rv=GWEN_ParserXml_ReadFile(et, "test-element.xml");
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
-    return rv;
-  }
-
-  fprintf(stderr, "================== Data tree: ====================\n");
-  GWEN_ParserElement_Tree_Dump(et, 2);
-
-  rv=GWEN_Parser_CheckTree(dt, et);
-  if (rv<0) {
-    DBG_ERROR(0, "Error checking tree (%d)", rv);
-    return rv;
-  }
-
-  fprintf(stderr, "Tree is ok.\n");
-
-  return 0;
-}
-
-
-
-int testParser4(int argc, char **argv)
-{
-  int rv;
-  GWEN_GUI *gui;
-  GWEN_PARSER_ELEMENT_TREE *dt;
-  GWEN_PARSER_ELEMENT_TREE *et;
-
-  gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetGui(gui);
-
-  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
-
-  dt=GWEN_ParserElement_Tree_new();
-  rv=GWEN_ParserElement_Tree_ReadXmlFile(dt, "test-def.xml");
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
-    return rv;
-  }
-
-  fprintf(stderr, "============== Definitions tree: =================\n");
-  GWEN_ParserElement_Tree_Dump(dt, 2);
-
-
-  et=GWEN_ParserElement_Tree_new();
-  rv=GWEN_ParserXml_ReadFile(et, "test-element.xml");
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading element definition file (%d)", rv);
-    return rv;
-  }
-
-  fprintf(stderr, "================== Data tree: ====================\n");
-  GWEN_ParserElement_Tree_Dump(et, 2);
-
-  rv=GWEN_Parser_UpdateTree(dt, et);
-  if (rv<0) {
-    DBG_ERROR(0, "Error checking tree (%d)", rv);
-    return rv;
-  }
-
-  fprintf(stderr, "================ Data tree now: ==================\n");
-  GWEN_ParserElement_Tree_Dump(et, 2);
-
-  fprintf(stderr, "Tree is ok.\n");
-
-  return 0;
-}
-
-#endif
-
-
 
 int testParams1(int argc, char **argv)
 {
@@ -5949,21 +5983,13 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "params3")==0) {
     rv=testParams3(argc, argv);
   }
+  else if (strcasecmp(argv[1], "socketServer")==0) {
+    rv=testSocketServer(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "tlsServer")==0) {
+    rv=testTlsServer(argc, argv);
+  }
 
-#ifdef TEST_GPARSER
-  else if (strcasecmp(argv[1], "parser1")==0) {
-    rv=testParser1(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "parser2")==0) {
-    rv=testParser2(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "parser3")==0) {
-    rv=testParser3(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "parser4")==0) {
-    rv=testParser4(argc, argv);
-  }
-#endif
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
