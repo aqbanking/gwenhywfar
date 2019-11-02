@@ -5451,35 +5451,35 @@ int testParams1(int argc, char **argv)
   /* var 1: int */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "intVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Int);
   GWEN_Param_SetCurrentValueAsInt(prm, 1);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 2: int */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "intVar2");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Int);
   GWEN_Param_SetCurrentValueAsInt(prm, 2);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 3: float */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "doubleVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Float);
   GWEN_Param_SetCurrentValueAsDouble(prm, 101.7);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 4: float */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "doubleVar2");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Float);
   GWEN_Param_SetCurrentValueAsDouble(prm, 102.4);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 5: string */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "stringVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_String);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_String);
   GWEN_Param_SetCurrentValue(prm, "first string");
   GWEN_Param_List_Add(prm, pl);
 
@@ -5564,35 +5564,35 @@ int testParams2(int argc, char **argv)
   /* var 1: int */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "intVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Int);
   GWEN_Param_SetCurrentValueAsInt(prm, 99);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 2: int */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "intVar2");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Int);
   GWEN_Param_SetCurrentValueAsInt(prm, 88);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 3: float */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "doubleVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Float);
   GWEN_Param_SetCurrentValueAsDouble(prm, 77.5);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 4: float */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "doubleVar2");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Float);
   GWEN_Param_SetCurrentValueAsDouble(prm, 99.3);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 5: string */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "stringVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_String);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_String);
   GWEN_Param_SetCurrentValue(prm, "first real string");
   GWEN_Param_List_Add(prm, pl);
 
@@ -5664,35 +5664,35 @@ int testParams3(int argc, char **argv)
   /* var 1: int */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "intVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Int);
   GWEN_Param_SetCurrentValueAsInt(prm, 1);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 2: int */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "intVar2");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Int);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Int);
   GWEN_Param_SetCurrentValueAsInt(prm, 2);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 3: float */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "doubleVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Float);
   GWEN_Param_SetCurrentValueAsDouble(prm, 101.7);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 4: float */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "doubleVar2");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_Float);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_Float);
   GWEN_Param_SetCurrentValueAsDouble(prm, 102.4);
   GWEN_Param_List_Add(prm, pl);
 
   /* var 5: string */
   prm=GWEN_Param_new();
   GWEN_Param_SetName(prm, "stringVar1");
-  GWEN_Param_SetType(prm, GWEN_Param_DataType_String);
+  GWEN_Param_SetDataType(prm, GWEN_Param_DataType_String);
   GWEN_Param_SetCurrentValue(prm, "first string");
   GWEN_Param_List_Add(prm, pl);
 
