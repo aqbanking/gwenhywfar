@@ -45,7 +45,7 @@
 #endif
 
 
-GWENHYWFAR_API struct GWEN_SOCKET {
+struct GWEN_SOCKET {
   GWEN_LIST_ELEMENT(GWEN_SOCKET)
   int socket;
   GWEN_SOCKETTYPE type;
@@ -53,7 +53,7 @@ GWENHYWFAR_API struct GWEN_SOCKET {
 };
 
 
-GWENHYWFAR_API struct GWEN_SOCKETSETSTRUCT {
+struct GWEN_SOCKETSETSTRUCT {
   fd_set set;
   int highest;
   uint32_t count;
