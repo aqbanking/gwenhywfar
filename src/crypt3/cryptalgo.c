@@ -191,7 +191,7 @@ int GWEN_Crypt_CryptAlgo_toDb(const GWEN_CRYPT_CRYPTALGO *a, GWEN_DB_NODE *db)
                        GWEN_Crypt_CryptAlgoId_toString(a->id));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "mode",
-                       GWEN_Crypt_CryptMode_toString(a->id));
+                       GWEN_Crypt_CryptMode_toString(a->mode));
   if (a->pInitVector && a->lInitVector)
     GWEN_DB_SetBinValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "initVector",
