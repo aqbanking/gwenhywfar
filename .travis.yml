@@ -1,12 +1,15 @@
 language: c
+dist: bionic
 compiler:
   - gcc
   - clang
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install libgnutls-dev libgtk-3-dev libgtk2.0-dev libgcrypt20-dev libgpg-error-dev
+  - sudo apt-get -y install libgnutls28-dev libgtk-3-dev libgtk2.0-dev libgcrypt20-dev libgpg-error-dev
+addons:
+  apt:
+    update: true
 script:
   - make -f Makefile.cvs
-  - ./configure --with-guis="qt4 gtk2 gtk3"
+  - ./configure --with-guis="qt4 gtk2 gtk3" --enable-error-on-warning --disable-network-checks
   - make
-  - make test
+  - make check
