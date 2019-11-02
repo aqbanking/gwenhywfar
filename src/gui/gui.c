@@ -281,6 +281,7 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
     spaceNeeded=vsnprintf(GWEN_Buffer_GetStart(tbuf), bufLen, fmt, args);
     if (spaceNeeded==(size_t) -1) {
       fprintf(stderr, "GWEN INTERNAL ERROR: vsnprintf returned -1 on fmt=\"%s\"?\n", fmt);
+      va_end(args);
       return EOF;
     }
     if (spaceNeeded>=bufLen) {
