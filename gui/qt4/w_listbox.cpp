@@ -245,18 +245,16 @@ public:
       return 0;
 
     case GWEN_DialogProperty_AddValue: {
-      QString str;
       QString t;
       int n=0;
       QStringList sl;
-      QTreeWidgetItem *item;
 
-      str=text;
+      QString str=text;
       while(!(t=str.section('\t', n, n)).isEmpty()) {
         sl+=t;
         n++;
       }
-      item=new QTreeWidgetItem(qw, sl);
+      (void)new QTreeWidgetItem(qw, sl);
       return 0;
     }
 

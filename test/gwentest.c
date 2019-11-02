@@ -3354,8 +3354,6 @@ GWEN_SOCKET *createListeningSocket(const char *sAddr, int port)
 int testSocketServer(int argc, char **argv)
 {
   GWEN_GUI *gui;
-  const char *urlString;
-  GWEN_HTTP_SESSION *sess;
   int port;
   int rv;
   GWEN_SOCKET *skServer;
@@ -3410,8 +3408,6 @@ int testSocketServer(int argc, char **argv)
 int testTlsServer(int argc, char **argv)
 {
   GWEN_GUI *gui;
-  const char *urlString;
-  GWEN_HTTP_SESSION *sess;
   int port;
   int rv;
   GWEN_SOCKET *skServer;
