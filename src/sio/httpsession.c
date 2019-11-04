@@ -472,10 +472,10 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 
 
 
-int GWEN_HttpSession_SendResponse(GWEN_HTTP_SESSION *sess,
-				  int resultCode,
-				  const char *resultText,
-                                  const uint8_t *buf, uint32_t blen)
+int GWEN_HttpSession_SendStatus(GWEN_HTTP_SESSION *sess,
+                                int resultCode,
+                                const char *resultText,
+                                const uint8_t *buf, uint32_t blen)
 {
   int rv;
   GWEN_DB_NODE *db;
@@ -483,6 +483,10 @@ int GWEN_HttpSession_SendResponse(GWEN_HTTP_SESSION *sess,
   assert(sess);
   assert(sess->usage);
 
+  if (!(sess->flags & GWEN_HTTP_SESSION_FLAGS_PASSIVE)) {  /* client mode */
+    DBG_ERROR(GWEN_LOGDOMAIN, "In client mode, cannot send status");
+    return GWEN_ERROR_INVALID;
+  }
 
   /* set result */
   db=GWEN_SyncIo_Http_GetDbStatusOut(sess->syncIo);
@@ -518,6 +522,16 @@ int GWEN_HttpSession_SendResponse(GWEN_HTTP_SESSION *sess,
 
   DBG_INFO(GWEN_LOGDOMAIN, "Message sent.");
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Message sent."));
+
+  /* disconnect */
+  GWEN_Gui_ProgressLog(0,
+                       GWEN_LoggerLevel_Debug,
+                       I18N("Disconnecting from server..."));
+  GWEN_SyncIo_Disconnect(sess->syncIo);
+  GWEN_Gui_ProgressLog(0,
+                       GWEN_LoggerLevel_Debug,
+                       I18N("Disconnected."));
+
   return 0;
 }
 
@@ -637,6 +651,63 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
   GWEN_Gui_ProgressLog(0,
                        GWEN_LoggerLevel_Debug,
                        I18N("Disconnected."));
+  return rv;
+}
+
+
+
+int GWEN_HttpSession_RecvCommand(GWEN_HTTP_SESSION *sess,
+                                 GWEN_DB_NODE *dbCommandAndHeader,
+                                 GWEN_BUFFER *buf)
+{
+  int rv;
+  GWEN_DB_NODE *db;
+  uint32_t pos;
+
+  if (!(sess->flags & GWEN_HTTP_SESSION_FLAGS_PASSIVE)) {  /* client mode */
+    DBG_ERROR(GWEN_LOGDOMAIN, "In client mode, cannot receive command.");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* read response */
+  pos=GWEN_Buffer_GetPos(buf);
+  for (;;) {
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Receiving command..."));
+    rv=GWEN_HttpSession__RecvPacket(sess, buf);
+    if (rv<0 || rv<200 || rv>299) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error receiving packet (%d)", rv);
+      GWEN_SyncIo_Disconnect(sess->syncIo);
+      return rv;
+    }
+    if (rv!=100)
+      break;
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Received continuation response."));
+    GWEN_Buffer_Crop(buf, 0, pos);
+  }
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Command received."));
+
+
+  /* copy command db */
+  db=GWEN_SyncIo_Http_GetDbCommandIn(sess->syncIo);
+  if (db) {
+    GWEN_DB_NODE *dbDest;
+
+    dbDest=GWEN_DB_GetGroup(dbCommandAndHeader, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "command");
+    assert(dbDest);
+    GWEN_DB_AddGroupChildren(dbDest, db);
+  }
+
+  /* copy header db */
+  db=GWEN_SyncIo_Http_GetDbHeaderIn(sess->syncIo);
+  if (db) {
+    GWEN_DB_NODE *dbDest;
+
+    dbDest=GWEN_DB_GetGroup(dbCommandAndHeader, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "header");
+    assert(dbDest);
+    GWEN_DB_AddGroupChildren(dbDest, db);
+  }
+
   return rv;
 }
 

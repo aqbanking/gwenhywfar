@@ -175,7 +175,7 @@ int GWEN_HttpSession_Fini(GWEN_HTTP_SESSION *sess);
 
 
 
-/** @name Sending and Receiving
+/** @name Client: Sending and Receiving
  *
  */
 /*@{*/
@@ -193,23 +193,6 @@ GWENHYWFAR_API
 int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
                                 const char *httpCommand,
                                 const uint8_t *buf, uint32_t blen);
-
-
-/**
- * This function sends the given response (only usable in PASSIVE mode, i.e. server mode).
- * The buffer given as argument to this function must only contain the
- * raw data (i.e. the HTTP body, no header).
- * @param sess http session object
- * @param resultCode HTTP result code to send
- * @param resultText HTTP result text to send
- * @param buf pointer to the http body data to send
- * @param blen size of the http body data to send (might be 0)
- */
-GWENHYWFAR_API
-int GWEN_HttpSession_SendResponse(GWEN_HTTP_SESSION *sess,
-				  int resultCode,
-				  const char *resultText,
-                                  const uint8_t *buf, uint32_t blen);
 
 
 /**
@@ -232,6 +215,46 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
 GWENHYWFAR_API
 int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess);
 
+/*@}*/
+
+
+
+/** @name Server: Sending and Receiving
+ *
+ */
+/*@{*/
+
+
+/**
+ * This function receives a command packet from a client.
+ *
+ * @return HTTP result code if positive, error code if negative)
+ * @param sess pointer to session object
+ * @param dbCommandAndHeader on currect receiption a subgroup "command" is created which contains the command
+ *        parameters receives and a subgroup "header" is created which contains the last HTTP header received
+ * @param buf buffer to receive possible HTTP body data
+ */
+GWENHYWFAR_API
+int GWEN_HttpSession_RecvCommand(GWEN_HTTP_SESSION *sess,
+                                 GWEN_DB_NODE *dbCommandAndHeader,
+                                 GWEN_BUFFER *buf);
+
+/**
+ * This function sends the given response (only usable in PASSIVE mode, i.e. server mode) and closes
+ * the connection.
+ * The buffer given as argument to this function must only contain the
+ * raw data (i.e. the HTTP body, no header).
+ * @param sess http session object
+ * @param resultCode HTTP result code to send
+ * @param resultText HTTP result text to send
+ * @param buf pointer to the http body data to send
+ * @param blen size of the http body data to send (might be 0)
+ */
+GWENHYWFAR_API
+int GWEN_HttpSession_SendStatus(GWEN_HTTP_SESSION *sess,
+                                int resultCode,
+                                const char *resultText,
+                                const uint8_t *buf, uint32_t blen);
 /*@}*/
 
 
