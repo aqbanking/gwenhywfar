@@ -472,6 +472,57 @@ int GWEN_HttpSession_SendPacket(GWEN_HTTP_SESSION *sess,
 
 
 
+int GWEN_HttpSession_SendResponse(GWEN_HTTP_SESSION *sess,
+				  int resultCode,
+				  const char *resultText,
+                                  const uint8_t *buf, uint32_t blen)
+{
+  int rv;
+  GWEN_DB_NODE *db;
+
+  assert(sess);
+  assert(sess->usage);
+
+
+  /* set result */
+  db=GWEN_SyncIo_Http_GetDbStatusOut(sess->syncIo);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "code", resultCode);
+  if (resultText && *resultText)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "text", resultText);
+
+  /* set protocol */
+  if (sess->httpVMajor) {
+    char numbuf[32];
+
+    snprintf(numbuf, sizeof(numbuf)-1, "HTTP/%d.%d", sess->httpVMajor, sess->httpVMinor);
+    numbuf[sizeof(numbuf)-1]=0;
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", numbuf);
+  }
+  else
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "protocol", "HTTP/1.0");
+
+  /* set content length */
+  db=GWEN_SyncIo_Http_GetDbHeaderOut(sess->syncIo);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-length", blen);
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Sending response..."));
+
+  /* send request */
+  rv=GWEN_SyncIo_WriteForced(sess->syncIo, buf, blen);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not send message (%d)", rv);
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not send message (%d)"), rv);
+    GWEN_SyncIo_Disconnect(sess->syncIo);
+    return rv;
+  }
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Message sent.");
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Message sent."));
+  return 0;
+}
+
+
+
 int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
 {
   int rv;
