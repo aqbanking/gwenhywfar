@@ -3523,7 +3523,7 @@ int testHttpsServer(int argc, char **argv)
   else {
     char sPeerAddr[256];
     GWEN_SYNCIO *sioBase;
-    GWEN_SYNCIO *sioTls;
+    GWEN_SYNCIO *sio;
     GWEN_HTTP_SESSION *sess;
 
     fprintf(stdout, "Received a connection\n");
@@ -3543,15 +3543,31 @@ int testHttpsServer(int argc, char **argv)
     fprintf(stdout, " SyncIo socket created.\n");
     GWEN_SyncIo_AddFlags(sioBase, GWEN_SYNCIO_FLAGS_PASSIVE);
 
-    sioTls=GWEN_SyncIo_Tls_new(sioBase);
-    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_FLAGS_PASSIVE);
+    sio=GWEN_SyncIo_Tls_new(sioBase);
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PASSIVE);
     fprintf(stdout, " SyncIo TLS created.\n");
 
-    GWEN_SyncIo_Tls_SetLocalCertFile(sioTls, "./testcert.pem");
-    GWEN_SyncIo_Tls_SetLocalKeyFile(sioTls, "./testkey.pem");
+    GWEN_SyncIo_Tls_SetLocalCertFile(sio, "./testcert.pem");
+    GWEN_SyncIo_Tls_SetLocalKeyFile(sio, "./testkey.pem");
+
+    sioBase=sio;
+    sio=GWEN_SyncIo_Buffered_new(sioBase);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_SyncIo_free(sioBase);
+      return 2;
+    }
+
+    sioBase=sio;
+    sio=GWEN_SyncIo_Http_new(sioBase);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here");
+      GWEN_SyncIo_free(sioBase);
+      return 2;
+    }
 
     fprintf(stdout, " Connecting.\n");
-    rv=GWEN_SyncIo_Connect(sioTls);
+    rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
       fprintf(stderr, "ERROR: GWEN_SyncIo_Connect(): %d\n", rv);
       return 2;
@@ -3559,7 +3575,7 @@ int testHttpsServer(int argc, char **argv)
 
     fprintf(stdout, " TLS connection established\n");
 
-    sess=GWEN_HttpSession_fromSyncIoPassive(sioTls);
+    sess=GWEN_HttpSession_fromSyncIoPassive(sio);
     if (sess==NULL) {
       fprintf(stderr, "ERROR: GWEN_HttpSession_fromSyncIoPassive(): NULL\n");
       return 2;
@@ -3567,6 +3583,12 @@ int testHttpsServer(int argc, char **argv)
     else {
       GWEN_DB_NODE *dbCommandAndHeader;
       GWEN_BUFFER *bufBody;
+
+      rv=GWEN_HttpSession_Init(sess);
+      if (rv<0) {
+        fprintf(stderr, "ERROR: GWEN_HttpSession_Init(): %d\n", rv);
+        return 2;
+      }
 
       dbCommandAndHeader=GWEN_DB_Group_new("commandAndHeader");
       bufBody=GWEN_Buffer_new(0, 256, 0, 1);

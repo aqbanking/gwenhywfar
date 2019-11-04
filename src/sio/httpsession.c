@@ -549,7 +549,7 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  else if (rv<200 || rv>299) {
+  else if ((rv>0 && rv<200) || rv>299) {
     /* response is only ok for continuation (100) code */
     if (rv==100) {
       DBG_INFO(GWEN_LOGDOMAIN, "Continue...");
@@ -674,7 +674,7 @@ int GWEN_HttpSession_RecvCommand(GWEN_HTTP_SESSION *sess,
   for (;;) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Receiving command..."));
     rv=GWEN_HttpSession__RecvPacket(sess, buf);
-    if (rv<0 || rv<200 || rv>299) {
+    if (rv<0 || (rv>0 && rv<200) || rv>299) {
       DBG_INFO(GWEN_LOGDOMAIN, "Error receiving packet (%d)", rv);
       GWEN_SyncIo_Disconnect(sess->syncIo);
       return rv;

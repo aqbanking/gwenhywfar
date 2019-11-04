@@ -1338,7 +1338,7 @@ GWEN_DB_NODE *GWEN_SyncIo_Http_GetDbHeaderOut(const GWEN_SYNCIO *sio)
 int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf)
 {
   GWEN_SYNCIO_HTTP *xio;
-  int rv;
+  int rv=0;
   int code=0;
   int firstRead=1;
   int bodySize=-1;
@@ -1378,7 +1378,7 @@ int GWEN_SyncIo_Http_RecvBody(GWEN_SYNCIO *sio, GWEN_BUFFER *buf)
     }
     while (rv==GWEN_ERROR_INTERRUPTED);
 
-    if (rv==0)
+    if (rv==0) /* EOF met */
       break;
     else if (rv<0) {
       if (rv==GWEN_ERROR_EOF) {
