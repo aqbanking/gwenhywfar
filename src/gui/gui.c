@@ -350,7 +350,7 @@ int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf)
 
 
 
-void GWEN_Gui_GetRawText(const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf)
+void GWEN_Gui_GetRawText(GWEN_UNUSED const GWEN_GUI *gui, const char *text, GWEN_BUFFER *tbuf)
 {
   size_t len;
   const char *p;
@@ -1255,7 +1255,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
           time_t t1;
 
           t1=time(0);
-          v=(int) difftime(t1, t0);
+          v=difftime(t1, t0);
           if (v>wt) {
             GWEN_Gui_ProgressEnd(pid);
             return GWEN_ERROR_TIMEOUT;
@@ -1650,7 +1650,7 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd)
 
 
 
-void GWEN_Gui_Internal_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd)
+void GWEN_Gui_Internal_CheckShow(GWEN_UNUSED GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd)
 {
   if (GWEN_ProgressData_GetShown(pd)==0) {
     if (GWEN_ProgressData_GetFlags(pd) & GWEN_GUI_PROGRESS_DELAY) {
@@ -1998,14 +1998,14 @@ int GWEN_Gui_Internal_ProgressLog(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
+int GWEN_Gui_Internal_InputBox(GWEN_UNUSED GWEN_GUI *gui,
                                uint32_t flags,
                                const char *title,
                                const char *text,
                                char *buffer,
                                int minLen,
                                int maxLen,
-                               uint32_t guiid)
+                               GWEN_UNUSED uint32_t guiid)
 {
   GWEN_DIALOG *dlg;
   int rv;
@@ -2040,14 +2040,14 @@ int GWEN_Gui_Internal_InputBox(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_Internal_MessageBox(GWEN_GUI *gui,
+int GWEN_Gui_Internal_MessageBox(GWEN_UNUSED GWEN_GUI *gui,
                                  uint32_t flags,
                                  const char *title,
                                  const char *text,
                                  const char *b1,
                                  const char *b2,
                                  const char *b3,
-                                 uint32_t guiid)
+                                 GWEN_UNUSED uint32_t guiid)
 {
   GWEN_DIALOG *dlg;
   int rv;
@@ -2253,7 +2253,7 @@ GWEN_SYNCIO *GWEN_Gui_ExtendSyncIo(const char *url,
 
 
 
-int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_UNUSED GWEN_GUI *gui,
                                               const char *url,
                                               const char *defaultProto,
                                               int defaultPort,
@@ -2362,8 +2362,8 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
                                                        char *buffer,
                                                        int minLen,
                                                        int maxLen,
-                                                       GWEN_GUI_PASSWORD_METHOD methodId,
-                                                       GWEN_DB_NODE *methodParams,
+                                                       GWEN_UNUSED GWEN_GUI_PASSWORD_METHOD methodId,
+                                                       GWEN_UNUSED GWEN_DB_NODE *methodParams,
                                                        uint32_t guiid)
 {
   if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
