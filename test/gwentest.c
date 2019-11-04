@@ -218,7 +218,7 @@ static int writeFile(const char *fname, const char *p, int len)
 
 
 
-static int zip_inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf)
+static int zip_inflate(GWEN_UNUSED const char *ptr, GWEN_UNUSED unsigned int size, GWEN_UNUSED GWEN_BUFFER *buf)
 {
 #ifdef WITH_ZIP_TEST
   z_stream z;
@@ -278,7 +278,7 @@ static int zip_inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf)
 
 
 
-int testDB(int argc, char **argv)
+int testDB(void)
 {
   GWEN_DB_NODE *cfg;
   int rv;
@@ -477,7 +477,7 @@ int testDB(int argc, char **argv)
 
 
 
-int testDB2(int argc, char **argv)
+int testDB2(void)
 {
   GWEN_DB_NODE *cfg;
   int rv;
@@ -540,7 +540,7 @@ int testDB2(int argc, char **argv)
 
 
 
-int testDBfile(int argc, char **argv)
+int testDBfile(void)
 {
   GWEN_DB_NODE *db;
 
@@ -629,7 +629,7 @@ int testDBfile3(int argc, char **argv)
 
 
 
-int testDBfile4(int argc, char **argv)
+int testDBfile4(void)
 {
   GWEN_DB_NODE *db;
 
@@ -773,6 +773,7 @@ int testXML4(int argc, char **argv)
   GWEN_XMLNODE *n;
   time_t startTime;
   time_t stopTime;
+  int i;
 
   if (argc<3) {
     fprintf(stderr, "Name of testfile needed.\n");
@@ -788,20 +789,21 @@ int testXML4(int argc, char **argv)
   stopTime=time(0);
   GWEN_XMLNode_free(n);
 
-  fprintf(stderr, "Time for loading: %d secs\n",
-          (int)(difftime(stopTime, startTime)));
+  i=difftime(stopTime, startTime);
+  fprintf(stderr, "Time for loading: %d secs\n", i);
 
   return 0;
 }
 
 
 
-int testXML5(int argc, char **argv)
+int testXML5(void)
 {
 #ifdef USE_LIBXML2
   xmlDocPtr doc;
   time_t startTime;
   time_t stopTime;
+  int i;
 
   if (argc<3) {
     fprintf(stderr, "Name of testfile needed.\n");
@@ -815,8 +817,8 @@ int testXML5(int argc, char **argv)
     return -1;
   }
 
-  fprintf(stderr, "Time for loading: %d secs\n",
-          (int)(difftime(stopTime, startTime)));
+  i=difftime(stopTime, startTime);
+  fprintf(stderr, "Time for loading: %d secs\n", i);
 #else
   fprintf(stderr, "Compiled without support for LibXML\n");
 #endif
@@ -857,7 +859,7 @@ int testXML6(int argc, char **argv)
 
 
 
-int testMsg(int argc, char **argv)
+int testMsg(void)
 {
   GWEN_XMLNODE *n;
   GWEN_MSGENGINE *e;
@@ -978,7 +980,7 @@ int testListMsg(int argc, char **argv)
 
 
 
-int testSnprintf(int argc, char **argv)
+int testSnprintf(void)
 {
   unsigned int i;
   char buffer[256];
@@ -1285,7 +1287,7 @@ int testBase64_2(int argc, char **argv)
 
 
 
-int testTime(int argc, char **argv)
+int testTime(void)
 {
   GWEN_TIME *ti1;
   GWEN_TIME *ti2;
@@ -1386,7 +1388,7 @@ int testTimeFromString(int argc, char **argv)
 
 
 
-int testOldDbImport(int argc, char **argv)
+int testOldDbImport(void)
 {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbParams;
@@ -1414,7 +1416,7 @@ int testOldDbImport(int argc, char **argv)
 
 
 
-int testRfc822Import(int argc, char **argv)
+int testRfc822Import(void)
 {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbParams;
@@ -1443,7 +1445,7 @@ int testRfc822Import(int argc, char **argv)
 
 
 
-int testRfc822Export(int argc, char **argv)
+int testRfc822Export(void)
 {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbParams;
@@ -1542,7 +1544,7 @@ int testFsLock2(int argc, char **argv)
 
 
 
-int testPtr(int argc, char **argv)
+int testPtr(void)
 {
   GWEN_REFPTR *rp;
   GWEN_REFPTR *rp2;
@@ -1572,7 +1574,7 @@ int testPtr(int argc, char **argv)
 
 
 
-int testStringList2(int argc, char **argv)
+int testStringList2(void)
 {
   GWEN_STRINGLIST2 *sl2;
   GWEN_STRINGLIST2 *sl2copy;
@@ -1786,7 +1788,7 @@ int testSort(int argc, char **argv)
 
 
 
-int testMem(int argc, char **argv)
+int testMem(void)
 {
   GWEN_XMLNODE *n;
   char *s;
@@ -1801,7 +1803,7 @@ int testMem(int argc, char **argv)
 
 
 
-int testBuffer2(int argc, char **argv)
+int testBuffer2(void)
 {
   GWEN_BUFFER *buf;
   unsigned int bsize;
@@ -1825,7 +1827,7 @@ int testBuffer2(int argc, char **argv)
 }
 
 
-int testFloatDouble(int argc, char **argv)
+int testFloatDouble()
 {
   fprintf(stderr, "Sizeof double: %d float: %d\n",
           (int)sizeof(double), (int)sizeof(float));
@@ -1834,7 +1836,7 @@ int testFloatDouble(int argc, char **argv)
 
 
 
-int testMap(int argc, char **argv)
+int testMap(void)
 {
   GWEN_IDMAP *map;
   const char *s1="Test-String1";
@@ -1954,7 +1956,7 @@ int testMap(int argc, char **argv)
 
 
 #define TEST_MAP2_MANY 1000000
-int testMap2(int argc, char **argv)
+int testMap2(void)
 {
   GWEN_IDMAP *map;
   const char *s1="Test-String1";
@@ -2035,7 +2037,7 @@ GWEN_IDMAP_FUNCTION_DEFS(GWEN_BUFFER, GWEN_Buffer)
 GWEN_IDMAP_FUNCTIONS(GWEN_BUFFER, GWEN_Buffer)
 
 
-int testMap3(int argc, char **argv)
+int testMap3(void)
 {
   GWEN_BUFFER_IDMAP *map;
   uint32_t id;
@@ -2131,7 +2133,7 @@ int testMap3(int argc, char **argv)
 
 
 
-int testMap4(int argc, char **argv)
+int testMap4(void)
 {
   GWEN_BUFFER_IDMAP *map;
   uint32_t id;
@@ -2191,7 +2193,7 @@ int testMap4(int argc, char **argv)
 
 
 
-int testIdList(int argc, char **argv)
+int testIdList(void)
 {
   GWEN_IDLIST *idl;
   uint32_t id;
@@ -2282,7 +2284,7 @@ int testIdList(int argc, char **argv)
 
 
 
-int testXmlDbExport(int argc, char **argv)
+int testXmlDbExport(void)
 {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbT;
@@ -2335,7 +2337,7 @@ int testXmlDbExport(int argc, char **argv)
 
 
 
-int testXmlDbImport(int argc, char **argv)
+int testXmlDbImport(void)
 {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbParams;
@@ -2367,7 +2369,7 @@ int testXmlDbImport(int argc, char **argv)
 
 
 int GWENHYWFAR_CB testSignalsFunc(GWEN_SLOT *slot,
-                                  void *userData,
+                                  GWEN_UNUSED void *userData,
                                   void *pArg1,
                                   void *pArg2,
                                   int iArg3,
@@ -2385,7 +2387,7 @@ int GWENHYWFAR_CB testSignalsFunc(GWEN_SLOT *slot,
 
 
 
-int testSignals1(int argc, char **argv)
+int testSignals1(void)
 {
   GWEN_SIGNALOBJECT *so1;
   GWEN_SIGNALOBJECT *so2;
@@ -2422,7 +2424,7 @@ int testSignals1(int argc, char **argv)
 
 
 
-int testSignals2(int argc, char **argv)
+int testSignals2(void)
 {
   GWEN_SIGNALOBJECT *so1;
   GWEN_SIGNALOBJECT *so2;
@@ -2463,7 +2465,7 @@ int testSignals2(int argc, char **argv)
 
 
 
-int testSignals3(int argc, char **argv)
+int testSignals3(void)
 {
   GWEN_SIGNALOBJECT *so1;
   GWEN_SIGNALOBJECT *so2;
@@ -2536,6 +2538,7 @@ int testNewXML(int argc, char **argv)
   GWEN_XML_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   int rv;
+  int i;
 
   if (argc<3) {
     fprintf(stderr, "Name of testfile needed.\n");
@@ -2581,15 +2584,15 @@ int testNewXML(int argc, char **argv)
   GWEN_XmlCtx_free(ctx);
   GWEN_XMLNode_free(n);
 
-  fprintf(stderr, "Time for loading: %d secs\n",
-          (int)(difftime(stopTime, startTime)));
+  i=difftime(stopTime, startTime);
+  fprintf(stderr, "Time for loading: %d secs\n", i);
 
   return 0;
 }
 
 
 
-int testCrypt3Rsa(int argc, char **argv)
+int testCrypt3Rsa(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -2665,7 +2668,7 @@ int testCrypt3Rsa(int argc, char **argv)
 
 
 
-int testCrypt3Rsa2(int argc, char **argv)
+int testCrypt3Rsa2(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -2773,7 +2776,7 @@ int testCrypt3Rsa2(int argc, char **argv)
 
 
 
-int testCrypt3Rsa3(int argc, char **argv)
+int testCrypt3Rsa3(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -2881,7 +2884,7 @@ int testCrypt3Rsa3(int argc, char **argv)
 
 
 
-int testCrypt3Rsa4(int argc, char **argv)
+int testCrypt3Rsa4(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -3015,7 +3018,7 @@ int testCrypt3Rsa4(int argc, char **argv)
 
 
 
-int testGnutls(int argc, char **argv)
+int testGnutls(void)
 {
   gnutls_session_t session;
   gnutls_certificate_credentials_t credentials;
@@ -3487,7 +3490,111 @@ int testTlsServer(int argc, char **argv)
 
 
 
-int testDES(int argc, char **argv)
+int testHttpsServer(int argc, char **argv)
+{
+  GWEN_GUI *gui;
+  int port;
+  int rv;
+  GWEN_SOCKET *skServer;
+  GWEN_SOCKET *skClient=NULL;
+  GWEN_INETADDRESS *addrClient=NULL;
+
+  if (argc<3) {
+    fprintf(stderr, "%s %s PORT\n", argv[0], argv[1]);
+    return 1;
+  }
+  port=atoi(argv[2]);
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  skServer=createListeningSocket("127.0.0.1", port);
+  if (skServer==NULL) {
+    fprintf(stderr, "ERROR: createListeningSocketServer()\n");
+    return 2;
+  }
+
+  rv=GWEN_Socket_Accept(skServer, &addrClient, &skClient);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: GWEN_Socket_Accept(): %d\n", rv);
+    return 2;
+  }
+  else {
+    char sPeerAddr[256];
+    GWEN_SYNCIO *sioBase;
+    GWEN_SYNCIO *sioTls;
+    GWEN_HTTP_SESSION *sess;
+
+    fprintf(stdout, "Received a connection\n");
+    rv=GWEN_InetAddr_GetAddress(addrClient, sPeerAddr, sizeof(sPeerAddr)-1);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: GWEN_InetAddr_GetAddress(): %d\n", rv);
+      return 2;
+    }
+    sPeerAddr[sizeof(sPeerAddr)-1]=0;
+    fprintf(stdout, " Peer addr=%s (%d)\n", sPeerAddr, GWEN_InetAddr_GetPort(addrClient));
+
+    sioBase=GWEN_SyncIo_Socket_TakeOver(skClient);
+    if (sioBase==NULL) {
+      fprintf(stderr, "No syncIo socket created.\n");
+      return 2;
+    }
+    fprintf(stdout, " SyncIo socket created.\n");
+    GWEN_SyncIo_AddFlags(sioBase, GWEN_SYNCIO_FLAGS_PASSIVE);
+
+    sioTls=GWEN_SyncIo_Tls_new(sioBase);
+    GWEN_SyncIo_AddFlags(sioTls, GWEN_SYNCIO_FLAGS_PASSIVE);
+    fprintf(stdout, " SyncIo TLS created.\n");
+
+    GWEN_SyncIo_Tls_SetLocalCertFile(sioTls, "./testcert.pem");
+    GWEN_SyncIo_Tls_SetLocalKeyFile(sioTls, "./testkey.pem");
+
+    fprintf(stdout, " Connecting.\n");
+    rv=GWEN_SyncIo_Connect(sioTls);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: GWEN_SyncIo_Connect(): %d\n", rv);
+      return 2;
+    }
+
+    fprintf(stdout, " TLS connection established\n");
+
+    sess=GWEN_HttpSession_fromSyncIoPassive(sioTls);
+    if (sess==NULL) {
+      fprintf(stderr, "ERROR: GWEN_HttpSession_fromSyncIoPassive(): NULL\n");
+      return 2;
+    }
+    else {
+      GWEN_DB_NODE *dbCommandAndHeader;
+      GWEN_BUFFER *bufBody;
+
+      dbCommandAndHeader=GWEN_DB_Group_new("commandAndHeader");
+      bufBody=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=GWEN_HttpSession_RecvCommand(sess, dbCommandAndHeader, bufBody);
+      if (rv<0) {
+        fprintf(stderr, "ERROR: GWEN_InetAddr_GetAddress(): %d\n", rv);
+        return 2;
+      }
+      fprintf(stdout, "Received this:\n");
+      GWEN_DB_Dump(dbCommandAndHeader, 2);
+      GWEN_HttpSession_Fini(sess);
+      GWEN_HttpSession_free(sess);
+      GWEN_Buffer_free(bufBody);
+      GWEN_DB_Group_free(dbCommandAndHeader);
+    }
+
+    GWEN_InetAddr_free(addrClient);
+  }
+
+  GWEN_Socket_Close(skServer);
+  GWEN_Socket_free(skServer);
+
+  return 0;
+}
+
+
+
+int testDES(void)
 {
   GWEN_CRYPT_KEY *skey;
   GWEN_BUFFER *buf1;
@@ -3585,7 +3692,7 @@ int testDES(int argc, char **argv)
 
 
 
-int testDES2(int argc, char **argv)
+int testDES2(void)
 {
   GWEN_CRYPT_KEY *skey;
   GWEN_BUFFER *buf1;
@@ -3690,7 +3797,7 @@ int testDES2(int argc, char **argv)
 
 
 
-int testDES3(int argc, char **argv)
+int testDES3(void)
 {
   GWEN_CRYPT_KEY *skey;
   uint32_t l2;
@@ -3877,7 +3984,7 @@ int testDES4(int argc, char **argv)
 
 
 
-int testCryptMgr1(int argc, char **argv)
+int testCryptMgr1(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -3934,7 +4041,7 @@ int testCryptMgr1(int argc, char **argv)
 
 
 
-int testCryptMgr2(int argc, char **argv)
+int testCryptMgr2(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -4005,7 +4112,7 @@ int testCryptMgr2(int argc, char **argv)
 
 
 
-int testCryptMgr3(int argc, char **argv)
+int testCryptMgr3(void)
 {
   int rv;
   GWEN_CRYPT_KEY *pubKey;
@@ -4076,7 +4183,7 @@ int testCryptMgr3(int argc, char **argv)
 
 
 
-int testPss1(int argc, char **argv)
+int testPss1(void)
 {
   uint8_t em[]= {
     0x57, 0xa4, 0x11, 0xc3, 0x48, 0x99, 0xf6, 0x8e, 0xb8, 0x93, 0x83, 0x6a, 0xe5, 0xc6, 0xe1, 0xc3,
@@ -4120,7 +4227,7 @@ int testPss1(int argc, char **argv)
 
 
 
-int testPss2(int argc, char **argv)
+int testPss2(void)
 {
   uint8_t m[]= {"This is the test message"};
   uint8_t em[1024];
@@ -4706,7 +4813,7 @@ int testHttp2(int argc, char **argv)
 
 
 
-int testTresor1(int argc, char **argv)
+int testTresor1(void)
 {
   int rv;
   const char *testData="This is the actual test data";
@@ -4760,7 +4867,7 @@ int testTresor1(int argc, char **argv)
 
 
 
-int testTresor2(int argc, char **argv)
+int testTresor2(void)
 {
   int i;
 
@@ -4855,7 +4962,7 @@ int testHashTree(int argc, char **argv)
 
 
 
-int testDate1(int argc, char **argv)
+int testDate1(void)
 {
   GWEN_DATE *ti1;
   int j;
@@ -4899,7 +5006,7 @@ int testDate1(int argc, char **argv)
 
 
 
-int testDate2(int argc, char **argv)
+int testDate2(void)
 {
   GWEN_DATE *ti1;
   GWEN_BUFFER *dbuf;
@@ -5119,7 +5226,7 @@ int testSar4(int argc, char **argv)
 
 
 
-int testStringListFromString(int argc, char **argv)
+int testStringListFromString(void)
 {
   GWEN_STRINGLIST *sl;
 #if 1
@@ -5147,7 +5254,7 @@ int testStringListFromString(int argc, char **argv)
 
 
 
-int testPasswordStore1(int argc, char **argv)
+int testPasswordStore1(void)
 {
   GWEN_PASSWD_STORE *sto;
   const char *pw1="Secret1";
@@ -5183,7 +5290,7 @@ int testPasswordStore1(int argc, char **argv)
 
 
 
-int testPasswordStore2(int argc, char **argv)
+int testPasswordStore2(void)
 {
   GWEN_PASSWD_STORE *sto;
   const char *pw1="Secret1";
@@ -5214,7 +5321,7 @@ int testPasswordStore2(int argc, char **argv)
 
 
 
-int testPasswordStore3(int argc, char **argv)
+int testPasswordStore3(void)
 {
   GWEN_PASSWD_STORE *sto;
   GWEN_DB_NODE *dbPasswords;
@@ -5354,7 +5461,7 @@ int testPasswordStore5(int argc, char **argv)
 
 
 
-int testCSV(int argc, char **argv)
+int testCSV(void)
 {
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbParams;
@@ -5425,7 +5532,7 @@ int testCSV(int argc, char **argv)
 
 
 
-int testParams1(int argc, char **argv)
+int testParams1(void)
 {
   int rv;
   GWEN_GUI *gui;
@@ -5543,7 +5650,7 @@ int testParams1(int argc, char **argv)
 
 
 
-int testParams2(int argc, char **argv)
+int testParams2(void)
 {
   GWEN_GUI *gui;
   GWEN_PARAM_LIST *pl;
@@ -5639,7 +5746,7 @@ int testParams2(int argc, char **argv)
 
 
 
-int testParams3(int argc, char **argv)
+int testParams3(void)
 {
   int rv;
   GWEN_GUI *gui;
@@ -5779,27 +5886,27 @@ int main(int argc, char **argv)
 
 
   if (strcasecmp(argv[1], "dbfile")==0)
-    rv=testDBfile(argc, argv);
+    rv=testDBfile();
   else if (strcasecmp(argv[1], "des")==0)
-    rv=testDES(argc, argv);
+    rv=testDES();
   else if (strcasecmp(argv[1], "des2")==0)
-    rv=testDES2(argc, argv);
+    rv=testDES2();
   else if (strcasecmp(argv[1], "des3")==0)
-    rv=testDES3(argc, argv);
+    rv=testDES3();
   else if (strcasecmp(argv[1], "des4")==0)
     rv=testDES4(argc, argv);
   else if (strcasecmp(argv[1], "db")==0)
-    rv=testDB(argc, argv);
+    rv=testDB();
   else if (strcasecmp(argv[1], "db2")==0)
-    rv=testDB2(argc, argv);
+    rv=testDB2();
   else if (strcasecmp(argv[1], "dbfile2")==0)
     rv=testDBfile2(argc, argv);
   else if (strcasecmp(argv[1], "dbfile3")==0)
     rv=testDBfile3(argc, argv);
   else if (strcasecmp(argv[1], "dbfile4")==0)
-    rv=testDBfile4(argc, argv);
+    rv=testDBfile4();
   else if (strcasecmp(argv[1], "msg")==0)
-    rv=testMsg(argc, argv);
+    rv=testMsg();
   else if (strcasecmp(argv[1], "list")==0)
     rv=testListMsg(argc, argv);
   else if (strcasecmp(argv[1], "xml")==0)
@@ -5811,11 +5918,11 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "xml4")==0)
     rv=testXML4(argc, argv);
   else if (strcasecmp(argv[1], "xml5")==0)
-    rv=testXML5(argc, argv);
+    rv=testXML5();
   else if (strcasecmp(argv[1], "xml6")==0)
     rv=testXML6(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
-    rv=testSnprintf(argc, argv);
+    rv=testSnprintf();
   else if (strcasecmp(argv[1], "process")==0)
     rv=testProcess(argc, argv);
   else if (strcasecmp(argv[1], "option")==0)
@@ -5825,67 +5932,67 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "base64_2")==0)
     rv=testBase64_2(argc, argv);
   else if (strcasecmp(argv[1], "time")==0)
-    rv=testTime(argc, argv);
+    rv=testTime();
   else if (strcasecmp(argv[1], "time2")==0)
     rv=testTimeFromString(argc, argv);
   else if (strcasecmp(argv[1], "time1")==0)
     rv=testTimeToString(argc, argv);
   else if (strcasecmp(argv[1], "olddb")==0)
-    rv=testOldDbImport(argc, argv);
+    rv=testOldDbImport();
   else if (strcasecmp(argv[1], "822")==0)
-    rv=testRfc822Import(argc, argv);
+    rv=testRfc822Import();
   else if (strcasecmp(argv[1], "822x")==0)
-    rv=testRfc822Export(argc, argv);
+    rv=testRfc822Export();
   else if (strcasecmp(argv[1], "xmldb1")==0)
-    rv=testXmlDbExport(argc, argv);
+    rv=testXmlDbExport();
   else if (strcasecmp(argv[1], "xmldb2")==0)
-    rv=testXmlDbImport(argc, argv);
+    rv=testXmlDbImport();
   else if (strcasecmp(argv[1], "fslock")==0)
     rv=testFsLock(argc, argv);
   else if (strcasecmp(argv[1], "fslock2")==0)
     rv=testFsLock2(argc, argv);
   else if (strcasecmp(argv[1], "ptr")==0)
-    rv=testPtr(argc, argv);
+    rv=testPtr();
   else if (strcasecmp(argv[1], "sl2")==0)
-    rv=testStringList2(argc, argv);
+    rv=testStringList2();
   else if (strcasecmp(argv[1], "sort")==0)
     rv=testSort(argc, argv);
   else if (strcasecmp(argv[1], "buf2")==0)
-    rv=testBuffer2(argc, argv);
+    rv=testBuffer2();
   else if (strcasecmp(argv[1], "mem")==0)
-    rv=testMem(argc, argv);
+    rv=testMem();
   else if (strcasecmp(argv[1], "floatdouble")==0)
     rv=testFloatDouble(argc, argv);
   else if (strcasecmp(argv[1], "map")==0)
-    rv=testMap(argc, argv);
+    rv=testMap();
   else if (strcasecmp(argv[1], "map2")==0)
-    rv=testMap2(argc, argv);
+    rv=testMap2();
   else if (strcasecmp(argv[1], "map3")==0)
-    rv=testMap3(argc, argv);
+    rv=testMap3();
   else if (strcasecmp(argv[1], "map4")==0)
-    rv=testMap4(argc, argv);
+    rv=testMap4();
   else if (strcasecmp(argv[1], "idlist")==0)
-    rv=testIdList(argc, argv);
+    rv=testIdList();
   else if (strcasecmp(argv[1], "signals1")==0)
-    rv=testSignals1(argc, argv);
+    rv=testSignals1();
   else if (strcasecmp(argv[1], "signals2")==0)
-    rv=testSignals2(argc, argv);
+    rv=testSignals2();
   else if (strcasecmp(argv[1], "signals3")==0)
-    rv=testSignals3(argc, argv);
+    rv=testSignals3();
   else if (strcasecmp(argv[1], "url")==0)
     rv=testUrl(argc, argv);
   else if (strcasecmp(argv[1], "newxml")==0)
     rv=testNewXML(argc, argv);
   else if (strcasecmp(argv[1], "3rsa")==0)
-    rv=testCrypt3Rsa(argc, argv);
+    rv=testCrypt3Rsa();
   else if (strcasecmp(argv[1], "3rsa2")==0)
-    rv=testCrypt3Rsa2(argc, argv);
+    rv=testCrypt3Rsa2();
   else if (strcasecmp(argv[1], "3rsa3")==0)
-    rv=testCrypt3Rsa3(argc, argv);
+    rv=testCrypt3Rsa3();
   else if (strcasecmp(argv[1], "3rsa4")==0)
-    rv=testCrypt3Rsa4(argc, argv);
+    rv=testCrypt3Rsa4();
   else if (strcasecmp(argv[1], "gtls")==0)
-    rv=testGnutls(argc, argv);
+    rv=testGnutls();
   else if (strcasecmp(argv[1], "httpsession")==0)
     rv=testHttpSession(argc, argv);
   else if (strcasecmp(argv[1], "rsa")==0) {
@@ -5893,19 +6000,19 @@ int main(int argc, char **argv)
     rv=0;
   }
   else if (strcasecmp(argv[1], "cryptmgr1")==0) {
-    rv=testCryptMgr1(argc, argv);
+    rv=testCryptMgr1();
   }
   else if (strcasecmp(argv[1], "cryptmgr2")==0) {
-    rv=testCryptMgr2(argc, argv);
+    rv=testCryptMgr2();
   }
   else if (strcasecmp(argv[1], "cryptmgr3")==0) {
-    rv=testCryptMgr3(argc, argv);
+    rv=testCryptMgr3();
   }
   else if (strcasecmp(argv[1], "pss1")==0) {
-    rv=testPss1(argc, argv);
+    rv=testPss1();
   }
   else if (strcasecmp(argv[1], "pss2")==0) {
-    rv=testPss2(argc, argv);
+    rv=testPss2();
   }
   else if (strcasecmp(argv[1], "dlg")==0) {
     rv=testDialog(argc, argv);
@@ -5926,19 +6033,19 @@ int main(int argc, char **argv)
     rv=testHttp2(argc, argv);
   }
   else if (strcasecmp(argv[1], "tresor1")==0) {
-    rv=testTresor1(argc, argv);
+    rv=testTresor1();
   }
   else if (strcasecmp(argv[1], "tresor2")==0) {
-    rv=testTresor2(argc, argv);
+    rv=testTresor2();
   }
   else if (strcasecmp(argv[1], "hashtree")==0) {
     rv=testHashTree(argc, argv);
   }
   else if (strcasecmp(argv[1], "date1")==0) {
-    rv=testDate1(argc, argv);
+    rv=testDate1();
   }
   else if (strcasecmp(argv[1], "date2")==0) {
-    rv=testDate2(argc, argv);
+    rv=testDate2();
   }
   else if (strcasecmp(argv[1], "sar1")==0) {
     rv=testSar1(argc, argv);
@@ -5953,37 +6060,40 @@ int main(int argc, char **argv)
     rv=testSar4(argc, argv);
   }
   else if (strcasecmp(argv[1], "sl")==0) {
-    rv=testStringListFromString(argc, argv);
+    rv=testStringListFromString();
   }
   else if (strcasecmp(argv[1], "pw1")==0) {
-    rv=testPasswordStore1(argc, argv);
+    rv=testPasswordStore1();
   }
   else if (strcasecmp(argv[1], "pw2")==0) {
-    rv=testPasswordStore2(argc, argv);
+    rv=testPasswordStore2();
   }
   else if (strcasecmp(argv[1], "pw3")==0) {
-    rv=testPasswordStore3(argc, argv);
+    rv=testPasswordStore3();
   }
   else if (strcasecmp(argv[1], "pw4")==0) {
     rv=testPasswordStore4(argc, argv);
   }
   else if (strcasecmp(argv[1], "csv")==0) {
-    rv=testCSV(argc, argv);
+    rv=testCSV();
   }
   else if (strcasecmp(argv[1], "params1")==0) {
-    rv=testParams1(argc, argv);
+    rv=testParams1();
   }
   else if (strcasecmp(argv[1], "params2")==0) {
-    rv=testParams2(argc, argv);
+    rv=testParams2();
   }
   else if (strcasecmp(argv[1], "params3")==0) {
-    rv=testParams3(argc, argv);
+    rv=testParams3();
   }
   else if (strcasecmp(argv[1], "socketServer")==0) {
     rv=testSocketServer(argc, argv);
   }
   else if (strcasecmp(argv[1], "tlsServer")==0) {
     rv=testTlsServer(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "httpsServer")==0) {
+    rv=testHttpsServer(argc, argv);
   }
 
   else {
