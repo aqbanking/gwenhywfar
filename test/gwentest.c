@@ -5984,7 +5984,7 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "mem")==0)
     rv=testMem();
   else if (strcasecmp(argv[1], "floatdouble")==0)
-    rv=testFloatDouble(argc, argv);
+    rv=testFloatDouble();
   else if (strcasecmp(argv[1], "map")==0)
     rv=testMap();
   else if (strcasecmp(argv[1], "map2")==0)
