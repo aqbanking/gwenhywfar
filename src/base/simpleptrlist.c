@@ -144,12 +144,36 @@ void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
 
 
 
-void GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
+int GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
 {
   assert(pl);
   assert(pl->refCount);
+
   if (idx<pl->usedEntries) {
     void *oldPtr;
+
+    /* copy on write, if needed */
+    if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE) {
+      INTERNAL_PTRLIST *entryList;
+      uint64_t num;
+
+      num=pl->maxEntries+pl->steps;
+      entryList=_copyPtrList(pl->entryList, num);
+      if (entryList==NULL) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
+        return GWEN_ERROR_MEMORY_FULL;
+      }
+      else {
+        _freePtrList(pl->entryList);
+        pl->entryList=entryList;
+        pl->maxEntries=num;
+        /* this is a copy, attach to objs */
+        if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)
+          _attachToAllObjects(pl);
+        /* clear copy-on-write flag */
+        pl->flags&=~GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
+      }
+    }
 
     oldPtr=pl->entryList->entries[idx];
     pl->entryList->entries[idx]=p;
@@ -160,7 +184,10 @@ void GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad index");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
+
+  return 0;
 }
 
 

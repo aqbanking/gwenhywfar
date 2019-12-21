@@ -73,6 +73,7 @@ int test2(void);
 int test3(void);
 int test4(void);
 int test5(void);
+int test6(void);
 
 TEST_TYPE *createTestType(int num);
 void dumpTestTypeList(TEST_TYPE_LIST *ttList);
@@ -133,6 +134,15 @@ int GWEN_SimplePtrList_Test(void)
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: passed");
+  }
+
+  rv=test6();
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: failed (%d)", rv);
+    numFailed++;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: passed");
   }
 
   if (numFailed)
@@ -912,6 +922,167 @@ int test5(void)
     }
   }
 
+  TestType_List_free(ttList);
+
+  return 0;
+}
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * test 6: test lazy copying with attach/detach and setPtr
+ * ------------------------------------------------------------------------------------------------
+ */
+
+int test6(void)
+{
+
+  GWEN_SIMPLEPTRLIST *pl;
+  GWEN_SIMPLEPTRLIST *plCopy;
+  TEST_TYPE_LIST *ttList;
+  int i;
+
+  pl=GWEN_SimplePtrList_new(128, 128);
+  GWEN_SimplePtrList_SetAttachObjectFn(pl, _attachToTestType);
+  GWEN_SimplePtrList_SetFreeObjectFn(pl, _detachFromTestType);
+  GWEN_SimplePtrList_AddFlags(pl, GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS);
+  GWEN_SimplePtrList_AddFlags(pl, GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS);
+
+  ttList=TestType_List_new();
+  for (i=0; i<1024; i++) {
+    TEST_TYPE *tt;
+    int64_t idx;
+
+    tt=createTestType(i);
+    TestType_List_Add(tt, ttList);
+    idx=GWEN_SimplePtrList_AddPtr(pl, tt);
+    if (idx<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error adding pointer %d to list: %s (%d)", i, GWEN_Error_SimpleToString((int)idx), (int)idx);
+      GWEN_SimplePtrList_free(pl);
+      return (int) idx;
+    }
+  } /* for */
+
+  plCopy=GWEN_SimplePtrList_LazyCopy(pl);
+  if (plCopy==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not copy pointer list");
+    GWEN_SimplePtrList_free(plCopy);
+    GWEN_SimplePtrList_free(pl);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (!(plCopy->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)");
+    GWEN_SimplePtrList_free(plCopy);
+    GWEN_SimplePtrList_free(pl);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (!(plCopy->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)");
+    GWEN_SimplePtrList_free(plCopy);
+    GWEN_SimplePtrList_free(pl);
+    return GWEN_ERROR_GENERIC;
+  }
+
+
+  if (1) {
+    TEST_TYPE *tt;
+    int rv;
+
+    tt=createTestType(1024);
+    TestType_List_Add(tt, ttList);
+    rv=GWEN_SimplePtrList_SetPtrAt(plCopy, 100, tt);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error setting pointer %d in list: %s (%d)", 100, GWEN_Error_SimpleToString(rv), rv);
+      GWEN_SimplePtrList_free(plCopy);
+      GWEN_SimplePtrList_free(pl);
+      return rv;
+    }
+  }
+
+
+  for (i=0; i<1024; i++) {
+    TEST_TYPE *tt;
+    int rv;
+
+    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
+    if (tt==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
+      TestType_List_free(ttList);
+      GWEN_SimplePtrList_free(plCopy);
+      GWEN_SimplePtrList_free(pl);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    rv=TestType_TestHash(tt);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error testing hash of object %d: %s (%d)", i, GWEN_Error_SimpleToString(rv), rv);
+      TestType_List_free(ttList);
+      GWEN_SimplePtrList_free(plCopy);
+      GWEN_SimplePtrList_free(pl);
+      return rv;
+    }
+  } /* for */
+
+
+  if (1) {
+    TEST_TYPE *tt;
+    int cnt=0;
+
+    tt=TestType_List_First(ttList);
+    while(tt) {
+      if (cnt==1024 || cnt==100) {
+        if (tt->_refCounter!=2) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object %d is not 2 (%d)", cnt, tt->_refCounter);
+          TestType_List_free(ttList);
+          GWEN_SimplePtrList_free(plCopy);
+          GWEN_SimplePtrList_free(pl);
+          return GWEN_ERROR_GENERIC;
+        }
+      }
+      else {
+        if (tt->_refCounter!=3) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object %d is not 3 (%d)", cnt, tt->_refCounter);
+          TestType_List_free(ttList);
+          GWEN_SimplePtrList_free(plCopy);
+          GWEN_SimplePtrList_free(pl);
+          return GWEN_ERROR_GENERIC;
+        }
+      }
+      cnt++;
+      tt=TestType_List_Next(tt);
+    }
+    if (cnt!=1025) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Too few objects in list (%d instead of %d)", cnt, 1024);
+    }
+  }
+
+  if (1) {
+    TEST_TYPE *tt1;
+    TEST_TYPE *tt2;
+
+    tt1=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, 100);
+    tt2=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(pl, 100);
+    if (!(tt1 && tt2 && tt1!=tt2)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Pointers 100 are unexpectedly equal in both lists");
+      TestType_List_free(ttList);
+      GWEN_SimplePtrList_free(plCopy);
+      GWEN_SimplePtrList_free(pl);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    if (tt1->_refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter in copy list object 100 is not 2 (%d)", tt1->_refCounter);
+      TestType_List_free(ttList);
+      GWEN_SimplePtrList_free(plCopy);
+      GWEN_SimplePtrList_free(pl);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+
+  GWEN_SimplePtrList_free(plCopy);
+  GWEN_SimplePtrList_free(pl);
   TestType_List_free(ttList);
 
   return 0;

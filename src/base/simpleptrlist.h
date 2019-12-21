@@ -50,7 +50,7 @@ GWENHYWFAR_API GWEN_SIMPLEPTRLIST *GWEN_SimplePtrList_LazyCopy(GWEN_SIMPLEPTRLIS
 
 
 GWENHYWFAR_API void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx);
-GWENHYWFAR_API void GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p);
+GWENHYWFAR_API int GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p);
 GWENHYWFAR_API int64_t GWEN_SimplePtrList_AddPtr(GWEN_SIMPLEPTRLIST *pl, void *p);
 
 GWENHYWFAR_API uint64_t GWEN_SimplePtrList_GetSteps(const GWEN_SIMPLEPTRLIST *pl);
