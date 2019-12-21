@@ -49,6 +49,9 @@ struct GWEN_SIMPLEPTRLIST {
   uint32_t flags;
   uint32_t refCount;
   INTERNAL_PTRLIST *entryList;
+
+  GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN attachObjectFn;
+  GWEN_SIMPLEPTRLIST_FREEOBJECT_FN freeObjectFn;
 };
 
 

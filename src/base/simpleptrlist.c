@@ -44,6 +44,11 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+static void _attachToObject(GWEN_SIMPLEPTRLIST *pl, void *p);
+static void _detachFromObject(GWEN_SIMPLEPTRLIST *pl, void *p);
+static void _attachToAllObjects(GWEN_SIMPLEPTRLIST *pl);
+static void _detachFromAllObjects(GWEN_SIMPLEPTRLIST *pl);
+
 static INTERNAL_PTRLIST *_mallocPtrList(uint64_t totalEntries);
 static void _attachToPtrList(INTERNAL_PTRLIST *entries);
 static void _freePtrList(INTERNAL_PTRLIST *entries);
@@ -89,7 +94,9 @@ GWEN_SIMPLEPTRLIST *GWEN_SimplePtrList_LazyCopy(GWEN_SIMPLEPTRLIST *oldList)
   pl->maxEntries=oldList->maxEntries;
   pl->steps=oldList->steps;
   pl->usedEntries=oldList->usedEntries;
-  pl->flags|=GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
+  pl->attachObjectFn=oldList->attachObjectFn;
+  pl->freeObjectFn=oldList->freeObjectFn;
+  pl->flags=oldList->flags | GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
   /* set copyOnWrite flag also on old list to keep lists separate even when changes to old lists are made */
   oldList->flags|=GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
   return pl;
@@ -111,6 +118,8 @@ void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
   assert(pl);
   assert(pl->refCount);
   if (pl->refCount==1) {
+    if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)
+      _detachFromAllObjects(pl);
     _freePtrList(pl->entryList);
     pl->entryList=NULL;
     pl->maxEntries=0;
@@ -135,7 +144,7 @@ void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
 
 
 
-void *GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
+void GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
 {
   assert(pl);
   assert(pl->refCount);
@@ -144,11 +153,13 @@ void *GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
 
     oldPtr=pl->entryList->entries[idx];
     pl->entryList->entries[idx]=p;
-    return oldPtr;
+    if (p && (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS))
+      _attachToObject(pl, p);
+    if (oldPtr && (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS))
+      _detachFromObject(pl, oldPtr);
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Bad index");
-    return NULL;
   }
 }
 
@@ -174,10 +185,13 @@ int64_t GWEN_SimplePtrList_AddPtr(GWEN_SIMPLEPTRLIST *pl, void *p)
 	  return GWEN_ERROR_MEMORY_FULL;
 	}
 	else {
-	  _freePtrList(pl->entryList);
+          _freePtrList(pl->entryList);
 	  pl->entryList=entryList;
-	  pl->maxEntries=num;
-	  /* clear copy-on-write flag */
+          pl->maxEntries=num;
+          /* this is a copy, attach to objs */
+          if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)
+            _attachToAllObjects(pl);
+          /* clear copy-on-write flag */
 	  pl->flags&=~GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
 	}
       }
@@ -202,6 +216,8 @@ int64_t GWEN_SimplePtrList_AddPtr(GWEN_SIMPLEPTRLIST *pl, void *p)
 
   /* add entry */
   pl->entryList->entries[pl->usedEntries]=p;
+  if (p && (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS))
+    _attachToObject(pl, p);
   pl->usedEntries++;
   return pl->usedEntries-1;
 }
@@ -251,6 +267,125 @@ void *GWEN_SimplePtrList_GetEntries(const GWEN_SIMPLEPTRLIST *pl)
   return pl->entryList->entries;
 }
 
+
+
+uint32_t GWEN_SimplePtrList_GetFlags(const GWEN_SIMPLEPTRLIST *pl)
+{
+  assert(pl);
+  assert(pl->refCount);
+  return pl->flags;
+}
+
+
+
+void GWEN_SimplePtrList_SetFlags(GWEN_SIMPLEPTRLIST *pl, uint32_t f)
+{
+  assert(pl);
+  assert(pl->refCount);
+  pl->flags=f;
+}
+
+
+
+void GWEN_SimplePtrList_AddFlags(GWEN_SIMPLEPTRLIST *pl, uint32_t f)
+{
+  assert(pl);
+  assert(pl->refCount);
+  pl->flags|=f;
+}
+
+
+
+void GWEN_SimplePtrList_SubFlags(GWEN_SIMPLEPTRLIST *pl, uint32_t f)
+{
+  assert(pl);
+  assert(pl->refCount);
+  pl->flags&=~f;
+}
+
+
+
+GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN GWEN_SimplePtrList_SetAttachObjectFn(GWEN_SIMPLEPTRLIST *pl, GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN fn)
+{
+  GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN oldFn;
+
+  assert(pl);
+  assert(pl->refCount);
+
+  oldFn=pl->attachObjectFn;
+  pl->attachObjectFn=fn;
+  return oldFn;
+}
+
+
+
+GWEN_SIMPLEPTRLIST_FREEOBJECT_FN GWEN_SimplePtrList_SetFreeObjectFn(GWEN_SIMPLEPTRLIST *pl, GWEN_SIMPLEPTRLIST_FREEOBJECT_FN fn)
+{
+  GWEN_SIMPLEPTRLIST_FREEOBJECT_FN oldFn;
+
+  assert(pl);
+  assert(pl->refCount);
+
+  oldFn=pl->freeObjectFn;
+  pl->freeObjectFn=fn;
+  return oldFn;
+}
+
+
+
+void _attachToObject(GWEN_SIMPLEPTRLIST *pl, void *p)
+{
+  if (pl->attachObjectFn)
+    pl->attachObjectFn(pl, p);
+}
+
+
+
+void _detachFromObject(GWEN_SIMPLEPTRLIST *pl, void *p)
+{
+  if (pl->freeObjectFn)
+    pl->freeObjectFn(pl, p);
+}
+
+
+
+void _attachToAllObjects(GWEN_SIMPLEPTRLIST *pl)
+{
+  if (pl->attachObjectFn) {
+    uint64_t i;
+    void **ptr;
+
+    ptr=pl->entryList->entries;
+    for (i=0; i<pl->usedEntries; i++) {
+      if (*ptr!=NULL)
+        pl->attachObjectFn(pl, *ptr);
+      ptr++;
+    }
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No attachObjectFn set");
+  }
+}
+
+
+
+void _detachFromAllObjects(GWEN_SIMPLEPTRLIST *pl)
+{
+  if (pl->freeObjectFn) {
+    uint64_t i;
+    void **ptr;
+
+    ptr=pl->entryList->entries;
+    for (i=0; i<pl->usedEntries; i++) {
+      if (*ptr!=NULL)
+        pl->freeObjectFn(pl, *ptr);
+      ptr++;
+    }
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No attachObjectFn set");
+  }
+}
 
 
 
