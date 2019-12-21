@@ -56,6 +56,16 @@ GWENHYWFAR_API
 int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l);
 
 
+/**
+ * Convenience function, this calls @ref, GWEN_MDigest_Begin, @ref GWEN_MDigest_Update
+ * and @ref GWEN_MDigest_End and copies the resulting hash into the given buffer.
+ */
+GWENHYWFAR_API
+int GWEN_MDigest_Digest(GWEN_MDIGEST *md,
+			const uint8_t *srcBuf, unsigned int srcLen,
+			uint8_t *dstBuf, unsigned int dstLen);
+
+
 
 
 

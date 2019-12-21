@@ -162,6 +162,54 @@ int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l)
 
 
 
+int GWEN_MDigest_Digest(GWEN_MDIGEST *md,
+                        const uint8_t *srcBuf, unsigned int srcLen,
+                        uint8_t *dstBuf, unsigned int dstLen)
+{
+  int rv;
+  int digestLen;
+
+  assert(md);
+  assert(srcBuf && srcLen);
+  assert(dstBuf && dstLen);
+
+  if (md && srcBuf && srcLen && dstBuf && dstLen) {
+    rv=GWEN_MDigest_Begin(md);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    rv=GWEN_MDigest_Update(md, srcBuf, srcLen);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    rv=GWEN_MDigest_End(md);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    digestLen=GWEN_MDigest_GetDigestSize(md);
+    if (dstLen<digestLen) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Provided buffer too small (%d < %d)", dstLen, digestLen);
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
+
+    memmove(dstBuf, GWEN_MDigest_GetDigestPtr(md), digestLen);
+    return 0;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty function arguments");
+    return GWEN_ERROR_INTERNAL;
+  }
+}
+
+
+
+
+
+
+
 GWEN_MDIGEST_BEGIN_FN GWEN_MDigest_SetBeginFn(GWEN_MDIGEST *md, GWEN_MDIGEST_BEGIN_FN f)
 {
   GWEN_MDIGEST_BEGIN_FN of;
