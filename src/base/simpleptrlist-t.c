@@ -336,6 +336,20 @@ int test2(void)
     }
   } /* for */
 
+  /* free all objects */
+  for (i=0; i<1024; i++) {
+    TEST_TYPE *tt;
+
+    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(pl, i);
+    if (tt==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
+      GWEN_SimplePtrList_free(pl);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_SimplePtrList_SetPtrAt(pl, i, NULL);
+    TestType_free(tt);
+  } /* for */
+
   GWEN_SimplePtrList_free(pl);
   return 0;
 }
@@ -495,6 +509,22 @@ int test3(void)
       return rv;
     }
   } /* for */
+
+  /* free all objects */
+  for (i=0; i<1024; i++) {
+    TEST_TYPE *tt;
+
+    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
+    if (tt==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
+      GWEN_SimplePtrList_free(plCopy);
+      GWEN_SimplePtrList_free(pl);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_SimplePtrList_SetPtrAt(plCopy, i, NULL);
+    TestType_free(tt);
+  } /* for */
+
 
   GWEN_SimplePtrList_free(plCopy);
   GWEN_SimplePtrList_free(pl);
