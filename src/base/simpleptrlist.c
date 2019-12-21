@@ -64,6 +64,10 @@ static INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64
  */
 
 
+GWEN_INHERIT_FUNCTIONS(GWEN_SIMPLEPTRLIST)
+
+
+
 
 GWEN_SIMPLEPTRLIST *GWEN_SimplePtrList_new(uint64_t startEntries, uint64_t steps)
 {
@@ -71,6 +75,7 @@ GWEN_SIMPLEPTRLIST *GWEN_SimplePtrList_new(uint64_t startEntries, uint64_t steps
 
   GWEN_NEW_OBJECT(GWEN_SIMPLEPTRLIST, pl);
   pl->refCount=1;
+  GWEN_INHERIT_INIT(GWEN_SIMPLEPTRLIST, pl);
 
   pl->entryList=_mallocPtrList(startEntries);
   pl->maxEntries=startEntries;
@@ -87,6 +92,7 @@ GWEN_SIMPLEPTRLIST *GWEN_SimplePtrList_LazyCopy(GWEN_SIMPLEPTRLIST *oldList)
 
   GWEN_NEW_OBJECT(GWEN_SIMPLEPTRLIST, pl);
   pl->refCount=1;
+  GWEN_INHERIT_INIT(GWEN_SIMPLEPTRLIST, pl);
 
   pl->entryList=oldList->entryList;
   _attachToPtrList(pl->entryList);
@@ -118,6 +124,7 @@ void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
   assert(pl);
   assert(pl->refCount);
   if (pl->refCount==1) {
+    GWEN_INHERIT_FINI(GWEN_SIMPLEPTRLIST, pl);
     if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)
       _detachFromAllObjects(pl);
     _freePtrList(pl->entryList);

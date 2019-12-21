@@ -43,6 +43,8 @@ struct INTERNAL_PTRLIST {
 
 
 struct GWEN_SIMPLEPTRLIST {
+  GWEN_INHERIT_ELEMENT(GWEN_SIMPLEPTRLIST)
+
   uint64_t maxEntries;
   uint64_t usedEntries;
   uint64_t steps;

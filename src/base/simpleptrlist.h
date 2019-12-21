@@ -26,6 +26,7 @@
 #define GWENHYWFAR_SIMPLEPTRLIST_H
 
 #include <gwenhywfar/types.h>
+#include <gwenhywfar/inherit.h>
 
 
 
@@ -35,6 +36,8 @@
 
 
 typedef struct GWEN_SIMPLEPTRLIST GWEN_SIMPLEPTRLIST;
+
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_SIMPLEPTRLIST, GWENHYWFAR_API)
 
 
 typedef GWENHYWFAR_CB void (*GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN)(GWEN_SIMPLEPTRLIST *pl, void *p);
