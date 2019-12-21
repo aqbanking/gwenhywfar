@@ -493,7 +493,7 @@ int GWEN_Padd_MGF1(uint8_t *pDestBuffer,
 
 
 int GWEN_Padd_AddPkcs1Pss(uint8_t *pDestBuffer,
-                          uint32_t lDestBuffer,
+                          GWEN_UNUSED uint32_t lDestBuffer,
                           uint32_t nbits,
                           const uint8_t *pHash,
                           uint32_t lHash,
