@@ -30,7 +30,7 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=4
 GWENHYWFAR_VERSION_MINOR=99
 GWENHYWFAR_VERSION_PATCHLEVEL=25
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="rc9"
 
@@ -350,6 +350,24 @@ AC_MSG_RESULT($enable_gwen_network_checks)
 
 if test "$enable_gwen_network_checks" = "no"; then
   AC_DEFINE(GWENHYWFAR_SKIP_NETWORK_CHECKS, 1, [whether to run network-dependent checks during build])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
+# check whether test code should be enabled
+#
+
+AC_MSG_CHECKING(whether to enable test code)
+AC_ARG_ENABLE(testcode,
+  [  --enable-testcode       allow compiling of test code (default=no)],
+  enable_testcode="$enableval",
+  enable_testcode="no")
+AC_MSG_RESULT($enable_testcode)
+
+if test "$enable_testcode" != "no"; then
+  AC_DEFINE(GWENHYWFAR_ENABLE_TESTCODE, 1, [whether to enable test code])
 fi
 
 
@@ -1560,6 +1578,7 @@ echo "Symbol Visibility             : $visibility_supported"
 echo "OpenSSL Support for gct-tool  : $ssl_available"
 echo "GUI Support                   : $gwenhywfar_guis"
 echo "Use system-wide certificates  : $enable_system_certs"
+echo "Compiling test code enabled   : $enable_testcode"
 
 if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
   echo "GNUTLS                        : 1.6.1 or higher"

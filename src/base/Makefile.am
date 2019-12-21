@@ -24,7 +24,9 @@ dist_typedata_DATA=\
 typefiles=param.xml
 
 
-EXTRA_DIST=$(typefiles) param_fns.c
+EXTRA_DIST=$(typefiles) \
+  param_fns.c \
+  simpleptrlist-t.c
 
 
 
@@ -57,6 +59,7 @@ noinst_HEADERS=\
  tree_p.h \
  tree2_p.h \
  pointerlist_p.h \
+ simpleptrlist_p.h \
  multicache_p.h \
  param_p.h
 
@@ -94,6 +97,7 @@ iheader_HEADERS=\
  tree.h \
  tree2.h \
  pointerlist.h \
+ simpleptrlist.h \
  multicache.h \
  bindata.h \
  param.h \
@@ -128,6 +132,7 @@ libbase_la_SOURCES=\
  tree.c \
  tree2.c \
  pointerlist.c \
+ simpleptrlist.c \
  multicache.c \
  param.c
 
