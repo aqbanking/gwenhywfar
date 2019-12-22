@@ -50,6 +50,7 @@ struct GWEN_SIMPLEPTRLIST {
   uint64_t steps;
   uint32_t flags;
   uint32_t refCount;
+  int userIntData;
   INTERNAL_PTRLIST *entryList;
 
   GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN attachObjectFn;

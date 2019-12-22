@@ -139,6 +139,25 @@ void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
 
 
 
+int GWEN_SimplePtrList_GetUserIntData(const GWEN_SIMPLEPTRLIST *pl)
+{
+  assert(pl);
+  assert(pl->refCount);
+  return pl->userIntData;
+}
+
+
+
+void GWEN_SimplePtrList_SetUserIntData(GWEN_SIMPLEPTRLIST *pl, int i)
+{
+  assert(pl);
+  assert(pl->refCount);
+  pl->userIntData=i;
+}
+
+
+
+
 void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
 {
   assert(pl);
