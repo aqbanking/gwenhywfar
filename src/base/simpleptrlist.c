@@ -139,6 +139,24 @@ void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
 
 
 
+void GWEN_SimplePtrList_Clear(GWEN_SIMPLEPTRLIST *pl)
+{
+  uint64_t i;
+  void **ptr;
+
+  assert(pl);
+  assert(pl->refCount);
+
+  if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)
+    _detachFromAllObjects(pl);
+
+  ptr=pl->entryList->entries;
+  for (i=0; i<pl->usedEntries; i++)
+    *(ptr++)=NULL;
+}
+
+
+
 int GWEN_SimplePtrList_GetUserIntData(const GWEN_SIMPLEPTRLIST *pl)
 {
   assert(pl);
