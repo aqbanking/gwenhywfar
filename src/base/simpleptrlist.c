@@ -121,20 +121,21 @@ void GWEN_SimplePtrList_Attach(GWEN_SIMPLEPTRLIST *pl)
 
 void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
 {
-  assert(pl);
-  assert(pl->refCount);
-  if (pl->refCount==1) {
-    GWEN_INHERIT_FINI(GWEN_SIMPLEPTRLIST, pl);
-    if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)
-      _detachFromAllObjects(pl);
-    _freePtrList(pl->entryList);
-    pl->entryList=NULL;
-    pl->maxEntries=0;
-    pl->refCount--;
-    GWEN_FREE_OBJECT(pl);
+  if (pl) {
+    assert(pl->refCount);
+    if (pl->refCount==1) {
+      GWEN_INHERIT_FINI(GWEN_SIMPLEPTRLIST, pl);
+      if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)
+	_detachFromAllObjects(pl);
+      _freePtrList(pl->entryList);
+      pl->entryList=NULL;
+      pl->maxEntries=0;
+      pl->refCount--;
+      GWEN_FREE_OBJECT(pl);
+    }
+    else
+      pl->refCount--;
   }
-  else
-    pl->refCount--;
 }
 
 
