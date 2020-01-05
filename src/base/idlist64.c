@@ -548,6 +548,13 @@ GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl)
   uint32_t idx;
 
   nidl=GWEN_IdList64_new();
+  if (nidl->pIdTablePointers==NULL) {
+    nidl->idTableCount=idl->idTableCount;
+    nidl->pIdTablePointers=(GWEN_IDTABLE64 **) malloc(sizeof(GWEN_IDTABLE64 *)*(nidl->idTableCount));
+    assert(nidl->pIdTablePointers);
+    memset(nidl->pIdTablePointers, 0, sizeof(GWEN_IDTABLE64 *)*(nidl->idTableCount));
+  }
+
 
   nidl->idTableCount=idl->idTableCount;
   nidl->entryCount=idl->entryCount;
