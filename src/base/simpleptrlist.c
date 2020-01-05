@@ -186,6 +186,12 @@ void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
   if (idx<pl->usedEntries) {
     return pl->entryList->entries[idx];
   }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Index outside boundaries (%lu >= %lu)",
+             (unsigned long) idx,
+             (unsigned long) (pl->usedEntries));
+  }
   return NULL;
 }
 
