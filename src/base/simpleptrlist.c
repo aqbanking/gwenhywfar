@@ -55,6 +55,7 @@ static void _freePtrList(INTERNAL_PTRLIST *entries);
 static INTERNAL_PTRLIST *_reallocPtrList(INTERNAL_PTRLIST *oldEntries, uint64_t totalEntries);
 static INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t totalEntries);
 
+static int _ensurePtrListWritability(GWEN_SIMPLEPTRLIST *pl);
 
 
 
@@ -102,6 +103,7 @@ GWEN_SIMPLEPTRLIST *GWEN_SimplePtrList_LazyCopy(GWEN_SIMPLEPTRLIST *oldList)
   pl->usedEntries=oldList->usedEntries;
   pl->attachObjectFn=oldList->attachObjectFn;
   pl->freeObjectFn=oldList->freeObjectFn;
+  pl->userIntData=oldList->userIntData;
   pl->flags=oldList->flags | GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
   /* set copyOnWrite flag also on old list to keep lists separate even when changes to old lists are made */
   oldList->flags|=GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
@@ -125,8 +127,10 @@ void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
     assert(pl->refCount);
     if (pl->refCount==1) {
       GWEN_INHERIT_FINI(GWEN_SIMPLEPTRLIST, pl);
-      if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)
+      if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS && pl->entryList->refCounter==1) {
+	DBG_VERBOUS(GWEN_LOGDOMAIN, "Entries no longer needed, detaching from its objects");
 	_detachFromAllObjects(pl);
+      }
       _freePtrList(pl->entryList);
       pl->entryList=NULL;
       pl->maxEntries=0;
@@ -195,29 +199,14 @@ int GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
   assert(pl->refCount);
 
   if (idx<pl->usedEntries) {
+    int rv;
     void *oldPtr;
 
     /* copy on write, if needed */
-    if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE) {
-      INTERNAL_PTRLIST *entryList;
-      uint64_t num;
-
-      num=pl->maxEntries+pl->steps;
-      entryList=_copyPtrList(pl->entryList, num);
-      if (entryList==NULL) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
-        return GWEN_ERROR_MEMORY_FULL;
-      }
-      else {
-        _freePtrList(pl->entryList);
-        pl->entryList=entryList;
-        pl->maxEntries=num;
-        /* this is a copy, attach to objs */
-        if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)
-          _attachToAllObjects(pl);
-        /* clear copy-on-write flag */
-        pl->flags&=~GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
-      }
+    rv=_ensurePtrListWritability(pl);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
     }
 
     oldPtr=pl->entryList->entries[idx];
@@ -239,46 +228,32 @@ int GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
 
 int64_t GWEN_SimplePtrList_AddPtr(GWEN_SIMPLEPTRLIST *pl, void *p)
 {
+  int rv;
+
   assert(pl);
   assert(pl->refCount);
 
-  if (pl->usedEntries >= pl->maxEntries || (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE)) {
+  rv=_ensurePtrListWritability(pl);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  if (pl->usedEntries >= pl->maxEntries) {
     uint64_t num;
 
     num=pl->maxEntries+pl->steps;
     if (num>pl->maxEntries) {
       INTERNAL_PTRLIST *entryList;
 
-      if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE) {
-	/* make new entries pointer a copy of the old one */
-	entryList=_copyPtrList(pl->entryList, num);
-	if (entryList==NULL) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
-	  return GWEN_ERROR_MEMORY_FULL;
-	}
-	else {
-          _freePtrList(pl->entryList);
-	  pl->entryList=entryList;
-          pl->maxEntries=num;
-          /* this is a copy, attach to objs */
-          if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)
-            _attachToAllObjects(pl);
-          /* clear copy-on-write flag */
-	  pl->flags&=~GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
-	}
+      /* resize current list */
+      entryList=_reallocPtrList(pl->entryList, num);
+      if (entryList==NULL) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
+	return GWEN_ERROR_MEMORY_FULL;
       }
-      else {
-	/* resize current list */
-	entryList=_reallocPtrList(pl->entryList, num);
-	if (entryList==NULL) {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
-	  return GWEN_ERROR_MEMORY_FULL;
-	}
-	else {
-	  pl->entryList=entryList;
-	  pl->maxEntries=num;
-	}
-      }
+      pl->entryList=entryList;
+      pl->maxEntries=num;
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Table full (step size==0).");
@@ -427,10 +402,11 @@ void _attachToAllObjects(GWEN_SIMPLEPTRLIST *pl)
     uint64_t i;
     void **ptr;
 
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Attaching to objects");
     ptr=pl->entryList->entries;
     for (i=0; i<pl->usedEntries; i++) {
       if (*ptr!=NULL)
-        pl->attachObjectFn(pl, *ptr);
+	_attachToObject(pl, *ptr);
       ptr++;
     }
   }
@@ -447,10 +423,11 @@ void _detachFromAllObjects(GWEN_SIMPLEPTRLIST *pl)
     uint64_t i;
     void **ptr;
 
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Detaching from objects");
     ptr=pl->entryList->entries;
     for (i=0; i<pl->usedEntries; i++) {
       if (*ptr!=NULL)
-        pl->freeObjectFn(pl, *ptr);
+	_detachFromObject(pl, *ptr);
       ptr++;
     }
   }
@@ -468,6 +445,7 @@ INTERNAL_PTRLIST *_mallocPtrList(uint64_t totalEntries)
 {
   INTERNAL_PTRLIST *entries;
 
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "Malloc entries");
   entries=(INTERNAL_PTRLIST*) malloc(sizeof(INTERNAL_PTRLIST) + (totalEntries*sizeof(void*)));
   if (entries==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
@@ -485,6 +463,7 @@ void _attachToPtrList(INTERNAL_PTRLIST *entries)
 {
   assert(entries && entries->refCounter>0);
   if (entries && entries->refCounter>0) {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Attaching to entries");
     entries->refCounter++;
   }
   else {
@@ -498,6 +477,7 @@ void _freePtrList(INTERNAL_PTRLIST *entries)
 {
   if (entries && entries->refCounter>0) {
     if (entries->refCounter==1) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Freeing entries");
       entries->refCounter=0;
       free(entries);
     }
@@ -516,6 +496,7 @@ INTERNAL_PTRLIST *_reallocPtrList(INTERNAL_PTRLIST *entries, uint64_t totalEntri
     size_t newSize;
     uint64_t diffEntries;
 
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Resizing entries");
     if (totalEntries<entries->storedEntries) {
       DBG_INFO(GWEN_LOGDOMAIN, "Will not decrease size (for now)");
       return entries;
@@ -553,6 +534,7 @@ INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t tota
     size_t newSize;
     uint64_t diffEntries;
 
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Copying entries");
     if (totalEntries<oldEntries->storedEntries)
       totalEntries=oldEntries->storedEntries;
 
@@ -583,6 +565,43 @@ INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t tota
     return NULL;
   }
 }
+
+
+
+int _ensurePtrListWritability(GWEN_SIMPLEPTRLIST *pl)
+{
+  assert(pl && pl->refCount);
+
+  if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE) {
+    INTERNAL_PTRLIST *entryList;
+    uint64_t num;
+
+    num=pl->maxEntries+pl->steps;
+
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Copying entries");
+
+    /* make new entries pointer a copy of the old one */
+    entryList=_copyPtrList(pl->entryList, num);
+    if (entryList==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
+      return GWEN_ERROR_MEMORY_FULL;
+    }
+
+    _freePtrList(pl->entryList);
+    pl->entryList=entryList;
+    pl->maxEntries=num;
+    /* this is a copy, attach to objs */
+    if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Attaching to objects");
+      _attachToAllObjects(pl);
+    }
+    /* clear copy-on-write flag */
+    pl->flags&=~GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE;
+  }
+
+  return 0;
+}
+
 
 
 /* include tests */
