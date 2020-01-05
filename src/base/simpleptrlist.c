@@ -55,8 +55,6 @@ static void _freePtrList(INTERNAL_PTRLIST *entries);
 static INTERNAL_PTRLIST *_reallocPtrList(INTERNAL_PTRLIST *oldEntries, uint64_t totalEntries);
 static INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t totalEntries);
 
-static int _ensurePtrListWritability(GWEN_SIMPLEPTRLIST *pl);
-
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -203,7 +201,7 @@ int GWEN_SimplePtrList_SetPtrAt(GWEN_SIMPLEPTRLIST *pl, uint64_t idx, void *p)
     void *oldPtr;
 
     /* copy on write, if needed */
-    rv=_ensurePtrListWritability(pl);
+    rv=GWEN_SimplePtrList_EnsureWritability(pl);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -233,7 +231,7 @@ int64_t GWEN_SimplePtrList_AddPtr(GWEN_SIMPLEPTRLIST *pl, void *p)
   assert(pl);
   assert(pl->refCount);
 
-  rv=_ensurePtrListWritability(pl);
+  rv=GWEN_SimplePtrList_EnsureWritability(pl);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -568,7 +566,7 @@ INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t tota
 
 
 
-int _ensurePtrListWritability(GWEN_SIMPLEPTRLIST *pl)
+int GWEN_SimplePtrList_EnsureWritability(GWEN_SIMPLEPTRLIST *pl)
 {
   assert(pl && pl->refCount);
 
