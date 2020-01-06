@@ -1,4 +1,13 @@
 
+idList64:
+ - base on GWEN_SimplePtrList (use AQFS_TABLE from AqDatabase as guide)
+
+modtest:
+ - create a new module test
+   - use logger hook
+   - allow submodule tests
+
+
 sio:
  - ssl_cert_descr -> typemaker2
 
