@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,38 +30,28 @@
 #include <gwenhywfar/idlist64.h>
 
 
-#define GWEN_IDTABLE64_MAXENTRIES 64
-#define GWEN_IDLIST64_STEP        64
+#define GWEN_IDTABLE64_RUNTIME_FLAGS_DIRTY  0x01
+#define GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY 0x02
+
+
+#define GWEN_IDLIST64_RUNTIME_FLAGS_DIRTY  0x01
+#define GWEN_IDLIST64_RUNTIME_FLAGS_ISCOPY 0x02
+
 
 
 typedef struct GWEN_IDTABLE64 GWEN_IDTABLE64;
 
 struct GWEN_IDTABLE64 {
+  uint64_t maxEntries;
   uint64_t freeEntries;
-  uint64_t entries[GWEN_IDTABLE64_MAXENTRIES];
-  uint64_t current;
+  uint64_t highestEntry;
+  uint64_t *ptrEntries;
+
   uint32_t refCount;
+  uint32_t runtimeFlags;
 };
 
-static GWEN_IDTABLE64 *GWEN_IdTable64_new();
-static void GWEN_IdTable64_free(GWEN_IDTABLE64 *idt);
-/*static void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *idt);*/
 
-static uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos);
-static uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos);
-
-static void GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *idt);
-static void GWEN_IdList64_Clean(GWEN_IDLIST64 *idl);
-
-struct GWEN_IDLIST64 {
-  uint32_t refCount;
-  uint64_t entryCount;
-
-  GWEN_IDTABLE64 **pIdTablePointers;
-  uint32_t idTableCount;
-  uint32_t lastTableIdx;
-  uint64_t nextIdx;
-};
 
 
 

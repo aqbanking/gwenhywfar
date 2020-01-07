@@ -57,26 +57,26 @@ struct TEST_TYPE {
  */
 
 
-TEST_TYPE *TestType_new(const char *s, int pos);
-void TestType_Attach(TEST_TYPE *tt);
-void TestType_free(TEST_TYPE *tt);
+static TEST_TYPE *TestType_new(const char *s, int pos);
+static void TestType_Attach(TEST_TYPE *tt);
+static void TestType_free(TEST_TYPE *tt);
 
-int TestType_CalcHash(TEST_TYPE *tt);
-int TestType_TestHash(const TEST_TYPE *tt);
+static int TestType_CalcHash(TEST_TYPE *tt);
+static int TestType_TestHash(const TEST_TYPE *tt);
 
-GWENHYWFAR_CB void _attachToTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
-GWENHYWFAR_CB void _detachFromTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
+static GWENHYWFAR_CB void _attachToTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
+static GWENHYWFAR_CB void _detachFromTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
 
 
-int test1(void);
-int test2(void);
-int test3(void);
-int test4(void);
-int test5(void);
-int test6(void);
+static int test1(void);
+static int test2(void);
+static int test3(void);
+static int test4(void);
+static int test5(void);
+static int test6(void);
 
-TEST_TYPE *createTestType(int num);
-void dumpTestTypeList(TEST_TYPE_LIST *ttList);
+static TEST_TYPE *createTestType(int num);
+static void dumpTestTypeList(TEST_TYPE_LIST *ttList);
 
 
 
