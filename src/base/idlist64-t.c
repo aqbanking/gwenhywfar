@@ -38,12 +38,17 @@
 
 static int test1(void);
 static int test2(void);
-#if 0
 static int test3(void);
 static int test4(void);
 static int test5(void);
 static int test6(void);
-#endif
+static int test7(void);
+static int test8(void);
+static int test9(void);
+static int test10(void);
+static int test11(void);
+
+static int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2);
 
 
 
@@ -63,6 +68,7 @@ int GWEN_IdList64_Test(void)
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 1: failed (%d)", rv);
     numFailed++;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 1: passed");
@@ -72,16 +78,17 @@ int GWEN_IdList64_Test(void)
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 2: failed (%d)", rv);
     numFailed++;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 2: passed");
   }
 
-#if 0
   rv=test3();
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 3: failed (%d)", rv);
     numFailed++;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 3: passed");
@@ -91,6 +98,7 @@ int GWEN_IdList64_Test(void)
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 4: failed (%d)", rv);
     numFailed++;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 4: passed");
@@ -100,6 +108,7 @@ int GWEN_IdList64_Test(void)
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: failed (%d)", rv);
     numFailed++;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: passed");
@@ -109,11 +118,61 @@ int GWEN_IdList64_Test(void)
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: failed (%d)", rv);
     numFailed++;
+    return rv;
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: passed");
   }
-#endif
+
+  rv=test7();
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 7: failed (%d)", rv);
+    numFailed++;
+    return rv;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 7: passed");
+  }
+
+  rv=test8();
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 8: failed (%d)", rv);
+    numFailed++;
+    return rv;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 8: passed");
+  }
+
+  rv=test9();
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 9: failed (%d)", rv);
+    numFailed++;
+    return rv;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 9: passed");
+  }
+
+  rv=test10();
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 10: failed (%d)", rv);
+    numFailed++;
+    return rv;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 10: passed");
+  }
+
+  rv=test11();
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 11: failed (%d)", rv);
+    numFailed++;
+    return rv;
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Test 11: passed");
+  }
 
   if (numFailed)
     return GWEN_ERROR_GENERIC;
@@ -254,6 +313,796 @@ int test2(void)
 }
 
 
+
+int test3(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  int i;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddEntry(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list1) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  GWEN_IdList64_free(ptrList1);
+
+  return 0;
+}
+
+
+
+int test4(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list1) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
+
+  GWEN_IdList64_free(ptrList1);
+  GWEN_IdList64_free(ptrList2);
+
+  return 0;
+}
+
+
+
+int test5(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
+
+  for(i=0; i<2048; i++) {
+    int64_t entry;
+
+    entry=GWEN_IdList64_GetIdAt(ptrList1, i);
+    if (entry<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
+		i, GWEN_Error_SimpleToString(entry), (int)entry);
+      return entry;
+    }
+    if (entry != (int64_t) (i+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for(i=0; i<2048; i++) {
+    int64_t entry;
+
+    entry=GWEN_IdList64_GetIdAt(ptrList2, i);
+    if (entry<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
+		i, GWEN_Error_SimpleToString(entry), (int)entry);
+      return entry;
+    }
+    if (entry != (int64_t) (i+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list1) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list2) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  GWEN_IdList64_free(ptrList2);
+  GWEN_IdList64_free(ptrList1);
+
+  return 0;
+}
+
+
+
+int test6(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  GWEN_IdList64_free(ptrList1);
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list2) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  GWEN_IdList64_free(ptrList2);
+
+  return 0;
+}
+
+
+
+int test7(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+  int64_t iEntry;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table1;
+    GWEN_IDTABLE64 *table2;
+
+    table1=GWEN_IdList64_GetTableAt(ptrList1, i);
+    table2=GWEN_IdList64_GetTableAt(ptrList2, i);
+    if (table1!=table2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Table at position %d should be equal but isn't", i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  iEntry=GWEN_IdList64_AddId(ptrList2, (uint64_t) 2048);
+  if (iEntry<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+	      i, GWEN_Error_SimpleToString((int)iEntry), (int)iEntry);
+    return (int)iEntry;
+  }
+  if (iEntry!=(int64_t)2048) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be 2048", i, (unsigned long) iEntry);
+    return GWEN_ERROR_INTERNAL;
+  }
+
+
+  if (GWEN_IdList64_GetIdAt(ptrList1, 2048)>0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Entry 2048 exists in list1 when it should not");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  iEntry=GWEN_IdList64_GetIdAt(ptrList2, 2049);
+  if (iEntry>0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Entry 2049 exists in list2 when it should not (%ld)", (long int) iEntry);
+    return GWEN_ERROR_INTERNAL;
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 2 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 2 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=8; i<9; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int test8(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
+
+  for(i=2048; i<4096; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList2, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  for(i=0; i<2048; i++) {
+    int64_t entry;
+
+    entry=GWEN_IdList64_GetIdAt(ptrList1, i);
+    if (entry<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
+		i, GWEN_Error_SimpleToString(entry), (int)entry);
+      return entry;
+    }
+    if (entry != (int64_t) (i+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  if (GWEN_IdList64_GetIdAt(ptrList1, 2048)>0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Entry 2048 exists in list1 when it should not");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  for(i=0; i<4096; i++) {
+    int64_t entry;
+
+    entry=GWEN_IdList64_GetIdAt(ptrList2, i);
+    if (entry<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
+		i, GWEN_Error_SimpleToString(entry), (int)entry);
+      return entry;
+    }
+    if (entry != (int64_t) (i+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  if (GWEN_IdList64_GetIdAt(ptrList1, 4096)>=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Entry 4096 exists in list2 when it should not");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 2 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 2 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=8; i<16; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  GWEN_IdList64_free(ptrList1);
+
+  for (i=0; i<(2048/256); i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list2) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int test9(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+  int rv;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2047; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
+
+  rv=GWEN_IdList64_AddId(ptrList2, (uint64_t) 2047);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+	      "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+	      i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+    return rv;
+  }
+  if (rv!=(int64_t)2047) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be 2047", i, (unsigned long) rv);
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  if (GWEN_IdList64_GetTableAt(ptrList2, 8)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Table 8 exists when it should not");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+
+  if (GWEN_IdList64_GetIdAt(ptrList2, 2049)>0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Entry 2049 exists in list2 when it should not");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 2 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=2) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 2 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=8; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int test10(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_dup(ptrList1);
+
+  for(i=0; i<2048; i++) {
+    int64_t entry;
+
+    entry=GWEN_IdList64_GetIdAt(ptrList1, i);
+    if (entry<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
+		i, GWEN_Error_SimpleToString(entry), (int)entry);
+      return entry;
+    }
+    if (entry != (int64_t) (i+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for(i=0; i<2048; i++) {
+    int64_t entry;
+
+    entry=GWEN_IdList64_GetIdAt(ptrList2, i);
+    if (entry<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
+		i, GWEN_Error_SimpleToString(entry), (int)entry);
+      return entry;
+    }
+    if (entry != (int64_t) (i+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList1, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list1) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  for (i=0; i<8; i++) {
+    GWEN_IDTABLE64 *table;
+    int refCounter;
+
+    table=GWEN_IdList64_GetTableAt(ptrList2, i);
+    refCounter=table->refCount;
+    if (refCounter!=1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected reference counter in table (list2) %d: is %d, should be 1 ", i, refCounter);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  GWEN_IdList64_free(ptrList2);
+  GWEN_IdList64_free(ptrList1);
+
+  return 0;
+}
+
+
+
+int test11(void)
+{
+  GWEN_IDLIST64 *ptrList1;
+  GWEN_IDLIST64 *ptrList2;
+  int i;
+  int rv;
+
+  ptrList1=GWEN_IdList64_new(256);
+
+  for(i=0; i<2048; i++) {
+    int64_t rv;
+
+    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
+		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+      return rv;
+    }
+    if (rv!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+      return GWEN_ERROR_INTERNAL;
+    }
+  }
+
+  ptrList2=GWEN_IdList64_dup(ptrList1);
+
+
+  rv=_compareList1AgainstList2(ptrList1, ptrList2);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", (int) rv);
+    GWEN_IdList64_free(ptrList2);
+    GWEN_IdList64_free(ptrList1);
+    return (int) rv;
+  }
+
+  GWEN_IdList64_free(ptrList2);
+  GWEN_IdList64_free(ptrList1);
+
+  return 0;
+}
+
+
+
+
+
+int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2) {
+  GWEN_IDLIST64_ITERATOR *iter1;
+  GWEN_IDLIST64_ITERATOR *iter2;
+  uint64_t id1;
+  uint64_t id2;
+  uint64_t index=0;
+
+  iter1=GWEN_IdList64_Iterator_new(idList1);
+  iter2=GWEN_IdList64_Iterator_new(idList2);
+  id1=GWEN_IdList64_Iterator_GetFirstId(iter1);
+  id2=GWEN_IdList64_Iterator_GetFirstId(iter2);
+  while(id1>0 && id2>0) {
+    if (id1 != id2) {
+      fprintf(stderr, "Tables differ at position %lu (%lu != %lu)\n",
+              (unsigned long) index,
+              (unsigned long) id1,
+              (unsigned long) id2);
+      GWEN_IdList64_Iterator_free(iter2);
+      GWEN_IdList64_Iterator_free(iter1);
+      return GWEN_ERROR_GENERIC;
+    }
+    index++;
+    id1=GWEN_IdList64_Iterator_GetNextId(iter1);
+    id2=GWEN_IdList64_Iterator_GetNextId(iter2);
+  }
+  if (GWEN_IdList64_Iterator_GetNextId(iter1)>0 || GWEN_IdList64_Iterator_GetNextId(iter2)>0) {
+    fprintf(stderr, "NUmber of elements in lists differs\n");
+    GWEN_IdList64_Iterator_free(iter2);
+    GWEN_IdList64_Iterator_free(iter1);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_IdList64_Iterator_free(iter2);
+  GWEN_IdList64_Iterator_free(iter1);
+
+  return 0;
+}
 
 
 

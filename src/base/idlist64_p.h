@@ -29,13 +29,12 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/idlist64.h>
 
+#define GWEN_IDLIST64_INITIAL_ENTRYCOUNT 64
+#define GWEN_IDLIST64_STEPS              64
 
 #define GWEN_IDTABLE64_RUNTIME_FLAGS_DIRTY  0x01
 #define GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY 0x02
 
-
-#define GWEN_IDLIST64_RUNTIME_FLAGS_DIRTY  0x01
-#define GWEN_IDLIST64_RUNTIME_FLAGS_ISCOPY 0x02
 
 
 

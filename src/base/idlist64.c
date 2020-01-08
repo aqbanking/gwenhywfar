@@ -71,6 +71,8 @@ static void GWEN_IdTable64_SetPtrEntries(GWEN_IDTABLE64 *ft, uint64_t *ptr);
 
 static GWEN_IDTABLE64 *GWEN_IdList64_GetTableAt(const GWEN_IDLIST64 *tl, uint64_t idx);
 /*static int GWEN_IdList64_SetIdAt(GWEN_IDLIST64 *tl, uint64_t idx, uint64_t entry);*/
+static int64_t GWEN_IdList64_AddTable(GWEN_IDLIST64 *idl, GWEN_IDTABLE64 *t);
+
 static uint64_t GWEN_IdList64__GetFirstId(const GWEN_IDLIST64 *idl, uint64_t *pos);
 static uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos);
 
@@ -83,16 +85,51 @@ static uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos
  */
 
 
-GWEN_IDLIST64 *GWEN_IdList64_new(int tableMaxEntries)
+GWEN_IDLIST64 *GWEN_IdList64_new(int steps)
 {
   GWEN_IDLIST64 *idl;
 
-  idl=GWEN_SimplePtrList_new(tableMaxEntries, tableMaxEntries);
+  idl=GWEN_SimplePtrList_new(GWEN_IDLIST64_INITIAL_ENTRYCOUNT, GWEN_IDLIST64_STEPS);
   GWEN_SimplePtrList_SetAttachObjectFn(idl, _attachToTable);
   GWEN_SimplePtrList_SetFreeObjectFn(idl, _detachFromTable);
   GWEN_SimplePtrList_AddFlags(idl, GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS);
   GWEN_SimplePtrList_AddFlags(idl, GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS);
-  GWEN_SimplePtrList_SetUserIntData(idl, tableMaxEntries);
+  GWEN_SimplePtrList_SetUserIntData(idl, steps);
+
+  return idl;
+}
+
+
+
+GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *oldList)
+{
+  GWEN_IDLIST64 *idl;
+  uint64_t tableCount;
+  uint64_t i;
+
+  idl=GWEN_IdList64_new(GWEN_SimplePtrList_GetUserIntData(oldList));
+  tableCount=GWEN_SimplePtrList_GetUsedEntries(oldList);
+
+  for (i=0; i<tableCount; i++) {
+    const GWEN_IDTABLE64 *oldTable;
+
+    oldTable=GWEN_IdList64_GetTableAt(oldList, i);
+    if (oldTable) {
+      GWEN_IDTABLE64 *table;
+      int64_t rv;
+
+      table=GWEN_IdTable64_dup(oldTable);
+      rv=GWEN_IdList64_AddTable(idl, table);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", (int) rv);
+        GWEN_IdTable64_free(table);
+        GWEN_IdList64_free(idl);
+        return NULL;
+      }
+      GWEN_IdTable64_free(table);
+    }
+  } /* for */
+  GWEN_SimplePtrList_SetUserCounter(idl, GWEN_SimplePtrList_GetUserCounter(oldList));
 
   return idl;
 }
@@ -294,6 +331,11 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
   int64_t idxTableCurrent=0;
   int entriesPerTable=GWEN_IdList64_GetTableMaxEntries(idl);
   int rv;
+
+  if (entry==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "id 0 is not allowed");
+    return GWEN_ERROR_INVALID;
+  }
 
   rv=GWEN_SimplePtrList_EnsureWritability(idl);
   if (rv<0) {
