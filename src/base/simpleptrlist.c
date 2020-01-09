@@ -230,10 +230,10 @@ void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
     return pl->entryList->entries[idx];
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN,
-             "Index outside boundaries (%lu >= %lu)",
-             (unsigned long) idx,
-             (unsigned long) (pl->usedEntries));
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Index outside boundaries (%lu >= %lu)",
+              (unsigned long) idx,
+              (unsigned long) (pl->usedEntries));
   }
   return NULL;
 }
@@ -514,7 +514,7 @@ void _attachToPtrList(INTERNAL_PTRLIST *entries)
     entries->refCounter++;
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN, "Null pointer or already freed");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Null pointer or already freed");
   }
 }
 
