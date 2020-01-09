@@ -36,17 +36,17 @@
  */
 
 
-static int test1(GWEN_TEST_MODULE *mod);
-static int test2(GWEN_TEST_MODULE *mod);
-static int test3(GWEN_TEST_MODULE *mod);
-static int test4(GWEN_TEST_MODULE *mod);
-static int test5(GWEN_TEST_MODULE *mod);
-static int test6(GWEN_TEST_MODULE *mod);
-static int test7(GWEN_TEST_MODULE *mod);
-static int test8(GWEN_TEST_MODULE *mod);
-static int test9(GWEN_TEST_MODULE *mod);
-static int test10(GWEN_TEST_MODULE *mod);
-static int test11(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test1(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test2(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test3(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test4(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test5(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test6(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test7(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test8(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test9(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test10(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test11(GWEN_TEST_MODULE *mod);
 
 static int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2);
 

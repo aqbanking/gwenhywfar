@@ -72,7 +72,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_TEST_MODULE, GWENHYWFAR_API)
 
 
 /* definitions for virtual functions (post) */
-typedef int  (*GWEN_TEST_MODULE_TEST_FN)(GWEN_TEST_MODULE *p_struct);
+typedef int GWENHYWFAR_CB  (*GWEN_TEST_MODULE_TEST_FN)(GWEN_TEST_MODULE *p_struct);
 
 /** Constructor. */
 GWENHYWFAR_API GWEN_TEST_MODULE *GWEN_Test_Module_new(void);

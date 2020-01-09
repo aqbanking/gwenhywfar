@@ -216,6 +216,7 @@
         <access>public</access>
         <returnType>int</returnType>
         <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <flags>gwen_cb</flags>
         <params>
           <!--
           <param type="ABS_ACCOUNT_INFO_LIST**"     name="pAccountInfoList" >

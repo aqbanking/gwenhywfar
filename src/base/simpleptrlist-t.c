@@ -68,12 +68,12 @@ static GWENHYWFAR_CB void _attachToTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
 static GWENHYWFAR_CB void _detachFromTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
 
 
-static int test1(GWEN_TEST_MODULE *mod);
-static int test2(GWEN_TEST_MODULE *mod);
-static int test3(GWEN_TEST_MODULE *mod);
-static int test4(GWEN_TEST_MODULE *mod);
-static int test5(GWEN_TEST_MODULE *mod);
-static int test6(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test1(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test2(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test3(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test4(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test5(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test6(GWEN_TEST_MODULE *mod);
 
 static TEST_TYPE *createTestType(int num);
 static void dumpTestTypeList(TEST_TYPE_LIST *ttList);
