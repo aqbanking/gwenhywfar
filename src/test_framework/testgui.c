@@ -23,8 +23,8 @@
 
 
 
-static void GWENHYWFAR_CB _freeData(void *bp, void *p);
-static int GWENHYWFAR_CB _logHook(GWEN_GUI *gui, const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s);
+static GWENHYWFAR_CB void _freeData(void *bp, void *p);
+static GWENHYWFAR_CB int _logHook(GWEN_GUI *gui, const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s);
 
 static void _addLogLineToList(GWEN_GUI *gui, const char *s);
 static void _addLogLineToFile(GWEN_GUI *gui, const char *s);
@@ -72,7 +72,7 @@ void TestGui_Unextend(GWEN_GUI *gui)
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+static GWENHYWFAR_CB void _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_GUI_TEST *xgui;
 
@@ -100,7 +100,7 @@ void Test_Gui_FlushLogs(GWEN_GUI *gui)
 
 
 
-int _logHook(GWEN_GUI *gui, const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s)
+static GWENHYWFAR_CB int _logHook(GWEN_GUI *gui, const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s)
 {
   GWEN_GUI_TEST *xgui;
 

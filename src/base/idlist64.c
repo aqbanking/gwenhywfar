@@ -510,7 +510,7 @@ int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t wantedId)
 
 
 
-void _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
+static GWENHYWFAR_CB void _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 {
   GWEN_IDTABLE64 *ft;
 
@@ -520,7 +520,7 @@ void _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 
 
 
-void _detachFromTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
+static GWENHYWFAR_CB void _detachFromTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 {
   GWEN_IDTABLE64 *ft;
 
