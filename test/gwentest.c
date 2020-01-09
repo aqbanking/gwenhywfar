@@ -5906,6 +5906,14 @@ int testModules(int argc, char **argv)
 
   rv=GWEN_IdList64_AddTests(TestFramework_GetModulesRoot(tf));
   if (rv<0) {
+    fprintf(stderr, "Adding module failed.\n");
+    return 2;
+  }
+
+  rv=GWEN_SimplePtrList_AddTests(TestFramework_GetModulesRoot(tf));
+  if (rv<0) {
+    fprintf(stderr, "Adding module failed.\n");
+    return 2;
   }
 
   argc--;
@@ -6152,9 +6160,6 @@ int main(int argc, char **argv)
   }
   else if (strcasecmp(argv[1], "httpsServer")==0) {
     rv=testHttpsServer(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "simplePtr")==0) {
-    rv=GWEN_SimplePtrList_Test();
   }
   else if (strcasecmp(argv[1], "modules")==0) {
     rv=testModules(argc, argv);

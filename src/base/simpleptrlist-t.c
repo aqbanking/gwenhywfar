@@ -68,12 +68,12 @@ static GWENHYWFAR_CB void _attachToTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
 static GWENHYWFAR_CB void _detachFromTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
 
 
-static int test1(void);
-static int test2(void);
-static int test3(void);
-static int test4(void);
-static int test5(void);
-static int test6(void);
+static int test1(GWEN_TEST_MODULE *mod);
+static int test2(GWEN_TEST_MODULE *mod);
+static int test3(GWEN_TEST_MODULE *mod);
+static int test4(GWEN_TEST_MODULE *mod);
+static int test5(GWEN_TEST_MODULE *mod);
+static int test6(GWEN_TEST_MODULE *mod);
 
 static TEST_TYPE *createTestType(int num);
 static void dumpTestTypeList(TEST_TYPE_LIST *ttList);
@@ -86,67 +86,19 @@ static void dumpTestTypeList(TEST_TYPE_LIST *ttList);
  */
 
 
-int GWEN_SimplePtrList_Test(void)
+int GWEN_SimplePtrList_AddTests(GWEN_TEST_MODULE *mod)
 {
-  int rv;
-  int numFailed=0;
+  GWEN_TEST_MODULE *newMod;
 
-  rv=test1();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 1: failed (%d)", rv);
-    numFailed++;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 1: passed");
-  }
+  newMod=GWEN_Test_Module_AddModule(mod, "GWEN_SimplePtrList", NULL);
 
-  rv=test2();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 2: failed (%d)", rv);
-    numFailed++;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 2: passed");
-  }
+  GWEN_Test_Module_AddTest(newMod, "test1", test1, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test2", test2, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test3", test3, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test4", test4, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test5", test5, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test6", test6, NULL);
 
-  rv=test3();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 3: failed (%d)", rv);
-    numFailed++;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 3: passed");
-  }
-
-  rv=test4();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 4: failed (%d)", rv);
-    numFailed++;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 4: passed");
-  }
-
-  rv=test5();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: failed (%d)", rv);
-    numFailed++;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: passed");
-  }
-
-  rv=test6();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: failed (%d)", rv);
-    numFailed++;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: passed");
-  }
-
-  if (numFailed)
-    return GWEN_ERROR_GENERIC;
   return 0;
 }
 
@@ -317,7 +269,7 @@ void dumpTestTypeList(TEST_TYPE_LIST *ttList)
  * ------------------------------------------------------------------------------------------------
  */
 
-int test1(void)
+int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_SIMPLEPTRLIST *pl;
   int i;
@@ -386,7 +338,7 @@ int test1(void)
  * ------------------------------------------------------------------------------------------------
  */
 
-int test2(void)
+int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
 
   GWEN_SIMPLEPTRLIST *pl;
@@ -462,7 +414,7 @@ int test2(void)
  * ------------------------------------------------------------------------------------------------
  */
 
-int test3(void)
+int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
 
   GWEN_SIMPLEPTRLIST *pl;
@@ -639,7 +591,7 @@ int test3(void)
  * ------------------------------------------------------------------------------------------------
  */
 
-int test4(void)
+int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
 
   GWEN_SIMPLEPTRLIST *pl;
@@ -743,7 +695,7 @@ int test4(void)
  * ------------------------------------------------------------------------------------------------
  */
 
-int test5(void)
+int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
 
   GWEN_SIMPLEPTRLIST *pl;
@@ -934,7 +886,7 @@ int test5(void)
  * ------------------------------------------------------------------------------------------------
  */
 
-int test6(void)
+int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
 
   GWEN_SIMPLEPTRLIST *pl;
@@ -1096,7 +1048,7 @@ int test6(void)
 
 #else
 
-int GWEN_SimplePtrList_Test(void)
+int GWEN_SimplePtrList_AddTests(GWEN_TEST_MODULE *mod)
 {
   DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without test code enabled.");
   return GWEN_ERROR_GENERIC;

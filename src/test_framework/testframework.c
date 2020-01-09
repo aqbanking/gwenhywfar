@@ -169,8 +169,8 @@ int _runTest(GWEN_GUI *gui, GWEN_TEST_MODULE *mod, int depth)
   if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
     if (rv<0) {
       GWEN_Test_Module_SetResult(mod, rv);
-      TestGui_AddLogLine(gui, "->failed\n");
-      GWEN_Buffer_AppendString(fbuf, "failed.");
+      TestGui_AddLogLine(gui, "->FAILED!\n");
+      GWEN_Buffer_AppendString(fbuf, "FAILED!");
       fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(fbuf));
       GWEN_Buffer_free(fbuf);
       return rv;

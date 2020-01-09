@@ -23,7 +23,7 @@
  ***************************************************************************/
 
 
-/* This file is included by "simpleptrlist.c" */
+/* This file is included by "idlist64.c" */
 
 
 #if GWENHYWFAR_ENABLE_TESTCODE
@@ -63,7 +63,7 @@ int GWEN_IdList64_AddTests(GWEN_TEST_MODULE *mod)
 {
   GWEN_TEST_MODULE *newMod;
 
-  newMod=GWEN_Test_Module_AddModule(mod, "IdList64", NULL);
+  newMod=GWEN_Test_Module_AddModule(mod, "GWEN_IdList64", NULL);
 
   GWEN_Test_Module_AddTest(newMod, "test1", test1, NULL);
   GWEN_Test_Module_AddTest(newMod, "test2", test2, NULL);

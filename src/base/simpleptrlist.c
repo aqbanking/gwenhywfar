@@ -491,14 +491,16 @@ void _detachFromAllObjects(GWEN_SIMPLEPTRLIST *pl)
 INTERNAL_PTRLIST *_mallocPtrList(uint64_t totalEntries)
 {
   INTERNAL_PTRLIST *entries;
+  size_t objectSize;
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Malloc entries");
-  entries=(INTERNAL_PTRLIST*) malloc(sizeof(INTERNAL_PTRLIST) + (totalEntries*sizeof(void*)));
+  objectSize=sizeof(INTERNAL_PTRLIST) + (totalEntries*sizeof(void*));
+  entries=(INTERNAL_PTRLIST*) malloc(objectSize);
   if (entries==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
     return NULL;
   }
-  memset((void*)entries, 0, (totalEntries*sizeof(void*)));
+  memset((void*)entries, 0, objectSize);
   entries->refCounter=1;
   entries->storedEntries=totalEntries;
   return entries;

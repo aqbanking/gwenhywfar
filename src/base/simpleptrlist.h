@@ -27,6 +27,7 @@
 
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/testframework.h>
 
 
 
@@ -97,7 +98,7 @@ GWENHYWFAR_API void GWEN_SimplePtrList_IncUserCounter(GWEN_SIMPLEPTRLIST *pl);
 GWENHYWFAR_API int GWEN_SimplePtrList_DecUserCounter(GWEN_SIMPLEPTRLIST *pl);
 
 
-GWENHYWFAR_API int GWEN_SimplePtrList_Test(void);
+GWENHYWFAR_API int GWEN_SimplePtrList_AddTests(GWEN_TEST_MODULE *mod);
 
 
 #endif /* GWENHYWFAR_SIMPLEPTRLIST_P_H */
