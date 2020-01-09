@@ -78,6 +78,8 @@ uint32_t Typemaker2_FlagsFromString(const char *t)
         flags|=TYPEMAKER2_FLAGS_NOCONSTOBJECT;
       else if (strcasecmp(s, "none")==0)
         flags|=TYPEMAKER2_FLAGS_NONE;
+      else if (strcasecmp(s, "gwen_cb")==0)
+        flags|=TYPEMAKER2_FLAGS_GWEN_CB;
 
       se=GWEN_StringListEntry_Next(se);
     }

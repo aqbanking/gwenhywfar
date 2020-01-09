@@ -4169,6 +4169,11 @@ int _buildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, const ch
         }
         GWEN_Buffer_AppendString(tbuf, s);
 
+        if (Typemaker2_VirtualFn_GetFlags(vf) & TYPEMAKER2_FLAGS_GWEN_CB) {
+          GWEN_Buffer_AppendString(tbuf, " GWENHYWFAR_CB");
+        }
+
+
         GWEN_Buffer_AppendString(tbuf, "  (*");
         s=Typemaker2_Type_GetIdentifier(ty);
         GWEN_Buffer_AppendString(tbuf, s);
@@ -4814,7 +4819,7 @@ int _buildSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
 
 
-static int _setEnumStringFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+static int _setEnumStringFns(GWEN_UNUSED TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
   TYPEMAKER2_ENUM_LIST *enums;
   /* TYPEMAKER2_TYPEMANAGER *tym; */
@@ -7076,7 +7081,7 @@ static int _buildApiDoc(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
 
 
-static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+static int _addVirtualFnsFromSlots(GWEN_UNUSED TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -7156,7 +7161,7 @@ static int _addVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
 
 
-static void _delVirtualFnsFromSlots(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+static void _delVirtualFnsFromSlots(GWEN_UNUSED TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
   TYPEMAKER2_VIRTUALFN_LIST *fnList;
 
