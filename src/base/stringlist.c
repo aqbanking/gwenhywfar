@@ -319,8 +319,7 @@ int GWEN_StringList_InsertString(GWEN_STRINGLIST *sl,
 
 
 
-GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
-                                                const char *s)
+int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl, const char *s)
 {
   GWEN_STRINGLISTENTRY *se;
 
@@ -358,6 +357,27 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
       se=se->next;
     } /* while */
     return 0;
+  }
+}
+
+
+
+void GWEN_StringList_RemoveFirstString(GWEN_STRINGLIST *sl)
+{
+  GWEN_STRINGLISTENTRY *se;
+
+  assert(sl);
+  se=sl->first;
+  if (se) {
+    assert(se->refCount);
+
+    se->refCount--;
+    if (sl->ignoreRefCount)
+      GWEN_StringList_RemoveEntry(sl, se);
+    else {
+      if (se->refCount==0)
+	GWEN_StringList_RemoveEntry(sl, se);
+    }
   }
 }
 

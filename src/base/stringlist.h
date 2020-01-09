@@ -140,6 +140,12 @@ GWENHYWFAR_API int GWEN_StringList_RemoveString(GWEN_STRINGLIST *sl,
                                                 const char *s);
 
 /**
+ * Removes the first string from the stringlist (if any).
+ */
+GWENHYWFAR_API void GWEN_StringList_RemoveFirstString(GWEN_STRINGLIST *sl);
+
+
+/**
  * Checks whether the given string already exists within in the
  * string list.
  * @return !=0 if found, 0 otherwise
