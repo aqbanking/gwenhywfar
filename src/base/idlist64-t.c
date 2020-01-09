@@ -36,17 +36,17 @@
  */
 
 
-static int test1(void);
-static int test2(void);
-static int test3(void);
-static int test4(void);
-static int test5(void);
-static int test6(void);
-static int test7(void);
-static int test8(void);
-static int test9(void);
-static int test10(void);
-static int test11(void);
+static int test1(GWEN_TEST_MODULE *mod);
+static int test2(GWEN_TEST_MODULE *mod);
+static int test3(GWEN_TEST_MODULE *mod);
+static int test4(GWEN_TEST_MODULE *mod);
+static int test5(GWEN_TEST_MODULE *mod);
+static int test6(GWEN_TEST_MODULE *mod);
+static int test7(GWEN_TEST_MODULE *mod);
+static int test8(GWEN_TEST_MODULE *mod);
+static int test9(GWEN_TEST_MODULE *mod);
+static int test10(GWEN_TEST_MODULE *mod);
+static int test11(GWEN_TEST_MODULE *mod);
 
 static int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2);
 
@@ -59,129 +59,30 @@ static int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idLi
 
 
 
-int GWEN_IdList64_Test(void)
+int GWEN_IdList64_AddTests(GWEN_TEST_MODULE *mod)
 {
-  int rv;
-  int numFailed=0;
+  GWEN_TEST_MODULE *newMod;
 
-  rv=test1();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 1: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 1: passed");
-  }
+  newMod=GWEN_Test_Module_AddModule(mod, "IdList64", NULL);
 
-  rv=test2();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 2: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 2: passed");
-  }
+  GWEN_Test_Module_AddTest(newMod, "test1", test1, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test2", test2, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test3", test3, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test4", test4, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test5", test5, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test6", test6, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test7", test7, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test8", test8, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test9", test9, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test10", test10, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test11", test11, NULL);
 
-  rv=test3();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 3: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 3: passed");
-  }
-
-  rv=test4();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 4: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 4: passed");
-  }
-
-  rv=test5();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 5: passed");
-  }
-
-  rv=test6();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 6: passed");
-  }
-
-  rv=test7();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 7: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 7: passed");
-  }
-
-  rv=test8();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 8: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 8: passed");
-  }
-
-  rv=test9();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 9: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 9: passed");
-  }
-
-  rv=test10();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 10: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 10: passed");
-  }
-
-  rv=test11();
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 11: failed (%d)", rv);
-    numFailed++;
-    return rv;
-  }
-  else {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Test 11: passed");
-  }
-
-  if (numFailed)
-    return GWEN_ERROR_GENERIC;
   return 0;
 }
 
 
 
-int test1(void)
+int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *idList1;
   GWEN_IDLIST64_ITERATOR *iterator1;
@@ -227,7 +128,7 @@ int test1(void)
 
 
 
-int test2(void)
+int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *idList1;
   GWEN_IDLIST64_ITERATOR *iterator1;
@@ -314,7 +215,7 @@ int test2(void)
 
 
 
-int test3(void)
+int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   int i;
@@ -357,7 +258,7 @@ int test3(void)
 
 
 
-int test4(void)
+int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -404,7 +305,7 @@ int test4(void)
 
 
 
-int test5(void)
+int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -495,7 +396,7 @@ int test5(void)
 
 
 
-int test6(void)
+int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -554,7 +455,7 @@ int test6(void)
 
 
 
-int test7(void)
+int test7(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -684,7 +585,7 @@ int test7(void)
 
 
 
-int test8(void)
+int test8(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -826,7 +727,7 @@ int test8(void)
 
 
 
-int test9(void)
+int test9(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -930,7 +831,7 @@ int test9(void)
 
 
 
-int test10(void)
+int test10(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -1021,7 +922,7 @@ int test10(void)
 
 
 
-int test11(void)
+int test11(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   GWEN_IDLIST64 *ptrList1;
   GWEN_IDLIST64 *ptrList2;
@@ -1108,7 +1009,7 @@ int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2) {
 
 #else
 
-int GWEN_IdList64_Test(void)
+int GWEN_IdList64_AddTests(GWEN_TEST_MODULE *mod)
 {
   DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without test code enabled.");
   return GWEN_ERROR_GENERIC;

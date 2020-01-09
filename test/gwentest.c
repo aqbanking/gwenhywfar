@@ -40,6 +40,7 @@
 #include <gwenhywfar/param.h>
 #include <gwenhywfar/simpleptrlist.h>
 #include <gwenhywfar/idlist64.h>
+#include <gwenhywfar/testframework.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
@@ -5892,13 +5893,46 @@ int testParams3(void)
 
 
 
+int testModules(int argc, char **argv)
+{
+  GWEN_GUI *gui;
+  GWEN_TEST_FRAMEWORK *tf;
+  int rv;
+
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  tf=TestFramework_new();
+
+  rv=GWEN_IdList64_AddTests(TestFramework_GetModulesRoot(tf));
+  if (rv<0) {
+  }
+
+  argc--;
+  argv++;
+  rv=TestFramework_Run(tf, argc, argv);
+  if (rv) {
+    fprintf(stderr, "SomeError in tests failed.\n");
+    GWEN_Gui_SetGui(NULL);
+    GWEN_Gui_free(gui);
+    return 2;
+  }
+  TestFramework_free(tf);
+
+  GWEN_Gui_SetGui(NULL);
+  GWEN_Gui_free(gui);
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
 
   GWEN_Init();
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
-  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+  //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
   if (argc<2) {
     fprintf(stderr,
@@ -6122,8 +6156,8 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "simplePtr")==0) {
     rv=GWEN_SimplePtrList_Test();
   }
-  else if (strcasecmp(argv[1], "idList64")==0) {
-    rv=GWEN_IdList64_Test();
+  else if (strcasecmp(argv[1], "modules")==0) {
+    rv=testModules(argc, argv);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

@@ -34,6 +34,7 @@
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/simpleptrlist.h>
+#include <gwenhywfar/testframework.h>
 
 
 #ifdef __cplusplus
@@ -106,7 +107,7 @@ GWENHYWFAR_API int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl);
 GWENHYWFAR_API int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl);
 
 
-GWENHYWFAR_API int GWEN_IdList64_Test(void);
+GWENHYWFAR_API int GWEN_IdList64_AddTests(GWEN_TEST_MODULE *mod);
 
 
 /*@}*/
