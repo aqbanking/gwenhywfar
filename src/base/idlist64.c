@@ -85,7 +85,14 @@ static uint64_t GWEN_IdList64__GetNextId(const GWEN_IDLIST64 *idl, uint64_t *pos
  */
 
 
-GWEN_IDLIST64 *GWEN_IdList64_new(int steps)
+GWEN_IDLIST64 *GWEN_IdList64_new()
+{
+  return GWEN_IdList64_newWithSteps(GWEN_IDLIST64_ENTRIES_PER_TABLE);
+}
+
+
+
+GWEN_IDLIST64 *GWEN_IdList64_newWithSteps(uint64_t steps)
 {
   GWEN_IDLIST64 *idl;
 
@@ -107,7 +114,7 @@ GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *oldList)
   uint64_t tableCount;
   uint64_t i;
 
-  idl=GWEN_IdList64_new(GWEN_SimplePtrList_GetUserIntData(oldList));
+  idl=GWEN_IdList64_newWithSteps(GWEN_SimplePtrList_GetUserIntData(oldList));
   tableCount=GWEN_SimplePtrList_GetUsedEntries(oldList);
 
   for (i=0; i<tableCount; i++) {
@@ -257,11 +264,11 @@ int64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t idx)
       }
     }
     else {
-      DBG_INFO(GWEN_LOGDOMAIN, "No table at table pos %lu", (unsigned long) tablePos);
+      DBG_ERROR(GWEN_LOGDOMAIN, "No table at table pos %lu", (unsigned long) tablePos);
     }
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN, "No entriesPerTable");
+    DBG_ERROR(GWEN_LOGDOMAIN, "No entriesPerTable");
   }
 
   return GWEN_ERROR_BUFFER_OVERFLOW;
@@ -353,13 +360,13 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
   if (pTableCurrent==NULL || GWEN_IdTable64_GetFreeEntries(pTableCurrent)==0) {
     /* create new table */
     if (pTableCurrent==NULL) {
-      DBG_INFO(GWEN_LOGDOMAIN, "No table, need to create one");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "No table, need to create one");
     }
     else if (GWEN_IdTable64_GetFreeEntries(pTableCurrent)==0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Current table has no free entries, need to create new one");
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Current table has no free entries, need to create new one");
     }
 
-    DBG_INFO(GWEN_LOGDOMAIN, "Creating table with %d entries", entriesPerTable);
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Creating table with %d entries", entriesPerTable);
     pTableCurrent=GWEN_IdTable64_Create(entriesPerTable);
     GWEN_IdTable64_AddRuntimeFlags(pTableCurrent, GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY); /* no need to copy later */
 
@@ -383,7 +390,7 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
     if (!(GWEN_IdTable64_GetRuntimeFlags(pTableCurrent) & GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY)) {
       GWEN_IDTABLE64 *pTableCopy;
 
-      DBG_INFO(GWEN_LOGDOMAIN, "Copying table at idx %lu", (unsigned long) idxTableCurrent);
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Copying table at idx %lu", (unsigned long) idxTableCurrent);
       pTableCopy=GWEN_IdTable64_dup(pTableCurrent);
       GWEN_IdList64_SetTableAt(idl, idxTableCurrent, pTableCopy);
       GWEN_IdTable64_free(pTableCopy);
@@ -412,7 +419,7 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
       }
       else {
         /* slower way: find free entry somewhere in the table */
-        DBG_ERROR(GWEN_LOGDOMAIN, "Finding free empty the slow way");
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Finding free empty the slow way");
         for (entryPos=0; entryPos<entriesPerTable; entryPos++) {
           if (ptr[entryPos]==0)
             break;

@@ -65,7 +65,8 @@ extern "C" {
 
 
 
-GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_new(int steps);
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_new(void);
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_newWithSteps(uint64_t steps);
 GWENHYWFAR_API void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl);
 GWENHYWFAR_API void GWEN_IdList64_free(GWEN_IDLIST64 *idl);
 

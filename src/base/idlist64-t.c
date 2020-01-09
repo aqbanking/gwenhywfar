@@ -188,7 +188,7 @@ int test1(void)
   int i;
   uint64_t id;
 
-  idList1=GWEN_IdList64_new(64);
+  idList1=GWEN_IdList64_newWithSteps(64);
   for (i=0; i<100; i++) {
     int64_t rv;
 
@@ -235,7 +235,7 @@ int test2(void)
   uint64_t id;
   int rv;
 
-  idList1=GWEN_IdList64_new(64);
+  idList1=GWEN_IdList64_newWithSteps(64);
   for (i=0; i<100; i++) {
     int64_t rv;
 
@@ -319,7 +319,7 @@ int test3(void)
   GWEN_IDLIST64 *ptrList1;
   int i;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -363,7 +363,7 @@ int test4(void)
   GWEN_IDLIST64 *ptrList2;
   int i;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -410,7 +410,7 @@ int test5(void)
   GWEN_IDLIST64 *ptrList2;
   int i;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -501,7 +501,7 @@ int test6(void)
   GWEN_IDLIST64 *ptrList2;
   int i;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -561,7 +561,7 @@ int test7(void)
   int i;
   int64_t iEntry;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -690,7 +690,7 @@ int test8(void)
   GWEN_IDLIST64 *ptrList2;
   int i;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -833,7 +833,7 @@ int test9(void)
   int i;
   int rv;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2047; i++) {
     int64_t rv;
@@ -936,7 +936,7 @@ int test10(void)
   GWEN_IDLIST64 *ptrList2;
   int i;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
@@ -1028,7 +1028,7 @@ int test11(void)
   int i;
   int rv;
 
-  ptrList1=GWEN_IdList64_new(256);
+  ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for(i=0; i<2048; i++) {
     int64_t rv;
