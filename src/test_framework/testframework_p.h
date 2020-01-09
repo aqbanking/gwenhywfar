@@ -17,7 +17,7 @@
 
 struct GWEN_TEST_FRAMEWORK {
   GWEN_TEST_MODULE *modulesRoot;
-
+  GWEN_DB_NODE *paramsDb;
 };
 
 

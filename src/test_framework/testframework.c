@@ -210,6 +210,8 @@ GWEN_TEST_FRAMEWORK *TestFramework_new()
   tf->modulesRoot=GWEN_Test_Module_new();
   GWEN_Test_Module_SetName(tf->modulesRoot, "Root");
 
+  tf->paramsDb=GWEN_DB_Group_new("params");
+
   return tf;
 }
 
@@ -219,6 +221,8 @@ void TestFramework_free(GWEN_TEST_FRAMEWORK *tf)
 {
   if (tf) {
     GWEN_Test_Module_free(tf->modulesRoot);
+    GWEN_DB_Group_free(tf->paramsDb);
+
     GWEN_FREE_OBJECT(tf);
   }
 }
@@ -231,6 +235,13 @@ GWEN_TEST_MODULE *TestFramework_GetModulesRoot(const GWEN_TEST_FRAMEWORK *tf)
   return tf->modulesRoot;
 }
 
+
+
+GWEN_DB_NODE *TestFramework_GetParamsDb(const GWEN_TEST_FRAMEWORK *tf)
+{
+  assert(tf);
+  return tf->paramsDb;
+}
 
 
 
