@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri Sep 12 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -39,10 +36,9 @@
 #define GWEN_BUFFER_DYNAMIC_STEP 1024
 
 #define GWEN_BUFFER_FLAGS_OWNED      0x0001
-#define GWEN_BUFFER_FLAGS_OWN_SYNCIO 0x0002
 
 #define GWEN_BUFFER_MODE_COPYMASK (\
-  ~(GWEN_BUFFER_FLAGS_OWN_SYNCIO) \
+  ~(0) \
   )
 
 
@@ -58,7 +54,6 @@ struct GWEN_BUFFER {
   uint32_t hardLimit;
   uint32_t step;
   uint32_t bookmarks[GWEN_BUFFER_MAX_BOOKMARKS];
-  GWEN_SYNCIO *syncIo;
   uint32_t _refCount;
 };
 
@@ -68,9 +63,6 @@ static void GWEN_Buffer_AdjustBookmarks(GWEN_BUFFER *bf,
                                         uint32_t pos,
                                         int offset);
 
-
-static int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf);
-static int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf);
 
 
 #endif

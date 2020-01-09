@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri Sep 12 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,7 +41,7 @@ typedef struct GWEN_BUFFER GWEN_BUFFER;
 #endif
 
 #include <gwenhywfar/types.h>
-#include <gwenhywfar/syncio.h>
+//#include <gwenhywfar/syncio.h>
 
 
 #include <stdio.h>
@@ -68,7 +65,6 @@ extern "C" {
 
 #define GWEN_BUFFER_MODE_DYNAMIC          0x0001
 #define GWEN_BUFFER_MODE_ABORT_ON_MEMFULL 0x0002
-#define GWEN_BUFFER_MODE_USE_SYNCIO       0x0010
 #define GWEN_BUFFER_MODE_READONLY         0x0020
 
 #define GWEN_BUFFER_MODE_DEFAULT \
@@ -528,19 +524,6 @@ int GWEN_Buffer_Crop(GWEN_BUFFER *bf,
  */
 GWENHYWFAR_API
 void GWEN_Buffer_OverwriteContent(GWEN_BUFFER *bf, int c);
-
-
-/**
- * Sets the syncio to be used as a source.
- * This io layer is used when a byte is to be returned while the buffer is
- * empty (or the end of the buffer is reached). In such a case the missing
- * bytes are read from this io layer if the mode contains
- * @ref GWEN_BUFFER_MODE_USE_SYNCIO.
- */
-GWENHYWFAR_API
-void GWEN_Buffer_SetSourceSyncIo(GWEN_BUFFER *bf,
-                                 GWEN_SYNCIO *sio,
-                                 int take);
 
 
 /** Print the current content of buffer @c bf into the file @c f. */

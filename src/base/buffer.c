@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Sep 12 2003
-    copyright   : (C) 2003-2010 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -89,10 +89,6 @@ void GWEN_Buffer_free(GWEN_BUFFER *bf)
     if (bf->_refCount==1) {
       if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
         GWEN_Memory_dealloc(bf->realPtr);
-      if (bf->syncIo) {
-        if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO)
-          GWEN_SyncIo_free(bf->syncIo);
-      }
       GWEN_FREE_OBJECT(bf);
     }
     else
@@ -263,15 +259,10 @@ int GWEN_Buffer_SetPos(GWEN_BUFFER *bf, uint32_t i)
   assert(bf);
 
   if (i>=bf->bufferSize) {
-    if (bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO) {
-      bf->pos=i;
-    }
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Position %d outside buffer boundaries (%d bytes)",
-                i, (int)(bf->bufferSize));
-      return GWEN_ERROR_BUFFER_OVERFLOW;
-    }
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Position %d outside buffer boundaries (%d bytes)",
+              i, (int)(bf->bufferSize));
+    return GWEN_ERROR_BUFFER_OVERFLOW;
   }
   bf->pos=i;
   return 0;
@@ -428,68 +419,12 @@ int GWEN_Buffer_AppendByte(GWEN_BUFFER *bf, char c)
 
 
 
-int GWEN_Buffer__FillBuffer_SyncIo(GWEN_BUFFER *bf)
-{
-  if (bf->syncIo) {
-    uint32_t toread;
-    int rv;
-
-    toread=bf->pos-bf->bytesUsed+1;
-    if (GWEN_Buffer_AllocRoom(bf, toread+1)) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Buffer too small");
-      return GWEN_ERROR_GENERIC;
-    }
-    rv=GWEN_SyncIo_ReadForced(bf->syncIo,
-                              (uint8_t *)(bf->ptr+bf->bytesUsed),
-                              toread);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-    else if (rv==0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
-      return GWEN_ERROR_EOF;
-    }
-
-    bf->bytesUsed+=rv;
-  }
-  else {
-    DBG_DEBUG(GWEN_LOGDOMAIN,
-              "End of used area reached and no SYNCIO (%d bytes)",
-              bf->pos);
-    return GWEN_ERROR_EOF;
-  }
-  return 0;
-}
-
-
-
-int GWEN_Buffer__FillBuffer(GWEN_BUFFER *bf)
-{
-  assert(bf);
-  if (bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)
-    return GWEN_Buffer__FillBuffer_SyncIo(bf);
-  else {
-    DBG_DEBUG(GWEN_LOGDOMAIN,
-              "End of used area reached (%d bytes)", bf->pos);
-    return GWEN_ERROR_EOF;
-  }
-}
-
-
-
 int GWEN_Buffer_PeekByte(GWEN_BUFFER *bf)
 {
   assert(bf);
 
   if (bf->pos>=bf->bytesUsed) {
-    int rv;
-
-    rv=GWEN_Buffer__FillBuffer(bf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
+    return GWEN_ERROR_EOF;
   }
 
   return (unsigned char)(bf->ptr[bf->pos]);
@@ -502,13 +437,7 @@ int GWEN_Buffer_ReadByte(GWEN_BUFFER *bf)
   assert(bf);
 
   if (bf->pos>=bf->bytesUsed) {
-    int rv;
-
-    rv=GWEN_Buffer__FillBuffer(bf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
+    return GWEN_ERROR_EOF;
   }
 
   return (unsigned char)(bf->ptr[bf->pos++]);
@@ -521,12 +450,10 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, uint32_t i)
   assert(bf);
 
   if (i+bf->pos>=bf->bufferSize) {
-    if (!(bf->mode & GWEN_BUFFER_MODE_USE_SYNCIO)) {
-      DBG_DEBUG(GWEN_LOGDOMAIN,
-                "Position %d outside buffer boundaries (%d bytes)\n"
-                "Incrementing anyway",
-                i+bf->pos, bf->bufferSize);
-    }
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+	      "Position %d outside buffer boundaries (%d bytes)\n"
+	      "Incrementing anyway",
+	      i+bf->pos, bf->bufferSize);
   }
 
   bf->pos+=i;
@@ -748,12 +675,8 @@ int GWEN_Buffer_ReadBytes(GWEN_BUFFER *bf, char *buffer, uint32_t *size)
     int j;
     int srcLeft;
 
-    if (bf->pos>=bf->bytesUsed) {
-      if (GWEN_Buffer__FillBuffer(bf)) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Could not fill buffer, but that's ok");
-        break;
-      }
-    }
+    if (bf->pos>=bf->bytesUsed)
+      break;
 
     srcLeft=bf->bytesUsed - bf->pos;
     if (srcLeft==0)
@@ -1075,25 +998,6 @@ int GWEN_Buffer_InsertString(GWEN_BUFFER *bf,
   assert(bf);
   assert(buffer);
   return GWEN_Buffer_InsertBytes(bf, buffer, strlen(buffer));
-}
-
-
-
-void GWEN_Buffer_SetSourceSyncIo(GWEN_BUFFER *bf,
-                                 GWEN_SYNCIO *sio,
-                                 int take)
-{
-  assert(bf);
-  if (bf->syncIo) {
-    if (bf->flags & GWEN_BUFFER_FLAGS_OWN_SYNCIO) {
-      GWEN_SyncIo_free(bf->syncIo);
-    }
-  }
-  if (take)
-    bf->flags|=GWEN_BUFFER_FLAGS_OWN_SYNCIO;
-  else
-    bf->flags&=~GWEN_BUFFER_FLAGS_OWN_SYNCIO;
-  bf->syncIo=sio;
 }
 
 

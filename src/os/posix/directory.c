@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 03 2002
-    copyright   : (C) 2002-2010 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,6 +44,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/memory.h>
+
 
 
 static char gwen_directory_posix__homedir[256];
