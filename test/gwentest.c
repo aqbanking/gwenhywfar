@@ -39,6 +39,7 @@
 #include <gwenhywfar/sar.h>
 #include <gwenhywfar/param.h>
 #include <gwenhywfar/simpleptrlist.h>
+#include <gwenhywfar/idlist64.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
@@ -6120,6 +6121,9 @@ int main(int argc, char **argv)
   }
   else if (strcasecmp(argv[1], "simplePtr")==0) {
     rv=GWEN_SimplePtrList_Test();
+  }
+  else if (strcasecmp(argv[1], "idList64")==0) {
+    rv=GWEN_IdList64_Test();
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

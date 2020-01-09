@@ -1,6 +1,7 @@
 
 idList64:
- - base on GWEN_SimplePtrList (use AQFS_TABLE from AqDatabase as guide)
+ - add GWEN_IdList64_dup()
+
 
 modtest:
  - create a new module test

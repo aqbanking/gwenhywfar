@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,21 +30,27 @@
 #ifndef GWENHYWFAR_IDLIST64_H
 #define GWENHYWFAR_IDLIST64_H
 
+
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/types.h>
+#include <gwenhywfar/simpleptrlist.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef struct GWEN_IDLIST64 GWEN_IDLIST64;
+typedef GWEN_SIMPLEPTRLIST GWEN_IDLIST64;
 typedef struct GWEN_IDLIST64_ITERATOR GWEN_IDLIST64_ITERATOR;
 #ifdef __cplusplus
 }
 #endif
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
 
 /**
  * @defgroup MOD_IDLIST64 ID list module
@@ -56,121 +62,54 @@ extern "C" {
  * throughout Gwen it is less memory consuming.
  */
 /*@{*/
-/**
- * Constructor.
- */
-GWENHYWFAR_API
-GWEN_IDLIST64 *GWEN_IdList64_new(void);
+
+
+
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_new(void);
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_newWithSteps(uint64_t steps);
+GWENHYWFAR_API void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl);
+GWENHYWFAR_API void GWEN_IdList64_free(GWEN_IDLIST64 *idl);
+
+GWENHYWFAR_API void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl);
+
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *oldList);
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_IdList64_LazyCopy(GWEN_IDLIST64 *oldList);
 
 /**
- * Destructor.
+ * Adds an id to the list, returns its index. This function does no doublecheck.
  */
-GWENHYWFAR_API
-void GWEN_IdList64_free(GWEN_IDLIST64 *idl);
-
-
-
-GWENHYWFAR_API
-void GWEN_IdList64_Attach(GWEN_IDLIST64 *idl);
-
-
-/**
- * Returns a new id list which contains all the ids of the given list
- * in the same order. However, the list returned might be more
- * is compact (i.e. it has fewer wholes), so the positions of ids
- * within the list might have changed!.
- */
-GWENHYWFAR_API
-GWEN_IDLIST64 *GWEN_IdList64_dup(const GWEN_IDLIST64 *idl);
-
-
-/**
- * Removes all ids from the list thus leaving it empty.
- */
-GWENHYWFAR_API
-void GWEN_IdList64_Clear(GWEN_IDLIST64 *idl);
-
-/**
- * Adds an id to the list. This function does no doublecheck.
- */
-GWENHYWFAR_API
-int GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id);
+GWENHYWFAR_API int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t id);
 
 /**
  * Removes the first occurrence of the given id.
  * @return 0 if deleted, !=0 if the id wasn't found
  */
-GWENHYWFAR_API
-int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id);
+GWENHYWFAR_API int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t id);
 
 /**
  * Checks whether the given id exists in the idlist.
- * @return 0 if found, !=0 otherwise
+ * @return 1 if found, 0 otherwise
  */
-GWENHYWFAR_API
-int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id);
+GWENHYWFAR_API int GWEN_IdList64_HasId(const GWEN_IDLIST64 *idl, uint64_t id);
 
-#ifndef NO_DEPRECATED_SYMBOLS
-/**
- * @deprecated
- * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
- * instead.
- */
-GWENHYWFAR_API DEPRECATED
-uint64_t GWEN_IdList64_GetFirstId(GWEN_IDLIST64 *idl);
+GWENHYWFAR_API int64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index);
 
-/**
- * @deprecated
- * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
- * instead.
- */
-GWENHYWFAR_API DEPRECATED
-uint64_t GWEN_IdList64_GetNextId(GWEN_IDLIST64 *idl);
 
-/**
- * @deprecated
- * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
- * instead.
- */
-GWENHYWFAR_API DEPRECATED
-uint64_t GWEN_IdList64_GetFirstId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
-
-/**
- * @deprecated
- * This function is deprecated, please use @ref GWEN_IdList64_Iterator_new
- * instead.
- */
-GWENHYWFAR_API DEPRECATED
-uint64_t GWEN_IdList64_GetNextId2(const GWEN_IDLIST64 *idl, uint64_t *hdl);
-#endif  // ifndef NO_DEPRECATED_SYMBOLS
-
+GWENHYWFAR_API uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl);
 
 /**
  * Sorts the ids in ascending order
  */
-GWENHYWFAR_API
-int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl);
+GWENHYWFAR_API int GWEN_IdList64_Sort(GWEN_IDLIST64 *idl);
 
 
-GWENHYWFAR_API
-int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl);
+GWENHYWFAR_API int GWEN_IdList64_ReverseSort(GWEN_IDLIST64 *idl);
 
 
-/**
- * Always append id at the end of the list.
- */
-GWENHYWFAR_API
-int GWEN_IdList64_AppendId(GWEN_IDLIST64 *idl, uint64_t id);
+GWENHYWFAR_API int GWEN_IdList64_Test(void);
 
-GWENHYWFAR_API
-uint64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t index);
-
-
-GWENHYWFAR_API
-uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl);
 
 /*@}*/
-
 
 
 
@@ -182,19 +121,16 @@ uint64_t GWEN_IdList64_GetEntryCount(const GWEN_IDLIST64 *idl);
  */
 /*@{*/
 
-GWENHYWFAR_API
-GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl);
+GWENHYWFAR_API GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl);
 
-GWENHYWFAR_API
-void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it);
+GWENHYWFAR_API void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it);
 
-GWENHYWFAR_API
-uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it);
+GWENHYWFAR_API uint64_t GWEN_IdList64_Iterator_GetFirstId(GWEN_IDLIST64_ITERATOR *it);
 
-GWENHYWFAR_API
-uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it);
+GWENHYWFAR_API uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it);
 
 /*@}*/
+
 
 
 #ifdef __cplusplus

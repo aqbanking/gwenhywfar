@@ -88,6 +88,15 @@ GWENHYWFAR_API
 void GWEN_SimplePtrList_SetUserIntData(GWEN_SIMPLEPTRLIST *pl, int i);
 
 
+GWENHYWFAR_API void GWEN_SimplePtrList_SetUserCounter(GWEN_SIMPLEPTRLIST *pl, uint64_t i);
+
+GWENHYWFAR_API uint64_t GWEN_SimplePtrList_GetUserCounter(const GWEN_SIMPLEPTRLIST *pl);
+
+GWENHYWFAR_API void GWEN_SimplePtrList_IncUserCounter(GWEN_SIMPLEPTRLIST *pl);
+
+GWENHYWFAR_API int GWEN_SimplePtrList_DecUserCounter(GWEN_SIMPLEPTRLIST *pl);
+
+
 GWENHYWFAR_API int GWEN_SimplePtrList_Test(void);
 
 

@@ -178,6 +178,49 @@ void GWEN_SimplePtrList_SetUserIntData(GWEN_SIMPLEPTRLIST *pl, int i)
 
 
 
+void GWEN_SimplePtrList_SetUserCounter(GWEN_SIMPLEPTRLIST *pl, uint64_t i)
+{
+  assert(pl);
+  assert(pl->refCount);
+  pl->userCounter=i;
+}
+
+
+
+uint64_t GWEN_SimplePtrList_GetUserCounter(const GWEN_SIMPLEPTRLIST *pl)
+{
+  assert(pl);
+  assert(pl->refCount);
+  return pl->userCounter;
+}
+
+
+
+void GWEN_SimplePtrList_IncUserCounter(GWEN_SIMPLEPTRLIST *pl)
+{
+  assert(pl);
+  assert(pl->refCount);
+  pl->userCounter++;
+}
+
+
+
+int GWEN_SimplePtrList_DecUserCounter(GWEN_SIMPLEPTRLIST *pl)
+{
+  assert(pl);
+  assert(pl->refCount);
+  if (pl->userCounter) {
+    pl->userCounter--;
+    return 0;
+  }
+  else
+    return GWEN_ERROR_INVALID; /* counter already is 0 */
+}
+
+
+
+
+
 
 void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
 {
@@ -187,10 +230,10 @@ void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
     return pl->entryList->entries[idx];
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN,
-             "Index outside boundaries (%lu >= %lu)",
-             (unsigned long) idx,
-             (unsigned long) (pl->usedEntries));
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Index outside boundaries (%lu >= %lu)",
+              (unsigned long) idx,
+              (unsigned long) (pl->usedEntries));
   }
   return NULL;
 }
@@ -471,7 +514,7 @@ void _attachToPtrList(INTERNAL_PTRLIST *entries)
     entries->refCounter++;
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN, "Null pointer or already freed");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Null pointer or already freed");
   }
 }
 
