@@ -30,8 +30,6 @@ GWENHYWFAR_API GWEN_TEST_MODULE *TestFramework_GetModulesRoot(const GWEN_TEST_FR
 
 GWENHYWFAR_API void TestFramework_free(GWEN_TEST_FRAMEWORK *tf);
 
-GWENHYWFAR_API GWEN_DB_NODE *TestFramework_GetParamsDb(const GWEN_TEST_FRAMEWORK *tf);
-
 
 
 #endif

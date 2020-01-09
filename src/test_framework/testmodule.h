@@ -45,6 +45,12 @@ extern "C" {
 
 <p>Set this property with @ref GWEN_Test_Module_SetResult(), get it with @ref GWEN_Test_Module_GetResult().</p>
 
+
+@anchor GWEN_TEST_MODULE_paramsDb
+<h2>paramsDb</h2>
+
+<p>Set this property with @ref GWEN_Test_Module_SetParamsDb(), get it with @ref GWEN_Test_Module_GetParamsDb().</p>
+
 */
 
 /* needed system headers */
@@ -141,6 +147,8 @@ GWENHYWFAR_API GWEN_TEST_MODULE *GWEN_Test_Module_Tree2_GetById(const GWEN_TEST_
 
 GWENHYWFAR_API GWEN_TEST_MODULE * GWEN_Test_Module_AddTest(GWEN_TEST_MODULE *st, const char *tName, GWEN_TEST_MODULE_TEST_FN fn, const char *tDescr);
 GWENHYWFAR_API GWEN_TEST_MODULE * GWEN_Test_Module_AddModule(GWEN_TEST_MODULE *st, const char *tName, const char *tDescr);
+GWENHYWFAR_API const char* GWEN_Test_Module_GetCharParam(const GWEN_TEST_MODULE *st, const char *paramName, const char *defVal);
+GWENHYWFAR_API void GWEN_Test_Module_SetCharParam(GWEN_TEST_MODULE *st, const char *paramName, const char *val);
 /* end-headers */
 
 

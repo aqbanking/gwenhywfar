@@ -33,6 +33,7 @@ GWEN_TEST_MODULE *GWEN_Test_Module_new(void) {
   p_struct->name=NULL;
   p_struct->description=NULL;
   p_struct->result=0;
+  p_struct->paramsDb=NULL;
   /* virtual functions */
 
   return p_struct;
@@ -47,6 +48,7 @@ void GWEN_Test_Module_free(GWEN_TEST_MODULE *p_struct) {
   /* members */
     free(p_struct->name); p_struct->name=NULL;
     free(p_struct->description); p_struct->description=NULL;
+    GWEN_DB_Group_free(p_struct->paramsDb); p_struct->paramsDb=NULL;
     p_struct->_refCount=0;
     GWEN_FREE_OBJECT(p_struct);
   }
@@ -90,6 +92,15 @@ GWEN_TEST_MODULE *GWEN_Test_Module_dup(const GWEN_TEST_MODULE *p_src) {
   /* member "result" */
   p_struct->result=p_src->result;
 
+  /* member "paramsDb" */
+  if (p_struct->paramsDb) {
+    GWEN_DB_Group_free(p_struct->paramsDb); p_struct->paramsDb=NULL;
+    p_struct->paramsDb=NULL;
+  }
+  if (p_src->paramsDb) {
+    p_struct->paramsDb=GWEN_DB_Group_dup(p_src->paramsDb);
+  }
+
   return p_struct;
 }
 
@@ -120,6 +131,15 @@ GWEN_TEST_MODULE *GWEN_Test_Module_copy(GWEN_TEST_MODULE *p_struct, const GWEN_T
   /* member "result" */
   p_struct->result=p_src->result;
 
+  /* member "paramsDb" */
+  if (p_struct->paramsDb) {
+    GWEN_DB_Group_free(p_struct->paramsDb); p_struct->paramsDb=NULL;
+    p_struct->paramsDb=NULL;
+  }
+  if (p_src->paramsDb) {
+    p_struct->paramsDb=GWEN_DB_Group_dup(p_src->paramsDb);
+  }
+
   return p_struct;
 }
 
@@ -141,6 +161,11 @@ const char *GWEN_Test_Module_GetDescription(const GWEN_TEST_MODULE *p_struct) {
 int GWEN_Test_Module_GetResult(const GWEN_TEST_MODULE *p_struct) {
   assert(p_struct);
   return p_struct->result;
+}
+
+const GWEN_DB_NODE *GWEN_Test_Module_GetParamsDb(const GWEN_TEST_MODULE *p_struct) {
+  assert(p_struct);
+  return p_struct->paramsDb;
 }
 
 void GWEN_Test_Module_SetId(GWEN_TEST_MODULE *p_struct, uint32_t p_src) {
@@ -177,6 +202,19 @@ void GWEN_Test_Module_SetDescription(GWEN_TEST_MODULE *p_struct, const char *p_s
 void GWEN_Test_Module_SetResult(GWEN_TEST_MODULE *p_struct, int p_src) {
   assert(p_struct);
   p_struct->result=p_src;
+}
+
+void GWEN_Test_Module_SetParamsDb(GWEN_TEST_MODULE *p_struct, const GWEN_DB_NODE *p_src) {
+  assert(p_struct);
+  if (p_struct->paramsDb) {
+    GWEN_DB_Group_free(p_struct->paramsDb); p_struct->paramsDb=NULL;
+  }
+  if (p_src) {
+    p_struct->paramsDb=GWEN_DB_Group_dup(p_src);
+  }
+  else {
+    p_struct->paramsDb=NULL;
+  }
 }
 
 /* code for virtual functions */
@@ -222,6 +260,14 @@ void GWEN_Test_Module_ReadDb(GWEN_TEST_MODULE *p_struct, GWEN_DB_NODE *p_db) {
   /* member "result" */
   p_struct->result=GWEN_DB_GetIntValue(p_db, "result", 0, 0);
 
+  /* member "paramsDb" */
+  if (p_struct->paramsDb) {
+    GWEN_DB_Group_free(p_struct->paramsDb); p_struct->paramsDb=NULL;
+  }
+  { GWEN_DB_NODE *dbSrc; dbSrc=GWEN_DB_GetGroup(p_db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "paramsDb"); if (dbSrc) { p_struct->paramsDb=GWEN_DB_Group_dup(dbSrc); } else p_struct->paramsDb=NULL; }
+  if (p_struct->paramsDb==NULL) {  p_struct->paramsDb=NULL;
+  }
+
 }
 
 int GWEN_Test_Module_WriteDb(const GWEN_TEST_MODULE *p_struct, GWEN_DB_NODE *p_db) {
@@ -251,6 +297,13 @@ int GWEN_Test_Module_WriteDb(const GWEN_TEST_MODULE *p_struct, GWEN_DB_NODE *p_d
 
   /* member "result" */
   p_rv=GWEN_DB_SetIntValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "result", p_struct->result);
+  if (p_rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
+    return p_rv;
+  }
+
+  /* member "paramsDb" */
+  if (p_struct->paramsDb){ GWEN_DB_NODE *dbCopy; dbCopy=GWEN_DB_GetGroup(p_db, GWEN_DB_FLAGS_DEFAULT, "paramsDb"); assert(dbCopy); p_rv=GWEN_DB_AddGroupChildren(dbCopy, p_struct->paramsDb); } else { GWEN_DB_DeleteGroup(p_db, "paramsDb"); p_rv=0; }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -311,6 +364,29 @@ GWEN_TEST_MODULE * GWEN_Test_Module_AddModule(GWEN_TEST_MODULE *st, const char *
  
  GWEN_Test_Module_Tree2_AddChild(st, mod); 
  return mod; 
+ }
+const char* GWEN_Test_Module_GetCharParam(const GWEN_TEST_MODULE *st, const char *paramName, const char *defVal) 
+ { 
+ assert(st); 
+ while(st) { 
+ if (st->paramsDb) { 
+ const char *s; 
+ 
+ s=GWEN_DB_GetCharValue(st->paramsDb, paramName, 0, NULL); 
+ if (s) 
+ return s; 
+ } 
+ st=GWEN_Test_Module_Tree2_GetParent(st); 
+ } 
+ 
+ return defVal; 
+ }
+void GWEN_Test_Module_SetCharParam(GWEN_TEST_MODULE *st, const char *paramName, const char *val) 
+ { 
+ assert(st); 
+ if (st->paramsDb==NULL) 
+ st->paramsDb=GWEN_DB_Group_new("params"); 
+ GWEN_DB_SetCharValue(st->paramsDb, GWEN_DB_FLAGS_OVERWRITE_VARS, paramName, val); 
  }
 
 /* code headers */

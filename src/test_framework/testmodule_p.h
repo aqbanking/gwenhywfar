@@ -23,8 +23,19 @@ struct GWEN_TEST_MODULE {
   char *name;
   char *description;
   int result;
+  GWEN_DB_NODE *paramsDb;
   GWEN_TEST_MODULE_TEST_FN testFn;
 };
+
+/** Getter.
+ * Use this function to get the member "paramsDb" (see @ref GWEN_TEST_MODULE_paramsDb)
+*/
+const GWEN_DB_NODE *GWEN_Test_Module_GetParamsDb(const GWEN_TEST_MODULE *p_struct);
+
+/** Setter.
+ * Use this function to set the member "paramsDb" (see @ref GWEN_TEST_MODULE_paramsDb)
+*/
+void GWEN_Test_Module_SetParamsDb(GWEN_TEST_MODULE *p_struct, const GWEN_DB_NODE *p_src);
 
 #ifdef __cplusplus
 }

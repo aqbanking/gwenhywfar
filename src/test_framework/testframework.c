@@ -77,7 +77,7 @@ GWEN_GUI *_setupGui(GWEN_TEST_FRAMEWORK *tf, int argc, char **argv)
   s=GWEN_DB_GetCharValue(dbArgs, "logFile", 0, NULL);
   if (s && *s)
     TestGui_SetLogFile(gui, s);
-  i=GWEN_DB_GetIntValue(dbArgs, "logLastLines", 0, 100);
+  i=GWEN_DB_GetIntValue(dbArgs, "logLastLines", 0, 0);
   TestGui_SetLogLastX(gui, i);
 
   return gui;
@@ -210,8 +210,6 @@ GWEN_TEST_FRAMEWORK *TestFramework_new()
   tf->modulesRoot=GWEN_Test_Module_new();
   GWEN_Test_Module_SetName(tf->modulesRoot, "Root");
 
-  tf->paramsDb=GWEN_DB_Group_new("params");
-
   return tf;
 }
 
@@ -221,7 +219,6 @@ void TestFramework_free(GWEN_TEST_FRAMEWORK *tf)
 {
   if (tf) {
     GWEN_Test_Module_free(tf->modulesRoot);
-    GWEN_DB_Group_free(tf->paramsDb);
 
     GWEN_FREE_OBJECT(tf);
   }
@@ -233,14 +230,6 @@ GWEN_TEST_MODULE *TestFramework_GetModulesRoot(const GWEN_TEST_FRAMEWORK *tf)
 {
   assert(tf);
   return tf->modulesRoot;
-}
-
-
-
-GWEN_DB_NODE *TestFramework_GetParamsDb(const GWEN_TEST_FRAMEWORK *tf)
-{
-  assert(tf);
-  return tf->paramsDb;
 }
 
 
@@ -270,8 +259,8 @@ GWEN_DB_NODE *_readCommandLine(int argc, char **argv)
       1,                            /* maxnum */
       0,                            /* short option */
       "logLastLines",                    /* long option */
-      "Set size of log line buffer (default: 100 lines)", /* short description */
-      "Set size of log line buffer (default: 100 lines)"  /* long description */
+      "Set size of log line buffer (default: unlimited number of lines)", /* short description */
+      "Set size of log line buffer (default: unlimited number of lines)"  /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */

@@ -87,6 +87,66 @@
         </inline>
 
 
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <descr>
+            Add a submodule below the given module.
+          </descr>
+          <content>
+             $(api) const char* $(struct_prefix)_GetCharParam(const $(struct_type) *st, const char *paramName, const char *defVal);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             const char* $(struct_prefix)_GetCharParam(const $(struct_type) *st, const char *paramName, const char *defVal) \n
+             {                                                                                                              \n
+               assert(st);                                                                                                  \n
+               while(st) {                                                                                                  \n
+                 if (st->paramsDb) {                                                                                        \n
+                   const char *s;                                                                                           \n
+                                                                                                                            \n
+                   s=GWEN_DB_GetCharValue(st->paramsDb, paramName, 0, NULL);                                                \n
+                   if (s)                                                                                                   \n
+                     return s;                                                                                              \n
+                 }                                                                                                          \n
+                 st=$(struct_prefix)_Tree2_GetParent(st);                                                                   \n
+               }                                                                                                            \n
+                                                                                                                            \n
+               return defVal;                                                                                               \n
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <descr>
+          </descr>
+          <content>
+             $(api) void $(struct_prefix)_SetCharParam($(struct_type) *st, const char *paramName, const char *val);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetCharParam($(struct_type) *st, const char *paramName, const char *val)                 \n
+             {                                                                                                              \n
+               assert(st);                                                                                                  \n
+               if (st->paramsDb==NULL)                                                                                      \n
+                 st->paramsDb=GWEN_DB_Group_new("params");                                                                  \n
+               GWEN_DB_SetCharValue(st->paramsDb, GWEN_DB_FLAGS_OVERWRITE_VARS, paramName, val);                            \n
+             }
+          </content>
+        </inline>
+
+
       </inlines>
 
 
@@ -134,6 +194,12 @@
         <access>public</access>
       </member>
 
+      <member name="paramsDb" type="GWEN_DB_NODE" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <flags>own</flags>
+        <access>private</access>
+      </member>
 
 
     </members>
