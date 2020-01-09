@@ -22,6 +22,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef GWEN_TREE2_H
+#define GWEN_TREE2_H
+
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/types.h>
@@ -34,9 +37,6 @@
 # define GWEN_DUMMY_EMPTY_ARG
 #endif
 
-
-#ifndef GWEN_TREE2_H
-#define GWEN_TREE2_H
 
 
 #ifdef __cplusplus
