@@ -422,8 +422,8 @@ GWEN_DB_NODE *Typemaker2_Builder_CreateDbForCall(TYPEMAKER2_BUILDER *tb,
 
 
 
-void addMemberInfoToCallDb(TYPEMAKER2_BUILDER *tb,
-                           TYPEMAKER2_TYPE *ty,
+void addMemberInfoToCallDb(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
+                           GWEN_UNUSED TYPEMAKER2_TYPE *ty,
                            TYPEMAKER2_MEMBER *tm,
                            GWEN_DB_NODE *db,
                            int withTypePrefix)
@@ -883,7 +883,7 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
 
 
 
-int Typemaker2_Builder_WriteTypedefFile(TYPEMAKER2_BUILDER *tb,
+int Typemaker2_Builder_WriteTypedefFile(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
                                         TYPEMAKER2_TYPE *ty,
                                         const char *fileName)
 {
@@ -924,7 +924,7 @@ int Typemaker2_Builder_WriteTypedefFile(TYPEMAKER2_BUILDER *tb,
 
 
 
-int Typemaker2_Builder_WriteTypedefFile_List1(TYPEMAKER2_BUILDER *tb,
+int Typemaker2_Builder_WriteTypedefFile_List1(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
                                               TYPEMAKER2_TYPE *ty,
                                               const char *fileName)
 {
@@ -967,7 +967,7 @@ int Typemaker2_Builder_WriteTypedefFile_List1(TYPEMAKER2_BUILDER *tb,
 
 
 
-int Typemaker2_Builder_WriteTypedefFile_List2(TYPEMAKER2_BUILDER *tb,
+int Typemaker2_Builder_WriteTypedefFile_List2(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
                                               TYPEMAKER2_TYPE *ty,
                                               const char *fileName)
 {
@@ -1010,7 +1010,7 @@ int Typemaker2_Builder_WriteTypedefFile_List2(TYPEMAKER2_BUILDER *tb,
 
 
 
-int Typemaker2_Builder_WriteTypedefFile_Tree(TYPEMAKER2_BUILDER *tb,
+int Typemaker2_Builder_WriteTypedefFile_Tree(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
                                              TYPEMAKER2_TYPE *ty,
                                              const char *fileName)
 {
@@ -1053,7 +1053,7 @@ int Typemaker2_Builder_WriteTypedefFile_Tree(TYPEMAKER2_BUILDER *tb,
 
 
 
-int Typemaker2_Builder_WriteTypedefFile_Tree2(TYPEMAKER2_BUILDER *tb,
+int Typemaker2_Builder_WriteTypedefFile_Tree2(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
                                               TYPEMAKER2_TYPE *ty,
                                               const char *fileName)
 {
@@ -1096,7 +1096,7 @@ int Typemaker2_Builder_WriteTypedefFile_Tree2(TYPEMAKER2_BUILDER *tb,
 
 
 
-int Typemaker2_Builder_WriteTypedefFile_IdMap(TYPEMAKER2_BUILDER *tb,
+int Typemaker2_Builder_WriteTypedefFile_IdMap(GWEN_UNUSED TYPEMAKER2_BUILDER *tb,
                                               TYPEMAKER2_TYPE *ty,
                                               const char *fileName)
 {
