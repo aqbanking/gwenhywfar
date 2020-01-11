@@ -95,7 +95,7 @@ GWEN_DIALOG *GWEN_DlgMessage_new(uint32_t flags,
 
 
 
-void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_DlgMessage_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_DLGMSG *xdlg;
 

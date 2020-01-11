@@ -14,9 +14,9 @@
 static GWENHYWFAR_CB
 int Gtk3Gui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int value,
-                                     int doSignal)
+                                     GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -53,7 +53,7 @@ int Gtk3Gui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int defaultValue)
 {
   GtkWidget *g;
@@ -89,9 +89,9 @@ int Gtk3Gui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
                                       GWEN_DIALOG_PROPERTY prop,
-                                      int index,
+                                      GWEN_UNUSED int index,
                                       const char *value,
-                                      int doSignal)
+                                      GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -129,7 +129,7 @@ int Gtk3Gui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 const char *Gtk3Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
                                               GWEN_DIALOG_PROPERTY prop,
-                                              int index,
+                                              GWEN_UNUSED int index,
                                               const char *defaultValue)
 {
   GtkWidget *g;
@@ -171,7 +171,7 @@ const char *Gtk3Gui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk3Gui_WTextEdit_Changed_handler(GtkTextBuffer *buffer, gpointer data)
+static void Gtk3Gui_WTextEdit_Changed_handler(GWEN_UNUSED GtkTextBuffer *buffer, gpointer data)
 {
   GWEN_WIDGET *w;
   int rv;

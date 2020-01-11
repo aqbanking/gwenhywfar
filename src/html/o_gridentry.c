@@ -41,7 +41,7 @@ HTML_OBJECT *HtmlObject_GridEntry_new(GWEN_XML_CONTEXT *ctx)
 
 
 
-void GWENHYWFAR_CB HtmlObject_GridEntry_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB HtmlObject_GridEntry_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   OBJECT_GRIDENTRY *xo;
 

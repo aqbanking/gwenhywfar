@@ -14,9 +14,9 @@
 static GWENHYWFAR_CB
 int Gtk2Gui_WCheckBox_SetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int value,
-                                     int doSignal)
+                                     GWEN_UNUSED int doSignal)
 {
   GtkButton *g;
 
@@ -57,7 +57,7 @@ int Gtk2Gui_WCheckBox_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WCheckBox_GetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int defaultValue)
 {
   GtkButton *g;
@@ -95,9 +95,9 @@ int Gtk2Gui_WCheckBox_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WCheckBox_SetCharProperty(GWEN_WIDGET *w,
                                       GWEN_DIALOG_PROPERTY prop,
-                                      int index,
+                                      GWEN_UNUSED int index,
                                       const char *value,
-                                      int doSignal)
+                                      GWEN_UNUSED int doSignal)
 {
   GtkButton *g;
 
@@ -123,7 +123,7 @@ int Gtk2Gui_WCheckBox_SetCharProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 const char *Gtk2Gui_WCheckBox_GetCharProperty(GWEN_WIDGET *w,
                                               GWEN_DIALOG_PROPERTY prop,
-                                              int index,
+                                              GWEN_UNUSED int index,
                                               const char *defaultValue)
 {
   GtkButton *g;
@@ -146,7 +146,7 @@ const char *Gtk2Gui_WCheckBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk2Gui_WCheckBox_Toggled_handler(GtkButton *button, gpointer data)
+static void Gtk2Gui_WCheckBox_Toggled_handler(GWEN_UNUSED GtkButton *button, gpointer data)
 {
   GWEN_WIDGET *w;
   int rv;

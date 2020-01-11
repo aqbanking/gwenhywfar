@@ -7,7 +7,7 @@
 #include "derivedclass.h"
 #include <assert.h>
 
-int main(int argc, char *argv[])
+int main(GWEN_UNUSED int argc, GWEN_UNUSED char *argv[])
 {
   BASECLASS *object = DerivedClass_new("some data");
   assert(object);

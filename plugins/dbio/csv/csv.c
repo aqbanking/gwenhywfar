@@ -99,7 +99,7 @@ int GWEN_DBIO_CSV_Export(GWEN_DBIO *dbio,
                          GWEN_SYNCIO *sio,
                          GWEN_DB_NODE *data,
                          GWEN_DB_NODE *cfg,
-                         uint32_t flags)
+                         GWEN_UNUSED uint32_t flags)
 {
   GWEN_DB_NODE *colgr;
   GWEN_DB_NODE *n;
@@ -336,7 +336,7 @@ int GWEN_DBIO_CSV_Import(GWEN_DBIO *dbio,
                          GWEN_SYNCIO *sio,
                          GWEN_DB_NODE *data,
                          GWEN_DB_NODE *cfg,
-                         uint32_t flags)
+                         GWEN_UNUSED uint32_t flags)
 {
   GWEN_DB_NODE *colgr;
   int delimiter;
@@ -593,7 +593,7 @@ int GWEN_DBIO_CSV__ReadLine(GWEN_FAST_BUFFER *fb, GWEN_STRINGLIST *sl)
 
 
 
-GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *fname)
+GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_UNUSED GWEN_DBIO *dbio, const char *fname)
 {
   int i;
   int rv;
@@ -646,7 +646,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_CSV_CheckFile(GWEN_DBIO *dbio, const char *
 
 
 
-GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_PLUGIN *pl)
+GWEN_DBIO *GWEN_DBIO_CSV_Factory(GWEN_UNUSED GWEN_PLUGIN *pl)
 {
   GWEN_DBIO *dbio;
 

@@ -17,7 +17,7 @@ int Gtk3Gui_WListBox_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
-                                    int doSignal)
+                                    GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -227,9 +227,9 @@ int Gtk3Gui_WListBox_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WListBox_SetCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      const char *value,
-                                     int doSignal)
+                                     GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -482,7 +482,7 @@ const char *Gtk3Gui_WListBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk3Gui_WListBox_CursorChanged_handler(GtkTreeView *g, gpointer data)
+static void Gtk3Gui_WListBox_CursorChanged_handler(GWEN_UNUSED GtkTreeView *g, gpointer data)
 {
   GWEN_WIDGET *w;
   int rv;

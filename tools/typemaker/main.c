@@ -64,9 +64,9 @@ int write_xml_to_bio(GWEN_XMLNODE *n, GWEN_SYNCIO *sio, uint32_t flags)
 
 
 
-int write_h_header(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_h_header(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_SYNCIO *sio,
-                   const char *where)
+                   GWEN_UNUSED const char *where)
 {
   int isSys;
   int err;
@@ -637,7 +637,7 @@ int write_h_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 
 
-int write_h_funcs(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_h_funcs(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                   GWEN_SYNCIO *sio,
                   const char *acc)
 {

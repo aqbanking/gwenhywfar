@@ -14,9 +14,9 @@
 static GWENHYWFAR_CB
 int Gtk2Gui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
-                                        int index,
+                                        GWEN_UNUSED int index,
                                         int value,
-                                        int doSignal)
+                                        GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
@@ -56,7 +56,7 @@ int Gtk2Gui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
                                         GWEN_DIALOG_PROPERTY prop,
-                                        int index,
+                                        GWEN_UNUSED int index,
                                         int defaultValue)
 {
   GtkWidget *g;  /* text view */
@@ -98,9 +98,9 @@ int Gtk2Gui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
                                          GWEN_DIALOG_PROPERTY prop,
-                                         int index,
+                                         GWEN_UNUSED int index,
                                          const char *value,
-                                         int doSignal)
+                                         GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
@@ -148,7 +148,7 @@ int Gtk2Gui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 const char *Gtk2Gui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
                                                  GWEN_DIALOG_PROPERTY prop,
-                                                 int index,
+                                                 GWEN_UNUSED int index,
                                                  const char *defaultValue)
 {
   GtkWidget *g;  /* text view */

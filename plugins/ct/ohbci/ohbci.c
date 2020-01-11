@@ -105,7 +105,7 @@ GWEN_CRYPT_TOKEN *GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Plugin_CreateToken(GWEN_PL
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
+int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Plugin_CheckToken(GWEN_UNUSED GWEN_PLUGIN *pl,
                                                           GWEN_BUFFER *name)
 {
   FILE *f;
@@ -197,7 +197,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Plugin_CheckToken(GWEN_PLUGIN *pl,
 
 
 
-GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenOHBCI_new(GWEN_PLUGIN_MANAGER *pm,
+GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenOHBCI_new(GWEN_UNUSED GWEN_PLUGIN_MANAGER *pm,
                                             const char *name)
 {
   GWEN_CRYPT_TOKEN *ct;
@@ -227,7 +227,7 @@ GWEN_CRYPT_TOKEN *GWEN_Crypt_TokenOHBCI_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_CRYPT_TOKEN_OHBCI *lct;
 
@@ -690,7 +690,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Read(GWEN_CRYPT_TOKEN *ct, int fd, uint3
 
 
 
-void GWEN_Crypt_TokenOHBCI__DecodeKey(GWEN_CRYPT_TOKEN *ct,
+void GWEN_Crypt_TokenOHBCI__DecodeKey(GWEN_UNUSED GWEN_CRYPT_TOKEN *ct,
                                       GWEN_TAG16 *keyTlv,
                                       GWEN_DB_NODE *dbKeys,
                                       const char *keyName)
@@ -2089,7 +2089,7 @@ int GWEN_Crypt_TokenOHBCI_Encode(GWEN_CRYPT_TOKEN *ct, GWEN_BUFFER *dbuf)
 
 
 
-int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Write(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid)
+int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Write(GWEN_CRYPT_TOKEN *ct, int fd, GWEN_UNUSED int cre, uint32_t gid)
 {
   GWEN_CRYPT_TOKEN_OHBCI *lct;
   int rv;
@@ -2318,8 +2318,8 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_Write(GWEN_CRYPT_TOKEN *ct, int fd, int 
 
 
 int GWENHYWFAR_CB GWEN_Crypt_TokenOHBCI_ChangePin(GWEN_CRYPT_TOKEN *ct,
-                                                  int admin,
-                                                  uint32_t gid)
+                                                  GWEN_UNUSED int admin,
+                                                  GWEN_UNUSED uint32_t gid)
 {
   GWEN_CRYPT_TOKEN_OHBCI *lct;
 

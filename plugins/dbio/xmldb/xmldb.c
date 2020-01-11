@@ -136,10 +136,10 @@ void GWEN_DBIO__XmlDb_ReadDataTags(GWEN_XMLNODE *node, GWEN_BUFFER *buf)
 
 
 
-int GWEN_DBIO__XmlDb_ImportVar(GWEN_DBIO *dbio,
+int GWEN_DBIO__XmlDb_ImportVar(GWEN_UNUSED GWEN_DBIO *dbio,
                                uint32_t flags,
                                GWEN_DB_NODE *data,
-                               GWEN_DB_NODE *cfg,
+                               GWEN_UNUSED GWEN_DB_NODE *cfg,
                                GWEN_XMLNODE *node)
 {
   GWEN_XMLNODE *n;
@@ -344,7 +344,7 @@ int GWEN_DBIO_XmlDb__ExportGroup(GWEN_DBIO *dbio,
 
 
 
-int GWEN_DBIO_XmlDb__ExportVar(GWEN_DBIO *dbio,
+int GWEN_DBIO_XmlDb__ExportVar(GWEN_UNUSED GWEN_DBIO *dbio,
                                GWEN_DB_NODE *data,
                                GWEN_XMLNODE *node)
 {
@@ -466,7 +466,7 @@ int GWEN_DBIO_XmlDb_Export(GWEN_DBIO *dbio,
                            GWEN_SYNCIO *sio,
                            GWEN_DB_NODE *data,
                            GWEN_DB_NODE *cfg,
-                           uint32_t flags)
+                           GWEN_UNUSED uint32_t flags)
 {
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *nh;
@@ -559,7 +559,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_XmlDb_CheckFile(GWEN_DBIO *dbio,
 
 
 
-GWEN_DBIO *GWEN_DBIO_XmlDb_Factory(GWEN_PLUGIN *pl)
+GWEN_DBIO *GWEN_DBIO_XmlDb_Factory(GWEN_UNUSED GWEN_PLUGIN *pl)
 {
   GWEN_DBIO *dbio;
 

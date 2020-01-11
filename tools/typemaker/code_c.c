@@ -32,7 +32,7 @@
 
 
 
-int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_c_enums(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                   GWEN_SYNCIO *sio)
 {
   GWEN_XMLNODE *n;
@@ -193,7 +193,7 @@ int write_c_enums(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 
 
-int write_code_freeElem_c(ARGUMENTS *args,
+int write_code_freeElem_c(GWEN_UNUSED ARGUMENTS *args,
                           GWEN_XMLNODE *node,
                           GWEN_SYNCIO *sio)
 {
@@ -330,7 +330,7 @@ int write_code_freeElems_c(ARGUMENTS *args,
 
 
 
-int write_code_dupArg_c(ARGUMENTS *args,
+int write_code_dupArg_c(GWEN_UNUSED ARGUMENTS *args,
                         GWEN_XMLNODE *node,
                         GWEN_SYNCIO *sio,
                         const char *param)
@@ -403,7 +403,7 @@ int write_code_dupArg_c(ARGUMENTS *args,
 
 
 
-int write_code_todbArg_c(ARGUMENTS *args,
+int write_code_todbArg_c(GWEN_UNUSED ARGUMENTS *args,
                          GWEN_XMLNODE *node,
                          GWEN_SYNCIO *sio)
 {
@@ -769,7 +769,7 @@ int write_code_todbArg_c(ARGUMENTS *args,
 
 
 
-int write_code_fromdbArg_c(ARGUMENTS *args,
+int write_code_fromdbArg_c(GWEN_UNUSED ARGUMENTS *args,
                            GWEN_XMLNODE *node,
                            GWEN_SYNCIO *sio)
 {
@@ -1634,7 +1634,7 @@ int write_code_setget_c(ARGUMENTS *args,
 
 
 
-int write_code_dupList_c(ARGUMENTS *args, GWEN_XMLNODE *n,
+int write_code_dupList_c(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *n,
                          GWEN_SYNCIO *sio,
                          const char *listName)
 {
@@ -2535,7 +2535,7 @@ int write_code_readdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 
 
-int write_code_fromdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_code_fromdb_c(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                         GWEN_SYNCIO *sio)
 {
   const char *prefix;
@@ -2588,7 +2588,7 @@ int write_code_fromdb_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 
 
-int write_code_builtin_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_code_builtin_c(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                          GWEN_SYNCIO *sio)
 {
   const char *prefix;

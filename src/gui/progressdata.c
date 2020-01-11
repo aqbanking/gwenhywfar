@@ -199,7 +199,7 @@ void GWEN_ProgressData_ClearLogText(GWEN_PROGRESS_DATA *pd)
 
 
 void GWEN_ProgressData_AddLogText(GWEN_PROGRESS_DATA *pd,
-                                  GWEN_LOGGER_LEVEL level,
+                                  GWEN_UNUSED GWEN_LOGGER_LEVEL level,
                                   const char *s)
 {
   assert(pd);

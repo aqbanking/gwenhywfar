@@ -132,7 +132,7 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
 
 
 
-void GWENHYWFAR_CB GWEN_DlgInput_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_DlgInput_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_DLGINPUT *xdlg;
 

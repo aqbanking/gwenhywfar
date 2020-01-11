@@ -22,9 +22,9 @@ GWEN_INHERIT(GWEN_WIDGET, W_SPINBOX)
 static GWENHYWFAR_CB
 int Gtk3Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
-                                    int index,
+                                    GWEN_UNUSED int index,
                                     int value,
-                                    int doSignal)
+                                    GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
   W_SPINBOX *xw;
@@ -78,7 +78,7 @@ int Gtk3Gui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
-                                    int index,
+                                    GWEN_UNUSED int index,
                                     int defaultValue)
 {
   GtkWidget *g;
@@ -127,10 +127,10 @@ int Gtk3Gui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk3Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
-                                     GWEN_DIALOG_PROPERTY prop,
-                                     int index,
-                                     const char *value,
-                                     int doSignal)
+                                     GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                                     GWEN_UNUSED int index,
+                                     GWEN_UNUSED const char *value,
+                                     GWEN_UNUSED int doSignal)
 {
   DBG_WARN(GWEN_LOGDOMAIN,
            "Function is not appropriate for this type of widget (%s)",
@@ -142,8 +142,8 @@ int Gtk3Gui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 const char *Gtk3Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
-                                             GWEN_DIALOG_PROPERTY prop,
-                                             int index,
+                                             GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                                             GWEN_UNUSED int index,
                                              const char *defaultValue)
 {
   DBG_WARN(GWEN_LOGDOMAIN,
@@ -154,7 +154,7 @@ const char *Gtk3Gui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void GWENHYWFAR_CB Gtk3Gui_WSpinBox_FreeData(void *bp, void *p)
+static void GWENHYWFAR_CB Gtk3Gui_WSpinBox_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   W_SPINBOX *xw;
 
@@ -164,7 +164,7 @@ static void GWENHYWFAR_CB Gtk3Gui_WSpinBox_FreeData(void *bp, void *p)
 
 
 
-static void Gtk3Gui_WSpinBox_Changed_handler(GtkAdjustment *adjustment, gpointer data)
+static void Gtk3Gui_WSpinBox_Changed_handler(GWEN_UNUSED GtkAdjustment *adjustment, gpointer data)
 {
   GWEN_WIDGET *w;
   int rv;

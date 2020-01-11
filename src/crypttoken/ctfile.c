@@ -617,7 +617,7 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyIdList(GWEN_CRYPT_TOKEN *ct,
 
 const GWEN_CRYPT_TOKEN_KEYINFO *GWENHYWFAR_CB GWEN_Crypt_TokenFile__GetKeyInfo(GWEN_CRYPT_TOKEN *ct,
                                                                                uint32_t id,
-                                                                               uint32_t flags,
+                                                                               GWEN_UNUSED uint32_t flags,
                                                                                uint32_t gid)
 {
   GWEN_CRYPT_TOKEN_FILE *lct;

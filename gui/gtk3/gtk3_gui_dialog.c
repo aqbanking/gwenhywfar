@@ -106,7 +106,7 @@ void Gtk3Gui_Dialog_Unextend(GWEN_DIALOG *dlg)
 
 
 
-void GWENHYWFAR_CB Gtk3Gui_Dialog_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB Gtk3Gui_Dialog_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GTK3_GUI_DIALOG *xdlg;
 
@@ -133,7 +133,7 @@ GtkWidget *Gtk3Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg)
 
 
 
-GWENHYWFAR_CB int Gtk3Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
+GWENHYWFAR_CB int Gtk3Gui_Dialog_SetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                 GWEN_WIDGET *w,
                                                 GWEN_DIALOG_PROPERTY prop,
                                                 int index,
@@ -145,7 +145,7 @@ GWENHYWFAR_CB int Gtk3Gui_Dialog_SetIntProperty(GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_CB int Gtk3Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
+GWENHYWFAR_CB int Gtk3Gui_Dialog_GetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                 GWEN_WIDGET *w,
                                                 GWEN_DIALOG_PROPERTY prop,
                                                 int index,
@@ -156,7 +156,7 @@ GWENHYWFAR_CB int Gtk3Gui_Dialog_GetIntProperty(GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_CB int Gtk3Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
+GWENHYWFAR_CB int Gtk3Gui_Dialog_SetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                  GWEN_WIDGET *w,
                                                  GWEN_DIALOG_PROPERTY prop,
                                                  int index,
@@ -168,7 +168,7 @@ GWENHYWFAR_CB int Gtk3Gui_Dialog_SetCharProperty(GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_CB const char *Gtk3Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
+GWENHYWFAR_CB const char *Gtk3Gui_Dialog_GetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                          GWEN_WIDGET *w,
                                                          GWEN_DIALOG_PROPERTY prop,
                                                          int index,
@@ -179,7 +179,7 @@ GWENHYWFAR_CB const char *Gtk3Gui_Dialog_GetCharProperty(GWEN_DIALOG *dlg,
 
 
 
-int Gtk3Gui_Dialog_Setup(GWEN_DIALOG *dlg, GtkWidget *parentWindow)
+int Gtk3Gui_Dialog_Setup(GWEN_DIALOG *dlg, GWEN_UNUSED GtkWidget *parentWindow)
 {
   GTK3_GUI_DIALOG *xdlg;
   GWEN_WIDGET_TREE *wtree;
@@ -264,7 +264,7 @@ void Gtk3Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result)
 
 
 
-static void run_unmap_handler(GtkWindow *window, gpointer data)
+static void run_unmap_handler(GWEN_UNUSED GtkWindow *window, gpointer data)
 {
   GWEN_DIALOG *dlg;
   GTK3_GUI_DIALOG *xdlg;
@@ -279,8 +279,8 @@ static void run_unmap_handler(GtkWindow *window, gpointer data)
 
 
 
-static gint run_delete_handler(GtkWindow *window,
-                               GdkEventAny *event,
+static gint run_delete_handler(GWEN_UNUSED GtkWindow *window,
+                               GWEN_UNUSED GdkEventAny *event,
                                gpointer data)
 {
   GWEN_DIALOG *dlg;
@@ -297,7 +297,7 @@ static gint run_delete_handler(GtkWindow *window,
 
 
 
-static void run_destroy_handler(GtkWindow *window, gpointer data)
+static void run_destroy_handler(GWEN_UNUSED GtkWindow *window, gpointer data)
 {
   GWEN_DIALOG *dlg;
   GTK3_GUI_DIALOG *xdlg;

@@ -293,10 +293,10 @@ GWEN_DB_NODE *GWEN_DBIO_OldDb__ParseLine(GWEN_DB_NODE *root,
 
 
 
-int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
+int GWEN_DBIO_OldDb_Import(GWEN_UNUSED GWEN_DBIO *dbio,
                            GWEN_SYNCIO *sio,
                            GWEN_DB_NODE *data,
-                           GWEN_DB_NODE *cfg,
+                           GWEN_UNUSED GWEN_DB_NODE *cfg,
                            uint32_t flags)
 {
   GWEN_DB_NODE *curr;
@@ -339,11 +339,11 @@ int GWEN_DBIO_OldDb_Import(GWEN_DBIO *dbio,
 
 
 
-int GWEN_DBIO_OldDb_Export(GWEN_DBIO *dbio,
-                           GWEN_SYNCIO *sio,
-                           GWEN_DB_NODE *data,
-                           GWEN_DB_NODE *cfg,
-                           uint32_t flags)
+int GWEN_DBIO_OldDb_Export(GWEN_UNUSED GWEN_DBIO *dbio,
+                           GWEN_UNUSED GWEN_SYNCIO *sio,
+                           GWEN_UNUSED GWEN_DB_NODE *data,
+                           GWEN_UNUSED GWEN_DB_NODE *cfg,
+                           GWEN_UNUSED uint32_t flags)
 {
   DBG_ERROR(GWEN_LOGDOMAIN, "Export function not supported");
   return GWEN_ERROR_GENERIC;
@@ -385,7 +385,7 @@ GWEN_DBIO_CHECKFILE_RESULT GWEN_DBIO_OldDb_CheckFile(GWEN_DBIO *dbio, const char
 
 
 
-GWEN_DBIO *GWEN_DBIO_OldDb_Factory(GWEN_PLUGIN *pl)
+GWEN_DBIO *GWEN_DBIO_OldDb_Factory(GWEN_UNUSED GWEN_PLUGIN *pl)
 {
   GWEN_DBIO *dbio;
 

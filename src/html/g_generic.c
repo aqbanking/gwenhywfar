@@ -61,7 +61,7 @@ int HtmlGroup_Generic_EndTag(HTML_GROUP *g, const char *tagName)
 
 
 
-int HtmlGroup_Generic_AddData(HTML_GROUP *g, const char *data)
+int HtmlGroup_Generic_AddData(HTML_GROUP *g, GWEN_UNUSED const char *data)
 {
   assert(g);
 
@@ -71,7 +71,7 @@ int HtmlGroup_Generic_AddData(HTML_GROUP *g, const char *data)
 
 
 
-int HtmlGroup_Generic_EndSubGroup(HTML_GROUP *g, HTML_GROUP *sg)
+int HtmlGroup_Generic_EndSubGroup(HTML_GROUP *g, GWEN_UNUSED HTML_GROUP *sg)
 {
   assert(g);
 

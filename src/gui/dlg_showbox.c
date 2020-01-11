@@ -85,7 +85,7 @@ GWEN_DIALOG *GWEN_DlgShowBox_new(uint32_t flags,
 
 
 
-void GWENHYWFAR_CB GWEN_DlgShowBox_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_DlgShowBox_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_DLGSHOWBOX *xdlg;
 
@@ -172,7 +172,7 @@ void GWEN_DlgShowBox_Fini(GWEN_DIALOG *dlg)
 
 int GWENHYWFAR_CB GWEN_DlgShowBox_SignalHandler(GWEN_DIALOG *dlg,
                                                 GWEN_DIALOG_EVENTTYPE t,
-                                                const char *sender)
+                                                GWEN_UNUSED const char *sender)
 {
   GWEN_DLGSHOWBOX *xdlg;
 

@@ -114,7 +114,7 @@ void Typemaker2_Group_SetDescription(TYPEMAKER2_GROUP *gr, const char *s)
 
 
 
-int Typemaker2_Group_readXml(TYPEMAKER2_GROUP *gr, GWEN_XMLNODE *node, const char *wantedLang)
+int Typemaker2_Group_readXml(TYPEMAKER2_GROUP *gr, GWEN_XMLNODE *node, GWEN_UNUSED const char *wantedLang)
 {
   const char *s;
   GWEN_XMLNODE *n;

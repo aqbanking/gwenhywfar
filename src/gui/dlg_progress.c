@@ -63,7 +63,7 @@ GWEN_DIALOG *GWEN_DlgProgress_new(void)
 
 
 
-void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB GWEN_DlgProgress_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_DLGPROGRESS *xdlg;
 

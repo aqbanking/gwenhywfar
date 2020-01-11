@@ -22,9 +22,9 @@ GWEN_INHERIT(GWEN_WIDGET, W_COMBOBOX)
 static GWENHYWFAR_CB
 int Gtk2Gui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int value,
-                                     int doSignal)
+                                     GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
   W_COMBOBOX *xw;
@@ -76,7 +76,7 @@ int Gtk2Gui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WComboBox_GetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int defaultValue)
 {
   GtkWidget *g;
@@ -127,9 +127,9 @@ int Gtk2Gui_WComboBox_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
                                       GWEN_DIALOG_PROPERTY prop,
-                                      int index,
+                                      GWEN_UNUSED int index,
                                       const char *value,
-                                      int doSignal)
+                                      GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
   W_COMBOBOX *xw;
@@ -220,7 +220,7 @@ const char *Gtk2Gui_WComboBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void changed_handler(GtkWidget *comboBox, gpointer data)
+static void changed_handler(GWEN_UNUSED GtkWidget *comboBox, gpointer data)
 {
   GWEN_WIDGET *w;
   int rv;
@@ -238,7 +238,7 @@ static void changed_handler(GtkWidget *comboBox, gpointer data)
 
 
 
-static void GWENHYWFAR_CB Gtk2Gui_WComboBox_FreeData(void *bp, void *p)
+static void GWENHYWFAR_CB Gtk2Gui_WComboBox_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   W_COMBOBOX *xw;
 

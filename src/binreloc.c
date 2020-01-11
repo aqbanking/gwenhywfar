@@ -15,6 +15,9 @@
 
 #include "config.h"
 
+#include <gwenhywfar/gwenhywfarapi.h>
+
+
 #ifdef ENABLE_BINRELOC
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -184,7 +187,7 @@ _br_find_exe(BrInitError *error)
  * Returns a filename which must be freed, or NULL on error.
  */
 static char *
-_br_find_exe_for_symbol(const void *symbol, BrInitError *error)
+_br_find_exe_for_symbol(const void *symbol, GWEN_UNUSED BrInitError *error)
 {
 #ifndef ENABLE_BINRELOC
   if (error)

@@ -27,9 +27,9 @@ GWEN_INHERIT(GWEN_WIDGET, GTK2_GRIDLAYOUT_WIDGET)
 static GWENHYWFAR_CB
 int Gtk2Gui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
                                        GWEN_DIALOG_PROPERTY prop,
-                                       int index,
+                                       GWEN_UNUSED int index,
                                        int value,
-                                       int doSignal)
+                                       GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -61,7 +61,7 @@ int Gtk2Gui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk2Gui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
                                        GWEN_DIALOG_PROPERTY prop,
-                                       int index,
+                                       GWEN_UNUSED int index,
                                        int defaultValue)
 {
   GtkWidget *g;
@@ -91,10 +91,10 @@ int Gtk2Gui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 int Gtk2Gui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
-                                        GWEN_DIALOG_PROPERTY prop,
-                                        int index,
-                                        const char *value,
-                                        int doSignal)
+                                        GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                                        GWEN_UNUSED int index,
+                                        GWEN_UNUSED const char *value,
+                                        GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -111,8 +111,8 @@ int Gtk2Gui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
 
 static GWENHYWFAR_CB
 const char *Gtk2Gui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
-                                                GWEN_DIALOG_PROPERTY prop,
-                                                int index,
+                                                GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                                                GWEN_UNUSED int index,
                                                 const char *defaultValue)
 {
   GtkWidget *g;
@@ -195,7 +195,7 @@ int Gtk2Gui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
 
 
 static GWENHYWFAR_CB
-void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p)
+void Gtk2Gui_WGridLayout_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GTK2_GRIDLAYOUT_WIDGET *xw;
 

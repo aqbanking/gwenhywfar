@@ -14,9 +14,9 @@
 static GWENHYWFAR_CB
 int Gtk3Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int value,
-                                     int doSignal)
+                                     GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -53,7 +53,7 @@ int Gtk3Gui_WLineEdit_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
-                                     int index,
+                                     GWEN_UNUSED int index,
                                      int defaultValue)
 {
   GtkWidget *g;
@@ -89,9 +89,9 @@ int Gtk3Gui_WLineEdit_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
                                       GWEN_DIALOG_PROPERTY prop,
-                                      int index,
+                                      GWEN_UNUSED int index,
                                       const char *value,
-                                      int doSignal)
+                                      GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;
 
@@ -118,7 +118,7 @@ int Gtk3Gui_WLineEdit_SetCharProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 const char *Gtk3Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
                                               GWEN_DIALOG_PROPERTY prop,
-                                              int index,
+                                              GWEN_UNUSED int index,
                                               const char *defaultValue)
 {
   GtkWidget *g;
@@ -141,9 +141,9 @@ const char *Gtk3Gui_WLineEdit_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static void Gtk3Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
-                                                   guint arg1,
-                                                   guint arg2,
+static void Gtk3Gui_WLineEdit_Deleted_text_handler(GWEN_UNUSED GtkEntryBuffer *entrybuffer,
+                                                   GWEN_UNUSED guint arg1,
+                                                   GWEN_UNUSED guint arg2,
                                                    gpointer data)
 {
   GWEN_WIDGET *w;
@@ -162,10 +162,10 @@ static void Gtk3Gui_WLineEdit_Deleted_text_handler(GtkEntryBuffer *entrybuffer,
 
 
 
-static void Gtk3Gui_WLineEdit_Inserted_text_handler(GtkEntryBuffer *entrybuffer,
-                                                    guint arg1,
-                                                    gchar *arg2,
-                                                    guint arg3,
+static void Gtk3Gui_WLineEdit_Inserted_text_handler(GWEN_UNUSED GtkEntryBuffer *entrybuffer,
+                                                    GWEN_UNUSED guint arg1,
+                                                    GWEN_UNUSED gchar *arg2,
+                                                    GWEN_UNUSED guint arg3,
                                                     gpointer data)
 {
   GWEN_WIDGET *w;

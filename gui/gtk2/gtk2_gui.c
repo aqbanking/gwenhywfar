@@ -57,7 +57,7 @@ GWEN_GUI *Gtk2_Gui_new()
 
 
 
-GWENHYWFAR_CB void Gtk2_Gui_FreeData(void *bp, void *p)
+GWENHYWFAR_CB void Gtk2_Gui_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GTK2_GUI *xgui;
 
@@ -93,9 +93,9 @@ GWENHYWFAR_CB int GTK2_Gui_ExecDialog(GWEN_GUI *gui,
 
 
 
-GWENHYWFAR_CB int GTK2_Gui_OpenDialog(GWEN_GUI *gui,
+GWENHYWFAR_CB int GTK2_Gui_OpenDialog(GWEN_UNUSED GWEN_GUI *gui,
                                       GWEN_DIALOG *dlg,
-                                      uint32_t guiid)
+                                      GWEN_UNUSED uint32_t guiid)
 {
   int rv;
   GtkWidget *g;
@@ -131,7 +131,7 @@ GWENHYWFAR_CB int GTK2_Gui_OpenDialog(GWEN_GUI *gui,
 
 
 
-GWENHYWFAR_CB int GTK2_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg)
+GWENHYWFAR_CB int GTK2_Gui_CloseDialog(GWEN_UNUSED GWEN_GUI *gui, GWEN_DIALOG *dlg)
 {
   GtkWidget *g;
   int rv;
@@ -161,7 +161,7 @@ GWENHYWFAR_CB int GTK2_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg)
 
 
 
-GWENHYWFAR_CB int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilEnd)
+GWENHYWFAR_CB int GTK2_Gui_RunDialog(GWEN_UNUSED GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilEnd)
 {
   int rv;
 
@@ -176,13 +176,13 @@ GWENHYWFAR_CB int GTK2_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int untilE
 
 
 
-GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_GUI *gui,
+GWENHYWFAR_CB int GTK2_Gui_GetFileName(GWEN_UNUSED GWEN_GUI *gui,
                                        const char *caption,
                                        GWEN_GUI_FILENAME_TYPE fnt,
-                                       uint32_t flags,
-                                       const char *patterns,
+                                       GWEN_UNUSED uint32_t flags,
+                                       GWEN_UNUSED const char *patterns,
                                        GWEN_BUFFER *pathBuffer,
-                                       uint32_t guiid)
+                                       GWEN_UNUSED uint32_t guiid)
 {
   char *folder=NULL;
   char *fileName=NULL;

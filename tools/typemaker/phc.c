@@ -34,7 +34,7 @@
 
 
 
-int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_h_elem_c(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_SYNCIO *sio)
 {
   const char *name;
@@ -103,7 +103,7 @@ int write_h_elem_c(ARGUMENTS *args, GWEN_XMLNODE *node,
 
 
 
-int write_h_func_c(ARGUMENTS *args, GWEN_XMLNODE *node,
+int write_h_func_c(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
                    GWEN_SYNCIO *sio)
 {
   const char *name;

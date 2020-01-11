@@ -58,7 +58,7 @@ int verify_url(GWEN_URL *url,
   }
 }
 
-int main(int argc, char **argv)
+int main(GWEN_UNUSED int argc, GWEN_UNUSED char **argv)
 {
   GWEN_URL *url = GWEN_Url_fromString("http://www.aqbanking.de/foo/bar");
   test_assert(GWEN_Url_GetPassword(url) == NULL);

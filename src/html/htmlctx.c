@@ -76,7 +76,7 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags)
 
 
 GWENHYWFAR_CB
-void HtmlCtx_FreeData(void *bp, void *p)
+void HtmlCtx_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   HTML_XMLCTX *xctx;
   HTML_GROUP *g;
@@ -297,7 +297,7 @@ HTML_OBJECT *HtmlCtx_GetRootObject(const GWEN_XML_CONTEXT *ctx)
 
 
 
-int HtmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
+int HtmlCtx_SanitizeData(GWEN_UNUSED GWEN_XML_CONTEXT *ctx,
                          const char *data,
                          GWEN_BUFFER *buf)
 {
@@ -546,7 +546,7 @@ int HtmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data)
 
 
 
-int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data)
+int HtmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, GWEN_UNUSED const char *data)
 {
   HTML_XMLCTX *xctx;
 

@@ -114,7 +114,7 @@ void Arguments_free(ARGUMENTS *ar)
 
 
 
-void usage(const char *prgname)
+void usage(GWEN_UNUSED const char *prgname)
 {
   fprintf(stdout, "%s%s",
           k_PRG_VERSION_INFO "\n",

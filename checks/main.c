@@ -11,10 +11,10 @@
 
 
 
-int GWENHYWFAR_CB checkCert(GWEN_GUI *gui,
-                            const GWEN_SSLCERTDESCR *cert,
-                            GWEN_SYNCIO *sio,
-                            uint32_t guiid)
+int GWENHYWFAR_CB checkCert(GWEN_UNUSED GWEN_GUI *gui,
+                            GWEN_UNUSED const GWEN_SSLCERTDESCR *cert,
+                            GWEN_UNUSED GWEN_SYNCIO *sio,
+                            GWEN_UNUSED uint32_t guiid)
 {
   /* automatically accept any cert for non-interactive checks */
   return 0;
@@ -22,7 +22,7 @@ int GWENHYWFAR_CB checkCert(GWEN_GUI *gui,
 
 
 
-int main(int argc, char **argv)
+int main(GWEN_UNUSED int argc, GWEN_UNUSED char **argv)
 {
   int errs=0;
   GWEN_GUI *gui;

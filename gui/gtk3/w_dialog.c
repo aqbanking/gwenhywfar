@@ -14,9 +14,9 @@
 static GWENHYWFAR_CB
 int Gtk3Gui_WDialog_SetIntProperty(GWEN_WIDGET *w,
                                    GWEN_DIALOG_PROPERTY prop,
-                                   int index,
+                                   GWEN_UNUSED int index,
                                    int value,
-                                   int doSignal)
+                                   GWEN_UNUSED int doSignal)
 {
   GtkWindow *g;
 
@@ -64,7 +64,7 @@ int Gtk3Gui_WDialog_SetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WDialog_GetIntProperty(GWEN_WIDGET *w,
                                    GWEN_DIALOG_PROPERTY prop,
-                                   int index,
+                                   GWEN_UNUSED int index,
                                    int defaultValue)
 {
   GtkWindow *g;
@@ -109,9 +109,9 @@ int Gtk3Gui_WDialog_GetIntProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 int Gtk3Gui_WDialog_SetCharProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
-                                    int index,
+                                    GWEN_UNUSED int index,
                                     const char *value,
-                                    int doSignal)
+                                    GWEN_UNUSED int doSignal)
 {
   GtkWindow *g;
 
@@ -137,7 +137,7 @@ int Gtk3Gui_WDialog_SetCharProperty(GWEN_WIDGET *w,
 static GWENHYWFAR_CB
 const char *Gtk3Gui_WDialog_GetCharProperty(GWEN_WIDGET *w,
                                             GWEN_DIALOG_PROPERTY prop,
-                                            int index,
+                                            GWEN_UNUSED int index,
                                             const char *defaultValue)
 {
   GtkWindow *g;
