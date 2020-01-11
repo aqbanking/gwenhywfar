@@ -39,7 +39,6 @@ noinst_HEADERS=\
  error_p.h \
  gwensignal_p.h \
  i18n_l.h \
- idlist_p.h \
  idlist64_p.h \
  inherit_p.h \
  list_p.h \
@@ -59,7 +58,6 @@ noinst_HEADERS=\
  memcache_p.h \
  tree_p.h \
  tree2_p.h \
- pointerlist_p.h \
  simpleptrlist_p.h \
  multicache_p.h \
  param_p.h
@@ -73,7 +71,6 @@ iheader_HEADERS=\
  error.h \
  gwensignal.h \
  i18n.h \
- idlist.h \
  idlist64.h \
  inherit.h \
  list.h \
@@ -97,7 +94,6 @@ iheader_HEADERS=\
  memcache.h \
  tree.h \
  tree2.h \
- pointerlist.h \
  simpleptrlist.h \
  multicache.h \
  bindata.h \
@@ -113,7 +109,6 @@ libbase_la_SOURCES=\
  error.c \
  gwensignal.c \
  i18n.c \
- idlist.c \
  idlist64.c \
  inherit.c \
  list.c \
@@ -132,7 +127,6 @@ libbase_la_SOURCES=\
  memcache.c \
  tree.c \
  tree2.c \
- pointerlist.c \
  simpleptrlist.c \
  multicache.c \
  param.c
