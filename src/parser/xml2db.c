@@ -146,7 +146,8 @@ const char *GWEN_Xml2Db_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const char *pa
 
 
 /* TODO: optimize later */
-int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_UNUSED GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent,
+int GWEN_Xml2Db_ConvertAndSetCharValue(GWEN_UNUSED GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode,
+                                       GWEN_DB_NODE *dbCurrent,
                                        const char *value)
 {
   if (value && *value) {

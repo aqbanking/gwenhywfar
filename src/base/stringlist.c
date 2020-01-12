@@ -376,7 +376,7 @@ void GWEN_StringList_RemoveFirstString(GWEN_STRINGLIST *sl)
       GWEN_StringList_RemoveEntry(sl, se);
     else {
       if (se->refCount==0)
-	GWEN_StringList_RemoveEntry(sl, se);
+        GWEN_StringList_RemoveEntry(sl, se);
     }
   }
 }

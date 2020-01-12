@@ -166,8 +166,8 @@ int TestType_CalcHash(TEST_TYPE *tt)
 
     md=GWEN_MDigest_Rmd160_new();
     rv=GWEN_MDigest_Digest(md,
-			   (const uint8_t*)tt->testStringPtr, strlen(tt->testStringPtr),
-			   tt->testHash, sizeof(tt->testHash));
+                           (const uint8_t *)tt->testStringPtr, strlen(tt->testStringPtr),
+                           tt->testHash, sizeof(tt->testHash));
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on GWEN_MDigest_Begin: %s (%d)", GWEN_Error_SimpleToString(rv), rv);
       GWEN_MDigest_free(md);
@@ -189,8 +189,8 @@ int TestType_TestHash(const TEST_TYPE *tt)
 
     md=GWEN_MDigest_Rmd160_new();
     rv=GWEN_MDigest_Digest(md,
-			   (const uint8_t*)tt->testStringPtr, strlen(tt->testStringPtr),
-			   hash, sizeof(hash));
+                           (const uint8_t *)tt->testStringPtr, strlen(tt->testStringPtr),
+                           hash, sizeof(hash));
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on GWEN_MDigest_Digest: %s (%d)", GWEN_Error_SimpleToString(rv), rv);
       GWEN_MDigest_free(md);
@@ -235,7 +235,7 @@ void _attachToTestType(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 {
   TEST_TYPE *tt;
 
-  tt=(TEST_TYPE*) p;
+  tt=(TEST_TYPE *) p;
   TestType_Attach(tt);
 }
 
@@ -245,7 +245,7 @@ void _detachFromTestType(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 {
   TEST_TYPE *tt;
 
-  tt=(TEST_TYPE*) p;
+  tt=(TEST_TYPE *) p;
   TestType_free(tt);
 }
 
@@ -256,7 +256,7 @@ void dumpTestTypeList(TEST_TYPE_LIST *ttList)
   TEST_TYPE *tt;
 
   tt=TestType_List_First(ttList);
-  while(tt) {
+  while (tt) {
     fprintf(stderr, "%5d: %3d: %s\n", tt->testPosition, tt->_refCounter, tt->testStringPtr);
     tt=TestType_List_Next(tt);
   }
@@ -374,7 +374,7 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     TEST_TYPE *tt;
     int rv;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(pl, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(pl, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       GWEN_SimplePtrList_free(pl);
@@ -393,7 +393,7 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   for (i=0; i<1024; i++) {
     TEST_TYPE *tt;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(pl, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(pl, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       GWEN_SimplePtrList_free(pl);
@@ -492,7 +492,8 @@ int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   }
 
   if (!(pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in old list: flags (should not have cleared GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid object field in old list: flags (should not have cleared GWEN_SIMPLEPTRLIST_FLAGS_COPYONWRITE)");
     GWEN_SimplePtrList_free(plCopy);
     GWEN_SimplePtrList_free(pl);
     return GWEN_ERROR_GENERIC;
@@ -546,7 +547,7 @@ int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     TEST_TYPE *tt;
     int rv;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       GWEN_SimplePtrList_free(plCopy);
@@ -567,7 +568,7 @@ int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   for (i=0; i<1024; i++) {
     TEST_TYPE *tt;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       GWEN_SimplePtrList_free(plCopy);
@@ -626,7 +627,7 @@ int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     int cnt=0;
 
     tt=TestType_List_First(ttList);
-    while(tt) {
+    while (tt) {
       if (tt->_refCounter!=2) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object is not 2");
         TestType_List_free(ttList);
@@ -645,7 +646,7 @@ int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     TEST_TYPE *tt;
     int rv;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(pl, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(pl, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       TestType_List_free(ttList);
@@ -669,7 +670,7 @@ int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     int cnt=0;
 
     tt=TestType_List_First(ttList);
-    while(tt) {
+    while (tt) {
       if (tt->_refCounter!=1) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object is not 1");
         TestType_List_free(ttList);
@@ -733,14 +734,16 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   }
 
   if (!(plCopy->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)");
     GWEN_SimplePtrList_free(plCopy);
     GWEN_SimplePtrList_free(pl);
     return GWEN_ERROR_GENERIC;
   }
 
   if (!(plCopy->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)");
     GWEN_SimplePtrList_free(plCopy);
     GWEN_SimplePtrList_free(pl);
     return GWEN_ERROR_GENERIC;
@@ -767,7 +770,7 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     TEST_TYPE *tt;
     int rv;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       TestType_List_free(ttList);
@@ -792,7 +795,7 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     int cnt=0;
 
     tt=TestType_List_First(ttList);
-    while(tt) {
+    while (tt) {
       if (cnt<1000) {
         if (tt->_refCounter!=3) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object %d is not 3 (%d)", cnt, tt->_refCounter);
@@ -826,7 +829,7 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     int cnt=0;
 
     tt=TestType_List_First(ttList);
-    while(tt) {
+    while (tt) {
       if (cnt<1000) {
         if (tt->_refCounter!=2) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object is not 2");
@@ -859,7 +862,7 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     int cnt=0;
 
     tt=TestType_List_First(ttList);
-    while(tt) {
+    while (tt) {
       if (tt->_refCounter!=1) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object is not 1");
         TestType_List_free(ttList);
@@ -924,14 +927,16 @@ int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   }
 
   if (!(plCopy->flags & GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_ATTACHTOOBJECTS)");
     GWEN_SimplePtrList_free(plCopy);
     GWEN_SimplePtrList_free(pl);
     return GWEN_ERROR_GENERIC;
   }
 
   if (!(plCopy->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)");
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Invalid object field in list: flags (should have set GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS)");
     GWEN_SimplePtrList_free(plCopy);
     GWEN_SimplePtrList_free(pl);
     return GWEN_ERROR_GENERIC;
@@ -958,7 +963,7 @@ int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     TEST_TYPE *tt;
     int rv;
 
-    tt=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
+    tt=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(plCopy, i);
     if (tt==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "No object at position %d", i);
       TestType_List_free(ttList);
@@ -983,7 +988,7 @@ int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     int cnt=0;
 
     tt=TestType_List_First(ttList);
-    while(tt) {
+    while (tt) {
       if (cnt==1024 || cnt==100) {
         if (tt->_refCounter!=2) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Refcounter of object %d is not 2 (%d)", cnt, tt->_refCounter);
@@ -1014,8 +1019,8 @@ int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     TEST_TYPE *tt1;
     TEST_TYPE *tt2;
 
-    tt1=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(plCopy, 100);
-    tt2=(TEST_TYPE*) GWEN_SimplePtrList_GetPtrAt(pl, 100);
+    tt1=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(plCopy, 100);
+    tt2=(TEST_TYPE *) GWEN_SimplePtrList_GetPtrAt(pl, 100);
     if (!(tt1 && tt2 && tt1!=tt2)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Pointers 100 are unexpectedly equal in both lists");
       TestType_List_free(ttList);

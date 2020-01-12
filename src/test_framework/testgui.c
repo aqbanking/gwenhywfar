@@ -266,13 +266,13 @@ void _writeLinesToFile(GWEN_GUI *gui)
       GWEN_FSLOCK_RESULT res;
       FILE *f;
       GWEN_STRINGLISTENTRY *se;
-  
+
       if (GWEN_Directory_GetPath(xgui->logFile, GWEN_PATH_FLAGS_VARIABLE)) {
         xgui->logHookIsActive=0;
         fprintf(stderr, "Unable to get logfile, turning off logging.\n");
         return;
       }
-  
+
       lck=GWEN_FSLock_new(xgui->logFile, GWEN_FSLock_TypeFile);
       res=GWEN_FSLock_Lock(lck, 30, 0);
       if (res!=GWEN_FSLock_ResultOk) {
@@ -281,7 +281,7 @@ void _writeLinesToFile(GWEN_GUI *gui)
         GWEN_FSLock_free(lck);
         return;
       }
-  
+
       f=fopen(xgui->logFile, "a");
       if (f==NULL) {
         fprintf(stderr, "Unable to open logfile, turning off logging.\n");
@@ -290,18 +290,18 @@ void _writeLinesToFile(GWEN_GUI *gui)
         GWEN_FSLock_free(lck);
         return;
       }
-  
+
       /* write log message */
       se=GWEN_StringList_FirstEntry(xgui->logStrings);
-      while(se) {
+      while (se) {
         const char *s;
-  
+
         s=GWEN_StringListEntry_Data(se);
         if (s && *s)
           fprintf(f, "%s", s);
         se=GWEN_StringListEntry_Next(se);
       }
-  
+
       /* close log file */
       if (fclose(f)) {
         fprintf(stderr, "Unable to close logfile, turning off logging.\n");
@@ -310,19 +310,19 @@ void _writeLinesToFile(GWEN_GUI *gui)
         GWEN_FSLock_free(lck);
         return;
       }
-  
+
       /* unlock log file */
       GWEN_FSLock_Unlock(lck);
       GWEN_FSLock_free(lck);
     }
     else {
       GWEN_STRINGLISTENTRY *se;
-  
+
       /* write log message */
       se=GWEN_StringList_FirstEntry(xgui->logStrings);
-      while(se) {
+      while (se) {
         const char *s;
-    
+
         s=GWEN_StringListEntry_Data(se);
         if (s && *s)
           fprintf(stderr, "%s", s);

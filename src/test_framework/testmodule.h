@@ -72,7 +72,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_TEST_MODULE, GWENHYWFAR_API)
 
 
 /* definitions for virtual functions (post) */
-typedef int GWENHYWFAR_CB  (*GWEN_TEST_MODULE_TEST_FN)(GWEN_TEST_MODULE *p_struct);
+typedef int GWENHYWFAR_CB(*GWEN_TEST_MODULE_TEST_FN)(GWEN_TEST_MODULE *p_struct);
 
 /** Constructor. */
 GWENHYWFAR_API GWEN_TEST_MODULE *GWEN_Test_Module_new(void);
@@ -133,7 +133,8 @@ GWENHYWFAR_API void GWEN_Test_Module_SetResult(GWEN_TEST_MODULE *p_struct, int p
 GWENHYWFAR_API int GWEN_Test_Module_Test(GWEN_TEST_MODULE *p_struct);
 
 /* setters for virtual functions */
-GWENHYWFAR_API GWEN_TEST_MODULE_TEST_FN GWEN_Test_Module_SetTestFn(GWEN_TEST_MODULE *p_struct, GWEN_TEST_MODULE_TEST_FN fn);
+GWENHYWFAR_API GWEN_TEST_MODULE_TEST_FN GWEN_Test_Module_SetTestFn(GWEN_TEST_MODULE *p_struct,
+                                                                   GWEN_TEST_MODULE_TEST_FN fn);
 
 GWENHYWFAR_API void GWEN_Test_Module_ReadDb(GWEN_TEST_MODULE *p_struct, GWEN_DB_NODE *p_db);
 
@@ -145,9 +146,12 @@ GWENHYWFAR_API int GWEN_Test_Module_toDb(const GWEN_TEST_MODULE *p_struct, GWEN_
 
 GWENHYWFAR_API GWEN_TEST_MODULE *GWEN_Test_Module_Tree2_GetById(const GWEN_TEST_MODULE *p_object, uint32_t p_cmp);
 
-GWENHYWFAR_API GWEN_TEST_MODULE * GWEN_Test_Module_AddTest(GWEN_TEST_MODULE *st, const char *tName, GWEN_TEST_MODULE_TEST_FN fn, const char *tDescr);
-GWENHYWFAR_API GWEN_TEST_MODULE * GWEN_Test_Module_AddModule(GWEN_TEST_MODULE *st, const char *tName, const char *tDescr);
-GWENHYWFAR_API const char* GWEN_Test_Module_GetCharParam(const GWEN_TEST_MODULE *st, const char *paramName, const char *defVal);
+GWENHYWFAR_API GWEN_TEST_MODULE *GWEN_Test_Module_AddTest(GWEN_TEST_MODULE *st, const char *tName,
+                                                          GWEN_TEST_MODULE_TEST_FN fn, const char *tDescr);
+GWENHYWFAR_API GWEN_TEST_MODULE *GWEN_Test_Module_AddModule(GWEN_TEST_MODULE *st, const char *tName,
+                                                            const char *tDescr);
+GWENHYWFAR_API const char *GWEN_Test_Module_GetCharParam(const GWEN_TEST_MODULE *st, const char *paramName,
+                                                         const char *defVal);
 GWENHYWFAR_API void GWEN_Test_Module_SetCharParam(GWEN_TEST_MODULE *st, const char *paramName, const char *val);
 /* end-headers */
 

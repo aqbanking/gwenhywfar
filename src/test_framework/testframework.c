@@ -120,14 +120,14 @@ int _runModule(GWEN_GUI *gui, GWEN_TEST_MODULE *mod, int depth)
     fprintf(stdout, "Module %s\n", (sName && *sName)?sName:"");
 
     subMod=GWEN_Test_Module_Tree2_GetFirstChild(mod);
-    while(subMod) {
+    while (subMod) {
       rv=_runModule(gui, subMod, depth+1);
       if (rv<0 && rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
         subModsFailed++;
       }
       subMod=GWEN_Test_Module_Tree2_GetNext(subMod);
     }
-  
+
     GWEN_Test_Module_SetResult(mod, subModsFailed);
     return 0;
   }

@@ -451,9 +451,9 @@ int GWEN_Buffer_IncrementPos(GWEN_BUFFER *bf, uint32_t i)
 
   if (i+bf->pos>=bf->bufferSize) {
     DBG_DEBUG(GWEN_LOGDOMAIN,
-	      "Position %d outside buffer boundaries (%d bytes)\n"
-	      "Incrementing anyway",
-	      i+bf->pos, bf->bufferSize);
+              "Position %d outside buffer boundaries (%d bytes)\n"
+              "Incrementing anyway",
+              i+bf->pos, bf->bufferSize);
   }
 
   bf->pos+=i;

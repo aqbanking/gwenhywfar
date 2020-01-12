@@ -126,8 +126,8 @@ void GWEN_SimplePtrList_free(GWEN_SIMPLEPTRLIST *pl)
     if (pl->refCount==1) {
       GWEN_INHERIT_FINI(GWEN_SIMPLEPTRLIST, pl);
       if (pl->flags & GWEN_SIMPLEPTRLIST_FLAGS_DETACHFROMOBJECTS && pl->entryList->refCounter==1) {
-	DBG_VERBOUS(GWEN_LOGDOMAIN, "Entries no longer needed, detaching from its objects");
-	_detachFromAllObjects(pl);
+        DBG_VERBOUS(GWEN_LOGDOMAIN, "Entries no longer needed, detaching from its objects");
+        _detachFromAllObjects(pl);
       }
       _freePtrList(pl->entryList);
       pl->entryList=NULL;
@@ -233,7 +233,7 @@ void *GWEN_SimplePtrList_GetPtrAt(const GWEN_SIMPLEPTRLIST *pl, uint64_t idx)
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Index outside boundaries (%lu >= %lu)",
               (unsigned long) idx,
-              (unsigned long) (pl->usedEntries));
+              (unsigned long)(pl->usedEntries));
   }
   return NULL;
 }
@@ -296,8 +296,8 @@ int64_t GWEN_SimplePtrList_AddPtr(GWEN_SIMPLEPTRLIST *pl, void *p)
       /* resize current list */
       entryList=_reallocPtrList(pl->entryList, num);
       if (entryList==NULL) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
-	return GWEN_ERROR_MEMORY_FULL;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
+        return GWEN_ERROR_MEMORY_FULL;
       }
       pl->entryList=entryList;
       pl->maxEntries=num;
@@ -399,7 +399,8 @@ void GWEN_SimplePtrList_SubFlags(GWEN_SIMPLEPTRLIST *pl, uint32_t f)
 
 
 
-GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN GWEN_SimplePtrList_SetAttachObjectFn(GWEN_SIMPLEPTRLIST *pl, GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN fn)
+GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN GWEN_SimplePtrList_SetAttachObjectFn(GWEN_SIMPLEPTRLIST *pl,
+                                                                        GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN fn)
 {
   GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN oldFn;
 
@@ -413,7 +414,8 @@ GWEN_SIMPLEPTRLIST_ATTACHOBJECT_FN GWEN_SimplePtrList_SetAttachObjectFn(GWEN_SIM
 
 
 
-GWEN_SIMPLEPTRLIST_FREEOBJECT_FN GWEN_SimplePtrList_SetFreeObjectFn(GWEN_SIMPLEPTRLIST *pl, GWEN_SIMPLEPTRLIST_FREEOBJECT_FN fn)
+GWEN_SIMPLEPTRLIST_FREEOBJECT_FN GWEN_SimplePtrList_SetFreeObjectFn(GWEN_SIMPLEPTRLIST *pl,
+                                                                    GWEN_SIMPLEPTRLIST_FREEOBJECT_FN fn)
 {
   GWEN_SIMPLEPTRLIST_FREEOBJECT_FN oldFn;
 
@@ -453,7 +455,7 @@ void _attachToAllObjects(GWEN_SIMPLEPTRLIST *pl)
     ptr=pl->entryList->entries;
     for (i=0; i<pl->usedEntries; i++) {
       if (*ptr!=NULL)
-	_attachToObject(pl, *ptr);
+        _attachToObject(pl, *ptr);
       ptr++;
     }
   }
@@ -474,7 +476,7 @@ void _detachFromAllObjects(GWEN_SIMPLEPTRLIST *pl)
     ptr=pl->entryList->entries;
     for (i=0; i<pl->usedEntries; i++) {
       if (*ptr!=NULL)
-	_detachFromObject(pl, *ptr);
+        _detachFromObject(pl, *ptr);
       ptr++;
     }
   }
@@ -494,13 +496,13 @@ INTERNAL_PTRLIST *_mallocPtrList(uint64_t totalEntries)
   size_t objectSize;
 
   DBG_VERBOUS(GWEN_LOGDOMAIN, "Malloc entries");
-  objectSize=sizeof(INTERNAL_PTRLIST) + (totalEntries*sizeof(void*));
-  entries=(INTERNAL_PTRLIST*) malloc(objectSize);
+  objectSize=sizeof(INTERNAL_PTRLIST) + (totalEntries*sizeof(void *));
+  entries=(INTERNAL_PTRLIST *) malloc(objectSize);
   if (entries==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
     return NULL;
   }
-  memset((void*)entries, 0, objectSize);
+  memset((void *)entries, 0, objectSize);
   entries->refCounter=1;
   entries->storedEntries=totalEntries;
   return entries;
@@ -552,9 +554,9 @@ INTERNAL_PTRLIST *_reallocPtrList(INTERNAL_PTRLIST *entries, uint64_t totalEntri
     }
 
     diffEntries=totalEntries-(entries->storedEntries);
-    newSize=sizeof(INTERNAL_PTRLIST)+totalEntries*sizeof(void*);
+    newSize=sizeof(INTERNAL_PTRLIST)+totalEntries*sizeof(void *);
 
-    entries=(INTERNAL_PTRLIST*) realloc(entries, newSize);
+    entries=(INTERNAL_PTRLIST *) realloc(entries, newSize);
     if (entries==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
       return NULL;
@@ -562,7 +564,7 @@ INTERNAL_PTRLIST *_reallocPtrList(INTERNAL_PTRLIST *entries, uint64_t totalEntri
 
     /* preset new entries */
     if (diffEntries)
-      memset((void*) &(entries->entries[entries->storedEntries]), 0, diffEntries*sizeof(void*));
+      memset((void *) &(entries->entries[entries->storedEntries]), 0, diffEntries*sizeof(void *));
     entries->storedEntries=totalEntries;
     return entries;
   }
@@ -588,10 +590,10 @@ INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t tota
       totalEntries=oldEntries->storedEntries;
 
     diffEntries=totalEntries-(oldEntries->storedEntries);
-    oldSize=sizeof(INTERNAL_PTRLIST)+((oldEntries->storedEntries)*sizeof(void*));
-    newSize=sizeof(INTERNAL_PTRLIST)+totalEntries*sizeof(void*);
+    oldSize=sizeof(INTERNAL_PTRLIST)+((oldEntries->storedEntries)*sizeof(void *));
+    newSize=sizeof(INTERNAL_PTRLIST)+totalEntries*sizeof(void *);
 
-    entries=(INTERNAL_PTRLIST*) malloc(newSize);
+    entries=(INTERNAL_PTRLIST *) malloc(newSize);
     if (entries==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Memory full.");
       return NULL;
@@ -602,7 +604,7 @@ INTERNAL_PTRLIST *_copyPtrList(const INTERNAL_PTRLIST *oldEntries, uint64_t tota
 
     /* preset new entries */
     if (diffEntries)
-      memset((void*) &(entries->entries[entries->storedEntries]), 0, diffEntries*sizeof(void*));
+      memset((void *) &(entries->entries[entries->storedEntries]), 0, diffEntries*sizeof(void *));
 
     /* setup rest of the fields */
     entries->refCounter=1;

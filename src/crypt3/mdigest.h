@@ -62,8 +62,8 @@ int GWEN_MDigest_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l);
  */
 GWENHYWFAR_API
 int GWEN_MDigest_Digest(GWEN_MDIGEST *md,
-			const uint8_t *srcBuf, unsigned int srcLen,
-			uint8_t *dstBuf, unsigned int dstLen);
+                        const uint8_t *srcBuf, unsigned int srcLen,
+                        uint8_t *dstBuf, unsigned int dstLen);
 
 
 

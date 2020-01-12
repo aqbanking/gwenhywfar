@@ -257,10 +257,10 @@ int64_t GWEN_IdList64_GetIdAt(const GWEN_IDLIST64 *idl, uint64_t idx)
 
       entries=GWEN_IdTable64_GetPtrEntries(t);
       if (entries) {
-	uint64_t entryPos;
+        uint64_t entryPos;
 
-	entryPos=idx%entriesPerTable;
-	return entries[entryPos];
+        entryPos=idx%entriesPerTable;
+        return entries[entryPos];
       }
     }
     else {
@@ -299,21 +299,21 @@ int GWEN_IdList64_SetIdAt(GWEN_IDLIST64 *idl, uint64_t idx, uint64_t entry)
 
       /* copy table if necessary (copy-on-write) */
       if (!(GWEN_IdTable64_GetRuntimeFlags(t) & GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY)) {
-	GWEN_IDTABLE64 *pTableCopy;
+        GWEN_IDTABLE64 *pTableCopy;
 
-	pTableCopy=GWEN_IdTable64_dup(t);
-	GWEN_IdList64_SetTableAt(idl, tablePos, pTableCopy);
-	t=pTableCopy;
-	GWEN_IdTable64_AddRuntimeFlags(t, GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY);
+        pTableCopy=GWEN_IdTable64_dup(t);
+        GWEN_IdList64_SetTableAt(idl, tablePos, pTableCopy);
+        t=pTableCopy;
+        GWEN_IdTable64_AddRuntimeFlags(t, GWEN_IDTABLE64_RUNTIME_FLAGS_ISCOPY);
       }
 
       entries=GWEN_IdTable64_GetPtrEntries(t);
       if (entries) {
-	uint64_t entryPos;
+        uint64_t entryPos;
 
-	entryPos=idx%entriesPerTable;
-	entries[entryPos]=entry;
-	return 0;
+        entryPos=idx%entriesPerTable;
+        entries[entryPos]=entry;
+        return 0;
       }
     } /* if (t) */
     else {
@@ -401,7 +401,7 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
     ptr=GWEN_IdTable64_GetPtrEntries(pTableCurrent);
 
     /* find entryPos of free entry in pTableCurrent */
-    DBG_VERBOUS(GWEN_LOGDOMAIN, "Current table (ptr=%p, %d entriesPerTable):", (void*)ptr, entriesPerTable);
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "Current table (ptr=%p, %d entriesPerTable):", (void *)ptr, entriesPerTable);
     /*GWEN_IdTable64_Dump(pTableCurrent);*/
     if (GWEN_IdTable64_GetFreeEntries(pTableCurrent)==GWEN_IdTable64_GetMaxEntries(pTableCurrent)) {
       /** all entries are free, this is simple */
@@ -431,7 +431,7 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
                 (unsigned long) entryPos,
                 (unsigned long) idxTableCurrent,
                 (unsigned long) index,
-                (unsigned long) (index+entryPos));
+                (unsigned long)(index+entryPos));
 
     if (entryPos<entriesPerTable) {
       /* store new entry, get index */
@@ -514,7 +514,7 @@ static GWENHYWFAR_CB void _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, voi
 {
   GWEN_IDTABLE64 *ft;
 
-  ft=(GWEN_IDTABLE64*) p;
+  ft=(GWEN_IDTABLE64 *) p;
   GWEN_IdTable64_Attach(ft);
 }
 
@@ -524,7 +524,7 @@ static GWENHYWFAR_CB void _detachFromTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, v
 {
   GWEN_IDTABLE64 *ft;
 
-  ft=(GWEN_IDTABLE64*) p;
+  ft=(GWEN_IDTABLE64 *) p;
   GWEN_IdTable64_free(ft);
 }
 
@@ -774,7 +774,8 @@ uint64_t GWEN_IdList64_Iterator_GetNextId(GWEN_IDLIST64_ITERATOR *it)
 
 
 
-GWEN_IDTABLE64 *GWEN_IdTable64_new() {
+GWEN_IDTABLE64 *GWEN_IdTable64_new()
+{
   GWEN_IDTABLE64 *ft;
 
   GWEN_NEW_OBJECT(GWEN_IDTABLE64, ft);
@@ -785,7 +786,8 @@ GWEN_IDTABLE64 *GWEN_IdTable64_new() {
 
 
 
-void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *ft) {
+void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *ft)
+{
   assert(ft && ft->refCount);
   if (ft && ft->refCount) {
     ft->refCount++;
@@ -794,7 +796,8 @@ void GWEN_IdTable64_Attach(GWEN_IDTABLE64 *ft) {
 
 
 
-void GWEN_IdTable64_free(GWEN_IDTABLE64 *ft) {
+void GWEN_IdTable64_free(GWEN_IDTABLE64 *ft)
+{
   if (ft) {
     assert(ft->refCount);
     if (ft->refCount==1) {
@@ -818,7 +821,8 @@ int GWEN_IdTable64_GetRefCounter(const GWEN_IDTABLE64 *ft)
 
 
 
-GWEN_IDTABLE64 *GWEN_IdTable64_dup(const GWEN_IDTABLE64 *ftOrig) {
+GWEN_IDTABLE64 *GWEN_IdTable64_dup(const GWEN_IDTABLE64 *ftOrig)
+{
   GWEN_IDTABLE64 *ft;
 
   assert(ftOrig);
@@ -834,7 +838,7 @@ GWEN_IDTABLE64 *GWEN_IdTable64_dup(const GWEN_IDTABLE64 *ftOrig) {
     uint64_t offsetArraySize;
 
     offsetArraySize=ftOrig->maxEntries*sizeof(uint64_t);
-    ft->ptrEntries=(uint64_t*) malloc(offsetArraySize);
+    ft->ptrEntries=(uint64_t *) malloc(offsetArraySize);
     assert(ft->ptrEntries);
     memmove(ft->ptrEntries, ftOrig->ptrEntries, offsetArraySize);
   }
@@ -844,7 +848,8 @@ GWEN_IDTABLE64 *GWEN_IdTable64_dup(const GWEN_IDTABLE64 *ftOrig) {
 
 
 
-GWEN_IDTABLE64 *GWEN_IdTable64_Create(uint64_t maxEntries) {
+GWEN_IDTABLE64 *GWEN_IdTable64_Create(uint64_t maxEntries)
+{
   GWEN_IDTABLE64 *ft;
   uint64_t offsetArraySize;
   uint64_t *ptr;
@@ -855,7 +860,7 @@ GWEN_IDTABLE64 *GWEN_IdTable64_Create(uint64_t maxEntries) {
 
   offsetArraySize=ft->maxEntries*sizeof(uint64_t);
 
-  ptr=(uint64_t*) malloc(offsetArraySize);
+  ptr=(uint64_t *) malloc(offsetArraySize);
   assert(ptr);
   memset(ptr, 0, offsetArraySize);
   GWEN_IdTable64_SetPtrEntries(ft, ptr);
@@ -865,7 +870,8 @@ GWEN_IDTABLE64 *GWEN_IdTable64_Create(uint64_t maxEntries) {
 
 
 
-uint64_t GWEN_IdTable64_GetMaxEntries(const GWEN_IDTABLE64 *ft) {
+uint64_t GWEN_IdTable64_GetMaxEntries(const GWEN_IDTABLE64 *ft)
+{
   assert(ft);
   assert(ft->refCount);
   return ft->maxEntries;
@@ -873,7 +879,8 @@ uint64_t GWEN_IdTable64_GetMaxEntries(const GWEN_IDTABLE64 *ft) {
 
 
 
-uint64_t GWEN_IdTable64_GetFreeEntries(const GWEN_IDTABLE64 *ft) {
+uint64_t GWEN_IdTable64_GetFreeEntries(const GWEN_IDTABLE64 *ft)
+{
   assert(ft);
   assert(ft->refCount);
   return ft->freeEntries;
@@ -881,7 +888,8 @@ uint64_t GWEN_IdTable64_GetFreeEntries(const GWEN_IDTABLE64 *ft) {
 
 
 
-void GWEN_IdTable64_DecFreeEntries(GWEN_IDTABLE64 *ft) {
+void GWEN_IdTable64_DecFreeEntries(GWEN_IDTABLE64 *ft)
+{
   assert(ft);
   assert(ft->refCount);
   if (ft->freeEntries>0)
@@ -890,7 +898,8 @@ void GWEN_IdTable64_DecFreeEntries(GWEN_IDTABLE64 *ft) {
 
 
 
-uint64_t GWEN_IdTable64_GetHighestEntry(const GWEN_IDTABLE64 *ft) {
+uint64_t GWEN_IdTable64_GetHighestEntry(const GWEN_IDTABLE64 *ft)
+{
   assert(ft);
   assert(ft->refCount);
   return ft->highestEntry;
@@ -898,7 +907,8 @@ uint64_t GWEN_IdTable64_GetHighestEntry(const GWEN_IDTABLE64 *ft) {
 
 
 
-void GWEN_IdTable64_CheckAndSetHighestEntry(GWEN_IDTABLE64 *ft, uint64_t i) {
+void GWEN_IdTable64_CheckAndSetHighestEntry(GWEN_IDTABLE64 *ft, uint64_t i)
+{
   assert(ft);
   assert(ft->refCount);
   if (i>ft->highestEntry)
@@ -907,7 +917,8 @@ void GWEN_IdTable64_CheckAndSetHighestEntry(GWEN_IDTABLE64 *ft, uint64_t i) {
 
 
 
-uint64_t *GWEN_IdTable64_GetPtrEntries(const GWEN_IDTABLE64 *ft) {
+uint64_t *GWEN_IdTable64_GetPtrEntries(const GWEN_IDTABLE64 *ft)
+{
   assert(ft);
   assert(ft->refCount);
   return ft->ptrEntries;
@@ -915,7 +926,8 @@ uint64_t *GWEN_IdTable64_GetPtrEntries(const GWEN_IDTABLE64 *ft) {
 
 
 
-void GWEN_IdTable64_SetPtrEntries(GWEN_IDTABLE64 *ft, uint64_t *ptr) {
+void GWEN_IdTable64_SetPtrEntries(GWEN_IDTABLE64 *ft, uint64_t *ptr)
+{
   assert(ft);
   assert(ft->refCount);
   if (ft->ptrEntries && ft->ptrEntries!=ptr)
@@ -925,14 +937,16 @@ void GWEN_IdTable64_SetPtrEntries(GWEN_IDTABLE64 *ft, uint64_t *ptr) {
 
 
 
-uint32_t GWEN_IdTable64_GetRuntimeFlags(const GWEN_IDTABLE64 *ft) {
+uint32_t GWEN_IdTable64_GetRuntimeFlags(const GWEN_IDTABLE64 *ft)
+{
   assert(ft);
   return ft->runtimeFlags;
 }
 
 
 
-void GWEN_IdTable64_AddRuntimeFlags(GWEN_IDTABLE64 *ft, uint32_t i) {
+void GWEN_IdTable64_AddRuntimeFlags(GWEN_IDTABLE64 *ft, uint32_t i)
+{
   assert(ft);
   ft->runtimeFlags|=i;
 }

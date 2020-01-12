@@ -101,7 +101,7 @@ int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     }
     if (rv!=(int64_t) i) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected position for id at index %u (is %lu, expected %u)",
-		i, (unsigned long) rv, i);
+                i, (unsigned long) rv, i);
       GWEN_IdList64_free(idList1);
       return (int) rv;
     }
@@ -110,7 +110,7 @@ int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   i=0;
   iterator1=GWEN_IdList64_Iterator_new(idList1);
   id=GWEN_IdList64_Iterator_GetFirstId(iterator1);
-  while(id) {
+  while (id) {
     if (id!=i+1) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected id at index %lu (is %lu, expected %lu)",
                 (unsigned long) i, (unsigned long) id, (unsigned long) i+1);
@@ -159,7 +159,7 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   i=0;
   iterator1=GWEN_IdList64_Iterator_new(idList1);
   id=GWEN_IdList64_Iterator_GetFirstId(iterator1);
-  while(id) {
+  while (id) {
     if (id!=100-i) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected id at index %lu (is %lu, expected %lu)",
                 (unsigned long) i, (unsigned long) id, (unsigned long) i+1);
@@ -189,7 +189,7 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   i=0;
   iterator1=GWEN_IdList64_Iterator_new(idList1);
   id=GWEN_IdList64_Iterator_GetFirstId(iterator1);
-  while(id) {
+  while (id) {
     if (id!=i+1) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected id at index %lu (is %lu, expected %lu)",
                 (unsigned long) i, (unsigned long) id, (unsigned long) i+1);
@@ -222,14 +222,14 @@ int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddEntry(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddEntry(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -266,14 +266,14 @@ int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -313,14 +313,14 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -331,33 +331,33 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t entry;
 
     entry=GWEN_IdList64_GetIdAt(ptrList1, i);
     if (entry<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
-		i, GWEN_Error_SimpleToString(entry), (int)entry);
+                "Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
+                i, GWEN_Error_SimpleToString(entry), (int)entry);
       return entry;
     }
-    if (entry != (int64_t) (i+1)) {
+    if (entry != (int64_t)(i+1)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
       return GWEN_ERROR_INTERNAL;
     }
   }
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t entry;
 
     entry=GWEN_IdList64_GetIdAt(ptrList2, i);
     if (entry<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
-		i, GWEN_Error_SimpleToString(entry), (int)entry);
+                "Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
+                i, GWEN_Error_SimpleToString(entry), (int)entry);
       return entry;
     }
-    if (entry != (int64_t) (i+1)) {
+    if (entry != (int64_t)(i+1)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
       return GWEN_ERROR_INTERNAL;
     }
@@ -404,14 +404,14 @@ int test6(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -464,14 +464,14 @@ int test7(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -522,8 +522,8 @@ int test7(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   iEntry=GWEN_IdList64_AddId(ptrList2, (uint64_t) 2048);
   if (iEntry<0) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Error on GWEN_IdList64_AddId(%d): %s (%d)",
-	      i, GWEN_Error_SimpleToString((int)iEntry), (int)iEntry);
+              "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+              i, GWEN_Error_SimpleToString((int)iEntry), (int)iEntry);
     return (int)iEntry;
   }
   if (iEntry!=(int64_t)2048) {
@@ -593,14 +593,14 @@ int test8(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -611,14 +611,14 @@ int test8(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList2=GWEN_IdList64_LazyCopy(ptrList1);
 
-  for(i=2048; i<4096; i++) {
+  for (i=2048; i<4096; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList2, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -628,17 +628,17 @@ int test8(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   }
 
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t entry;
 
     entry=GWEN_IdList64_GetIdAt(ptrList1, i);
     if (entry<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
-		i, GWEN_Error_SimpleToString(entry), (int)entry);
+                "Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
+                i, GWEN_Error_SimpleToString(entry), (int)entry);
       return entry;
     }
-    if (entry != (int64_t) (i+1)) {
+    if (entry != (int64_t)(i+1)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
       return GWEN_ERROR_INTERNAL;
     }
@@ -649,17 +649,17 @@ int test8(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     return GWEN_ERROR_INTERNAL;
   }
 
-  for(i=0; i<4096; i++) {
+  for (i=0; i<4096; i++) {
     int64_t entry;
 
     entry=GWEN_IdList64_GetIdAt(ptrList2, i);
     if (entry<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
-		i, GWEN_Error_SimpleToString(entry), (int)entry);
+                "Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
+                i, GWEN_Error_SimpleToString(entry), (int)entry);
       return entry;
     }
-    if (entry != (int64_t) (i+1)) {
+    if (entry != (int64_t)(i+1)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
       return GWEN_ERROR_INTERNAL;
     }
@@ -736,14 +736,14 @@ int test9(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2047; i++) {
+  for (i=0; i<2047; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -769,8 +769,8 @@ int test9(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   rv=GWEN_IdList64_AddId(ptrList2, (uint64_t) 2047);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN,
-	      "Error on GWEN_IdList64_AddId(%d): %s (%d)",
-	      i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+              "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+              i, GWEN_Error_SimpleToString((int)rv), (int)rv);
     return rv;
   }
   if (rv!=(int64_t)2047) {
@@ -839,14 +839,14 @@ int test10(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -857,33 +857,33 @@ int test10(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList2=GWEN_IdList64_dup(ptrList1);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t entry;
 
     entry=GWEN_IdList64_GetIdAt(ptrList1, i);
     if (entry<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
-		i, GWEN_Error_SimpleToString(entry), (int)entry);
+                "Error on GWEN_IdList64_GetIdAt(%d, list1): %s (%d)",
+                i, GWEN_Error_SimpleToString(entry), (int)entry);
       return entry;
     }
-    if (entry != (int64_t) (i+1)) {
+    if (entry != (int64_t)(i+1)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
       return GWEN_ERROR_INTERNAL;
     }
   }
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t entry;
 
     entry=GWEN_IdList64_GetIdAt(ptrList2, i);
     if (entry<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
-		i, GWEN_Error_SimpleToString(entry), (int)entry);
+                "Error on GWEN_IdList64_GetIdAt(%d, list2): %s (%d)",
+                i, GWEN_Error_SimpleToString(entry), (int)entry);
       return entry;
     }
-    if (entry != (int64_t) (i+1)) {
+    if (entry != (int64_t)(i+1)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Non-matching entry at index %d: is %ld, should be %d ", i, (unsigned long) entry, i);
       return GWEN_ERROR_INTERNAL;
     }
@@ -931,14 +931,14 @@ int test11(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
-  for(i=0; i<2048; i++) {
+  for (i=0; i<2048; i++) {
     int64_t rv;
 
     rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
-		"Error on GWEN_IdList64_AddId(%d): %s (%d)",
-		i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                "Error on GWEN_IdList64_AddId(%d): %s (%d)",
+                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
       return rv;
     }
     if (rv!=(int64_t)i) {
@@ -968,7 +968,8 @@ int test11(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
 
 
-int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2) {
+int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2)
+{
   GWEN_IDLIST64_ITERATOR *iter1;
   GWEN_IDLIST64_ITERATOR *iter2;
   uint64_t id1;
@@ -979,7 +980,7 @@ int _compareList1AgainstList2(GWEN_IDLIST64 *idList1, GWEN_IDLIST64 *idList2) {
   iter2=GWEN_IdList64_Iterator_new(idList2);
   id1=GWEN_IdList64_Iterator_GetFirstId(iter1);
   id2=GWEN_IdList64_Iterator_GetFirstId(iter2);
-  while(id1>0 && id2>0) {
+  while (id1>0 && id2>0) {
     if (id1 != id2) {
       fprintf(stderr, "Tables differ at position %lu (%lu != %lu)\n",
               (unsigned long) index,
