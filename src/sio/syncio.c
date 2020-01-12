@@ -583,4 +583,56 @@ int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf)
 
 
 
+int GWEN_SyncIo_Helper_WriteFile(const char *fName, const uint8_t *ptrSource, uint64_t lenSource)
+{
+  GWEN_SYNCIO *sio;
+  int rv;
+  int64_t bytesWritten=0;
+  int64_t bytesLeft;
+
+  /* open file */
+  sio=GWEN_SyncIo_File_new(fName, GWEN_SyncIo_File_CreationMode_CreateNew);
+  GWEN_SyncIo_SetFlags(sio, GWEN_SYNCIO_FILE_FLAGS_WRITE);
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not open file [%s]", fName?fName:"<no filename>");
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  /* write file */
+  bytesLeft=lenSource;
+  while (bytesLeft>0) {
+    do {
+      rv=GWEN_SyncIo_Write(sio, ptrSource, bytesLeft);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
+
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Nothing written");
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+      return GWEN_ERROR_IO;
+    }
+    ptrSource+=rv;
+    bytesWritten+=rv;
+    bytesLeft-=rv;
+  }
+
+  /* close file */
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  return bytesWritten;
+}
+
+
+
 

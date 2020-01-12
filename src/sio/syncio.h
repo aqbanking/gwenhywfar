@@ -198,6 +198,19 @@ GWENHYWFAR_API
 int GWEN_SyncIo_Helper_ReadFile(const char *fName, GWEN_BUFFER *dbuf);
 
 
+/**
+ * Writes a whole file from the given buffer
+ *
+ * @return number of bytes actually written (or error code if negative value)
+ * @param fName name of the file to load
+ * @param ptrSource pointer to the data to write
+ * @param lenSource size of the data to write
+ */
+GWENHYWFAR_API
+int GWEN_SyncIo_Helper_WriteFile(const char *fName, const uint8_t *ptrSource, uint64_t lenSource);
+
+
+
 
 /** @name Declarations for Virtual Functions
  *
