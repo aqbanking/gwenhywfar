@@ -11,7 +11,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=$(visibility_cflags) @WERROR@
 
 SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar test_framework
-DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar
+DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar test_framework
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
