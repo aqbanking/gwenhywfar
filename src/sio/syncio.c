@@ -592,7 +592,9 @@ int GWEN_SyncIo_Helper_WriteFile(const char *fName, const uint8_t *ptrSource, ui
 
   /* open file */
   sio=GWEN_SyncIo_File_new(fName, GWEN_SyncIo_File_CreationMode_CreateNew);
-  GWEN_SyncIo_SetFlags(sio, GWEN_SYNCIO_FILE_FLAGS_WRITE);
+  GWEN_SyncIo_SetFlags(sio,
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE | GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD | GWEN_SYNCIO_FILE_FLAGS_UWRITE);
 
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
