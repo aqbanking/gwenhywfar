@@ -68,13 +68,13 @@ static int GWEN_XMLNode__WriteNamespacesToStream(const GWEN_XMLNODE *n, GWEN_FAS
     if (name && *name) {
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ":", -1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, name, -1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
@@ -85,8 +85,8 @@ static int GWEN_XMLNode__WriteNamespacesToStream(const GWEN_XMLNODE *n, GWEN_FAS
     if (url) {
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, url, -1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
@@ -116,42 +116,42 @@ static int GWEN_XMLNode__WritePropertiesToStream(const GWEN_XMLNODE *n, GWEN_FAS
     while (p) {
       GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(buf);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(buf);
+        return rv;
       }
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, p->name, -1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(buf);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(buf);
+        return rv;
       }
       if (p->value) {
-	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Buffer_free(buf);
-	  return rv;
-	}
-	rv=GWEN_Text_ConvertCharset("UTF-8", encoding, p->value, strlen(p->value), buf);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Buffer_free(buf);
-	  return rv;
-	}
-	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Buffer_free(buf);
-	  return rv;
-	}
-	GWEN_Buffer_Reset(buf);
-	GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Buffer_free(buf);
-	  return rv;
-	}
+        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
+        rv=GWEN_Text_ConvertCharset("UTF-8", encoding, p->value, strlen(p->value), buf);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
+        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
+        GWEN_Buffer_Reset(buf);
+        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
       }
       p=p->next;
     }
@@ -163,10 +163,10 @@ static int GWEN_XMLNode__WritePropertiesToStream(const GWEN_XMLNODE *n, GWEN_FAS
 
 
 static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
-					  GWEN_FAST_BUFFER *fb,
-					  uint32_t flags,
-					  const char *encoding,
-					  unsigned int ind)
+                                          GWEN_FAST_BUFFER *fb,
+                                          uint32_t flags,
+                                          const char *encoding,
+                                          unsigned int ind)
 {
   int rv;
   int simpleTag=0;
@@ -175,8 +175,8 @@ static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
     if (flags & GWEN_XML_FLAGS_INDENT) {
       rv=GWEN_XMLNode__WriteIndents(fb, ind);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }
@@ -225,8 +225,8 @@ static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
       simpleTag=1;
       GWEN_FASTBUFFER_WRITEBYTE(fb, rv, '?');
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     else if (n->data[0]=='!') {
@@ -253,8 +253,8 @@ static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
     if (hasSubTags) {
       GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
 
@@ -262,19 +262,19 @@ static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
     while (c) {
       rv=GWEN_XMLNode__WriteToStream(c, fb, flags, encoding, ind+2);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       c=GWEN_XMLNode_Next(c);
     }
 
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
       if (flags & GWEN_XML_FLAGS_INDENT) {
-	rv=GWEN_XMLNode__WriteIndents(fb, ind);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+        rv=GWEN_XMLNode__WriteIndents(fb, ind);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
       }
     }
 
@@ -282,39 +282,39 @@ static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
     if (n->data) {
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "</", -1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
       if (flags & GWEN_XML_FLAGS_SIMPLE) {
 #if 0
-	if (!hasSubTags) {
-	  GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
-	}
-	else {
-	  GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
-	}
+        if (!hasSubTags) {
+          GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+        }
+        else {
+          GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
+        }
 #else
-	GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+        GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
 #endif
       }
       else {
-	GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+        GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
       }
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
     else {
       GWEN_FASTBUFFER_WRITELINE(fb, rv, "</UNKNOWN>");
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }
@@ -325,10 +325,10 @@ static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
 
 
 static int GWEN_XMLNode__WriteDataToStream(const GWEN_XMLNODE *n,
-					   GWEN_FAST_BUFFER *fb,
-					   uint32_t flags,
-					   const char *encoding,
-					   unsigned int ind)
+                                           GWEN_FAST_BUFFER *fb,
+                                           uint32_t flags,
+                                           const char *encoding,
+                                           unsigned int ind)
 {
 
   if (n->data) {
@@ -337,11 +337,11 @@ static int GWEN_XMLNode__WriteDataToStream(const GWEN_XMLNODE *n,
 
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
       if (flags & GWEN_XML_FLAGS_INDENT) {
-	rv=GWEN_XMLNode__WriteIndents(fb, ind);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+        rv=GWEN_XMLNode__WriteIndents(fb, ind);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
       }
     }
 
@@ -362,8 +362,8 @@ static int GWEN_XMLNode__WriteDataToStream(const GWEN_XMLNODE *n,
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
       GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }
@@ -374,10 +374,10 @@ static int GWEN_XMLNode__WriteDataToStream(const GWEN_XMLNODE *n,
 
 
 static int GWEN_XMLNode__WriteCommentToStream(const GWEN_XMLNODE *n,
-					      GWEN_FAST_BUFFER *fb,
-					      uint32_t flags,
-					      const char *encoding,
-					      unsigned int ind)
+                                              GWEN_FAST_BUFFER *fb,
+                                              uint32_t flags,
+                                              const char *encoding,
+                                              unsigned int ind)
 {
 
   if (n->data) {
@@ -386,11 +386,11 @@ static int GWEN_XMLNode__WriteCommentToStream(const GWEN_XMLNODE *n,
 
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
       if (flags & GWEN_XML_FLAGS_INDENT) {
-	rv=GWEN_XMLNode__WriteIndents(fb, ind);
-	if (rv<0) {
-	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	  return rv;
-	}
+        rv=GWEN_XMLNode__WriteIndents(fb, ind);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
       }
     }
 
@@ -424,8 +424,8 @@ static int GWEN_XMLNode__WriteCommentToStream(const GWEN_XMLNODE *n,
     if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
       GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }
@@ -436,10 +436,10 @@ static int GWEN_XMLNode__WriteCommentToStream(const GWEN_XMLNODE *n,
 
 
 static int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
-				       GWEN_FAST_BUFFER *fb,
-				       uint32_t flags,
-				       const char *encoding,
-				       unsigned int ind)
+                                       GWEN_FAST_BUFFER *fb,
+                                       uint32_t flags,
+                                       const char *encoding,
+                                       unsigned int ind)
 {
   int rv;
 
@@ -463,8 +463,8 @@ static int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
     if (flags & GWEN_XML_FLAGS_HANDLE_COMMENTS) {
       rv=GWEN_XMLNode__WriteCommentToStream(n, fb, flags, encoding, ind);
       if (rv<0) {
-	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	return rv;
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }

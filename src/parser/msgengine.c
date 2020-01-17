@@ -3159,11 +3159,11 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
           if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
             break;
           c=GWEN_Buffer_PeekByte(msgbuf);
-	  if (c &&
-	      (*gtype || (delimiter && delimiter == c) || (terminator && terminator == c)) &&
-	      strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
-	    abortLoop=1;
-	  }
+          if (c &&
+              (*gtype || (delimiter && delimiter == c) || (terminator && terminator == c)) &&
+              strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
+            abortLoop=1;
+          }
           else {
             gname=GWEN_XMLNode_GetProperty(n, "name", 0);
             if (gname) {
