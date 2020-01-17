@@ -1987,7 +1987,9 @@ int GWEN_DB_WriteVarValueToBuffer(GWEN_DB_NODE *db, const char *name, int index,
 
   assert(db);
 
-  valType=GWEN_DB_GetVariableType(db, name);
+  /*valType=GWEN_DB_GetVariableType(db, name);*/
+  DBG_ERROR(0, "Get value for %s[%i]", name, index);
+  valType=GWEN_DB_GetValueTypeByPath(db, name, index);
   switch (valType) { /* GWEN_DB_GetVariableType */
   case GWEN_DB_NodeType_ValueInt:
     valueInt=GWEN_DB_GetIntValue(db, name, index, 0);

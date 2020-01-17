@@ -1,5 +1,5 @@
 /***************************************************************************
- copyright   : (C) 2007-2010 by Martin Preuss
+ copyright   : (C) 2020 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,211 +26,453 @@
 
 
 
-int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
-                                GWEN_FAST_BUFFER *fb,
-                                uint32_t flags,
-                                const char *encoding,
-                                unsigned int ind)
+static int GWEN_XMLNode__WriteIndents(GWEN_FAST_BUFFER *fb, int ind)
 {
-  GWEN_XMLPROPERTY *p;
-  GWEN_XMLNODE *c;
-  GWEN_BUFFER *buf;
   int i;
-  int simpleTag;
-  int rv;
+  int rv=0;
 
-#define CHECK_ERROR(rv) \
-  if (rv<0) {\
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);\
-    GWEN_Buffer_free(buf);\
-    return rv;\
+  for (i=0; i<ind; i++) {
+    GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  return 0;
+}
+
+
+
+static int GWEN_XMLNode__WriteNamespacesToStream(const GWEN_XMLNODE *n, GWEN_FAST_BUFFER *fb)
+{
+  GWEN_XMLNODE_NAMESPACE *ns;
+
+  ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
+  while (ns) {
+    const char *name;
+    const char *url;
+    int rv;
+
+    name=GWEN_XMLNode_NameSpace_GetName(ns);
+    url=GWEN_XMLNode_NameSpace_GetUrl(ns);
+    GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "xmlns", -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    if (name && *name) {
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ":", -1);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, name, -1);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    if (url) {
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, url, -1);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    ns=GWEN_XMLNode_NameSpace_List_Next(ns);
   }
 
-  assert(n);
+  return 0;
+}
 
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
-  simpleTag=0;
-  if (n->type==GWEN_XMLNodeTypeTag) {
-    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
-      if (flags & GWEN_XML_FLAGS_INDENT) {
-        for (i=0; i<ind; i++) {
-          GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-          CHECK_ERROR(rv);
-        }
-      }
-    }
 
-    if (n->data) {
-      GWEN_FASTBUFFER_WRITEBYTE(fb, rv, '<');
-      CHECK_ERROR(rv);
-      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
-      CHECK_ERROR(rv);
-    }
-    else {
-      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<UNKNOWN", -1);
-      CHECK_ERROR(rv);
-    }
 
-    if (flags & GWEN_XML_FLAGS_HANDLE_NAMESPACES) {
-      GWEN_XMLNODE_NAMESPACE *ns;
+static int GWEN_XMLNode__WritePropertiesToStream(const GWEN_XMLNODE *n, GWEN_FAST_BUFFER *fb, const char *encoding)
+{
+  GWEN_XMLPROPERTY *p;
 
-      ns=GWEN_XMLNode_NameSpace_List_First(n->nameSpaces);
-      while (ns) {
-        const char *name;
-        const char *url;
+  p=n->properties;
+  if (p) {
+    GWEN_BUFFER *buf;
+    int rv=0;
 
-        name=GWEN_XMLNode_NameSpace_GetName(ns);
-        url=GWEN_XMLNode_NameSpace_GetUrl(ns);
-        GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-        CHECK_ERROR(rv);
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "xmlns", -1);
-        CHECK_ERROR(rv);
-        if (name && *name) {
-          GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ":", -1);
-          CHECK_ERROR(rv);
-          GWEN_FASTBUFFER_WRITEFORCED(fb, rv, name, -1);
-          CHECK_ERROR(rv);
-        }
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
-        CHECK_ERROR(rv);
-        if (url) {
-          GWEN_FASTBUFFER_WRITEFORCED(fb, rv, url, -1);
-          CHECK_ERROR(rv);
-        }
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
-        CHECK_ERROR(rv);
-
-        ns=GWEN_XMLNode_NameSpace_List_Next(ns);
-      }
-    }
-
-    p=n->properties;
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
     while (p) {
       GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-      CHECK_ERROR(rv);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(buf);
+        return rv;
+      }
       GWEN_FASTBUFFER_WRITEFORCED(fb, rv, p->name, -1);
-      CHECK_ERROR(rv);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(buf);
+        return rv;
+      }
       if (p->value) {
         GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "=\"", -1);
-        CHECK_ERROR(rv);
-        rv=GWEN_Text_ConvertCharset("UTF-8", encoding,
-                                    p->value, strlen(p->value), buf);
-        CHECK_ERROR(rv);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
+        rv=GWEN_Text_ConvertCharset("UTF-8", encoding, p->value, strlen(p->value), buf);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
         GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
-        CHECK_ERROR(rv);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
         GWEN_Buffer_Reset(buf);
         GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "\"", -1);
-        CHECK_ERROR(rv);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(buf);
+          return rv;
+        }
       }
       p=p->next;
     }
+  }
 
-    if (n->data) {
-      if (n->data[0]=='?') {
-        simpleTag=1;
-        GWEN_FASTBUFFER_WRITEBYTE(fb, rv, '?');
-        CHECK_ERROR(rv);
-      }
-      else if (n->data[0]=='!') {
-        simpleTag=1;
-      }
-    }
+  return 0;
+}
 
-    if (flags & GWEN_XML_FLAGS_SIMPLE) {
-      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
-    }
-    else {
-      GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
-    }
-    CHECK_ERROR(rv);
-    if (!simpleTag) {
-      c=GWEN_XMLNode_GetChild(n);
-      while (c) {
-        rv=GWEN_XMLNode__WriteToStream(c, fb, flags, encoding, ind+2);
-        CHECK_ERROR(rv);
-        c=GWEN_XMLNode_Next(c);
-      }
 
-      if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
-        if (flags & GWEN_XML_FLAGS_INDENT) {
-          for (i=0; i<ind; i++) {
-            GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-            CHECK_ERROR(rv);
-          }
-        }
-      }
-      if (n->data) {
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "</", -1);
-        CHECK_ERROR(rv);
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
-        CHECK_ERROR(rv);
-        if (flags & GWEN_XML_FLAGS_SIMPLE) {
-          GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
-        }
-        else {
-          GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
-        }
-        CHECK_ERROR(rv);
-      }
-      else {
-        GWEN_FASTBUFFER_WRITELINE(fb, rv, "</UNKNOWN>");
-        CHECK_ERROR(rv);
+
+static int GWEN_XMLNode__WriteTagToStream(const GWEN_XMLNODE *n,
+                                          GWEN_FAST_BUFFER *fb,
+                                          uint32_t flags,
+                                          const char *encoding,
+                                          unsigned int ind)
+{
+  int rv;
+  int simpleTag=0;
+
+  if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+    if (flags & GWEN_XML_FLAGS_INDENT) {
+      rv=GWEN_XMLNode__WriteIndents(fb, ind);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
     }
   }
-  else if (n->type==GWEN_XMLNodeTypeData) {
-    if (n->data) {
-      if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
-        if (flags & GWEN_XML_FLAGS_INDENT) {
-          for (i=0; i<ind; i++) {
-            GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-            CHECK_ERROR(rv);
-          }
+
+  /* write element opening ("<NAME") */
+  if (n->data) {
+    GWEN_FASTBUFFER_WRITEBYTE(fb, rv, '<');
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<UNKNOWN", -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* write namespaces */
+  if (flags & GWEN_XML_FLAGS_HANDLE_NAMESPACES) {
+    rv=GWEN_XMLNode__WriteNamespacesToStream(n, fb);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* write properties */
+  rv=GWEN_XMLNode__WritePropertiesToStream(n, fb, encoding);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  /* write element closing (">) */
+  if (n->data) {
+    if (n->data[0]=='?') {
+      simpleTag=1;
+      GWEN_FASTBUFFER_WRITEBYTE(fb, rv, '?');
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+    else if (n->data[0]=='!') {
+      simpleTag=1;
+    }
+  }
+  if (flags & GWEN_XML_FLAGS_SIMPLE) {
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
+  }
+  else {
+    GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+  }
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* probably write children */
+  if (!simpleTag) {
+    int hasSubTags;
+    GWEN_XMLNODE *c;
+
+    hasSubTags=(GWEN_XMLNode_GetFirstTag(n)!=NULL);
+    if (hasSubTags) {
+      GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+
+    c=GWEN_XMLNode_GetChild(n);
+    while (c) {
+      rv=GWEN_XMLNode__WriteToStream(c, fb, flags, encoding, ind+2);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+      c=GWEN_XMLNode_Next(c);
+    }
+
+    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+      if (flags & GWEN_XML_FLAGS_INDENT) {
+        rv=GWEN_XMLNode__WriteIndents(fb, ind);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
         }
       }
+    }
 
-      rv=GWEN_Text_ConvertCharset("UTF-8", encoding,
-                                  n->data, strlen(n->data), buf);
-      CHECK_ERROR(rv);
-      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
-      CHECK_ERROR(rv);
-      GWEN_Buffer_Reset(buf);
-      if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
-        GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
-        CHECK_ERROR(rv);
+    /* write closing tag ("</NAME>") */
+    if (n->data) {
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "</", -1);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
+      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, n->data, -1);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+      if (flags & GWEN_XML_FLAGS_SIMPLE) {
+#if 0
+        if (!hasSubTags) {
+          GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+        }
+        else {
+          GWEN_FASTBUFFER_WRITEFORCED(fb, rv, ">", -1);
+        }
+#else
+        GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+#endif
+      }
+      else {
+        GWEN_FASTBUFFER_WRITELINE(fb, rv, ">");
+      }
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+    else {
+      GWEN_FASTBUFFER_WRITELINE(fb, rv, "</UNKNOWN>");
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+static int GWEN_XMLNode__WriteDataToStream(const GWEN_XMLNODE *n,
+                                           GWEN_FAST_BUFFER *fb,
+                                           uint32_t flags,
+                                           const char *encoding,
+                                           unsigned int ind)
+{
+
+  if (n->data) {
+    GWEN_BUFFER *buf;
+    int rv=0;
+
+    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+      if (flags & GWEN_XML_FLAGS_INDENT) {
+        rv=GWEN_XMLNode__WriteIndents(fb, ind);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+      }
+    }
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Text_ConvertCharset("UTF-8", encoding, n->data, strlen(n->data), buf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    GWEN_Buffer_free(buf);
+    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+      GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+static int GWEN_XMLNode__WriteCommentToStream(const GWEN_XMLNODE *n,
+                                              GWEN_FAST_BUFFER *fb,
+                                              uint32_t flags,
+                                              const char *encoding,
+                                              unsigned int ind)
+{
+
+  if (n->data) {
+    GWEN_BUFFER *buf;
+    int rv=0;
+
+    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+      if (flags & GWEN_XML_FLAGS_INDENT) {
+        rv=GWEN_XMLNode__WriteIndents(fb, ind);
+        if (rv<0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+      }
+    }
+
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<!--", -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Text_ConvertCharset("UTF-8", encoding, n->data, strlen(n->data), buf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    GWEN_Buffer_free(buf);
+
+    GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "-->", -1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    if (!(flags & GWEN_XML_FLAGS_SIMPLE)) {
+      GWEN_FASTBUFFER_WRITELINE(fb, rv, "");
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+static int GWEN_XMLNode__WriteToStream(const GWEN_XMLNODE *n,
+                                       GWEN_FAST_BUFFER *fb,
+                                       uint32_t flags,
+                                       const char *encoding,
+                                       unsigned int ind)
+{
+  int rv;
+
+  assert(n);
+
+  if (n->type==GWEN_XMLNodeTypeTag) {
+    rv=GWEN_XMLNode__WriteTagToStream(n, fb, flags, encoding, ind);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else if (n->type==GWEN_XMLNodeTypeData) {
+    rv=GWEN_XMLNode__WriteDataToStream(n, fb, flags, encoding, ind);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
     }
   }
   else if (n->type==GWEN_XMLNodeTypeComment) {
     if (flags & GWEN_XML_FLAGS_HANDLE_COMMENTS) {
-      if (flags & GWEN_XML_FLAGS_INDENT) {
-        for (i=0; i<ind; i++) {
-          GWEN_FASTBUFFER_WRITEBYTE(fb, rv, ' ');
-          CHECK_ERROR(rv);
-        }
+      rv=GWEN_XMLNode__WriteCommentToStream(n, fb, flags, encoding, ind);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
       }
-
-      GWEN_FASTBUFFER_WRITEFORCED(fb, rv, "<!--", -1);
-      CHECK_ERROR(rv);
-      if (n->data) {
-        rv=GWEN_Text_ConvertCharset("UTF-8", encoding,
-                                    n->data, strlen(n->data), buf);
-        CHECK_ERROR(rv);
-        GWEN_FASTBUFFER_WRITEFORCED(fb, rv, GWEN_Buffer_GetStart(buf), -1);
-        CHECK_ERROR(rv);
-        GWEN_Buffer_Reset(buf);
-      }
-      GWEN_FASTBUFFER_WRITELINE(fb, rv, "-->");
-      CHECK_ERROR(rv);
     }
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unknown tag type (%d)", n->type);
   }
 
-  GWEN_Buffer_free(buf);
   return 0;
-#undef CHECK_ERROR
 }
 
 

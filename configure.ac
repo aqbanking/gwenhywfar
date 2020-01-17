@@ -29,7 +29,7 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=5
 GWENHYWFAR_VERSION_MINOR=1
-GWENHYWFAR_VERSION_PATCHLEVEL=0
+GWENHYWFAR_VERSION_PATCHLEVEL=2
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="stable"
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 GWENHYWFAR_SO_CURRENT="80"
 GWENHYWFAR_SO_AGE="1"
-GWENHYWFAR_SO_REVISION="0"
+GWENHYWFAR_SO_REVISION="2"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -178,7 +178,7 @@ AC_SUBST(WEBKIT_FRAMEWORK)
 ###-------------------------------------------------------------------------
 # prefix handling
 
-AC_PREFIX_DEFAULT(/usr)
+AC_PREFIX_DEFAULT(/usr/local)
 if test "x$prefix" = "xNONE"; then
   prefix=$ac_default_prefix
   ac_configure_args="$ac_configure_args --prefix $prefix"

@@ -3159,7 +3159,9 @@ int GWEN_MsgEngine__ReadGroup(GWEN_MSGENGINE *e,
           if (GWEN_Buffer_GetBytesLeft(msgbuf)==0)
             break;
           c=GWEN_Buffer_PeekByte(msgbuf);
-          if (c && strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
+          if (c &&
+              (*gtype || (delimiter && delimiter == c) || (terminator && terminator == c)) &&
+              strchr(GWEN_Buffer_GetStart(delimBuffer), c)) {
             abortLoop=1;
           }
           else {

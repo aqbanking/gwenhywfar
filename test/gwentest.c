@@ -701,8 +701,7 @@ int testXML2(int argc, char **argv)
   }
   fprintf(stderr, "XML file:\n");
   GWEN_XMLNode_Dump(n, 2);
-  if (GWEN_XMLNode_WriteFile(n, "xml.out",
-                             GWEN_XML_FLAGS_DEFAULT)) {
+  if (GWEN_XMLNode_WriteFile(n, "xml.out", GWEN_XML_FLAGS_SIMPLE)) {
     fprintf(stderr, "Could not write file xml.out\n");
     return 2;
   }
