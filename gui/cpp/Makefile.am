@@ -13,7 +13,8 @@ noinst_HEADERS=\
   cppwidget_p.hpp
 
 libgwengui_cpp_la_LIBADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
-libgwengui_cpp_la_LDFLAGS=-no-undefined
+libgwengui_cpp_la_LDFLAGS=-no-undefined -version-info \
+   $(GWENHYWFAR_SO_CURRENT):$(GWENHYWFAR_SO_REVISION):$(GWENHYWFAR_SO_AGE)
 
 libgwengui_cpp_la_SOURCES=\
   cppdialog.cpp \

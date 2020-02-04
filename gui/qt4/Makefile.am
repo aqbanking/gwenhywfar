@@ -17,6 +17,9 @@ noinst_HEADERS=\
   qt4_gui_dialog.hpp
 
 libgwengui_qt4_la_LIBADD=$(qt4_libs) $(top_builddir)/src/$(gwenhywfar_internal_libname) $(builddir)/../cpp/libgwengui-cpp.la
+libgwengui_qt4_la_LDFLAGS=-no-undefined -version-info \
+   $(GWENHYWFAR_SO_CURRENT):$(GWENHYWFAR_SO_REVISION):$(GWENHYWFAR_SO_AGE)
+
 libgwengui_qt4_la_SOURCES=\
   qt4dialogbox.cpp \
   qt4_gui.cpp \
