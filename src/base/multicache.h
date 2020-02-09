@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed May 08 2013
-    copyright   : (C) 2013 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,6 +29,7 @@
 
 #include <gwenhywfar/list1.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/idlist64.h>
 
 
 #ifdef __cplusplus
@@ -101,6 +102,9 @@ GWENHYWFAR_API void GWEN_MultiCache_Type_PurgeData(GWEN_MULTICACHE_TYPE *ct, uin
 GWENHYWFAR_API void GWEN_MultiCache_Type_PurgeAll(GWEN_MULTICACHE_TYPE *ct);
 
 
+GWENHYWFAR_API GWEN_IDLIST64 *GWEN_MultiCache_Type_GetIdsInCache(const GWEN_MULTICACHE_TYPE *ct);
+
+
 GWENHYWFAR_API void GWEN_MultiCache_Type_SetAttachFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_ATTACH_FN fn);
 
 GWENHYWFAR_API void GWEN_MultiCache_Type_SetFreeFn(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE_TYPE_FREE_FN fn);
@@ -127,6 +131,8 @@ GWENHYWFAR_API void GWEN_MultiCache_free(GWEN_MULTICACHE *mc);
 
 
 GWENHYWFAR_API uint64_t GWEN_MultiCache_GetMaxSizeUsed(const GWEN_MULTICACHE *mc);
+
+GWENHYWFAR_API int GWEN_MultiCache_GetUsageString(const GWEN_MULTICACHE *mc, char *ptrBuffer, int lenBuffer);
 
 /*@}*/
 

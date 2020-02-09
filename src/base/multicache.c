@@ -472,6 +472,37 @@ void GWEN_MultiCache_Type_ReleaseEntry(GWEN_MULTICACHE_TYPE *ct, GWEN_MULTICACHE
 
 
 
+GWEN_IDLIST64 *GWEN_MultiCache_Type_GetIdsInCache(const GWEN_MULTICACHE_TYPE *ct)
+{
+  GWEN_IDLIST64 *idList;
+  GWEN_MULTICACHE_ENTRY *ce;
+
+  assert(ct);
+  assert(ct->_refCount);
+
+  idList=GWEN_IdList64_new();
+
+  ce=GWEN_MultiCache_Entry_List_First(ct->multiCache->entryList);
+  while (ce) {
+    GWEN_MULTICACHE_ENTRY *ceNext;
+
+    ceNext=GWEN_MultiCache_Entry_List_Next(ce);
+    if (GWEN_MultiCache_Entry_GetCacheType(ce)==ct) {
+      GWEN_IdList64_AddId(idList, ce->id);
+    }
+    ce=ceNext;
+  }
+
+  if (GWEN_IdList64_GetEntryCount(idList)<1) {
+    GWEN_IdList64_free(idList);
+    return NULL;
+  }
+
+  return idList;
+}
+
+
+
 
 
 
@@ -529,6 +560,42 @@ void GWEN_MultiCache_free(GWEN_MULTICACHE *mc)
     else
       mc->_refCount--;
   }
+}
+
+
+
+int GWEN_MultiCache_GetUsageString(const GWEN_MULTICACHE *mc, char *ptrBuffer, int lenBuffer)
+{
+  size_t len;
+  uint64_t totalCacheOps;
+  int hitPercentage=0;
+
+  totalCacheOps=mc->cacheHits+mc->cacheMisses;
+  if (totalCacheOps)
+    hitPercentage=((mc->cacheHits)*100)/totalCacheOps;
+
+  len=snprintf(ptrBuffer, lenBuffer,
+               "MultiCache usage: "
+               "%" PRIu64 " hits (%d %%), "
+               "%" PRIu64 " misses, "
+               "%" PRIu64 " drops, "
+               "%" PRIu64 " mb max memory used from "
+               "%" PRIu64 " mb "
+               "(%d %%)",
+               (uint64_t) mc->cacheHits,
+               hitPercentage,
+               (uint64_t) mc->cacheMisses,
+               (uint64_t) mc->cacheDrops,
+               (uint64_t)((mc->maxSizeUsed)/(1024*1024)),
+               (uint64_t)((mc->maxSize)/(1024*1024)),
+               (int)((mc->maxSizeUsed)*100.0/mc->maxSize));
+  if (len>=(size_t)lenBuffer) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small (%" PRIu64 " < %" PRIu64,
+              (uint64_t) lenBuffer, (uint64_t) len);
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+  ptrBuffer[len]=0;
+  return 0;
 }
 
 
