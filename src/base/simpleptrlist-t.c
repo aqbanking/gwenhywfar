@@ -26,13 +26,16 @@
 /* This file is included by "simpleptrlist.c" */
 
 
+#include <gwenhywfar/testframework.h>
+#include "simpleptrlist-t.h"
+
+
 #ifdef GWENHYWFAR_ENABLE_TESTCODE
 
 
 #include <gwenhywfar/mdigest.h>
 #include <string.h>
 
-#include "simpleptrlist-t.h"
 
 
 
