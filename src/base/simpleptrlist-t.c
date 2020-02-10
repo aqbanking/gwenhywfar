@@ -26,7 +26,7 @@
 /* This file is included by "simpleptrlist.c" */
 
 
-#if GWENHYWFAR_ENABLE_TESTCODE
+#ifdef GWENHYWFAR_ENABLE_TESTCODE
 
 
 #include <gwenhywfar/mdigest.h>

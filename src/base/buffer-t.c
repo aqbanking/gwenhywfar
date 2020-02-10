@@ -30,7 +30,7 @@
 #include "buffer-t.h"
 
 
-#if GWENHYWFAR_ENABLE_TESTCODE
+#ifdef GWENHYWFAR_ENABLE_TESTCODE
 
 
 

@@ -28,7 +28,7 @@
 #include "idlist64-t.h"
 
 
-#if GWENHYWFAR_ENABLE_TESTCODE
+#ifdef GWENHYWFAR_ENABLE_TESTCODE
 
 
 
