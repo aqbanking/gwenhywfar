@@ -32,6 +32,8 @@
 #include <gwenhywfar/mdigest.h>
 #include <string.h>
 
+#include "simpleptrlist-t.h"
+
 
 
 /* ------------------------------------------------------------------------------------------------

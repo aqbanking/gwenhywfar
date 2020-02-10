@@ -272,6 +272,17 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
                             const char *buffer,
                             uint32_t size);
 
+/**
+ * Append strings to buffer with a sprintf()-like argument list.
+ *
+ * @return 0 if okay, error code otherwise
+ * @param bf buffer to append data to
+ * @param fmt format string like that for sprintf().
+ */
+GWENHYWFAR_API
+int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...);
+
+
 GWENHYWFAR_API
 int GWEN_Buffer_FillWithBytes(GWEN_BUFFER *bf,
                               unsigned char c,
