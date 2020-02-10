@@ -3,3 +3,4 @@ test-output.def
 testcert.pem
 testkey.pem
 xml.out
+test.log
