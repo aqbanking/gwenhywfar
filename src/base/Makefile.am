@@ -26,8 +26,9 @@ typefiles=param.xml
 
 EXTRA_DIST=$(typefiles) \
   param_fns.c \
-  simpleptrlist-t.c \
-  idlist64-t.c
+  simpleptrlist-t.c simpleptrlist-t.h \
+  idlist64-t.c idlist64-t.h \
+  buffer-t.c buffer-t.h
 
 
 

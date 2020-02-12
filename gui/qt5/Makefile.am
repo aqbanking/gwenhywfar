@@ -16,7 +16,9 @@ noinst_PROGRAMS=libtest
 noinst_HEADERS=
 
 libgwengui_qt5_la_LIBADD=$(QT_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname) $(builddir)/../cpp/libgwengui-cpp.la
-libgwengui_qt5_la_LDFLAGS=-no-undefined
+libgwengui_qt5_la_LDFLAGS=-no-undefined -version-info \
+   $(GWENHYWFAR_SO_CURRENT):$(GWENHYWFAR_SO_REVISION):$(GWENHYWFAR_SO_AGE)
+
 libgwengui_qt5_la_SOURCES=\
   qt5dialogbox.cpp \
   qt5_gui.cpp \

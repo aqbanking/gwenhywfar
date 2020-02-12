@@ -25,8 +25,10 @@
 
 /* This file is included by "idlist64.c" */
 
+#include "idlist64-t.h"
 
-#if GWENHYWFAR_ENABLE_TESTCODE
+
+#ifdef GWENHYWFAR_ENABLE_TESTCODE
 
 
 

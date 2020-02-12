@@ -34,6 +34,10 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
+#include <stdarg.h>
+#include <stdio.h>
+
+
 
 GWEN_BUFFER *GWEN_Buffer_new(char *buffer,
                              uint32_t size,
@@ -1074,6 +1078,53 @@ int GWENHYWFAR_CB GWEN_Buffer_CacheFn_Free(void *ptr)
   GWEN_Buffer_free((GWEN_BUFFER *) ptr);
   return 0;
 }
+
+
+
+int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...)
+{
+
+  va_list list;
+  char *p;
+  int maxUnsegmentedWrite;
+  int rv;
+
+  GWEN_Buffer_AllocRoom(bf, 256);
+
+  maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
+  p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+
+  /* prepare list for va_arg */
+  va_start(list, fmt);
+  rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+    va_end(list);
+    return GWEN_ERROR_GENERIC;
+  }
+  else if (rv>=maxUnsegmentedWrite) {
+    GWEN_Buffer_AllocRoom(bf, rv+1);
+    maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
+    p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+    rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+      va_end(list);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+  if (rv>0) {
+    GWEN_Buffer_IncrementPos(bf, rv);
+    GWEN_Buffer_AdjustUsedBytes(bf);
+  }
+  va_end(list);
+
+  return 0;
+}
+
+
+
+#include "buffer-t.c"
 
 
 

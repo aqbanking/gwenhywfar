@@ -91,6 +91,10 @@
 #include <gwenhywfar/parser_xml.h>
 #endif
 
+#include "buffer-t.h"
+#include "simpleptrlist-t.h"
+#include "idlist64-t.h"
+
 
 #include <sys/types.h>
 #ifdef HAVE_ARPA_INET_H
@@ -5818,6 +5822,12 @@ int testModules(int argc, char **argv)
   }
 
   rv=GWEN_SimplePtrList_AddTests(TestFramework_GetModulesRoot(tf));
+  if (rv<0) {
+    fprintf(stderr, "Adding module failed.\n");
+    return 2;
+  }
+
+  rv=GWEN_Buffer_AddTests(TestFramework_GetModulesRoot(tf));
   if (rv<0) {
     fprintf(stderr, "Adding module failed.\n");
     return 2;
