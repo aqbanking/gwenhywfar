@@ -334,6 +334,7 @@ if test "$enable_system_certs" != "no"; then
   AC_DEFINE(GWEN_TLS_USE_SYSTEM_CERTIFICATES, 1, [whether system-wide trusted certificates should be set])
 fi
 
+AM_CONDITIONAL(INSTALL_CERTS, [test "$enable_system_certs" = "no"])
 
 
 ###-------------------------------------------------------------------------
