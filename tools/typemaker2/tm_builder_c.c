@@ -493,7 +493,10 @@ static int _buildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
         TYPEMAKER2_ENUM *te=Typemaker2_Member_GetEnumPtr(tm);
         const char *s;
 
-        assert(te);
+        if (te==NULL) {
+          DBG_ERROR(0, "No enum name set in definition of member \"%s\"", Typemaker2_Member_GetName(tm));
+          return GWEN_ERROR_BAD_DATA;
+        }
         s=Typemaker2_Enum_GetType(te);
         if (s && *s) {
           GWEN_Buffer_AppendString(tbuf, s);
