@@ -62,7 +62,9 @@ libparser_la_SOURCES=\
  xml.c \
  xmlctx.c \
  xsdnode.c \
- xml2db.c
+ xml2db.c \
+ xml2db_todb.c \
+ xml2db_fromdb.c
 
 
 
