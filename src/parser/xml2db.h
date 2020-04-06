@@ -1,7 +1,7 @@
 /***************************************************************************
     begin       : Sun Dec 16 2018
     copyright   : (C) 2018 by Martin Preuss
- email       : martin@libchipcard.de
+    email       : martin@libchipcard.de
 
  ***************************************************************************
  *                                                                         *
@@ -35,6 +35,10 @@
 GWENHYWFAR_API int GWEN_Xml2Db(GWEN_XMLNODE *xmlNodeDocument,
                                GWEN_XMLNODE *xmlNodeSchema,
                                GWEN_DB_NODE *dbDestination);
+
+GWENHYWFAR_API int GWEN_XmlFromDb(GWEN_XMLNODE *xmlNodeDestination,
+                                  GWEN_XMLNODE *xmlNodeSchema,
+                                  GWEN_DB_NODE *dbSource);
 
 
 

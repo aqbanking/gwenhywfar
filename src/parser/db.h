@@ -495,6 +495,7 @@ int GWEN_DB_SetCharValue(GWEN_DB_NODE *n,
  * @param path path and name of the variable
  * @param val The integer value to be stored as string value in the DB
  */
+GWENHYWFAR_API
 int GWEN_DB_SetCharValueFromInt(GWEN_DB_NODE *n,
                                 uint32_t flags,
                                 const char *path,

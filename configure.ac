@@ -28,7 +28,7 @@ AC_CONFIG_HEADERS([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=5
-GWENHYWFAR_VERSION_MINOR=2
+GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=0
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
@@ -40,8 +40,8 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="81"
-GWENHYWFAR_SO_AGE="2"
+GWENHYWFAR_SO_CURRENT="82"
+GWENHYWFAR_SO_AGE="3"
 GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
@@ -334,6 +334,7 @@ if test "$enable_system_certs" != "no"; then
   AC_DEFINE(GWEN_TLS_USE_SYSTEM_CERTIFICATES, 1, [whether system-wide trusted certificates should be set])
 fi
 
+AM_CONDITIONAL(INSTALL_CERTS, [test "$enable_system_certs" = "no"])
 
 
 ###-------------------------------------------------------------------------
