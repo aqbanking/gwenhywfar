@@ -1202,14 +1202,30 @@ AC_ARG_ENABLE(full-doc,
   enable_fulldoc="no")
 
 if test "$enable_fulldoc" = "yes"; then
-	DOXYGEN_INPUT="listdoc.h src gui plugins tools"
-        DOXYGEN_DEFINE=""
+    DOXYGEN_INPUT="listdoc.h src gui plugins tools"
+    DOXYGEN_DEFINE=""
+    DOXYGEN_GENERATE_QHP="NO"
+    DOXYGEN_QHG_LOCATION=""
+    DOXYGEN_QHP_NAMESPACE=de.aquamaniac.gwenhywfar-$GWENHYWFAR_VERSION_STRING
+    if which qhelpgenerator >/dev/null ; then
+        DOXYGEN_QHG_LOCATION=$(which qhelpgenerator)
+        DOXYGEN_GENERATE_QHP="YES"
+        USE_DOT=NO
+    elif which qhelpgenerator-qt5 >/dev/null ; then
+        DOXYGEN_QHG_LOCATION=$(which qhelpgenerator-qt5)
+        DOXYGEN_GENERATE_QHP="YES"
+        USE_DOT=NO
+    fi
 else
-	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h gwenhywfar5"
+    DOXYGEN_DEFINE="DOXYGEN_HIDE"
+    DOXYGEN_INPUT="listdoc.h gwenhywfar5"
 fi
+AC_SUBST(DOXYGEN_GENERATE_QHP)
+AC_SUBST(DOXYGEN_QHG_LOCATION)
+AC_SUBST(DOXYGEN_QHP_NAMESPACE)
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
+AC_SUBST(USE_DOT)
 AC_MSG_RESULT($enable_fulldoc)
 
 
