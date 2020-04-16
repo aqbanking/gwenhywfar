@@ -162,6 +162,12 @@ GWEN_CRYPT_KEY *GWEN_Crypt_KeySym_fromDb(GWEN_CRYPT_CRYPTMODE mode, GWEN_DB_NODE
 GWENHYWFAR_API
 int GWEN_Crypt_KeySym_toDb(const GWEN_CRYPT_KEY *k, GWEN_DB_NODE *db);
 
+GWENHYWFAR_API
+uint8_t *GWEN_Crypt_KeySym_GetKeyDataPtr(const GWEN_CRYPT_KEY *k);
+
+GWENHYWFAR_API
+uint32_t GWEN_Crypt_KeySym_GetKeyDataLen(const GWEN_CRYPT_KEY *k);
+
 
 #ifdef __cplusplus
 }
