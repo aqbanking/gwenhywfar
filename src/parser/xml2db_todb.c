@@ -48,7 +48,8 @@
 
 static int _handleChildren_toDb(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
 static const char *_getCharValueByPath(GWEN_XMLNODE *xmlNode, const char *path, const char *defValue);
-static int _convertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent, const char *value);
+static int _convertAndSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent,
+                                   const char *value);
 
 static int _handleDbSetCharValue_internal(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbCurrent);
 
@@ -142,8 +143,8 @@ const char *_getCharValueByPath(GWEN_XMLNODE *xmlNode, const char *path, const c
 
 /* TODO: optimize later */
 int _convertAndSetCharValue(GWEN_UNUSED GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode,
-                                       GWEN_DB_NODE *dbCurrent,
-                                       const char *value)
+                            GWEN_DB_NODE *dbCurrent,
+                            const char *value)
 {
   if (value && *value) {
     const char *name;
