@@ -96,7 +96,8 @@ mp:
 	   --enable-full-doc \
 	   --enable-testcode \
 	   --prefix=/usr/local \
-	   --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
+	   --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake" \
+	   --with-libxml2-code=yes
 
 mp-werror:
 	libtoolize -f --automake
