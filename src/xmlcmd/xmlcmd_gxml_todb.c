@@ -522,7 +522,7 @@ int _handleDbSetCharValue(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 
 int _handleDbSetTempCharValue(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
-  return _handleDbSetCharValue_internal(cmd, xmlNode, GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd));
+  return _handleDbSetCharValue_internal(cmd, xmlNode, GWEN_XmlCommanderGwenXml_GetCurrentTempDbGroup(cmd));
 }
 
 
