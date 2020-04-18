@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Sun Dec 16 2018
-    copyright   : (C) 2018 by Martin Preuss
+    begin       : Sat Apr 18 2018
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,66 +23,44 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+#ifndef GWEN_XMLCMD_H
+#define GWEN_XMLCMD_H
+
+
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+typedef struct GWEN_XMLCOMMANDER GWEN_XMLCOMMANDER;
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_XMLCOMMANDER, GWENHYWFAR_API)
+
+typedef int (*GWEN_XMLCMD_HANDLECHILDREN_FN)(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+
+
+
+GWENHYWFAR_API GWEN_XMLCOMMANDER *GWEN_XmlCommander_new(void);
+
+GWENHYWFAR_API void GWEN_XmlCommander_free(GWEN_XMLCOMMANDER *cmd);
+
+
+GWENHYWFAR_API GWEN_XMLCMD_HANDLECHILDREN_FN GWEN_XmlCommander_SetHandleChildrenFn(GWEN_XMLCOMMANDER *cmd,
+                                                                                   GWEN_XMLCMD_HANDLECHILDREN_FN f);
+
+
+
+GWENHYWFAR_API int GWEN_XmlCommander_HandleChildren(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+
+
+
+#ifdef __cplusplus
+}
 #endif
 
 
 
-#include "xml2db.h"
-
-#include <gwenhywfar/debug.h>
-#include <gwenhywfar/text.h>
-#include <gwenhywfar/gwendate.h>
-#include <gwenhywfar/xmlcmd_gxml_fromdb.h>
-#include <gwenhywfar/xmlcmd_gxml_todb.h>
-
-
-#include <ctype.h>
-
-
-
-
-int GWEN_Xml2Db(GWEN_XMLNODE *xmlNodeDocument,
-                GWEN_XMLNODE *xmlNodeSchema,
-                GWEN_DB_NODE *dbDestination)
-{
-  GWEN_XMLCOMMANDER *cmd;
-  int rv;
-
-  cmd=GWEN_XmlCommanderGwenXml_toDb_new(xmlNodeDocument, dbDestination);
-
-  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNodeSchema);
-  GWEN_XmlCommander_free(cmd);
-
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int GWEN_XmlFromDb(GWEN_XMLNODE *xmlNodeDestination,
-		   GWEN_XMLNODE *xmlNodeSchema,
-		   GWEN_DB_NODE *dbSource)
-{
-  GWEN_XMLCOMMANDER *cmd;
-  int rv;
-
-  cmd=GWEN_XmlCommanderGwenXml_fromDb_new(xmlNodeDestination, dbSource);
-
-  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNodeSchema);
-  GWEN_XmlCommander_free(cmd);
-
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
+#endif /* GWEN_XML2DB_H */
