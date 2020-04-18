@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Sun Dec 16 2018
-    copyright   : (C) 2018 by Martin Preuss
+    begin       : Sat Apr 18 2018
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,45 +23,69 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_XML2DB_P_H
-#define GWEN_XML2DB_P_H
-
-#include <gwenhywfar/xml2db.h>
-
-#include <gwenhywfar/db.h>
-#include <gwenhywfar/xml.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 
-typedef struct GWEN_XML2DB_CONTEXT GWEN_XML2DB_CONTEXT;
 
-typedef int (*GWEN_XML2DB_HANDLECHILDREN_FN)(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+#include "xmlcmd_p.h"
+
+#include <gwenhywfar/debug.h>
 
 
-struct GWEN_XML2DB_CONTEXT {
-  GWEN_XMLNODE *docRoot;            /* provided by caller (dont free) */
-  GWEN_XMLNODE *currentDocNode;     /* pointer, dont free */
+#include <ctype.h>
 
-  GWEN_XMLNODE_LIST2 *xmlNodeStack;  /* do free */
 
-  GWEN_DB_NODE *dbRoot;             /* provided by caller (dont free) */
-  GWEN_DB_NODE *currentDbGroup;     /* pointer, dont free */
 
-  GWEN_DB_NODE *tempDbRoot;         /* do free */
-  GWEN_DB_NODE *currentTempDbGroup; /* pointer, dont free */
-
-  GWEN_XML2DB_HANDLECHILDREN_FN handleChildrenFn;
-};
+GWEN_INHERIT_FUNCTIONS(GWEN_XMLCOMMANDER)
 
 
 
 
-GWEN_XML2DB_CONTEXT *GWEN_Xml2Db_Context_new(GWEN_XMLNODE *documentRoot, GWEN_DB_NODE *dbRoot);
-void GWEN_Xml2Db_Context_free(GWEN_XML2DB_CONTEXT *ctx);
+GWEN_XMLCOMMANDER *GWEN_XmlCommander_new(void)
+{
+  GWEN_XMLCOMMANDER *cmd;
 
-void GWEN_Xml2Db_Context_EnterDocNode(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-void GWEN_Xml2Db_Context_LeaveDocNode(GWEN_XML2DB_CONTEXT *ctx);
+  GWEN_NEW_OBJECT(GWEN_XMLCOMMANDER, cmd);
+  assert(cmd);
+  GWEN_INHERIT_INIT(GWEN_XMLCOMMANDER, cmd);
 
-int GWEN_Xml2Db_Context_HandleChildren(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+  return cmd;
+}
 
 
-#endif /* GWEN_XML2DB_P_H */
+
+void GWEN_XmlCommander_free(GWEN_XMLCOMMANDER *cmd)
+{
+  if (cmd) {
+    GWEN_INHERIT_FINI(GWEN_XMLCOMMANDER, cmd);
+    GWEN_FREE_OBJECT(cmd);
+  }
+}
+
+
+
+GWEN_XMLCMD_HANDLECHILDREN_FN GWEN_XmlCommander_SetHandleChildrenFn(GWEN_XMLCOMMANDER *cmd, GWEN_XMLCMD_HANDLECHILDREN_FN f)
+{
+  GWEN_XMLCMD_HANDLECHILDREN_FN oldFn;
+
+  oldFn=cmd->handleChildrenFn;
+  cmd->handleChildrenFn=f;
+  return oldFn;
+}
+
+
+
+int GWEN_XmlCommander_HandleChildren(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
+{
+  if (cmd->handleChildrenFn)
+    return (cmd->handleChildrenFn)(cmd, xmlNode);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+
+

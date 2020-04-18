@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Sun Dec 16 2018
-    copyright   : (C) 2018 by Martin Preuss
+    begin       : Sat Apr 18 2018
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,66 +23,24 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#ifndef GWEN_XMLCMD_P_H
+#define GWEN_XMLCMD_P_H
+
+#include <gwenhywfar/xmlcmd.h>
+
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
 
 
 
-#include "xml2db.h"
+struct GWEN_XMLCOMMANDER {
+  GWEN_INHERIT_ELEMENT(GWEN_XMLCOMMANDER)
 
-#include <gwenhywfar/debug.h>
-#include <gwenhywfar/text.h>
-#include <gwenhywfar/gwendate.h>
-#include <gwenhywfar/xmlcmd_gxml_fromdb.h>
-#include <gwenhywfar/xmlcmd_gxml_todb.h>
-
-
-#include <ctype.h>
+  GWEN_XMLCMD_HANDLECHILDREN_FN handleChildrenFn;
+};
 
 
 
 
-int GWEN_Xml2Db(GWEN_XMLNODE *xmlNodeDocument,
-                GWEN_XMLNODE *xmlNodeSchema,
-                GWEN_DB_NODE *dbDestination)
-{
-  GWEN_XMLCOMMANDER *cmd;
-  int rv;
 
-  cmd=GWEN_XmlCommanderGwenXml_toDb_new(xmlNodeDocument, dbDestination);
-
-  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNodeSchema);
-  GWEN_XmlCommander_free(cmd);
-
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int GWEN_XmlFromDb(GWEN_XMLNODE *xmlNodeDestination,
-		   GWEN_XMLNODE *xmlNodeSchema,
-		   GWEN_DB_NODE *dbSource)
-{
-  GWEN_XMLCOMMANDER *cmd;
-  int rv;
-
-  cmd=GWEN_XmlCommanderGwenXml_fromDb_new(xmlNodeDestination, dbSource);
-
-  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNodeSchema);
-  GWEN_XmlCommander_free(cmd);
-
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
+#endif /* GWEN_XML2DB_P_H */
