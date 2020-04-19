@@ -66,6 +66,30 @@ GWENHYWFAR_API void GWEN_XmlCommanderLibXml_LeaveDocNode(GWEN_XMLCOMMANDER *cmd)
 
 
 
+/** @name Helper Functions
+ *
+ */
+/*@{*/
+GWENHYWFAR_API xmlNodePtr GWEN_XmlCommanderLibXml_GetXmlNode(xmlNodePtr n, const char *path, uint32_t flags);
+GWENHYWFAR_API xmlNodePtr GWEN_XmlCommanderLibXml_FindFirstElement(xmlNodePtr parent, const char *elemName);
+GWENHYWFAR_API xmlNodePtr GWEN_XmlCommanderLibXml_FindNextElement(xmlNodePtr elem, const char *elemName);
+
+GWENHYWFAR_API int GWEN_XmlCommanderLibXml_SetXmlCharValue(xmlNodePtr n, const char *path, const char *value);
+GWENHYWFAR_API const char *GWEN_XmlCommanderLibXml_GetXmlCharValue(xmlNodePtr n, const char *path, const char *defValue);
+
+GWENHYWFAR_API int GWEN_XmlCommanderLibXml_SetIntValue(xmlNodePtr n, const char *path, int value);
+GWENHYWFAR_API int GWEN_XmlCommanderLibXml_GetIntValue(xmlNodePtr n, const char *path, int defValue);
+
+GWENHYWFAR_API const char *GWEN_XmlCommanderLibXml_GetXmlCharValueByPath(xmlNodePtr elem, const char *path, const char *defValue);
+GWENHYWFAR_API void GWEN_XmlCommanderLibXml_SetXmlCharValueByPath(xmlNodePtr elem, const char *path, const char *value);
+
+/*@}*/
+
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

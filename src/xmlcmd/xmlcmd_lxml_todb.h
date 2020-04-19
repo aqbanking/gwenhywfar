@@ -23,43 +23,33 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_XMLCMD_LXMLP_H
-#define GWEN_XMLCMD_LXMLP_H
+#ifndef GWEN_XMLCMD_LXML_TODB_H
+#define GWEN_XMLCMD_LXML_TODB_H
 
-#include <gwenhywfar/xmlcmd_lxml.h>
+
+#include <gwenhywfar/xmlcmd.h>
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
 
+#include <libxml/tree.h>
 
-#define GWEN_XMLCMD_LXML_PATH_MAXDEPTH 128
 
-
-typedef struct GWEN_XMLCMD_LXML GWEN_XMLCMD_LXML;
-struct GWEN_XMLCMD_LXML {
-  xmlNodePtr docRoot;            /* provided by caller (dont free) */
-  xmlNodePtr currentDocNode;     /* pointer, dont free */
-
-  xmlNodePtr xmlNodeStack[GWEN_XMLCMD_LXML_PATH_MAXDEPTH];
-  int currentStackPos;
-
-  GWEN_DB_NODE *dbRoot;             /* provided by caller (dont free) */
-  GWEN_DB_NODE *currentDbGroup;     /* pointer, dont free */
-
-  GWEN_DB_NODE *tempDbRoot;         /* do free */
-  GWEN_DB_NODE *currentTempDbGroup; /* pointer, dont free */
-
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
-
-typedef struct GWEN_XMLCMD_LXML_TWOSTRINGS GWEN_XMLCMD_LXML_TWOSTRINGS;
-struct GWEN_XMLCMD_LXML_TWOSTRINGS {
-  char *string1;
-  char *string2;
-  uint8_t ownStringsBitmap;
-};
+GWENHYWFAR_API GWEN_XMLCOMMANDER *GWEN_XmlCommanderLibXml_toDb_new(xmlNodePtr xmlNodeDocument,
+                                                                   GWEN_DB_NODE *dbDestination);
 
 
-#endif /* GWEN_XML2DB_P_H */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+
+#endif /* GWEN_XML2DB_H */

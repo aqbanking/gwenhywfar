@@ -41,10 +41,12 @@ noinst_HEADERS += \
 
 
 iheader_HEADERS += \
-  xmlcmd_lxml.h
+  xmlcmd_lxml.h \
+  xmlcmd_lxml_todb.h
 
 libxmlcmd_la_SOURCES += \
-  xmlcmd_lxml.c
+  xmlcmd_lxml.c \
+  xmlcmd_lxml_todb.c
 
 endif # WITH_LIBXML2_CODE
 
