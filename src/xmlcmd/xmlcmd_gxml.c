@@ -72,7 +72,7 @@ GWEN_XMLCOMMANDER *GWEN_XmlCommanderGwenXml_new(GWEN_XMLNODE *documentRoot, GWEN
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_XMLCMD_GXML *xcmd;
 
