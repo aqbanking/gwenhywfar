@@ -467,6 +467,14 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
   GWEN_BUFFER *tbuf;
 
   assert(gui);
+
+  if ((GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) &&
+      (flags & GWEN_GUI_INPUT_FLAGS_TAN)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No TAN input in non-interactive mode");
+    return GWEN_ERROR_USER_ABORTED;
+  }
+
+
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Gui_GetRawText(gui, text, tbuf);
 
