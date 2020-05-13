@@ -74,8 +74,9 @@
             int i=0;
             int result=0;
             
+            GWEN_DB_DeleteVar($(db), "$(name)");
             for (i=0; i &lt; $(maxlen); i++) {
-              result=GWEN_DB_SetIntValue($(db), GWEN_DB_FLAGS_OVERWRITE_VARS, "$(name)", $(src)[i]);
+              result=GWEN_DB_SetIntValue($(db), 0, "$(name)", $(src)[i]);
             }
             
             $(retval)=result;
