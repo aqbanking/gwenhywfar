@@ -30,6 +30,28 @@ libxmlcmd_la_SOURCES=\
 
 
 
+
+if WITH_LIBXML2_CODE
+
+AM_CPPFLAGS += $(LIBXML_CFLAGS)
+
+
+noinst_HEADERS += \
+ xmlcmd_lxml_p.h
+
+
+iheader_HEADERS += \
+  xmlcmd_lxml.h \
+  xmlcmd_lxml_todb.h
+
+libxmlcmd_la_SOURCES += \
+  xmlcmd_lxml.c \
+  xmlcmd_lxml_todb.c
+
+endif # WITH_LIBXML2_CODE
+
+
+
 sources:
 	for f in $(libxmlcmd_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

@@ -186,6 +186,7 @@ GWEN_SOCKET *GWEN_Socket_new(GWEN_SOCKETTYPE socketType)
   GWEN_NEW_OBJECT(GWEN_SOCKET, sp);
   GWEN_LIST_INIT(GWEN_SOCKET, sp);
   sp->type=socketType;
+  sp->isNonSocket=0;
   return sp;
 }
 
@@ -199,6 +200,7 @@ GWEN_SOCKET *GWEN_Socket_fromFile(int fd)
   GWEN_LIST_INIT(GWEN_SOCKET, sp);
   sp->type=GWEN_SocketTypeFile;
   sp->socket=fd;
+  sp->isNonSocket=1;
   return sp;
 }
 
@@ -524,7 +526,10 @@ int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize)
   assert(sp);
   assert(buffer);
   assert(bsize);
-  i=recv(sp->socket, buffer, *bsize, 0);
+  if (sp->isNonSocket)
+      i=read(sp->socket, buffer, *bsize);
+  else
+    i=recv(sp->socket, buffer, *bsize, 0);
   if (i<0) {
     if (errno==EAGAIN || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
@@ -549,17 +554,20 @@ int GWEN_Socket_Write(GWEN_SOCKET *sp, const char *buffer, int *bsize)
   assert(buffer);
   assert(bsize);
 
-  i=send(sp->socket,
-         buffer,
-         *bsize,
-         0
+  if (sp->isNonSocket)
+    i=write(sp->socket, buffer, *bsize);
+  else
+    i=send(sp->socket,
+	   buffer,
+	   *bsize,
+	   0
 #ifdef MSG_NOSIGNAL
-         | MSG_NOSIGNAL
+	   | MSG_NOSIGNAL
 #endif
 #ifdef MSG_DONTWAIT
-         | MSG_DONTWAIT
+	   | MSG_DONTWAIT
 #endif
-        );
+	  );
 
   if (i<0) {
     if (errno==EAGAIN || errno==ENOTCONN)

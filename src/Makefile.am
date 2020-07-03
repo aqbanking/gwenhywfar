@@ -64,7 +64,7 @@ libgwenhywfar_la_LIBADD=\
   gui/libgui.la \
   sar/libsar.la \
   xmlcmd/libxmlcmd.la \
-  test_framework/libtestframework.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(rt_libs) $(all_libraries)
+  test_framework/libtestframework.la $(i18n_libs) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(LIBXML_LIBS) $(rt_libs) $(all_libraries)
 
 
 noinst_PROGRAMS=testlib

@@ -915,6 +915,30 @@ AM_CONDITIONAL(WITH_GUI_GTK3, [test "$with_gui_gtk3" = "yes"])
 
 ###-------------------------------------------------------------------------
 #
+# check whether libXML2 code is to be compiled
+#
+AC_MSG_CHECKING(libXML2-depending code)
+AC_ARG_WITH(libxml2-code, [  --with-libxml2-code=yes compile libXML2-depending code],
+  [gwen_with_libxml2_code="$withval"],
+  [gwen_with_libxml2_code="no"])
+AC_MSG_RESULT($gwen_with_libxml2_code)
+AM_CONDITIONAL(WITH_LIBXML2_CODE, [test "$gwen_with_libxml2_code" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Check for libxml
+#
+if test "$gwen_with_libxml2_code" = "yes"; then
+  AC_DEFINE(GWEN_COMPILE_LIBXML2_CODE, 1, [if libxml2-code is wanted])
+  PKG_CHECK_MODULES(LIBXML,  [libxml-2.0])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # QT4
 #
 

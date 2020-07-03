@@ -351,12 +351,12 @@ int _dbIfHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 
   name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(name && *name)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfCharDataMatches\"");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfHasCharData\"");
     return GWEN_ERROR_INVALID;
   }
 
   val=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
-  if (val) {
+  if (val && *val) {
     int rv;
 
     /* pattern matches, handle children  */
@@ -379,12 +379,12 @@ int _dbIfNotHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 
   name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(name && *name)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfCharDataMatches\"");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfNotHasCharData\"");
     return GWEN_ERROR_INVALID;
   }
 
   val=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
-  if (val==NULL) {
+  if (val==NULL || *val==0) {
     int rv;
 
     /* pattern matches, handle children  */
