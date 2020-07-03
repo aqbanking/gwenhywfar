@@ -30,9 +30,9 @@ AC_CONFIG_HEADERS([config.h])
 GWENHYWFAR_VERSION_MAJOR=5
 GWENHYWFAR_VERSION_MINOR=3
 GWENHYWFAR_VERSION_PATCHLEVEL=0
-GWENHYWFAR_VERSION_BUILD=0
+GWENHYWFAR_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="stable"
+GWENHYWFAR_VERSION_TAG="git"
 
 
 
@@ -1606,6 +1606,8 @@ echo "OpenSSL Support for gct-tool  : $ssl_available"
 echo "GUI Support                   : $gwenhywfar_guis"
 echo "Use system-wide certificates  : $enable_system_certs"
 echo "Compiling test code enabled   : $enable_testcode"
+echo "Compile LibXML2 code          : $gwen_with_libxml2_code"
+
 
 if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
   echo "GNUTLS                        : 1.6.1 or higher"
