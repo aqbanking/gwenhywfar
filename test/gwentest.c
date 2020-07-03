@@ -6161,13 +6161,13 @@ int testModules(int argc, char **argv)
 
 
 
-int _verifyPkcs1Pss(const uint8_t *ptrSrcBuffer,
-		    uint32_t lenSrcBuffer,
-		    uint32_t nbits,
-		    const uint8_t *ptrHash,
-		    uint32_t lenHash,
-		    uint32_t lenSalt,
-		    GWEN_MDIGEST *md)
+int _verifyPkcs1Pss(GWEN_UNUSED const uint8_t *ptrSrcBuffer,
+		    GWEN_UNUSED uint32_t lenSrcBuffer,
+		    GWEN_UNUSED uint32_t nbits,
+		    GWEN_UNUSED const uint8_t *ptrHash,
+		    GWEN_UNUSED uint32_t lenHash,
+		    GWEN_UNUSED uint32_t lenSalt,
+		    GWEN_UNUSED GWEN_MDIGEST *md)
 {
 
 
