@@ -4517,6 +4517,9 @@ int testPss2(void)
     return 2;
   }
 
+  fprintf(stderr, "Encoded Message:\n");
+  GWEN_Text_DumpString((const char*) em, rv, 2);
+
   rv=GWEN_Padd_VerifyPkcs1Pss(em, rv,
                               1984,
                               hash, sizeof(hash),
@@ -6158,6 +6161,86 @@ int testModules(int argc, char **argv)
 
 
 
+int _verifyPkcs1Pss(const uint8_t *ptrSrcBuffer,
+		    uint32_t lenSrcBuffer,
+		    uint32_t nbits,
+		    const uint8_t *ptrHash,
+		    uint32_t lenHash,
+		    uint32_t lenSalt,
+		    GWEN_MDIGEST *md)
+{
+
+
+  return -1;
+}
+
+
+
+
+int testPss3()
+{
+  GWEN_MDIGEST *md;
+  int rv;
+  const char srcBufAsText[]={
+    "47 18 72 30 11 08 67 1d 9b 40 4d 7c 1f 84 2f a7 "
+    "77 cc 6c 5c 77 4f 75 14 96 99 9b fb 6b e4 00 40 "
+    "3f e4 b4 0d 73 ac 95 cd ca d9 3f 84 9a dc 6f 5f "
+    "81 3b 98 08 a4 c6 f6 1e 47 33 d8 57 d4 3f 87 d3 "
+    "93 6d 6e 3b d4 74 59 b2 8d 2e b9 5c 3e 4d 01 38 "
+    "77 25 94 f3 83 f3 77 d0 34 db 5d ee 5f 68 02 cb "
+    "3e 23 d3 2f da d0 b1 3d 32 4e b0 09 81 ea 3f fb "
+    "50 df 23 88 e9 42 65 bd 4d 4f 3d b8 05 4a 6a 1e "
+    "d5 a0 2b 0e e9 c5 ba 0a 28 8c 89 ce 37 23 91 ca "
+    "d1 2e 19 0c 4a 07 68 b9 af 43 a4 47 55 9d 35 43 "
+    "65 64 17 cc dc 06 5a a7 78 a3 dd b9 f6 27 13 15 "
+    "b2 42 31 f5 af 55 0c 80 13 06 2e 70 87 21 f0 69 "
+    "ec ac 97 7b 8f a6 4c b9 7a 69 6f 77 a9 2f e8 f2 "
+    "b9 8a 17 7f 27 ae 03 96 ff 6b 08 bc 90 e5 4c e9 "
+    "67 20 fd fd ee fb cd 42 61 aa 06 2e 22 18 b7 1a "
+    "08 c8 c9 88 2c 87 f0 cd 7b e8 91 4e d4 9e 9c bc "
+  };
+  const char hashBufAsText[]={
+    "86 b0 19 f9 ab ad bf 4d 5c a2 09 8e 73 ac f7 53 "
+    "21 3f 52 1a a2 39 76 5a a1 44 33 1d 59 6f e4 c7"
+  };
+  GWEN_BUFFER *srcBuf;
+  GWEN_BUFFER *hashBuf;
+
+
+  srcBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_Text_FromHexBuffer(srcBufAsText, srcBuf);
+  if (rv<0) {
+    fprintf(stderr, "Bad input data in srcBuf.\n");
+    return 2;
+  }
+
+  hashBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_Text_FromHexBuffer(hashBufAsText, hashBuf);
+  if (rv<0) {
+    fprintf(stderr, "Bad input data in hashBuf.\n");
+    return 2;
+  }
+
+  md=GWEN_MDigest_Sha256_new();
+
+  rv=_verifyPkcs1Pss((const uint8_t*) GWEN_Buffer_GetStart(srcBuf),
+		     GWEN_Buffer_GetUsedBytes(srcBuf),
+		     2048,
+		     (const uint8_t*) GWEN_Buffer_GetStart(hashBuf),
+		     GWEN_Buffer_GetUsedBytes(hashBuf),
+		     32,
+		     md);
+  if (rv<0) {
+    fprintf(stderr, "Hash does not match\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Hash is okay!\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -6394,6 +6477,9 @@ int main(int argc, char **argv)
   }
   else if (strcasecmp(argv[1], "modules")==0) {
     rv=testModules(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "pss3")==0) {
+    rv=testPss3();
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
