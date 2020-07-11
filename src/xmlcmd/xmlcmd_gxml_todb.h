@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Sat Apr 18 2018
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,46 +22,32 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
+#ifndef GWEN_XMLCMD_GXML_TODB_H
+#define GWEN_XMLCMD_GXML_TODB_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/types.h>
-#include "inetsocket_l.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
+
+#include <gwenhywfar/xmlcmd.h>
+
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 
-struct GWEN_SOCKET {
-  GWEN_LIST_ELEMENT(GWEN_SOCKET)
-  int socket;
-  GWEN_SOCKETTYPE type;
-  int haveWaited;
-  int isNonSocket;
-};
 
-
-struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-  uint32_t count;
-};
-
-
-static int GWEN_Socket_NetError2GwenError(int rv);
-
-
-#endif /* GWEN_SOCKET_P_H */
+GWENHYWFAR_API GWEN_XMLCOMMANDER *GWEN_XmlCommanderGwenXml_toDb_new(GWEN_XMLNODE *xmlNodeDocument,
+                                                                    GWEN_DB_NODE *dbDestination);
 
 
 
+#ifdef __cplusplus
+}
+#endif
+
+
+
+#endif /* GWEN_XML2DB_H */

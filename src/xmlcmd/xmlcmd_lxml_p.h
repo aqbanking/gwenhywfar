@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002 by Martin Preuss
+    begin       : Sat Apr 18 2018
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,46 +22,44 @@
  *                                                                         *
  ***************************************************************************/
 
-/**
- * @file chameleon/socket.h
- * @short This file contains sockets and socket sets.
- */
 
-#ifndef GWEN_SOCKET_P_H
-#define GWEN_SOCKET_P_H
+#ifndef GWEN_XMLCMD_LXMLP_H
+#define GWEN_XMLCMD_LXMLP_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/error.h>
-#include <gwenhywfar/types.h>
-#include "inetsocket_l.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+#include <gwenhywfar/xmlcmd_lxml.h>
+
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
 
 
-struct GWEN_SOCKET {
-  GWEN_LIST_ELEMENT(GWEN_SOCKET)
-  int socket;
-  GWEN_SOCKETTYPE type;
-  int haveWaited;
-  int isNonSocket;
+#define GWEN_XMLCMD_LXML_PATH_MAXDEPTH 128
+
+
+typedef struct GWEN_XMLCMD_LXML GWEN_XMLCMD_LXML;
+struct GWEN_XMLCMD_LXML {
+  xmlNodePtr docRoot;            /* provided by caller (dont free) */
+  xmlNodePtr currentDocNode;     /* pointer, dont free */
+
+  xmlNodePtr xmlNodeStack[GWEN_XMLCMD_LXML_PATH_MAXDEPTH];
+  int currentStackPos;
+
+  GWEN_DB_NODE *dbRoot;             /* provided by caller (dont free) */
+  GWEN_DB_NODE *currentDbGroup;     /* pointer, dont free */
+
+  GWEN_DB_NODE *tempDbRoot;         /* do free */
+  GWEN_DB_NODE *currentTempDbGroup; /* pointer, dont free */
+
 };
 
 
-struct GWEN_SOCKETSETSTRUCT {
-  fd_set set;
-  int highest;
-  uint32_t count;
+
+
+typedef struct GWEN_XMLCMD_LXML_TWOSTRINGS GWEN_XMLCMD_LXML_TWOSTRINGS;
+struct GWEN_XMLCMD_LXML_TWOSTRINGS {
+  char *string1;
+  char *string2;
+  uint8_t ownStringsBitmap;
 };
 
 
-static int GWEN_Socket_NetError2GwenError(int rv);
-
-
-#endif /* GWEN_SOCKET_P_H */
-
-
-
+#endif /* GWEN_XML2DB_P_H */

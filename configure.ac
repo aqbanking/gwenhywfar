@@ -28,7 +28,7 @@ AC_CONFIG_HEADERS([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=5
-GWENHYWFAR_VERSION_MINOR=3
+GWENHYWFAR_VERSION_MINOR=4
 GWENHYWFAR_VERSION_PATCHLEVEL=0
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
@@ -40,8 +40,8 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="82"
-GWENHYWFAR_SO_AGE="3"
+GWENHYWFAR_SO_CURRENT="83"
+GWENHYWFAR_SO_AGE="4"
 GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
@@ -915,6 +915,30 @@ AM_CONDITIONAL(WITH_GUI_GTK3, [test "$with_gui_gtk3" = "yes"])
 
 ###-------------------------------------------------------------------------
 #
+# check whether libXML2 code is to be compiled
+#
+AC_MSG_CHECKING(libXML2-depending code)
+AC_ARG_WITH(libxml2-code, [  --with-libxml2-code=yes compile libXML2-depending code],
+  [gwen_with_libxml2_code="$withval"],
+  [gwen_with_libxml2_code="no"])
+AC_MSG_RESULT($gwen_with_libxml2_code)
+AM_CONDITIONAL(WITH_LIBXML2_CODE, [test "$gwen_with_libxml2_code" = "yes"])
+
+
+
+###-------------------------------------------------------------------------
+#
+# Check for libxml
+#
+if test "$gwen_with_libxml2_code" = "yes"; then
+  AC_DEFINE(GWEN_COMPILE_LIBXML2_CODE, 1, [if libxml2-code is wanted])
+  PKG_CHECK_MODULES(LIBXML,  [libxml-2.0])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # QT4
 #
 
@@ -1350,6 +1374,7 @@ AC_CONFIG_FILES([Doxyfile
                  src/parser/Makefile
                  src/sar/Makefile
                  src/test_framework/Makefile
+                 src/xmlcmd/Makefile
                  plugins/Makefile
                  plugins/dbio/Makefile
                  plugins/dbio/csv/Makefile
@@ -1407,8 +1432,8 @@ AC_OUTPUT
 #
 # create header directory, make symlinks
 #
-HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui src/html src/test_framework"
-HEADER_DIRS="${HEADER_DIRS} src/parser src/sar src/test_framework"
+HEADER_DIRS="src src/base src/crypt3 src/cryptmsg src/crypttoken src/sio src/os src/os/${GWEN_OS} src/gui src/html"
+HEADER_DIRS="${HEADER_DIRS} src/parser src/sar src/xmlcmd src/test_framework"
 lprefix="${srcdir}"
 lprefix=`( cd ${lprefix} ; pwd )`
 
@@ -1581,6 +1606,8 @@ echo "OpenSSL Support for gct-tool  : $ssl_available"
 echo "GUI Support                   : $gwenhywfar_guis"
 echo "Use system-wide certificates  : $enable_system_certs"
 echo "Compiling test code enabled   : $enable_testcode"
+echo "Compile LibXML2 code          : $gwen_with_libxml2_code"
+
 
 if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
   echo "GNUTLS                        : 1.6.1 or higher"

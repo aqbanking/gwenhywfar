@@ -2932,6 +2932,7 @@ int testCrypt3Rsa4(void)
 
 
 
+
 int testGnutls(void)
 {
   gnutls_session_t session;
@@ -3920,6 +3921,312 @@ int testDES4(int argc, char **argv)
 
 
 
+int _testDES5(void)
+{
+  GWEN_CRYPT_KEY *desKey1;
+  GWEN_CRYPT_KEY *desKey2;
+  uint8_t testData[]=
+    "This is the test data           "
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+  uint8_t buffer[1024];
+  uint32_t len;
+  uint8_t *p;
+  uint8_t keyBuffer[16];
+  uint32_t len2;
+  GWEN_BUFFER *mbuf;
+  GWEN_BUFFER *dbuf;
+  int rv;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Buffer_AppendString(dbuf, "Generating key ...\n");
+  desKey1=GWEN_Crypt_KeyDes3K_Generate(GWEN_Crypt_CryptMode_Cbc, 24, 2);
+  if (desKey1==NULL) {
+    DBG_INFO(0, "Could not generate DES key");
+    return 2;
+  }
+
+  /* store key */
+  GWEN_Buffer_AppendString(dbuf, "Storing key ...\n");
+  p=GWEN_Crypt_KeySym_GetKeyDataPtr(desKey1);
+  len2=GWEN_Crypt_KeySym_GetKeyDataLen(desKey1);
+  if (p==NULL || len2<16) {
+    DBG_ERROR(0, "Invalid key size (%d)", len2);
+    return 2;
+  }
+  memmove(keyBuffer, p, 16);
+
+  /* dump */
+  GWEN_Buffer_AppendString(dbuf, "Key1:\n");
+  GWEN_Text_DumpString2Buffer((const char*) keyBuffer, 16, dbuf, 2);
+  GWEN_Buffer_AppendString(dbuf, "\n\n");
+
+  GWEN_Buffer_AppendString(dbuf, "Padding data ...\n");
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendBytes(mbuf, (const char*) testData, sizeof(testData));
+
+  /* dump */
+  GWEN_Buffer_AppendString(dbuf, "Unpadded raw data:\n");
+  GWEN_Text_DumpString2Buffer(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), dbuf, 2);
+  GWEN_Buffer_AppendString(dbuf, "\n\n");
+
+  rv=GWEN_Padd_PaddWithAnsiX9_23(mbuf);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+
+  /* dump */
+  GWEN_Buffer_AppendString(dbuf, "Padded data:\n");
+  GWEN_Text_DumpString2Buffer(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), dbuf, 2);
+  GWEN_Buffer_AppendString(dbuf, "\n\n");
+
+  GWEN_Buffer_AppendString(dbuf, "Encrypting data ...\n");
+  len=sizeof(buffer);
+  rv=GWEN_Crypt_Key_Encipher(desKey1,
+			     (uint8_t *)GWEN_Buffer_GetStart(mbuf),
+			     GWEN_Buffer_GetUsedBytes(mbuf),
+			     buffer, &len);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+
+  /* dump */
+  GWEN_Buffer_AppendString(dbuf, "Encrypted data:\n");
+  GWEN_Text_DumpString2Buffer((const char*) buffer, len, dbuf, 2);
+  GWEN_Buffer_AppendString(dbuf, "\n\n");
+
+  /* buffer, len contain encrypted data */
+
+  GWEN_Buffer_free(mbuf);
+
+
+  GWEN_Buffer_AppendString(dbuf, "Generating 2nd key ...\n");
+  desKey2=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, keyBuffer, 16);
+  if (desKey2==NULL) {
+    DBG_INFO(0, "Could not generate DES key 2");
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+
+  GWEN_Buffer_AppendString(dbuf, "Decipher data ...\n");
+  len2=len*2;
+  mbuf=GWEN_Buffer_new(0, len2, 0, 1);
+  rv=GWEN_Crypt_Key_Decipher(desKey2,
+			     (const uint8_t *)buffer, len,
+			     (uint8_t *)GWEN_Buffer_GetPosPointer(mbuf),
+			     &len2);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+  GWEN_Buffer_IncrementPos(mbuf, len2);
+  GWEN_Buffer_AdjustUsedBytes(mbuf);
+
+  /* dump */
+  GWEN_Buffer_AppendString(dbuf, "Padded decrypted data:\n");
+  GWEN_Text_DumpString2Buffer(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), dbuf, 2);
+  GWEN_Buffer_AppendString(dbuf, "\n\n");
+
+  GWEN_Buffer_AppendString(dbuf, "Unpadding data ...\n");
+  rv=GWEN_Padd_UnpaddWithAnsiX9_23(mbuf);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+
+  /* dump */
+  GWEN_Buffer_AppendString(dbuf, "Unpadded decrypted data:\n");
+  GWEN_Text_DumpString2Buffer(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), dbuf, 2);
+  GWEN_Buffer_AppendString(dbuf, "\n\n");
+
+  if (GWEN_Buffer_GetUsedBytes(mbuf)!=sizeof(testData)) {
+    fprintf(stderr, "Deciphered message does not match src\n");
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+  if (memcmp(testData, GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf))) {
+    fprintf(stderr, "Deciphered message does not match src\n");
+    GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), 1);
+    GWEN_Text_DumpString((const char*) testData, sizeof(testData), 1);
+
+    fprintf(stderr, "Data so far: \n%s\n", GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+    return 2;
+  }
+
+  GWEN_Buffer_free(dbuf);
+  GWEN_Buffer_free(mbuf);
+
+  return 0;
+}
+
+
+
+int testDES5(void)
+{
+  int i;
+
+  for (i=0; i<1000000; i++) {
+    int rv;
+
+    fprintf(stdout, "%d\n", i);
+    rv=_testDES5();
+    if (rv) {
+      fprintf(stderr, "ERROR in loop %d\n", i);
+    }
+  }
+
+  return 0;
+}
+
+
+int _byteHasEvenParity(uint8_t x)
+{
+  return ( (x>>7) ^
+	  (x>>6) ^
+	  (x>>5) ^
+	  (x>>4) ^
+	  (x>>3) ^
+	  (x>>2) ^
+	  (x>>1) ^
+	  (x) ) & 1;
+}
+
+
+
+int _hasEvenParity(const uint8_t *ptr, uint32_t len)
+{
+  int x=0;
+  uint32_t i;
+
+  for (i=0; i<len; i++) {
+    int y;
+
+    y=_byteHasEvenParity(*(ptr++));
+    fprintf(stderr, "Parity of byte at pos %d: %d\n", i, y);
+    x ^=y;
+  }
+  fprintf(stderr, "Total parity: %d\n", (~x) & 1);
+  return (~x) & 1;
+}
+
+
+
+int testDES6(int argc, char **argv)
+{
+  GWEN_BUFFER *bufDataFile;
+  GWEN_BUFFER *bufDataDecrypted;
+  uint32_t lenDataDecrypted;
+  GWEN_CRYPT_KEY *skey;
+  int rv;
+  const char *sDataFileName;
+  const uint8_t keyData[]= {
+    0x4b, 0xbf, 0x7d, 0xc6, 0x74, 0x59, 0xef, 0x4d, 0x14, 0x67, 0x4b, 0x74, 0x89, 0x95, 0xf6, 0x68
+  };
+
+  if (argc<3) {
+    DBG_ERROR(0, "Arguments: dataFile");
+    return 1;
+  }
+  sDataFileName=argv[2];
+
+  bufDataFile=GWEN_Buffer_new(0, 256, 0, 1);;
+  rv=readFile(sDataFileName, bufDataFile);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to read file [%s]: %d", sDataFileName, rv);
+    return 2;
+  }
+
+  if (1) {
+    int parity;
+
+    parity=_hasEvenParity(keyData, 16);
+    DBG_ERROR(0, "Has Even Parity: %d", parity);
+  }
+
+  skey=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, keyData, 16);
+  if (skey==NULL) {
+    DBG_ERROR(0, "Unable to create DES key");
+    return 2;
+  }
+
+  /* decrypt buf1 */
+  fprintf(stderr, "Decrypting %d bytes\n", GWEN_Buffer_GetUsedBytes(bufDataFile));
+  lenDataDecrypted=GWEN_Buffer_GetUsedBytes(bufDataFile)*2;
+  bufDataDecrypted=GWEN_Buffer_new(0, lenDataDecrypted, 0, 1);
+
+  rv=GWEN_Crypt_Key_Decipher(skey,
+                             (uint8_t *)GWEN_Buffer_GetStart(bufDataFile),
+                             GWEN_Buffer_GetUsedBytes(bufDataFile),
+                             (uint8_t *)GWEN_Buffer_GetPosPointer(bufDataDecrypted),
+			     &lenDataDecrypted);
+  if (rv<0) {
+    DBG_ERROR(0, "Unable to decipher");
+    return 2;
+  }
+  fprintf(stderr, "Decrypted %d bytes\n", lenDataDecrypted);
+  GWEN_Buffer_IncrementPos(bufDataDecrypted, lenDataDecrypted);
+  GWEN_Buffer_AdjustUsedBytes(bufDataDecrypted);
+
+  writeFile("des6.out1",
+            GWEN_Buffer_GetStart(bufDataDecrypted),
+            GWEN_Buffer_GetUsedBytes(bufDataDecrypted));
+
+
+  rv=GWEN_Padd_UnpaddWithAnsiX9_23(bufDataDecrypted);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    return 2;
+  }
+
+  writeFile("des6.out2",
+	    GWEN_Buffer_GetStart(bufDataDecrypted),
+	    GWEN_Buffer_GetUsedBytes(bufDataDecrypted));
+
+  GWEN_Crypt_Key_free(skey);
+
+  return 0;
+}
+
+
+
+int testParity(int argc, char **argv)
+{
+  uint8_t buffer[256];
+  int len;
+
+  if (argc<3) {
+    DBG_ERROR(0, "Arguments: data");
+    return 1;
+  }
+
+  len=sizeof(buffer);
+  len=GWEN_Text_FromHex(argv[2], (char*) buffer, len);
+  if (len) {
+    if (_hasEvenParity(buffer, len))
+      fprintf(stderr, "Even parity!\n");
+    else
+      fprintf(stderr, "Odd parity!\n");
+  }
+
+  return 0;
+}
+
+
+
 int testCryptMgr1(void)
 {
   int rv;
@@ -4209,6 +4516,9 @@ int testPss2(void)
     fprintf(stderr, "Error decoding em\n");
     return 2;
   }
+
+  fprintf(stderr, "Encoded Message:\n");
+  GWEN_Text_DumpString((const char*) em, rv, 2);
 
   rv=GWEN_Padd_VerifyPkcs1Pss(em, rv,
                               1984,
@@ -5851,6 +6161,86 @@ int testModules(int argc, char **argv)
 
 
 
+int _verifyPkcs1Pss(GWEN_UNUSED const uint8_t *ptrSrcBuffer,
+		    GWEN_UNUSED uint32_t lenSrcBuffer,
+		    GWEN_UNUSED uint32_t nbits,
+		    GWEN_UNUSED const uint8_t *ptrHash,
+		    GWEN_UNUSED uint32_t lenHash,
+		    GWEN_UNUSED uint32_t lenSalt,
+		    GWEN_UNUSED GWEN_MDIGEST *md)
+{
+
+
+  return -1;
+}
+
+
+
+
+int testPss3()
+{
+  GWEN_MDIGEST *md;
+  int rv;
+  const char srcBufAsText[]={
+    "47 18 72 30 11 08 67 1d 9b 40 4d 7c 1f 84 2f a7 "
+    "77 cc 6c 5c 77 4f 75 14 96 99 9b fb 6b e4 00 40 "
+    "3f e4 b4 0d 73 ac 95 cd ca d9 3f 84 9a dc 6f 5f "
+    "81 3b 98 08 a4 c6 f6 1e 47 33 d8 57 d4 3f 87 d3 "
+    "93 6d 6e 3b d4 74 59 b2 8d 2e b9 5c 3e 4d 01 38 "
+    "77 25 94 f3 83 f3 77 d0 34 db 5d ee 5f 68 02 cb "
+    "3e 23 d3 2f da d0 b1 3d 32 4e b0 09 81 ea 3f fb "
+    "50 df 23 88 e9 42 65 bd 4d 4f 3d b8 05 4a 6a 1e "
+    "d5 a0 2b 0e e9 c5 ba 0a 28 8c 89 ce 37 23 91 ca "
+    "d1 2e 19 0c 4a 07 68 b9 af 43 a4 47 55 9d 35 43 "
+    "65 64 17 cc dc 06 5a a7 78 a3 dd b9 f6 27 13 15 "
+    "b2 42 31 f5 af 55 0c 80 13 06 2e 70 87 21 f0 69 "
+    "ec ac 97 7b 8f a6 4c b9 7a 69 6f 77 a9 2f e8 f2 "
+    "b9 8a 17 7f 27 ae 03 96 ff 6b 08 bc 90 e5 4c e9 "
+    "67 20 fd fd ee fb cd 42 61 aa 06 2e 22 18 b7 1a "
+    "08 c8 c9 88 2c 87 f0 cd 7b e8 91 4e d4 9e 9c bc "
+  };
+  const char hashBufAsText[]={
+    "86 b0 19 f9 ab ad bf 4d 5c a2 09 8e 73 ac f7 53 "
+    "21 3f 52 1a a2 39 76 5a a1 44 33 1d 59 6f e4 c7"
+  };
+  GWEN_BUFFER *srcBuf;
+  GWEN_BUFFER *hashBuf;
+
+
+  srcBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_Text_FromHexBuffer(srcBufAsText, srcBuf);
+  if (rv<0) {
+    fprintf(stderr, "Bad input data in srcBuf.\n");
+    return 2;
+  }
+
+  hashBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_Text_FromHexBuffer(hashBufAsText, hashBuf);
+  if (rv<0) {
+    fprintf(stderr, "Bad input data in hashBuf.\n");
+    return 2;
+  }
+
+  md=GWEN_MDigest_Sha256_new();
+
+  rv=_verifyPkcs1Pss((const uint8_t*) GWEN_Buffer_GetStart(srcBuf),
+		     GWEN_Buffer_GetUsedBytes(srcBuf),
+		     2048,
+		     (const uint8_t*) GWEN_Buffer_GetStart(hashBuf),
+		     GWEN_Buffer_GetUsedBytes(hashBuf),
+		     32,
+		     md);
+  if (rv<0) {
+    fprintf(stderr, "Hash does not match\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Hash is okay!\n");
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -5878,6 +6268,12 @@ int main(int argc, char **argv)
     rv=testDES3();
   else if (strcasecmp(argv[1], "des4")==0)
     rv=testDES4(argc, argv);
+  else if (strcasecmp(argv[1], "des5")==0) {
+    rv=testDES5();
+  }
+  else if (strcasecmp(argv[1], "des6")==0) {
+    rv=testDES6(argc, argv);
+  }
   else if (strcasecmp(argv[1], "db")==0)
     rv=testDB();
   else if (strcasecmp(argv[1], "db2")==0)
@@ -6076,8 +6472,14 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "httpsServer")==0) {
     rv=testHttpsServer(argc, argv);
   }
+  else if (strcasecmp(argv[1], "parity")==0) {
+    rv=testParity(argc, argv);
+  }
   else if (strcasecmp(argv[1], "modules")==0) {
     rv=testModules(argc, argv);
+  }
+  else if (strcasecmp(argv[1], "pss3")==0) {
+    rv=testPss3();
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

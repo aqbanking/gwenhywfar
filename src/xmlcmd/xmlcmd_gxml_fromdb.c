@@ -1,5 +1,5 @@
 /***************************************************************************
-    begin       : Thu Apr 02 2020
+    begin       : Sat Apr 18 2018
     copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -29,7 +29,8 @@
 
 
 
-#include "xml2db_p.h"
+#include "xmlcmd_gxml_fromdb.h"
+#include "xmlcmd_gxml.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
@@ -40,22 +41,24 @@
 
 
 
+
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
  * ------------------------------------------------------------------------------------------------
  */
 
-static int _handleChildren_fromDb(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbEnter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _xmlCreateAndEnterElement(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _xmlSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbIfCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbIfNotCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbIfHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbIfNotHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbIfPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
-static int _dbIfNotPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode);
+static int _handleChildren_fromDb(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+
+static int _dbEnter(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbForEvery(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _xmlCreateAndEnterElement(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _xmlSetCharValue(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbIfCharDataMatches(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbIfNotCharDataMatches(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbIfHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbIfNotHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbIfPathExists(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
+static int _dbIfNotPathExists(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode);
 
 static int _setCharValueByPath(GWEN_XMLNODE *xmlNode, const char *path, const char *value);
 static int _convertAndSetCharValue(GWEN_XMLNODE *xmlDocNode, GWEN_XMLNODE *xmlSchemaNode, const char *value);
@@ -70,31 +73,20 @@ static int _convertAndSetCharValue(GWEN_XMLNODE *xmlDocNode, GWEN_XMLNODE *xmlSc
  */
 
 
-int GWEN_XmlFromDb(GWEN_XMLNODE *xmlNodeDestination,
-                   GWEN_XMLNODE *xmlNodeSchema,
-                   GWEN_DB_NODE *dbSource)
+GWEN_XMLCOMMANDER *GWEN_XmlCommanderGwenXml_fromDb_new(GWEN_XMLNODE *xmlNodeDestination,GWEN_DB_NODE *dbSource)
 {
-  GWEN_XML2DB_CONTEXT *ctx;
-  int rv;
+  GWEN_XMLCOMMANDER *cmd;
 
-  ctx=GWEN_Xml2Db_Context_new(xmlNodeDestination, dbSource);
-  ctx->handleChildrenFn=_handleChildren_fromDb;
-  rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNodeSchema);
-  GWEN_Xml2Db_Context_free(ctx);
+  cmd=GWEN_XmlCommanderGwenXml_new(xmlNodeDestination, dbSource);
+  GWEN_XmlCommander_SetHandleChildrenFn(cmd, _handleChildren_fromDb);
 
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
+  return cmd;
 }
 
 
 
 
-
-int _handleChildren_fromDb(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _handleChildren_fromDb(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNODE *n;
 
@@ -108,25 +100,25 @@ int _handleChildren_fromDb(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
       DBG_INFO(GWEN_LOGDOMAIN, "Handling element \"%s\"", name);
       if (strcasecmp(name, "DbEnter")==0)
-        rv=_dbEnter(ctx, n);
+        rv=_dbEnter(cmd, n);
       else if (strcasecmp(name, "DbForEvery")==0)
-        rv=_dbForEvery(ctx, n);
+        rv=_dbForEvery(cmd, n);
       else if (strcasecmp(name, "XmlCreateAndEnterElement")==0)
-        rv=_xmlCreateAndEnterElement(ctx, n);
+        rv=_xmlCreateAndEnterElement(cmd, n);
       else if (strcasecmp(name, "XmlSetCharValue")==0)
-        rv=_xmlSetCharValue(ctx, n);
+        rv=_xmlSetCharValue(cmd, n);
       else if (strcasecmp(name, "DbIfCharDataMatches")==0)
-        rv=_dbIfCharDataMatches(ctx, n);
+        rv=_dbIfCharDataMatches(cmd, n);
       else if (strcasecmp(name, "DbIfNotCharDataMatches")==0)
-        rv=_dbIfNotCharDataMatches(ctx, n);
+        rv=_dbIfNotCharDataMatches(cmd, n);
       else if (strcasecmp(name, "DbIfHasCharData")==0)
-        rv=_dbIfHasCharData(ctx, n);
+        rv=_dbIfHasCharData(cmd, n);
       else if (strcasecmp(name, "DbIfNotHasCharData")==0)
-        rv=_dbIfNotHasCharData(ctx, n);
+        rv=_dbIfNotHasCharData(cmd, n);
       else if (strcasecmp(name, "DbIfPathExists")==0)
-        rv=_dbIfPathExists(ctx, n);
+        rv=_dbIfPathExists(cmd, n);
       else if (strcasecmp(name, "DbIfNotPathExists")==0)
-        rv=_dbIfNotPathExists(ctx, n);
+        rv=_dbIfNotPathExists(cmd, n);
       else {
         DBG_ERROR(GWEN_LOGDOMAIN, "Unknown element \"%s\", aborting", name);
         return GWEN_ERROR_INVALID;
@@ -145,7 +137,7 @@ int _handleChildren_fromDb(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbIfPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbIfPathExists(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   GWEN_DB_NODE *dbNew;
@@ -157,10 +149,10 @@ int _dbIfPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
     return GWEN_ERROR_INVALID;
   }
 
-  dbNew=GWEN_DB_GetGroup(ctx->currentDbGroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
+  dbNew=GWEN_DB_GetGroup(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
   if (dbNew) {
     /* handle children (nothing special here) */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -173,7 +165,7 @@ int _dbIfPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbIfNotPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbIfNotPathExists(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   GWEN_DB_NODE *dbNew;
@@ -185,10 +177,10 @@ int _dbIfNotPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
     return GWEN_ERROR_INVALID;
   }
 
-  dbNew=GWEN_DB_GetGroup(ctx->currentDbGroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
+  dbNew=GWEN_DB_GetGroup(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
   if (dbNew==NULL) {
     /* handle children (nothing special here) */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -201,7 +193,7 @@ int _dbIfNotPathExists(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbEnter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbEnter(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   GWEN_DB_NODE *dbLast;
@@ -215,18 +207,18 @@ int _dbEnter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
   }
 
   /* save group */
-  dbLast=ctx->currentDbGroup;
+  dbLast=GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd);
 
   dbNew=GWEN_DB_GetGroup(dbLast, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
   if (dbNew) {
     /* push group */
-    ctx->currentDbGroup=dbNew;
+    GWEN_XmlCommanderGwenXml_SetCurrentDbGroup(cmd, dbNew);
 
     /* handle children (nothing special here) */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
 
     /* pop group */
-    ctx->currentDbGroup=dbLast;
+    GWEN_XmlCommanderGwenXml_SetCurrentDbGroup(cmd, dbLast);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -243,7 +235,7 @@ int _dbEnter(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbForEvery(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   GWEN_DB_NODE *dbLast;
@@ -257,18 +249,18 @@ int _dbForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
   }
 
   /* save group */
-  dbLast=ctx->currentDbGroup;
+  dbLast=GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd);
 
   dbNew=GWEN_DB_FindFirstGroup(dbLast, name);
   while (dbNew) {
     /* push group */
-    ctx->currentDbGroup=dbNew;
+    GWEN_XmlCommanderGwenXml_SetCurrentDbGroup(cmd, dbNew);
 
     /* handle children (nothing special here) */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
 
     /* pop group */
-    ctx->currentDbGroup=dbLast;
+    GWEN_XmlCommanderGwenXml_SetCurrentDbGroup(cmd, dbLast);
 
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -282,7 +274,7 @@ int _dbForEvery(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbIfCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbIfCharDataMatches(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   const char *pattern;
@@ -300,12 +292,12 @@ int _dbIfCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
     return GWEN_ERROR_INVALID;
   }
 
-  val=GWEN_DB_GetCharValue(ctx->currentDbGroup, name, 0, NULL);
+  val=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
   if (val && -1!=GWEN_Text_ComparePattern(val, pattern, 0)) {
     int rv;
 
     /* pattern matches, handle children  */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -317,7 +309,7 @@ int _dbIfCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbIfNotCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbIfNotCharDataMatches(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   const char *pattern;
@@ -335,12 +327,12 @@ int _dbIfNotCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
     return GWEN_ERROR_INVALID;
   }
 
-  val=GWEN_DB_GetCharValue(ctx->currentDbGroup, name, 0, NULL);
+  val=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
   if (val==NULL || -1==GWEN_Text_ComparePattern(val, pattern, 0)) {
     int rv;
 
     /* pattern matches, handle children  */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -352,23 +344,23 @@ int _dbIfNotCharDataMatches(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbIfHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbIfHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   const char *val;
 
   name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(name && *name)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfCharDataMatches\"");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfHasCharData\"");
     return GWEN_ERROR_INVALID;
   }
 
-  val=GWEN_DB_GetCharValue(ctx->currentDbGroup, name, 0, NULL);
-  if (val) {
+  val=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
+  if (val && *val) {
     int rv;
 
     /* pattern matches, handle children  */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -380,23 +372,23 @@ int _dbIfHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _dbIfNotHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _dbIfNotHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *name;
   const char *val;
 
   name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(name && *name)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfCharDataMatches\"");
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing or empty name in \"dbIfNotHasCharData\"");
     return GWEN_ERROR_INVALID;
   }
 
-  val=GWEN_DB_GetCharValue(ctx->currentDbGroup, name, 0, NULL);
-  if (val==NULL) {
+  val=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
+  if (val==NULL || *val==0) {
     int rv;
 
     /* pattern matches, handle children  */
-    rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+    rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -408,7 +400,7 @@ int _dbIfNotHasCharData(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
 
 
-int _xmlCreateAndEnterElement(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _xmlCreateAndEnterElement(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *path;
   GWEN_XMLNODE *n;
@@ -420,29 +412,30 @@ int _xmlCreateAndEnterElement(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
     return GWEN_ERROR_INVALID;
   }
 
-  n=GWEN_XMLNode_GetNodeByXPath(ctx->currentDocNode, path, GWEN_PATH_FLAGS_CREATE_GROUP | GWEN_PATH_FLAGS_CREATE_VAR);
+  n=GWEN_XMLNode_GetNodeByXPath(GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd),
+                                path, GWEN_PATH_FLAGS_CREATE_GROUP | GWEN_PATH_FLAGS_CREATE_VAR);
   if (n==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Path \"%s\" does not exist", path);
     return GWEN_ERROR_INVALID;
   }
 
   /* enter given document node */
-  GWEN_Xml2Db_Context_EnterDocNode(ctx, n);
+  GWEN_XmlCommanderGwenXml_EnterDocNode(cmd, n);
 
-  rv=GWEN_Xml2Db_Context_HandleChildren(ctx, xmlNode);
+  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNode);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   /* leave given document node, re-select previously active one, thus restoring status from the beginning */
-  GWEN_Xml2Db_Context_LeaveDocNode(ctx);
+  GWEN_XmlCommanderGwenXml_LeaveDocNode(cmd);
   return 0;
 }
 
 
 
-int _xmlSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int _xmlSetCharValue(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 {
   const char *path;
   const char *value;
@@ -459,13 +452,13 @@ int _xmlSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
     int rv;
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=GWEN_DB_ReplaceVars(ctx->currentDbGroup, value, dbuf);
+    rv=GWEN_DB_ReplaceVars(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), value, dbuf);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(dbuf);
       return rv;
     }
-    _convertAndSetCharValue(ctx->currentDocNode, xmlNode, GWEN_Buffer_GetStart(dbuf));
+    _convertAndSetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd), xmlNode, GWEN_Buffer_GetStart(dbuf));
     GWEN_Buffer_free(dbuf);
   }
   else {
@@ -477,9 +470,9 @@ int _xmlSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
       return GWEN_ERROR_INVALID;
     }
 
-    value=GWEN_DB_GetCharValue(ctx->currentDbGroup, name, 0, NULL);
+    value=GWEN_DB_GetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDbGroup(cmd), name, 0, NULL);
     if (value && *value) {
-      _convertAndSetCharValue(ctx->currentDocNode, xmlNode, value);
+      _convertAndSetCharValue(GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd), xmlNode, value);
     }
 #if 0
     else {
@@ -487,12 +480,12 @@ int _xmlSetCharValue(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-      GWEN_XMLNode_GetXPath(NULL, ctx->currentDocNode, tbuf);
+      GWEN_XMLNode_GetXPath(NULL, GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd), tbuf);
 
       DBG_ERROR(GWEN_LOGDOMAIN, "No value in path \"%s\" (%s)", path, GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
 
-      /* GWEN_XMLNode_Dump(ctx->currentDocNode, 2); */
+      /* GWEN_XMLNode_Dump(GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd), 2); */
       return GWEN_ERROR_INVALID;
     }
 #endif
@@ -622,6 +615,7 @@ int _convertAndSetCharValue(GWEN_XMLNODE *xmlDocNode, GWEN_XMLNODE *xmlSchemaNod
   }
   return 0;
 }
+
 
 
 

@@ -29,11 +29,13 @@
 
 
 
-#include "xml2db_p.h"
+#include "xml2db.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/gwendate.h>
+#include <gwenhywfar/xmlcmd_gxml_fromdb.h>
+#include <gwenhywfar/xmlcmd_gxml_todb.h>
 
 
 #include <ctype.h>
@@ -41,80 +43,46 @@
 
 
 
-
-
-
-GWEN_XML2DB_CONTEXT *GWEN_Xml2Db_Context_new(GWEN_XMLNODE *documentRoot, GWEN_DB_NODE *dbRoot)
+int GWEN_Xml2Db(GWEN_XMLNODE *xmlNodeDocument,
+                GWEN_XMLNODE *xmlNodeSchema,
+                GWEN_DB_NODE *dbDestination)
 {
-  GWEN_XML2DB_CONTEXT *ctx;
+  GWEN_XMLCOMMANDER *cmd;
+  int rv;
 
-  GWEN_NEW_OBJECT(GWEN_XML2DB_CONTEXT, ctx);
-  assert(ctx);
+  cmd=GWEN_XmlCommanderGwenXml_toDb_new(xmlNodeDocument, dbDestination);
 
-  ctx->docRoot=documentRoot;
-  ctx->xmlNodeStack=GWEN_XMLNode_List2_new();
-  ctx->dbRoot=dbRoot;
-  ctx->tempDbRoot=GWEN_DB_Group_new("dbTempRoot");
+  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNodeSchema);
+  GWEN_XmlCommander_free(cmd);
 
-  ctx->currentDbGroup=ctx->dbRoot;
-  ctx->currentTempDbGroup=ctx->tempDbRoot;
-  ctx->currentDocNode=documentRoot;
-
-  return ctx;
-}
-
-
-
-void GWEN_Xml2Db_Context_free(GWEN_XML2DB_CONTEXT *ctx)
-{
-  if (ctx) {
-    GWEN_XMLNode_List2_free(ctx->xmlNodeStack);
-    ctx->xmlNodeStack=NULL;
-
-    GWEN_DB_Group_free(ctx->tempDbRoot);
-    GWEN_FREE_OBJECT(ctx);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
+
+  return 0;
 }
 
 
 
-void GWEN_Xml2Db_Context_EnterDocNode(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
+int GWEN_XmlFromDb(GWEN_XMLNODE *xmlNodeDestination,
+		   GWEN_XMLNODE *xmlNodeSchema,
+		   GWEN_DB_NODE *dbSource)
 {
-  assert(ctx);
-  assert(xmlNode);
+  GWEN_XMLCOMMANDER *cmd;
+  int rv;
 
-  GWEN_XMLNode_List2_PushBack(ctx->xmlNodeStack, ctx->currentDocNode);
-  ctx->currentDocNode=xmlNode;
-}
+  cmd=GWEN_XmlCommanderGwenXml_fromDb_new(xmlNodeDestination, dbSource);
 
+  rv=GWEN_XmlCommander_HandleChildren(cmd, xmlNodeSchema);
+  GWEN_XmlCommander_free(cmd);
 
-
-void GWEN_Xml2Db_Context_LeaveDocNode(GWEN_XML2DB_CONTEXT *ctx)
-{
-  GWEN_XMLNODE *xmlNode;
-
-  assert(ctx);
-
-  xmlNode=GWEN_XMLNode_List2_GetBack(ctx->xmlNodeStack);
-  if (xmlNode==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Nothing on stack");
-    assert(xmlNode);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
-  ctx->currentDocNode=xmlNode;
-  GWEN_XMLNode_List2_PopBack(ctx->xmlNodeStack);
+
+  return 0;
 }
-
-
-
-int GWEN_Xml2Db_Context_HandleChildren(GWEN_XML2DB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode)
-{
-  if (ctx->handleChildrenFn)
-    return (ctx->handleChildrenFn)(ctx, xmlNode);
-  else
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
 
 

@@ -26,8 +26,7 @@ noinst_HEADERS=\
  xmlctx_l.h \
  xmlctx_p.h \
  xsdnode_l.h \
- xsdnode_p.h \
- xml2db_p.h
+ xsdnode_p.h
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -62,9 +61,7 @@ libparser_la_SOURCES=\
  xml.c \
  xmlctx.c \
  xsdnode.c \
- xml2db.c \
- xml2db_todb.c \
- xml2db_fromdb.c
+ xml2db.c
 
 
 
