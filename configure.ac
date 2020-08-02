@@ -702,10 +702,6 @@ PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
 AQ_CHECK_SSL
 if test "$ssl_available" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_OPENSSL, 1, [Defined if OpenSSL is available])
-  USE_CRYPT="yes"
-else
-  GWEN_CRYPTO="none"
-  USE_CRYPT="no"
 fi
 AM_CONDITIONAL(IF_HAVE_OPENSSL, [test "$ssl_available" = "yes"])
 AC_SUBST(ssl_available)

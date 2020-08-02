@@ -142,7 +142,6 @@ begin
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_PATCHLEVEL@', '@GWENHYWFAR_VERSION_PATCHLEVEL@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_BUILD@', '@GWENHYWFAR_VERSION_BUILD@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_TAG@', '@GWENHYWFAR_VERSION_TAG@');
-  StringChange(FileString, '@'+'USE_CRYPT@', '@USE_CRYPT@');
 
   { Save the final file }
   Res := SaveStringToFile(FileName, FileString, False);
