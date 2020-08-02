@@ -1160,7 +1160,7 @@ AC_MSG_RESULT($gwenhywfar_buffer_hardlimit)
 # compile program flags
 #
 
-PROG_LIBRARIES="${PROG_LIBRARIES} ${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
+PROG_LIBRARIES="${PROG_LIBRARIES} ${ncurses_libs}"
 
 # Clean up include variables
 AS_SCRUB_INCLUDE(ssl_includes)
