@@ -699,13 +699,9 @@ PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
 #
 # check for OpenSSL
 #
-AQ_CHECK_SSL
+PKG_CHECK_MODULES([OPENSSL], [openssl], [ssl_available=yes], [ssl_available=no])
 if test "$ssl_available" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_OPENSSL, 1, [Defined if OpenSSL is available])
-  USE_CRYPT="yes"
-else
-  GWEN_CRYPTO="none"
-  USE_CRYPT="no"
 fi
 AM_CONDITIONAL(IF_HAVE_OPENSSL, [test "$ssl_available" = "yes"])
 AC_SUBST(ssl_available)
@@ -1160,10 +1156,9 @@ AC_MSG_RESULT($gwenhywfar_buffer_hardlimit)
 # compile program flags
 #
 
-PROG_LIBRARIES="${PROG_LIBRARIES} ${ssl_libraries} ${ssl_lib} ${ncurses_libs}"
+PROG_LIBRARIES="${PROG_LIBRARIES} ${ncurses_libs}"
 
 # Clean up include variables
-AS_SCRUB_INCLUDE(ssl_includes)
 AS_SCRUB_INCLUDE(gwenhywfar_includes)
 AS_SCRUB_INCLUDE(all_includes)
 

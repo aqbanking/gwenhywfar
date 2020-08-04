@@ -1,4 +1,7 @@
-AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir) $(ssl_includes)
+AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir)
+if IF_HAVE_OPENSSL
+AM_CPPFLAGS+= $(OPENSSL_CFLAGS)
+endif
 
 #EXTRA_DIST=
 
@@ -37,7 +40,7 @@ cttest_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
 
 
 if IF_HAVE_OPENSSL
-gct_tool_LDADD+=$(ssl_libraries) $(ssl_lib)
+gct_tool_LDADD+=$(OPENSSL_LIBS)
 endif
 
 sources:
