@@ -90,8 +90,13 @@
 #endif
 
 #if GWENHYWFAR_SYS_IS_WINDOWS
+#ifdef __MINGW32__
+# define GWEN_DIR_SEPARATOR           '/'
+# define GWEN_DIR_SEPARATOR_S         "/"
+#else
 # define GWEN_DIR_SEPARATOR           '\\'
 # define GWEN_DIR_SEPARATOR_S         "\\"
+#endif
 # define GWEN_SEARCHPATH_SEPARATOR    ';'
 # define GWEN_SEARCHPATH_SEPARATOR_S  ";"
 #else
