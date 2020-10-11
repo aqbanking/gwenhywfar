@@ -129,7 +129,6 @@ begin
   { Explanation: StringChange(S,FromStr,ToStr): Change all occurances in S of FromStr to ToStr. }
   StringChange(FileString, '@'+'prefix@', appdir);
   StringChange(FileString, '@'+'libdir@', windir);
-  StringChange(FileString, '@'+'ssl_includes@', '@ssl_includes@');
   StringChange(FileString, '@'+'gwenhywfar_headerdir@', includedir);
   StringChange(FileString, '@'+'gwenhywfar_ldflags@', '-L'+windir);
   StringChange(FileString, '@'+'gwenhywfar_libs@', '@gwenhywfar_libs@');
@@ -142,7 +141,6 @@ begin
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_PATCHLEVEL@', '@GWENHYWFAR_VERSION_PATCHLEVEL@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_BUILD@', '@GWENHYWFAR_VERSION_BUILD@');
   StringChange(FileString, '@'+'GWENHYWFAR_VERSION_TAG@', '@GWENHYWFAR_VERSION_TAG@');
-  StringChange(FileString, '@'+'USE_CRYPT@', '@USE_CRYPT@');
 
   { Save the final file }
   Res := SaveStringToFile(FileName, FileString, False);
