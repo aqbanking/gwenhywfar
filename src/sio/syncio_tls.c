@@ -708,6 +708,14 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     return GWEN_ERROR_GENERIC;
   }
 
+  /* if hostname set try to set it */
+  if (xio->hostName) {
+    rv=gnutls_server_name_set(xio->session, GNUTLS_NAME_DNS, xio->hostName, strlen(xio->hostName));
+    if (rv!=GNUTLS_E_SUCCESS) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_server_name_set: %d (%s), ignoring", rv, gnutls_strerror(rv));
+    }
+  }
+
   /* we use our own push/pull functions */
   gnutls_transport_set_ptr(xio->session, (gnutls_transport_ptr_t)sio);
   gnutls_transport_set_push_function(xio->session, GWEN_SyncIo_Tls_Push);
