@@ -226,7 +226,7 @@ AC_CHECK_PROG(ASTYLE, astyle, astyle, echo)
 AC_CHECK_LIB(dl, dlopen)
 # note: this AC_CHECK_LIB will also add -ldl to LIBS.
 
-ACX_PTHREAD
+AX_PTHREAD
 
 
 #AC_CHECK_LIB(rt, sem_init,
