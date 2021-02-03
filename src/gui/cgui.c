@@ -192,15 +192,16 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
   size_t outLeft;
   size_t done;
   ICONV_CONST char *pInbuf;
+  const char *wantedCharSet;
   char *nextchr;
 
-  nextchr=(char *)GWEN_Gui_GetCharSet(gui);
-  if (!nextchr)
-    nextchr="UTF-8";
-  ic=iconv_open("UTF-8", nextchr);
+  wantedCharSet=GWEN_Gui_GetCharSet(gui);
+  if (!wantedCharSet)
+    wantedCharSet="UTF-8";
+  ic=iconv_open("UTF-8", wantedCharSet);
   if (ic==(iconv_t)-1) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Cannot convert from \"%s\" to \"UTF-8\", %s",
-              nextchr, strerror(errno));
+              wantedCharSet, strerror(errno));
     return GWEN_ERROR_GENERIC;
   }
 

@@ -140,13 +140,13 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
   idList1=GWEN_IdList64_newWithSteps(64);
   for (i=0; i<100; i++) {
-    int64_t rv;
+    int64_t rv64;
 
-    rv=GWEN_IdList64_AddId(idList1, i+1);
-    if (rv<0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", (int) rv);
+    rv64=GWEN_IdList64_AddId(idList1, i+1);
+    if (rv64<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", (int) rv64);
       GWEN_IdList64_free(idList1);
-      return (int) rv;
+      return (int) rv64;
     }
   }
 
@@ -739,17 +739,17 @@ int test9(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for (i=0; i<2047; i++) {
-    int64_t rv;
+    int64_t rv64;
 
-    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
-    if (rv<0) {
+    rv64=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv64<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Error on GWEN_IdList64_AddId(%d): %s (%d)",
-                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                i, GWEN_Error_SimpleToString((int)rv64), (int)rv64);
       return rv;
     }
-    if (rv!=(int64_t)i) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+    if (rv64!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv64, i);
       return GWEN_ERROR_INTERNAL;
     }
   }
@@ -934,17 +934,17 @@ int test11(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   ptrList1=GWEN_IdList64_newWithSteps(256);
 
   for (i=0; i<2048; i++) {
-    int64_t rv;
+    int64_t rv64;
 
-    rv=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
-    if (rv<0) {
+    rv64=GWEN_IdList64_AddId(ptrList1, (uint64_t) i+1);
+    if (rv64<0) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Error on GWEN_IdList64_AddId(%d): %s (%d)",
-                i, GWEN_Error_SimpleToString((int)rv), (int)rv);
+                i, GWEN_Error_SimpleToString((int)rv64), (int)rv64);
       return rv;
     }
-    if (rv!=(int64_t)i) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv, i);
+    if (rv64!=(int64_t)i) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv64, i);
       return GWEN_ERROR_INTERNAL;
     }
   }

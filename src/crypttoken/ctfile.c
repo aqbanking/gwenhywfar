@@ -915,8 +915,8 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
   }
 
   if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION) {
-    uint32_t i=GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ski);
-    GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, i);
+    uint32_t i32=GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ski);
+    GWEN_Crypt_Token_KeyInfo_SetKeyVersion(ki, i32);
     nflags|=GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION;
     if (key)
       GWEN_Crypt_Key_SetKeyVersion(key, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ski));
@@ -924,15 +924,15 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__SetKeyInfo(GWEN_CRYPT_TOKEN *ct,
   }
 
   if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER) {
-    uint32_t i=GWEN_Crypt_Token_KeyInfo_GetSignCounter(ski);
-    GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, i);
+    uint32_t i32=GWEN_Crypt_Token_KeyInfo_GetSignCounter(ski);
+    GWEN_Crypt_Token_KeyInfo_SetSignCounter(ki, i32);
     nflags|=GWEN_CRYPT_TOKEN_KEYFLAGS_HASSIGNCOUNTER;
     DBG_INFO(GWEN_LOGDOMAIN, "Setting signature counter");
   }
 
   if (flags & GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER) {
-    uint32_t i=GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ski);
-    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, i);
+    uint32_t i32=GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ski);
+    GWEN_Crypt_Token_KeyInfo_SetKeyNumber(ki, i32);
     nflags|=GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER;
     if (key)
       GWEN_Crypt_Key_SetKeyNumber(key, GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ski));
