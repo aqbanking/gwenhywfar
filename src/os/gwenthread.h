@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Wed Mar 24 2004
-    copyright   : (C) 2004 by Martin Preuss
+    begin       : Wed Feb 03 2021
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,35 +23,39 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_TIME_L_H
-#define GWEN_TIME_L_H
+#ifndef GWEN_THREAD_H
+#define GWEN_THREAD_H
 
 
 #include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/types.h>
-#include <gwenhywfar/gwentime.h>
-#include <gwenhywfar/misc.h>
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/list1.h>
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * This function is called by OS dependant implementations of
- * @ref GWEN_Time__GetCurrentTime.
- */
-void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
-                                uint32_t secs,
-                                uint32_t msecs);
 
-/** @name Functions to be implemented by OS specific modules
- *
- */
-/*@{*/
-int GWEN_Time__GetCurrentTime(GWEN_TIME *ti);
+typedef struct GWEN_THREAD GWEN_THREAD;
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_THREAD, GWENHYWFAR_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_THREAD, GWEN_Thread, GWENHYWFAR_API)
 
-/*@}*/
+
+typedef GWENHYWFAR_CB void (*GWEN_THREAD_RUN_FN)(GWEN_THREAD *thr);
+
+
+
+GWENHYWFAR_API GWEN_THREAD *GWEN_Thread_new();
+GWENHYWFAR_API void GWEN_Thread_free(GWEN_THREAD *thr);
+
+GWENHYWFAR_API int GWEN_Thread_Start(GWEN_THREAD *thr);
+
+GWENHYWFAR_API int GWEN_Thread_Join(GWEN_THREAD *thr);
+
+
+GWENHYWFAR_API GWEN_THREAD_RUN_FN GWEN_Thread_SetRunFn(GWEN_THREAD *thr, GWEN_THREAD_RUN_FN fn);
+
 
 
 #ifdef __cplusplus

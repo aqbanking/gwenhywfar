@@ -41,6 +41,7 @@
 #include <gwenhywfar/simpleptrlist.h>
 #include <gwenhywfar/idlist64.h>
 #include <gwenhywfar/testframework.h>
+#include <gwenhywfar/gwenthread.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
 # define sleep(x) Sleep(x*1000)
@@ -6241,6 +6242,44 @@ int testPss3()
 
 
 
+static GWENHYWFAR_CB void _threadTestFn(GWEN_UNUSED GWEN_THREAD *thr)
+{
+  fprintf(stdout, "This is from the thread, now sleeping for 10 secs.\n");
+  sleep(10);
+  fprintf(stdout, "10 secs over, returning.\n");
+}
+
+
+
+int testThreads1()
+{
+  GWEN_THREAD *thread1;
+  int rv;
+
+  thread1=GWEN_Thread_new();
+  GWEN_Thread_SetRunFn(thread1, _threadTestFn);
+
+  fprintf(stdout, "Starting thread1.\n");
+  rv=GWEN_Thread_Start(thread1);
+  if (rv<0) {
+    fprintf(stderr, "Error starting thread (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stdout, "Waiting for thread1.\n");
+  rv=GWEN_Thread_Join(thread1);
+  if (rv<0) {
+    fprintf(stderr, "Error joining thread (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stdout, "thread1 finished.\n");
+  GWEN_Thread_free(thread1);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -6480,6 +6519,9 @@ int main(int argc, char **argv)
   }
   else if (strcasecmp(argv[1], "pss3")==0) {
     rv=testPss3();
+  }
+  else if (strcasecmp(argv[1], "threads1")==0) {
+    rv=testThreads1();
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);

@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Wed Mar 24 2004
-    copyright   : (C) 2004 by Martin Preuss
+    begin       : Wed Feb 03 2021
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,40 +23,24 @@
  ***************************************************************************/
 
 
-#ifndef GWEN_TIME_L_H
-#define GWEN_TIME_L_H
+#ifndef GWEN_THREAD_P_H
+#define GWEN_THREAD_P_H
 
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/types.h>
-#include <gwenhywfar/gwentime.h>
-#include <gwenhywfar/misc.h>
+#include "gwenthread.h"
+
+#include <pthread.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-/**
- * This function is called by OS dependant implementations of
- * @ref GWEN_Time__GetCurrentTime.
- */
-void GWEN_Time__SetSecsAndMSecs(GWEN_TIME *ti,
-                                uint32_t secs,
-                                uint32_t msecs);
+struct GWEN_THREAD {
+  GWEN_INHERIT_ELEMENT(GWEN_THREAD)
+  GWEN_LIST_ELEMENT(GWEN_THREAD)
 
-/** @name Functions to be implemented by OS specific modules
- *
- */
-/*@{*/
-int GWEN_Time__GetCurrentTime(GWEN_TIME *ti);
+  pthread_t threadId;
+  GWEN_THREAD_RUN_FN runFn;
+};
 
-/*@}*/
-
-
-#ifdef __cplusplus
-}
-#endif
 
 
 
