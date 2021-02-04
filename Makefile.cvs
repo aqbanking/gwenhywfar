@@ -112,8 +112,8 @@ mp-werror:
 	   --with-guis="gtk2 gtk3 fox16 qt5" \
 	   --disable-static \
 	   --enable-full-doc \
-	   --enable-error-on-warning \
-	   --prefix=/usr/local \
+           --enable-testcode \
+           --prefix=/usr/local \
 	   --with-qt5-qmake="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake"
 
 mp-opt:
