@@ -746,7 +746,7 @@ int test9(GWEN_UNUSED GWEN_TEST_MODULE *mod)
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Error on GWEN_IdList64_AddId(%d): %s (%d)",
                 i, GWEN_Error_SimpleToString((int)rv64), (int)rv64);
-      return rv;
+      return rv64;
     }
     if (rv64!=(int64_t)i) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv64, i);
@@ -941,7 +941,7 @@ int test11(GWEN_UNUSED GWEN_TEST_MODULE *mod)
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Error on GWEN_IdList64_AddId(%d): %s (%d)",
                 i, GWEN_Error_SimpleToString((int)rv64), (int)rv64);
-      return rv;
+      return rv64;
     }
     if (rv64!=(int64_t)i) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected index returned for entry %d: is %ld, should be %d ", i, (unsigned long) rv64, i);
