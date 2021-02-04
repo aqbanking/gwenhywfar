@@ -55,6 +55,7 @@
 #include "parser/configmgr_l.h"
 #include "crypt3/cryptkey_l.h"
 #include "crypttoken/ctplugin_l.h"
+#include "gui/gui_l.h"
 
 #include "binreloc.h"
 
@@ -284,6 +285,10 @@ int GWEN_Init(void)
     err=GWEN_Crypt_Token_ModuleInit();
     if (err)
       return err;
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Initializing GUI module");
+    err=GWEN_Gui_ModuleInit();
+    if (err)
+      return err;
     /* add more modules here */
 
   }
@@ -309,6 +314,8 @@ int GWEN_Fini(void)
     int lerr;
 
     /* add more modules here */
+    GWEN_Gui_ModuleFini();
+
     lerr=GWEN_Crypt_Token_ModuleFini();
     if (lerr) {
       err=lerr;

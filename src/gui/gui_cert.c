@@ -29,8 +29,11 @@
 
 int GWEN_Gui_CheckCert(const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid)
 {
-  if (gwenhywfar_gui && gwenhywfar_gui->checkCertFn)
-    return gwenhywfar_gui->checkCertFn(gwenhywfar_gui, cd, sio, guiid);
+  GWEN_GUI *gui;
+
+  gui=GWEN_Gui_GetGui();
+  if (gui && gui->checkCertFn)
+    return gui->checkCertFn(gui, cd, sio, guiid);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }

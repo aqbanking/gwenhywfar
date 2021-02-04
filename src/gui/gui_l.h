@@ -31,5 +31,9 @@
 
 int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
 
+int GWEN_Gui_ModuleInit();
+void GWEN_Gui_ModuleFini();
+
+
 #endif
 

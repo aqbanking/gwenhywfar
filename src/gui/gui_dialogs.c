@@ -49,8 +49,6 @@ int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd)
   GWEN_PROGRESS_DATA *t;
   GWEN_DIALOG *dlg=NULL;
 
-  assert(gwenhywfar_gui);
-
   t=pd;
   while (t) {
     highest=t;

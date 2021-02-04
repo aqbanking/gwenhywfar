@@ -270,28 +270,14 @@ int GWEN_Gui_GetPassword(uint32_t flags,
                          GWEN_DB_NODE *methodParams,
                          uint32_t guiid)
 {
-  if (gwenhywfar_gui) {
-    if (gwenhywfar_gui->getPasswordFn)
-      return gwenhywfar_gui->getPasswordFn(gwenhywfar_gui,
-                                           flags,
-                                           token,
-                                           title,
-                                           text,
-                                           buffer,
-                                           minLen,
-                                           maxLen,
-                                           methodId,
-                                           methodParams,
-                                           guiid);
-    else if (gwenhywfar_gui->inputBoxFn)
-      return gwenhywfar_gui->inputBoxFn(gwenhywfar_gui,
-                                        flags,
-                                        title,
-                                        text,
-                                        buffer,
-                                        minLen,
-                                        maxLen,
-                                        guiid);
+  GWEN_GUI *gui;
+
+  gui=GWEN_Gui_GetGui();
+  if (gui) {
+    if (gui->getPasswordFn)
+      return gui->getPasswordFn(gui, flags, token, title, text, buffer, minLen, maxLen, methodId, methodParams, guiid);
+    else if (gui->inputBoxFn)
+      return gui->inputBoxFn(gui, flags, title, text, buffer, minLen, maxLen, guiid);
   }
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -303,9 +289,11 @@ int GWEN_Gui_SetPasswordStatus(const char *token,
                                GWEN_GUI_PASSWORD_STATUS status,
                                uint32_t guiid)
 {
-  if (gwenhywfar_gui && gwenhywfar_gui->setPasswordStatusFn)
-    return gwenhywfar_gui->setPasswordStatusFn(gwenhywfar_gui,
-                                               token, pin, status, guiid);
+  GWEN_GUI *gui;
+
+  gui=GWEN_Gui_GetGui();
+  if (gui && gui->setPasswordStatusFn)
+    return gui->setPasswordStatusFn(gui, token, pin, status, guiid);
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 

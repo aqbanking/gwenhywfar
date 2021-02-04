@@ -183,11 +183,14 @@ int GWEN_Gui_StdPrintf(const GWEN_GUI *gui, FILE *stream,
 int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf)
 {
 #ifdef HAVE_ICONV
-  if (gwenhywfar_gui) {
+  GWEN_GUI *gui;
+
+  gui=GWEN_Gui_GetGui();
+  if (gui) {
     const char *fromCs;
 
-    if (gwenhywfar_gui->charSet)
-      fromCs=gwenhywfar_gui->charSet;
+    if (gui->charSet)
+      fromCs=gui->charSet;
     else
       /* UTF-8 to UTF-8 conversion does not seem to make much sense, but
        * it is a convenient way to check whether the input text actually
@@ -237,4 +240,6 @@ void GWEN_Gui_GetRawText(GWEN_UNUSED const GWEN_GUI *gui, const char *text, GWEN
     len=strlen(text);
   GWEN_Buffer_AppendBytes(tbuf, text, len);
 }
+
+
 

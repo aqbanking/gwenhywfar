@@ -664,5 +664,131 @@ int GWEN_Gui_GetSyncIo(const char *url,
 
 
 
+int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
+                            GWEN_SOCKET_LIST2 *writeSockets,
+                            uint32_t guiid,
+                            int msecs)
+{
+  GWEN_GUI *gui;
+
+  gui=GWEN_Gui_GetGui();
+  if (gui && gui->waitForSocketsFn)
+    return gui->waitForSocketsFn(gui, readSockets, writeSockets, guiid, msecs);
+  else {
+    uint32_t pid;
+    time_t t0;
+    int wt;
+    int dist;
+
+    t0=time(0);
+    if (msecs==GWEN_TIMEOUT_NONE) {
+      wt=0;
+      dist=0;
+    }
+    else if (msecs==GWEN_TIMEOUT_FOREVER) {
+      wt=0;
+      dist=500;
+    }
+    else {
+      wt=msecs/1000;
+      dist=500;
+    }
+
+    pid=GWEN_Gui_ProgressStart(((wt!=0)?GWEN_GUI_PROGRESS_SHOW_PROGRESS:0) |
+                               GWEN_GUI_PROGRESS_SHOW_ABORT |
+                               GWEN_GUI_PROGRESS_DELAY |
+                               GWEN_GUI_PROGRESS_ALLOW_EMBED,
+                               I18N("Waiting for Data"),
+                               "Waiting for data to become available",
+                               wt,
+                               0);
+    while (1) {
+      GWEN_SOCKETSET *rset;
+      GWEN_SOCKETSET *wset;
+      GWEN_SOCKET_LIST2_ITERATOR *sit;
+
+      rset=GWEN_SocketSet_new();
+      wset=GWEN_SocketSet_new();
+
+      /* fill read socket set */
+      if (readSockets) {
+        sit=GWEN_Socket_List2_First(readSockets);
+        if (sit) {
+          GWEN_SOCKET *s;
+
+          s=GWEN_Socket_List2Iterator_Data(sit);
+          assert(s);
+
+          while (s) {
+            GWEN_SocketSet_AddSocket(rset, s);
+            s=GWEN_Socket_List2Iterator_Next(sit);
+          }
+          GWEN_Socket_List2Iterator_free(sit);
+        }
+      }
+
+      /* fill write socket set */
+      if (writeSockets) {
+        sit=GWEN_Socket_List2_First(writeSockets);
+        if (sit) {
+          GWEN_SOCKET *s;
+
+          s=GWEN_Socket_List2Iterator_Data(sit);
+          assert(s);
+
+          while (s) {
+            GWEN_SocketSet_AddSocket(wset, s);
+            s=GWEN_Socket_List2Iterator_Next(sit);
+          }
+          GWEN_Socket_List2Iterator_free(sit);
+        }
+      }
+
+      if (GWEN_SocketSet_GetSocketCount(rset)==0 &&
+          GWEN_SocketSet_GetSocketCount(wset)==0) {
+        /* no sockets to wait for, sleep for a few ms to keep cpu load down */
+        GWEN_SocketSet_free(wset);
+        GWEN_SocketSet_free(rset);
+
+        if (msecs) {
+          /* only sleep if a timeout was given */
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Sleeping (no socket)");
+          GWEN_Socket_Select(NULL, NULL, NULL, GWEN_GUI_CPU_TIMEOUT);
+        }
+        GWEN_Gui_ProgressEnd(pid);
+        return GWEN_ERROR_TIMEOUT;
+      }
+      else {
+        int rv;
+        int v=0;
+
+        rv=GWEN_Socket_Select(rset, wset, NULL, dist);
+        GWEN_SocketSet_free(wset);
+        GWEN_SocketSet_free(rset);
+
+        if (rv!=GWEN_ERROR_TIMEOUT) {
+          GWEN_Gui_ProgressEnd(pid);
+          return rv;
+        }
+
+        if (wt) {
+          time_t t1;
+
+          t1=time(0);
+          v=difftime(t1, t0);
+          if (v>wt) {
+            GWEN_Gui_ProgressEnd(pid);
+            return GWEN_ERROR_TIMEOUT;
+          }
+        }
+        rv=GWEN_Gui_ProgressAdvance(pid, v);
+        if (rv==GWEN_ERROR_USER_ABORTED) {
+          GWEN_Gui_ProgressEnd(pid);
+          return rv;
+        }
+      }
+    } /* loop */
+  }
+}
 
 
