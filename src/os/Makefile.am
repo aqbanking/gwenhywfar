@@ -25,6 +25,7 @@ noinst_HEADERS= \
  gwentime_l.h \
  gwentime_p.h \
  gwenthread.h \
+ threadlocaldata.h \
  inetaddr_l.h \
  inetsocket_l.h \
  libloader_l.h \
