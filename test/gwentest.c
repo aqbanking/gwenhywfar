@@ -96,6 +96,7 @@
 #include "simpleptrlist-t.h"
 #include "idlist64-t.h"
 
+#include "testthread.h"
 
 #include <sys/types.h>
 #ifdef HAVE_ARPA_INET_H
@@ -6280,6 +6281,57 @@ int testThreads1()
 
 
 
+int testThreads2()
+{
+  GWEN_GUI *gui;
+  GWEN_THREAD *thread1;
+  GWEN_THREAD *thread2;
+  int rv;
+
+  fprintf(stderr, "Creating gui.\n");
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+
+  thread1=TestThread_new(1, 10);
+  thread2=TestThread_new(2, 5);
+
+  fprintf(stdout, "Starting thread1.\n");
+  rv=GWEN_Thread_Start(thread1);
+  if (rv<0) {
+    fprintf(stderr, "Error starting thread (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stdout, "Starting thread2.\n");
+  rv=GWEN_Thread_Start(thread2);
+  if (rv<0) {
+    fprintf(stderr, "Error starting thread (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stdout, "Waiting for thread1.\n");
+  rv=GWEN_Thread_Join(thread1);
+  if (rv<0) {
+    fprintf(stderr, "Error joining thread (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stdout, "thread1 finished.\n");
+  GWEN_Thread_free(thread1);
+
+  fprintf(stdout, "Waiting for thread2.\n");
+  rv=GWEN_Thread_Join(thread2);
+  if (rv<0) {
+    fprintf(stderr, "Error joining thread (%d)\n", rv);
+    return 2;
+  }
+  fprintf(stdout, "thread2 finished.\n");
+  GWEN_Thread_free(thread2);
+
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -6522,6 +6574,9 @@ int main(int argc, char **argv)
   }
   else if (strcasecmp(argv[1], "threads1")==0) {
     rv=testThreads1();
+  }
+  else if (strcasecmp(argv[1], "threads2")==0) {
+    rv=testThreads2();
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
