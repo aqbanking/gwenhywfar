@@ -50,7 +50,15 @@ dlgdata_DATA=\
   dlg_progress.dlg \
   dlg_showbox.dlg
 
-EXTRA_DIST=$(dlgdata_DATA)
+
+EXTRA_DIST=$(dlgdata_DATA) \
+  gui_cert.c \
+  gui_dialogs.c \
+  gui_passwd.c \
+  gui_syncio.c \
+  gui_utils.c \
+  gui_virtual.c
+
 
 
 sources:
