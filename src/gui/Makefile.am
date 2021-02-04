@@ -13,6 +13,7 @@ noinst_HEADERS=\
  cprogress_l.h cprogress_p.h \
  dialog_p.h \
  gui_l.h gui_p.h cgui_l.h \
+ nogui_p.h \
  widget_l.h widget_p.h \
  progressdata_l.h progressdata_p.h \
  dlg_progress_l.h dlg_progress_p.h \
@@ -26,6 +27,7 @@ iheader_HEADERS=\
  cgui.h \
  dialog.h dialog_be.h \
  gui.h gui_be.h \
+ nogui.h \
  widget_be.h \
  passwdstore.h
 
@@ -34,6 +36,7 @@ libgui_la_SOURCES=\
  cprogress.c \
  dialog.c \
  gui.c \
+ nogui.c \
  widget.c \
  progressdata.c \
  dlg_progress.c \
