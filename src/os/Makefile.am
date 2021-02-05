@@ -12,6 +12,8 @@ iheader_HEADERS=\
  directory.h \
  fslock.h \
  gwentime.h \
+ gwenthread.h \
+ threadlocaldata.h \
  inetaddr.h \
  inetsocket.h \
  libloader.h \
@@ -24,8 +26,6 @@ noinst_HEADERS= \
  gwendate_p.h \
  gwentime_l.h \
  gwentime_p.h \
- gwenthread.h \
- threadlocaldata.h \
  inetaddr_l.h \
  inetsocket_l.h \
  libloader_l.h \
