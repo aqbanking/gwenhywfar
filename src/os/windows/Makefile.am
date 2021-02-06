@@ -1,11 +1,12 @@
 AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/base \
- -I$(top_srcdir)/src/io \
  -I$(top_srcdir)/src/sio \
- -I$(top_srcdir)/src/ipc \
+ -I$(top_srcdir)/src/os \
+ -I$(top_srcdir)/src \
  -I$(top_srcdir)/src/parser @all_includes@
 
 AM_CFLAGS=@visibility_cflags@ @WERROR@ -DBUILDING_GWENHYWFAR
+
 
 # We need to skip -I$(top_srcdir)/src/os here and instead specify the
 # include path directly in the C files because when we add that
@@ -28,7 +29,9 @@ noinst_HEADERS=\
  mutex_p.h \
  semaphore_p.h \
  syncio_file_l.h \
- syncio_file_p.h
+ syncio_file_p.h \
+ errorstring.h
+
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=\
@@ -47,7 +50,8 @@ libosimpl_la_SOURCES=\
  process.c \
  mutex.c \
  semaphore.c \
- syncio_file.c
+ syncio_file.c \
+ errorstring.c
 
 
 sources:

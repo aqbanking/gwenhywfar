@@ -30,6 +30,7 @@
 
 
 #include "gwenthread_p.h"
+#include "errorstring.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -94,7 +95,7 @@ int GWEN_Thread_Start(GWEN_THREAD *thr)
     DWORD lastError;
 
     lastError=GetLastError();
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on CreateThread: %d (%s)", (int) lastError, h_strerror(lastError));
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on CreateThread: %d (%s)", (int) lastError, GWEN_ErrorString_Windows(lastError));
     return GWEN_ERROR_GENERIC;
   }
 
@@ -121,7 +122,7 @@ int GWEN_Thread_Join(GWEN_THREAD *thr)
         DWORD lastError;
 
         lastError=GetLastError();
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error on WaitForSingleObject: %d (%s)", (int) lastError, h_strerror(lastError));
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on WaitForSingleObject: %d (%s)", (int) lastError, GWEN_ErrorString_Windows(lastError));
         break;
       }
     default:
@@ -153,7 +154,7 @@ GWEN_THREAD_RUN_FN GWEN_Thread_SetRunFn(GWEN_THREAD *thr, GWEN_THREAD_RUN_FN fn)
 
 
 
-DWORD _threadRun_cb(LPVOID lpParam);
+DWORD _threadRun_cb(LPVOID lpParam)
 {
   GWEN_THREAD *thr;
 
