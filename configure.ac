@@ -28,11 +28,11 @@ AC_CONFIG_HEADERS([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=5
-GWENHYWFAR_VERSION_MINOR=4
-GWENHYWFAR_VERSION_PATCHLEVEL=1
-GWENHYWFAR_VERSION_BUILD=1
+GWENHYWFAR_VERSION_MINOR=5
+GWENHYWFAR_VERSION_PATCHLEVEL=0
+GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
-GWENHYWFAR_VERSION_TAG="git"
+GWENHYWFAR_VERSION_TAG="stable"
 
 
 
@@ -40,9 +40,9 @@ GWENHYWFAR_VERSION_TAG="git"
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="83"
-GWENHYWFAR_SO_AGE="4"
-GWENHYWFAR_SO_REVISION="1"
+GWENHYWFAR_SO_CURRENT="84"
+GWENHYWFAR_SO_AGE="5"
+GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -1088,6 +1088,7 @@ if test $ac_cv_hidden_visibility_attribute = yes;
 then
   AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
   visibility_cflags="-fvisibility=hidden"
+  visibility_supported="yes"
 fi
 AC_SUBST(visibility_cflags)
 
@@ -1607,12 +1608,6 @@ echo "Use system-wide certificates  : $enable_system_certs"
 echo "Compiling test code enabled   : $enable_testcode"
 echo "Compile LibXML2 code          : $gwen_with_libxml2_code"
 
-
-if test "$HAVE_GNUTLS_TRANSPORT_SET_ERRNO" = "yes"; then
-  echo "GNUTLS                        : 1.6.1 or higher"
-else
-  echo "GNUTLS                        : pre-1.6.1"
-fi
 
 echo
 echo "Plugins"
