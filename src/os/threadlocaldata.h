@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002-2010 by Martin Preuss
+    begin       : Thu Feb 04 2021
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,17 +22,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_GUI_GUI_L_H
-#define GWENHYWFAR_GUI_GUI_L_H
+
+#ifndef GWEN_THREADLOCALDATA_H
+#define GWEN_THREADLOCALDATA_H
 
 
-#include <gwenhywfar/gui_be.h>
+#include <gwenhywfar/gwenhywfarapi.h>
 
 
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int GWEN_Gui_ModuleInit();
-void GWEN_Gui_ModuleFini();
+
+typedef struct GWEN_THREADLOCAL_DATA GWEN_THREADLOCAL_DATA;
+
+
+
+GWENHYWFAR_API GWEN_THREADLOCAL_DATA *GWEN_ThreadLocalData_new();
+
+GWENHYWFAR_API void GWEN_ThreadLocalData_free(GWEN_THREADLOCAL_DATA *threadLocalData);
+
+GWENHYWFAR_API int GWEN_ThreadLocalData_SetData(GWEN_THREADLOCAL_DATA *threadLocalData, void *pointer);
+GWENHYWFAR_API void *GWEN_ThreadLocalData_GetData(const GWEN_THREADLOCAL_DATA *threadLocalData);
+
+
+#ifdef __cplusplus
+}
+#endif
+
 
 
 #endif

@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002-2010 by Martin Preuss
+    begin       : Thu Feb 04 2021
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,17 +22,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_GUI_GUI_L_H
-#define GWENHYWFAR_GUI_GUI_L_H
+
+#ifndef GWEN_THREADLOCALDATA_P_H
+#define GWEN_THREADLOCALDATA_P_H
+
+#include "os/threadlocaldata.h"
+
+#include <windows.h>
 
 
-#include <gwenhywfar/gui_be.h>
 
-
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
-
-int GWEN_Gui_ModuleInit();
-void GWEN_Gui_ModuleFini();
+struct GWEN_THREADLOCAL_DATA {
+  DWORD dwTlsIndex;
+};
 
 
 #endif

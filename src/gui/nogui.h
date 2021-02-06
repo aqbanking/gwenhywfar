@@ -22,18 +22,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_GUI_GUI_L_H
-#define GWENHYWFAR_GUI_GUI_L_H
+
+#ifndef GWENHYWFAR_GUI_NOGUI_H
+#define GWENHYWFAR_GUI_NOGUI_H
 
 
-#include <gwenhywfar/gui_be.h>
+#include <gwenhywfar/gui.h>
 
 
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int GWEN_Gui_ModuleInit();
-void GWEN_Gui_ModuleFini();
+
+/**
+ * Create a GUI which does nothing at all, no interaction whatsoever.
+ * Every functions just returns "0" (meaning all fine) without doing anything.
+ *
+ * You can use this GUI in side-threads which are not allowed to call real GUI functions but want to
+ * use functions which might call GWEN_GUI functions.
+ *
+ * Due to its simplicity it can also serve as a template for your own GUI implementation.
+ */
+GWENHYWFAR_API GWEN_GUI *GWEN_NoGui_new(void);
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif
-

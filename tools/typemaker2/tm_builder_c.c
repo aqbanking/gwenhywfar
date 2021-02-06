@@ -4822,6 +4822,169 @@ int _buildSetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
 
 
+int _buildProtoGetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+{
+  TYPEMAKER2_VIRTUALFN_LIST *fns;
+  TYPEMAKER2_TYPEMANAGER *tym;
+  /* uint32_t flags; */
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  fns=Typemaker2_Type_GetVirtualFns(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
+
+  assert(fns);
+  if (Typemaker2_VirtualFn_List_GetCount(fns)) {
+    GWEN_BUFFER *tbuf;
+    const char *s;
+    TYPEMAKER2_VIRTUALFN *vf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    GWEN_Buffer_AppendString(tbuf, "/* getters for virtual functions */\n");
+    vf=Typemaker2_VirtualFn_List_First(fns);
+    while (vf) {
+      int access=Typemaker2_VirtualFn_GetAccess(vf);
+
+      s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+      if (s && *s) {
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, " ");
+      }
+
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_");
+      s=Typemaker2_VirtualFn_GetName(vf);
+      if (!(s && *s)) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      while (*s)
+        GWEN_Buffer_AppendByte(tbuf, toupper(*(s++)));
+      GWEN_Buffer_AppendString(tbuf, "_FN ");
+
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_Get");
+      s=Typemaker2_VirtualFn_GetName(vf);
+      if (!(s && *s)) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "Fn(const ");
+
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      /* created structs are always pointers */
+      GWEN_Buffer_AppendString(tbuf, " *p_struct);\n");
+
+      switch (access) {
+      case TypeMaker2_Access_Public:
+        Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+        break;
+      case TypeMaker2_Access_Library:
+        Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+        break;
+      case TypeMaker2_Access_Protected:
+        Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+        break;
+      case TypeMaker2_Access_Private:
+        Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+        break;
+      default:
+        DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      GWEN_Buffer_Reset(tbuf);
+
+      vf=Typemaker2_VirtualFn_List_Next(vf);
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _buildGetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+{
+  TYPEMAKER2_VIRTUALFN_LIST *fns;
+  /* TYPEMAKER2_TYPEMANAGER *tym; */
+  /* uint32_t flags; */
+
+  /* tym=Typemaker2_Builder_GetTypeManager(tb); */
+  fns=Typemaker2_Type_GetVirtualFns(ty);
+  /* flags=Typemaker2_Type_GetFlags(ty); */
+
+  assert(fns);
+  if (Typemaker2_VirtualFn_List_GetCount(fns)) {
+    GWEN_BUFFER *tbuf;
+    const char *s;
+    TYPEMAKER2_VIRTUALFN *vf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    GWEN_Buffer_AppendString(tbuf, "/* getters for virtual functions */\n");
+    vf=Typemaker2_VirtualFn_List_First(fns);
+    while (vf) {
+
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_");
+
+      s=Typemaker2_VirtualFn_GetName(vf);
+      if (!(s && *s)) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      while (*s)
+        GWEN_Buffer_AppendByte(tbuf, toupper(*(s++)));
+      GWEN_Buffer_AppendString(tbuf, "_FN ");
+
+      s=Typemaker2_Type_GetPrefix(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "_Get");
+      s=Typemaker2_VirtualFn_GetName(vf);
+      if (!(s && *s)) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      GWEN_Buffer_AppendByte(tbuf, toupper(*s));
+      GWEN_Buffer_AppendString(tbuf, s+1);
+      GWEN_Buffer_AppendString(tbuf, "Fn(const ");
+
+      s=Typemaker2_Type_GetIdentifier(ty);
+      GWEN_Buffer_AppendString(tbuf, s);
+      /* created structs are always pointers */
+      GWEN_Buffer_AppendString(tbuf, " *p_struct){\n");
+
+      GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
+      GWEN_Buffer_AppendString(tbuf, "  return p_struct->");
+      s=Typemaker2_VirtualFn_GetName(vf);
+      if (!(s && *s)) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      GWEN_Buffer_AppendString(tbuf, s);
+      GWEN_Buffer_AppendString(tbuf, "Fn;\n");
+
+      GWEN_Buffer_AppendString(tbuf, "}\n");
+
+      Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+
+      vf=Typemaker2_VirtualFn_List_Next(vf);
+    }
+  }
+
+  return 0;
+}
+
+
+
 static int _setEnumStringFns(GWEN_UNUSED TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
   TYPEMAKER2_ENUM_LIST *enums;
@@ -7353,6 +7516,18 @@ static int Typemaker2_Builder_C_Build(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *t
   }
 
   rv=_buildSetterVirtualFns(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_buildProtoGetterVirtualFns(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_buildGetterVirtualFns(tb, ty);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;

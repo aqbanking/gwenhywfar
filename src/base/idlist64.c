@@ -725,14 +725,13 @@ int __compDescending(const void *pa, const void *pb)
  */
 
 
-GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl)
+GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(const GWEN_IDLIST64 *idl)
 {
   GWEN_IDLIST64_ITERATOR *it;
 
   assert(idl);
   GWEN_NEW_OBJECT(GWEN_IDLIST64_ITERATOR, it);
 
-  GWEN_IdList64_Attach(idl);
   it->list=idl;
 
   return it;
@@ -743,7 +742,6 @@ GWEN_IDLIST64_ITERATOR *GWEN_IdList64_Iterator_new(GWEN_IDLIST64 *idl)
 void GWEN_IdList64_Iterator_free(GWEN_IDLIST64_ITERATOR *it)
 {
   if (it) {
-    GWEN_IdList64_free(it->list);
     GWEN_FREE_OBJECT(it);
   }
 }

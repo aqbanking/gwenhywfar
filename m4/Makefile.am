@@ -1,6 +1,7 @@
 
 EXTRA_DIST= \
  acx_compile_warn.m4 \
+ ax_pthread.m4 \
  as-scrub-include.m4 \
  binreloc.m4 \
  debugmode.m4 \

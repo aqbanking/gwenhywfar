@@ -44,9 +44,22 @@ static const uint8_t daysInMonth[12]= {
 };
 
 
+static void _writeAsString(GWEN_DATE *gd);
+static GWEN_DATE *_createFromGregorianAndUseGivenString(int y, int m, int d, const char *s);
+
+
 
 
 GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d)
+{
+  return _createFromGregorianAndUseGivenString(y, m, d, NULL);
+}
+
+
+
+/* if s is given it must contain a string of minimum 8 bytes length from which the date was derived,
+ * if not given the string representation will be generated. */
+GWEN_DATE *_createFromGregorianAndUseGivenString(int y, int m, int d, const char *s)
 {
   GWEN_DATE *gd;
 
@@ -64,10 +77,12 @@ GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d)
              (3*((y+4900+(m-14)/12)/100))/4+
              d-32075;
 
-  snprintf(gd->asString, sizeof(gd->asString)-1,
-           "%04d%02d%02d",
-           gd->year, gd->month, gd->day);
-  gd->asString[sizeof(gd->asString)-1]=0;
+  if (s && *s) {
+    memmove(gd->asString, s, 8);
+    gd->asString[8]=0;
+  }
+  else
+    _writeAsString(gd);
 
   return gd;
 }
@@ -76,7 +91,7 @@ GWEN_DATE *GWEN_Date_fromGregorian(int y, int m, int d)
 
 void GWEN_Date_setJulian(GWEN_DATE *gd, int julian)
 {
-  int l, n, i, j, len;
+  int l, n, i, j /*, len */;
 
   l=julian+68569;
   n=(4*l)/146097;
@@ -90,14 +105,49 @@ void GWEN_Date_setJulian(GWEN_DATE *gd, int julian)
   gd->year=100*(n-49)+i+l;
   gd->julian=julian;
 
+#if 1
+  _writeAsString(gd);
+#else
   len=snprintf(gd->asString, sizeof(gd->asString)-1,
                "%04d%02d%02d",
                gd->year, gd->month, gd->day);
   gd->asString[sizeof(gd->asString)-1]=0;
-  if ((int)(sizeof(gd->asString)-1) < len)
+  if ((int)(sizeof(gd->asString)-1) < len) {
     DBG_ERROR(GWEN_LOGDOMAIN, "truncated date string [%s]", gd->asString);
+  }
+#endif
+
 }
 
+
+
+void _writeAsString(GWEN_DATE *gd)
+{
+  char *ptr;
+  int x;
+
+  ptr=gd->asString+8;
+  *(ptr--)=0;
+
+  x=gd->day;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=gd->month;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=gd->year;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *ptr='0'+(x%10);
+}
 
 
 void GWEN_Date_AddDays(GWEN_DATE *gd, int days)
@@ -218,6 +268,41 @@ GWEN_DATE *GWEN_Date_dup(const GWEN_DATE *ogd)
 
 GWEN_DATE *GWEN_Date_fromString(const char *s)
 {
+
+#if 1
+  if (s && strlen(s)>7) {
+    int y, m, d;
+    GWEN_DATE *result;
+    const char *originalPtr;
+
+    originalPtr=s;
+    y=*(s++)-'0';
+    y*=10;
+    y+=*(s++)-'0';
+    y*=10;
+    y+=*(s++)-'0';
+    y*=10;
+    y+=*(s++)-'0';
+
+    m=*(s++)-'0';
+    m*=10;
+    m+=*(s++)-'0';
+
+    d=*(s++)-'0';
+    d*=10;
+    d+=*(s++)-'0';
+
+    result=_createFromGregorianAndUseGivenString(y, m, d, originalPtr);
+    if (!result) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Bad date string [%s]", originalPtr);
+    }
+    return result;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad date string [%s]", s?s:"<empty>");
+    return NULL;
+  }
+#else
   int y, m, d;
 
   if (3==sscanf(s, "%04d%02d%02d", &y, &m, &d)) {
@@ -230,6 +315,7 @@ GWEN_DATE *GWEN_Date_fromString(const char *s)
     DBG_INFO(GWEN_LOGDOMAIN, "Bad date string [%s]", s);
     return NULL;
   }
+#endif
 }
 
 

@@ -56,7 +56,7 @@ struct GWEN_IDTABLE64 {
 
 
 struct GWEN_IDLIST64_ITERATOR {
-  GWEN_IDLIST64 *list;
+  const GWEN_IDLIST64 *list;
   uint64_t nextIndex;
 };
 

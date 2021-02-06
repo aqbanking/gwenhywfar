@@ -44,7 +44,7 @@
 
 
 #ifdef HAVE_OPENSSL
-int getKeyDataFromTextOpenSSL(GWEN_GUI *gui,
+int getKeyDataFromTextOpenSSL(GWEN_UNUSED GWEN_GUI *gui,
                               const char *password,
                               unsigned char *buffer,
                               unsigned int bsize)

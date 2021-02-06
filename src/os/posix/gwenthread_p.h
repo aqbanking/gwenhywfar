@@ -1,6 +1,6 @@
 /***************************************************************************
-    begin       : Tue Oct 02 2002
-    copyright   : (C) 2002-2010 by Martin Preuss
+    begin       : Wed Feb 03 2021
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,17 +22,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_GUI_GUI_L_H
-#define GWENHYWFAR_GUI_GUI_L_H
+
+#ifndef GWEN_THREAD_P_H
+#define GWEN_THREAD_P_H
 
 
-#include <gwenhywfar/gui_be.h>
+#include "gwenthread.h"
+
+#include <pthread.h>
 
 
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
 
-int GWEN_Gui_ModuleInit();
-void GWEN_Gui_ModuleFini();
+struct GWEN_THREAD {
+  GWEN_INHERIT_ELEMENT(GWEN_THREAD)
+  GWEN_LIST_ELEMENT(GWEN_THREAD)
+
+  pthread_t threadId;
+  GWEN_THREAD_RUN_FN runFn;
+};
+
+
 
 
 #endif

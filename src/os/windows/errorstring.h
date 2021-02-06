@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Oct 02 2002
-    copyright   : (C) 2002-2010 by Martin Preuss
+    copyright   : (C) 2002 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,18 +22,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_GUI_GUI_L_H
-#define GWENHYWFAR_GUI_GUI_L_H
+
+#ifndef GWEN_ERRORSTRING_H
+#define GWEN_ERRORSTRING_H
 
 
-#include <gwenhywfar/gui_be.h>
+const char *GWEN_ErrorString_Windows(int errnum);
 
 
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
-
-int GWEN_Gui_ModuleInit();
-void GWEN_Gui_ModuleFini();
 
 
 #endif
-

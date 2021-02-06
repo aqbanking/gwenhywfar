@@ -8,8 +8,13 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser @all_includes@
 
+noinst_HEADERS=\
+  testthread.h \
+  testthread_p.h
+
+
 noinst_PROGRAMS=gwentest
-gwentest_SOURCES=gwentest.c
+gwentest_SOURCES=gwentest.c testthread.c
 gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
   $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS)
 

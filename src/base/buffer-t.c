@@ -137,7 +137,7 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 
 #else
 
-int GWEN_Buffer_AddTests(GWEN_TEST_MODULE *mod)
+int GWEN_Buffer_AddTests(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
   DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without test code enabled.");
   return GWEN_ERROR_GENERIC;

@@ -22,17 +22,57 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GWENHYWFAR_GUI_GUI_L_H
-#define GWENHYWFAR_GUI_GUI_L_H
 
+#ifndef GWENHYWFAR_GUI_NOGUI_P_H
+#define GWENHYWFAR_GUI_NOGUI_P_H
+
+#include "nogui.h"
 
 #include <gwenhywfar/gui_be.h>
 
 
-int GWEN_Gui_ReadString(const char *text, GWEN_BUFFER *tbuf);
 
-int GWEN_Gui_ModuleInit();
-void GWEN_Gui_ModuleFini();
+
+typedef struct GWEN_GUI_NOGUI GWEN_GUI_NOGUI;
+struct GWEN_GUI_NOGUI {
+  GWEN_GUI_MESSAGEBOX_FN messageBoxFn;
+  GWEN_GUI_INPUTBOX_FN inputBoxFn;
+
+  GWEN_GUI_SHOWBOX_FN showBoxFn;
+  GWEN_GUI_HIDEBOX_FN hideBoxFn;
+
+  GWEN_GUI_PROGRESS_START_FN progressStartFn;
+  GWEN_GUI_PROGRESS_ADVANCE_FN progressAdvanceFn;
+  GWEN_GUI_PROGRESS_SETTOTAL_FN progressSetTotalFn;
+  GWEN_GUI_PROGRESS_LOG_FN progressLogFn;
+  GWEN_GUI_PROGRESS_END_FN progressEndFn;
+
+  GWEN_GUI_PRINT_FN printFn;
+
+  GWEN_GUI_GETPASSWORD_FN getPasswordFn;
+  GWEN_GUI_SETPASSWORDSTATUS_FN setPasswordStatusFn;
+
+  GWEN_GUI_LOG_HOOK_FN logHookFn;
+
+  GWEN_GUI_WAITFORSOCKETS_FN waitForSocketsFn;
+
+  GWEN_GUI_CHECKCERT_FN checkCertFn;
+
+  GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN keyDataFromTextOpenSslFn;
+
+  GWEN_GUI_EXEC_DIALOG_FN execDialogFn;
+
+  GWEN_GUI_OPEN_DIALOG_FN openDialogFn;
+  GWEN_GUI_CLOSE_DIALOG_FN closeDialogFn;
+  GWEN_GUI_RUN_DIALOG_FN runDialogFn;
+
+  GWEN_GUI_READ_DIALOG_PREFS_FN readDialogPrefsFn;
+  GWEN_GUI_WRITE_DIALOG_PREFS_FN writeDialogPrefsFn;
+
+  GWEN_GUI_GET_FILENAME_FN getFileNameFn;
+
+  GWEN_GUI_GETSYNCIO_FN getSyncIoFn;
+};
 
 
 #endif

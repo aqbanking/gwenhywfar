@@ -15,6 +15,8 @@ noinst_HEADERS=\
  directory_p.h \
  fslock_p.h \
  gwentime_p.h \
+ gwenthread_p.h \
+ threadlocaldata_p.h \
  inetaddr_p.h \
  inetsocket_p.h \
  libloader_p.h \
@@ -32,6 +34,8 @@ libosimpl_la_SOURCES=\
  directory.c \
  fslock.c \
  gwentime.c \
+ gwenthread.c \
+ threadlocaldata.c \
  inetaddr.c \
  inetsocket.c \
  init.c \
