@@ -1401,6 +1401,7 @@ AC_CONFIG_FILES([Doxyfile
                  tools/typemaker2/types/c/Makefile
                  tools/gcttool/Makefile
                  tools/gsa/Makefile
+                 tools/gwenbuild/Makefile
                  test/Makefile
                  gui/Makefile
                  gui/cpp/Makefile
