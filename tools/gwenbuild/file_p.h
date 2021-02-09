@@ -10,7 +10,7 @@
 #ifndef GWBUILD_FILE_P_H
 #define GWBUILD_FILE_P_H
 
-#include "gwenbuild/context.h"
+#include "gwenbuild/file.h"
 
 
 struct GWB_FILE {

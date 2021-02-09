@@ -10,16 +10,19 @@
 #ifndef GWBUILD_GENERATOR_P_H
 #define GWBUILD_GENERATOR_P_H
 
+
 #include "gwenbuild/generator.h"
 
 
 struct GWB_GENERATOR {
+  GWEN_INHERIT_ELEMENT(GWB_GENERATOR)
+
   uint32_t id;
 
   GWB_CONTEXT *context;
 
-  GWB_FILE_LIST2 *inputFileList;
-  GWB_FILE_LIST2 *outputFileList;
+  GWB_FILE_LIST2 *inputFileList2;
+  GWB_FILE_LIST2 *outputFileList2;
 
   int numBlockingInputFiles;
 
