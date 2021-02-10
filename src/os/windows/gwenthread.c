@@ -154,7 +154,7 @@ GWEN_THREAD_RUN_FN GWEN_Thread_SetRunFn(GWEN_THREAD *thr, GWEN_THREAD_RUN_FN fn)
 
 
 
-DWORD _threadRun_cb(LPVOID lpParam)
+DWORD WINAPI _threadRun_cb(LPVOID lpParam)
 {
   GWEN_THREAD *thr;
 
