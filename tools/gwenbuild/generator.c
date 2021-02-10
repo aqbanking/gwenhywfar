@@ -40,7 +40,6 @@ void GWEN_Generator_free(GWB_GENERATOR *gen)
 {
   if (gen) {
     GWEN_INHERIT_FINI(GWB_GENERATOR, gen);
-    GWB_Context_free(gen->context);
     GWB_File_List2_free(gen->inputFileList2);
     GWB_File_List2_free(gen->outputFileList2);
   }
@@ -64,8 +63,6 @@ GWB_CONTEXT *GWEN_Generator_GetContext(const GWB_GENERATOR *gen)
 
 void GWEN_Generator_SetContext(GWB_GENERATOR *gen, GWB_CONTEXT *ctx)
 {
-  if (gen->context)
-    GWB_Context_free(gen->context);
   gen->context=ctx;
 }
 

@@ -11,14 +11,20 @@
 #define GWBUILD_CONTEXT_H
 
 
+#include <gwenhywfar/tree2.h>
+
+
+typedef struct GWB_CONTEXT GWB_CONTEXT;
+GWEN_TREE2_FUNCTION_DEFS(GWB_CONTEXT, GWB_Context)
+
+
 #include "gwenbuild/keyvaluepair.h"
+#include "gwenbuild/file.h"
 
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/db.h>
 
 
-
-typedef struct GWB_CONTEXT GWB_CONTEXT;
 
 GWB_CONTEXT *GWB_Context_new();
 GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx);
@@ -57,6 +63,8 @@ void GWB_Context_SetDefine(GWB_CONTEXT *ctx, const char *name, const char *value
 GWEN_DB_NODE *GWB_Context_GetVars(const GWB_CONTEXT *ctx);
 
 
+GWB_FILE_LIST2 *GWEN_Context_GetSourceFileList2(const GWB_CONTEXT *ctx);
+void GWEN_Context_AddSourceFile(GWB_CONTEXT *ctx, GWB_FILE *f);
 
 
 #endif

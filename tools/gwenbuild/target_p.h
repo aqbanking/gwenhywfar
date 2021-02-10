@@ -7,31 +7,25 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_CONTEXT_P_H
-#define GWBUILD_CONTEXT_P_H
-
-#include "gwenbuild/context.h"
+#ifndef GWBUILD_TARGET_P_H
+#define GWBUILD_TARGET_P_H
 
 
-struct GWB_CONTEXT {
-  GWEN_TREE2_ELEMENT(GWB_CONTEXT)
+#include "gwenbuild/target.h"
 
-  char *topBuildDir;
-  char *topSourceDir;
 
-  char *currentBuildDir;
-  char *currentSourceDir;
+struct GWB_TARGET {
+  GWEN_TREE2_ELEMENT(GWB_TARGET)
 
-  char *compilerFlags;
-  char *linkerFlags;
+  char *name;
+  GWBUILD_TARGETTYPE targetType;
 
-  GWB_KEYVALUEPAIR_LIST *includeList;
-  GWB_KEYVALUEPAIR_LIST *defineList;
+  GWB_CONTEXT *context;
 
-  GWEN_DB_NODE *vars;
+  GWEN_STRINGLIST *sourceFileNameList;
+  GWEN_STRINGLIST *usedTargetNameList;
 
-  GWB_FILE_LIST2 *sourceFileList2;
-
+  GWB_GENERATOR *generator;
 };
 
 

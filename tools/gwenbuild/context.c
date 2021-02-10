@@ -21,6 +21,9 @@
 #include <string.h>
 
 
+GWEN_TREE2_FUNCTIONS(GWB_CONTEXT, GWB_Context)
+
+
 
 static char *_combinedString(const char *string1, const char *string2, const char delim);
 
@@ -32,6 +35,7 @@ GWB_CONTEXT *GWB_Context_new()
   GWB_CONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWB_CONTEXT, ctx);
+  GWEN_TREE2_INIT(GWB_CONTEXT, ctx, GWB_Context);
 
   ctx->vars=GWEN_DB_Group_new("vars");
 
@@ -45,6 +49,7 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
   GWB_CONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWB_CONTEXT, ctx);
+  GWEN_TREE2_INIT(GWB_CONTEXT, ctx, GWB_Context);
 
   if (originalCtx->topBuildDir)
     ctx->topBuildDir=strdup(originalCtx->topBuildDir);
@@ -79,6 +84,8 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
 void GWB_Context_free(GWB_CONTEXT *ctx)
 {
   if (ctx) {
+    GWEN_TREE2_FINI(GWB_CONTEXT, ctx, GWB_Context);
+
     free(ctx->topBuildDir);
     free(ctx->topSourceDir);
     free(ctx->currentBuildDir);
@@ -89,6 +96,7 @@ void GWB_Context_free(GWB_CONTEXT *ctx)
     GWB_KeyValuePair_List_free(ctx->includeList);
     GWB_KeyValuePair_List_free(ctx->defineList);
     GWEN_DB_Group_free(ctx->vars);
+    GWB_File_List2_free(ctx->sourceFileList2);
 
     GWEN_FREE_OBJECT(ctx);
   }
@@ -327,6 +335,23 @@ GWEN_DB_NODE *GWB_Context_GetVars(const GWB_CONTEXT *ctx)
 {
   return ctx->vars;
 }
+
+
+
+GWB_FILE_LIST2 *GWEN_Context_GetSourceFileList2(const GWB_CONTEXT *ctx)
+{
+  return ctx->sourceFileList2;
+}
+
+
+
+void GWEN_Context_AddSourceFile(GWB_CONTEXT *ctx, GWB_FILE *f)
+{
+  if (ctx->sourceFileList2==NULL)
+    ctx->sourceFileList2=GWB_File_List2_new();
+  GWB_File_List2_PushBack(ctx->sourceFileList2, f);
+}
+
 
 
 

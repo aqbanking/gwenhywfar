@@ -1,13 +1,19 @@
 INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(gwenhywfar_symlinkdir)
 
+
+
 bin_PROGRAMS=gwbuild
+
+
 
 gwbuild_SOURCES=\
   main.c \
   context.c \
   file.c \
   generator.c \
-  keyvaluepair.c
+  keyvaluepair.c \
+  target.c
+
 
 
 noinst_HEADERS= \
@@ -18,7 +24,10 @@ noinst_HEADERS= \
   generator.h \
   generator_p.h \
   keyvaluepair.h \
-  keyvaluepair_p.h
+  keyvaluepair_p.h \
+  target.h \
+  target_p.h
+
 
 
 gwbuild_LDADD = \

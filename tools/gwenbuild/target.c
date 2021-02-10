@@ -1,0 +1,147 @@
+/***************************************************************************
+    begin       : Mon Feb 08 2021
+    copyright   : (C) 2021 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include "gwenbuild/target_p.h"
+
+
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/memory.h>
+
+
+
+GWEN_TREE2_FUNCTIONS(GWB_TARGET, GWB_Target)
+
+
+
+GWB_TARGET *GWB_Target_new(void)
+{
+  GWB_TARGET *target;
+
+  GWEN_NEW_OBJECT(GWB_TARGET, target);
+  GWEN_TREE2_INIT(GWB_TARGET, target, GWB_Target);
+
+
+  return target;
+}
+
+
+
+void GWB_Target_free(GWB_TARGET *target)
+{
+  if (target) {
+    GWEN_TREE2_FINI(GWB_TARGET, target, GWB_Target);
+    free(target->name);
+    GWEN_StringList_free(target->sourceFileNameList);
+    GWEN_StringList_free(target->usedTargetNameList);
+
+    GWEN_FREE_OBJECT(target);
+  }
+
+}
+
+
+const char *GWB_Target_GetName(const GWB_TARGET *target)
+{
+  return target->name;
+}
+
+
+
+void GWB_Target_SetName(GWB_TARGET *target, const char *s)
+{
+  if (target->name)
+    free(target->name);
+  if (s)
+    target->name=strdup(s);
+  else
+    target->name=NULL;
+}
+
+
+
+GWBUILD_TARGETTYPE GWB_Target_GetTargetType(const GWB_TARGET *target)
+{
+  return target->targetType;
+}
+
+
+
+void GWB_Target_SetTargetType(GWB_TARGET *target, GWBUILD_TARGETTYPE t)
+{
+  target->targetType=t;
+}
+
+
+
+GWB_CONTEXT *GWB_Target_GetContext(const GWB_TARGET *target)
+{
+  return target->context;
+}
+
+
+
+void GWB_Target_SetContext(GWB_TARGET *target, GWB_CONTEXT *ctx)
+{
+  target->context=ctx;
+}
+
+
+
+GWEN_STRINGLIST *GWB_Target_GetSourceFileNameList(const GWB_TARGET *target)
+{
+  return target->sourceFileNameList;
+}
+
+
+
+void GWB_Target_AddSourceFileName(GWB_TARGET *target, const char *s)
+{
+  if (target->sourceFileNameList==NULL)
+    target->sourceFileNameList=GWEN_StringList_new();
+  GWEN_StringList_AppendString(target->sourceFileNameList, s, 0, 1);
+}
+
+
+
+GWEN_STRINGLIST *GWB_Target_GetUsedTargetNameList(const GWB_TARGET *target)
+{
+  return target->usedTargetNameList;
+}
+
+
+
+void GWB_Target_AddUsedTargetFileName(GWB_TARGET *target, const char *s)
+{
+  if (target->usedTargetNameList==NULL)
+    target->usedTargetNameList=GWEN_StringList_new();
+  GWEN_StringList_AppendString(target->usedTargetNameList, s, 0, 1);
+}
+
+
+
+GWB_GENERATOR *GWB_Target_GetGenerator(const GWB_TARGET *target)
+{
+  return target->generator;
+}
+
+
+
+void GWB_Target_SetGenerator(GWB_TARGET *target, GWB_GENERATOR *gen)
+{
+  target->generator=gen;
+}
+
+
+
+
+
