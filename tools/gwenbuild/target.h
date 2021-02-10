@@ -19,6 +19,7 @@ GWEN_TREE2_FUNCTION_DEFS(GWB_TARGET, GWB_Target)
 
 
 #include "gwenbuild/context.h"
+#include "gwenbuild/file.h"
 #include "gwenbuild/gwenbuild.h"
 
 #include <gwenhywfar/stringlist.h>
@@ -50,6 +51,8 @@ void GWB_Target_AddUsedTargetFileName(GWB_TARGET *target, const char *s);
 GWB_GENERATOR *GWB_Target_GetGenerator(const GWB_TARGET *target);
 void GWB_Target_SetGenerator(GWB_TARGET *target, GWB_GENERATOR *gen);
 
+GWB_FILE *GWB_Target_GetOutputFile(const GWB_TARGET *target);
+void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f);
 
 
 

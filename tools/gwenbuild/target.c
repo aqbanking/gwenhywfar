@@ -143,5 +143,18 @@ void GWB_Target_SetGenerator(GWB_TARGET *target, GWB_GENERATOR *gen)
 
 
 
+GWB_FILE *GWB_Target_GetOutputFile(const GWB_TARGET *target)
+{
+  return target->outputFile;
+}
+
+
+
+void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f)
+{
+  target->outputFile=f;
+}
+
+
 
 

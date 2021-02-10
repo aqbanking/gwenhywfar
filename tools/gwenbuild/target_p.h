@@ -26,6 +26,7 @@ struct GWB_TARGET {
   GWEN_STRINGLIST *usedTargetNameList;
 
   GWB_GENERATOR *generator;
+  GWB_FILE *outputFile;
 };
 
 
