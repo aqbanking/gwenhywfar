@@ -23,7 +23,7 @@ struct GWB_CONTEXT {
   char *compilerFlags;
   char *linkerFlags;
 
-  GWEN_STRINGLIST *includeList;
+  GWB_KEYVALUEPAIR_LIST *includeList;
   GWB_KEYVALUEPAIR_LIST *defineList;
 
   GWEN_DB_NODE *vars;

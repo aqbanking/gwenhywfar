@@ -48,8 +48,8 @@ const char *GWB_Context_GetLinkerFlags(const GWB_CONTEXT *ctx);
 void GWB_Context_SetLinkerFlags(GWB_CONTEXT *ctx, const char *s);
 void GWB_Context_AddLinkerFlags(GWB_CONTEXT *ctx, const char *s);
 
-GWEN_STRINGLIST *GWB_Context_GetIncludeList(const GWB_CONTEXT *ctx);
-void GWB_Context_AddInclude(GWB_CONTEXT *ctx, const char *folder);
+GWB_KEYVALUEPAIR_LIST *GWB_Context_GetIncludeList(const GWB_CONTEXT *ctx);
+void GWB_Context_AddInclude(GWB_CONTEXT *ctx, const char *genType, const char *incl);
 
 GWB_KEYVALUEPAIR_LIST *GWB_Context_GetDefineList(const GWB_CONTEXT *ctx);
 void GWB_Context_SetDefine(GWB_CONTEXT *ctx, const char *name, const char *value);

@@ -26,6 +26,11 @@ GWEN_LIST_FUNCTIONS(GWB_KEYVALUEPAIR, GWB_KeyValuePair)
 
 
 
+static GWB_KEYVALUEPAIR *_getByKey(GWB_KEYVALUEPAIR *kvp, const char *key);
+
+
+
+
 GWB_KEYVALUEPAIR *GWB_KeyValuePair_new(const char *key, const char *value)
 {
   GWB_KEYVALUEPAIR *kvp;
@@ -124,16 +129,38 @@ GWB_KEYVALUEPAIR_LIST *GWB_KeyValuePair_List_dup(const GWB_KEYVALUEPAIR_LIST *ol
 
 
 
-GWB_KEYVALUEPAIR *GWB_KeyValuePair_List_GetByKey(const GWB_KEYVALUEPAIR_LIST *kvpList, const char *key)
+const char *GWB_KeyValuePair_List_GetValue(const GWB_KEYVALUEPAIR_LIST *kvpList, const char *key)
 {
   GWB_KEYVALUEPAIR *kvp;
 
-  kvp=GWB_KeyValuePair_List_First(kvpList);
-  while(kvp) {
-    const char *s;
+  kvp=GWB_KeyValuePair_List_GetFirstByKey(kvpList, key);
+  if (kvp==NULL)
+    return NULL;
+  return kvp->value;
+}
 
-    s=GWB_KeyValuePair_GetKey(kvp);
-    if (s && strcasecmp(s, key)==0)
+
+
+GWB_KEYVALUEPAIR *GWB_KeyValuePair_List_GetFirstByKey(const GWB_KEYVALUEPAIR_LIST *kvpList, const char *key)
+{
+  return _getByKey(GWB_KeyValuePair_List_First(kvpList), key);
+}
+
+
+
+GWB_KEYVALUEPAIR *GWB_KeyValuePair_List_GetNextByKey(const GWB_KEYVALUEPAIR *kvp, const char *key)
+{
+  if (kvp)
+    return _getByKey(GWB_KeyValuePair_List_Next(kvp), key);
+  return NULL;
+}
+
+
+
+GWB_KEYVALUEPAIR *_getByKey(GWB_KEYVALUEPAIR *kvp, const char *key)
+{
+  while(kvp) {
+    if (kvp->key && strcmp(kvp->key, key)==0)
       return kvp;
     kvp=GWB_KeyValuePair_List_Next(kvp);
   }
@@ -143,17 +170,60 @@ GWB_KEYVALUEPAIR *GWB_KeyValuePair_List_GetByKey(const GWB_KEYVALUEPAIR_LIST *kv
 
 
 
-const char *GWB_KeyValuePair_List_GetValue(const GWB_KEYVALUEPAIR_LIST *kvpList, const char *key)
+int GWB_KeyValuePair_List_SampleValuesByKey(const GWB_KEYVALUEPAIR_LIST *kvpList,
+                                            const char *key,
+                                            const char *prefix,
+                                            const char *delim,
+                                            GWEN_BUFFER *destBuf)
 {
-  GWB_KEYVALUEPAIR *kvp;
+  const GWB_KEYVALUEPAIR *kvp;
+  int entriesAdded=0;
 
-  kvp=GWB_KeyValuePair_List_GetByKey(kvpList, key);
-  if (kvp==NULL)
-    return NULL;
-  return kvp->value;
+  kvp=GWB_KeyValuePair_List_GetFirstByKey(kvpList, key);
+  while(kvp) {
+    if (kvp->value && *(kvp->value)) {
+      if (entriesAdded && delim)
+        GWEN_Buffer_AppendString(destBuf, delim);
+      if (prefix)
+        GWEN_Buffer_AppendString(destBuf, prefix);
+      GWEN_Buffer_AppendString(destBuf, kvp->value);
+      entriesAdded++;
+    }
+    kvp=GWB_KeyValuePair_List_GetNextByKey(kvp, key);
+  }
+  return entriesAdded;
 }
 
 
+
+int GWB_KeyValuePair_List_WriteAllPairsToBuffer(const GWB_KEYVALUEPAIR_LIST *kvpList,
+                                                const char *prefix,
+                                                const char *assignmentString,
+                                                const char *delim,
+                                                GWEN_BUFFER *destBuf)
+{
+  const GWB_KEYVALUEPAIR *kvp;
+  int entriesAdded=0;
+
+  kvp=GWB_KeyValuePair_List_First(kvpList);
+  while(kvp) {
+    if (kvp->key && *(kvp->key)) {
+      if (entriesAdded && delim)
+        GWEN_Buffer_AppendString(destBuf, delim);
+      if (prefix)
+        GWEN_Buffer_AppendString(destBuf, prefix);
+      GWEN_Buffer_AppendString(destBuf, kvp->key);
+      if (kvp->value && *(kvp->value)) {
+        if (assignmentString)
+          GWEN_Buffer_AppendString(destBuf, assignmentString);
+        GWEN_Buffer_AppendString(destBuf, kvp->value);
+      }
+      entriesAdded++;
+    }
+    kvp=GWB_KeyValuePair_List_Next(kvp);
+  }
+  return entriesAdded;
+}
 
 
 

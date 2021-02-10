@@ -63,7 +63,7 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
     ctx->linkerFlags=originalCtx->linkerFlags;
 
   if (originalCtx->includeList)
-    ctx->includeList=GWEN_StringList_dup(originalCtx->includeList);
+    ctx->includeList=GWB_KeyValuePair_List_dup(originalCtx->includeList);
 
   if (originalCtx->defineList)
     ctx->defineList=GWB_KeyValuePair_List_dup(originalCtx->defineList);
@@ -86,7 +86,7 @@ void GWB_Context_free(GWB_CONTEXT *ctx)
     free(ctx->compilerFlags);
     free(ctx->linkerFlags);
 
-    GWEN_StringList_free(ctx->includeList);
+    GWB_KeyValuePair_List_free(ctx->includeList);
     GWB_KeyValuePair_List_free(ctx->defineList);
     GWEN_DB_Group_free(ctx->vars);
 
@@ -276,19 +276,24 @@ void GWB_Context_AddLinkerFlags(GWB_CONTEXT *ctx, const char *s)
 
 
 
-GWEN_STRINGLIST *GWB_Context_GetIncludeList(const GWB_CONTEXT *ctx)
+GWB_KEYVALUEPAIR_LIST *GWB_Context_GetIncludeList(const GWB_CONTEXT *ctx)
 {
   return ctx->includeList;
 }
 
 
 
-void GWB_Context_AddInclude(GWB_CONTEXT *ctx, const char *folder)
+void GWB_Context_AddInclude(GWB_CONTEXT *ctx, const char *genType, const char *incl)
 {
-  if (ctx->includeList==NULL)
-    ctx->includeList=GWEN_StringList_new();
+  if (genType && *genType &&incl && *incl) {
+    GWB_KEYVALUEPAIR *kvp;
 
-  GWEN_StringList_AppendString(ctx->includeList, folder, 0, 1);
+    if (ctx->includeList==NULL)
+      ctx->includeList=GWB_KeyValuePair_List_new();
+
+    kvp=GWB_KeyValuePair_new(genType, incl);
+    GWB_KeyValuePair_List_Add(kvp, ctx->includeList);
+  }
 }
 
 
@@ -308,7 +313,7 @@ void GWB_Context_SetDefine(GWB_CONTEXT *ctx, const char *name, const char *value
     if (ctx->defineList==NULL)
       ctx->defineList=GWB_KeyValuePair_List_new();
 
-    kvp=GWB_KeyValuePair_List_GetByKey(ctx->defineList, name);
+    kvp=GWB_KeyValuePair_List_GetFirstByKey(ctx->defineList, name);
     if (kvp)
       GWB_KeyValuePair_SetValue(kvp, value);
     else
