@@ -109,22 +109,22 @@ static int GWENHYWFAR_CB GWEN_Gui_CheckCertBuiltIn(GWEN_GUI *gui,
 
 static void GWEN_Gui_DialogBased_CheckShow(GWEN_GUI *gui, GWEN_PROGRESS_DATA *pd);
 
-static uint32_t GWEN_Gui_DialogBased_ProgressStart(GWEN_GUI *gui,
+static uint32_t GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressStart(GWEN_GUI *gui,
                                                 uint32_t progressFlags,
                                                 const char *title,
                                                 const char *text,
                                                 uint64_t total,
                                                 uint32_t guiid);
-static int GWEN_Gui_DialogBased_ProgressEnd(GWEN_GUI *gui, uint32_t pid);
-static int GWEN_Gui_DialogBased_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress);
-static int GWEN_Gui_DialogBased_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total);
+static int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressEnd(GWEN_GUI *gui, uint32_t pid);
+static int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress);
+static int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total);
 
-static int GWEN_Gui_DialogBased_ProgressLog(GWEN_GUI *gui,
+static int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressLog(GWEN_GUI *gui,
                                          uint32_t pid,
                                          GWEN_LOGGER_LEVEL level,
                                          const char *text);
 
-static int GWEN_Gui_DialogBased_InputBox(GWEN_GUI *gui,
+static int GWENHYWFAR_CB GWEN_Gui_DialogBased_InputBox(GWEN_GUI *gui,
                                       uint32_t flags,
                                       const char *title,
                                       const char *text,
@@ -133,7 +133,7 @@ static int GWEN_Gui_DialogBased_InputBox(GWEN_GUI *gui,
                                       int maxLen,
                                       uint32_t guiid);
 
-static int GWEN_Gui_DialogBased_MessageBox(GWEN_GUI *gui,
+static int GWENHYWFAR_CB GWEN_Gui_DialogBased_MessageBox(GWEN_GUI *gui,
                                         uint32_t flags,
                                         const char *title,
                                         const char *text,
@@ -142,12 +142,12 @@ static int GWEN_Gui_DialogBased_MessageBox(GWEN_GUI *gui,
                                         const char *b3,
                                         uint32_t guiid);
 
-static uint32_t GWEN_Gui_DialogBased_ShowBox(GWEN_GUI *gui,
+static uint32_t GWENHYWFAR_CB GWEN_Gui_DialogBased_ShowBox(GWEN_GUI *gui,
                                           uint32_t flags,
                                           const char *title,
                                           const char *text,
                                           uint32_t guiid);
-static void GWEN_Gui_DialogBased_HideBox(GWEN_GUI *gui, uint32_t id);
+static void GWENHYWFAR_CB GWEN_Gui_DialogBased_HideBox(GWEN_GUI *gui, uint32_t id);
 
 static int GWENHYWFAR_CB GWEN_Gui_Internal_GetSyncIo(GWEN_GUI *gui, const char *url,
                                                      const char *defaultProto,
