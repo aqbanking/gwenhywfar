@@ -219,7 +219,7 @@ GWEN_GUI *GWEN_NoGui_new(void)
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_GUI_NOGUI *xgui;
 
@@ -230,7 +230,7 @@ void _freeData(GWEN_UNUSED void *bp, void *p)
 
 
 
-int _messageBox(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _messageBox(GWEN_UNUSED GWEN_GUI *gui,
                 GWEN_UNUSED uint32_t flags,
                 GWEN_UNUSED const char *title,
                 GWEN_UNUSED const char *text,
@@ -244,7 +244,7 @@ int _messageBox(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _inputBox(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _inputBox(GWEN_UNUSED GWEN_GUI *gui,
               GWEN_UNUSED uint32_t flags,
               GWEN_UNUSED const char *title,
               GWEN_UNUSED const char *text,
@@ -258,7 +258,7 @@ int _inputBox(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-uint32_t _showBox(GWEN_UNUSED GWEN_GUI *gui,
+uint32_t GWENHYWFAR_CB _showBox(GWEN_UNUSED GWEN_GUI *gui,
                   GWEN_UNUSED uint32_t flags,
                   GWEN_UNUSED const char *title,
                   GWEN_UNUSED const char *text,
@@ -269,13 +269,13 @@ uint32_t _showBox(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-void _hideBox(GWEN_UNUSED GWEN_GUI *gui, GWEN_UNUSED uint32_t id)
+void GWENHYWFAR_CB _hideBox(GWEN_UNUSED GWEN_GUI *gui, GWEN_UNUSED uint32_t id)
 {
 }
 
 
 
-uint32_t _progressStart(GWEN_UNUSED GWEN_GUI *gui,
+uint32_t GWENHYWFAR_CB _progressStart(GWEN_UNUSED GWEN_GUI *gui,
                         GWEN_UNUSED uint32_t progressFlags,
                         GWEN_UNUSED const char *title,
                         GWEN_UNUSED const char *text,
@@ -287,7 +287,7 @@ uint32_t _progressStart(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _progressAdvance(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _progressAdvance(GWEN_UNUSED GWEN_GUI *gui,
                      GWEN_UNUSED uint32_t pid,
                      GWEN_UNUSED uint64_t progress)
 {
@@ -296,7 +296,7 @@ int _progressAdvance(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _progressSetTotal(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _progressSetTotal(GWEN_UNUSED GWEN_GUI *gui,
                       GWEN_UNUSED uint32_t pid,
                       GWEN_UNUSED uint64_t total)
 {
@@ -305,7 +305,7 @@ int _progressSetTotal(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _progressLog(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _progressLog(GWEN_UNUSED GWEN_GUI *gui,
                  GWEN_UNUSED uint32_t pid,
                  GWEN_UNUSED GWEN_LOGGER_LEVEL level,
                  GWEN_UNUSED const char *text)
@@ -315,7 +315,7 @@ int _progressLog(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _progressEnd(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _progressEnd(GWEN_UNUSED GWEN_GUI *gui,
                  GWEN_UNUSED uint32_t pid)
 {
   return 0;
@@ -323,7 +323,7 @@ int _progressEnd(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _print(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _print(GWEN_UNUSED GWEN_GUI *gui,
            GWEN_UNUSED const char *docTitle,
            GWEN_UNUSED const char *docType,
            GWEN_UNUSED const char *descr,
@@ -335,7 +335,7 @@ int _print(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _getPassword(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _getPassword(GWEN_UNUSED GWEN_GUI *gui,
                  GWEN_UNUSED uint32_t flags,
                  GWEN_UNUSED const char *token,
                  GWEN_UNUSED const char *title,
@@ -352,7 +352,7 @@ int _getPassword(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _setPasswordStatus(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _setPasswordStatus(GWEN_UNUSED GWEN_GUI *gui,
                        GWEN_UNUSED const char *token,
                        GWEN_UNUSED const char *pin,
                        GWEN_UNUSED GWEN_GUI_PASSWORD_STATUS status,
@@ -363,7 +363,7 @@ int _setPasswordStatus(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _logHook(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _logHook(GWEN_UNUSED GWEN_GUI *gui,
              GWEN_UNUSED const char *logDomain,
              GWEN_UNUSED GWEN_LOGGER_LEVEL priority,
              GWEN_UNUSED const char *s)
@@ -373,7 +373,7 @@ int _logHook(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _waitForSockets(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _waitForSockets(GWEN_UNUSED GWEN_GUI *gui,
                     GWEN_UNUSED GWEN_SOCKET_LIST2 *readSockets,
                     GWEN_UNUSED GWEN_SOCKET_LIST2 *writeSockets,
                     GWEN_UNUSED int msecs,
@@ -384,7 +384,7 @@ int _waitForSockets(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _checkCert(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _checkCert(GWEN_UNUSED GWEN_GUI *gui,
                GWEN_UNUSED const GWEN_SSLCERTDESCR *cert,
                GWEN_UNUSED GWEN_SYNCIO *sio,
                GWEN_UNUSED uint32_t guiid)
@@ -394,7 +394,7 @@ int _checkCert(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _keyDataFromTextOpenSsl(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _keyDataFromTextOpenSsl(GWEN_UNUSED GWEN_GUI *gui,
                             GWEN_UNUSED const char *text,
                             GWEN_UNUSED unsigned char *buffer,
                             GWEN_UNUSED unsigned int bufLength)
@@ -404,7 +404,7 @@ int _keyDataFromTextOpenSsl(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _execDialog(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _execDialog(GWEN_UNUSED GWEN_GUI *gui,
                 GWEN_UNUSED GWEN_DIALOG *dlg,
                 GWEN_UNUSED uint32_t guiid)
 {
@@ -413,7 +413,7 @@ int _execDialog(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _openDialog(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _openDialog(GWEN_UNUSED GWEN_GUI *gui,
                 GWEN_UNUSED GWEN_DIALOG *dlg,
                 GWEN_UNUSED uint32_t guiid)
 {
@@ -422,7 +422,7 @@ int _openDialog(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _closeDialog(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _closeDialog(GWEN_UNUSED GWEN_GUI *gui,
                  GWEN_UNUSED GWEN_DIALOG *dlg)
 {
   return 0;
@@ -430,7 +430,7 @@ int _closeDialog(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _runDialog(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _runDialog(GWEN_UNUSED GWEN_GUI *gui,
                GWEN_UNUSED GWEN_DIALOG *dlg,
                GWEN_UNUSED int timeout)
 {
@@ -439,7 +439,7 @@ int _runDialog(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _readDialogPrefs(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _readDialogPrefs(GWEN_UNUSED GWEN_GUI *gui,
                      GWEN_UNUSED const char *groupName,
                      GWEN_UNUSED const char *altName,
                      GWEN_UNUSED GWEN_DB_NODE **pDb)
@@ -449,7 +449,7 @@ int _readDialogPrefs(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _writeDialogPrefs(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _writeDialogPrefs(GWEN_UNUSED GWEN_GUI *gui,
                       GWEN_UNUSED const char *groupName,
                       GWEN_UNUSED GWEN_DB_NODE *db)
 {
@@ -458,7 +458,7 @@ int _writeDialogPrefs(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _getFilename(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _getFilename(GWEN_UNUSED GWEN_GUI *gui,
                  GWEN_UNUSED const char *caption,
                  GWEN_UNUSED GWEN_GUI_FILENAME_TYPE fnt,
                  GWEN_UNUSED uint32_t flags,
@@ -471,7 +471,7 @@ int _getFilename(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int _getSyncio(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB _getSyncio(GWEN_UNUSED GWEN_GUI *gui,
                GWEN_UNUSED const char *url,
                GWEN_UNUSED const char *defaultProto,
                GWEN_UNUSED int defaultPort,

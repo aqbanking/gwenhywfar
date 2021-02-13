@@ -43,7 +43,7 @@ void GWEN_Gui_UseDialogs(GWEN_GUI *gui)
 
 
 
-int GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd)
+int GWENHYWFAR_CB GWEN_Gui_ShowProgress(GWEN_PROGRESS_DATA *pd)
 {
   GWEN_PROGRESS_DATA *highest=NULL;
   GWEN_PROGRESS_DATA *t;
@@ -132,7 +132,7 @@ void GWEN_Gui_DialogBased_CheckShow(GWEN_UNUSED GWEN_GUI *gui, GWEN_PROGRESS_DAT
 
 
 
-uint32_t GWEN_Gui_DialogBased_ProgressStart(GWEN_GUI *gui,
+uint32_t GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressStart(GWEN_GUI *gui,
                                          uint32_t progressFlags,
                                          const char *title,
                                          const char *text,
@@ -179,7 +179,7 @@ uint32_t GWEN_Gui_DialogBased_ProgressStart(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_DialogBased_ProgressEnd(GWEN_GUI *gui, uint32_t pid)
+int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressEnd(GWEN_GUI *gui, uint32_t pid)
 {
   GWEN_PROGRESS_DATA *pd;
   /*uint32_t parentPid=0;*/
@@ -296,7 +296,7 @@ int GWEN_Gui_DialogBased_ProgressEnd(GWEN_GUI *gui, uint32_t pid)
 
 
 
-int GWEN_Gui_DialogBased_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress)
+int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t progress)
 {
   GWEN_PROGRESS_DATA *pd;
   int aborted=0;
@@ -347,7 +347,7 @@ int GWEN_Gui_DialogBased_ProgressAdvance(GWEN_GUI *gui, uint32_t pid, uint64_t p
 
 
 
-int GWEN_Gui_DialogBased_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total)
+int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t total)
 {
   GWEN_PROGRESS_DATA *pd;
   int aborted=0;
@@ -394,7 +394,7 @@ int GWEN_Gui_DialogBased_ProgressSetTotal(GWEN_GUI *gui, uint32_t pid, uint64_t 
 
 
 
-int GWEN_Gui_DialogBased_ProgressLog(GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_DialogBased_ProgressLog(GWEN_GUI *gui,
                                   uint32_t pid,
                                   GWEN_LOGGER_LEVEL level,
                                   const char *text)
@@ -452,7 +452,7 @@ int GWEN_Gui_DialogBased_ProgressLog(GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_DialogBased_InputBox(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_DialogBased_InputBox(GWEN_UNUSED GWEN_GUI *gui,
                                uint32_t flags,
                                const char *title,
                                const char *text,
@@ -494,7 +494,7 @@ int GWEN_Gui_DialogBased_InputBox(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-int GWEN_Gui_DialogBased_MessageBox(GWEN_UNUSED GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_DialogBased_MessageBox(GWEN_UNUSED GWEN_GUI *gui,
                                  uint32_t flags,
                                  const char *title,
                                  const char *text,
@@ -520,7 +520,7 @@ int GWEN_Gui_DialogBased_MessageBox(GWEN_UNUSED GWEN_GUI *gui,
 
 
 
-uint32_t GWEN_Gui_DialogBased_ShowBox(GWEN_GUI *gui,
+uint32_t GWENHYWFAR_CB GWEN_Gui_DialogBased_ShowBox(GWEN_GUI *gui,
                                    uint32_t flags,
                                    const char *title,
                                    const char *text,
@@ -554,7 +554,7 @@ uint32_t GWEN_Gui_DialogBased_ShowBox(GWEN_GUI *gui,
 
 
 
-void GWEN_Gui_DialogBased_HideBox(GWEN_GUI *gui, uint32_t id)
+void GWENHYWFAR_CB GWEN_Gui_DialogBased_HideBox(GWEN_GUI *gui, uint32_t id)
 {
   GWEN_DIALOG *dlg;
 
