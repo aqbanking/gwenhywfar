@@ -76,8 +76,6 @@ void GWEN_ThreadLocalData_free(GWEN_THREADLOCAL_DATA *threadLocalData)
 
 int GWEN_ThreadLocalData_SetData(GWEN_THREADLOCAL_DATA *threadLocalData, void *pointer)
 {
-  int rv;
-
   if (!TlsSetValue(threadLocalData->dwTlsIndex, (LPVOID) pointer)) {
     DWORD lastError;
 
