@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: xsd.c 656 2004-12-22 17:02:05Z aquamaniac $
  begin       : Sat Jun 28 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2021 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -46,6 +43,23 @@
 
 GWEN_INHERIT_FUNCTIONS(GWEN_XML_CONTEXT)
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static GWEN_XMLNODE *_findTagForClosingTagAndcloseAndMoveSubTags(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *currNode, const char *tagName);
+static void _moveSubTagsUpOneLevel(GWEN_XMLNODE *currNode);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -427,29 +441,15 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName)
     }
 
     if (strcasecmp(s, tagName)!=0) {
+      /* current closing tag doesn't match currently open tag, check further */
       if (!(GWEN_XmlCtx_GetFlags(ctx) & GWEN_XML_FLAGS_TOLERANT_ENDTAGS)) {
-        DBG_INFO(GWEN_LOGDOMAIN,
-                 "Endtag does not match curent tag (%s != %s)", s, tagName);
+        DBG_INFO(GWEN_LOGDOMAIN, "Endtag does not match curent tag (%s != %s)", s, tagName);
         return GWEN_ERROR_BAD_DATA;
       }
       else {
-        newNode=currNode;
-
-        while ((newNode=GWEN_XMLNode_GetParent(newNode))) {
-          GWEN_XmlCtx_DecDepth(ctx);
-          s=GWEN_XMLNode_GetData(newNode);
-          if (strcasecmp(s, tagName)==0)
-            break;
-        }
-        if (newNode)
-          newNode=GWEN_XMLNode_GetParent(newNode);
-        if (newNode) {
-          GWEN_XmlCtx_SetCurrentNode(ctx, newNode);
-          GWEN_XmlCtx_DecDepth(ctx);
-        }
-        else {
-          DBG_INFO(GWEN_LOGDOMAIN, "No matching parent node for [%s]",
-                   tagName);
+        newNode=_findTagForClosingTagAndcloseAndMoveSubTags(ctx, currNode, tagName);
+        if (newNode==NULL) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here");
           return GWEN_ERROR_BAD_DATA;
         }
       }
@@ -476,6 +476,56 @@ int GWEN_XmlCtxStore_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName)
   }
 
   return 0;
+}
+
+
+
+GWEN_XMLNODE *_findTagForClosingTagAndcloseAndMoveSubTags(GWEN_XML_CONTEXT *ctx, GWEN_XMLNODE *currNode, const char *tagName)
+{
+  GWEN_XMLNODE *newNode;
+
+  newNode=currNode;
+
+  if (GWEN_XmlCtx_GetFlags(ctx) & GWEN_XML_FLAGS_SGML)
+    _moveSubTagsUpOneLevel(currNode);
+
+  while ((newNode=GWEN_XMLNode_GetParent(newNode))) {
+    const char *s;
+
+    GWEN_XmlCtx_DecDepth(ctx);
+    s=GWEN_XMLNode_GetData(newNode);
+    if (strcasecmp(s, tagName)==0)
+      break;
+    if (GWEN_XmlCtx_GetFlags(ctx) & GWEN_XML_FLAGS_SGML)
+      _moveSubTagsUpOneLevel(newNode);
+  }
+  if (newNode)
+    newNode=GWEN_XMLNode_GetParent(newNode);
+  if (newNode) {
+    GWEN_XmlCtx_SetCurrentNode(ctx, newNode);
+    GWEN_XmlCtx_DecDepth(ctx);
+    return newNode;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "No matching parent node for [%s]", tagName);
+    return NULL;
+  }
+}
+
+
+
+void _moveSubTagsUpOneLevel(GWEN_XMLNODE *currNode)
+{
+  GWEN_XMLNODE *childNode;
+  GWEN_XMLNODE *parentNode;
+
+  parentNode=GWEN_XMLNode_GetParent(currNode);
+  if (parentNode) {
+    while( (childNode=GWEN_XMLNode_GetFirstTag(currNode)) ) {
+      GWEN_XMLNode_UnlinkChild(currNode, childNode);
+      GWEN_XMLNode_AddChild(parentNode, childNode);
+    }
+  }
 }
 
 

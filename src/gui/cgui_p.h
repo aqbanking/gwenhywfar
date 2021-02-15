@@ -52,7 +52,7 @@ int GWEN_Gui_CGui__input(GWEN_GUI *gui,
 GWEN_GUI_CPROGRESS *GWEN_Gui_CGui__findProgress(GWEN_GUI *gui, uint32_t id);
 
 
-int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
                              uint32_t flags,
                              const char *title,
                              const char *text,
@@ -61,7 +61,7 @@ int GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
                              const char *b3,
                              uint32_t guiid);
 
-int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
                            uint32_t flags,
                            const char *title,
                            const char *text,
@@ -70,33 +70,33 @@ int GWEN_Gui_CGui_InputBox(GWEN_GUI *gui,
                            int maxLen,
                            uint32_t guiid);
 
-uint32_t GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
+uint32_t GWENHYWFAR_CB GWEN_Gui_CGui_ShowBox(GWEN_GUI *gui,
                                uint32_t flags,
                                const char *title,
                                const char *text,
                                uint32_t guiid);
 
-void GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, uint32_t id);
+void GWENHYWFAR_CB GWEN_Gui_CGui_HideBox(GWEN_GUI *gui, uint32_t id);
 
-uint32_t GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
+uint32_t GWENHYWFAR_CB GWEN_Gui_CGui_ProgressStart(GWEN_GUI *gui,
                                      uint32_t progressFlags,
                                      const char *title,
                                      const char *text,
                                      uint64_t total,
                                      uint32_t guiid);
 
-int GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_CGui_ProgressAdvance(GWEN_GUI *gui,
                                   uint32_t id,
                                   uint64_t progress);
 
-int GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total);
+int GWENHYWFAR_CB GWEN_Gui_CGui_ProgressSetTotal(GWEN_GUI *gui, uint32_t id, uint64_t total);
 
-int GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
+int GWENHYWFAR_CB GWEN_Gui_CGui_ProgressLog(GWEN_GUI *gui,
                               uint32_t id,
                               GWEN_LOGGER_LEVEL level,
                               const char *text);
 
-int GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui, uint32_t id);
+int GWENHYWFAR_CB GWEN_Gui_CGui_ProgressEnd(GWEN_GUI *gui, uint32_t id);
 
 #endif
 

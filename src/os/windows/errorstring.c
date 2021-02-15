@@ -29,9 +29,9 @@
 
 #include "errorstring.h"
 
+#include <winsock2.h>
 #include <windows.h>
 #include <winerror.h>
-#include <winsock2.h>
 
 
 

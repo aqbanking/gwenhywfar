@@ -866,6 +866,66 @@ int testXML6(int argc, char **argv)
 
 
 
+int testXML7(int argc, char **argv)
+{
+  GWEN_XMLNODE *n;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  if (GWEN_XML_ReadFile(n, argv[2],
+                        GWEN_XML_FLAGS_DEFAULT |
+                        GWEN_XML_FLAGS_HANDLE_HEADERS |
+                        GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
+                        GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS |
+                        GWEN_XML_FLAGS_SGML)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+  fprintf(stderr, "XML file:\n");
+  GWEN_XMLNode_Dump(n, 2);
+  GWEN_XMLNode_free(n);
+
+  return 0;
+}
+
+
+
+int testXML8(int argc, char **argv)
+{
+  GWEN_XMLNODE *n;
+
+  if (argc<3) {
+    fprintf(stderr, "Name of testfile needed.\n");
+    return 1;
+  }
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  if (GWEN_XML_ReadFile(n, argv[2],
+                        GWEN_XML_FLAGS_TOLERANT_ENDTAGS |
+                        GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS |
+                        GWEN_XML_FLAGS_SGML |
+                        GWEN_XML_FLAGS_DEFAULT)) {
+    fprintf(stderr, "Error reading XML file.\n");
+    return 1;
+  }
+  fprintf(stderr, "XML file:\n");
+  GWEN_XMLNode_Dump(n, 2);
+  if (GWEN_XMLNode_WriteFile(n, "xml.out", GWEN_XML_FLAGS_SIMPLE)) {
+    fprintf(stderr, "Could not write file xml.out\n");
+    return 2;
+  }
+  GWEN_XMLNode_free(n);
+  return 0;
+}
+
+
+
 int testMsg(void)
 {
   GWEN_XMLNODE *n;
@@ -6391,6 +6451,10 @@ int main(int argc, char **argv)
     rv=testXML5();
   else if (strcasecmp(argv[1], "xml6")==0)
     rv=testXML6(argc, argv);
+  else if (strcasecmp(argv[1], "xml7")==0)
+    rv=testXML7(argc, argv);
+  else if (strcasecmp(argv[1], "xml8")==0)
+    rv=testXML8(argc, argv);
   else if (strcasecmp(argv[1], "sn")==0)
     rv=testSnprintf();
   else if (strcasecmp(argv[1], "process")==0)

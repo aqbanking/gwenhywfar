@@ -161,13 +161,14 @@ DWORD WINAPI _threadRun_cb(LPVOID lpParam)
   thr=(GWEN_THREAD*) lpParam;
   assert(thr);
 
-  if (thr->runFn)
+  if (thr->runFn) {
     thr->runFn(thr);
-  else {
+  } else {
     DBG_ERROR(GWEN_LOGDOMAIN, "No run function set in thread");
+    return 1;
   }
 
-  return NULL;
+  return 0;
 }
 
 

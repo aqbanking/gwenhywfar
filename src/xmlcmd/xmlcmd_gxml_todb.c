@@ -235,7 +235,7 @@ int _convertAndSetCharValue(GWEN_UNUSED GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xm
 
       tmpl=GWEN_XMLNode_GetProperty(xmlNode, "template", "YYYYMMDD");
       if (!(tmpl && *tmpl)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Empty template in \"SetCharValue\"");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Empty date template in \"SetCharValue\"");
         GWEN_Buffer_free(resultBuf);
         GWEN_Buffer_free(vbuf);
         return GWEN_ERROR_INVALID;
@@ -245,6 +245,29 @@ int _convertAndSetCharValue(GWEN_UNUSED GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xm
       if (dt) {
         GWEN_Buffer_AppendString(vbuf, GWEN_Date_GetString(dt));
         GWEN_Date_free(dt);
+      }
+    }
+    else if (strcasecmp(typ, "time")==0) {
+      const char *tmpl;
+      GWEN_TIME *ti=NULL;
+
+      tmpl=GWEN_XMLNode_GetProperty(xmlNode, "template", "YYYYMMDDhhmmss");
+      if (!(tmpl && *tmpl)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Empty time template in \"SetCharValue\"");
+        GWEN_Buffer_free(resultBuf);
+        GWEN_Buffer_free(vbuf);
+        return GWEN_ERROR_INVALID;
+      }
+
+      ti=GWEN_Time_fromString(value, tmpl);
+      if (ti) {
+	GWEN_Time_toString(ti, "YYYYMMDDhhmmss", vbuf);
+        GWEN_Time_free(ti);
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "Invalid timespec \"%s\" according to template \"%s\"",
+		 value?value:"<empty>", tmpl);
+	return GWEN_ERROR_INVALID;
       }
     }
 
@@ -317,7 +340,7 @@ int _handleXmlEnter(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 
   n=GWEN_XMLNode_GetNodeByXPath(GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd), path, GWEN_PATH_FLAGS_PATHMUSTEXIST);
   if (n==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Path \"%s\" does not exist", path);
+    DBG_ERROR(GWEN_LOGDOMAIN, "XmlEnter: Path \"%s\" does not exist", path);
     return GWEN_ERROR_INVALID;
   }
 
@@ -351,10 +374,11 @@ int _handleXmlForEvery(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
 
   n=GWEN_XMLNode_FindFirstTag(GWEN_XmlCommanderGwenXml_GetCurrentDocNode(cmd), path, NULL, NULL);
   if (n==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Path \"%s\" not found", path);
+    DBG_INFO(GWEN_LOGDOMAIN, "XmlForEvery: Path \"%s\" not found, not entering", path);
     /* GWEN_XMLNode_Dump(cmd->currentDocNode, 2); */
   }
   while (n) {
+    DBG_INFO(GWEN_LOGDOMAIN, "XmlForEvery: Entering path \"%s\"", path);
 
     /* enter given document node */
     GWEN_XmlCommanderGwenXml_EnterDocNode(cmd, n);
@@ -624,7 +648,7 @@ int _handleXmlIfHasCharData(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
     }
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN, "No value for path \"%s\"", path);
+    DBG_INFO(GWEN_LOGDOMAIN, "XmlIfHasCharData: No value for path \"%s\"", path);
   }
 
   return 0;
@@ -681,7 +705,7 @@ int _handleXmlIfPathExists(GWEN_XMLCOMMANDER *cmd, GWEN_XMLNODE *xmlNode)
     }
   }
   else {
-    DBG_INFO(GWEN_LOGDOMAIN, "Path \"%s\" does not exist", path);
+    DBG_INFO(GWEN_LOGDOMAIN, "XmlIfPathExists: Path \"%s\" does not exist", path);
   }
 
   return 0;
