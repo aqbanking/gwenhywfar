@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2019-10-21 17:08+0200\n"
-"PO-Revision-Date: 2019-10-22 22:18+0200\n"
+"POT-Creation-Date: 2021-02-16 20:55+0100\n"
+"PO-Revision-Date: 2021-02-16 21:00+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
 "Language: de_DE\n"
@@ -220,60 +220,60 @@ msgstr "TLS: SSL Ciphers Prioritätenliste: %s"
 msgid "Using GnuTLS default ciphers."
 msgstr "Verwende GnuTLS Default Ciphers."
 
-#: src/sio/syncio_tls.c:808 src/sio/syncio_tls.c:1076
+#: src/sio/syncio_tls.c:816 src/sio/syncio_tls.c:1084
 msgid "Signer not found"
 msgstr "Unterzeichner des Zertifikats wurde nicht gefunden"
 
-#: src/sio/syncio_tls.c:815 src/sio/syncio_tls.c:1082
+#: src/sio/syncio_tls.c:823 src/sio/syncio_tls.c:1090
 msgid "Certificate is not trusted"
 msgstr "Dem Zertifikat wird nicht vertraut"
 
-#: src/sio/syncio_tls.c:822 src/sio/syncio_tls.c:1088
+#: src/sio/syncio_tls.c:830 src/sio/syncio_tls.c:1096
 msgid "Certificate has been revoked"
 msgstr "Das Zertifikat wurde zurückgerufen (revoked)"
 
-#: src/sio/syncio_tls.c:966
+#: src/sio/syncio_tls.c:974
 msgid "Certificate was not issued for this host"
 msgstr "Zertifikat ist nicht für diesen Host erstellt worden"
 
-#: src/sio/syncio_tls.c:977
+#: src/sio/syncio_tls.c:985
 msgid "No hostname to verify the sender!"
 msgstr "Kein Hostname vorhanden, mit dem der Absender verifiziert werden kann!"
 
-#: src/sio/syncio_tls.c:1094
+#: src/sio/syncio_tls.c:1102
 msgid "Certificate has expired"
 msgstr "Zertifikat ist nicht mehr gültig"
 
-#: src/sio/syncio_tls.c:1100
+#: src/sio/syncio_tls.c:1108
 msgid "Certificate is not active yet"
 msgstr "Zertifikat ist noch nicht gültig"
 
-#: src/sio/syncio_tls.c:1106
+#: src/sio/syncio_tls.c:1114
 msgid "Certificate owner does not match hostname"
 msgstr "Zertifikat-Besitzer passt nicht zum Hostnamen"
 
-#: src/sio/syncio_tls.c:1112
+#: src/sio/syncio_tls.c:1120
 msgid "Certificate contains invalid information"
 msgstr "Zertifikat enthält ungültige Informationen"
 
-#: src/sio/syncio_tls.c:1118
+#: src/sio/syncio_tls.c:1126
 msgid "A system error occurred while checking the certificate"
 msgstr "Es gab einen Fehler im Betriebssystem beim Prüfen des Zertifikates"
 
-#: src/sio/syncio_tls.c:1124
+#: src/sio/syncio_tls.c:1132
 msgid "The certificate is valid"
 msgstr "Zertifikat ist gültig"
 
-#: src/sio/syncio_tls.c:1284
+#: src/sio/syncio_tls.c:1282
 #, c-format
 msgid "TLS: SSL-Ciphers negotiated: %s"
 msgstr "TLS: SSL-Ciphers ausgehandelt: %s"
 
-#: src/sio/syncio_tls.c:1295
+#: src/sio/syncio_tls.c:1293
 msgid "TLS: Warning - The server has chosen unsafe SSL-Ciphers!"
 msgstr "TLS: Achtung - der Server hat unsichere SSL-Ciphers gewählt."
 
-#: src/sio/syncio_tls.c:1358
+#: src/sio/syncio_tls.c:1356
 msgid ""
 "A TLS handshake error occurred. If you are using AqBanking you should "
 "consider enabling the option \"force SSLv3\" in the user settings dialog."
@@ -282,22 +282,22 @@ msgstr ""
 "benutzen, sollten Sie einmal die Option \"SSLv3 erzwingen\" in den "
 "Einstellungen ausprobieren."
 
-#: src/sio/syncio_tls.c:1367
+#: src/sio/syncio_tls.c:1365
 #, c-format
 msgid "TLS Handshake Error: %d (%s)"
 msgstr "TLS-Handshake-Fehler: %d (%s)"
 
-#: src/sio/syncio_tls.c:1448
+#: src/sio/syncio_tls.c:1446
 #, c-format
 msgid "Error on gnutls_bye: %d (%s)"
 msgstr "Fehler beim Schritt \"gnutls_bye\": %d (%s)"
 
-#: src/sio/syncio_tls.c:1497
+#: src/sio/syncio_tls.c:1495
 #, c-format
 msgid "Error on gnutls_record_recv: %d (%s)"
 msgstr "Fehler beim Schritt \"gnutls_record_recv\": %d (%s)"
 
-#: src/sio/syncio_tls.c:1565
+#: src/sio/syncio_tls.c:1563
 #, c-format
 msgid "Error on gnutls_record_send: %d (%s)"
 msgstr "Fehler beim Schritt \"gnutls_record_send\": %d (%s)"
@@ -332,97 +332,111 @@ msgstr "Kein HTTP Status-Code empfangen"
 msgid "- no details -)"
 msgstr "- Keine Angaben -"
 
-#: src/sio/httpsession.c:380 src/sio/httpsession.c:715
+#: src/sio/httpsession.c:403 src/sio/httpsession.c:860
 msgid "Connecting to server..."
 msgstr "Mit Server verbinden..."
 
-#: src/sio/httpsession.c:390 src/sio/httpsession.c:724
+#: src/sio/httpsession.c:413 src/sio/httpsession.c:869
 msgid "Could not connect to server"
 msgstr "Es konnte keine Verbindung zum Server aufgebaut werden."
 
-#: src/sio/httpsession.c:399 src/sio/httpsession.c:731
+#: src/sio/httpsession.c:422 src/sio/httpsession.c:876
 msgid "Connected."
 msgstr "Verbunden."
 
-#: src/sio/httpsession.c:428
+#: src/sio/httpsession.c:451
 msgid "Sending message..."
 msgstr "Nachricht senden..."
 
-#: src/sio/httpsession.c:436
+#: src/sio/httpsession.c:459 src/sio/httpsession.c:518
 #, c-format
 msgid "Could not send message (%d)"
 msgstr "Konnte Nachricht nicht senden (%d)"
 
-#: src/sio/httpsession.c:445
+#: src/sio/httpsession.c:468 src/sio/httpsession.c:524
 msgid "Message sent."
 msgstr "Nachricht gesendet."
 
-#: src/sio/httpsession.c:506 src/sio/httpsession.c:603
+#: src/sio/httpsession.c:512
+msgid "Sending response..."
+msgstr "Antwort senden..."
+
+#: src/sio/httpsession.c:529 src/sio/httpsession.c:649
+#: src/sio/httpsession.c:840
+msgid "Disconnecting from server..."
+msgstr "Beenden der Verbindung zum Server..."
+
+#: src/sio/httpsession.c:533 src/sio/httpsession.c:653
+#: src/sio/httpsession.c:844 src/sio/httpsession.c:881
+msgid "Disconnected."
+msgstr "Verbindung beendet."
+
+#: src/sio/httpsession.c:594 src/sio/httpsession.c:748
 #, c-format
 msgid "HTTP: Moved permanently to %s"
 msgstr "HTTP: Permanent verschoben nach %s"
 
-#: src/sio/httpsession.c:509 src/sio/httpsession.c:606
+#: src/sio/httpsession.c:597 src/sio/httpsession.c:751
 #, c-format
 msgid "HTTP: Use proxy at %s"
 msgstr "HTTP: Proxy verwenden auf %s"
 
-#: src/sio/httpsession.c:512 src/sio/httpsession.c:609
+#: src/sio/httpsession.c:600 src/sio/httpsession.c:754
 #, c-format
 msgid "HTTP: Moved temporarily to %s"
 msgstr "HTTP: Zeitweise verschoben nach %s"
 
-#: src/sio/httpsession.c:515 src/sio/httpsession.c:612
+#: src/sio/httpsession.c:603 src/sio/httpsession.c:757
 #, c-format
 msgid "HTTP: Moved to %s"
 msgstr "HTTP: Verschoben nach %s"
 
-#: src/sio/httpsession.c:538 src/sio/httpsession.c:650
+#: src/sio/httpsession.c:626 src/sio/httpsession.c:795
 msgid "Receiving response..."
 msgstr "Antwort wird empfangen..."
 
-#: src/sio/httpsession.c:550 src/sio/httpsession.c:682
+#: src/sio/httpsession.c:638 src/sio/httpsession.c:684
+#: src/sio/httpsession.c:827
 msgid "Received continuation response."
 msgstr "Antwort mit Fortsetzung empfangen."
 
-#: src/sio/httpsession.c:556 src/sio/httpsession.c:690
+#: src/sio/httpsession.c:644 src/sio/httpsession.c:835
 msgid "Response received."
 msgstr "Antwort empfangen."
 
-#: src/sio/httpsession.c:561 src/sio/httpsession.c:695
-msgid "Disconnecting from server..."
-msgstr "Beenden der Verbindung zum Server..."
+#: src/sio/httpsession.c:675
+msgid "Receiving command..."
+msgstr "Kommando wird empfangen..."
 
-#: src/sio/httpsession.c:565 src/sio/httpsession.c:699
-#: src/sio/httpsession.c:736
-msgid "Disconnected."
-msgstr "Verbindung beendet."
+#: src/sio/httpsession.c:688
+msgid "Command received."
+msgstr "Kommando empfangen."
 
-#: src/os/gwendate.c:584
+#: src/os/gwendate.c:670
 msgid "Sunday"
 msgstr "Sonntag"
 
-#: src/os/gwendate.c:587
+#: src/os/gwendate.c:673
 msgid "Monday"
 msgstr "Montag"
 
-#: src/os/gwendate.c:590
+#: src/os/gwendate.c:676
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: src/os/gwendate.c:593
+#: src/os/gwendate.c:679
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: src/os/gwendate.c:596
+#: src/os/gwendate.c:682
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: src/os/gwendate.c:599
+#: src/os/gwendate.c:685
 msgid "Friday"
 msgstr "Freitag"
 
-#: src/os/gwendate.c:602
+#: src/os/gwendate.c:688
 msgid "Saturday"
 msgstr "Samstag"
 
@@ -482,7 +496,7 @@ msgid "Remove Lock"
 msgstr "Lock entfernen"
 
 #: src/os/posix/fslock.c:378 src/crypttoken/ct.c:1067 src/crypttoken/ct.c:1139
-#: src/gui/cgui.c:302
+#: src/gui/cgui.c:303
 msgid "Abort"
 msgstr "Abbrechen"
 
@@ -494,25 +508,25 @@ msgstr "Vom Benutzer abgebrochen."
 msgid "Lock removed by user request."
 msgstr "Lock auf Aufforderung des Benutzers entfernt."
 
-#: src/crypt3/mdigest.c:515
+#: src/crypt3/mdigest.c:563
 #, c-format
 msgid "Error unpacking program (%d)"
 msgstr "Fehler beim Entpacken des Programms (%d)"
 
-#: src/crypt3/mdigest.c:532
+#: src/crypt3/mdigest.c:580
 #, c-format
 msgid "Error loading checksum file (%d)"
 msgstr "Fehler beim Laden der Prüfsummendatei (%d)"
 
-#: src/crypt3/mdigest.c:558
+#: src/crypt3/mdigest.c:606
 msgid "Checksum file does not contain valid lines"
 msgstr "Prüfsummendatei enthält keine gültigen Zeilen"
 
-#: src/crypt3/mdigest.c:566
+#: src/crypt3/mdigest.c:614
 msgid "Integrity check on folder failed"
 msgstr "Integritätsprüfung des Ordners ist fehlgeschlagen"
 
-#: src/crypt3/mdigest.c:576 src/crypt3/mdigest.c:583
+#: src/crypt3/mdigest.c:624 src/crypt3/mdigest.c:631
 #, c-format
 msgid "Folder contains %d files without checksum"
 msgstr "Ordner enthält %d Dateien ohne Prüfsumme"
@@ -613,7 +627,7 @@ msgstr "Fehler"
 msgid "An internal error occurred."
 msgstr "Es ist ein interner Fehler aufgetreten."
 
-#: src/crypttoken/ct.c:1080 src/crypttoken/ct.c:1152 src/gui/gui.c:913
+#: src/crypttoken/ct.c:1080 src/crypttoken/ct.c:1152 src/gui/gui.c:393
 msgid "Dismiss"
 msgstr "Schließen"
 
@@ -753,11 +767,11 @@ msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
 msgid "Could not load plugin \"%s\""
 msgstr "Fehler beim Laden des Plugins \"%s\""
 
-#: src/gui/cgui.c:297
+#: src/gui/cgui.c:298
 msgid "Empty Input"
 msgstr "Leere Eingabe"
 
-#: src/gui/cgui.c:298
+#: src/gui/cgui.c:299
 msgid ""
 "Your input was empty.\n"
 "Do you want to use the default?"
@@ -765,109 +779,13 @@ msgstr ""
 "Ihre Eingabe war leer.\n"
 "Wollen Sie die voreingestellte PIN benutzen?"
 
-#: src/gui/cgui.c:300 src/gui/gui.c:1462
+#: src/gui/cgui.c:301 src/gui/gui_cert.c:220
 msgid "Yes"
 msgstr "Ja"
 
-#: src/gui/cgui.c:301 src/gui/gui.c:1462
+#: src/gui/cgui.c:302 src/gui/gui_cert.c:220
 msgid "No"
 msgstr "Nein"
-
-#: src/gui/gui.c:1180
-msgid "Waiting for Data"
-msgstr "Auf Daten warten"
-
-#: src/gui/gui.c:1312
-#, c-format
-msgid ""
-"The following certificate has been received:\n"
-"Name         : %s\n"
-"Organisation : %s\n"
-"Department   : %s\n"
-"Country      : %s\n"
-"City         : %s\n"
-"State        : %s\n"
-"Valid after  : %s\n"
-"Valid until  : %s\n"
-"Hash (MD5)   : %s\n"
-"Hash (SHA1)  : %s\n"
-"Hash (SHA512): %s\n"
-"Status       : %s\n"
-"Do you wish to accept this certificate?<html> <p>  The following certificate "
-"has been received: </p> <table>  <tr><td>Name</td><td>%s</td></tr>  "
-"<tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Department</td><td>%s</"
-"td></tr>  <tr><td>Country</td><td>%s</td></tr>  <tr><td>City</td><td>%s</"
-"td></tr>  <tr><td>State</td><td>%s</td></tr>  <tr><td>Valid after</td><td>"
-"%s</td></tr>  <tr><td>Valid until</td><td>%s</td></tr>  <tr><td>Hash (MD5)</"
-"td><td>%s</td></tr>  <tr><td>Hash (SHA1)</td><td>%s</td></tr>  <tr><td>Hash "
-"(SHA512)</td><td>%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </"
-"table> <p>  Do you wish to accept this certificate? </p></html>"
-msgstr ""
-"Das folgende Zertifikat wurde empfangen:\n"
-"Name         : %s\n"
-"Organisation : %s\n"
-"Abteilung    : %s\n"
-"Staat        : %s\n"
-"Stadt        : %s\n"
-"Bundesland   : %s\n"
-"Gültig ab    : %s\n"
-"Gültig bis   : %s\n"
-"Hash (MD5)   : %s\\n\n"
-"Hash (SHA1)  : %s\\n\n"
-"Hash (SHA512): %s\\n\n"
-"Status       : %s\n"
-"Wollen Sie dieses Zertifikat akzeptieren? <html><p>Das folgende Zertifikat wurde empfangen:</p> <table>  <tr><td>Name</td><td>%s</td></tr>  <tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Abteilung</td><td>%s</td></tr>  <tr><td>Staat</td><td>%s</td></tr>  <tr><td>Stadt</td><td>%s</td></tr>  <tr><td>Bundesland</td><td>%s</td></tr>  <tr><td>G&uuml;ltig ab</td><td>%s</td></tr>  <tr><td>G&uuml;ltig bis</td><td>%s</td></tr>\n"
-"<tr><td>Hash (MD5)</td><td>%s</td></tr>  <tr><td>Hash (SHA1)</td><td>%s</td></tr>\n"
-"<tr><td>Hash (SHA512)</td><td>%s</td></tr>\n"
-"<tr><td>Status</td><td>%s%s%s</td></tr> </table>\n"
-"<p>Wollen Sie dieses Zertifikat akzeptieren?</p></html>"
-
-#. TRANSLATORS: This string is used as a template string to
-#. convert a given time into your local translated timeformat. The
-#. following characters are accepted in the template string: Y -
-#. digit of the year, M - digit of the month, D - digit of the day
-#. of month, h - digit of the hour, m - digit of the minute, s-
-#. digit of the second. All other characters are left unchanged.
-#: src/gui/gui.c:1374 src/gui/gui.c:1388
-msgid "YYYY/MM/DD hh:mm:ss"
-msgstr "DD.MM.YYYY hh:mm:ss"
-
-#: src/gui/gui.c:1406
-msgid "unknown"
-msgstr "unbekannt"
-
-#: src/gui/gui.c:1460
-msgid "Certificate Received"
-msgstr "Zertifikat empfangen"
-
-#: src/gui/gui.c:1791
-msgid "Operation finished, you can now close this window."
-msgstr "Vorgang abgeschlossen, Sie können das Fenster nun schließen."
-
-#: src/gui/gui.c:2464
-msgid "Enforce PIN"
-msgstr "PIN erzwingen"
-
-#: src/gui/gui.c:2466
-msgid ""
-"You entered the same PIN twice.\n"
-"The PIN is marked as bad, do you want\n"
-"to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN is "
-"marked as <b>bad</b>, do you want to use it anyway?</p></html>"
-msgstr ""
-"Sie haben die gleiche PIN zweimal eingegeben.\n"
-"Die PIN ist aber als ungültig markiert. Wollen Sie sie trotzdem verwenden? "
-"<html><p>Sie haben die gleiche PIN zweimal eingegeben.</p> <p>Die PIN ist "
-"aber als <b>ungültig</b> markiert. Wollen Sie sie trotzdem verwenden?</p></"
-"html>"
-
-#: src/gui/gui.c:2478
-msgid "Yes, use anyway"
-msgstr "Ja, trotzdem verwenden"
-
-#: src/gui/gui.c:2479
-msgid "Re-enter"
-msgstr "Neu eingeben"
 
 #: src/gui/passwdstore.c:293 src/gui/passwdstore.c:427
 msgid ""
@@ -951,6 +869,133 @@ msgstr ""
 "Bitte geben Sie jetzt das Hauptpasswort für den Passwortspeicher ein oder "
 "wählen Sie \"Abbrechen\".\n"
 "</p></html>"
+
+#: src/gui/gui_cert.c:70
+#, c-format
+msgid ""
+"The following certificate has been received:\n"
+"Name         : %s\n"
+"Organisation : %s\n"
+"Department   : %s\n"
+"Country      : %s\n"
+"City         : %s\n"
+"State        : %s\n"
+"Valid after  : %s\n"
+"Valid until  : %s\n"
+"Hash (MD5)   : %s\n"
+"Hash (SHA1)  : %s\n"
+"Hash (SHA512): %s\n"
+"Status       : %s\n"
+"Do you wish to accept this certificate?<html> <p>  The following certificate "
+"has been received: </p> <table>  <tr><td>Name</td><td>%s</td></tr>  "
+"<tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Department</td><td>%s</"
+"td></tr>  <tr><td>Country</td><td>%s</td></tr>  <tr><td>City</td><td>%s</"
+"td></tr>  <tr><td>State</td><td>%s</td></tr>  <tr><td>Valid after</td><td>"
+"%s</td></tr>  <tr><td>Valid until</td><td>%s</td></tr>  <tr><td>Hash (MD5)</"
+"td><td>%s</td></tr>  <tr><td>Hash (SHA1)</td><td>%s</td></tr>  <tr><td>Hash "
+"(SHA512)</td><td>%s</td></tr>  <tr><td>Status</td><td>%s%s%s</td></tr> </"
+"table> <p>  Do you wish to accept this certificate? </p></html>"
+msgstr ""
+"Das folgende Zertifikat wurde empfangen:\n"
+"Name         : %s\n"
+"Organisation : %s\n"
+"Abteilung    : %s\n"
+"Staat        : %s\n"
+"Stadt        : %s\n"
+"Bundesland   : %s\n"
+"Gültig ab    : %s\n"
+"Gültig bis   : %s\n"
+"Hash (MD5)   : %s\\n\n"
+"Hash (SHA1)  : %s\\n\n"
+"Hash (SHA512): %s\\n\n"
+"Status       : %s\n"
+"Wollen Sie dieses Zertifikat akzeptieren? <html><p>Das folgende Zertifikat "
+"wurde empfangen:</p> <table>  <tr><td>Name</td><td>%s</td></tr>  "
+"<tr><td>Organisation</td><td>%s</td></tr>  <tr><td>Abteilung</td><td>%s</"
+"td></tr>  <tr><td>Staat</td><td>%s</td></tr>  <tr><td>Stadt</td><td>%s</td></"
+"tr>  <tr><td>Bundesland</td><td>%s</td></tr>  <tr><td>G&uuml;ltig ab</td><td>"
+"%s</td></tr>  <tr><td>G&uuml;ltig bis</td><td>%s</td></tr>\n"
+"<tr><td>Hash (MD5)</td><td>%s</td></tr>  <tr><td>Hash (SHA1)</td><td>%s</"
+"td></tr>\n"
+"<tr><td>Hash (SHA512)</td><td>%s</td></tr>\n"
+"<tr><td>Status</td><td>%s%s%s</td></tr> </table>\n"
+"<p>Wollen Sie dieses Zertifikat akzeptieren?</p></html>"
+
+#. TRANSLATORS: This string is used as a template string to
+#. convert a given time into your local translated timeformat. The
+#. following characters are accepted in the template string: Y -
+#. digit of the year, M - digit of the month, D - digit of the day
+#. of month, h - digit of the hour, m - digit of the minute, s-
+#. digit of the second. All other characters are left unchanged.
+#: src/gui/gui_cert.c:132 src/gui/gui_cert.c:146
+msgid "YYYY/MM/DD hh:mm:ss"
+msgstr "DD.MM.YYYY hh:mm:ss"
+
+#: src/gui/gui_cert.c:164
+msgid "unknown"
+msgstr "unbekannt"
+
+#: src/gui/gui_cert.c:218
+msgid "Certificate Received"
+msgstr "Zertifikat empfangen"
+
+#: src/gui/gui_dialogs.c:246
+msgid "Operation finished, you can now close this window."
+msgstr "Vorgang abgeschlossen, Sie können das Fenster nun schließen."
+
+#: src/gui/gui_passwd.c:168
+msgid "Enforce PIN"
+msgstr "PIN erzwingen"
+
+#: src/gui/gui_passwd.c:170
+msgid ""
+"You entered the same PIN twice.\n"
+"The PIN is marked as bad, do you want\n"
+"to use it anyway?<html><p>You entered the same PIN twice.</p><p>The PIN is "
+"marked as <b>bad</b>, do you want to use it anyway?</p></html>"
+msgstr ""
+"Sie haben die gleiche PIN zweimal eingegeben.\n"
+"Die PIN ist aber als ungültig markiert. Wollen Sie sie trotzdem verwenden? "
+"<html><p>Sie haben die gleiche PIN zweimal eingegeben.</p> <p>Die PIN ist "
+"aber als <b>ungültig</b> markiert. Wollen Sie sie trotzdem verwenden?</p></"
+"html>"
+
+#: src/gui/gui_passwd.c:182
+msgid "Yes, use anyway"
+msgstr "Ja, trotzdem verwenden"
+
+#: src/gui/gui_passwd.c:183
+msgid "Re-enter"
+msgstr "Neu eingeben"
+
+#: src/gui/gui_virtual.c:701
+msgid "Waiting for Data"
+msgstr "Auf Daten warten"
+
+#: src/sar/sar.c:547 src/sar/sar.c:1225 src/sar/sar.c:1879 src/sar/sar.c:1999
+#: src/sar/sar.c:2177 src/sar/sar.c:2428
+msgid "File Operation"
+msgstr "Dateioperation"
+
+#: src/sar/sar.c:548
+msgid "Copying file into archive"
+msgstr "Datei in Archiv kopieren"
+
+#: src/sar/sar.c:1226
+msgid "Extracting file from archive"
+msgstr "Datei aus Archiv entpacken"
+
+#: src/sar/sar.c:1880
+msgid "Unpacking archive file"
+msgstr "Entpacken von Archiv-Datei"
+
+#: src/sar/sar.c:2000 src/sar/sar.c:2178
+msgid "Signing archive file"
+msgstr "Signieren der Archiv-Datei"
+
+#: src/sar/sar.c:2429
+msgid "Checking archive file"
+msgstr "Archiv-Datei prüfen"
 
 #: plugins/ct/ohbci/ohbci.c:639
 msgid "No valid PIN (tried too often), aborting."
@@ -1153,7 +1198,8 @@ msgid ""
 "\n"
 msgstr ""
 "  showpasswords:\n"
-"    Zeige die Passwörter, die in einer GWEN_PASSWD_STORE Datei gespeichert sind\n"
+"    Zeige die Passwörter, die in einer GWEN_PASSWD_STORE Datei gespeichert "
+"sind\n"
 "\n"
 
 #: tools/gsa/main.c:132
