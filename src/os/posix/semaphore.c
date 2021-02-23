@@ -31,6 +31,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 
+#include <errno.h>
 
 
 
@@ -56,18 +57,31 @@ void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm)
 
 
 
-void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm)
+int GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm)
 {
+  int rv;
+
   assert(sm);
-  sem_wait(&(sm->sem));
+  do {
+    rv=sem_wait(&(sm->sem));
+  } while(rv<0 && errno==EINTR);
+
+  if (rv<0)
+    return GWEN_ERROR_IO;
+  return 0;
 }
 
 
 
-void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm)
+int GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm)
 {
+  int rv;
+
   assert(sm);
-  sem_post(&(sm->sem));
+  rv=sem_post(&(sm->sem));
+  if (rv<0)
+    return GWEN_ERROR_IO;
+  return 0;
 }
 
 

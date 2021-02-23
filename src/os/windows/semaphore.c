@@ -55,18 +55,22 @@ void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm)
 
 
 
-void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm)
+int GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm)
 {
   assert(sm);
   WaitForSingleObject(sm->semId, INFINITE);
+  /* TODO: check for error */
+  return 0;
 }
 
 
 
-void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm)
+int GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm)
 {
   assert(sm);
   ReleaseSemaphore(sm->semId, 1, NULL);
+  /* TODO: check for error */
+  return 0;
 }
 
 
