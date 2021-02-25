@@ -37,7 +37,7 @@ extern "C" {
 typedef struct GWEN_SEMAPHORE GWEN_SEMAPHORE;
 
 
-GWENHYWFAR_API GWEN_SEMAPHORE *GWEN_Semaphore_new(void);
+GWENHYWFAR_API GWEN_SEMAPHORE *GWEN_Semaphore_new(int initialCount);
 GWENHYWFAR_API void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm);
 
 GWENHYWFAR_API int GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm);

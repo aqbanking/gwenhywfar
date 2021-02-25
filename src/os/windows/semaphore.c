@@ -34,12 +34,12 @@
 
 
 
-GWEN_SEMAPHORE *GWEN_Semaphore_new(void)
+GWEN_SEMAPHORE *GWEN_Semaphore_new(int initialCount)
 {
   GWEN_SEMAPHORE *sm;
 
   GWEN_NEW_OBJECT(GWEN_SEMAPHORE, sm);
-  sm->semId=CreateSemaphore(NULL, 0, 0x7fffffff, NULL);
+  sm->semId=CreateSemaphore(NULL, initialCount, 0x7fffffff, NULL);
   return sm;
 }
 
