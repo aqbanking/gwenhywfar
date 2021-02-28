@@ -71,8 +71,46 @@ void GWEN_Thread_free(GWEN_THREAD *thr)
   if (thr) {
     GWEN_LIST_FINI(GWEN_THREAD, thr);
     GWEN_INHERIT_FINI(GWEN_THREAD, thr);
+
+    if (thr->threadHandle!=NULL) {
+      CloseHandle(thr->threadHandle);
+      thr->threadHandle=NULL;
+    }
+
     GWEN_FREE_OBJECT(thr);
   }
+}
+
+
+
+uint32_t GWEN_Thread_GetFlags(const GWEN_THREAD *thr)
+{
+  assert(thr);
+  return thr->flags;
+}
+
+
+
+void GWEN_Thread_SetFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags=flags;
+}
+
+
+
+void GWEN_Thread_AddFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags|=flags;
+}
+
+
+
+void GWEN_Thread_SubFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags&=~flags;
 }
 
 
@@ -134,6 +172,7 @@ int GWEN_Thread_Join(GWEN_THREAD *thr)
   }
 
   CloseHandle(thr->threadHandle);
+  thr->threadHandle==NULL;
 
   return 0;
 }

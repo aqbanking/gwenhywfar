@@ -31,6 +31,11 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list1.h>
 
+#include <inttypes.h>
+
+
+#define GWEN_THREAD_FLAGS_DETACHED 0x00000001
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,6 +57,11 @@ GWENHYWFAR_API void GWEN_Thread_free(GWEN_THREAD *thr);
 GWENHYWFAR_API int GWEN_Thread_Start(GWEN_THREAD *thr);
 
 GWENHYWFAR_API int GWEN_Thread_Join(GWEN_THREAD *thr);
+
+GWENHYWFAR_API uint32_t GWEN_Thread_GetFlags(const GWEN_THREAD *thr);
+GWENHYWFAR_API void GWEN_Thread_SetFlags(GWEN_THREAD *thr, uint32_t flags);
+GWENHYWFAR_API void GWEN_Thread_AddFlags(GWEN_THREAD *thr, uint32_t flags);
+GWENHYWFAR_API void GWEN_Thread_SubFlags(GWEN_THREAD *thr, uint32_t flags);
 
 
 GWENHYWFAR_API GWEN_THREAD_RUN_FN GWEN_Thread_SetRunFn(GWEN_THREAD *thr, GWEN_THREAD_RUN_FN fn);
