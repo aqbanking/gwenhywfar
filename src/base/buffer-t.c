@@ -41,6 +41,9 @@
 
 static int GWENHYWFAR_CB test1(GWEN_TEST_MODULE *mod);
 static int GWENHYWFAR_CB test2(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test3(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test4(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test5(GWEN_TEST_MODULE *mod);
 
 
 
@@ -60,6 +63,10 @@ int GWEN_Buffer_AddTests(GWEN_TEST_MODULE *mod)
 
   GWEN_Test_Module_AddTest(newMod, "append args (simple)", test1, NULL);
   GWEN_Test_Module_AddTest(newMod, "append args (long string)", test2, NULL);
+
+  GWEN_Test_Module_AddTest(newMod, "cutout text between strings (onlyBetween=0)", test3, NULL);
+  GWEN_Test_Module_AddTest(newMod, "cutout text between strings (onlyBetween=1)", test4, NULL);
+  GWEN_Test_Module_AddTest(newMod, "cutout text between strings, add something behind", test5, NULL);
 
   return 0;
 }
@@ -124,6 +131,157 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     GWEN_Buffer_free(buf);
     return GWEN_ERROR_GENERIC;
   }
+  GWEN_Buffer_free(buf);
+
+  return 0;
+}
+
+
+
+int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
+{
+  GWEN_BUFFER *buf;
+  int rv;
+  static const char *testString1=
+    "0000000000"
+    "<begin>"
+    "1111111111"
+    "<end>"
+    "222222222";
+  static const char *testString2=
+    "<begin>"
+    "1111111111"
+    "<end>";
+
+  buf=GWEN_Buffer_new(0, 16, 0, 1);
+  rv=GWEN_Buffer_AppendString(buf, testString1);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not append string");
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  rv=GWEN_Buffer_KeepTextBetweenStrings(buf, "<begin>", "<end>", 0);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not cut data out (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+
+  if (strcmp(GWEN_Buffer_GetStart(buf), testString2)!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected string in buffer (%s)", GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_Buffer_free(buf);
+
+  return 0;
+}
+
+
+
+int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
+{
+  GWEN_BUFFER *buf;
+  int rv;
+  static const char *testString1=
+    "0000000000"
+    "<begin>"
+    "1111111111"
+    "<end>"
+    "222222222";
+  static const char *testString2=
+    "1111111111";
+
+  buf=GWEN_Buffer_new(0, 16, 0, 1);
+  rv=GWEN_Buffer_AppendString(buf, testString1);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not append string");
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  rv=GWEN_Buffer_KeepTextBetweenStrings(buf, "<begin>", "<end>", 1);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not cut data out (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (strcmp(GWEN_Buffer_GetStart(buf), testString2)!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected string in buffer (%s)", GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (GWEN_Buffer_GetUsedBytes(buf)!=strlen(testString2)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid buffer size (%d)", GWEN_Buffer_GetUsedBytes(buf));
+  }
+
+  GWEN_Buffer_free(buf);
+
+  return 0;
+}
+
+
+
+int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
+{
+  GWEN_BUFFER *buf;
+  int rv;
+  static const char *testString1=
+    "0000000000"
+    "<begin>"
+    "1111111111"
+    "<end>"
+    "222222222";
+  static const char *testString2=
+    "1111111111";
+  static const char *testString3=
+    "3333333333";
+  static const char *testString4=
+    "1111111111"
+    "3333333333";
+
+  buf=GWEN_Buffer_new(0, 16, 0, 1);
+  rv=GWEN_Buffer_AppendString(buf, testString1);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not append string");
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  rv=GWEN_Buffer_KeepTextBetweenStrings(buf, "<begin>", "<end>", 1);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not cut data out (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (strcmp(GWEN_Buffer_GetStart(buf), testString2)!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected string in buffer (%s)", GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (GWEN_Buffer_GetUsedBytes(buf)!=strlen(testString2)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid buffer size (%d)", GWEN_Buffer_GetUsedBytes(buf));
+  }
+
+  rv=GWEN_Buffer_AppendString(buf, testString3);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not append 2nd string");
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (strcmp(GWEN_Buffer_GetStart(buf), testString4)!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected string in buffer (%s)", GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+
   GWEN_Buffer_free(buf);
 
   return 0;
