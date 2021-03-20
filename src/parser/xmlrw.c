@@ -1131,11 +1131,11 @@ int GWEN_XML_ReadFromFastBuffer(GWEN_XML_CONTEXT *ctx, GWEN_FAST_BUFFER *fb)
     GWEN_FASTBUFFER_PEEKBYTE(fb, rv);
     if (rv<0) {
       if (rv!=GWEN_ERROR_EOF || !oks ||
-          (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (rv=%d, oks=%d, depth=%d, startingDepth=%d)",
-                 rv, oks, GWEN_XmlCtx_GetDepth(ctx), startingDepth);
-        GWEN_Buffer_free(workBuf);
-        return rv;
+	  (GWEN_XmlCtx_GetDepth(ctx)!=startingDepth)) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (rv=%d, oks=%d, depth=%d, startingDepth=%d)",
+		 rv, oks, GWEN_XmlCtx_GetDepth(ctx), startingDepth);
+	GWEN_Buffer_free(workBuf);
+	return rv;
       }
       GWEN_Buffer_free(workBuf);
       return 0;
