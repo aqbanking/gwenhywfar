@@ -15,8 +15,6 @@
 
 
 struct GWB_TARGET {
-  GWEN_TREE2_ELEMENT(GWB_TARGET)
-
   char *name;
   GWBUILD_TARGETTYPE targetType;
 
@@ -25,7 +23,9 @@ struct GWB_TARGET {
   GWEN_STRINGLIST *sourceFileNameList;
   GWEN_STRINGLIST *usedTargetNameList;
 
-  GWB_GENERATOR *generator;
+  GWEN_STRINGLIST *usedLibraryList; /* LDFLAGS */
+
+  GWB_BUILDER *builder;
   GWB_FILE *outputFile;
 };
 

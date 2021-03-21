@@ -18,7 +18,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_FILE, GWB_File)
 
 
 #include "gwenbuild/context.h"
-#include "gwenbuild/generator.h"
+#include "gwenbuild/builder.h"
 
 #include <inttypes.h>
 
@@ -43,8 +43,12 @@ const char *GWB_File_GetName(const GWB_FILE *f);
 void GWB_File_SetName(GWB_FILE *f, const char *s);
 
 
-GWB_GENERATOR_LIST2 *GWB_File_GetWaitingGeneratorList2(const GWB_FILE *f);
-void GWB_File_AddWaitingGenerator(GWB_FILE *f, GWB_GENERATOR *gen);
+const char *GWB_File_GetFileType(const GWB_FILE *f);
+void GWB_File_SetFileType(GWB_FILE *f, const char *s);
+
+
+GWB_BUILDER_LIST2 *GWB_File_GetWaitingBuilderList2(const GWB_FILE *f);
+void GWB_File_AddWaitingBuilder(GWB_FILE *f, GWB_BUILDER *builder);
 
 
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);

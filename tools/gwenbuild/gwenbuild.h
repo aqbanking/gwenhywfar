@@ -18,9 +18,8 @@ typedef enum {
   GWBUILD_TargetType_InstallLibrary,
   GWBUILD_TargetType_ConvenienceLibrary,
   GWBUILD_TargetType_Program,
+  GWBUILD_TargetType_Objects,
 } GWBUILD_TARGETTYPE;
-
-
 
 
 #endif

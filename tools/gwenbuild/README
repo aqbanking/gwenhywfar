@@ -1,0 +1,158 @@
+
+  Generator: 
+  - destType
+  - srcType
+  - makeFile(GENERATOR, FILE)
+  - addDeps(GENERATOR, FILE)
+  
+  Example generators:
+  - tm2_to_c_h_tm2
+  - c_to_obj
+  - obj_to_so
+  - obj_to_a
+  - res_to_c
+  
+  Context (tree):
+  - refCounter
+  - folder
+  - defines
+  - includes
+  - environment vars (CFLAGS etc)
+  - vars (prefix, project_so_current etc)
+  
+  File:
+  - id
+  - name
+  - type (c, cpp, tm2, obj, asm, nvcpp, resource, const)
+  - generator (ccompiler, typemaker2, linker etc)
+  - flags: dist, built
+  - installToFolder
+  - pointer to context
+
+  - runtimeFlags: built_in_this_session
+  - stat: datetime
+  - FILE_LIST2 *blockingFiles;
+  - FILE_LIST2 *blockedFiles;
+  - FILE_LIST2 *dependecies;
+  
+
+ Build dependecies:
+   cc -E -I INCLUDE_FOLDER -M -MF DEPOUTFILE SRCFILE
+
+Immer im build-dir kompilieren/builden
+
+
+
+Reading files:
+
+
+- project
+  - options
+  - dependencies
+  - checkHeaders
+  - checkFunctions
+  - subdirs
+  - target
+    - includes   ->context
+    - defines    ->context
+    - sources    ->context
+    - headers    ->context
+    - data       ->context
+    - libraries  ->target
+    - useTargets ->target
+    - ifOptionContains etc
+
+
+Context-Aenderung:
+- bei enter eines <subdirs>:
+  - neuen Context erstellen
+    - newCtx->topBuildDir=SUBDIR+oldCtx->topBuildDir
+    - newCtx->topSourceDir=SUBDIR+oldCtx->topSourceDir
+    - newCtx->currentBuildDir=oldCtx->currentBuildDir+"/"+SUBDIR
+    - newCtx->currentSourceDir=oldCtx->currentSourceDir+"/"+SUBDIR
+    - clear includeList
+    - clear defineList
+    - copy vars
+    - clear sourceFileList2
+    - copy currentTarget
+- bei beginn eines <target>
+  - neuen Context erstellen
+    - copy all
+    - clear includeList
+    - clear defineList
+    - clear sourceFileList2
+    - set new target
+
+
+main structure:
+- list2<FILE>
+- tree2<CONTEXT>
+- list2<TARGET>
+- db fuer deps, globale variablen wie:
+  - prefix
+  - deps
+  - options
+
+
+beim erzeugen eines builders:
+- ermittle Dateien fuer getOutputFiles() anhand der inputs
+- fuege diese Dateien der list main->files hinzu, erzeuge id etc
+
+
+
+Durchgang:
+- alle Contexte und targets sammeln
+
+
+Durchgang
+- fuer jedes Target:
+  - erzeuge builder
+- fuer jeden Context:
+  - hole aktuelles target
+  - fuer jedes SourceFile
+    - target->generator->expectedInputType()?
+      - ja: target->generator->addInput(FILE)
+      - nein: 
+        - erzeuge generator nach quelldateityp
+        - fuer jedes (generator->getOutputFiles())
+          - add to current SourceFile list
+
+
+Durchgang: Handle used targets
+- fuer jedes Target:
+  - fuer jedes usedTarget
+    - erstes (usedTarget->builder->getOutputFiles())
+      - file->addWaitingBuilder(target->builder)
+      - target->builder->incBlockingFiles()
+
+
+Durchgang
+- fuer jeden builder
+  - fuer jedes inputFile
+    - flags::generated?
+      - file->addWaitingBuilder(builder)
+      - builder->incBlockingFiles()
+
+
+Durchgang
+- fuer jeden Builder
+  - blockingFiles==0?
+    ja: add to runnableBuilderList
+
+
+Durchgang (tatsaechliches bauen)
+  - fuer jeden builder in runnableBuilderList
+    - builder->run()
+    - fuer jedes builder->getOutputFiles()
+      - fuer jeden file->getWaitingBuilders()
+        - builder->decBlockingFiles()
+        - builder->blockingFiles==0?
+          ja: add builder to runnableBuilderList
+        - file->removeWaitingBuilder
+        
+      
+
+
+
+
+

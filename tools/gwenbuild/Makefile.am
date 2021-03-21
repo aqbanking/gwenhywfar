@@ -8,25 +8,28 @@ bin_PROGRAMS=gwbuild
 
 gwbuild_SOURCES=\
   main.c \
+  builder.c \
   context.c \
   file.c \
-  generator.c \
   keyvaluepair.c \
-  target.c
+  target.c \
+  project.c
 
 
 
 noinst_HEADERS= \
+  builder.h \
+  builder_p.h \
   context.h \
   context_p.h \
   file.h \
   file_p.h \
-  generator.h \
-  generator_p.h \
   keyvaluepair.h \
   keyvaluepair_p.h \
   target.h \
-  target_p.h
+  target_p.h \
+  project.h \
+  project_p.h
 
 
 

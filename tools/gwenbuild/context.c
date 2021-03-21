@@ -354,6 +354,19 @@ void GWEN_Context_AddSourceFile(GWB_CONTEXT *ctx, GWB_FILE *f)
 
 
 
+GWB_TARGET *GWB_Context_GetCurrentTarget(const GWB_CONTEXT *ctx)
+{
+  return ctx->currentTarget;
+}
+
+
+void GWB_Context_SetCurrentTarget(GWB_CONTEXT *ctx, GWB_TARGET *target)
+{
+  ctx->currentTarget=target;
+}
+
+
+
 
 /* mindmap for my stupid brain...
    abcde  abc

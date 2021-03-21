@@ -20,6 +20,7 @@ GWEN_TREE2_FUNCTION_DEFS(GWB_CONTEXT, GWB_Context)
 
 #include "gwenbuild/keyvaluepair.h"
 #include "gwenbuild/file.h"
+#include "gwenbuild/target.h"
 
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/db.h>
@@ -61,6 +62,11 @@ GWB_KEYVALUEPAIR_LIST *GWB_Context_GetDefineList(const GWB_CONTEXT *ctx);
 void GWB_Context_SetDefine(GWB_CONTEXT *ctx, const char *name, const char *value);
 
 GWEN_DB_NODE *GWB_Context_GetVars(const GWB_CONTEXT *ctx);
+
+GWB_TARGET *GWB_Context_GetCurrentTarget(const GWB_CONTEXT *ctx);
+
+/** doesn't take over target */
+void GWB_Context_SetCurrentTarget(GWB_CONTEXT *ctx, GWB_TARGET *target);
 
 
 GWB_FILE_LIST2 *GWEN_Context_GetSourceFileList2(const GWB_CONTEXT *ctx);

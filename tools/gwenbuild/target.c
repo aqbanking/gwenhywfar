@@ -19,7 +19,7 @@
 
 
 
-GWEN_TREE2_FUNCTIONS(GWB_TARGET, GWB_Target)
+GWEN_LIST2_FUNCTIONS(GWB_TARGET, GWB_Target)
 
 
 
@@ -28,7 +28,6 @@ GWB_TARGET *GWB_Target_new(void)
   GWB_TARGET *target;
 
   GWEN_NEW_OBJECT(GWB_TARGET, target);
-  GWEN_TREE2_INIT(GWB_TARGET, target, GWB_Target);
 
 
   return target;
@@ -39,7 +38,6 @@ GWB_TARGET *GWB_Target_new(void)
 void GWB_Target_free(GWB_TARGET *target)
 {
   if (target) {
-    GWEN_TREE2_FINI(GWB_TARGET, target, GWB_Target);
     free(target->name);
     GWEN_StringList_free(target->sourceFileNameList);
     GWEN_StringList_free(target->usedTargetNameList);
@@ -129,16 +127,16 @@ void GWB_Target_AddUsedTargetFileName(GWB_TARGET *target, const char *s)
 
 
 
-GWB_GENERATOR *GWB_Target_GetGenerator(const GWB_TARGET *target)
+GWB_BUILDER *GWB_Target_GetBuilder(const GWB_TARGET *target)
 {
-  return target->generator;
+  return target->builder;
 }
 
 
 
-void GWB_Target_SetGenerator(GWB_TARGET *target, GWB_GENERATOR *gen)
+void GWB_Target_SetBuilder(GWB_TARGET *target, GWB_BUILDER *builder)
 {
-  target->generator=gen;
+  target->builder=builder;
 }
 
 

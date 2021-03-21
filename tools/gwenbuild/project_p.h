@@ -7,26 +7,32 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_GENERATOR_P_H
-#define GWBUILD_GENERATOR_P_H
+#ifndef GWBUILD_PROJECT_P_H
+#define GWBUILD_PROJECT_P_H
 
 
-#include "gwenbuild/generator.h"
+#include "gwenbuild/project.h"
 
 
-struct GWB_GENERATOR {
-  GWEN_INHERIT_ELEMENT(GWB_GENERATOR)
 
-  uint32_t id;
+struct GWB_PROJECT {
+  GWB_FILE_LIST2 *fileList;
+  GWB_CONTEXT *contextTree;
+  GWB_TARGET_LIST2 *targetList;
+  GWB_BUILDER_LIST2 *builderList;
 
-  GWB_CONTEXT *context;
+  char *projectName;
+  int versionMajor;
+  int versionMinor;
+  int versionPatchlevel;
+  int versionBuild;
 
-  GWB_FILE_LIST2 *inputFileList2;
-  GWB_FILE_LIST2 *outputFileList2;
-
-  int numBlockingInputFiles;
-
+  int soVersionCurrent;
+  int soVersionAge;
+  int soVersionRevision;
 };
+
+
 
 
 #endif

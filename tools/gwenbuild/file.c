@@ -42,7 +42,7 @@ GWB_FILE *GWB_File_new(const char *folder, const char *fName, uint32_t id)
 void GWB_File_free(GWB_FILE *f)
 {
   if (f) {
-    GWB_Generator_List2_free(f->waitingGeneratorList2);
+    GWB_Builder_List2_free(f->waitingBuilderList2);
     free(f->folder);
     free(f->name);
 
@@ -132,18 +132,37 @@ void GWB_File_SetName(GWB_FILE *f, const char *s)
 
 
 
-GWB_GENERATOR_LIST2 *GWB_File_GetWaitingGeneratorList2(const GWB_FILE *f)
+const char *GWB_File_GetFileType(const GWB_FILE *f)
 {
-  return f->waitingGeneratorList2;
+  return f->fileType;
 }
 
 
 
-void GWB_File_AddWaitingGenerator(GWB_FILE *f, GWB_GENERATOR *gen)
+void GWB_File_SetFileType(GWB_FILE *f, const char *s)
 {
-  if (f->waitingGeneratorList2==NULL)
-    f->waitingGeneratorList2=GWB_Generator_List2_new();
-  GWB_Generator_List2_PushBack(f->waitingGeneratorList2, gen);
+  if (f->fileType)
+    free(f->fileType);
+  if (s && *s)
+    f->fileType=strdup(s);
+  else
+    f->fileType=NULL;
+}
+
+
+
+GWB_BUILDER_LIST2 *GWB_File_GetWaitingBuilderList2(const GWB_FILE *f)
+{
+  return f->waitingBuilderList2;
+}
+
+
+
+void GWB_File_AddWaitingBuilder(GWB_FILE *f, GWB_BUILDER *gen)
+{
+  if (f->waitingBuilderList2==NULL)
+    f->waitingBuilderList2=GWB_Builder_List2_new();
+  GWB_Builder_List2_PushBack(f->waitingBuilderList2, gen);
 }
 
 

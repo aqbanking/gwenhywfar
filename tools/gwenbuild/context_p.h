@@ -25,13 +25,14 @@ struct GWB_CONTEXT {
   char *compilerFlags;
   char *linkerFlags;
 
-  GWB_KEYVALUEPAIR_LIST *includeList;
+  GWB_KEYVALUEPAIR_LIST *includeList; /* key=TYPE (e.g. tm2), value=includes */
   GWB_KEYVALUEPAIR_LIST *defineList;
 
   GWEN_DB_NODE *vars;
 
   GWB_FILE_LIST2 *sourceFileList2;
 
+  GWB_TARGET *currentTarget;
 };
 
 

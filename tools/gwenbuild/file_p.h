@@ -16,11 +16,13 @@
 struct GWB_FILE {
   char *folder;
   char *name;
+  char *fileType;
+  char *installPath;
   uint32_t id;
   uint32_t flags;
 
 
-  GWB_GENERATOR_LIST2 *waitingGeneratorList2;
+  GWB_BUILDER_LIST2 *waitingBuilderList2;
 };
 
 

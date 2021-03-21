@@ -11,15 +11,16 @@
 #define GWBUILD_TARGET_H
 
 
-#include <gwenhywfar/tree2.h>
+#include <gwenhywfar/list2.h>
 
 
 typedef struct GWB_TARGET GWB_TARGET;
-GWEN_TREE2_FUNCTION_DEFS(GWB_TARGET, GWB_Target)
+GWEN_LIST2_FUNCTION_DEFS(GWB_TARGET, GWB_Target)
 
 
 #include "gwenbuild/context.h"
 #include "gwenbuild/file.h"
+#include "gwenbuild/builder.h"
 #include "gwenbuild/gwenbuild.h"
 
 #include <gwenhywfar/stringlist.h>
@@ -48,8 +49,8 @@ GWEN_STRINGLIST *GWB_Target_GetUsedTargetNameList(const GWB_TARGET *target);
 void GWB_Target_AddUsedTargetFileName(GWB_TARGET *target, const char *s);
 
 
-GWB_GENERATOR *GWB_Target_GetGenerator(const GWB_TARGET *target);
-void GWB_Target_SetGenerator(GWB_TARGET *target, GWB_GENERATOR *gen);
+GWB_BUILDER *GWB_Target_GetBuilder(const GWB_TARGET *target);
+void GWB_Target_SetBuilder(GWB_TARGET *target, GWB_BUILDER *builder);
 
 GWB_FILE *GWB_Target_GetOutputFile(const GWB_TARGET *target);
 void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f);
