@@ -71,8 +71,46 @@ void GWEN_Thread_free(GWEN_THREAD *thr)
   if (thr) {
     GWEN_LIST_FINI(GWEN_THREAD, thr);
     GWEN_INHERIT_FINI(GWEN_THREAD, thr);
+
+    if (thr->threadHandle!=NULL) {
+      CloseHandle(thr->threadHandle);
+      thr->threadHandle=NULL;
+    }
+
     GWEN_FREE_OBJECT(thr);
   }
+}
+
+
+
+uint32_t GWEN_Thread_GetFlags(const GWEN_THREAD *thr)
+{
+  assert(thr);
+  return thr->flags;
+}
+
+
+
+void GWEN_Thread_SetFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags=flags;
+}
+
+
+
+void GWEN_Thread_AddFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags|=flags;
+}
+
+
+
+void GWEN_Thread_SubFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags&=~flags;
 }
 
 
@@ -134,6 +172,7 @@ int GWEN_Thread_Join(GWEN_THREAD *thr)
   }
 
   CloseHandle(thr->threadHandle);
+  thr->threadHandle==NULL;
 
   return 0;
 }
@@ -154,20 +193,21 @@ GWEN_THREAD_RUN_FN GWEN_Thread_SetRunFn(GWEN_THREAD *thr, GWEN_THREAD_RUN_FN fn)
 
 
 
-DWORD _threadRun_cb(LPVOID lpParam)
+DWORD WINAPI _threadRun_cb(LPVOID lpParam)
 {
   GWEN_THREAD *thr;
 
   thr=(GWEN_THREAD*) lpParam;
   assert(thr);
 
-  if (thr->runFn)
+  if (thr->runFn) {
     thr->runFn(thr);
-  else {
+  } else {
     DBG_ERROR(GWEN_LOGDOMAIN, "No run function set in thread");
+    return 1;
   }
 
-  return NULL;
+  return 0;
 }
 
 

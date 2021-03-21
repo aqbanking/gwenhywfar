@@ -49,7 +49,7 @@ GWEN_THREAD *TestThread_new(int threadId, int loops)
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p)
 {
   TEST_THREAD *xthr;
 
@@ -59,7 +59,7 @@ void _freeData(GWEN_UNUSED void *bp, void *p)
 
 
 
-void _threadRun_cb(GWEN_UNUSED GWEN_THREAD *thr)
+void GWENHYWFAR_CB _threadRun_cb(GWEN_UNUSED GWEN_THREAD *thr)
 {
   GWEN_GUI *gui;
   TEST_THREAD *xthr;

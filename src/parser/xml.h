@@ -105,6 +105,13 @@ extern "C" {
 #define GWEN_XML_FLAGS_HANDLE_NAMESPACES    0x0200
 
 /**
+ * Handle input as kind of SGML data.
+ * This means that elements with text data are handled as if they had a closing
+ * element (e.g. "<DESC>Text" is handles like "<DESC>Text</DESC>").
+ */
+#define GWEN_XML_FLAGS_SGML                 0x0400
+
+/**
  * combination of other flags resembling the default flags
  */
 #define GWEN_XML_FLAGS_DEFAULT \

@@ -1124,6 +1124,42 @@ int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...)
 
 
 
+int GWEN_Buffer_KeepTextBetweenStrings(GWEN_BUFFER *bf,
+                                       const char *openingString,
+                                       const char *closingString,
+                                       int onlyBetween)
+{
+  const char *ptr;
+
+  ptr=GWEN_Text_StrCaseStr(bf->ptr, openingString);
+  if (ptr) {
+    int startPos=-1;
+    int endPos=-1;
+
+    startPos=(ptr-bf->ptr);
+    if (onlyBetween)
+      startPos+=strlen(openingString);
+    ptr+=strlen(openingString);
+    ptr=GWEN_Text_StrCaseStr(ptr, closingString);
+    if (ptr) {
+      endPos=(ptr-bf->ptr);
+      if (!onlyBetween)
+        endPos+=strlen(closingString);
+    }
+
+    if (endPos!=-1)
+      GWEN_Buffer_Crop(bf, startPos, (endPos-startPos));
+    else
+      GWEN_Buffer_Crop(bf, startPos, (bf->bytesUsed-startPos)+1);
+    return 0;
+  }
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
+
+
 #include "buffer-t.c"
 
 

@@ -39,6 +39,7 @@ struct GWEN_THREAD {
 
   pthread_t threadId;
   GWEN_THREAD_RUN_FN runFn;
+  uint32_t flags;
 };
 
 
