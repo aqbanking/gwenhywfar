@@ -17,14 +17,18 @@
 
 #include <gwenhywfar/debug.h>
 
+#include <stdlib.h>
 
 
+
+static void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db);
+static void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName);
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
 
 
 
 
-GWB_PROJECT *GWB_Parser_ReadBuildTree(const char *srcDir)
+GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir)
 {
   GWB_CONTEXT *currentContext;
   GWEN_XMLNODE *xmlNewFile;
@@ -34,6 +38,7 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(const char *srcDir)
 
   currentContext=GWB_Context_new();
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
+  _copySomeEnvironmentVariablesToDb(GWB_Context_GetVars(currentContext));
 
   xmlNewFile=GWB_Parser_ReadBuildFile(currentContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
@@ -50,7 +55,7 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(const char *srcDir)
     return NULL;
   }
 
-  project=GWB_Project_new(currentContext);
+  project=GWB_Project_new(gwbuild, currentContext);
 
   rv=GWB_ParseProject(project, currentContext, xmlProject);
   if (rv<0) {
@@ -64,6 +69,27 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(const char *srcDir)
   return project;
 }
 
+
+
+void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db)
+{
+  _copyEnvironmentVariableToDb(db, "CFLAGS", "CFLAGS");
+  _copyEnvironmentVariableToDb(db, "CXXFLAGS", "CXXFLAGS");
+  _copyEnvironmentVariableToDb(db, "CPPFLAGS", "CPPFLAGS");
+  _copyEnvironmentVariableToDb(db, "LDFLAGS", "LDFLAGS");
+  _copyEnvironmentVariableToDb(db, "TM2FLAGS", "TM2FLAGS");
+}
+
+
+
+void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName)
+{
+  const char *s;
+
+  s=getenv(envName);
+  if (s && *s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, dbVarName, s);
+}
 
 
 
@@ -132,7 +158,7 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const 
 
 
 
-GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_XMLNODE *xmlNode)
+GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNODE *xmlData;
 
@@ -142,13 +168,25 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_XMLNODE *xmlNode)
 
     s=GWEN_XMLNode_GetData(xmlData);
     if (s && *s) {
+      int rv;
+      GWEN_BUFFER *buf;
       GWEN_STRINGLIST *sl;
 
-      sl=GWEN_StringList_fromString(s, "", 1);
-      if (sl==NULL) {
-        DBG_ERROR(NULL, "Could not generate string list from data \"%s\"", s);
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=GWEN_DB_ReplaceVars(GWB_Context_GetVars(currentContext), s, buf);
+      if(rv<0) {
+        DBG_INFO(NULL, "here (%d)", rv);
+        GWEN_Buffer_free(buf);
         return NULL;
       }
+
+      sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), "", 1);
+      if (sl==NULL) {
+        DBG_ERROR(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
+        GWEN_Buffer_free(buf);
+        return NULL;
+      }
+      GWEN_Buffer_free(buf);
 
       return sl;
     }
@@ -163,7 +201,7 @@ int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, G
 {
   GWEN_STRINGLIST *sl;
 
-  sl=GWB_Parser_ReadXmlDataIntoStringList(xmlNode);
+  sl=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
 

@@ -7,34 +7,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_PROJECT_P_H
-#define GWBUILD_PROJECT_P_H
+#ifndef GWBUILD_GWENBUILD_P_H
+#define GWBUILD_GWENBUILD_P_H
 
 
-#include "gwenbuild/project.h"
+#include "gwenbuild/gwenbuild.h"
 
 
 
-struct GWB_PROJECT {
-  GWENBUILD *gwbuild;
-  GWB_CONTEXT *contextTree;
-
-  GWB_FILE_LIST2 *fileList;
-  GWB_TARGET_LIST2 *targetList;
-  GWB_BUILDER_LIST2 *builderList;
-
-  char *projectName;
-  int versionMajor;
-  int versionMinor;
-  int versionPatchlevel;
-  int versionBuild;
-
-  int soVersionCurrent;
-  int soVersionAge;
-  int soVersionRevision;
+struct GWENBUILD {
+  int dummy; /* for now */
 };
-
-
 
 
 #endif

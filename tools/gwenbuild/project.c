@@ -19,14 +19,16 @@
 
 
 
-GWB_PROJECT *GWB_Project_new(GWB_CONTEXT *ctx)
+GWB_PROJECT *GWB_Project_new(GWENBUILD *gwbuild, GWB_CONTEXT *ctx)
 {
   GWB_PROJECT *project;
 
   GWEN_NEW_OBJECT(GWB_PROJECT, project);
 
-  project->fileList=GWB_File_List2_new();
+  project->gwbuild=gwbuild;
   project->contextTree=ctx;
+
+  project->fileList=GWB_File_List2_new();
   project->targetList=GWB_Target_List2_new();
   project->builderList=GWB_Builder_List2_new();
 
@@ -45,6 +47,13 @@ void GWB_Project_free(GWB_PROJECT *project)
 
     GWEN_FREE_OBJECT(project);
   }
+}
+
+
+
+GWENBUILD *GWB_Project_GetGwbuild(const GWB_PROJECT *project)
+{
+  return project->gwbuild;
 }
 
 

@@ -11,7 +11,7 @@
 # include <config.h>
 #endif
 
-#include "gwenbuild.h"
+#include "gwenbuild/gwenbuild_p.h"
 
 
 

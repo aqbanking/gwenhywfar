@@ -14,6 +14,7 @@
 typedef struct GWB_PROJECT GWB_PROJECT;
 
 
+#include "gwenbuild/gwenbuild.h"
 #include "gwenbuild/context.h"
 #include "gwenbuild/file.h"
 #include "gwenbuild/builder.h"
@@ -21,9 +22,12 @@ typedef struct GWB_PROJECT GWB_PROJECT;
 
 
 
-GWB_PROJECT *GWB_Project_new(GWB_CONTEXT *ctx);
+GWB_PROJECT *GWB_Project_new(GWENBUILD *gwbuild, GWB_CONTEXT *ctx);
 void GWB_Project_free(GWB_PROJECT *project);
 
+GWENBUILD *GWB_Project_GetGwbuild(const GWB_PROJECT *project);
+
+GWB_CONTEXT *GWB_Project_GetRootContext(const GWB_PROJECT *project);
 
 
 const char *GWB_Project_GetProjectName(const GWB_PROJECT *project);
@@ -44,8 +48,6 @@ int GWB_Project_GetSoVersionRevision(const GWB_PROJECT *project);
 
 GWB_FILE *GWB_Project_GetFileByPathAndName(const GWB_PROJECT *project, const char *folder, const char *fname);
 void GWB_Project_AddFile(GWB_PROJECT *project, GWB_FILE *file);
-
-GWB_CONTEXT *GWB_Project_GetRootContext(const GWB_PROJECT *project);
 
 GWB_TARGET_LIST2 *GWB_Project_GetTargetList(const GWB_PROJECT *project);
 void GWB_Project_AddTarget(GWB_PROJECT *project, GWB_TARGET *target);

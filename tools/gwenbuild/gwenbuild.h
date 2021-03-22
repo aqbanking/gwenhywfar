@@ -11,6 +11,9 @@
 #define GWBUILD_GWENBUILD_H
 
 
+/** main object of gwenbuild */
+typedef struct GWENBUILD GWENBUILD;
+
 
 typedef enum {
   GWBUILD_TargetType_Invalid=-1,

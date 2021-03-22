@@ -29,6 +29,7 @@ noinst_HEADERS= \
   file.h \
   file_p.h \
   gwenbuild.h \
+  gwenbuild_p.h \
   keyvaluepair.h \
   keyvaluepair_p.h \
   target.h \
