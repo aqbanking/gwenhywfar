@@ -1,3 +1,6 @@
+SUBDIRS=parser
+
+
 INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(gwenhywfar_symlinkdir)
 
 
@@ -11,6 +14,7 @@ gwbuild_SOURCES=\
   builder.c \
   context.c \
   file.c \
+  gwenbuild.c \
   keyvaluepair.c \
   target.c \
   project.c
@@ -24,6 +28,7 @@ noinst_HEADERS= \
   context_p.h \
   file.h \
   file_p.h \
+  gwenbuild.h \
   keyvaluepair.h \
   keyvaluepair_p.h \
   target.h \

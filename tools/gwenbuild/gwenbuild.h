@@ -22,4 +22,18 @@ typedef enum {
 } GWBUILD_TARGETTYPE;
 
 
+
+#include "gwenbuild/keyvaluepair.h"
+#include "gwenbuild/file.h"
+
+#include <gwenhywfar/db.h>
+
+
+
+void GWBUILD_Debug_PrintValue(const char *sName, const char *sValue, int indent);
+void GWBUILD_Debug_PrintKvpList(const char *sName, const GWB_KEYVALUEPAIR_LIST *kvpList, int indent);
+void GWBUILD_Debug_PrintDb(const char *sName, GWEN_DB_NODE *db, int indent);
+void GWBUILD_Debug_PrintFileList2(const char *sName, const GWB_FILE_LIST2 *fileList2, int indent);
+
+
 #endif

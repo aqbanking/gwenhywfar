@@ -224,6 +224,36 @@ void GWB_Context_SetCurrentSourceDir(GWB_CONTEXT *ctx, const char *s)
 
 
 
+const char *GWB_Context_GetCurrentRelativeDir(const GWB_CONTEXT *ctx)
+{
+  return ctx->currentRelativeDir;
+}
+
+
+
+void GWB_Context_AddCurrentRelativeDir(GWB_CONTEXT *ctx, const char *s)
+{
+  char *newValue;
+
+  newValue=_combinedString(ctx->currentRelativeDir, s, '/');
+  free(ctx->currentRelativeDir);
+  ctx->currentRelativeDir=newValue;
+}
+
+
+
+void GWB_Context_SetCurrentRelativeDir(GWB_CONTEXT *ctx, const char *s)
+{
+  if (ctx->currentRelativeDir)
+    free(ctx->currentRelativeDir);
+  if (s)
+    ctx->currentRelativeDir=strdup(s);
+  else
+    ctx->currentRelativeDir=NULL;
+}
+
+
+
 const char *GWB_Context_GetCompilerFlags(const GWB_CONTEXT *ctx)
 {
   return ctx->compilerFlags;
@@ -306,6 +336,16 @@ void GWB_Context_AddInclude(GWB_CONTEXT *ctx, const char *genType, const char *i
 
 
 
+void GWB_Context_ClearIncludeList(GWB_CONTEXT *ctx)
+{
+  if (ctx->includeList==NULL)
+    ctx->includeList=GWB_KeyValuePair_List_new();
+  else
+    GWB_KeyValuePair_List_Clear(ctx->includeList);
+}
+
+
+
 GWB_KEYVALUEPAIR_LIST *GWB_Context_GetDefineList(const GWB_CONTEXT *ctx)
 {
   return ctx->defineList;
@@ -331,6 +371,16 @@ void GWB_Context_SetDefine(GWB_CONTEXT *ctx, const char *name, const char *value
 
 
 
+void GWB_Context_ClearDefineList(GWB_CONTEXT *ctx)
+{
+  if (ctx->defineList==NULL)
+    ctx->defineList=GWB_KeyValuePair_List_new();
+  else
+    GWB_KeyValuePair_List_Clear(ctx->defineList);
+}
+
+
+
 GWEN_DB_NODE *GWB_Context_GetVars(const GWB_CONTEXT *ctx)
 {
   return ctx->vars;
@@ -338,18 +388,28 @@ GWEN_DB_NODE *GWB_Context_GetVars(const GWB_CONTEXT *ctx)
 
 
 
-GWB_FILE_LIST2 *GWEN_Context_GetSourceFileList2(const GWB_CONTEXT *ctx)
+GWB_FILE_LIST2 *GWB_Context_GetSourceFileList2(const GWB_CONTEXT *ctx)
 {
   return ctx->sourceFileList2;
 }
 
 
 
-void GWEN_Context_AddSourceFile(GWB_CONTEXT *ctx, GWB_FILE *f)
+void GWB_Context_AddSourceFile(GWB_CONTEXT *ctx, GWB_FILE *f)
 {
   if (ctx->sourceFileList2==NULL)
     ctx->sourceFileList2=GWB_File_List2_new();
   GWB_File_List2_PushBack(ctx->sourceFileList2, f);
+}
+
+
+
+void GWB_Context_ClearSourceFileList2(GWB_CONTEXT *ctx)
+{
+  if (ctx->sourceFileList2==NULL)
+    ctx->sourceFileList2=GWB_File_List2_new();
+  else
+    GWB_File_List2_Clear(ctx->sourceFileList2);
 }
 
 
@@ -404,6 +464,30 @@ char *_combinedString(const char *string1, const char *string2, const char delim
   }
 }
 
+
+
+void GWB_Context_Dump(const GWB_CONTEXT *ctx, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "Context:\n");
+
+  GWBUILD_Debug_PrintValue("currentTarget.....", (ctx->currentTarget)?GWB_Target_GetName(ctx->currentTarget):NULL, indent+2);
+  GWBUILD_Debug_PrintValue("currentRelativeDir", ctx->currentRelativeDir, indent+2);
+  GWBUILD_Debug_PrintValue("topBuildDir.......", ctx->topBuildDir, indent+2);
+  GWBUILD_Debug_PrintValue("topSourceDir......", ctx->topSourceDir, indent+2);
+  GWBUILD_Debug_PrintValue("currentBuildDir...", ctx->currentBuildDir, indent+2);
+  GWBUILD_Debug_PrintValue("currentSourceDir..", ctx->currentSourceDir, indent+2);
+  GWBUILD_Debug_PrintValue("compilerFlags.....", ctx->compilerFlags, indent+2);
+  GWBUILD_Debug_PrintValue("linkerFlags.......", ctx->linkerFlags, indent+2);
+  GWBUILD_Debug_PrintKvpList("includeList", ctx->includeList, indent+2);
+  GWBUILD_Debug_PrintKvpList("defineList", ctx->defineList, indent+2);
+  GWBUILD_Debug_PrintDb("vars", ctx->vars, indent+2);
+  GWBUILD_Debug_PrintFileList2("sourceFileList2", ctx->sourceFileList2, indent+2);
+
+}
 
 
 

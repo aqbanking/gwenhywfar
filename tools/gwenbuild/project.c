@@ -19,13 +19,11 @@
 
 
 
-GWB_PROJECT *GWB_Project_new(const char *projectName)
+GWB_PROJECT *GWB_Project_new(void)
 {
   GWB_PROJECT *project;
 
   GWEN_NEW_OBJECT(GWB_PROJECT, project);
-  if (projectName)
-    project->projectName=strdup(projectName);
 
   project->fileList=GWB_File_List2_new();
   project->contextTree=GWB_Context_new();
@@ -54,6 +52,18 @@ void GWB_Project_free(GWB_PROJECT *project)
 const char *GWB_Project_GetProjectName(const GWB_PROJECT *project)
 {
   return project->projectName;
+}
+
+
+
+void GWB_Project_SetProjectName(GWB_PROJECT *project, const char *s)
+{
+  if (project->projectName)
+    free(project->projectName);
+  if (s)
+    project->projectName=strdup(s);
+  else
+    project->projectName=NULL;
 }
 
 

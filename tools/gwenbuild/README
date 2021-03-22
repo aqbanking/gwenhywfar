@@ -51,8 +51,9 @@ Reading files:
   - dependencies
   - checkHeaders
   - checkFunctions
-  - subdirs
-  - target
+
+  - subdirs (ContextWechsel)
+  - target (ContextWechsel)
     - includes   ->context
     - defines    ->context
     - sources    ->context
