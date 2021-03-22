@@ -36,6 +36,8 @@ int GWB_ParseProject(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 {
   const char *s;
   int rv;
+  GWEN_DB_NODE *db;
+  uint32_t flags=GWEN_DB_FLAGS_OVERWRITE_VARS;
 
   s=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(s && *s)) {
@@ -55,6 +57,18 @@ int GWB_ParseProject(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
                            GWEN_XMLNode_GetIntProperty(xmlNode, "so_current", 0),
                            GWEN_XMLNode_GetIntProperty(xmlNode, "so_age", 0),
                            GWEN_XMLNode_GetIntProperty(xmlNode, "so_revision", 0));
+
+  db=GWB_Context_GetVars(currentContext);
+  GWEN_DB_SetCharValue(db, flags, "project_name", GWB_Project_GetProjectName(project));
+  GWEN_DB_SetIntValue(db, flags, "project_vmajor", GWB_Project_GetVersionMajor(project));
+  GWEN_DB_SetIntValue(db, flags, "project_vminor", GWB_Project_GetVersionMinor(project));
+  GWEN_DB_SetIntValue(db, flags, "project_vpatchlevel", GWB_Project_GetVersionPatchlevel(project));
+  GWEN_DB_SetIntValue(db, flags, "project_vbuild", GWB_Project_GetVersionBuild(project));
+
+  GWEN_DB_SetIntValue(db, flags, "project_so_current", GWB_Project_GetSoVersionCurrent(project));
+  GWEN_DB_SetIntValue(db, flags, "project_so_age", GWB_Project_GetSoVersionAge(project));
+  GWEN_DB_SetIntValue(db, flags, "project_so_revision", GWB_Project_GetSoVersionRevision(project));
+
 
   rv=_parseChildNodes(project, currentContext, xmlNode);
   if (rv<0) {
