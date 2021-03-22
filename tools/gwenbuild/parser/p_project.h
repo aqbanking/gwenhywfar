@@ -17,7 +17,7 @@
 
 
 
-int GWB_ParseProjectNode(GWB_PROJECT *project, GWEN_XMLNODE *xmlNode);
+int GWB_ParseProject(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 

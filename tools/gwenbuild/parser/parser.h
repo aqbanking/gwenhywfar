@@ -21,20 +21,17 @@
 
 
 
-typedef int (*GWB_PARSER_PARSE_ELEMENT_FN)(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-
-
+GWB_PROJECT *GWB_Parser_ReadBuildTree(const char *srcDir);
 
 
 
 
 GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, const char *folder);
-
-
 GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const char *fileName);
-
 GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_XMLNODE *xmlNode);
 
+
+typedef int (*GWB_PARSER_PARSE_ELEMENT_FN)(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWB_PARSER_PARSE_ELEMENT_FN fn);
 
 #endif

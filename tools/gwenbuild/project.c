@@ -19,14 +19,14 @@
 
 
 
-GWB_PROJECT *GWB_Project_new(void)
+GWB_PROJECT *GWB_Project_new(GWB_CONTEXT *ctx)
 {
   GWB_PROJECT *project;
 
   GWEN_NEW_OBJECT(GWB_PROJECT, project);
 
   project->fileList=GWB_File_List2_new();
-  project->contextTree=GWB_Context_new();
+  project->contextTree=ctx;
   project->targetList=GWB_Target_List2_new();
   project->builderList=GWB_Builder_List2_new();
 

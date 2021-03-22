@@ -21,7 +21,7 @@ typedef struct GWB_PROJECT GWB_PROJECT;
 
 
 
-GWB_PROJECT *GWB_Project_new(void);
+GWB_PROJECT *GWB_Project_new(GWB_CONTEXT *ctx);
 void GWB_Project_free(GWB_PROJECT *project);
 
 

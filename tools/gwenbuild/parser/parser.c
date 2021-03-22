@@ -13,6 +13,7 @@
 
 
 #include "gwenbuild/parser/parser.h"
+#include "gwenbuild/parser/p_project.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -20,6 +21,48 @@
 
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
 
+
+
+
+GWB_PROJECT *GWB_Parser_ReadBuildTree(const char *srcDir)
+{
+  GWB_CONTEXT *currentContext;
+  GWEN_XMLNODE *xmlNewFile;
+  GWEN_XMLNODE *xmlProject;
+  GWB_PROJECT *project;
+  int rv;
+
+  currentContext=GWB_Context_new();
+  GWB_Context_SetTopSourceDir(currentContext, srcDir);
+
+  xmlNewFile=GWB_Parser_ReadBuildFile(currentContext, GWB_PARSER_FILENAME);
+  if (xmlNewFile==NULL) {
+    DBG_ERROR(NULL, "No valid node found in build file of folder \"%s\"", srcDir);
+    GWB_Context_free(currentContext);
+    return NULL;
+  }
+
+  xmlProject=GWEN_XMLNode_FindFirstTag(xmlNewFile, "project", NULL, NULL);
+  if (xmlProject==NULL) {
+    DBG_ERROR(NULL, "No project node found in build file of folder \"%s\"", srcDir);
+    GWB_Context_free(currentContext);
+    GWEN_XMLNode_free(xmlNewFile);
+    return NULL;
+  }
+
+  project=GWB_Project_new(currentContext);
+
+  rv=GWB_ParseProject(project, currentContext, xmlProject);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error parsing build tree in folder \"%s\"", srcDir);
+    GWB_Project_free(project);
+    GWEN_XMLNode_free(xmlNewFile);
+    return NULL;
+  }
+
+  GWEN_XMLNode_free(xmlNewFile);
+  return project;
+}
 
 
 
