@@ -55,7 +55,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
       DBG_INFO(NULL, "Handling element \"%s\"", name);
 
-      if (strcasecmp(name, "subdir")==0)
+      if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else {
         DBG_ERROR(NULL, "Element not handled");

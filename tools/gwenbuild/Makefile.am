@@ -41,4 +41,5 @@ noinst_HEADERS= \
 
 gwbuild_LDADD = \
   $(top_builddir)/src/$(gwenhywfar_internal_libname) \
+  parser/libgwb_parser.la \
   $(PROG_LIBRARIES)

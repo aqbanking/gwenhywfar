@@ -51,6 +51,8 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
   GWEN_NEW_OBJECT(GWB_CONTEXT, ctx);
   GWEN_TREE2_INIT(GWB_CONTEXT, ctx, GWB_Context);
 
+  ctx->currentTarget=originalCtx->currentTarget;
+
   if (originalCtx->topBuildDir)
     ctx->topBuildDir=strdup(originalCtx->topBuildDir);
   if (originalCtx->topSourceDir)
@@ -468,25 +470,42 @@ char *_combinedString(const char *string1, const char *string2, const char delim
 
 void GWB_Context_Dump(const GWB_CONTEXT *ctx, int indent)
 {
-  int i;
+  if (ctx) {
+    int i;
+  
+    for(i=0; i<indent; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "Context:\n");
+  
+    GWBUILD_Debug_PrintValue("currentTarget.....", (ctx->currentTarget)?GWB_Target_GetName(ctx->currentTarget):NULL, indent+2);
+    GWBUILD_Debug_PrintValue("currentRelativeDir", ctx->currentRelativeDir, indent+2);
+    GWBUILD_Debug_PrintValue("topBuildDir.......", ctx->topBuildDir, indent+2);
+    GWBUILD_Debug_PrintValue("topSourceDir......", ctx->topSourceDir, indent+2);
+    GWBUILD_Debug_PrintValue("currentBuildDir...", ctx->currentBuildDir, indent+2);
+    GWBUILD_Debug_PrintValue("currentSourceDir..", ctx->currentSourceDir, indent+2);
+    GWBUILD_Debug_PrintValue("compilerFlags.....", ctx->compilerFlags, indent+2);
+    GWBUILD_Debug_PrintValue("linkerFlags.......", ctx->linkerFlags, indent+2);
+    GWBUILD_Debug_PrintKvpList("includeList", ctx->includeList, indent+2);
+    GWBUILD_Debug_PrintKvpList("defineList", ctx->defineList, indent+2);
+    GWBUILD_Debug_PrintDb("vars", ctx->vars, indent+2);
+    GWBUILD_Debug_PrintFileList2("sourceFileList2", ctx->sourceFileList2, indent+2);
+  }
+}
 
-  for(i=0; i<indent; i++)
-    fprintf(stderr, " ");
-  fprintf(stderr, "Context:\n");
 
-  GWBUILD_Debug_PrintValue("currentTarget.....", (ctx->currentTarget)?GWB_Target_GetName(ctx->currentTarget):NULL, indent+2);
-  GWBUILD_Debug_PrintValue("currentRelativeDir", ctx->currentRelativeDir, indent+2);
-  GWBUILD_Debug_PrintValue("topBuildDir.......", ctx->topBuildDir, indent+2);
-  GWBUILD_Debug_PrintValue("topSourceDir......", ctx->topSourceDir, indent+2);
-  GWBUILD_Debug_PrintValue("currentBuildDir...", ctx->currentBuildDir, indent+2);
-  GWBUILD_Debug_PrintValue("currentSourceDir..", ctx->currentSourceDir, indent+2);
-  GWBUILD_Debug_PrintValue("compilerFlags.....", ctx->compilerFlags, indent+2);
-  GWBUILD_Debug_PrintValue("linkerFlags.......", ctx->linkerFlags, indent+2);
-  GWBUILD_Debug_PrintKvpList("includeList", ctx->includeList, indent+2);
-  GWBUILD_Debug_PrintKvpList("defineList", ctx->defineList, indent+2);
-  GWBUILD_Debug_PrintDb("vars", ctx->vars, indent+2);
-  GWBUILD_Debug_PrintFileList2("sourceFileList2", ctx->sourceFileList2, indent+2);
 
+void GWB_Context_Tree2_Dump(const GWB_CONTEXT *ctx, int indent)
+{
+  if (ctx) {
+    const GWB_CONTEXT *childCtx;
+
+    GWB_Context_Dump(ctx, indent);
+    childCtx=GWB_Context_Tree2_GetFirstChild(ctx);
+    while(childCtx) {
+      GWB_Context_Tree2_Dump(childCtx, indent+2);
+      childCtx=GWB_Context_Tree2_GetNext(childCtx);
+    }
+  }
 }
 
 

@@ -81,6 +81,36 @@ void GWB_Target_SetTargetType(GWB_TARGET *target, GWBUILD_TARGETTYPE t)
 
 
 
+void GWB_Target_SetSoVersion(GWB_TARGET *target, int vCurrent, int vAge, int vRevision)
+{
+  target->soVersionCurrent=vCurrent;
+  target->soVersionAge=vAge;
+  target->soVersionRevision=vRevision;
+}
+
+
+
+int GWB_Target_GetSoVersionCurrent(const GWB_TARGET *target)
+{
+  return target->soVersionCurrent;
+}
+
+
+
+int GWB_Target_GetSoVersionAge(const GWB_TARGET *target)
+{
+  return target->soVersionAge;
+}
+
+
+
+int GWB_Target_GetSoVersionRevision(const GWB_TARGET *target)
+{
+  return target->soVersionRevision;
+}
+
+
+
 GWB_CONTEXT *GWB_Target_GetContext(const GWB_TARGET *target)
 {
   return target->context;
@@ -153,6 +183,29 @@ void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f)
   target->outputFile=f;
 }
 
+
+
+void GWB_Target_Dump(const GWB_TARGET *target, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "Target:\n");
+
+  GWBUILD_Debug_PrintValue(     "name..............", target->name, indent+2);
+  GWBUILD_Debug_PrintIntValue(  "type..............", target->targetType, indent+2);
+  GWBUILD_Debug_PrintIntValue(  "soVersionCurrent..", target->soVersionCurrent, indent+2);
+  GWBUILD_Debug_PrintIntValue(  "soVersionAge......", target->soVersionAge, indent+2);
+  GWBUILD_Debug_PrintIntValue(  "soVersionRevision.", target->soVersionRevision, indent+2);
+  GWBUILD_Debug_PrintStringList("sourceFileNameList", target->sourceFileNameList, indent+2);
+  GWBUILD_Debug_PrintStringList("usedTargetNameList", target->usedTargetNameList, indent+2);
+  GWBUILD_Debug_PrintStringList("usedLibraryList...", target->usedLibraryList, indent+2);
+  GWBUILD_Debug_PrintFile(      "outputFile........", target->outputFile, indent+2);
+  GWB_Context_Dump(target->context, indent+2);
+
+
+}
 
 
 

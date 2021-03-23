@@ -18,6 +18,10 @@ struct GWB_TARGET {
   char *name;
   GWBUILD_TARGETTYPE targetType;
 
+  int soVersionCurrent;
+  int soVersionAge;
+  int soVersionRevision;
+
   GWB_CONTEXT *context;
 
   GWEN_STRINGLIST *sourceFileNameList;

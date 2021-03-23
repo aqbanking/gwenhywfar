@@ -38,6 +38,7 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir)
 
   currentContext=GWB_Context_new();
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
+  GWB_Context_SetCurrentSourceDir(currentContext, srcDir);
   _copySomeEnvironmentVariablesToDb(GWB_Context_GetVars(currentContext));
 
   xmlNewFile=GWB_Parser_ReadBuildFile(currentContext, GWB_PARSER_FILENAME);
@@ -116,6 +117,21 @@ GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, c
 
 
 
+GWB_CONTEXT *GWB_Parser_CopyContextForTarget(const GWB_CONTEXT *sourceContext)
+{
+  GWB_CONTEXT *newContext;
+
+  newContext=GWB_Context_dup(sourceContext);
+
+  GWB_Context_ClearSourceFileList2(newContext);
+  GWB_Context_ClearIncludeList(newContext);
+  GWB_Context_ClearDefineList(newContext);
+
+  return newContext;
+}
+
+
+
 GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const char *fileName)
 {
   GWEN_BUFFER *fileNameBuf;
@@ -134,6 +150,7 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const 
 
   xmlDocNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
+  DBG_ERROR(NULL, "Reading file %s", GWEN_Buffer_GetStart(fileNameBuf));
   rv=GWEN_XML_ReadFile(xmlDocNode, GWEN_Buffer_GetStart(fileNameBuf), GWEN_XML_FLAGS_DEFAULT);
   if (rv<0) {
     DBG_INFO(NULL, "here %d)", rv);
@@ -180,7 +197,7 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *current
         return NULL;
       }
 
-      sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), "", 1);
+      sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", 1);
       if (sl==NULL) {
         DBG_ERROR(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
         GWEN_Buffer_free(buf);

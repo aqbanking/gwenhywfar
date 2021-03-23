@@ -222,5 +222,29 @@ void GWB_Project_AddBuilder(GWB_PROJECT *project, GWB_BUILDER *builder)
 
 
 
+void GWB_Project_Dump(const GWB_PROJECT *project, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "Project:\n");
+
+  GWBUILD_Debug_PrintValue(   "projectName......", project->projectName, indent+2);
+  GWBUILD_Debug_PrintIntValue("versionMajor.....", project->versionMajor, indent+2);
+  GWBUILD_Debug_PrintIntValue("versionMinor.....", project->versionMinor, indent+2);
+  GWBUILD_Debug_PrintIntValue("versionPatchlevel", project->versionPatchlevel, indent+2);
+  GWBUILD_Debug_PrintIntValue("versionBuild.....", project->versionBuild, indent+2);
+  GWBUILD_Debug_PrintIntValue("soVersionCurrent.", project->soVersionCurrent, indent+2);
+  GWBUILD_Debug_PrintIntValue("soVersionAge.....", project->soVersionAge, indent+2);
+  GWBUILD_Debug_PrintIntValue("soVersionRevision", project->soVersionRevision, indent+2);
+
+  GWB_Context_Tree2_Dump(project->contextTree, indent+2);
+
+  GWBUILD_Debug_PrintFileList2("fileList", project->fileList, indent+2);
+  GWBUILD_Debug_PrintTargetList2("targetList", project->targetList, indent+2);
+}
+
+
 
 

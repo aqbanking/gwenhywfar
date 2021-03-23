@@ -55,6 +55,7 @@ void GWB_Project_AddTarget(GWB_PROJECT *project, GWB_TARGET *target);
 GWB_BUILDER_LIST2 *GWB_Project_GetBuilderList(const GWB_PROJECT *project);
 void GWB_Project_AddBuilder(GWB_PROJECT *project, GWB_BUILDER *builder);
 
+void GWB_Project_Dump(const GWB_PROJECT *project, int indent);
 
 
 #endif

@@ -38,6 +38,12 @@ GWBUILD_TARGETTYPE GWB_Target_GetTargetType(const GWB_TARGET *target);
 void GWB_Target_SetTargetType(GWB_TARGET *target, GWBUILD_TARGETTYPE t);
 
 
+void GWB_Target_SetSoVersion(GWB_TARGET *target, int vCurrent, int vAge, int vRevision);
+int GWB_Target_GetSoVersionCurrent(const GWB_TARGET *target);
+int GWB_Target_GetSoVersionAge(const GWB_TARGET *target);
+int GWB_Target_GetSoVersionRevision(const GWB_TARGET *target);
+
+
 GWB_CONTEXT *GWB_Target_GetContext(const GWB_TARGET *target);
 void GWB_Target_SetContext(GWB_TARGET *target, GWB_CONTEXT *ctx);
 
@@ -55,6 +61,7 @@ void GWB_Target_SetBuilder(GWB_TARGET *target, GWB_BUILDER *builder);
 GWB_FILE *GWB_Target_GetOutputFile(const GWB_TARGET *target);
 void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f);
 
+void GWB_Target_Dump(const GWB_TARGET *target, int indent);
 
 
 #endif

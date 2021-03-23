@@ -82,6 +82,7 @@ void GWB_Context_ClearSourceFileList2(GWB_CONTEXT *ctx);
 
 
 void GWB_Context_Dump(const GWB_CONTEXT *ctx, int indent);
+void GWB_Context_Tree2_Dump(const GWB_CONTEXT *ctx, int indent);
 
 
 #endif
