@@ -40,6 +40,8 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir)
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
   GWB_Context_SetCurrentSourceDir(currentContext, srcDir);
   _copySomeEnvironmentVariablesToDb(GWB_Context_GetVars(currentContext));
+  GWEN_DB_SetCharValue(GWB_Context_GetVars(currentContext), GWEN_DB_FLAGS_OVERWRITE_VARS, "prefix", "/usr/local");
+
 
   xmlNewFile=GWB_Parser_ReadBuildFile(currentContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
