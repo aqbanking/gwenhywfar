@@ -21,6 +21,7 @@
 
 static GWB_TARGET *_readTarget(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
@@ -44,6 +45,7 @@ int GWB_ParseTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
 
   newContext=GWB_Parser_CopyContextForTarget(currentContext);
   GWB_Context_SetCurrentTarget(newContext, target);
+  GWB_Target_SetContext(target, newContext);
 
   rv=_parseChildNodes(project, newContext, xmlNode);
   if (rv<0) {
@@ -126,6 +128,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
       if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
+      else if ((strcasecmp(name, "sources")==0) || (strcasecmp(name, "headers")==0))
+        rv=_parseSourcesOrHeaders(project, currentContext, n);
       else {
         DBG_ERROR(NULL, "Element not handled");
         rv=0;
@@ -142,6 +146,78 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
   DBG_INFO(NULL, "Leaving");
   return 0;
 }
+
+
+
+int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  GWB_TARGET *target;
+  uint32_t flags=0;
+  int rv;
+  const char *s;
+  const char *installPath;
+  const char *fileType;
+  const char *currentFolder;
+  GWEN_STRINGLIST *fileNameList;
+
+  target=GWB_Context_GetCurrentTarget(currentContext);
+  if (target==NULL) {
+    DBG_ERROR(NULL, "No target in current context, SNH!");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
+
+  currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
+
+  fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", NULL);
+
+  installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
+  if (installPath && *installPath)
+    flags|=GWB_FILE_FLAGS_INSTALL;
+
+  s=GWEN_XMLNode_GetProperty(xmlNode, "dist", NULL);
+  if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
+    flags|=GWB_FILE_FLAGS_DIST;
+
+  fileNameList=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  if (fileNameList) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(fileNameList);
+    while(se) {
+      const char *sFileName;
+
+      sFileName=GWEN_StringListEntry_Data(se);
+      if (sFileName && *sFileName) {
+        GWB_FILE *file;
+
+        file=GWB_Project_GetFileByPathAndName(project, currentFolder, sFileName);
+        if (file==NULL) {
+          file=GWB_File_new(currentFolder, sFileName, 0);
+          GWB_Project_AddFile(project, file);
+        }
+        GWB_File_AddFlags(file, flags);
+        if (installPath)
+          GWB_File_SetInstallPath(file, installPath);
+        if (fileType)
+          GWB_File_SetFileType(file, fileType);
+        GWB_Context_AddSourceFile(currentContext, file);
+        //GWB_Target_AddSourceFile(target, file);
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(fileNameList);
+  }
+
+  return 0;
+}
+
 
 
 

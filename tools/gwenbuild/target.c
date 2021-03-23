@@ -29,6 +29,9 @@ GWB_TARGET *GWB_Target_new(void)
 
   GWEN_NEW_OBJECT(GWB_TARGET, target);
 
+  target->sourceFileList=GWB_File_List2_new();
+  target->usedTargetNameList=GWEN_StringList_new();
+  target->usedLibraryList=GWEN_StringList_new();
 
   return target;
 }
@@ -39,7 +42,7 @@ void GWB_Target_free(GWB_TARGET *target)
 {
   if (target) {
     free(target->name);
-    GWEN_StringList_free(target->sourceFileNameList);
+    GWB_File_List2_free(target->sourceFileList);
     GWEN_StringList_free(target->usedTargetNameList);
 
     GWEN_FREE_OBJECT(target);
@@ -125,19 +128,18 @@ void GWB_Target_SetContext(GWB_TARGET *target, GWB_CONTEXT *ctx)
 
 
 
-GWEN_STRINGLIST *GWB_Target_GetSourceFileNameList(const GWB_TARGET *target)
+GWB_FILE_LIST2 *GWB_Target_GetSourceFileList(const GWB_TARGET *target)
 {
-  return target->sourceFileNameList;
+  return target->sourceFileList;
 }
 
 
 
-void GWB_Target_AddSourceFileName(GWB_TARGET *target, const char *s)
+void GWB_Target_AddSourceFile(GWB_TARGET *target, GWB_FILE *file)
 {
-  if (target->sourceFileNameList==NULL)
-    target->sourceFileNameList=GWEN_StringList_new();
-  GWEN_StringList_AppendString(target->sourceFileNameList, s, 0, 1);
+  GWB_File_List2_PushBack(target->sourceFileList, file);
 }
+
 
 
 
@@ -198,7 +200,7 @@ void GWB_Target_Dump(const GWB_TARGET *target, int indent)
   GWBUILD_Debug_PrintIntValue(  "soVersionCurrent..", target->soVersionCurrent, indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionAge......", target->soVersionAge, indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionRevision.", target->soVersionRevision, indent+2);
-  GWBUILD_Debug_PrintStringList("sourceFileNameList", target->sourceFileNameList, indent+2);
+  GWBUILD_Debug_PrintFileList2( "sourceFileList....", target->sourceFileList, indent+2);
   GWBUILD_Debug_PrintStringList("usedTargetNameList", target->usedTargetNameList, indent+2);
   GWBUILD_Debug_PrintStringList("usedLibraryList...", target->usedLibraryList, indent+2);
   GWBUILD_Debug_PrintFile(      "outputFile........", target->outputFile, indent+2);

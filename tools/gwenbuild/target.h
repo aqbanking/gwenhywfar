@@ -47,9 +47,8 @@ int GWB_Target_GetSoVersionRevision(const GWB_TARGET *target);
 GWB_CONTEXT *GWB_Target_GetContext(const GWB_TARGET *target);
 void GWB_Target_SetContext(GWB_TARGET *target, GWB_CONTEXT *ctx);
 
-
-GWEN_STRINGLIST *GWB_Target_GetSourceFileNameList(const GWB_TARGET *target);
-void GWB_Target_AddSourceFileName(GWB_TARGET *target, const char *s);
+GWB_FILE_LIST2 *GWB_Target_GetSourceFileList(const GWB_TARGET *target);
+void GWB_Target_AddSourceFile(GWB_TARGET *target, GWB_FILE *file);
 
 GWEN_STRINGLIST *GWB_Target_GetUsedTargetNameList(const GWB_TARGET *target);
 void GWB_Target_AddUsedTargetFileName(GWB_TARGET *target, const char *s);

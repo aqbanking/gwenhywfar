@@ -139,14 +139,28 @@ void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent
   if (file) {
     const char *sFolder;
     const char *sName;
+    const char *sInstallPath;
+    const char *sFileType;
+    uint32_t flags;
   
     sFolder=GWB_File_GetFolder(file);
     sName=GWB_File_GetName(file);
-  
+    flags=GWB_File_GetFlags(file);
+    sFileType=GWB_File_GetFileType(file);
+    sInstallPath=GWB_File_GetInstallPath(file);
+
     if (sFolder && *sFolder)
-      fprintf(stderr, "%s/%s\n", sFolder, sName?sName:"<no name>");
-    else
-      fprintf(stderr, "%s\n", sName?sName:"<no name>");
+      fprintf(stderr, "%s/", sFolder);
+    fprintf(stderr, "%s", sName?sName:"<no name>");
+    fprintf(stderr, " (%s)", sFileType?sFileType:"no type");
+
+    if (flags & GWB_FILE_FLAGS_DIST)
+      fprintf(stderr, " DIST");
+    if (flags & GWB_FILE_FLAGS_INSTALL)
+      fprintf(stderr, " INSTALL");
+    fprintf(stderr, " %s", sInstallPath?sInstallPath:"<no install path>");
+
+    fprintf(stderr, "\n");
   }
   else
     fprintf(stderr, "<empty>\n");

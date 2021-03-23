@@ -24,7 +24,7 @@ struct GWB_TARGET {
 
   GWB_CONTEXT *context;
 
-  GWEN_STRINGLIST *sourceFileNameList;
+  GWB_FILE_LIST2 *sourceFileList;
   GWEN_STRINGLIST *usedTargetNameList;
 
   GWEN_STRINGLIST *usedLibraryList; /* LDFLAGS */
