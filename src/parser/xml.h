@@ -168,6 +168,7 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_XMLNODE_NAMESPACE, GWEN_XMLNode_NameSpace, GWEN
 
 #include <gwenhywfar/xmlctx.h>
 #include <gwenhywfar/fastbuffer.h>
+#include <gwenhywfar/db.h>
 
 
 #ifdef __cplusplus
@@ -322,6 +323,17 @@ GWENHYWFAR_API
 void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
                                  const GWEN_XMLNODE *sn,
                                  int overwrite);
+
+/**
+ * Expand values of the properties in the given XML node.
+ *
+ * If a property contains something like "$(variableName)" then a variable with that
+ * name is looked up in the given dbVars and inserted instead of the variable name spec.
+ * Internally calls @ref GWEN_DB_ReplaceVars().
+ */
+GWENHYWFAR_API
+int GWEN_XMLNode_ExpandProperties(const GWEN_XMLNODE *tn, GWEN_DB_NODE *dbVars);
+
 /*@}*/
 
 /** @name Type And Data
