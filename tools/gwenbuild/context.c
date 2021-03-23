@@ -53,6 +53,8 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
 
   ctx->currentTarget=originalCtx->currentTarget;
 
+  if (originalCtx->currentRelativeDir)
+    ctx->currentRelativeDir=strdup(originalCtx->currentRelativeDir);
   if (originalCtx->topBuildDir)
     ctx->topBuildDir=strdup(originalCtx->topBuildDir);
   if (originalCtx->topSourceDir)
