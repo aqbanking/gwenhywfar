@@ -132,6 +132,25 @@ void GWB_File_SetName(GWB_FILE *f, const char *s)
 
 
 
+const char *GWB_File_GetInstallPath(const GWB_FILE *f)
+{
+  return f->installPath;
+}
+
+
+
+void GWB_File_SetInstallPath(GWB_FILE *f, const char *s)
+{
+  if (f->installPath)
+    free(f->installPath);
+  if (s && *s)
+    f->installPath=strdup(s);
+  else
+    f->installPath=NULL;
+}
+
+
+
 const char *GWB_File_GetFileType(const GWB_FILE *f)
 {
   return f->fileType;

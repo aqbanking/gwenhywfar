@@ -16,6 +16,9 @@
 typedef struct GWB_FILE GWB_FILE;
 GWEN_LIST2_FUNCTION_DEFS(GWB_FILE, GWB_File)
 
+#define GWB_FILE_FLAGS_DIST    0x0001
+#define GWB_FILE_FLAGS_INSTALL 0x0002
+
 
 #include "gwenbuild/context.h"
 #include "gwenbuild/builder.h"
@@ -41,6 +44,10 @@ void GWB_File_SetFolder(GWB_FILE *f, const char *s);
 
 const char *GWB_File_GetName(const GWB_FILE *f);
 void GWB_File_SetName(GWB_FILE *f, const char *s);
+
+
+const char *GWB_File_GetInstallPath(const GWB_FILE *f);
+void GWB_File_SetInstallPath(GWB_FILE *f, const char *s);
 
 
 const char *GWB_File_GetFileType(const GWB_FILE *f);
