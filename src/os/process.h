@@ -169,6 +169,21 @@ GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr);
 
 
+/**
+ * Start a process which executes the given command with the given arguments, and gathers
+ * stdout of the process into the given buffer (if any).
+ *
+ * Your application needs to install a signal handler which catches SIGCHLD.
+ *
+ * @return result of the command (negative value: GWEN error code)
+ * @param prg name of the binary to run
+ * @param args arguments for the command (all in one string, words separated by blanks)
+ * @param stdOutBuffer buffer to receive stdout from the started process
+ */
+GWENHYWFAR_API
+int GWEN_Process_RunCommandWaitAndGather(const char *prg, const char *args, GWEN_BUFFER *stdOutBuffer);
+
+
 #ifdef __cplusplus
 }
 #endif

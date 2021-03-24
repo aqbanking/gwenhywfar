@@ -35,7 +35,9 @@ noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
  directory_all.c \
  gwentime_all.c \
- gwendate.c
+ gwendate.c \
+ process_all.c
+
 
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la
 
