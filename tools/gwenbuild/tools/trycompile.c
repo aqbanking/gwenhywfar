@@ -25,7 +25,8 @@
 
 int GWB_Tools_TryCompile(const char *testCode)
 {
-  GWEN_BUFFER *responseBuffer;
+  GWEN_BUFFER *stdOutBuffer;
+  GWEN_BUFFER *stdErrBuffer;
   int rv;
 
   rv=GWEN_SyncIo_Helper_WriteFile("conftest.c", (const uint8_t*) testCode, strlen(testCode));
@@ -34,16 +35,19 @@ int GWB_Tools_TryCompile(const char *testCode)
     return rv;
   }
 
-  responseBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
-  rv=GWEN_Process_RunCommandWaitAndGather("gcc", "-c conftest.c -o contest.o", responseBuffer);
+  rv=GWEN_Process_RunCommandWaitAndGather("gcc", "-c conftest.c -o contest.o", stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running gcc (%d)", rv);
-    GWEN_Buffer_free(responseBuffer);
+    GWEN_Buffer_free(stdErrBuffer);
+    GWEN_Buffer_free(stdOutBuffer);
     unlink("conftest.c");
     return rv;
   }
-  GWEN_Buffer_free(responseBuffer);
+  GWEN_Buffer_free(stdErrBuffer);
+  GWEN_Buffer_free(stdOutBuffer);
 
   unlink("conftest.c");
   unlink("conftest.o");

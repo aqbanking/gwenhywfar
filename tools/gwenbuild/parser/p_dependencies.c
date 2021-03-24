@@ -162,10 +162,12 @@ int _checkVersion(GWEN_DB_NODE *db,
                   const char *sMaxVersion)
 {
   GWEN_BUFFER *argBuffer;
-  GWEN_BUFFER *responseBuffer;
+  GWEN_BUFFER *stdOutBuffer;
+  GWEN_BUFFER *stdErrBuffer;
   int rv;
 
-  responseBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   if (sMinVersion) {
@@ -181,15 +183,18 @@ int _checkVersion(GWEN_DB_NODE *db,
   GWEN_Buffer_AppendString(argBuffer, sName);
 
   DBG_ERROR(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
-  rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer), responseBuffer);
+  rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer),
+                                          stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running pkg-config (%d)", rv);
     GWEN_Buffer_free(argBuffer);
-    GWEN_Buffer_free(responseBuffer);
+    GWEN_Buffer_free(stdErrBuffer);
+    GWEN_Buffer_free(stdOutBuffer);
     return rv;
   }
   GWEN_Buffer_free(argBuffer);
-  GWEN_Buffer_free(responseBuffer);
+  GWEN_Buffer_free(stdErrBuffer);
+  GWEN_Buffer_free(stdOutBuffer);
 
   GWB_Parser_SetItemValue(db, sId, "_EXISTS", (rv==0)?"TRUE":"FALSE");
   return (rv==0)?0:GWEN_ERROR_NOT_FOUND;
@@ -234,10 +239,12 @@ int _callPkgConfig(GWEN_DB_NODE *db,
                    const char *args)
 {
   GWEN_BUFFER *argBuffer;
-  GWEN_BUFFER *responseBuffer;
+  GWEN_BUFFER *stdOutBuffer;
+  GWEN_BUFFER *stdErrBuffer;
   int rv;
 
-  responseBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendString(argBuffer, args);
@@ -245,20 +252,22 @@ int _callPkgConfig(GWEN_DB_NODE *db,
   GWEN_Buffer_AppendString(argBuffer, sName);
 
   DBG_ERROR(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
-  rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer), responseBuffer);
+  rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer), stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running pkg-config (%d)", rv);
     GWEN_Buffer_free(argBuffer);
-    GWEN_Buffer_free(responseBuffer);
+    GWEN_Buffer_free(stdErrBuffer);
+    GWEN_Buffer_free(stdOutBuffer);
     return rv;
   }
   GWEN_Buffer_free(argBuffer);
 
-  _replaceControlCharsWithBlanks(GWEN_Buffer_GetStart(responseBuffer));
-  GWEN_Text_CondenseBuffer(responseBuffer);
-  GWB_Parser_SetItemValue(db, sId, suffix, GWEN_Buffer_GetStart(responseBuffer));
+  _replaceControlCharsWithBlanks(GWEN_Buffer_GetStart(stdOutBuffer));
+  GWEN_Text_CondenseBuffer(stdOutBuffer);
+  GWB_Parser_SetItemValue(db, sId, suffix, GWEN_Buffer_GetStart(stdOutBuffer));
 
-  GWEN_Buffer_free(responseBuffer);
+  GWEN_Buffer_free(stdErrBuffer);
+  GWEN_Buffer_free(stdOutBuffer);
   return 0;
 }
 
