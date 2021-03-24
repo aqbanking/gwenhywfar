@@ -130,6 +130,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if ((strcasecmp(name, "sources")==0) || (strcasecmp(name, "headers")==0))
         rv=_parseSourcesOrHeaders(project, currentContext, n);
+      else if (strcasecmp(name, "setVar")==0)
+        rv=GWB_Parser_ParseSetVar(currentContext, n);
       else {
         DBG_ERROR(NULL, "Element not handled");
         rv=0;

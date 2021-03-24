@@ -108,8 +108,7 @@ Durchgang:
 Durchgang
 - fuer jedes Target:
   - erzeuge builder
-- fuer jeden Context:
-  - hole aktuelles target
+- fuer jeden Context unterhalb des Target:
   - fuer jedes SourceFile
     - target->generator->expectedInputType()?
       - ja: target->generator->addInput(FILE)
@@ -152,8 +151,32 @@ Durchgang (tatsaechliches bauen)
         - file->removeWaitingBuilder
         
       
+Am Ende nur noch:
+- list<builder>
+- list<file>
+Nur diese Objects muessen gespeichert werden fuers Compilieren.
+In den Buildern schon die Kommandozeilen speichern.
+Der Rest muss dann nicht mehr geladen werden.
 
 
 
+Builders
+========
+
+SharedLibBuilder
+- input: *.o
+- output:*.so.x.y.z
+
+CBuilder:
+- input: *.c
+- output: *.o
+
+CxxBuilder:
+- input: *.cpp
+- output: *.o
+
+Tm2Builder:
+- input: *.t2d
+- output: *.c, *.h
 
 

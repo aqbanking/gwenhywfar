@@ -44,6 +44,7 @@ void GWB_Project_free(GWB_PROJECT *project)
     GWB_Context_free(project->contextTree);
     GWB_Target_List2_free(project->targetList);
     GWB_Builder_List2_free(project->builderList);
+    GWB_KeyValuePair_List_free(project->defineList);
 
     GWEN_FREE_OBJECT(project);
   }
@@ -222,6 +223,41 @@ void GWB_Project_AddBuilder(GWB_PROJECT *project, GWB_BUILDER *builder)
 
 
 
+GWB_KEYVALUEPAIR_LIST *GWB_Project_GetDefineList(const GWB_PROJECT *project)
+{
+  return project->defineList;
+}
+
+
+
+void GWB_Project_SetDefine(GWB_PROJECT *project, const char *name, const char *value)
+{
+  if (name && *name) {
+    GWB_KEYVALUEPAIR *kvp;
+
+    if (project->defineList==NULL)
+      project->defineList=GWB_KeyValuePair_List_new();
+
+    kvp=GWB_KeyValuePair_List_GetFirstByKey(project->defineList, name);
+    if (kvp)
+      GWB_KeyValuePair_SetValue(kvp, value);
+    else
+    GWB_KeyValuePair_List_Add(GWB_KeyValuePair_new(name, value), project->defineList);
+  }
+}
+
+
+
+void GWB_Project_ClearDefineList(GWB_PROJECT *project)
+{
+if (project->defineList==NULL)
+    project->defineList=GWB_KeyValuePair_List_new();
+  else
+    GWB_KeyValuePair_List_Clear(project->defineList);
+}
+
+
+
 void GWB_Project_Dump(const GWB_PROJECT *project, int indent)
 {
   int i;
@@ -243,6 +279,7 @@ void GWB_Project_Dump(const GWB_PROJECT *project, int indent)
 
   GWBUILD_Debug_PrintFileList2("fileList", project->fileList, indent+2);
   GWBUILD_Debug_PrintTargetList2("targetList", project->targetList, indent+2);
+  GWBUILD_Debug_PrintKvpList("defineList", project->defineList, indent+2);
 }
 
 

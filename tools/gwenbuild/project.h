@@ -44,6 +44,9 @@ int GWB_Project_GetSoVersionCurrent(const GWB_PROJECT *project);
 int GWB_Project_GetSoVersionAge(const GWB_PROJECT *project);
 int GWB_Project_GetSoVersionRevision(const GWB_PROJECT *project);
 
+GWB_KEYVALUEPAIR_LIST *GWB_Project_GetDefineList(const GWB_PROJECT *project);
+void GWB_Project_SetDefine(GWB_PROJECT *project, const char *name, const char *value);
+void GWB_Project_ClearDefineList(GWB_PROJECT *project);
 
 
 GWB_FILE *GWB_Project_GetFileByPathAndName(const GWB_PROJECT *project, const char *folder, const char *fname);

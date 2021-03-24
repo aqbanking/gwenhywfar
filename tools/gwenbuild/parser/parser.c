@@ -16,7 +16,10 @@
 #include "gwenbuild/parser/p_project.h"
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/syncio.h>
+#include <gwenhywfar/process.h>
 
+#include <unistd.h>
 #include <stdlib.h>
 
 
@@ -24,6 +27,7 @@
 static void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db);
 static void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName);
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
+static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
 
 
 
@@ -179,6 +183,30 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const 
 
 GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
+  GWEN_BUFFER *buf;
+
+  buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, xmlNode);
+  if (buf) {
+    GWEN_STRINGLIST *sl;
+
+    sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", 1);
+    if (sl==NULL) {
+      DBG_ERROR(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+      return NULL;
+    }
+    GWEN_Buffer_free(buf);
+
+    return sl;
+  }
+
+  return NULL;
+}
+
+
+
+GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(const GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
   GWEN_XMLNODE *xmlData;
 
   xmlData=GWEN_XMLNode_GetFirstData(xmlNode);
@@ -189,7 +217,6 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *current
     if (s && *s) {
       int rv;
       GWEN_BUFFER *buf;
-      GWEN_STRINGLIST *sl;
 
       buf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=GWEN_DB_ReplaceVars(GWB_Context_GetVars(currentContext), s, buf);
@@ -199,15 +226,7 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *current
         return NULL;
       }
 
-      sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", 1);
-      if (sl==NULL) {
-        DBG_ERROR(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
-        GWEN_Buffer_free(buf);
-        return NULL;
-      }
-      GWEN_Buffer_free(buf);
-
-      return sl;
+      return buf;
     }
   }
 
@@ -278,6 +297,74 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
 }
 
 
+
+int GWB_Parser_ParseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  const char *sName;
+  const char *sMode;
+  GWEN_BUFFER *buf;
+  GWEN_DB_NODE *db;
+
+  db=GWB_Context_GetVars(currentContext);
+
+  sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(sName && *sName)) {
+    DBG_ERROR(NULL, "No name for <setVar>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  sMode=GWEN_XMLNode_GetProperty(xmlNode, "mode", "replace");
+
+  buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, xmlNode);
+  if (buf && GWEN_Buffer_GetUsedBytes(buf)) {
+    if (strcasecmp(sMode, "replace")==0)
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, sName, GWEN_Buffer_GetStart(buf));
+    else if (strcasecmp(sMode, "add")==0)
+      GWEN_DB_SetCharValue(db, 0, sName, GWEN_Buffer_GetStart(buf));
+    else if (strcasecmp(sMode, "append")==0)
+      _appendVarValue(db, sName, GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+  }
+
+  return 0;
+}
+
+
+
+void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue)
+{
+  const char *s;
+
+  s=GWEN_DB_GetCharValue(db, name, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *buf;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, " ");
+    GWEN_Buffer_AppendString(buf, newValue);
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, name, GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+  }
+  else
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, name, newValue);
+}
+
+
+
+void GWB_Parser_SetItemValue(GWEN_DB_NODE *db, const char *sId, const char *suffix, const char *value)
+{
+  GWEN_BUFFER *varNameBuffer;
+
+  varNameBuffer=GWEN_Buffer_new(0, 64, 0, 1);
+  GWEN_Buffer_AppendString(varNameBuffer, sId);
+  GWEN_Buffer_AppendString(varNameBuffer, suffix);
+  GWEN_DB_SetCharValue(db,
+                       GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       GWEN_Buffer_GetStart(varNameBuffer),
+                       value);
+  GWEN_Buffer_free(varNameBuffer);
+}
 
 
 

@@ -7,36 +7,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_PROJECT_P_H
-#define GWBUILD_PROJECT_P_H
+#ifndef GWBUILD_PARSER_CHECKLIBS_H
+#define GWBUILD_PARSER_CHECKLIBS_H
 
 
 #include "gwenbuild/project.h"
 
+#include <gwenhywfar/xml.h>
 
 
-struct GWB_PROJECT {
-  GWENBUILD *gwbuild;
-  GWB_CONTEXT *contextTree;
 
-  GWB_FILE_LIST2 *fileList;
-  GWB_TARGET_LIST2 *targetList;
-  GWB_BUILDER_LIST2 *builderList;
-
-  GWB_KEYVALUEPAIR_LIST *defineList;
-
-  char *projectName;
-  int versionMajor;
-  int versionMinor;
-  int versionPatchlevel;
-  int versionBuild;
-
-  int soVersionCurrent;
-  int soVersionAge;
-  int soVersionRevision;
-};
-
+int GWB_ParseCheckLibs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
 #endif
+

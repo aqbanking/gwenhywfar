@@ -16,8 +16,9 @@
 typedef struct GWB_FILE GWB_FILE;
 GWEN_LIST2_FUNCTION_DEFS(GWB_FILE, GWB_File)
 
-#define GWB_FILE_FLAGS_DIST    0x0001
-#define GWB_FILE_FLAGS_INSTALL 0x0002
+#define GWB_FILE_FLAGS_DIST      0x0001
+#define GWB_FILE_FLAGS_INSTALL   0x0002
+#define GWB_FILE_FLAGS_GENERATED 0x0004
 
 
 #include "gwenbuild/context.h"

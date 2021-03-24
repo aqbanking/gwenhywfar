@@ -15,6 +15,7 @@
 #include "gwenbuild/parser/p_project.h"
 #include "gwenbuild/parser/p_checkfunctions.h"
 #include "gwenbuild/parser/p_checkheaders.h"
+#include "gwenbuild/parser/p_checklibs.h"
 #include "gwenbuild/parser/p_dependencies.h"
 #include "gwenbuild/parser/p_options.h"
 #include "gwenbuild/parser/p_target.h"
@@ -107,10 +108,14 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_ParseCheckHeaders(project, currentContext, n);
       else if (strcasecmp(name, "checkfunctions")==0)
         rv=GWB_ParseCheckFunctions(project, currentContext, n);
+      else if (strcasecmp(name, "checklibs")==0)
+        rv=GWB_ParseCheckLibs(project, currentContext, n);
       else if (strcasecmp(name, "target")==0)
         rv=GWB_ParseTarget(project, currentContext, n);
       else if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
+      else if (strcasecmp(name, "setVar")==0)
+        rv=GWB_Parser_ParseSetVar(currentContext, n);
       else {
         DBG_ERROR(NULL, "Element not handled, ignoring");
         rv=0;
@@ -126,5 +131,6 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
   return 0;
 }
+
 
 
