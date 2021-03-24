@@ -33,7 +33,7 @@ struct sigaction sigActionChild;
 void _signalHandler(int s) {
   switch(s) {
   case SIGCHLD:
-    fprintf(stderr, "Child exited %d\n", s);
+    //fprintf(stderr, "Child exited %d\n", s);
     break;
   default:
     fprintf(stderr, "Received unhandled signal %d\n", s);
