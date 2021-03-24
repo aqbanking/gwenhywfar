@@ -138,6 +138,19 @@ GWEN_SYNCIO *GWEN_SyncIo_File_fromStderr(void)
 
 
 
+int GWEN_SyncIo_File_GetFd(const GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_FILE *xio;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_FILE, sio);
+  assert(xio);
+
+  return xio->fd;
+}
+
+
+
 
 
 

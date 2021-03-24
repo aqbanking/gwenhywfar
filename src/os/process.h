@@ -181,7 +181,9 @@ GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr);
  * @param stdOutBuffer buffer to receive stdout from the started process
  */
 GWENHYWFAR_API
-int GWEN_Process_RunCommandWaitAndGather(const char *prg, const char *args, GWEN_BUFFER *stdOutBuffer);
+int GWEN_Process_RunCommandWaitAndGather(const char *prg, const char *args,
+                                         GWEN_BUFFER *stdOutBuffer,
+                                         GWEN_BUFFER *stdErrBuffer);
 
 
 #ifdef __cplusplus

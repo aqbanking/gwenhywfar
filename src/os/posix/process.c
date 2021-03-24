@@ -37,7 +37,9 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -45,6 +47,8 @@
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
+#include <fcntl.h>
+
 
 
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
@@ -55,6 +59,9 @@ static void _closePipesOnError(GWEN_PROCESS *pr);
 static void _setupRedirectionsInParent(GWEN_PROCESS *pr);
 static void _setupRedirectionsInChild(GWEN_PROCESS *pr);
 static int _setupArgsAndExec(const char *prg, const char *args);
+
+static int _readAndAddToBuffer(int fd, GWEN_BUFFER *buf);
+int _waitForActivity(int fdStdOut, int fdStdErr);
 
 
 
@@ -561,24 +568,143 @@ int GWEN_Process_Redirect(GWEN_PROCESS *pr)
 
 
 
+int GWEN_Process_WaitAndRead(GWEN_PROCESS *pr, GWEN_BUFFER *stdOutBuffer, GWEN_BUFFER *stdErrBuffer)
+{
+  GWEN_SYNCIO *sioStdOut;
+  GWEN_SYNCIO *sioStdErr;
+  int fdStdOut=-1;
+  int fdStdErr=-1;
+  int rv;
+
+  sioStdOut=GWEN_Process_GetStdout(pr);
+  if (sioStdOut)
+    fdStdOut=GWEN_SyncIo_File_GetFd(sioStdOut);
+  sioStdErr=GWEN_Process_GetStderr(pr);
+  if (sioStdErr)
+    fdStdErr=GWEN_SyncIo_File_GetFd(sioStdErr);
+
+  if (fdStdOut!=-1) {
+    int flags;
+
+    flags=fcntl(fdStdOut, F_GETFL, 0);
+    fcntl(fdStdOut, F_SETFL, flags | O_NONBLOCK);
+  }
+  if (fdStdErr!=-1) {
+    int flags;
+
+    flags=fcntl(fdStdErr, F_GETFL, 0);
+    fcntl(fdStdErr, F_SETFL, flags | O_NONBLOCK);
+  }
+
+  for (;;) {
+    GWEN_PROCESS_STATE state;
+
+    if (fdStdOut!=-1) {
+      rv=_readAndAddToBuffer(fdStdOut, stdOutBuffer);
+      if (rv<0) {
+        if (rv==GWEN_ERROR_EOF) {
+          DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+          fdStdOut=-1;
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Process_CheckState(pr); /* avoid zombies */
+          return rv;
+        }
+      }
+    }
+
+    if (fdStdErr!=-1) {
+      rv=_readAndAddToBuffer(fdStdErr, stdErrBuffer);
+      if (rv<0) {
+        if (rv==GWEN_ERROR_EOF) {
+          DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+          fdStdErr=-1;
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Process_CheckState(pr); /* avoid zombies */
+          return rv;
+        }
+      }
+    }
+
+    state=GWEN_Process_CheckState(pr);
+    if (state!=GWEN_ProcessStateRunning)
+      break;
+
+    if (fdStdOut==-1 && fdStdErr==-1)
+      sleep(5);
+    else
+      _waitForActivity(fdStdOut, fdStdErr);
+  }
+
+  return 0;
+}
 
 
 
+int _readAndAddToBuffer(int fd, GWEN_BUFFER *buf)
+{
+  for (;;) {
+    uint8_t localBuffer[1024];
+    size_t rv;
+
+    rv=read(fd, localBuffer, sizeof(localBuffer));
+    if (rv==-1) {
+      if (errno==EAGAIN || errno==EWOULDBLOCK)
+        return 0;
+
+      if (errno!=EINTR) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on read(): %s", strerror(errno));
+        return GWEN_ERROR_GENERIC;
+      }
+      /* otherwise just try again */
+    }
+    else if (rv==0) {
+      return GWEN_ERROR_EOF;
+    }
+    else {
+      GWEN_Buffer_AppendBytes(buf, (const char*) localBuffer, rv);
+    }
+  }
+  return 0;
+}
 
 
 
+int _waitForActivity(int fdStdOut, int fdStdErr)
+{
+  fd_set rfds;
+  struct timeval tv;
+  int retval;
 
+  do {
+    FD_ZERO(&rfds);
 
+    if (fdStdOut!=-1)
+      FD_SET(fdStdOut, &rfds);
+    if (fdStdErr!=-1)
+      FD_SET(fdStdErr, &rfds);
 
+    tv.tv_sec=5;
+    tv.tv_usec=0;
 
+    retval=select(((fdStdOut>fdStdErr)?fdStdOut:fdStdErr)+1,
+                  &rfds, NULL, NULL, &tv);
+  } while(retval==-1 && errno==EINTR);
 
+  if (retval==-1) {
+    if (retval!=EINTR) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on select(): %s", strerror(errno));
+      return GWEN_ERROR_GENERIC;
+    }
 
-
-
-
-
-
-
+  }
+  else if (retval)
+    return 1;
+  return 0;
+}
 
 
 
