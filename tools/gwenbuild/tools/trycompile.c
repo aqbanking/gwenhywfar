@@ -38,7 +38,7 @@ int GWB_Tools_TryCompile(const char *testCode)
   stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
-  rv=GWEN_Process_RunCommandWaitAndGather("gcc", "-c conftest.c -o contest.o", stdOutBuffer, stdErrBuffer);
+  rv=GWEN_Process_RunCommandWaitAndGather("gcc", "-c conftest.c -o conftest.o", stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running gcc (%d)", rv);
     GWEN_Buffer_free(stdErrBuffer);
