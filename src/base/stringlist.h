@@ -211,6 +211,25 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble);
 
+/**
+ * Create a stringlist from a given complex string.
+ *
+ * In addition to @ref GWEN_StringList_fromString() this version allows to modify the behavior of the function
+ * by adding some flags (see @ref GWEN_TEXT_FLAGS_CHECK_BACKSLASH and following).
+ * Typically used flags are:
+ * - @ref GWEN_TEXT_FLAGS_DEL_QUOTES (delete quotes around single words)
+ * - @ref GWEN_TEXT_FLAGS_CHECK_BACKSLASH (handle backslashes as escape characters)
+ *
+ * @return stringlist object (contains at least one entry) or NULL if no entries/empty string
+ * @param str string to dissect
+ * @param delimiters word delimiters
+ * @param checkDouble if !=0 only add unique strings to the resulting list
+ * @param flags (see @ref GWEN_TEXT_FLAGS_DEL_QUOTES and others)
+ */
+GWENHYWFAR_API
+GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimiters, int checkDouble, uint32_t flags);
+
+
 #ifdef __cplusplus
 }
 #endif

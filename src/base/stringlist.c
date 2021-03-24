@@ -32,10 +32,14 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
+
 #include "stringlist_p.h"
 #include "debug.h"
+
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include <string.h>
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
@@ -791,6 +795,49 @@ GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimit
   else
     return NULL;
 }
+
+
+
+GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimiters, int checkDouble, uint32_t flags)
+{
+  if (str && *str) {
+    GWEN_STRINGLIST *sl;
+    const char *s;
+    GWEN_BUFFER *wbuf;
+
+    sl=GWEN_StringList_new();
+    s=(const char *)str;
+
+    wbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    while (*s) {
+      char *copyOfWord;
+
+      while (*s && isspace((int)*s))
+        s++;
+      if (!(*s))
+        break;
+
+      if (GWEN_Text_GetWordToBuffer(s, delimiters, wbuf, flags, &s))
+        break;
+
+      copyOfWord=strdup(GWEN_Buffer_GetStart(wbuf));
+      GWEN_StringList_AppendString(sl, copyOfWord, 1, checkDouble);
+      GWEN_Buffer_Reset(wbuf);
+    } /* while */
+    GWEN_Buffer_free(wbuf);
+
+    if (GWEN_StringList_Count(sl)==0) {
+      GWEN_StringList_free(sl);
+      return NULL;
+    }
+    return sl;
+  }
+
+  return NULL;
+}
+
+
+
 
 
 
