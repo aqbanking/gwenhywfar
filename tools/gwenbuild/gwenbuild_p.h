@@ -17,6 +17,13 @@
 
 struct GWENBUILD {
   int dummy; /* for now */
+
+  char *toolNameCC;
+  char *toolNameCXX;
+  char *toolNameLD;
+  char *toolNameAR;
+  char *toolNameRANLIB;
+
 };
 
 

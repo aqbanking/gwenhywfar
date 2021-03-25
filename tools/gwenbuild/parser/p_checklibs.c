@@ -21,7 +21,7 @@
 
 
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-static int _parseLib(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseLib(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static GWEN_BUFFER *_createTestCodeForLib(const char *fnName);
 
 
@@ -44,7 +44,7 @@ int GWB_ParseCheckLibs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_X
 
 
 
-int _parseChildNodes(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNODE *n;
 
@@ -59,7 +59,7 @@ int _parseChildNodes(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentConte
       DBG_INFO(NULL, "Handling element \"%s\"", name);
 
       if (strcasecmp(name, "lib")==0)
-        rv=_parseLib(currentContext, n);
+        rv=_parseLib(project, currentContext, n);
       else {
         DBG_ERROR(NULL, "Element not handled");
         rv=0;
@@ -78,7 +78,7 @@ int _parseChildNodes(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentConte
 
 
 
-int _parseLib(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseLib(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   int rv;
   const char *sId;
@@ -112,11 +112,11 @@ int _parseLib(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     GWEN_BUFFER *codeBuf;
 
     codeBuf=_createTestCodeForLib(sFunction);
-    rv=GWB_Tools_TryLink(GWEN_Buffer_GetStart(codeBuf), sName);
+    rv=GWB_Tools_TryLink(GWB_Project_GetGwbuild(project), GWEN_Buffer_GetStart(codeBuf), sName);
     GWEN_Buffer_free(codeBuf);
   }
   else
-    rv=GWB_Tools_TryLink("int main(int argc, char **argv) {return 0;}", sName);
+    rv=GWB_Tools_TryLink(GWB_Project_GetGwbuild(project), "int main(int argc, char **argv) {return 0;}", sName);
   if (rv<0) {
     DBG_ERROR(NULL, "here (%d)", rv);
     return rv;

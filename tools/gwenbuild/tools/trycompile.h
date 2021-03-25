@@ -11,8 +11,10 @@
 #define GWBUILD_TRYCOMPILE_H
 
 
+#include "gwenbuild/gwenbuild.h"
 
-int GWB_Tools_TryCompile(const char *testCode);
+
+int GWB_Tools_TryCompile(GWENBUILD *gwbuild, const char *testCode);
 
 
 

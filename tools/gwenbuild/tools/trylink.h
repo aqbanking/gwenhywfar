@@ -10,9 +10,11 @@
 #ifndef GWBUILD_TRYLINK_H
 #define GWBUILD_TRYLINK_H
 
+#include "gwenbuild/gwenbuild.h"
 
 
-int GWB_Tools_TryLink(const char *testCode, const char *libName);
+
+int GWB_Tools_TryLink(GWENBUILD *gwbuild, const char *testCode, const char *libName);
 
 
 

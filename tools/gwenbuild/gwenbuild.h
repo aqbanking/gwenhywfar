@@ -39,6 +39,24 @@ GWENBUILD *GWBUILD_new(void);
 void GWBUILD_free(GWENBUILD *gwenbuild);
 
 
+const char *GWBUILD_GetToolNameCC(const GWENBUILD *gwenbuild);
+void GWBUILD_SetToolNameCC(GWENBUILD *gwenbuild, const char *s);
+
+const char *GWBUILD_GetToolNameCXX(const GWENBUILD *gwenbuild);
+void GWBUILD_SetToolNameCXX(GWENBUILD *gwenbuild, const char *s);
+
+const char *GWBUILD_GetToolNameLD(const GWENBUILD *gwenbuild);
+void GWBUILD_SetToolNameLD(GWENBUILD *gwenbuild, const char *s);
+
+const char *GWBUILD_GetToolNameAR(const GWENBUILD *gwenbuild);
+void GWBUILD_SetToolNameAR(GWENBUILD *gwenbuild, const char *s);
+
+const char *GWBUILD_GetToolNameRANLIB(const GWENBUILD *gwenbuild);
+void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s);
+
+
+
+
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s);
 
 void GWBUILD_Debug_PrintValue(const char *sName, const char *sValue, int indent);

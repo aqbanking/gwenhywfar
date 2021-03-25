@@ -81,7 +81,7 @@ int _checkHeader(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
   GWEN_Buffer_AppendArgs(codeBuf, "#include <%s>\n", header);
   GWEN_Buffer_AppendString(codeBuf, "int main(int argc, char **argv) { return 0;};\n");
 
-  rv=GWB_Tools_TryCompile(GWEN_Buffer_GetStart(codeBuf));
+  rv=GWB_Tools_TryCompile(GWB_Project_GetGwbuild(project), GWEN_Buffer_GetStart(codeBuf));
   if (rv<0) {
     DBG_INFO(NULL, "here (%d)", rv);
     GWEN_Buffer_free(codeBuf);

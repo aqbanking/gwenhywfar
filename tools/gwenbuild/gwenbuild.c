@@ -24,6 +24,12 @@ GWENBUILD *GWBUILD_new(void)
   GWENBUILD *gwenbuild;
 
   GWEN_NEW_OBJECT(GWENBUILD, gwenbuild);
+  GWBUILD_SetToolNameCC(gwenbuild, "gcc");
+  GWBUILD_SetToolNameCXX(gwenbuild, "g++");
+  GWBUILD_SetToolNameLD(gwenbuild, "ld");
+  GWBUILD_SetToolNameAR(gwenbuild, "ar");
+  GWBUILD_SetToolNameRANLIB(gwenbuild, "ranlib");
+
   return gwenbuild;
 }
 
@@ -32,9 +38,106 @@ GWENBUILD *GWBUILD_new(void)
 void GWBUILD_free(GWENBUILD *gwenbuild)
 {
   if (gwenbuild) {
+    free(gwenbuild->toolNameCC);
+    free(gwenbuild->toolNameCXX);
+    free(gwenbuild->toolNameLD);
+    free(gwenbuild->toolNameAR);
+    free(gwenbuild->toolNameRANLIB);
+
     GWEN_FREE_OBJECT(gwenbuild);
   }
 }
+
+
+
+const char *GWBUILD_GetToolNameCC(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->toolNameCC;
+}
+
+
+
+void GWBUILD_SetToolNameCC(GWENBUILD *gwenbuild, const char *s)
+{
+  free(gwenbuild->toolNameCC);
+  if (s)
+    gwenbuild->toolNameCC=strdup(s);
+  else
+    gwenbuild->toolNameCC=NULL;
+}
+
+
+
+const char *GWBUILD_GetToolNameCXX(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->toolNameCXX;
+}
+
+
+
+void GWBUILD_SetToolNameCXX(GWENBUILD *gwenbuild, const char *s)
+{
+  free(gwenbuild->toolNameCXX);
+  if (s)
+    gwenbuild->toolNameCXX=strdup(s);
+  else
+    gwenbuild->toolNameCXX=NULL;
+}
+
+
+
+const char *GWBUILD_GetToolNameLD(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->toolNameLD;
+}
+
+
+
+void GWBUILD_SetToolNameLD(GWENBUILD *gwenbuild, const char *s)
+{
+  free(gwenbuild->toolNameLD);
+  if (s)
+    gwenbuild->toolNameLD=strdup(s);
+  else
+    gwenbuild->toolNameLD=NULL;
+}
+
+
+
+const char *GWBUILD_GetToolNameAR(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->toolNameAR;
+}
+
+
+
+void GWBUILD_SetToolNameAR(GWENBUILD *gwenbuild, const char *s)
+{
+  free(gwenbuild->toolNameAR);
+  if (s)
+    gwenbuild->toolNameAR=strdup(s);
+  else
+    gwenbuild->toolNameAR=NULL;
+}
+
+
+
+const char *GWBUILD_GetToolNameRANLIB(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->toolNameRANLIB;
+}
+
+
+
+void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s)
+{
+  free(gwenbuild->toolNameRANLIB);
+  if (s)
+    gwenbuild->toolNameRANLIB=strdup(s);
+  else
+    gwenbuild->toolNameRANLIB=NULL;
+}
+
 
 
 

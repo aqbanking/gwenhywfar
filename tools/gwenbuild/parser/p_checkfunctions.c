@@ -81,7 +81,7 @@ int _checkFunction(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char
   GWEN_Buffer_AppendArgs(codeBuf, "int %s(void);\n", fnName);
   GWEN_Buffer_AppendArgs(codeBuf, "int main(int argc, char **argv) {return %s();}", fnName);
 
-  rv=GWB_Tools_TryLink(GWEN_Buffer_GetStart(codeBuf), NULL);
+  rv=GWB_Tools_TryLink(GWB_Project_GetGwbuild(project), GWEN_Buffer_GetStart(codeBuf), NULL);
   if (rv<0) {
     DBG_INFO(NULL, "here (%d)", rv);
     GWEN_Buffer_free(codeBuf);

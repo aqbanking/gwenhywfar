@@ -23,11 +23,18 @@
 
 
 
-int GWB_Tools_TryCompile(const char *testCode)
+int GWB_Tools_TryCompile(GWENBUILD *gwbuild, const char *testCode)
 {
   GWEN_BUFFER *stdOutBuffer;
   GWEN_BUFFER *stdErrBuffer;
+  const char *toolName;
   int rv;
+
+  toolName=GWBUILD_GetToolNameCC(gwbuild);
+  if (!(toolName && *toolName)) {
+    DBG_ERROR(NULL, "No tool name for \"CC\"");
+    return GWEN_ERROR_INTERNAL;
+  }
 
   rv=GWEN_SyncIo_Helper_WriteFile("conftest.c", (const uint8_t*) testCode, strlen(testCode));
   if (rv<0) {
@@ -38,7 +45,7 @@ int GWB_Tools_TryCompile(const char *testCode)
   stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
-  rv=GWEN_Process_RunCommandWaitAndGather("gcc", "-c conftest.c -o conftest.o", stdOutBuffer, stdErrBuffer);
+  rv=GWEN_Process_RunCommandWaitAndGather(toolName, "-c -fPIC conftest.c -o conftest.o", stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running gcc (%d)", rv);
     GWEN_Buffer_free(stdErrBuffer);
