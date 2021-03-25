@@ -1,17 +1,4 @@
 
-  Generator: 
-  - destType
-  - srcType
-  - makeFile(GENERATOR, FILE)
-  - addDeps(GENERATOR, FILE)
-  
-  Example generators:
-  - tm2_to_c_h_tm2
-  - c_to_obj
-  - obj_to_so
-  - obj_to_a
-  - res_to_c
-  
   Context (tree):
   - refCounter
   - folder
@@ -110,11 +97,11 @@ Durchgang
   - erzeuge builder
 - fuer jeden Context unterhalb des Target:
   - fuer jedes SourceFile
-    - target->generator->expectedInputType()?
-      - ja: target->generator->addInput(FILE)
+    - target->builder->expectedInputType()?
+      - ja: target->builder->addInput(FILE)
       - nein: 
-        - erzeuge generator nach quelldateityp
-        - fuer jedes (generator->getOutputFiles())
+        - erzeuge builder nach quelldateityp
+        - fuer jedes (builder->getOutputFiles())
           - add to current SourceFile list
 
 
@@ -167,6 +154,11 @@ SharedLibBuilder
 - input: *.o
 - output:*.so.x.y.z
 
+
+StaticLibBuilder
+- input:  *.o
+- output: *.a
+
 CBuilder:
 - input: *.c
 - output: *.o
@@ -178,5 +170,31 @@ CxxBuilder:
 Tm2Builder:
 - input: *.t2d
 - output: *.c, *.h
+
+
+Virtual functions
+- setupOutputFiles() [call after adding last input file]
+- isAcceptableInput(const FILE *f)
+- prepare()
+  - c, cxx: do nothing
+  - tm2: create definition files only
+- run()
+
+
+
+
+  Builder: 
+  - destType
+  - srcType
+  - makeFile(BUILDER, FILE)
+  - addDeps(BUILDER, FILE)
+  
+  Example builders:
+  - tm2_to_c_h_tm2
+  - c_to_obj
+  - obj_to_so
+  - obj_to_a
+  - res_to_c
+
 
 
