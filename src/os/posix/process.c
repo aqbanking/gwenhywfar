@@ -629,14 +629,21 @@ int GWEN_Process_WaitAndRead(GWEN_PROCESS *pr, GWEN_BUFFER *stdOutBuffer, GWEN_B
       }
     }
 
-    state=GWEN_Process_CheckState(pr);
-    if (state!=GWEN_ProcessStateRunning)
-      break;
+    if (fdStdOut!=-1 || fdStdErr!=-1) {
+    }
 
-    if (fdStdOut==-1 && fdStdErr==-1)
-      sleep(5);
-    else
+
+    if (fdStdOut==-1 && fdStdErr==-1) {
+      state=GWEN_Process_CheckState(pr);
+      if (state!=GWEN_ProcessStateRunning)
+	break;
+    }
+    else {
+      state=GWEN_Process_Wait(pr);
+      if (state!=GWEN_ProcessStateRunning)
+	break;
       _waitForActivity(fdStdOut, fdStdErr);
+    }
   }
 
   return 0;
@@ -652,7 +659,7 @@ int _readAndAddToBuffer(int fd, GWEN_BUFFER *buf)
 
     rv=read(fd, localBuffer, sizeof(localBuffer));
     if (rv==-1) {
-      if (errno==EAGAIN || errno==EWOULDBLOCK)
+      if (errno==EAGAIN || errno==EWOULDBLOCK || errno==EINTR)
         return 0;
 
       if (errno!=EINTR) {
@@ -679,7 +686,7 @@ int _waitForActivity(int fdStdOut, int fdStdErr)
   struct timeval tv;
   int retval;
 
-  do {
+  //do {
     FD_ZERO(&rfds);
 
     if (fdStdOut!=-1)
@@ -692,7 +699,7 @@ int _waitForActivity(int fdStdOut, int fdStdErr)
 
     retval=select(((fdStdOut>fdStdErr)?fdStdOut:fdStdErr)+1,
                   &rfds, NULL, NULL, &tv);
-  } while(retval==-1 && errno==EINTR);
+  //} while(retval==-1 && errno==EINTR);
 
   if (retval==-1) {
     if (retval!=EINTR) {
