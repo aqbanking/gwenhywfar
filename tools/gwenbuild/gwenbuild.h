@@ -58,6 +58,7 @@ void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s);
 
 
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s);
+const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt);
 
 void GWBUILD_Debug_PrintValue(const char *sName, const char *sValue, int indent);
 void GWBUILD_Debug_PrintIntValue(const char *sName, int value, int indent);

@@ -196,7 +196,7 @@ void GWB_Target_Dump(const GWB_TARGET *target, int indent)
   fprintf(stderr, "Target:\n");
 
   GWBUILD_Debug_PrintValue(     "name..............", target->name, indent+2);
-  GWBUILD_Debug_PrintIntValue(  "type..............", target->targetType, indent+2);
+  GWBUILD_Debug_PrintValue(     "type..............", GWBUILD_TargetType_toString(target->targetType), indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionCurrent..", target->soVersionCurrent, indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionAge......", target->soVersionAge, indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionRevision.", target->soVersionRevision, indent+2);

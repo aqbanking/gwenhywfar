@@ -148,7 +148,8 @@ GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
   if (s && *s) {
     if (strcasecmp(s, "InstallLibrary")==0)
       return GWBUILD_TargetType_InstallLibrary;
-    else if (strcasecmp(s, "ConvenienceLibrary")==0)
+    else if (strcasecmp(s, "ConvenienceLibrary")==0 ||
+             strcasecmp(s, "TempLibrary")==0)
       return GWBUILD_TargetType_ConvenienceLibrary;
     else if (strcasecmp(s, "Program")==0)
       return GWBUILD_TargetType_Program;
@@ -165,6 +166,21 @@ GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
   return GWBUILD_TargetType_Invalid;
 }
 
+
+
+const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt)
+{
+  switch(tt) {
+  case GWBUILD_TargetType_Invalid:            return "invalid";
+  case GWBUILD_TargetType_None:               return "none";
+  case GWBUILD_TargetType_InstallLibrary:     return "InstallLibrary";
+  case GWBUILD_TargetType_ConvenienceLibrary: return "ConvenienceLibrary";
+  case GWBUILD_TargetType_Program:            return "program";
+  case GWBUILD_TargetType_Objects:            return "objects";
+  }
+
+  return "invalid";
+}
 
 
 void GWBUILD_Debug_PrintValue(const char *sName, const char *sValue, int indent)
