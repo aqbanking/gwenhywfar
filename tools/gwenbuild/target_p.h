@@ -31,6 +31,8 @@ struct GWB_TARGET {
 
   GWB_BUILDER *builder;
   GWB_FILE *outputFile;
+
+  GWB_PROJECT *project;
 };
 
 

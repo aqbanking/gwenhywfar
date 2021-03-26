@@ -29,6 +29,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_FILE, GWB_File)
 
 
 GWB_FILE *GWB_File_new(const char *folder, const char *fName, uint32_t id);
+GWB_FILE *GWB_File_dup(const GWB_FILE *oldFile);
 void GWB_File_free(GWB_FILE *f);
 
 
@@ -61,5 +62,7 @@ void GWB_File_AddWaitingBuilder(GWB_FILE *f, GWB_BUILDER *builder);
 
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);
 
+void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
+GWB_FILE *GWB_File_CopyFileAndChangeExtension(const GWB_FILE *file, const char *newExt);
 
 #endif

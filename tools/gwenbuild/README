@@ -97,7 +97,7 @@ Durchgang
   - erzeuge builder
 - fuer jeden Context unterhalb des Target:
   - fuer jedes SourceFile
-    - target->builder->expectedInputType()?
+    - target->builder->isAcceptableInput()?
       - ja: target->builder->addInput(FILE)
       - nein: 
         - erzeuge builder nach quelldateityp

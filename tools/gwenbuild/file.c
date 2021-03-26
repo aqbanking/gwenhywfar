@@ -16,6 +16,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/memory.h>
+#include <gwenhywfar/buffer.h>
 
 
 
@@ -35,6 +36,23 @@ GWB_FILE *GWB_File_new(const char *folder, const char *fName, uint32_t id)
   f->id=id;
 
   return f;
+}
+
+
+
+GWB_FILE *GWB_File_dup(const GWB_FILE *oldFile)
+{
+  if (oldFile) {
+    GWB_FILE *fileOut;
+
+    fileOut=GWB_File_new(oldFile->folder, oldFile->name, 0);
+    GWB_File_SetFileType(fileOut, oldFile->fileType);
+    GWB_File_SetInstallPath(fileOut, oldFile->installPath);
+    GWB_File_SetFlags(fileOut, oldFile->flags);
+    return fileOut;
+  }
+
+  return NULL;
 }
 
 
@@ -203,6 +221,54 @@ void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2)
     }
     GWB_File_List2_free(fileList2);
   }
+}
+
+
+
+void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt)
+{
+  const char *s;
+
+  s=file->name;
+  if (s && *s) {
+    const char *ext;
+    GWEN_BUFFER *buf;
+
+    buf=GWEN_Buffer_new(0, 64, 0, 1);
+    ext=strrchr(s, '.');
+    if (ext) {
+      int len;
+
+      len=(ext-s); /* exclude "." */
+      if (len) {
+        GWEN_Buffer_AppendBytes(buf, s, len);
+      }
+    }
+    GWEN_Buffer_AppendString(buf, newExt);
+    GWB_File_SetName(file, GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+  }
+}
+
+
+
+GWB_FILE *GWB_File_CopyFileAndChangeExtension(const GWB_FILE *file, const char *newExt)
+{
+  GWB_FILE *fileOut;
+  const char *s1;
+  const char *s2;
+
+  fileOut=GWB_File_dup(file);
+  GWB_File_ReplaceExtension(fileOut, newExt);
+  s1=GWB_File_GetName(file);
+  s2=GWB_File_GetName(fileOut);
+  if (strcasecmp(s1, s2)==0) {
+    DBG_ERROR(NULL, "Output file has the same name as input file (%s)!", s1);
+    GWB_File_free(fileOut);
+    return NULL;
+  }
+
+  return fileOut;
 }
 
 

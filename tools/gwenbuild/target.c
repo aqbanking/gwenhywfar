@@ -23,7 +23,7 @@ GWEN_LIST2_FUNCTIONS(GWB_TARGET, GWB_Target)
 
 
 
-GWB_TARGET *GWB_Target_new(void)
+GWB_TARGET *GWB_Target_new(GWB_PROJECT *project)
 {
   GWB_TARGET *target;
 
@@ -32,6 +32,7 @@ GWB_TARGET *GWB_Target_new(void)
   target->sourceFileList=GWB_File_List2_new();
   target->usedTargetNameList=GWEN_StringList_new();
   target->usedLibraryList=GWEN_StringList_new();
+  target->project=project;
 
   return target;
 }
@@ -47,8 +48,15 @@ void GWB_Target_free(GWB_TARGET *target)
 
     GWEN_FREE_OBJECT(target);
   }
-
 }
+
+
+
+GWB_PROJECT *GWB_Target_GetProject(const GWB_TARGET *target)
+{
+  return target->project;
+}
+
 
 
 const char *GWB_Target_GetName(const GWB_TARGET *target)
@@ -150,7 +158,7 @@ GWEN_STRINGLIST *GWB_Target_GetUsedTargetNameList(const GWB_TARGET *target)
 
 
 
-void GWB_Target_AddUsedTargetFileName(GWB_TARGET *target, const char *s)
+void GWB_Target_AddUsedTargetName(GWB_TARGET *target, const char *s)
 {
   if (target->usedTargetNameList==NULL)
     target->usedTargetNameList=GWEN_StringList_new();

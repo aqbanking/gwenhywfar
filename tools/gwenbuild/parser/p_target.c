@@ -19,9 +19,10 @@
 
 
 
-static GWB_TARGET *_readTarget(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
@@ -40,7 +41,7 @@ int GWB_ParseTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
     return rv;
   }
 
-  target=_readTarget(currentContext, xmlNode);
+  target=_readTarget(project, currentContext, xmlNode);
 
 
   newContext=GWB_Parser_CopyContextForTarget(currentContext);
@@ -63,7 +64,7 @@ int GWB_ParseTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
 
 
 
-GWB_TARGET *_readTarget(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   GWB_TARGET *target;
   const char *s;
@@ -71,7 +72,7 @@ GWB_TARGET *_readTarget(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
   uint32_t flags=GWEN_DB_FLAGS_OVERWRITE_VARS;
   GWEN_DB_NODE *db;
 
-  target=GWB_Target_new();
+  target=GWB_Target_new(project);
 
   s=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(s && *s)) {
@@ -132,6 +133,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=_parseSourcesOrHeaders(project, currentContext, n);
       else if (strcasecmp(name, "setVar")==0)
         rv=GWB_Parser_ParseSetVar(currentContext, n);
+      else if (strcasecmp(name, "useTargets")==0)
+        rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "target")==0)
         rv=GWB_ParseTarget(project, currentContext, n);
       else {
@@ -217,6 +220,46 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
       se=GWEN_StringListEntry_Next(se);
     }
     GWEN_StringList_free(fileNameList);
+  }
+
+  return 0;
+}
+
+
+
+int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  GWB_TARGET *target;
+  int rv;
+  GWEN_STRINGLIST *targetNameList;
+
+  target=GWB_Context_GetCurrentTarget(currentContext);
+  if (target==NULL) {
+    DBG_ERROR(NULL, "No target in current context, SNH!");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
+
+  targetNameList=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  if (targetNameList) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(targetNameList);
+    while(se) {
+      const char *sTargetName;
+
+      sTargetName=GWEN_StringListEntry_Data(se);
+      if (sTargetName && *sTargetName)
+        GWB_Target_AddUsedTargetName(target, sTargetName);
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(targetNameList);
   }
 
   return 0;
