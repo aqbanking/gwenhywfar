@@ -216,6 +216,17 @@ void GWB_Context_AddCurrentSourceDir(GWB_CONTEXT *ctx, const char *s)
 
 
 
+void GWB_Context_InsertCurrentSourceDir(GWB_CONTEXT *ctx, const char *s)
+{
+  char *newValue;
+
+  newValue=_combinedString(s, ctx->currentSourceDir, '/');
+  free(ctx->currentSourceDir);
+  ctx->currentSourceDir=newValue;
+}
+
+
+
 void GWB_Context_SetCurrentSourceDir(GWB_CONTEXT *ctx, const char *s)
 {
   if (ctx->currentSourceDir)

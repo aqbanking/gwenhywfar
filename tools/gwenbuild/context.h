@@ -51,6 +51,7 @@ void GWB_Context_AddCurrentBuildDir(GWB_CONTEXT *ctx, const char *s);
 const char *GWB_Context_GetCurrentSourceDir(const GWB_CONTEXT *ctx);
 void GWB_Context_SetCurrentSourceDir(GWB_CONTEXT *ctx, const char *s);
 void GWB_Context_AddCurrentSourceDir(GWB_CONTEXT *ctx, const char *s);
+void GWB_Context_InsertCurrentSourceDir(GWB_CONTEXT *ctx, const char *s);
 
 const char *GWB_Context_GetCompilerFlags(const GWB_CONTEXT *ctx);
 void GWB_Context_SetCompilerFlags(GWB_CONTEXT *ctx, const char *s);

@@ -113,6 +113,8 @@ GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, c
   GWB_Context_InsertTopSourceDir(newContext, "..");
 
   GWB_Context_AddCurrentBuildDir(newContext, folder);
+
+  GWB_Context_InsertCurrentSourceDir(newContext, "..");
   GWB_Context_AddCurrentSourceDir(newContext, folder);
 
   GWB_Context_ClearSourceFileList2(newContext);

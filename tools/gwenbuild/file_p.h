@@ -22,7 +22,7 @@ struct GWB_FILE {
   uint32_t flags;
 
 
-  GWB_BUILDER_LIST2 *waitingBuilderList2;
+  GWB_BUILD_CMD_LIST2 *waitingBuildCmdList2;
 };
 
 

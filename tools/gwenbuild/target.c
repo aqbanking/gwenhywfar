@@ -167,6 +167,22 @@ void GWB_Target_AddUsedTargetName(GWB_TARGET *target, const char *s)
 
 
 
+GWEN_STRINGLIST *GWB_Target_GetUsedLibraryNameList(const GWB_TARGET *target)
+{
+  return target->usedLibraryList;
+}
+
+
+
+void GWB_Target_AddUsedLibraryName(GWB_TARGET *target, const char *s)
+{
+  if (target->usedLibraryList==NULL)
+    target->usedLibraryList=GWEN_StringList_new();
+  GWEN_StringList_AppendString(target->usedLibraryList, s, 0, 1);
+}
+
+
+
 GWB_BUILDER *GWB_Target_GetBuilder(const GWB_TARGET *target)
 {
   return target->builder;

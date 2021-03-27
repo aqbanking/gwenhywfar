@@ -146,36 +146,41 @@ int GWB_Project_GetSoVersionRevision(const GWB_PROJECT *project)
 
 
 
+uint32_t GWB_Project_GetFlags(const GWB_PROJECT *project)
+{
+  return project->flags;
+}
+
+
+
+void GWB_Project_SetFlags(GWB_PROJECT *project, uint32_t fl)
+{
+  project->flags=fl;
+}
+
+
+
+void GWB_Project_AddFlags(GWB_PROJECT *project, uint32_t fl)
+{
+  project->flags|=fl;
+}
+
+
+
+void GWB_Project_DelFlags(GWB_PROJECT *project, uint32_t fl)
+{
+  project->flags&=~fl;
+}
+
+
+
+
+
 
 
 GWB_FILE *GWB_Project_GetFileByPathAndName(const GWB_PROJECT *project, const char *folder, const char *fname)
 {
-  GWB_FILE_LIST2_ITERATOR *it;
-
-  it=GWB_File_List2_First(project->fileList);
-  if (it) {
-    GWB_FILE *file;
-
-    file=GWB_File_List2Iterator_Data(it);
-    while(file) {
-      const char *currentName;
-
-      currentName=GWB_File_GetName(file);
-      if (currentName && *currentName && strcasecmp(currentName, fname)==0) {
-        const char *currentFolder;
-
-        currentFolder=GWB_File_GetFolder(file);
-        if (currentFolder && *currentFolder && strcasecmp(currentFolder, folder)==0) {
-          GWB_File_List2Iterator_free(it);
-          return file;
-        }
-      }
-      file=GWB_File_List2Iterator_Next(it);
-    }
-    GWB_File_List2Iterator_free(it);
-  }
-
-  return NULL;
+  return GWB_File_List2_GetFileByPathAndName(project->fileList, folder, fname);
 }
 
 
@@ -274,6 +279,13 @@ void GWB_Project_Dump(const GWB_PROJECT *project, int indent)
   GWBUILD_Debug_PrintIntValue("soVersionCurrent.", project->soVersionCurrent, indent+2);
   GWBUILD_Debug_PrintIntValue("soVersionAge.....", project->soVersionAge, indent+2);
   GWBUILD_Debug_PrintIntValue("soVersionRevision", project->soVersionRevision, indent+2);
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr,             "flags...........:");
+  if (project->flags & GWB_PROJECT_FLAGS_SHARED)
+    fprintf(stderr, " SHARED");
+  fprintf(stderr, "\n");
 
   GWB_Context_Tree2_Dump(project->contextTree, indent+2);
 

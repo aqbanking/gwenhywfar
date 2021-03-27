@@ -60,7 +60,7 @@ GWB_FILE *GWB_File_dup(const GWB_FILE *oldFile)
 void GWB_File_free(GWB_FILE *f)
 {
   if (f) {
-    GWB_Builder_List2_free(f->waitingBuilderList2);
+    GWB_BuildCmd_List2_free(f->waitingBuildCmdList2);
     free(f->folder);
     free(f->name);
 
@@ -188,18 +188,18 @@ void GWB_File_SetFileType(GWB_FILE *f, const char *s)
 
 
 
-GWB_BUILDER_LIST2 *GWB_File_GetWaitingBuilderList2(const GWB_FILE *f)
+GWB_BUILD_CMD_LIST2 *GWB_File_GetWaitingBuildCmdList2(const GWB_FILE *f)
 {
-  return f->waitingBuilderList2;
+  return f->waitingBuildCmdList2;
 }
 
 
 
-void GWB_File_AddWaitingBuilder(GWB_FILE *f, GWB_BUILDER *gen)
+void GWB_File_AddWaitingBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd)
 {
-  if (f->waitingBuilderList2==NULL)
-    f->waitingBuilderList2=GWB_Builder_List2_new();
-  GWB_Builder_List2_PushBack(f->waitingBuilderList2, gen);
+  if (f->waitingBuildCmdList2==NULL)
+    f->waitingBuildCmdList2=GWB_BuildCmd_List2_new();
+  GWB_BuildCmd_List2_PushBack(f->waitingBuildCmdList2, bcmd);
 }
 
 
@@ -269,6 +269,38 @@ GWB_FILE *GWB_File_CopyFileAndChangeExtension(const GWB_FILE *file, const char *
   }
 
   return fileOut;
+}
+
+
+
+GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, const char *folder, const char *fname)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      const char *currentName;
+
+      currentName=GWB_File_GetName(file);
+      if (currentName && *currentName && strcasecmp(currentName, fname)==0) {
+        const char *currentFolder;
+
+        currentFolder=GWB_File_GetFolder(file);
+        if (currentFolder && *currentFolder && strcasecmp(currentFolder, folder)==0) {
+          GWB_File_List2Iterator_free(it);
+          return file;
+        }
+      }
+      file=GWB_File_List2Iterator_Next(it);
+    }
+    GWB_File_List2Iterator_free(it);
+  }
+
+  return NULL;
 }
 
 

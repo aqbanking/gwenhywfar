@@ -34,6 +34,8 @@ struct GWB_PROJECT {
   int soVersionCurrent;
   int soVersionAge;
   int soVersionRevision;
+
+  uint32_t flags;
 };
 
 

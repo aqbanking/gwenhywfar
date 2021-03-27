@@ -21,6 +21,9 @@ typedef struct GWB_PROJECT GWB_PROJECT;
 #include "gwenbuild/target.h"
 
 
+#define GWB_PROJECT_FLAGS_SHARED 0x0001
+
+
 
 GWB_PROJECT *GWB_Project_new(GWENBUILD *gwbuild, GWB_CONTEXT *ctx);
 void GWB_Project_free(GWB_PROJECT *project);
@@ -57,6 +60,13 @@ void GWB_Project_AddTarget(GWB_PROJECT *project, GWB_TARGET *target);
 
 GWB_BUILDER_LIST2 *GWB_Project_GetBuilderList(const GWB_PROJECT *project);
 void GWB_Project_AddBuilder(GWB_PROJECT *project, GWB_BUILDER *builder);
+
+
+uint32_t GWB_Project_GetFlags(const GWB_PROJECT *project);
+void GWB_Project_SetFlags(GWB_PROJECT *project, uint32_t fl);
+void GWB_Project_AddFlags(GWB_PROJECT *project, uint32_t fl);
+void GWB_Project_DelFlags(GWB_PROJECT *project, uint32_t fl);
+
 
 void GWB_Project_Dump(const GWB_PROJECT *project, int indent);
 

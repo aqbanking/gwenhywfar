@@ -95,6 +95,11 @@ Durchgang:
 Durchgang
 - fuer jedes Target:
   - erzeuge builder
+  
+- fuer jeden builder:
+  - erzeuge buildcmd
+
+
 - fuer jeden Context unterhalb des Target:
   - fuer jedes SourceFile
     - target->builder->isAcceptableInput()?
@@ -103,6 +108,26 @@ Durchgang
         - erzeuge builder nach quelldateityp
         - fuer jedes (builder->getOutputFiles())
           - add to current SourceFile list
+
+
+- fuer jedes Target:
+    - usedTargetList?
+      - fuer jedes usedTarget:
+        - ConvenienceLib oder installLib?
+          - ja:
+            - schon in der stringlist?
+              - ja: circular dependency, FEHLER!
+              - nein: 
+              - dep->builder->outputFileList()->empty?
+                - ja:
+                 - dep->builder->generateOutputFileList()
+              - fuege als inputFile zum aktuellen Builder hinzu: dep->builder->outputFileList->Front()
+          - nein: FEHLER!
+    - builder->generateOutputFileList()
+
+- fuer jeden builder:
+  - erzeuge buildcmd
+
 
 
 Durchgang: Handle used targets
@@ -179,8 +204,9 @@ Virtual functions
   - c, cxx: do nothing
   - tm2: create definition files only
 - run()
-
-
+  - generate arguments
+  - get build path, cd into it
+  - run command
 
 
   Builder: 
