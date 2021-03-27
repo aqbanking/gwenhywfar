@@ -103,6 +103,7 @@ void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const c
 GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, const char *folder)
 {
   GWB_CONTEXT *newContext;
+  GWEN_DB_NODE *db;
 
   newContext=GWB_Context_dup(sourceContext);
 
@@ -117,6 +118,12 @@ GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, c
   GWB_Context_ClearSourceFileList2(newContext);
   GWB_Context_ClearIncludeList(newContext);
   GWB_Context_ClearDefineList(newContext);
+
+  db=GWB_Context_GetVars(newContext);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topbuilddir", GWB_Context_GetTopBuildDir(newContext));
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topsrcdir", GWB_Context_GetTopSourceDir(newContext));
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", GWB_Context_GetCurrentBuildDir(newContext));
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "srcdir", GWB_Context_GetCurrentSourceDir(newContext));
 
   return newContext;
 }
