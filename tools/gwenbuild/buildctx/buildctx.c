@@ -83,10 +83,12 @@ void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *b
   storedFile=GWB_BuildCtx_GetFileByPathAndName(bctx, GWB_File_GetFolder(file), GWB_File_GetName(file));
   if (storedFile)
     GWB_BuildCmd_AddInFile(bcmd, storedFile);
-
   else {
-    GWB_BuildCmd_AddOutFile(bcmd, file);
-    GWB_BuildCtx_AddFile(bctx, file);
+    GWB_FILE *fileCopy;
+
+    fileCopy=GWB_File_dup(file);
+    GWB_BuildCmd_AddOutFile(bcmd, fileCopy);
+    GWB_BuildCtx_AddFile(bctx, fileCopy);
   }
 }
 
@@ -119,8 +121,11 @@ void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *
   if (storedFile)
     GWB_BuildCmd_AddOutFile(bcmd, storedFile);
   else {
-    GWB_BuildCmd_AddOutFile(bcmd, file);
-    GWB_BuildCtx_AddFile(bctx, file);
+    GWB_FILE *fileCopy;
+
+    fileCopy=GWB_File_dup(file);
+    GWB_BuildCmd_AddOutFile(bcmd, fileCopy);
+    GWB_BuildCtx_AddFile(bctx, fileCopy);
   }
 }
 
