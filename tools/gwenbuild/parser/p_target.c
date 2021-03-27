@@ -23,6 +23,7 @@ static GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
@@ -115,8 +116,6 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 {
   GWEN_XMLNODE *n;
 
-  DBG_INFO(NULL, "Entering");
-
   n=GWEN_XMLNode_GetFirstTag(xmlNode);
   while (n) {
     const char *name;
@@ -135,6 +134,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_Parser_ParseSetVar(currentContext, n);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
+      else if (strcasecmp(name, "includes")==0)
+        rv=_parseIncludes(currentContext, n);
       else if (strcasecmp(name, "target")==0)
         rv=GWB_ParseTarget(project, currentContext, n);
       else {
@@ -150,7 +151,6 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
     n=GWEN_XMLNode_GetNextTag(n);
   }
 
-  DBG_INFO(NULL, "Leaving");
   return 0;
 }
 
@@ -260,6 +260,49 @@ int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
       se=GWEN_StringListEntry_Next(se);
     }
     GWEN_StringList_free(targetNameList);
+  }
+
+  return 0;
+}
+
+
+
+int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  GWB_TARGET *target;
+  int rv;
+  const char *builderType;
+  GWEN_STRINGLIST *entryList;
+
+  target=GWB_Context_GetCurrentTarget(currentContext);
+  if (target==NULL) {
+    DBG_ERROR(NULL, "No target in current context, SNH!");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
+
+  builderType=GWEN_XMLNode_GetProperty(xmlNode, "type", "c");
+
+  entryList=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  if (entryList) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(entryList);
+    while(se) {
+      const char *sEntry;
+
+      sEntry=GWEN_StringListEntry_Data(se);
+      if (sEntry && *sEntry)
+        GWB_Context_AddInclude(currentContext, builderType, sEntry);
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(entryList);
   }
 
   return 0;
