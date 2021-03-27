@@ -57,6 +57,7 @@ typedef struct GWEN_STRINGLISTSTRUCT GWEN_STRINGLIST;
 GWENHYWFAR_API GWEN_STRINGLIST *GWEN_StringList_new(void);
 
 GWENHYWFAR_API GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup);
+GWENHYWFAR_API int GWEN_StringList_toBuffer(const GWEN_STRINGLIST *sl, const char *delimiter, GWEN_BUFFER *outBuffer);
 
 GWENHYWFAR_API void GWEN_StringList_free(GWEN_STRINGLIST *sl);
 GWENHYWFAR_API

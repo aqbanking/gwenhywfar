@@ -838,6 +838,30 @@ GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimi
 
 
 
+int GWEN_StringList_toBuffer(const GWEN_STRINGLIST *sl, const char *delimiter, GWEN_BUFFER *outBuffer)
+{
+  int entriesAdded=0;
+
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+    int first=1;
+
+    se=sl->first;
+    while (se) {
+      if (se->data && *(se->data)) {
+        if (entriesAdded && delimiter && *delimiter)
+          GWEN_Buffer_AppendString(outBuffer, delimiter);
+        GWEN_Buffer_AppendString(outBuffer, se->data);
+        entriesAdded++;
+      }
+      se=se->next;
+    } /* while */
+  }
+  return entriesAdded;
+}
+
+
+
 
 
 
