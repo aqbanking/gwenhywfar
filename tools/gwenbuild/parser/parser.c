@@ -18,9 +18,12 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/process.h>
+#include <gwenhywfar/directory.h>
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 
 
@@ -260,7 +263,18 @@ int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, G
       if (sFolder && *sFolder) {
         int rv;
 
+        rv=GWEN_Directory_GetPath(sFolder, 0);
+        if (rv<0) {
+          DBG_ERROR(NULL, "Could not create folder \"%s\" in build tree", sFolder);
+          return rv;
+        }
+        if (chdir(sFolder)==-1) {
+          DBG_ERROR(NULL, "Could not enter folder \"%s\" in build tree (%s)",
+                    sFolder, strerror(errno));
+          return GWEN_ERROR_GENERIC;
+        }
         rv=_parseSubdir(project, currentContext, sFolder, fn);
+        chdir("..");
         if (rv<0) {
           DBG_INFO(NULL, "here (%d)", rv);
           return rv;
