@@ -252,7 +252,7 @@ void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt)
 
 
 
-GWB_FILE *GWB_File_CopyFileAndChangeExtension(const GWB_FILE *file, const char *newExt)
+GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt)
 {
   GWB_FILE *fileOut;
   const char *s1;

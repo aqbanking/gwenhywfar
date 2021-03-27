@@ -1404,7 +1404,7 @@ AC_CONFIG_FILES([Doxyfile
                  tools/gwenbuild/Makefile
                  tools/gwenbuild/parser/Makefile
                  tools/gwenbuild/tools/Makefile
-                 tools/gwenbuild/build/Makefile
+                 tools/gwenbuild/buildctx/Makefile
                  tools/gwenbuild/builders/Makefile
                  test/Makefile
                  gui/Makefile

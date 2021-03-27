@@ -1,0 +1,19 @@
+INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I../../ -I$(gwenhywfar_symlinkdir)
+
+
+
+noinst_LTLIBRARIES=libgwb_builders.la
+
+
+libgwb_builders_la_SOURCES=\
+ cbuilder.c \
+ staticlib.c
+
+
+noinst_HEADERS=\
+ cbuilder.h \
+ cbuilder_p.h \
+ staticlib.h \
+ staticlib_p.h
+
+

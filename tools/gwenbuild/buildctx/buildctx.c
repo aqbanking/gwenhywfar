@@ -1,0 +1,148 @@
+/***************************************************************************
+    begin       : Mon Feb 08 2021
+    copyright   : (C) 2021 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "gwenbuild/buildctx/buildctx_p.h"
+
+
+
+GWB_BUILD_CONTEXT *GWB_BuildCtx_new()
+{
+  GWB_BUILD_CONTEXT *bctx;
+
+  GWEN_NEW_OBJECT(GWB_BUILD_CONTEXT, bctx);
+  bctx->commandList=GWB_BuildCmd_List2_new();
+  bctx->fileList=GWB_File_List2_new();
+
+  return bctx;
+}
+
+
+
+void GWB_BuildCtx_free(GWB_BUILD_CONTEXT *bctx)
+{
+  if (bctx) {
+    GWB_BuildCmd_List2_free(bctx->commandList);
+    GWB_File_List2_free(bctx->fileList);
+
+    GWEN_FREE_OBJECT(bctx);
+  }
+}
+
+
+
+GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_GetCommandList(const GWB_BUILD_CONTEXT *bctx)
+{
+  return bctx->commandList;
+}
+
+
+
+void GWB_BuildCtx_AddCommandList(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *cmd)
+{
+  GWB_BuildCmd_List2_PushBack(bctx->commandList, cmd);
+}
+
+
+
+GWB_FILE_LIST2 *GWB_BuildCtx_GetFileList(const GWB_BUILD_CONTEXT *bctx)
+{
+  return bctx->fileList;
+}
+
+
+
+void GWB_BuildCtx_AddFile(GWB_BUILD_CONTEXT *bctx, GWB_FILE *file)
+{
+  GWB_File_List2_PushBack(bctx->fileList, file);
+}
+
+
+
+GWB_FILE *GWB_BuildCtx_GetFileByPathAndName(const GWB_BUILD_CONTEXT *bctx, const char *folder, const char *fname)
+{
+  return GWB_File_List2_GetFileByPathAndName(bctx->fileList, folder, fname);
+}
+
+
+
+void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file)
+{
+  GWB_FILE *storedFile;
+
+  storedFile=GWB_BuildCtx_GetFileByPathAndName(bctx, GWB_File_GetFolder(file), GWB_File_GetName(file));
+  if (storedFile)
+    GWB_BuildCmd_AddInFile(bcmd, storedFile);
+
+  else {
+    GWB_BuildCmd_AddOutFile(bcmd, file);
+    GWB_BuildCtx_AddFile(bctx, file);
+  }
+}
+
+
+
+void GWB_BuildCtx_AddInFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE_LIST2 *fileList)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      GWB_BuildCtx_AddInFileToCtxAndCmd(bctx, bcmd, file);
+      file=GWB_File_List2Iterator_Next(it);
+    }
+    GWB_File_List2Iterator_free(it);
+  }
+}
+
+
+
+void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file)
+{
+  GWB_FILE *storedFile;
+
+  storedFile=GWB_BuildCtx_GetFileByPathAndName(bctx, GWB_File_GetFolder(file), GWB_File_GetName(file));
+  if (storedFile)
+    GWB_BuildCmd_AddOutFile(bcmd, storedFile);
+  else {
+    GWB_BuildCmd_AddOutFile(bcmd, file);
+    GWB_BuildCtx_AddFile(bctx, file);
+  }
+}
+
+
+
+void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE_LIST2 *fileList)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      GWB_BuildCtx_AddOutFileToCtxAndCmd(bctx, bcmd, file);
+      file=GWB_File_List2Iterator_Next(it);
+    }
+    GWB_File_List2Iterator_free(it);
+  }
+}
+
+
+
+

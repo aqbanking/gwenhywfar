@@ -277,6 +277,8 @@ void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent
       fprintf(stderr, " DIST");
     if (flags & GWB_FILE_FLAGS_INSTALL)
       fprintf(stderr, " INSTALL");
+    if (flags & GWB_FILE_FLAGS_GENERATED)
+      fprintf(stderr, " GENERATED");
     fprintf(stderr, " %s", sInstallPath?sInstallPath:"<no install path>");
 
     fprintf(stderr, "\n");

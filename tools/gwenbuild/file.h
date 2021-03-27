@@ -22,7 +22,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_FILE, GWB_File)
 
 
 #include "gwenbuild/context.h"
-#include "gwenbuild/build/buildcmd.h"
+#include "gwenbuild/buildctx/buildcmd.h"
 
 #include <inttypes.h>
 
@@ -64,6 +64,6 @@ void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);
 GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, const char *folder, const char *fname);
 
 void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
-GWB_FILE *GWB_File_CopyFileAndChangeExtension(const GWB_FILE *file, const char *newExt);
+GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt);
 
 #endif
