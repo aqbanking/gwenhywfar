@@ -634,12 +634,12 @@ int GWEN_Process_WaitAndRead(GWEN_PROCESS *pr, GWEN_BUFFER *stdOutBuffer, GWEN_B
 
 
     if (fdStdOut==-1 && fdStdErr==-1) {
-      state=GWEN_Process_CheckState(pr);
+      state=GWEN_Process_Wait(pr);
       if (state!=GWEN_ProcessStateRunning)
 	break;
     }
     else {
-      state=GWEN_Process_Wait(pr);
+      state=GWEN_Process_CheckState(pr);
       if (state!=GWEN_ProcessStateRunning)
 	break;
       _waitForActivity(fdStdOut, fdStdErr);
