@@ -30,6 +30,8 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
+#include <gwenhywfar/buffer.h>
+
 
 #ifdef __cplusplus
 extern "C" {

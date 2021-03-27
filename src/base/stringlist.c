@@ -844,7 +844,6 @@ int GWEN_StringList_toBuffer(const GWEN_STRINGLIST *sl, const char *delimiter, G
 
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
-    int first=1;
 
     se=sl->first;
     while (se) {
