@@ -32,6 +32,8 @@
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"
 #include "gwenhywfar/text.h"
+#include "gwenhywfar/stringlist.h"
+
 #include <ctype.h>
 
 
@@ -43,6 +45,8 @@
 
 
 static void *GWEN_Path_AppendPathElement(const char *entry, void *data, unsigned int flags);
+static void _getPathBetween(const char *path1, const char *path2, GWEN_BUFFER *diffBuf);
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -420,6 +424,54 @@ int GWEN_Path_Convert(const char *path,
 
 
 
+int GWEN_Path_GetPathBetween(const char *path1, const char *path2, GWEN_BUFFER *diffBuf)
+{
+  if (!(path1 && *path1 && path2 && *path2)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Both paths are NULL");
+    return GWEN_ERROR_INVALID;
+  }
+  _getPathBetween(path1, path2, diffBuf);
+  return 0;
+}
+
+
+
+void _getPathBetween(const char *path1, const char *path2, GWEN_BUFFER *diffBuf)
+{
+  GWEN_STRINGLIST *sl1;
+  GWEN_STRINGLIST *sl2;
+  GWEN_STRINGLISTENTRY *se;
+  int count;
+  int i;
+
+  sl2=GWEN_StringList_fromString2(path2, "/", 0, GWEN_TEXT_FLAGS_DEL_QUOTES | GWEN_TEXT_FLAGS_CHECK_BACKSLASH);
+  sl1=GWEN_StringList_fromString2(path1, "/", 0, GWEN_TEXT_FLAGS_DEL_QUOTES | GWEN_TEXT_FLAGS_CHECK_BACKSLASH);
+
+  GWEN_StringList_RemoveCommonFirstEntries(sl1, sl2);
+
+  count=GWEN_StringList_Count(sl1);
+  for (i=0; i<count; i++) {
+    if (GWEN_Buffer_GetUsedBytes(diffBuf))
+      GWEN_Buffer_AppendString(diffBuf, "/");
+    GWEN_Buffer_AppendString(diffBuf, "..");
+  }
+  GWEN_StringList_free(sl1);
+
+  se=GWEN_StringList_FirstEntry(sl2);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s) {
+      if (GWEN_Buffer_GetUsedBytes(diffBuf))
+        GWEN_Buffer_AppendString(diffBuf, "/");
+      GWEN_Buffer_AppendString(diffBuf, s);
+    }
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+  GWEN_StringList_free(sl2);
+}
 
 
 
