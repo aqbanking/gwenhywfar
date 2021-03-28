@@ -18,6 +18,8 @@
 #include <gwenhywfar/memory.h>
 #include <gwenhywfar/buffer.h>
 
+#include <string.h>
+
 
 
 GWEN_LIST2_FUNCTIONS(GWB_FILE, GWB_File)
@@ -146,6 +148,15 @@ void GWB_File_SetName(GWB_FILE *f, const char *s)
     f->name=strdup(s);
   else
     f->name=NULL;
+}
+
+
+
+const char *GWB_File_GetExt(const GWB_FILE *f)
+{
+  if (f->name)
+    return (const char*) strrchr(f->name, '.');
+  return NULL;
 }
 
 
@@ -305,7 +316,7 @@ GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, co
 
 
 
-void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList)
+void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList, const char *ext)
 {
   GWB_FILE_LIST2_ITERATOR *it;
 
@@ -315,13 +326,20 @@ void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2
 
     file=GWB_File_List2Iterator_Data(it);
     while(file) {
-      GWB_File_List2_PushBack(destList, file);
+      if (ext && *ext) {
+	const char *s;
+
+	s=GWB_File_GetExt(file);
+	if (s && strcasecmp(s, ext)==0)
+	  GWB_File_List2_PushBack(destList, file);
+      }
+      else
+	GWB_File_List2_PushBack(destList, file);
       file=GWB_File_List2Iterator_Next(it);
     }
     GWB_File_List2Iterator_free(it);
   }
 }
-
 
 
 

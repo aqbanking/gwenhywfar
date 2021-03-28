@@ -47,6 +47,8 @@ void GWB_File_SetFolder(GWB_FILE *f, const char *s);
 const char *GWB_File_GetName(const GWB_FILE *f);
 void GWB_File_SetName(GWB_FILE *f, const char *s);
 
+const char *GWB_File_GetExt(const GWB_FILE *f);
+
 
 const char *GWB_File_GetInstallPath(const GWB_FILE *f);
 void GWB_File_SetInstallPath(GWB_FILE *f, const char *s);
@@ -66,7 +68,7 @@ GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, co
 void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
 GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt);
 
-void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList);
+void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList, const char *ext);
 
 
 #endif

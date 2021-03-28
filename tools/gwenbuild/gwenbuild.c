@@ -21,6 +21,7 @@
 
 
 GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context, GWB_FILE *file);
+int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target);
 
 
 
@@ -395,6 +396,7 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
       target=GWB_Target_List2Iterator_Data(it);
       while(target) {
         GWB_BUILDER *builder=NULL;
+        int rv;
 
         switch(GWB_Target_GetTargetType(target)) {
         case GWBUILD_TargetType_Invalid:
@@ -420,14 +422,18 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
         GWB_Target_SetBuilder(target, builder);
         GWB_Project_AddBuilder(project, builder);
 
-
+        rv=_addOrBuildTargetSources(project, target);
+        if (rv<0) {
+          DBG_ERROR(NULL, "here (%d)", rv);
+          return rv;
+        }
 
         target=GWB_Target_List2Iterator_Next(it);
       }
       GWB_Target_List2Iterator_free(it);
     }
   }
-
+  return 0;
 }
 
 
@@ -463,7 +469,9 @@ int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
         builder=_genBuilderForSourceFile(project, GWB_Target_GetContext(target), file);
         if (builder) {
           GWB_Project_AddBuilder(project, builder);
-          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList);
+          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList, ".c");
+          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList, ".cpp");
+          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList, ".o");
         }
       }
       file=GWB_File_List2Iterator_Next(it);

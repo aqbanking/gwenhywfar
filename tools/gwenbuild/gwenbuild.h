@@ -29,6 +29,7 @@ typedef enum {
 #include "gwenbuild/keyvaluepair.h"
 #include "gwenbuild/file.h"
 #include "gwenbuild/target.h"
+#include "gwenbuild/project.h"
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/stringlist.h>
@@ -37,6 +38,9 @@ typedef enum {
 
 GWENBUILD *GWBUILD_new(void);
 void GWBUILD_free(GWENBUILD *gwenbuild);
+
+
+int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project);
 
 
 const char *GWBUILD_GetToolNameCC(const GWENBUILD *gwenbuild);
