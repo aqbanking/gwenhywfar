@@ -224,4 +224,6 @@ Virtual functions
   - res_to_c
 
 
+# shared lib:
+gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--whole-archive draw/libaqdg_draw.a
 

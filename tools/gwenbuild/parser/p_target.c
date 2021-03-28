@@ -25,6 +25,7 @@ static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentCont
 static int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseLibraries(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseDefines(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
@@ -137,6 +138,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "includes")==0)
         rv=_parseIncludes(currentContext, n);
+      else if (strcasecmp(name, "define")==0)
+        rv=_parseDefines(currentContext, n);
       else if (strcasecmp(name, "libraries")==0)
         rv=_parseLibraries(currentContext, n);
       else if (strcasecmp(name, "target")==0)
@@ -307,6 +310,47 @@ int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     }
     GWEN_StringList_free(entryList);
   }
+
+  return 0;
+}
+
+
+
+int _parseDefines(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  int rv;
+  const char *varName;
+  const char *value;
+  int quoted;
+
+  rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
+
+  quoted=GWEN_XMLNode_GetIntProperty(xmlNode, "quoted", 0);
+  varName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  value=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
+  if (!(varName && *varName)) {
+    DBG_ERROR(NULL, "Missing variable name in DEFINE");
+    return GWEN_ERROR_GENERIC;
+  }
+  if (quoted) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(dbuf, "\\\"");
+    if (value && *value)
+      GWEN_Buffer_AppendString(dbuf, value);
+    GWEN_Buffer_AppendString(dbuf, "\\\"");
+    GWB_Context_SetDefine(currentContext, varName, GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+  }
+  else {
+    GWB_Context_SetDefine(currentContext, varName, value);
+  }
+
 
   return 0;
 }

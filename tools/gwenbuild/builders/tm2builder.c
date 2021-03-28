@@ -35,7 +35,9 @@ static int _isAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file);
 static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 
-static GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *inFile, GWB_FILE *outFile);
+static GWB_BUILD_CMD *_genCmds(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *inFile, GWB_FILE *outFile);
+static void _genBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile);
+static void _genPrepareCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile);
 static void _addIncludesAndTm2flags(const GWB_CONTEXT *context, GWEN_BUFFER *argBuffer);
 
 
@@ -197,7 +199,7 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
     return GWEN_ERROR_GENERIC;
   }
 
-  bcmd=_genCmd(builder, bctx, inFile, outFile);
+  bcmd=_genCmds(builder, bctx, inFile, outFile);
   if (bcmd==NULL) {
     DBG_INFO(NULL, "No build command created");
     return GWEN_ERROR_GENERIC;
@@ -209,11 +211,31 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
 
 
 
-GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *inFile, GWB_FILE *outFile)
+GWB_BUILD_CMD *_genCmds(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *inFile, GWB_FILE *outFile)
+{
+  GWB_CONTEXT *context;
+  GWB_BUILD_CMD *bcmd;
+
+  context=GWB_Builder_GetContext(builder);
+
+  bcmd=GWB_BuildCmd_new();
+  GWB_BuildCmd_SetFolder(bcmd, GWB_Context_GetCurrentBuildDir(context));
+
+  _genBuildCmd(builder, bcmd, inFile);
+  _genPrepareCmd(builder, bcmd, inFile);
+
+  GWB_BuildCtx_AddInFileToCtxAndCmd(bctx, bcmd, inFile);
+  GWB_BuildCtx_AddOutFileToCtxAndCmd(bctx, bcmd, outFile);
+
+  return bcmd;
+}
+
+
+
+void _genBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile)
 {
   GWB_CONTEXT *context;
   GWEN_BUFFER *argBuffer;
-  GWB_BUILD_CMD *bcmd;
 
   context=GWB_Builder_GetContext(builder);
 
@@ -225,15 +247,31 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *
   GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
 
   /* we have everything, create cmd now */
-  bcmd=GWB_BuildCmd_new();
   GWB_BuildCmd_SetFolder(bcmd, GWB_Context_GetCurrentBuildDir(context));
   GWB_BuildCmd_AddBuildCommand(bcmd, "typemaker2", GWEN_Buffer_GetStart(argBuffer));
   GWEN_Buffer_free(argBuffer);
+}
 
-  GWB_BuildCtx_AddInFileToCtxAndCmd(bctx, bcmd, inFile);
-  GWB_BuildCtx_AddOutFileToCtxAndCmd(bctx, bcmd, outFile);
 
-  return bcmd;
+
+void _genPrepareCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile)
+{
+  GWB_CONTEXT *context;
+  GWEN_BUFFER *argBuffer;
+
+  context=GWB_Builder_GetContext(builder);
+
+  argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+  _addIncludesAndTm2flags(context, argBuffer);
+  if (GWEN_Buffer_GetUsedBytes(argBuffer))
+    GWEN_Buffer_AppendString(argBuffer, " ");
+  GWEN_Buffer_AppendString(argBuffer, "--defs-only ");
+  GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
+
+  /* we have everything, create cmd now */
+  GWB_BuildCmd_AddPrepareCommand(bcmd, "typemaker2", GWEN_Buffer_GetStart(argBuffer));
+  GWEN_Buffer_free(argBuffer);
 }
 
 

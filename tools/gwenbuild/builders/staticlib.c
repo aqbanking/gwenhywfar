@@ -260,7 +260,7 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_L
 
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
-  GWEN_Buffer_AppendString(argBuffer, " rc ");
+  GWEN_Buffer_AppendString(argBuffer, " Trc ");
   GWB_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " ");
   GWB_Builder_AddFileNamesToBuffer(context, inFileList, argBuffer);
