@@ -823,6 +823,8 @@ GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimi
       copyOfWord=strdup(GWEN_Buffer_GetStart(wbuf));
       GWEN_StringList_AppendString(sl, copyOfWord, 1, checkDouble);
       GWEN_Buffer_Reset(wbuf);
+      if (*s)
+        s++;
     } /* while */
     GWEN_Buffer_free(wbuf);
 
@@ -861,6 +863,34 @@ int GWEN_StringList_toBuffer(const GWEN_STRINGLIST *sl, const char *delimiter, G
 
 
 
+void GWEN_StringList_RemoveCommonFirstEntries(GWEN_STRINGLIST *sl1, GWEN_STRINGLIST *sl2)
+{
+  GWEN_STRINGLISTENTRY *se1;
+  GWEN_STRINGLISTENTRY *se2;
+
+  se1=GWEN_StringList_FirstEntry(sl1);
+  se2=GWEN_StringList_FirstEntry(sl2);
+
+  while(se1 && se2) {
+    GWEN_STRINGLISTENTRY *se1Next;
+    GWEN_STRINGLISTENTRY *se2Next;
+    const char *s1;
+    const char *s2;
+
+    se1Next=GWEN_StringListEntry_Next(se1);
+    se2Next=GWEN_StringListEntry_Next(se2);
+
+    s1=GWEN_StringListEntry_Data(se1);
+    s2=GWEN_StringListEntry_Data(se2);
+    if (!(s1 && *s1 && s2 && *s2 && strcasecmp(s1, s2)==0))
+      break;
+    GWEN_StringList_RemoveEntry(sl1, se1);
+    GWEN_StringList_RemoveEntry(sl2, se2);
+
+    se1=se1Next;
+    se2=se2Next;
+  }
+}
 
 
 

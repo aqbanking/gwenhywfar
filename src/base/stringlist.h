@@ -233,6 +233,18 @@ GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimiters, int checkDouble, uint32_t flags);
 
 
+/**
+ * Remove first equal entries from both lists.
+ *
+ * If stringlist 1 contains "A", "B", "C", "D" and
+ *    stringlist 2 contains "A", "B", "X" then after this function the lists are changed to this:
+ *    stringlist 1 contains "C", "D"
+ *    stringlist 2 contains "X"
+ */
+GWENHYWFAR_API
+void GWEN_StringList_RemoveCommonFirstEntries(GWEN_STRINGLIST *sl1, GWEN_STRINGLIST *sl2);
+
+
 #ifdef __cplusplus
 }
 #endif
