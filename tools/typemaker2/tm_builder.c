@@ -1587,5 +1587,35 @@ int Typemaker2_Builder_WriteFiles(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, u
 
 
 
+int Typemaker2_Builder_PrintFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+{
+  int rv;
+
+  rv=Typemaker2_Builder_DetermineOutFileNames(tb, ty);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  if (GWEN_StringList_Count(tb->declarationsPublic))
+    fprintf(stdout, "%s\n", tb->fileNamePublic);
+
+  if (GWEN_StringList_Count(tb->declarationsLibrary))
+    fprintf(stdout, "%s\n", tb->fileNameLibrary);
+
+  if (GWEN_StringList_Count(tb->declarationsProtected))
+    fprintf(stdout, "%s\n", tb->fileNameProtected);
+
+  if (GWEN_StringList_Count(tb->declarationsPrivate))
+    fprintf(stdout, "%s\n", tb->fileNamePrivate);
+
+  if (GWEN_StringList_Count(tb->code))
+    fprintf(stdout, "%s\n", tb->fileNameCode);
+
+  return 0;
+}
+
+
+
 
 
