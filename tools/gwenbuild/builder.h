@@ -26,10 +26,11 @@ GWEN_INHERIT_FUNCTION_DEFS(GWB_BUILDER)
 #include <inttypes.h>
 
 
-GWB_BUILDER *GWB_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id);
 void GWB_Builder_free(GWB_BUILDER *builder);
 
 GWENBUILD *GWB_Builder_GetGwenbuild(const GWB_BUILDER *builder);
+
+const char *GWB_Builder_GetTypeName(const GWB_BUILDER *builder);
 uint32_t GWB_Builder_GetId(const GWB_BUILDER *builder);
 
 GWB_CONTEXT *GWB_Builder_GetContext(const GWB_BUILDER *builder);

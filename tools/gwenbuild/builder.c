@@ -24,7 +24,7 @@ GWEN_INHERIT_FUNCTIONS(GWB_BUILDER)
 
 
 
-GWB_BUILDER *GWB_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id)
+GWB_BUILDER *GWB_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, const char *typeName)
 {
   GWB_BUILDER *builder;
 
@@ -32,7 +32,8 @@ GWB_BUILDER *GWB_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_
   GWEN_INHERIT_INIT(GWB_BUILDER, builder);
   builder->gwenbuild=gwenbuild;
   builder->context=context;
-  builder->id=id;
+  if (typeName)
+    builder->typeName=strdup(typeName);
   return builder;
 }
 
@@ -42,10 +43,13 @@ void GWB_Builder_free(GWB_BUILDER *builder)
 {
   if (builder) {
     GWEN_INHERIT_FINI(GWB_BUILDER, builder);
+
+    free(builder->typeName);
     GWB_File_List2_free(builder->inputFileList2);
     GWB_File_List2_free(builder->outputFileList2);
   }
 }
+
 
 
 GWENBUILD *GWB_Builder_GetGwenbuild(const GWB_BUILDER *builder)
@@ -58,6 +62,13 @@ GWENBUILD *GWB_Builder_GetGwenbuild(const GWB_BUILDER *builder)
 uint32_t GWB_Builder_GetId(const GWB_BUILDER *builder)
 {
   return builder->id;
+}
+
+
+
+const char *GWB_Builder_GetTypeName(const GWB_BUILDER *builder)
+{
+  return builder->typeName;
 }
 
 
@@ -214,17 +225,11 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
 {
   const char *folder;
   const char *buildDir;
-  const char *sourceDir;
-  const char *topBuildDir;
-  const char *topSourceDir;
   const char *initialSourceDir;
   GWEN_BUFFER *realFileFolderBuffer;
   GWEN_BUFFER *relBuffer;
 
   buildDir=GWB_Context_GetCurrentBuildDir(context);
-  sourceDir=GWB_Context_GetCurrentSourceDir(context);
-  topBuildDir=GWB_Context_GetTopBuildDir(context);
-  topSourceDir=GWB_Context_GetTopSourceDir(context);
   initialSourceDir=GWB_Context_GetInitialSourceDir(context);
 
   folder=GWB_File_GetFolder(file);
@@ -237,7 +242,7 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
   GWEN_Buffer_AppendString(realFileFolderBuffer, folder);
 
   relBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  GWBUILD_GetPathBetweenFolders(buildDir, GWEN_Buffer_GetStart(realFileFolderBuffer), relBuffer);
+  GWEN_Path_GetPathBetween(buildDir, GWEN_Buffer_GetStart(realFileFolderBuffer), relBuffer);
 
   if (GWEN_Buffer_GetUsedBytes(relBuffer))
     GWEN_Buffer_AppendString(relBuffer, GWEN_DIR_SEPARATOR_S);
@@ -248,7 +253,12 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
   GWEN_Buffer_free(relBuffer);
   GWEN_Buffer_free(realFileFolderBuffer);
 }
-
+/*
+ /home/martin/projekte/c/0_current/aqbanking/gwenhywfar/branch-5/tools/gwenbuild/src/lib/aqdiagram
+ /home/martin/projekte/c/0_current/aqbanking/gwenhywfar/gwbuild/aqdiagram/src/lib/aqdiagram
+ ../../../../../gwbuild/aqdiagram/src/lib/aqdiagram !!!
+ ../../../../../..//aqdiagram/src/lib/aqdiagram ???
+*/
 
 
 void GWB_Builder_Dump(const GWB_BUILDER *builder, int indent, int fullDump)
@@ -259,8 +269,9 @@ void GWB_Builder_Dump(const GWB_BUILDER *builder, int indent, int fullDump)
     fprintf(stderr, " ");
   fprintf(stderr, "Builder:\n");
 
-  GWBUILD_Debug_PrintFileList2( "inputFileList2....", builder->inputFileList2, indent+2);
-  GWBUILD_Debug_PrintFileList2( "outputFileList2...", builder->outputFileList2, indent+2);
+  GWBUILD_Debug_PrintValue(    "typeName.......", builder->typeName, indent+2);
+  GWBUILD_Debug_PrintFileList2("inputFileList2.", builder->inputFileList2, indent+2);
+  GWBUILD_Debug_PrintFileList2("outputFileList2", builder->outputFileList2, indent+2);
   if (fullDump)
     GWB_Context_Dump(builder->context, indent+2);
 

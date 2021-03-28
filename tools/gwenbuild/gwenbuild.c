@@ -441,44 +441,6 @@ void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl,
 
 
 
-int GWBUILD_GetPathBetweenFolders(const char *folder1, const char *folder2, GWEN_BUFFER *resultBuffer)
-{
-  GWEN_XMLNODE *xmlNodeRoot;
-  GWEN_XMLNODE *xmlNodeFolder1;
-  GWEN_XMLNODE *xmlNodeFolder2;
-  GWEN_BUFFER *absFolder1Buffer;
-  GWEN_BUFFER *absFolder2Buffer;
-  int rv;
-
-  xmlNodeRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-
-  absFolder1Buffer=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Directory_GetAbsoluteFolderPath(folder1, absFolder1Buffer);
-  DBG_ERROR(NULL, "Folder1: \"%s\" -> \"%s\"", folder1, GWEN_Buffer_GetStart(absFolder1Buffer));
-
-  absFolder2Buffer=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Directory_GetAbsoluteFolderPath(folder2, absFolder2Buffer);
-  DBG_ERROR(NULL, "Folder2: \"%s\" -> \"%s\"", folder2, GWEN_Buffer_GetStart(absFolder2Buffer));
-
-  xmlNodeFolder1=GWEN_XMLNode_GetNodeByXPath(xmlNodeRoot, GWEN_Buffer_GetStart(absFolder1Buffer), 0);
-  GWEN_Buffer_free(absFolder1Buffer);
-  xmlNodeFolder2=GWEN_XMLNode_GetNodeByXPath(xmlNodeRoot, GWEN_Buffer_GetStart(absFolder2Buffer), 0);
-  GWEN_Buffer_free(absFolder2Buffer);
-
-  rv=GWEN_XMLNode_GetPathBetween(xmlNodeFolder1, xmlNodeFolder2, resultBuffer);
-  GWEN_XMLNode_free(xmlNodeRoot);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Not path found between folders \"%s\" and \"%s\"", folder1, folder2);
-    return rv;
-  }
-  DBG_ERROR(NULL, "Path: \"%s\"", GWEN_Buffer_GetStart(resultBuffer));
-
-  return 0;
-}
-
-
-
-
 int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 {
   GWENBUILD *gwenbuild;

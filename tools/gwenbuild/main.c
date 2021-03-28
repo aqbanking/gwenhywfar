@@ -102,7 +102,7 @@ int test_ReadProject(int argc, char **argv)
 
   rv=GWBUILD_MakeBuildersForTargets(project);
   if (rv<0) {
-    DBG_ERROR(NULL, "Error makeing builders for targets.");
+    DBG_ERROR(NULL, "Error making builders for targets.");
     return 2;
   }
   DBG_ERROR(NULL, "Targets successfully created.");
@@ -114,6 +114,14 @@ int test_ReadProject(int argc, char **argv)
     return 2;
   }
   DBG_ERROR(NULL, "Build commands successfully created.");
+
+  rv=GWB_BuildCtx_SetupDependencies(buildCtx);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error setting up dependencies for build commands.");
+    return 2;
+  }
+  DBG_ERROR(NULL, "Build dependencies successfully created.");
+
   GWB_BuildCtx_Dump(buildCtx, 2);
 
   //GWB_Project_Dump(project, 2, 0);

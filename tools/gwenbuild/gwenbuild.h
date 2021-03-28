@@ -80,7 +80,5 @@ void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl,
 void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent);
 
 
-int GWBUILD_GetPathBetweenFolders(const char *folder1, const char *folder2, GWEN_BUFFER *resultBuffer);
-
 
 #endif

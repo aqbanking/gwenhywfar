@@ -48,7 +48,7 @@ GWB_BUILDER *GWEN_Tm2Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uin
   GWB_BUILDER_TM2 *xbuilder;
   int rv;
 
-  builder=GWB_Builder_new(gwenbuild, context, id);
+  builder=GWB_Builder_new(gwenbuild, context, "Tm2Builder");
   GWEN_NEW_OBJECT(GWB_BUILDER_TM2, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_TM2, builder, xbuilder, _freeData);
 

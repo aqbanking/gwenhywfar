@@ -16,6 +16,11 @@
 
 
 
+static void _setupDepsForCmd(GWB_BUILD_CMD *bcmd);
+
+
+
+
 GWB_BUILD_CONTEXT *GWB_BuildCtx_new()
 {
   GWB_BUILD_CONTEXT *bctx;
@@ -88,7 +93,7 @@ void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *b
     GWB_FILE *fileCopy;
 
     fileCopy=GWB_File_dup(file);
-    GWB_BuildCmd_AddOutFile(bcmd, fileCopy);
+    GWB_BuildCmd_AddInFile(bcmd, fileCopy);
     GWB_BuildCtx_AddFile(bctx, fileCopy);
   }
 }
@@ -148,6 +153,59 @@ void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD 
     GWB_File_List2Iterator_free(it);
   }
 }
+
+
+
+int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx)
+{
+  if (bctx->commandList) {
+    GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+    it=GWB_BuildCmd_List2_First(bctx->commandList);
+    if (it) {
+      GWB_BUILD_CMD *bcmd;
+
+      bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+      while(bcmd) {
+        _setupDepsForCmd(bcmd);
+
+        bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+      }
+      GWB_BuildCmd_List2Iterator_free(it);
+    }
+  }
+
+  return 0;
+}
+
+
+
+void _setupDepsForCmd(GWB_BUILD_CMD *bcmd)
+{
+  GWB_FILE_LIST2 *inFileList;
+  
+  inFileList=GWB_BuildCmd_GetInFileList2(bcmd);
+  if (inFileList) {
+    GWB_FILE_LIST2_ITERATOR *it;
+
+    it=GWB_File_List2_First(inFileList);
+    if (it) {
+      GWB_FILE *file;
+
+      file=GWB_File_List2Iterator_Data(it);
+      while(file) {
+        if (GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED) {
+          GWB_File_AddWaitingBuildCmd(file, bcmd);
+          GWB_BuildCmd_IncBlockingFiles(bcmd);
+        }
+
+        file=GWB_File_List2Iterator_Next(it);
+      }
+      GWB_File_List2Iterator_free(it);
+    }
+  }
+}
+
 
 
 

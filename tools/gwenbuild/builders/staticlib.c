@@ -48,7 +48,7 @@ GWB_BUILDER *GWEN_StaticLibBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *contex
   GWB_BUILDER_STATICLIB *xbuilder;
   int rv;
 
-  builder=GWB_Builder_new(gwenbuild, context, id);
+  builder=GWB_Builder_new(gwenbuild, context, "StaticLibBuilder");
   GWEN_NEW_OBJECT(GWB_BUILDER_STATICLIB, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_STATICLIB, builder, xbuilder, _freeData);
 

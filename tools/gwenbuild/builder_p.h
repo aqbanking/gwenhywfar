@@ -19,6 +19,8 @@ struct GWB_BUILDER {
 
   uint32_t id;
 
+  char *typeName;
+
   GWENBUILD *gwenbuild;
 
   GWB_CONTEXT *context;

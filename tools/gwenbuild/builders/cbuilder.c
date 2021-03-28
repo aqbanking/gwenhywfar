@@ -49,7 +49,7 @@ GWB_BUILDER *GWEN_CBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint3
   GWB_BUILDER_CBUILDER *xbuilder;
   int rv;
 
-  builder=GWB_Builder_new(gwenbuild, context, id);
+  builder=GWB_Builder_new(gwenbuild, context, "CBuilder");
   GWEN_NEW_OBJECT(GWB_BUILDER_CBUILDER, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_CBUILDER, builder, xbuilder, _freeData);
 

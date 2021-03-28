@@ -34,6 +34,9 @@ void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD 
 void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
+int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx);
+
+
 void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent);
 
 

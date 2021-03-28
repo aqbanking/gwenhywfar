@@ -18,6 +18,9 @@ typedef int (*GWEN_BUILDER_ADDBUILDCMD_FN)(GWB_BUILDER *builder, GWB_BUILD_CONTE
 typedef void (*GWB_BUILDER_ADDSOURCEFILE_FN)(GWB_BUILDER *builder, GWB_FILE *f);
 
 
+GWB_BUILDER *GWB_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, const char *typeName);
+
+
 void GWB_Builder_AddInputFile(GWB_BUILDER *builder, GWB_FILE *f);
 /**
  * Files like *.so and *,a should be added first, because the first entry is used
