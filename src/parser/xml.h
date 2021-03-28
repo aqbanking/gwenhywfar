@@ -522,9 +522,6 @@ int GWEN_XMLNode_GetXPath(const GWEN_XMLNODE *n1,
                           const GWEN_XMLNODE *n2,
                           GWEN_BUFFER *nbuf);
 
-GWENHYWFAR_API
-int GWEN_XMLNode_GetPathBetween(const GWEN_XMLNODE *n1, const GWEN_XMLNODE *n2, GWEN_BUFFER *nbuf);
-
 /**
  * Locates a tag by its XPath. Currently attributes are not allowed, and
  * the flag @ref GWEN_PATH_FLAGS_VARIABLE is not supported.
