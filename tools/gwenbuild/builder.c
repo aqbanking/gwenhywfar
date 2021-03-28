@@ -24,7 +24,7 @@ GWEN_INHERIT_FUNCTIONS(GWB_BUILDER)
 
 
 
-GWB_BUILDER *GWEN_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id)
+GWB_BUILDER *GWB_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id)
 {
   GWB_BUILDER *builder;
 
@@ -38,7 +38,7 @@ GWB_BUILDER *GWEN_Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32
 
 
 
-void GWEN_Builder_free(GWB_BUILDER *builder)
+void GWB_Builder_free(GWB_BUILDER *builder)
 {
   if (builder) {
     GWEN_INHERIT_FINI(GWB_BUILDER, builder);
@@ -48,35 +48,35 @@ void GWEN_Builder_free(GWB_BUILDER *builder)
 }
 
 
-GWENBUILD *GWEN_Builder_GetGwenbuild(const GWB_BUILDER *builder)
+GWENBUILD *GWB_Builder_GetGwenbuild(const GWB_BUILDER *builder)
 {
   return builder->gwenbuild;
 }
 
 
 
-uint32_t GWEN_Builder_GetId(const GWB_BUILDER *builder)
+uint32_t GWB_Builder_GetId(const GWB_BUILDER *builder)
 {
   return builder->id;
 }
 
 
 
-GWB_CONTEXT *GWEN_Builder_GetContext(const GWB_BUILDER *builder)
+GWB_CONTEXT *GWB_Builder_GetContext(const GWB_BUILDER *builder)
 {
   return builder->context;
 }
 
 
 
-GWB_FILE_LIST2 *GWEN_Builder_GetInputFileList2(const GWB_BUILDER *builder)
+GWB_FILE_LIST2 *GWB_Builder_GetInputFileList2(const GWB_BUILDER *builder)
 {
   return builder->inputFileList2;
 }
 
 
 
-void GWEN_Builder_AddInputFile(GWB_BUILDER *builder, GWB_FILE *f)
+void GWB_Builder_AddInputFile(GWB_BUILDER *builder, GWB_FILE *f)
 {
   if (builder->inputFileList2==NULL)
     builder->inputFileList2=GWB_File_List2_new();
@@ -85,14 +85,14 @@ void GWEN_Builder_AddInputFile(GWB_BUILDER *builder, GWB_FILE *f)
 
 
 
-GWB_FILE_LIST2 *GWEN_Builder_GetOutputFileList2(const GWB_BUILDER *builder)
+GWB_FILE_LIST2 *GWB_Builder_GetOutputFileList2(const GWB_BUILDER *builder)
 {
   return builder->outputFileList2;
 }
 
 
 
-void GWEN_Builder_AddOutputFile(GWB_BUILDER *builder, GWB_FILE *f)
+void GWB_Builder_AddOutputFile(GWB_BUILDER *builder, GWB_FILE *f)
 {
   if (builder->outputFileList2==NULL)
     builder->outputFileList2=GWB_File_List2_new();
@@ -101,14 +101,14 @@ void GWEN_Builder_AddOutputFile(GWB_BUILDER *builder, GWB_FILE *f)
 
 
 
-int GWEN_Builder_GetNumBlockingInputFiles(const GWB_BUILDER *builder)
+int GWB_Builder_GetNumBlockingInputFiles(const GWB_BUILDER *builder)
 {
   return builder->numBlockingInputFiles;
 }
 
 
 
-int GWEN_Builder_IncNumBlockingInputFiles(GWB_BUILDER *builder)
+int GWB_Builder_IncNumBlockingInputFiles(GWB_BUILDER *builder)
 {
   builder->numBlockingInputFiles++;
   return builder->numBlockingInputFiles;
@@ -116,7 +116,7 @@ int GWEN_Builder_IncNumBlockingInputFiles(GWB_BUILDER *builder)
 
 
 
-int GWEN_Builder_DecNumBlockingInputFiles(GWB_BUILDER *builder)
+int GWB_Builder_DecNumBlockingInputFiles(GWB_BUILDER *builder)
 {
   if (builder->numBlockingInputFiles>0)
     builder->numBlockingInputFiles--;
@@ -125,7 +125,7 @@ int GWEN_Builder_DecNumBlockingInputFiles(GWB_BUILDER *builder)
 
 
 
-int GWEN_Builder_GenerateOutputFileList(GWB_BUILDER *builder)
+int GWB_Builder_GenerateOutputFileList(GWB_BUILDER *builder)
 {
   if (builder->generateOutputFileListFn)
     return builder->generateOutputFileListFn(builder);
@@ -135,7 +135,7 @@ int GWEN_Builder_GenerateOutputFileList(GWB_BUILDER *builder)
 
 
 
-int GWEN_Builder_IsAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file)
+int GWB_Builder_IsAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file)
 {
   if (builder->isAcceptableInputFn)
     return builder->isAcceptableInputFn(builder, file);
@@ -145,7 +145,7 @@ int GWEN_Builder_IsAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file)
 
 
 
-int GWEN_Builder_AddBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
+int GWB_Builder_AddBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
 {
   if (builder->addBuildCmdFn)
     return builder->addBuildCmdFn(builder, bctx);
@@ -155,7 +155,7 @@ int GWEN_Builder_AddBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
 
 
 
-GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN GWEN_Builder_SetGenerateOutputFileListFn(GWB_BUILDER *builder,
+GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN GWB_Builder_SetGenerateOutputFileListFn(GWB_BUILDER *builder,
                                                                                 GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN fn)
 {
   GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN oldFn;
@@ -167,7 +167,7 @@ GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN GWEN_Builder_SetGenerateOutputFileListFn(
 
 
 
-GWEN_BUILDER_ISACCEPTABLEINPUT_FN GWEN_Builder_SetIsAcceptableInputFn(GWB_BUILDER *builder,
+GWEN_BUILDER_ISACCEPTABLEINPUT_FN GWB_Builder_SetIsAcceptableInputFn(GWB_BUILDER *builder,
                                                                       GWEN_BUILDER_ISACCEPTABLEINPUT_FN fn)
 {
   GWEN_BUILDER_ISACCEPTABLEINPUT_FN oldFn;
@@ -179,7 +179,7 @@ GWEN_BUILDER_ISACCEPTABLEINPUT_FN GWEN_Builder_SetIsAcceptableInputFn(GWB_BUILDE
 
 
 
-GWEN_BUILDER_ADDBUILDCMD_FN GWEN_Builder_SeAddBuildCmdFn(GWB_BUILDER *builder, GWEN_BUILDER_ADDBUILDCMD_FN fn)
+GWEN_BUILDER_ADDBUILDCMD_FN GWB_Builder_SetAddBuildCmdFn(GWB_BUILDER *builder, GWEN_BUILDER_ADDBUILDCMD_FN fn)
 {
   GWEN_BUILDER_ADDBUILDCMD_FN oldFn;
 
@@ -190,7 +190,7 @@ GWEN_BUILDER_ADDBUILDCMD_FN GWEN_Builder_SeAddBuildCmdFn(GWB_BUILDER *builder, G
 
 
 
-void GWEN_Builder_AddFileNamesToBuffer(const GWB_CONTEXT *context, const GWB_FILE_LIST2 *inFileList, GWEN_BUFFER *argBuffer)
+void GWB_Builder_AddFileNamesToBuffer(const GWB_CONTEXT *context, const GWB_FILE_LIST2 *inFileList, GWEN_BUFFER *argBuffer)
 {
   GWB_FILE_LIST2_ITERATOR *it;
   int entriesAdded=0;
@@ -203,7 +203,7 @@ void GWEN_Builder_AddFileNamesToBuffer(const GWB_CONTEXT *context, const GWB_FIL
     while(file) {
       if (entriesAdded)
         GWEN_Buffer_AppendString(argBuffer, " ");
-      GWEN_Builder_AddFileNameToBuffer(context, file, argBuffer);
+      GWB_Builder_AddFileNameToBuffer(context, file, argBuffer);
       entriesAdded++;
       file=GWB_File_List2Iterator_Next(it);
     }
@@ -213,7 +213,7 @@ void GWEN_Builder_AddFileNamesToBuffer(const GWB_CONTEXT *context, const GWB_FIL
 
 
 
-void GWEN_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer)
+void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer)
 {
   const char *s;
 

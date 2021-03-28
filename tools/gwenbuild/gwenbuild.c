@@ -13,8 +13,15 @@
 
 
 #include "gwenbuild/gwenbuild_p.h"
+#include "gwenbuild/builders/cbuilder.h"
+#include "gwenbuild/builders/staticlib.h"
 
 #include <gwenhywfar/debug.h>
+
+
+
+GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context, GWB_FILE *file);
+
 
 
 
@@ -365,6 +372,150 @@ void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl,
       se=GWEN_StringListEntry_Next(se);
     }
   }
+}
+
+
+
+
+int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
+{
+  GWENBUILD *gwenbuild;
+  GWB_TARGET_LIST2 *targetList;
+
+  gwenbuild=GWB_Project_GetGwbuild(project);
+
+  targetList=GWB_Project_GetTargetList(project);
+  if (targetList) {
+    GWB_TARGET_LIST2_ITERATOR *it;
+
+    it=GWB_Target_List2_First(targetList);
+    if (it) {
+      GWB_TARGET *target;
+
+      target=GWB_Target_List2Iterator_Data(it);
+      while(target) {
+        GWB_BUILDER *builder=NULL;
+
+        switch(GWB_Target_GetTargetType(target)) {
+        case GWBUILD_TargetType_Invalid:
+        case GWBUILD_TargetType_None:
+          break;
+        case GWBUILD_TargetType_InstallLibrary:
+          break;
+        case GWBUILD_TargetType_ConvenienceLibrary:
+          builder=GWEN_StaticLibBuilder_new(gwenbuild, GWB_Target_GetContext(target), 0);
+          break;
+        case GWBUILD_TargetType_Program:
+          break;
+        case GWBUILD_TargetType_Objects:
+          break;
+        }
+        if (builder==NULL) {
+          DBG_ERROR(NULL,
+                    "Could not create builder for type \"%s\"",
+                    GWBUILD_TargetType_toString(GWB_Target_GetTargetType(target)));
+          GWB_Target_List2Iterator_free(it);
+          return GWEN_ERROR_GENERIC;
+        }
+        GWB_Target_SetBuilder(target, builder);
+        GWB_Project_AddBuilder(project, builder);
+
+
+
+        target=GWB_Target_List2Iterator_Next(it);
+      }
+      GWB_Target_List2Iterator_free(it);
+    }
+  }
+
+}
+
+
+
+int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
+{
+  GWB_FILE_LIST2 *fileList;
+  GWB_BUILDER *builder;
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  fileList=GWB_Target_GetSourceFileList(target);
+  if (!(fileList && GWB_File_List2_GetSize(fileList)>0)) {
+    DBG_ERROR(NULL, "Empty source file list in target \"%s\"", GWB_Target_GetName(target));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  builder=GWB_Target_GetBuilder(target);
+
+  fileList=GWB_File_List2_dup(fileList);
+
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      if (GWB_Builder_IsAcceptableInput(builder, file)) {
+        GWB_Builder_AddInputFile(builder, file);
+      }
+      else {
+        GWB_BUILDER *builder;
+
+        builder=_genBuilderForSourceFile(project, GWB_Target_GetContext(target), file);
+        if (builder) {
+          GWB_Project_AddBuilder(project, builder);
+          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList);
+        }
+      }
+      file=GWB_File_List2Iterator_Next(it);
+    }
+
+    GWB_File_List2Iterator_free(it);
+  }
+  GWB_File_List2_free(fileList);
+
+}
+
+
+
+GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context, GWB_FILE *file)
+{
+  const char *name;
+  const char *ext;
+  GWENBUILD *gwenbuild;
+  GWB_BUILDER *builder;
+  int rv;
+
+  gwenbuild=GWB_Project_GetGwbuild(project);
+
+  name=GWB_File_GetName(file);
+  if (!(name && *name)) {
+    DBG_ERROR(NULL, "No file name.");
+    return NULL;
+  }
+  ext=strrchr(name, '.');
+  if (ext==NULL) {
+    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\"", name);
+    return NULL;
+  }
+  ext++;
+
+  if (strcasecmp(ext, "c")==0)
+    builder=GWEN_CBuilder_new(gwenbuild, context, 0);
+  /* add more here */
+  else {
+    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
+    return NULL;
+  }
+
+  GWB_Builder_AddInputFile(builder, file);
+  rv=GWB_Builder_GenerateOutputFileList(builder);
+  if (rv<0) {
+    DBG_ERROR(NULL, "here (%d)", rv);
+    GWB_Builder_free(builder);
+    return NULL;
+  }
+
+  return builder;
 }
 
 

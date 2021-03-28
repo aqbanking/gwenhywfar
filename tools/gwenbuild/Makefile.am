@@ -1,4 +1,4 @@
-SUBDIRS=parser buildctx tools builders
+SUBDIRS=parser tools buildctx builders
 
 
 INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(gwenhywfar_symlinkdir)
@@ -43,7 +43,7 @@ gwbuild_LDADD = \
   $(top_builddir)/src/$(gwenhywfar_internal_libname) \
   parser/libgwb_parser.la \
   tools/libgwb_tools.la \
-  buildctx/libgwb_build.la \
   builders/libgwb_builders.la \
+  buildctx/libgwb_build.la \
   $(PROG_LIBRARIES)
 

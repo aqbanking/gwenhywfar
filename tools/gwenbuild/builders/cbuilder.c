@@ -13,6 +13,7 @@
 
 
 #include "gwenbuild/builders/cbuilder_p.h"
+#include "gwenbuild/buildctx/buildctx.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/memory.h>
@@ -46,18 +47,18 @@ GWB_BUILDER *GWEN_CBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint3
   GWB_BUILDER_CBUILDER *xbuilder;
   int rv;
 
-  builder=GWEN_Builder_new(gwenbuild, context, id);
+  builder=GWB_Builder_new(gwenbuild, context, id);
   GWEN_NEW_OBJECT(GWB_BUILDER_CBUILDER, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_CBUILDER, builder, xbuilder, _freeData);
 
-  GWEN_Builder_SetGenerateOutputFileListFn(builder, _generateOutputFileList);
-  GWEN_Builder_SetIsAcceptableInputFn(builder, _isAcceptableInput);
-  GWEN_Builder_SetAddBuildCmdFn(builder, _addBuildCmd);
+  GWB_Builder_SetGenerateOutputFileListFn(builder, _generateOutputFileList);
+  GWB_Builder_SetIsAcceptableInputFn(builder, _isAcceptableInput);
+  GWB_Builder_SetAddBuildCmdFn(builder, _addBuildCmd);
 
   rv=_init(builder);
   if (rv<0) {
     DBG_INFO(NULL, "here (%d)", rv);
-    GWEN_Builder_free(builder);
+    GWB_Builder_free(builder);
     return NULL;
   }
 
@@ -82,7 +83,7 @@ int _init(GWB_BUILDER *builder)
 {
   const char *s;
 
-  s=GWBUILD_GetToolNameCC(GWEN_Builder_GetGwenbuild(builder));
+  s=GWBUILD_GetToolNameCC(GWB_Builder_GetGwenbuild(builder));
   if (!(s && *s)) {
     DBG_ERROR(NULL, "No compiler set.");
     return GWEN_ERROR_GENERIC;
@@ -116,11 +117,11 @@ int _generateOutputFileList(GWB_BUILDER *builder)
   GWB_TARGET *target;
   GWB_PROJECT *project;
 
-  context=GWEN_Builder_GetContext(builder);
+  context=GWB_Builder_GetContext(builder);
   target=GWB_Context_GetCurrentTarget(context);
   project=GWB_Target_GetProject(target);
 
-  inputFileList2=GWEN_Builder_GetInputFileList2(builder);
+  inputFileList2=GWB_Builder_GetInputFileList2(builder);
   if (inputFileList2) {
     GWB_FILE_LIST2_ITERATOR *it;
 
@@ -153,7 +154,7 @@ int _generateOutputFileList(GWB_BUILDER *builder)
         else {
           GWB_Project_AddFile(project, fileOut);
         }
-        GWEN_Builder_AddOutputFile(builder, fileOut);
+        GWB_Builder_AddOutputFile(builder, fileOut);
         file=GWB_File_List2Iterator_Next(it);
       }
 
@@ -199,8 +200,8 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
   GWB_FILE *inFile;
   GWB_FILE *outFile;
 
-  inFile=GWB_File_List2_GetFront(GWEN_Builder_GetInputFileList2(builder));
-  outFile=GWB_File_List2_GetFront(GWEN_Builder_GetOutputFileList2(builder));
+  inFile=GWB_File_List2_GetFront(GWB_Builder_GetInputFileList2(builder));
+  outFile=GWB_File_List2_GetFront(GWB_Builder_GetOutputFileList2(builder));
 
   if (inFile==NULL) {
     DBG_ERROR(NULL, "No input file");
@@ -218,7 +219,7 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
     return GWEN_ERROR_GENERIC;
   }
 
-  GWB_BuildCtx_AddCommandList(bctx, bcmd);
+  GWB_BuildCtx_AddCommand(bctx, bcmd);
   return 0;
 }
 
@@ -233,15 +234,15 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *
 
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_CBUILDER, builder);
 
-  context=GWEN_Builder_GetContext(builder);
+  context=GWB_Builder_GetContext(builder);
 
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   _addDefinesIncludesAndCflags(context, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " -c -fPIC "); /* compile arguments */
-  GWEN_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
+  GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " -o ");
-  GWEN_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
+  GWB_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
 
   /* we have everything, create cmd now */
   bcmd=GWB_BuildCmd_new();

@@ -305,4 +305,23 @@ GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, co
 
 
 
+void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(sourceList);
+  if (it) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      GWB_File_List2_PushBack(destList, file);
+      file=GWB_File_List2Iterator_Next(it);
+    }
+    GWB_File_List2Iterator_free(it);
+  }
+}
+
+
+
 

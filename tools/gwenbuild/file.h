@@ -66,4 +66,7 @@ GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, co
 void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
 GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt);
 
+void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList);
+
+
 #endif

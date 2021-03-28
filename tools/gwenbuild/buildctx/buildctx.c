@@ -48,7 +48,7 @@ GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_GetCommandList(const GWB_BUILD_CONTEXT *bctx)
 
 
 
-void GWB_BuildCtx_AddCommandList(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *cmd)
+void GWB_BuildCtx_AddCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *cmd)
 {
   GWB_BuildCmd_List2_PushBack(bctx->commandList, cmd);
 }

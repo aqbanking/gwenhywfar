@@ -46,18 +46,18 @@ GWB_BUILDER *GWEN_StaticLibBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *contex
   GWB_BUILDER_STATICLIB *xbuilder;
   int rv;
 
-  builder=GWEN_Builder_new(gwenbuild, context, id);
+  builder=GWB_Builder_new(gwenbuild, context, id);
   GWEN_NEW_OBJECT(GWB_BUILDER_STATICLIB, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_STATICLIB, builder, xbuilder, _freeData);
 
-  GWEN_Builder_SetGenerateOutputFileListFn(builder, _generateOutputFileList);
-  GWEN_Builder_SetIsAcceptableInputFn(builder, _isAcceptableInput);
-  GWEN_Builder_SetAddBuildCmdFn(builder, _addBuildCmd);
+  GWB_Builder_SetGenerateOutputFileListFn(builder, _generateOutputFileList);
+  GWB_Builder_SetIsAcceptableInputFn(builder, _isAcceptableInput);
+  GWB_Builder_SetAddBuildCmdFn(builder, _addBuildCmd);
 
   rv=_init(builder);
   if (rv<0) {
     DBG_INFO(NULL, "here (%d)", rv);
-    GWEN_Builder_free(builder);
+    GWB_Builder_free(builder);
     return NULL;
   }
 
@@ -83,14 +83,14 @@ int _init(GWB_BUILDER *builder)
 {
   const char *s;
 
-  s=GWBUILD_GetToolNameAR(GWEN_Builder_GetGwenbuild(builder));
+  s=GWBUILD_GetToolNameAR(GWB_Builder_GetGwenbuild(builder));
   if (!(s && *s)) {
     DBG_ERROR(NULL, "No AR command set.");
     return GWEN_ERROR_GENERIC;
   }
   _setArchiverName(builder, s);
 
-  s=GWBUILD_GetToolNameRANLIB(GWEN_Builder_GetGwenbuild(builder));
+  s=GWBUILD_GetToolNameRANLIB(GWB_Builder_GetGwenbuild(builder));
   if (!(s && *s)) {
     DBG_ERROR(NULL, "No RANLIB command set.");
     return GWEN_ERROR_GENERIC;
@@ -135,7 +135,7 @@ int _generateOutputFileList(GWB_BUILDER *builder)
   GWB_FILE *fileOut;
   GWB_FILE *storedFile;
 
-  context=GWEN_Builder_GetContext(builder);
+  context=GWB_Builder_GetContext(builder);
   target=GWB_Context_GetCurrentTarget(context);
   project=GWB_Target_GetProject(target);
 
@@ -171,7 +171,7 @@ int _generateOutputFileList(GWB_BUILDER *builder)
   else {
     GWB_Project_AddFile(project, fileOut);
   }
-  GWEN_Builder_AddOutputFile(builder, fileOut);
+  GWB_Builder_AddOutputFile(builder, fileOut);
 
   return 0;
 }
@@ -207,8 +207,8 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
   GWB_FILE_LIST2 *inFileList;
   GWB_FILE *outFile;
 
-  inFileList=GWEN_Builder_GetInputFileList2(builder);
-  outFile=GWB_File_List2_GetFront(GWEN_Builder_GetOutputFileList2(builder));
+  inFileList=GWB_Builder_GetInputFileList2(builder);
+  outFile=GWB_File_List2_GetFront(GWB_Builder_GetOutputFileList2(builder));
 
   if (!(inFileList && GWB_File_List2_GetSize(inFileList))) {
     DBG_ERROR(NULL, "No input files");
@@ -226,7 +226,7 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
     return GWEN_ERROR_GENERIC;
   }
 
-  GWB_BuildCtx_AddCommandList(bctx, bcmd);
+  GWB_BuildCtx_AddCommand(bctx, bcmd);
   return 0;
 }
 
@@ -241,14 +241,14 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_L
 
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_STATICLIB, builder);
 
-  context=GWEN_Builder_GetContext(builder);
+  context=GWB_Builder_GetContext(builder);
 
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendString(argBuffer, " rc ");
-  GWEN_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
+  GWB_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " ");
-  GWEN_Builder_AddFileNamesToBuffer(context, inFileList, argBuffer);
+  GWB_Builder_AddFileNamesToBuffer(context, inFileList, argBuffer);
 
   /* commando to create libXX.a */
   bcmd=GWB_BuildCmd_new();
@@ -257,7 +257,7 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_L
   GWEN_Buffer_Reset(argBuffer);
 
   /* ranlib command */
-  GWEN_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
+  GWB_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
   GWB_BuildCmd_AddBuildCommand(bcmd, xbuilder->ranlibName, GWEN_Buffer_GetStart(argBuffer));
   GWEN_Buffer_free(argBuffer);
 

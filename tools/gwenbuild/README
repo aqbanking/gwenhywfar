@@ -1,4 +1,7 @@
 
+https://docencia.ac.upc.edu/FIB/USO/Bibliografia/unix-c-libraries.html
+
+
   Context (tree):
   - refCounter
   - folder
@@ -96,10 +99,6 @@ Durchgang
 - fuer jedes Target:
   - erzeuge builder
   
-- fuer jeden builder:
-  - erzeuge buildcmd
-
-
 - fuer jeden Context unterhalb des Target:
   - fuer jedes SourceFile
     - target->builder->isAcceptableInput()?
@@ -108,6 +107,9 @@ Durchgang
         - erzeuge builder nach quelldateityp
         - fuer jedes (builder->getOutputFiles())
           - add to current SourceFile list
+
+- fuer jeden builder:
+  - erzeuge buildcmd
 
 
 - fuer jedes Target:
