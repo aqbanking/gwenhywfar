@@ -211,7 +211,7 @@ void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f)
 
 
 
-void GWB_Target_Dump(const GWB_TARGET *target, int indent)
+void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump)
 {
   int i;
 
@@ -228,7 +228,8 @@ void GWB_Target_Dump(const GWB_TARGET *target, int indent)
   GWBUILD_Debug_PrintStringList("usedTargetNameList", target->usedTargetNameList, indent+2);
   GWBUILD_Debug_PrintStringList("usedLibraryList...", target->usedLibraryList, indent+2);
   GWBUILD_Debug_PrintFile(      "outputFile........", target->outputFile, indent+2);
-  GWB_Context_Dump(target->context, indent+2);
+  if (fullDump)
+    GWB_Context_Dump(target->context, indent+2);
 
 
 }

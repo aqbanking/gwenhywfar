@@ -125,16 +125,6 @@ int GWB_Builder_DecNumBlockingInputFiles(GWB_BUILDER *builder)
 
 
 
-int GWB_Builder_GenerateOutputFileList(GWB_BUILDER *builder)
-{
-  if (builder->generateOutputFileListFn)
-    return builder->generateOutputFileListFn(builder);
-  else
-    return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
 int GWB_Builder_IsAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file)
 {
   if (builder->isAcceptableInputFn)
@@ -155,14 +145,10 @@ int GWB_Builder_AddBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
 
 
 
-GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN GWB_Builder_SetGenerateOutputFileListFn(GWB_BUILDER *builder,
-                                                                                GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN fn)
+void GWB_Builder_AddSourceFile(GWB_BUILDER *builder, GWB_FILE *f)
 {
-  GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN oldFn;
-
-  oldFn=builder->generateOutputFileListFn;
-  builder->generateOutputFileListFn=fn;
-  return oldFn;
+  if (builder->addSourceFileFn)
+    return builder->addSourceFileFn(builder, f);
 }
 
 
@@ -185,6 +171,17 @@ GWEN_BUILDER_ADDBUILDCMD_FN GWB_Builder_SetAddBuildCmdFn(GWB_BUILDER *builder, G
 
   oldFn=builder->addBuildCmdFn;
   builder->addBuildCmdFn=fn;
+  return oldFn;
+}
+
+
+
+GWB_BUILDER_ADDSOURCEFILE_FN GWB_Builder_SetAddSourceFileFn(GWB_BUILDER *builder, GWB_BUILDER_ADDSOURCEFILE_FN fn)
+{
+  GWB_BUILDER_ADDSOURCEFILE_FN oldFn;
+
+  oldFn=builder->addSourceFileFn;
+  builder->addSourceFileFn=fn;
   return oldFn;
 }
 
@@ -229,6 +226,22 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
     GWEN_Buffer_AppendString(argBuffer, s);
 }
 
+
+
+void GWB_Builder_Dump(const GWB_BUILDER *builder, int indent, int fullDump)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "Builder:\n");
+
+  GWBUILD_Debug_PrintFileList2( "inputFileList2....", builder->inputFileList2, indent+2);
+  GWBUILD_Debug_PrintFileList2( "outputFileList2...", builder->outputFileList2, indent+2);
+  if (fullDump)
+    GWB_Context_Dump(builder->context, indent+2);
+
+}
 
 
 

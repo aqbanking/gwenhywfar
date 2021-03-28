@@ -330,8 +330,9 @@ void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2
 	const char *s;
 
 	s=GWB_File_GetExt(file);
-	if (s && strcasecmp(s, ext)==0)
-	  GWB_File_List2_PushBack(destList, file);
+        if (s && strcasecmp(s, ext)==0) {
+          GWB_File_List2_PushBack(destList, file);
+        }
       }
       else
 	GWB_File_List2_PushBack(destList, file);

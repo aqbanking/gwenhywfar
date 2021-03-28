@@ -214,6 +214,34 @@ void GWB_Project_AddTarget(GWB_PROJECT *project, GWB_TARGET *target)
 
 
 
+GWB_TARGET *GWB_Project_GetTargetByName(const GWB_PROJECT *project, const char *name)
+{
+  if (project->targetList) {
+    GWB_TARGET_LIST2_ITERATOR *it;
+
+    it=GWB_Target_List2_First(project->targetList);
+    if (it) {
+      GWB_TARGET *target;
+
+      target=GWB_Target_List2Iterator_Data(it);
+      while(target) {
+        const char *s;
+
+        s=GWB_Target_GetName(target);
+        if (s && strcasecmp(s, name)==0)
+          break;
+      }
+      GWB_Target_List2Iterator_free(it);
+      if (target)
+        return target;
+    }
+  }
+
+  return NULL;
+}
+
+
+
 GWB_BUILDER_LIST2 *GWB_Project_GetBuilderList(const GWB_PROJECT *project)
 {
   return project->builderList;
@@ -263,7 +291,7 @@ if (project->defineList==NULL)
 
 
 
-void GWB_Project_Dump(const GWB_PROJECT *project, int indent)
+void GWB_Project_Dump(const GWB_PROJECT *project, int indent, int fullDump)
 {
   int i;
 
@@ -290,8 +318,9 @@ void GWB_Project_Dump(const GWB_PROJECT *project, int indent)
   GWB_Context_Tree2_Dump(project->contextTree, indent+2);
 
   GWBUILD_Debug_PrintFileList2("fileList", project->fileList, indent+2);
-  GWBUILD_Debug_PrintTargetList2("targetList", project->targetList, indent+2);
+  GWBUILD_Debug_PrintTargetList2("targetList", project->targetList, indent+2, fullDump);
   GWBUILD_Debug_PrintKvpList("defineList", project->defineList, indent+2);
+  GWBUILD_Debug_PrintBuilderList2("builderList", project->builderList, indent+2, fullDump);
 }
 
 

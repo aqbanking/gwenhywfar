@@ -11,7 +11,7 @@
 #define GWBUILD_BUILDER_P_H
 
 
-#include "gwenbuild/builder.h"
+#include "gwenbuild/builder_be.h"
 
 
 struct GWB_BUILDER {
@@ -28,9 +28,9 @@ struct GWB_BUILDER {
 
   int numBlockingInputFiles;
 
-  GWEN_BUILDER_GENERATEOUTPUTFILELIST_FN generateOutputFileListFn;
   GWEN_BUILDER_ISACCEPTABLEINPUT_FN isAcceptableInputFn;
   GWEN_BUILDER_ADDBUILDCMD_FN addBuildCmdFn;
+  GWB_BUILDER_ADDSOURCEFILE_FN addSourceFileFn;
 };
 
 

@@ -80,6 +80,7 @@ int test_ReadProject(int argc, char **argv)
   GWENBUILD *gwenbuild;
   GWB_PROJECT *project;
   const char *folder;
+  int rv;
 
   gwenbuild=GWBUILD_new();
 
@@ -95,8 +96,17 @@ int test_ReadProject(int argc, char **argv)
     return 2;
   }
 
-  DBG_ERROR(NULL, "Tree successfully loaded.");
-  GWB_Project_Dump(project, 2);
+  //DBG_ERROR(NULL, "Tree successfully loaded.");
+  //GWB_Project_Dump(project, 2);
+
+  rv=GWBUILD_MakeBuildersForTargets(project);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error makeing builders for targets.");
+    return 2;
+  }
+
+  DBG_ERROR(NULL, "Targets successfully created.");
+  GWB_Project_Dump(project, 2, 0);
   return 0;
 }
 

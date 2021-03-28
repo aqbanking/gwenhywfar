@@ -68,7 +68,7 @@ void GWB_Target_SetBuilder(GWB_TARGET *target, GWB_BUILDER *builder);
 GWB_FILE *GWB_Target_GetOutputFile(const GWB_TARGET *target);
 void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f);
 
-void GWB_Target_Dump(const GWB_TARGET *target, int indent);
+void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump);
 
 
 #endif

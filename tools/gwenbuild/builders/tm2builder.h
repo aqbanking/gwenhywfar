@@ -7,23 +7,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_GWENBUILD_P_H
-#define GWBUILD_GWENBUILD_P_H
+#ifndef GWBUILD_BUILDERS_TM2BUILDER_H
+#define GWBUILD_BUILDERS_TM2BUILDER_H
 
 
-#include "gwenbuild/gwenbuild.h"
+#include "gwenbuild/builder.h"
 
 
 
-struct GWENBUILD {
-  int dummy; /* for now */
 
-  char *toolNameCC;
-  char *toolNameCXX;
-  char *toolNameLD;
-  char *toolNameAR;
-  char *toolNameRANLIB;
-};
+GWB_BUILDER *GWEN_Tm2Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id);
+
 
 
 #endif

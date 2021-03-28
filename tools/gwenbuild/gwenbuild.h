@@ -32,7 +32,9 @@ typedef enum {
 #include "gwenbuild/project.h"
 
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/buffer.h>
 
 
 
@@ -69,8 +71,13 @@ void GWBUILD_Debug_PrintIntValue(const char *sName, int value, int indent);
 void GWBUILD_Debug_PrintKvpList(const char *sName, const GWB_KEYVALUEPAIR_LIST *kvpList, int indent);
 void GWBUILD_Debug_PrintDb(const char *sName, GWEN_DB_NODE *db, int indent);
 void GWBUILD_Debug_PrintFileList2(const char *sName, const GWB_FILE_LIST2 *fileList2, int indent);
-void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *targetList2, int indent);
+void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *targetList2, int indent, int fullDump);
+void GWBUILD_Debug_PrintBuilderList2(const char *sName, const GWB_BUILDER_LIST2 *builderList2, int indent, int fullDump);
 void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl, int indent);
 void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent);
+
+
+int GWBUILD_GetPathBetweenFolders(const char *folder1, const char *folder2, GWEN_BUFFER *resultBuffer);
+
 
 #endif

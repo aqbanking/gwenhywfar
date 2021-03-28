@@ -15,13 +15,23 @@
 #include "gwenbuild/gwenbuild_p.h"
 #include "gwenbuild/builders/cbuilder.h"
 #include "gwenbuild/builders/staticlib.h"
+#include "gwenbuild/builders/tm2builder.h"
+#include "gwenbuild/builder_be.h"
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
 
 
 
 GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context, GWB_FILE *file);
 int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target);
+int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
+                                              GWB_TARGET *target,
+                                              GWB_FILE_LIST2 *sourceFileList,
+                                              GWB_FILE_LIST2 *newOutputList);
+int _addSubTargets(GWB_PROJECT *project);
+int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRINGLIST *usedTargetList);
+int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget);
 
 
 
@@ -324,7 +334,7 @@ void GWBUILD_Debug_PrintFileList2(const char *sName, const GWB_FILE_LIST2 *fileL
 
 
 
-void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *targetList2, int indent)
+void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *targetList2, int indent, int fullDump)
 {
   int i;
 
@@ -341,10 +351,37 @@ void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *t
 
       target=GWB_Target_List2Iterator_Data(it);
       while(target) {
-        GWB_Target_Dump(target, indent+2);
+        GWB_Target_Dump(target, indent+2, fullDump);
         target=GWB_Target_List2Iterator_Next(it);
       }
       GWB_Target_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+void GWBUILD_Debug_PrintBuilderList2(const char *sName, const GWB_BUILDER_LIST2 *builderList2, int indent, int fullDump)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "%s:\n", sName);
+
+  if (builderList2) {
+    GWB_BUILDER_LIST2_ITERATOR *it;
+
+    it=GWB_Builder_List2_First(builderList2);
+    if (it) {
+      GWB_BUILDER *builder;
+
+      builder=GWB_Builder_List2Iterator_Data(it);
+      while(builder) {
+        GWB_Builder_Dump(builder, indent+2, fullDump);
+        builder=GWB_Builder_List2Iterator_Next(it);
+      }
+      GWB_Builder_List2Iterator_free(it);
     }
   }
 }
@@ -377,6 +414,40 @@ void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl,
 
 
 
+int GWBUILD_GetPathBetweenFolders(const char *folder1, const char *folder2, GWEN_BUFFER *resultBuffer)
+{
+  GWEN_XMLNODE *xmlNodeRoot;
+  GWEN_XMLNODE *xmlNodeFolder1;
+  GWEN_XMLNODE *xmlNodeFolder2;
+  GWEN_BUFFER *absFolder1Buffer;
+  GWEN_BUFFER *absFolder2Buffer;
+  int rv;
+
+  xmlNodeRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+
+  absFolder1Buffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Directory_GetAbsoluteFolderPath(folder1, absFolder1Buffer);
+
+  absFolder2Buffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Directory_GetAbsoluteFolderPath(folder2, absFolder2Buffer);
+
+  xmlNodeFolder1=GWEN_XMLNode_GetNodeByXPath(xmlNodeRoot, GWEN_Buffer_GetStart(absFolder1Buffer), 0);
+  GWEN_Buffer_free(absFolder1Buffer);
+  xmlNodeFolder2=GWEN_XMLNode_GetNodeByXPath(xmlNodeRoot, GWEN_Buffer_GetStart(absFolder2Buffer), 0);
+  GWEN_Buffer_free(absFolder2Buffer);
+
+  rv=GWEN_XMLNode_GetXPath(xmlNodeFolder1, xmlNodeFolder2, resultBuffer);
+  GWEN_XMLNode_free(xmlNodeRoot);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Not path found between folders \"%s\" and \"%s\"", folder1, folder2);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 
 int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 {
@@ -388,6 +459,7 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
   targetList=GWB_Project_GetTargetList(project);
   if (targetList) {
     GWB_TARGET_LIST2_ITERATOR *it;
+    int rv;
 
     it=GWB_Target_List2_First(targetList);
     if (it) {
@@ -396,7 +468,6 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
       target=GWB_Target_List2Iterator_Data(it);
       while(target) {
         GWB_BUILDER *builder=NULL;
-        int rv;
 
         switch(GWB_Target_GetTargetType(target)) {
         case GWBUILD_TargetType_Invalid:
@@ -432,6 +503,12 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
       }
       GWB_Target_List2Iterator_free(it);
     }
+
+    rv=_addSubTargets(project);
+    if (rv<0) {
+      DBG_ERROR(NULL, "here (%d)", rv);
+      return rv;
+    }
   }
   return 0;
 }
@@ -440,38 +517,77 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 
 int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
 {
-  GWB_FILE_LIST2 *fileList;
-  GWB_BUILDER *builder;
-  GWB_FILE_LIST2_ITERATOR *it;
+  GWB_FILE_LIST2 *fileList1;
+  GWB_CONTEXT *context;
 
-  fileList=GWB_Target_GetSourceFileList(target);
-  if (!(fileList && GWB_File_List2_GetSize(fileList)>0)) {
-    DBG_ERROR(NULL, "Empty source file list in target \"%s\"", GWB_Target_GetName(target));
+  context=GWB_Target_GetContext(target);
+  fileList1=GWB_Context_GetSourceFileList2(context);
+  if (!(fileList1 && GWB_File_List2_GetSize(fileList1)>0)) {
+    DBG_ERROR(NULL, "Empty source file list in context of target \"%s\"", GWB_Target_GetName(target));
+    GWB_Target_Dump(target, 2, 1);
     return GWEN_ERROR_GENERIC;
   }
 
-  builder=GWB_Target_GetBuilder(target);
+  fileList1=GWB_File_List2_dup(fileList1);
+  while(GWB_File_List2_GetSize(fileList1)>0) {
+    GWB_FILE_LIST2 *fileList2;
+    int rv;
 
-  fileList=GWB_File_List2_dup(fileList);
+    fileList2=GWB_File_List2_new();
+    rv=_addSourcesOrMkBuildersAndGetTheirOutputs(project, target, fileList1, fileList2);
+    if (rv<0) {
+      DBG_ERROR(NULL, "here (%d)", rv);
+      GWB_File_List2_free(fileList1);
+      GWB_File_List2_free(fileList1);
+      return rv;
+    }
+    GWB_File_List2_free(fileList1);
+    fileList1=fileList2;
+  }
+  GWB_File_List2_free(fileList1);
+  return 0;
+}
 
-  it=GWB_File_List2_First(fileList);
+
+
+int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
+                                              GWB_TARGET *target,
+                                              GWB_FILE_LIST2 *sourceFileList,
+                                              GWB_FILE_LIST2 *newOutputList)
+{
+  GWB_BUILDER *targetBuilder;
+  GWB_FILE_LIST2_ITERATOR *it;
+  GWB_CONTEXT *context;
+
+  context=GWB_Target_GetContext(target);
+  targetBuilder=GWB_Target_GetBuilder(target);
+  it=GWB_File_List2_First(sourceFileList);
   if (it) {
     GWB_FILE *file;
 
     file=GWB_File_List2Iterator_Data(it);
     while(file) {
-      if (GWB_Builder_IsAcceptableInput(builder, file)) {
-        GWB_Builder_AddInputFile(builder, file);
+      DBG_ERROR(NULL, "Checking target \"%s\": file \"%s\"",
+                GWB_Target_GetName(target),
+                GWB_File_GetName(file));
+      if (GWB_Builder_IsAcceptableInput(targetBuilder, file)) {
+        DBG_ERROR(NULL, "- adding file \"%s\" as input for target \"%s\"",
+                  GWB_File_GetName(file),
+                  GWB_Target_GetName(target));
+        GWB_Builder_AddSourceFile(targetBuilder, file);
       }
       else {
-        GWB_BUILDER *builder;
+        GWB_BUILDER *sourceBuilder;
 
-        builder=_genBuilderForSourceFile(project, GWB_Target_GetContext(target), file);
-        if (builder) {
-          GWB_Project_AddBuilder(project, builder);
-          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList, ".c");
-          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList, ".cpp");
-          GWB_File_AddFileList2ToFileList2(GWB_Builder_GetOutputFileList2(builder), fileList, ".o");
+        sourceBuilder=_genBuilderForSourceFile(project, context, file);
+        if (sourceBuilder) {
+          GWB_FILE_LIST2 *buildersOutputFileList;
+
+          buildersOutputFileList=GWB_Builder_GetOutputFileList2(sourceBuilder);
+          GWB_Project_AddBuilder(project, sourceBuilder);
+          GWB_File_AddFileList2ToFileList2(buildersOutputFileList, newOutputList, ".c");
+          GWB_File_AddFileList2ToFileList2(buildersOutputFileList, newOutputList, ".cpp");
+          GWB_File_AddFileList2ToFileList2(buildersOutputFileList, newOutputList, ".o");
         }
       }
       file=GWB_File_List2Iterator_Next(it);
@@ -479,8 +595,8 @@ int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
 
     GWB_File_List2Iterator_free(it);
   }
-  GWB_File_List2_free(fileList);
 
+  return 0;
 }
 
 
@@ -491,7 +607,6 @@ GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context
   const char *ext;
   GWENBUILD *gwenbuild;
   GWB_BUILDER *builder;
-  int rv;
 
   gwenbuild=GWB_Project_GetGwbuild(project);
 
@@ -500,7 +615,7 @@ GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context
     DBG_ERROR(NULL, "No file name.");
     return NULL;
   }
-  ext=strrchr(name, '.');
+  ext=GWB_File_GetExt(file);
   if (ext==NULL) {
     DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\"", name);
     return NULL;
@@ -509,22 +624,122 @@ GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context
 
   if (strcasecmp(ext, "c")==0)
     builder=GWEN_CBuilder_new(gwenbuild, context, 0);
+  else if (strcasecmp(ext, "t2d")==0)
+    builder=GWEN_Tm2Builder_new(gwenbuild, context, 0);
   /* add more here */
   else {
     DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
     return NULL;
   }
 
-  GWB_Builder_AddInputFile(builder, file);
-  rv=GWB_Builder_GenerateOutputFileList(builder);
-  if (rv<0) {
-    DBG_ERROR(NULL, "here (%d)", rv);
-    GWB_Builder_free(builder);
-    return NULL;
-  }
+  GWB_Builder_AddSourceFile(builder, file);
 
   return builder;
 }
+
+
+
+int _addSubTargets(GWB_PROJECT *project)
+{
+  GWB_TARGET_LIST2 *targetList;
+
+  targetList=GWB_Project_GetTargetList(project);
+  if (targetList) {
+    GWB_TARGET_LIST2_ITERATOR *it;
+
+    it=GWB_Target_List2_First(targetList);
+    if (it) {
+      GWB_TARGET *target;
+
+      target=GWB_Target_List2Iterator_Data(it);
+      while(target) {
+        GWEN_STRINGLIST *usedTargetList;
+
+        usedTargetList=GWB_Target_GetUsedTargetNameList(target);
+        if (usedTargetList && GWEN_StringList_Count(usedTargetList)>0) {
+          int rv;
+
+          rv=_addSubTargetsForTarget(project, target, usedTargetList);
+          if (rv<0) {
+            DBG_ERROR(NULL, "here (%d)", rv);
+            GWB_Target_List2Iterator_free(it);
+            return rv;
+          }
+        }
+
+        target=GWB_Target_List2Iterator_Next(it);
+      }
+      GWB_Target_List2Iterator_free(it);
+    }
+  }
+  return 0;
+}
+
+
+
+int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRINGLIST *usedTargetList)
+{
+  GWEN_STRINGLISTENTRY *se;
+
+  se=GWEN_StringList_FirstEntry(usedTargetList);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s) {
+      GWB_TARGET *subTarget;
+
+      subTarget=GWB_Project_GetTargetByName(project, s);
+      if (subTarget) {
+        int rv;
+
+        rv=_addOneSubTargetForTarget(target, subTarget);
+        if (rv<0) {
+          DBG_INFO(NULL, "here (%d)", rv);
+          return rv;
+        }
+      }
+    }
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  return 0;
+}
+
+
+
+int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget)
+{
+  GWB_BUILDER *targetBuilder;
+  GWB_BUILDER *subTargetBuilder;
+  GWB_FILE_LIST2 *subTargetOutputFileList;
+  GWB_FILE *subTargetFile;
+
+  targetBuilder=GWB_Target_GetBuilder(target);
+  if (targetBuilder==NULL) {
+    DBG_ERROR(NULL, "No builder for target \"%s\"", GWB_Target_GetName(target));
+    return GWEN_ERROR_GENERIC;
+  }
+  subTargetBuilder=GWB_Target_GetBuilder(subTarget);
+  if (subTargetBuilder==NULL) {
+    DBG_ERROR(NULL, "No builder for sub-target \"%s\"", GWB_Target_GetName(subTarget));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  subTargetOutputFileList=GWB_Builder_GetOutputFileList2(subTargetBuilder);
+  if (subTargetOutputFileList==NULL) {
+    DBG_ERROR(NULL, "No output file list in target \"%s\"", GWB_Target_GetName(subTarget));
+    return GWEN_ERROR_GENERIC;
+  }
+  subTargetFile=GWB_File_List2_GetFront(subTargetOutputFileList);
+  if (subTargetFile==NULL) {
+    DBG_ERROR(NULL, "No output file in target \"%s\"", GWB_Target_GetName(subTarget));
+    return GWEN_ERROR_GENERIC;
+  }
+  GWB_Builder_AddInputFile(targetBuilder, subTargetFile);
+  return 0;
+}
+
 
 
 

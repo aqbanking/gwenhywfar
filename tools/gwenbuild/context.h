@@ -77,7 +77,7 @@ GWB_TARGET *GWB_Context_GetCurrentTarget(const GWB_CONTEXT *ctx);
 void GWB_Context_SetCurrentTarget(GWB_CONTEXT *ctx, GWB_TARGET *target);
 
 
-GWB_FILE_LIST2 *GWEN_Context_GetSourceFileList2(const GWB_CONTEXT *ctx);
+GWB_FILE_LIST2 *GWB_Context_GetSourceFileList2(const GWB_CONTEXT *ctx);
 void GWB_Context_AddSourceFile(GWB_CONTEXT *ctx, GWB_FILE *f);
 void GWB_Context_ClearSourceFileList2(GWB_CONTEXT *ctx);
 

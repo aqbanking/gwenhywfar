@@ -13,6 +13,7 @@
 
 
 #include "gwenbuild/builders/staticlib_p.h"
+#include "gwenbuild/builder_be.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/memory.h>
@@ -32,6 +33,7 @@ static void _setRanlibName(GWB_BUILDER *builder, const char *s);
 
 static int _generateOutputFileList(GWB_BUILDER *builder);
 static int _isAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file);
+static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 
 static GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_LIST2 *inFileList, GWB_FILE *outFile);
@@ -50,8 +52,8 @@ GWB_BUILDER *GWEN_StaticLibBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *contex
   GWEN_NEW_OBJECT(GWB_BUILDER_STATICLIB, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_STATICLIB, builder, xbuilder, _freeData);
 
-  GWB_Builder_SetGenerateOutputFileListFn(builder, _generateOutputFileList);
   GWB_Builder_SetIsAcceptableInputFn(builder, _isAcceptableInput);
+  GWB_Builder_SetAddSourceFileFn(builder, _addSourceFile);
   GWB_Builder_SetAddBuildCmdFn(builder, _addBuildCmd);
 
   rv=_init(builder);
@@ -120,6 +122,18 @@ void _setRanlibName(GWB_BUILDER *builder, const char *s)
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_STATICLIB, builder);
   free(xbuilder->ranlibName);
   xbuilder->ranlibName=s?strdup(s):NULL;
+}
+
+
+
+void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f)
+{
+  GWB_FILE_LIST2 *fileList;
+
+  GWB_Builder_AddInputFile(builder, f);
+  fileList=GWB_Builder_GetOutputFileList2(builder);
+  if (!(fileList && GWB_File_List2_GetSize(fileList)>0))
+    _generateOutputFileList(builder);
 }
 
 
@@ -194,6 +208,7 @@ int _isAcceptableInput(GWEN_UNUSED GWB_BUILDER *builder, const GWB_FILE *file)
         return 1;
       }
     }
+    DBG_INFO(NULL, "File \"%s\" is NOT acceptable as input for StaticLibBuilder", s);
   }
 
   return 0;

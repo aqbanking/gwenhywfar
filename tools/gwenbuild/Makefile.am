@@ -23,6 +23,7 @@ gwbuild_SOURCES=\
 
 noinst_HEADERS= \
   builder.h \
+  builder_be.h \
   builder_p.h \
   context.h \
   context_p.h \

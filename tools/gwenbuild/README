@@ -108,10 +108,6 @@ Durchgang
         - fuer jedes (builder->getOutputFiles())
           - add to current SourceFile list
 
-- fuer jeden builder:
-  - erzeuge buildcmd
-
-
 - fuer jedes Target:
     - usedTargetList?
       - fuer jedes usedTarget:
@@ -140,12 +136,15 @@ Durchgang: Handle used targets
       - target->builder->incBlockingFiles()
 
 
+<-------- we are here
+
+
 Durchgang
-- fuer jeden builder
+- fuer jeden buildCmd
   - fuer jedes inputFile
     - flags::generated?
-      - file->addWaitingBuilder(builder)
-      - builder->incBlockingFiles()
+      - file->addWaitingBuildCmd(buildCmd)
+      - buildcmd->incBlockingFiles()
 
 
 Durchgang
