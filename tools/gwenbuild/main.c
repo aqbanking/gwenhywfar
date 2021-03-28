@@ -122,9 +122,11 @@ int test_ReadProject(int argc, char **argv)
   }
   DBG_ERROR(NULL, "Build dependencies successfully created.");
 
+  GWB_Project_Dump(project, 2, 0);
+
+  DBG_ERROR(NULL, "Build context:");
   GWB_BuildCtx_Dump(buildCtx, 2);
 
-  //GWB_Project_Dump(project, 2, 0);
   return 0;
 }
 

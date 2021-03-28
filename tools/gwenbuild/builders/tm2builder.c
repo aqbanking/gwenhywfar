@@ -42,7 +42,7 @@ static void _addIncludesAndTm2flags(const GWB_CONTEXT *context, GWEN_BUFFER *arg
 
 
 
-GWB_BUILDER *GWEN_Tm2Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id)
+GWB_BUILDER *GWEN_Tm2Builder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context)
 {
   GWB_BUILDER *builder;
   GWB_BUILDER_TM2 *xbuilder;
@@ -220,6 +220,8 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   _addIncludesAndTm2flags(context, argBuffer);
+  if (GWEN_Buffer_GetUsedBytes(argBuffer))
+    GWEN_Buffer_AppendString(argBuffer, " ");
   GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
 
   /* we have everything, create cmd now */

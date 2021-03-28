@@ -468,7 +468,7 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
         case GWBUILD_TargetType_InstallLibrary:
           break;
         case GWBUILD_TargetType_ConvenienceLibrary:
-          builder=GWEN_StaticLibBuilder_new(gwenbuild, GWB_Target_GetContext(target), 0);
+          builder=GWEN_StaticLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
           break;
         case GWBUILD_TargetType_Program:
           break;
@@ -615,9 +615,9 @@ GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context
   ext++;
 
   if (strcasecmp(ext, "c")==0)
-    builder=GWEN_CBuilder_new(gwenbuild, context, 0);
+    builder=GWEN_CBuilder_new(gwenbuild, context);
   else if (strcasecmp(ext, "t2d")==0)
-    builder=GWEN_Tm2Builder_new(gwenbuild, context, 0);
+    builder=GWEN_Tm2Builder_new(gwenbuild, context);
   /* add more here */
   else {
     DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);

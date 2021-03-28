@@ -42,7 +42,7 @@ static GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB
 
 
 
-GWB_BUILDER *GWEN_StaticLibBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id)
+GWB_BUILDER *GWEN_StaticLibBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context)
 {
   GWB_BUILDER *builder;
   GWB_BUILDER_STATICLIB *xbuilder;

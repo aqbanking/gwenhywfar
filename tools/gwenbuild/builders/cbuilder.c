@@ -43,7 +43,7 @@ static void _addDefinesIncludesAndCflags(const GWB_CONTEXT *context, GWEN_BUFFER
 
 
 
-GWB_BUILDER *GWEN_CBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id)
+GWB_BUILDER *GWEN_CBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context)
 {
   GWB_BUILDER *builder;
   GWB_BUILDER_CBUILDER *xbuilder;

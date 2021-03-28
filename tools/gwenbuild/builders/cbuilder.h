@@ -16,7 +16,7 @@
 
 
 
-GWB_BUILDER *GWEN_CBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, uint32_t id);
+GWB_BUILDER *GWEN_CBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context);
 
 
 
