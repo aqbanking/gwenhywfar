@@ -79,6 +79,7 @@ int test_ReadProject(int argc, char **argv)
 {
   GWENBUILD *gwenbuild;
   GWB_PROJECT *project;
+  GWB_BUILD_CONTEXT *buildCtx;
   const char *folder;
   int rv;
 
@@ -104,9 +105,18 @@ int test_ReadProject(int argc, char **argv)
     DBG_ERROR(NULL, "Error makeing builders for targets.");
     return 2;
   }
-
   DBG_ERROR(NULL, "Targets successfully created.");
-  GWB_Project_Dump(project, 2, 0);
+
+  buildCtx=GWBUILD_MakeBuildCommands(project);
+  if (buildCtx==NULL) {
+    GWB_Project_Dump(project, 2, 0);
+    DBG_ERROR(NULL, "Could not generate build commands");
+    return 2;
+  }
+  DBG_ERROR(NULL, "Build commands successfully created.");
+  GWB_BuildCtx_Dump(buildCtx, 2);
+
+  //GWB_Project_Dump(project, 2, 0);
   return 0;
 }
 

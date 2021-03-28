@@ -212,18 +212,41 @@ void GWB_Builder_AddFileNamesToBuffer(const GWB_CONTEXT *context, const GWB_FILE
 
 void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer)
 {
-  const char *s;
+  const char *folder;
+  const char *buildDir;
+  const char *sourceDir;
+  const char *topBuildDir;
+  const char *topSourceDir;
+  const char *initialSourceDir;
+  GWEN_BUFFER *realFileFolderBuffer;
+  GWEN_BUFFER *relBuffer;
 
+  buildDir=GWB_Context_GetCurrentBuildDir(context);
+  sourceDir=GWB_Context_GetCurrentSourceDir(context);
+  topBuildDir=GWB_Context_GetTopBuildDir(context);
+  topSourceDir=GWB_Context_GetTopSourceDir(context);
+  initialSourceDir=GWB_Context_GetInitialSourceDir(context);
+
+  folder=GWB_File_GetFolder(file);
+
+  realFileFolderBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
-    s=GWB_Context_GetCurrentSourceDir(context);
-    if (s && *s) {
-      GWEN_Buffer_AppendString(argBuffer, s);
-      GWEN_Buffer_AppendString(argBuffer, GWEN_DIR_SEPARATOR_S);
-    }
+    GWEN_Buffer_AppendString(realFileFolderBuffer, initialSourceDir);
+    GWEN_Buffer_AppendString(realFileFolderBuffer, GWEN_DIR_SEPARATOR_S);
   }
-  s=GWB_File_GetName(file);
-  if (s && *s)
-    GWEN_Buffer_AppendString(argBuffer, s);
+  GWEN_Buffer_AppendString(realFileFolderBuffer, folder);
+
+  relBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWBUILD_GetPathBetweenFolders(buildDir, GWEN_Buffer_GetStart(realFileFolderBuffer), relBuffer);
+
+  if (GWEN_Buffer_GetUsedBytes(relBuffer))
+    GWEN_Buffer_AppendString(relBuffer, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(relBuffer, GWB_File_GetName(file));
+
+  GWEN_Buffer_AppendString(argBuffer, GWEN_Buffer_GetStart(relBuffer));
+
+  GWEN_Buffer_free(relBuffer);
+  GWEN_Buffer_free(realFileFolderBuffer);
 }
 
 

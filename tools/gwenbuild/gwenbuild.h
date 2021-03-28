@@ -30,6 +30,7 @@ typedef enum {
 #include "gwenbuild/file.h"
 #include "gwenbuild/target.h"
 #include "gwenbuild/project.h"
+#include "gwenbuild/buildctx/buildctx.h"
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
@@ -43,6 +44,7 @@ void GWBUILD_free(GWENBUILD *gwenbuild);
 
 
 int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project);
+GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project);
 
 
 const char *GWBUILD_GetToolNameCC(const GWENBUILD *gwenbuild);
@@ -73,6 +75,7 @@ void GWBUILD_Debug_PrintDb(const char *sName, GWEN_DB_NODE *db, int indent);
 void GWBUILD_Debug_PrintFileList2(const char *sName, const GWB_FILE_LIST2 *fileList2, int indent);
 void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *targetList2, int indent, int fullDump);
 void GWBUILD_Debug_PrintBuilderList2(const char *sName, const GWB_BUILDER_LIST2 *builderList2, int indent, int fullDump);
+void GWBUILD_Debug_PrintBuildCmdList2(const char *sName, const GWB_BUILD_CMD_LIST2 *buildCmdList2, int indent);
 void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl, int indent);
 void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent);
 

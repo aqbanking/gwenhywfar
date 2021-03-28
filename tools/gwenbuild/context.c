@@ -53,6 +53,8 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
 
   ctx->currentTarget=originalCtx->currentTarget;
 
+  if (originalCtx->initialSourceDir)
+    ctx->initialSourceDir=strdup(originalCtx->initialSourceDir);
   if (originalCtx->currentRelativeDir)
     ctx->currentRelativeDir=strdup(originalCtx->currentRelativeDir);
   if (originalCtx->topBuildDir)
@@ -94,6 +96,7 @@ void GWB_Context_free(GWB_CONTEXT *ctx)
     free(ctx->topSourceDir);
     free(ctx->currentBuildDir);
     free(ctx->currentSourceDir);
+    free(ctx->initialSourceDir);
     free(ctx->compilerFlags);
     free(ctx->linkerFlags);
 
@@ -265,6 +268,21 @@ void GWB_Context_SetCurrentRelativeDir(GWB_CONTEXT *ctx, const char *s)
     ctx->currentRelativeDir=strdup(s);
   else
     ctx->currentRelativeDir=NULL;
+}
+
+
+
+const char *GWB_Context_GetInitialSourceDir(const GWB_CONTEXT *ctx)
+{
+  return ctx->initialSourceDir;
+}
+
+
+
+void GWB_Context_SetInitialSourceDir(GWB_CONTEXT *ctx, const char *s)
+{
+  free(ctx->initialSourceDir);
+  ctx->initialSourceDir=s?strdup(s):NULL;
 }
 
 

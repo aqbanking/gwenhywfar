@@ -49,5 +49,7 @@ GWB_FILE_LIST2 *GWB_BuildCmd_GetOutFileList2(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
 
+void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent);
+
 
 #endif

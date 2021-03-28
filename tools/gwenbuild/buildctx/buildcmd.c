@@ -163,4 +163,25 @@ void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file)
 
 
 
+void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "BuildCmd:\n");
+
+  GWBUILD_Debug_PrintValue(   "folder.......", bcmd->folder, indent+2);
+  GWBUILD_Debug_PrintIntValue("blockingFiles", bcmd->blockingFiles, indent+2);
+  GWBUILD_Debug_PrintKvpList("prepareCommandList", bcmd->prepareCommandList, indent+2);
+  GWBUILD_Debug_PrintKvpList("buildCommandList", bcmd->buildCommandList, indent+2);
+  GWBUILD_Debug_PrintFileList2("inFileList2", bcmd->inFileList2, indent+2);
+  GWBUILD_Debug_PrintFileList2("outFileList2", bcmd->outFileList2, indent+2);
+
+}
+
+
+
+
+
 

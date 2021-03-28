@@ -44,6 +44,7 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir)
   int rv;
 
   currentContext=GWB_Context_new();
+  GWB_Context_SetInitialSourceDir(currentContext, srcDir);
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
   GWB_Context_SetCurrentSourceDir(currentContext, srcDir);
   _copySomeEnvironmentVariablesToDb(GWB_Context_GetVars(currentContext));

@@ -388,6 +388,33 @@ void GWBUILD_Debug_PrintBuilderList2(const char *sName, const GWB_BUILDER_LIST2 
 
 
 
+void GWBUILD_Debug_PrintBuildCmdList2(const char *sName, const GWB_BUILD_CMD_LIST2 *buildCmdList2, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "%s:\n", sName);
+
+  if (buildCmdList2) {
+    GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+    it=GWB_BuildCmd_List2_First(buildCmdList2);
+    if (it) {
+      GWB_BUILD_CMD *builder;
+
+      builder=GWB_BuildCmd_List2Iterator_Data(it);
+      while(builder) {
+        GWB_BuildCmd_Dump(builder, indent+2);
+        builder=GWB_BuildCmd_List2Iterator_Next(it);
+      }
+      GWB_BuildCmd_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
 void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl, int indent)
 {
   if (sl) {
@@ -427,21 +454,24 @@ int GWBUILD_GetPathBetweenFolders(const char *folder1, const char *folder2, GWEN
 
   absFolder1Buffer=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Directory_GetAbsoluteFolderPath(folder1, absFolder1Buffer);
+  DBG_ERROR(NULL, "Folder1: \"%s\" -> \"%s\"", folder1, GWEN_Buffer_GetStart(absFolder1Buffer));
 
   absFolder2Buffer=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Directory_GetAbsoluteFolderPath(folder2, absFolder2Buffer);
+  DBG_ERROR(NULL, "Folder2: \"%s\" -> \"%s\"", folder2, GWEN_Buffer_GetStart(absFolder2Buffer));
 
   xmlNodeFolder1=GWEN_XMLNode_GetNodeByXPath(xmlNodeRoot, GWEN_Buffer_GetStart(absFolder1Buffer), 0);
   GWEN_Buffer_free(absFolder1Buffer);
   xmlNodeFolder2=GWEN_XMLNode_GetNodeByXPath(xmlNodeRoot, GWEN_Buffer_GetStart(absFolder2Buffer), 0);
   GWEN_Buffer_free(absFolder2Buffer);
 
-  rv=GWEN_XMLNode_GetXPath(xmlNodeFolder1, xmlNodeFolder2, resultBuffer);
+  rv=GWEN_XMLNode_GetPathBetween(xmlNodeFolder1, xmlNodeFolder2, resultBuffer);
   GWEN_XMLNode_free(xmlNodeRoot);
   if (rv<0) {
     DBG_ERROR(NULL, "Not path found between folders \"%s\" and \"%s\"", folder1, folder2);
     return rv;
   }
+  DBG_ERROR(NULL, "Path: \"%s\"", GWEN_Buffer_GetStart(resultBuffer));
 
   return 0;
 }
@@ -740,6 +770,42 @@ int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget)
   return 0;
 }
 
+
+
+GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
+{
+  GWB_BUILDER_LIST2 *builderList;
+
+  builderList=GWB_Project_GetBuilderList(project);
+  if (builderList) {
+    GWB_BUILDER_LIST2_ITERATOR *it;
+
+    it=GWB_Builder_List2_First(builderList);
+    if (it) {
+      GWB_BUILD_CONTEXT *buildCtx;
+      GWB_BUILDER *builder;
+
+      buildCtx=GWB_BuildCtx_new();
+      builder=GWB_Builder_List2Iterator_Data(it);
+      while(builder) {
+        int rv;
+
+        rv=GWB_Builder_AddBuildCmd(builder, buildCtx);
+        if (rv<0) {
+          DBG_ERROR(NULL, "here (%d)", rv);
+          GWB_Builder_List2Iterator_free(it);
+          GWB_BuildCtx_free(buildCtx);
+          return NULL;
+        }
+        builder=GWB_Builder_List2Iterator_Next(it);
+      }
+
+      GWB_Builder_List2Iterator_free(it);
+      return buildCtx;
+    }
+  }
+  return NULL;
+}
 
 
 

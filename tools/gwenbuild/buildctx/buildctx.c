@@ -64,6 +64,7 @@ GWB_FILE_LIST2 *GWB_BuildCtx_GetFileList(const GWB_BUILD_CONTEXT *bctx)
 
 void GWB_BuildCtx_AddFile(GWB_BUILD_CONTEXT *bctx, GWB_FILE *file)
 {
+  GWB_File_SetId(file, ++(bctx->lastFileId));
   GWB_File_List2_PushBack(bctx->fileList, file);
 }
 
@@ -148,6 +149,19 @@ void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD 
   }
 }
 
+
+
+void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "BuildCtx:\n");
+
+  GWBUILD_Debug_PrintBuildCmdList2("commandList", bctx->commandList, indent+2);
+  GWBUILD_Debug_PrintFileList2("fileList", bctx->fileList, indent+2);
+}
 
 
 

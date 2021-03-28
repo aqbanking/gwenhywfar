@@ -35,6 +35,8 @@ const char *GWB_Context_GetCurrentRelativeDir(const GWB_CONTEXT *ctx);
 void GWB_Context_SetCurrentRelativeDir(GWB_CONTEXT *ctx, const char *s);
 void GWB_Context_AddCurrentRelativeDir(GWB_CONTEXT *ctx, const char *s);
 
+const char *GWB_Context_GetInitialSourceDir(const GWB_CONTEXT *ctx);
+void GWB_Context_SetInitialSourceDir(GWB_CONTEXT *ctx, const char *s);
 
 const char *GWB_Context_GetTopBuildDir(const GWB_CONTEXT *ctx);
 void GWB_Context_SetTopBuildDir(GWB_CONTEXT *ctx, const char *s);

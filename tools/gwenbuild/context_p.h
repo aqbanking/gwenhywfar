@@ -16,6 +16,7 @@
 struct GWB_CONTEXT {
   GWEN_TREE2_ELEMENT(GWB_CONTEXT)
 
+  char *initialSourceDir;
   char *currentRelativeDir;
 
   char *topBuildDir;
