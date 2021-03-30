@@ -86,19 +86,16 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 {
   GWEN_XMLNODE *n;
 
-  DBG_ERROR(NULL, "Reading child nodes:");
-  GWEN_XMLNode_Dump(xmlNode, 2);
-
   n=GWEN_XMLNode_GetFirstTag(xmlNode);
   while (n) {
     const char *name;
 
-    DBG_ERROR(NULL, "- Reading child node");
+    DBG_DEBUG(NULL, "- Reading child node");
     name=GWEN_XMLNode_GetData(n);
     if (name && *name) {
       int rv;
 
-      DBG_ERROR(NULL, "Handling element \"%s\"", name);
+      DBG_DEBUG(NULL, "Handling element \"%s\"", name);
 
       if (strcasecmp(name, "options")==0)
         rv=GWB_ParseOptions(project, currentContext, n);
@@ -117,7 +114,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
       else if (strcasecmp(name, "setVar")==0)
         rv=GWB_Parser_ParseSetVar(currentContext, n);
       else {
-        DBG_ERROR(NULL, "Element not handled, ignoring");
+        DBG_DEBUG(NULL, "Element not handled, ignoring");
         rv=0;
       }
       if (rv<0) {

@@ -204,11 +204,11 @@ int _isAcceptableInput(GWEN_UNUSED GWB_BUILDER *builder, const GWB_FILE *file)
     if (ext) {
       ext++;
       if (strcasecmp(ext, "o")==0) {
-        DBG_INFO(NULL, "File \"%s\" is acceptable as input for StaticLibBuilder", s);
+        DBG_DEBUG(NULL, "File \"%s\" is acceptable as input for StaticLibBuilder", s);
         return 1;
       }
     }
-    DBG_INFO(NULL, "File \"%s\" is NOT acceptable as input for StaticLibBuilder", s);
+    DBG_DEBUG(NULL, "File \"%s\" is NOT acceptable as input for StaticLibBuilder", s);
   }
 
   return 0;

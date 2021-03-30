@@ -56,12 +56,12 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
     if (name && *name) {
       int rv;
 
-      DBG_INFO(NULL, "Handling element \"%s\"", name);
+      DBG_DEBUG(NULL, "Handling element \"%s\"", name);
 
       if (strcasecmp(name, "lib")==0)
         rv=_parseLib(project, currentContext, n);
       else {
-        DBG_ERROR(NULL, "Element not handled");
+        DBG_INFO(NULL, "Element not handled");
         rv=0;
       }
       if (rv<0) {
@@ -118,7 +118,7 @@ int _parseLib(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *x
   else
     rv=GWB_Tools_TryLink(GWB_Project_GetGwbuild(project), "int main(int argc, char **argv) {return 0;}", sName);
   if (rv<0) {
-    DBG_ERROR(NULL, "here (%d)", rv);
+    DBG_INFO(NULL, "here (%d)", rv);
     return rv;
   }
   else if (rv==0) {

@@ -475,7 +475,7 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 
         rv=_addOrBuildTargetSources(project, target);
         if (rv<0) {
-          DBG_ERROR(NULL, "here (%d)", rv);
+          DBG_INFO(NULL, "here (%d)", rv);
           return rv;
         }
 
@@ -486,7 +486,7 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 
     rv=_addSubTargets(project);
     if (rv<0) {
-      DBG_ERROR(NULL, "here (%d)", rv);
+      DBG_INFO(NULL, "here (%d)", rv);
       return rv;
     }
   }
@@ -516,7 +516,7 @@ int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
     fileList2=GWB_File_List2_new();
     rv=_addSourcesOrMkBuildersAndGetTheirOutputs(project, target, fileList1, fileList2);
     if (rv<0) {
-      DBG_ERROR(NULL, "here (%d)", rv);
+      DBG_INFO(NULL, "here (%d)", rv);
       GWB_File_List2_free(fileList1);
       GWB_File_List2_free(fileList1);
       return rv;
@@ -550,11 +550,11 @@ int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
 
     file=GWB_File_List2Iterator_Data(it);
     while(file) {
-      DBG_ERROR(NULL, "Checking target \"%s\": file \"%s\"",
+      DBG_DEBUG(NULL, "Checking target \"%s\": file \"%s\"",
                 GWB_Target_GetName(target),
                 GWB_File_GetName(file));
       if (GWB_Builder_IsAcceptableInput(targetBuilder, file)) {
-        DBG_ERROR(NULL, "- adding file \"%s\" as input for target \"%s\"",
+        DBG_DEBUG(NULL, "- adding file \"%s\" as input for target \"%s\"",
                   GWB_File_GetName(file),
                   GWB_Target_GetName(target));
         GWB_Builder_AddSourceFile(targetBuilder, file);
@@ -606,7 +606,7 @@ int _addSubTargets(GWB_PROJECT *project)
 
           rv=_addSubTargetsForTarget(project, target, usedTargetList);
           if (rv<0) {
-            DBG_ERROR(NULL, "here (%d)", rv);
+            DBG_INFO(NULL, "here (%d)", rv);
             GWB_Target_List2Iterator_free(it);
             return rv;
           }
@@ -707,7 +707,7 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
 
         rv=GWB_Builder_AddBuildCmd(builder, buildCtx);
         if (rv<0) {
-          DBG_ERROR(NULL, "here (%d)", rv);
+          DBG_INFO(NULL, "here (%d)", rv);
           GWB_Builder_List2Iterator_free(it);
           GWB_BuildCtx_free(buildCtx);
           return NULL;
@@ -749,7 +749,7 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
   }
   ext=GWB_File_GetExt(file);
   if (ext==NULL) {
-    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\"", name);
+    DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\"", name);
     return NULL;
   }
   ext++;
@@ -760,7 +760,7 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
     builder=GWEN_Tm2Builder_new(gwenbuild, context);
   /* add more here */
   else {
-    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
+    DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
     return NULL;
   }
 

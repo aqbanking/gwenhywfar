@@ -169,7 +169,7 @@ int _isAcceptableInput(GWEN_UNUSED GWB_BUILDER *builder, const GWB_FILE *file)
     if (ext) {
       ext++;
       if (strcasecmp(ext, "t2d")==0) {
-        DBG_INFO(NULL, "File \"%s\" is acceptable as input for Tm2Builder", s);
+        DBG_DEBUG(NULL, "File \"%s\" is acceptable as input for Tm2Builder", s);
         return 1;
       }
     }

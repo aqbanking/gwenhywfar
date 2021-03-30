@@ -75,14 +75,14 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
     if (name && *name) {
       int rv;
 
-      DBG_INFO(NULL, "Handling element \"%s\"", name);
+      DBG_DEBUG(NULL, "Handling element \"%s\"", name);
 
       if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if (strcasecmp(name, "dep")==0)
         rv=_parseDep(currentContext, n);
       else {
-        DBG_ERROR(NULL, "Element not handled");
+        DBG_DEBUG(NULL, "Element not handled");
         rv=0;
       }
       if (rv<0) {
@@ -182,7 +182,7 @@ int _checkVersion(GWEN_DB_NODE *db,
   }
   GWEN_Buffer_AppendString(argBuffer, sName);
 
-  DBG_ERROR(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
+  DBG_DEBUG(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
   rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer),
                                           stdOutBuffer, stdErrBuffer);
   if (rv<0) {
@@ -251,7 +251,7 @@ int _callPkgConfig(GWEN_DB_NODE *db,
   GWEN_Buffer_AppendString(argBuffer, " ");
   GWEN_Buffer_AppendString(argBuffer, sName);
 
-  DBG_ERROR(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
+  DBG_DEBUG(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
   rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer), stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running pkg-config (%d)", rv);

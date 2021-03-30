@@ -169,7 +169,7 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const 
 
   xmlDocNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
-  DBG_ERROR(NULL, "Reading file %s", GWEN_Buffer_GetStart(fileNameBuf));
+  DBG_DEBUG(NULL, "Reading file %s", GWEN_Buffer_GetStart(fileNameBuf));
   rv=GWEN_XML_ReadFile(xmlDocNode, GWEN_Buffer_GetStart(fileNameBuf), GWEN_XML_FLAGS_DEFAULT);
   if (rv<0) {
     DBG_INFO(NULL, "here %d)", rv);

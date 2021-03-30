@@ -193,7 +193,7 @@ int _isAcceptableInput(GWEN_UNUSED GWB_BUILDER *builder, const GWB_FILE *file)
     if (ext) {
       ext++;
       if (strcasecmp(ext, "c")==0) {
-        DBG_INFO(NULL, "File \"%s\" is acceptable as input for CBuilder", s);
+        DBG_DEBUG(NULL, "File \"%s\" is acceptable as input for CBuilder", s);
         return 1;
       }
     }
