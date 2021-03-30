@@ -68,6 +68,7 @@ void GWB_BuildCmd_List2_FreeAll(GWB_BUILD_CMD_LIST2 *cmdList);
 
 
 void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent);
+void GWB_BuildCmd_PrintDescriptionWithText(const GWB_BUILD_CMD *bcmd, int indent, const char *text);
 
 
 #endif

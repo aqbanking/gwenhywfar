@@ -708,8 +708,13 @@ void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx)
 
     bcmd=GWB_BuildCmd_List2Iterator_Data(it);
     while(bcmd) {
-      if (GWB_BuildCmd_GetCurrentCommand(bcmd))
+      if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
+        GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Adding command to waiting queue");
         GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+      }
+      else {
+        GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Command has no current command, not adding to waiting queue");
+      }
 
       bcmd=GWB_BuildCmd_List2Iterator_Next(it);
     }
@@ -736,8 +741,10 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
       if (GWB_BuildCmd_GetBlockingFiles(bcmd)==0) {
         int rv;
 
+        GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Starting command");
         rv=_startCommand(bcmd);
         if (rv<0) {
+          GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Error starting command");
           GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
           errors++;
         }
@@ -746,6 +753,8 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
           started++;
         }
       }
+      else
+        GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
     }
     else
       GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);

@@ -469,6 +469,55 @@ void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent)
 
 
 
+void GWB_BuildCmd_PrintDescriptionWithText(const GWB_BUILD_CMD *bcmd, int indent, const char *text)
+{
+  if (bcmd) {
+    const GWB_FILE *fileIn=NULL;
+    const GWB_FILE *fileOut=NULL;
+
+    if (bcmd->inFileList2)
+      fileIn=GWB_File_List2_GetFront(bcmd->inFileList2);
+    if (bcmd->outFileList2)
+      fileOut=GWB_File_List2_GetFront(bcmd->outFileList2);
+    if (fileIn || fileOut) {
+      const char *folder;
+      const char *fileNameIn=NULL;
+      const char *fileNameOut=NULL;
+
+      folder=GWB_BuildCmd_GetFolder(bcmd);
+
+      if (fileIn)
+        fileNameIn=GWB_File_GetName(fileIn);
+      if (fileOut)
+        fileNameOut=GWB_File_GetName(fileOut);
+
+      if (fileNameIn && fileNameOut) {
+        int i;
+
+        for(i=0; i<indent; i++)
+          fprintf(stderr, " ");
+        fprintf(stderr, "%s: %s (%s -> %s)\n",
+                folder?folder:"<no folder>",
+                text?text:"BuildCmd",
+                fileNameIn?fileNameIn:"<no filename>",
+                fileNameOut?fileNameOut:"<no filename>");
+      }
+      else if (fileIn) {
+        int i;
+
+        for(i=0; i<indent; i++)
+          fprintf(stderr, " ");
+        fprintf(stderr, "%s: %s (%s) \n",
+                folder?folder:"<no folder>",
+                text?text:"BuildCmd",
+                fileNameIn?fileNameIn:"<no filename>");
+      }
+    }
+  }
+}
+
+
+
 
 
 
