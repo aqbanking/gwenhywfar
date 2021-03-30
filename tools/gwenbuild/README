@@ -237,3 +237,41 @@ TODO:
 - Program implementieren
 - DIST implementieren (tarball bauen)
 
+
+
+
+
+- QUEUES:
+  - waiting
+  - running
+  - runnable
+  - finished
+
+- fuer jedes BuildCmd in runningQueue:
+  - process?
+    - process running?
+      - nein:
+      . - remove from runningQueue
+      . - SetProcess(NULL)
+      . - exited?
+      .   - ja:
+      .   . - currentCommand: more?
+      .   .   - ja:
+      .   .   . - setCurrentCommand(next)
+      .   .   . - move to runnableQueue   
+      .   .   - nein: 
+      .   .     - move to finishedQueue
+      .   .     - fuer jedes OutputFile
+      .   .       - fuer jedes WaitingBuildCommand:
+      .   .         - WaitingBuildCommand->decBlockingFile
+      .   .           - 0?
+      .   .             - move WaitingBuildCommand ->runnableCommands
+      .   .
+      .   .     
+      .   - nein:
+      .     - move to finishedQueue
+      - ja:
+        - nothing to change
+
+
+
