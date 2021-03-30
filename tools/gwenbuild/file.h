@@ -60,6 +60,7 @@ void GWB_File_SetFileType(GWB_FILE *f, const char *s);
 
 GWB_BUILD_CMD_LIST2 *GWB_File_GetWaitingBuildCmdList2(const GWB_FILE *f);
 void GWB_File_AddWaitingBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd);
+void GWB_File_ClearWaitingBuildCmds(GWB_FILE *file);
 
 
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);

@@ -19,6 +19,12 @@ struct GWB_BUILD_CONTEXT {
   int lastFileId;
   GWB_BUILD_CMD_LIST2 *commandList;
   GWB_FILE_LIST2 *fileList;
+
+  /* only used while running commands */
+  GWB_BUILD_CMD_LIST2 *waitingQueue;
+  GWB_BUILD_CMD_LIST2 *runningQueue;
+  GWB_BUILD_CMD_LIST2 *finishedQueue;
+
 };
 
 

@@ -215,6 +215,14 @@ void GWB_File_AddWaitingBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd)
 
 
 
+void GWB_File_ClearWaitingBuildCmds(GWB_FILE *f)
+{
+  if (f->waitingBuildCmdList2)
+    GWB_BuildCmd_List2_Clear(f->waitingBuildCmdList2);
+}
+
+
+
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2)
 {
   if (fileList2) {

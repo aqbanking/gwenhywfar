@@ -16,6 +16,8 @@
 
 #include <gwenhywfar/debug.h>
 
+#include <unistd.h>
+
 
 
 static void _setupDepsForCmd(GWB_BUILD_CMD *bcmd);
@@ -28,6 +30,23 @@ void _readCommandsFromXml(GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode, const 
 
 void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *varName);
 uint32_t _readFlagsFromChar(const char *flagsAsText);
+
+int _setupDependencies(GWB_BUILD_CONTEXT *bctx);
+
+void _clearDeps(GWB_BUILD_CONTEXT *bctx);
+void _clearDepsInCommands(GWB_BUILD_CONTEXT *bctx);
+void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx);
+
+void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
+void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx);
+void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
+int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
+int _startCommand(GWB_BUILD_CMD *bcmd);
+int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
+void _signalJobFinished(GWB_BUILD_CMD *bcmd);
+void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
+void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
+void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList);
 
 
 
@@ -48,8 +67,12 @@ GWB_BUILD_CONTEXT *GWB_BuildCtx_new()
 void GWB_BuildCtx_free(GWB_BUILD_CONTEXT *bctx)
 {
   if (bctx) {
-    GWB_BuildCmd_List2_free(bctx->commandList);
-    GWB_File_List2_free(bctx->fileList);
+    GWB_BuildCmd_List2_free(bctx->waitingQueue);
+    GWB_BuildCmd_List2_free(bctx->runningQueue);
+    GWB_BuildCmd_List2_free(bctx->finishedQueue);
+
+    GWB_BuildCmd_List2_FreeAll(bctx->commandList);
+    GWB_File_List2_FreeAll(bctx->fileList);
 
     GWEN_FREE_OBJECT(bctx);
   }
@@ -167,8 +190,10 @@ void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD 
 
 
 
-int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx)
+int _setupDependencies(GWB_BUILD_CONTEXT *bctx)
 {
+  _clearDeps(bctx);
+
   if (bctx->commandList) {
     GWB_BUILD_CMD_LIST2_ITERATOR *it;
 
@@ -216,6 +241,59 @@ void _setupDepsForCmd(GWB_BUILD_CMD *bcmd)
     }
   }
 }
+
+
+
+void _clearDeps(GWB_BUILD_CONTEXT *bctx)
+{
+  _clearDepsInCommands(bctx);
+  _clearDepsInFiles(bctx);
+}
+
+
+
+void _clearDepsInCommands(GWB_BUILD_CONTEXT *bctx)
+{
+  if (bctx->commandList) {
+    GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+    it=GWB_BuildCmd_List2_First(bctx->commandList);
+    if (it) {
+      GWB_BUILD_CMD *bcmd;
+
+      bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+      while(bcmd) {
+        GWB_BuildCmd_SetBlockingFiles(bcmd, 0);
+        bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+      }
+      GWB_BuildCmd_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx)
+{
+  if (bctx->fileList) {
+    GWB_FILE_LIST2_ITERATOR *it;
+
+    it=GWB_File_List2_First(bctx->fileList);
+    if (it) {
+      GWB_FILE *file;
+
+      file=GWB_File_List2Iterator_Data(it);
+      while(file) {
+        GWB_File_ClearWaitingBuildCmds(file);
+        file=GWB_File_List2Iterator_Next(it);
+      }
+      GWB_File_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
 
 
 
@@ -467,13 +545,6 @@ GWB_BUILD_CONTEXT *GWB_BuildCtx_ReadFromXmlFile(const char *fileName)
   buildCtx=GWB_BuildCtx_fromXml(xmlBuildCtx);
   GWEN_XMLNode_free(xmlNode);
 
-  rv=GWB_BuildCtx_SetupDependencies(buildCtx);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error determining build dependencies for BuildContext in file \"%s\"", fileName);
-    GWB_BuildCtx_free(buildCtx);
-    return NULL;
-  }
-
   return buildCtx;
 }
 
@@ -513,6 +584,336 @@ void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent)
   GWBUILD_Debug_PrintBuildCmdList2("commandList", bctx->commandList, indent+2);
   GWBUILD_Debug_PrintFileList2("fileList", bctx->fileList, indent+2);
 }
+
+
+
+
+
+
+int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrepareCommands)
+{
+  int waitingJobs;
+  int runningJobs;
+
+  _setupDependencies(bctx);
+  _setupCommands(bctx, usePrepareCommands);
+  _createCommandQueues(bctx);
+  _initiallyFillQueues(bctx);
+
+  waitingJobs=GWB_BuildCmd_List2_GetSize(bctx->waitingQueue);
+  runningJobs=GWB_BuildCmd_List2_GetSize(bctx->runningQueue);
+  while(waitingJobs+runningJobs) {
+    int startedCommands;
+    int changedCommands;
+
+    startedCommands=_checkWaitingQueue(bctx, maxConcurrentJobs-runningJobs);
+    if (startedCommands<0) {
+      _abortAllCommands(bctx);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    changedCommands=_checkRunningQueue(bctx);
+    if (changedCommands<0) {
+      _abortAllCommands(bctx);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    if (startedCommands==0 && changedCommands==0) {
+      DBG_ERROR(NULL, "Nothing changed, sleeping...");
+      sleep(3);
+    }
+
+    waitingJobs=GWB_BuildCmd_List2_GetSize(bctx->waitingQueue);
+    runningJobs=GWB_BuildCmd_List2_GetSize(bctx->runningQueue);
+  } /* while */
+
+  GWB_BuildCmd_List2_free(bctx->waitingQueue);
+  GWB_BuildCmd_List2_free(bctx->runningQueue);
+  GWB_BuildCmd_List2_free(bctx->finishedQueue);
+
+  return 0;
+}
+
+
+
+void _abortAllCommands(GWB_BUILD_CONTEXT *bctx)
+{
+  _abortCommandsInQueue(bctx->waitingQueue);
+  GWB_BuildCmd_List2_free(bctx->waitingQueue);
+
+  _abortCommandsInQueue(bctx->runningQueue);
+  GWB_BuildCmd_List2_free(bctx->runningQueue);
+
+  _abortCommandsInQueue(bctx->finishedQueue);
+  GWB_BuildCmd_List2_free(bctx->finishedQueue);
+}
+
+
+
+void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList)
+{
+  GWB_BUILD_CMD *bcmd;
+
+  while( (bcmd=GWB_BuildCmd_List2_GetFront(cmdList)) ) {
+    GWB_BuildCmd_List2_PopFront(cmdList);
+    GWB_BuildCmd_SetCurrentProcess(bcmd, NULL);
+  } /* while */
+}
+
+
+
+
+void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands)
+{
+  GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+  it=GWB_BuildCmd_List2_First(bctx->commandList);
+  if (it) {
+    GWB_BUILD_CMD *bcmd;
+
+    bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+    while(bcmd) {
+      GWB_KEYVALUEPAIR_LIST *cmdList;
+  
+      if (forPrepareCommands)
+        cmdList=GWB_BuildCmd_GetPrepareCommandList(bcmd);
+      else
+        cmdList=GWB_BuildCmd_GetBuildCommandList(bcmd);
+      if (cmdList)
+        GWB_BuildCmd_SetCurrentCommand(bcmd, GWB_KeyValuePair_List_First(cmdList));
+      bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+    }
+    GWB_BuildCmd_List2Iterator_free(it);
+  }
+}
+
+
+
+void _createCommandQueues(GWB_BUILD_CONTEXT *bctx)
+{
+  bctx->waitingQueue=GWB_BuildCmd_List2_new();
+  bctx->finishedQueue=GWB_BuildCmd_List2_new();
+  bctx->runningQueue=GWB_BuildCmd_List2_new();
+}
+
+
+
+void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx)
+{
+  GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+  it=GWB_BuildCmd_List2_First(bctx->commandList);
+  if (it) {
+    GWB_BUILD_CMD *bcmd;
+
+    bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+    while(bcmd) {
+      if (GWB_BuildCmd_GetCurrentCommand(bcmd))
+        GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+
+      bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+    }
+    GWB_BuildCmd_List2Iterator_free(it);
+  }
+}
+
+
+
+int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
+{
+  GWB_BUILD_CMD_LIST2 *oldQueue;
+  GWB_BUILD_CMD *bcmd;
+  int started=0;
+  int errors=0;
+
+  oldQueue=bctx->waitingQueue;
+  bctx->waitingQueue=GWB_BuildCmd_List2_new();
+
+  while( (bcmd=GWB_BuildCmd_List2_GetFront(oldQueue)) ) {
+
+    GWB_BuildCmd_List2_PopFront(oldQueue);
+    if (started<maxStartAllowed) {
+      if (GWB_BuildCmd_GetBlockingFiles(bcmd)==0) {
+        int rv;
+
+        rv=_startCommand(bcmd);
+        if (rv<0) {
+          GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
+          errors++;
+        }
+        else {
+          GWB_BuildCmd_List2_PushBack(bctx->runningQueue, bcmd);
+          started++;
+        }
+      }
+    }
+    else
+      GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+  } /* while */
+  GWB_BuildCmd_List2_free(oldQueue);
+
+  if (errors)
+    return GWEN_ERROR_GENERIC;
+  return started;
+}
+
+
+
+int _startCommand(GWB_BUILD_CMD *bcmd)
+{
+  GWB_KEYVALUEPAIR *currentCommand;
+
+  currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
+  if (currentCommand) {
+    const char *folder;
+    const char *cmd;
+    const char *args;
+
+    folder=GWB_BuildCmd_GetFolder(bcmd);
+    cmd=GWB_KeyValuePair_GetKey(currentCommand);
+    args=GWB_KeyValuePair_GetValue(currentCommand);
+
+    if (cmd && *cmd) {
+      GWEN_PROCESS *process;
+      GWEN_PROCESS_STATE pstate;
+
+      process=GWEN_Process_new();
+      if (folder && *folder)
+        GWEN_Process_SetFolder(process, folder);
+      GWB_BuildCmd_SetCurrentProcess(bcmd, process);
+      DBG_ERROR(NULL, "Starting \"%s %s\"", cmd, args);
+      pstate=GWEN_Process_Start(process, cmd, args);
+      if (pstate!=GWEN_ProcessStateRunning) {
+        DBG_ERROR(NULL, "Error starting command process (%d)", pstate);
+        GWB_BuildCmd_SetCurrentProcess(bcmd, NULL);
+        return GWEN_ERROR_GENERIC;
+      }
+      DBG_ERROR(NULL, "Process started");
+      return 0;
+    }
+    else {
+      DBG_ERROR(NULL, "No command in build command");
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+  else {
+    DBG_ERROR(NULL, "No current command in build command");
+    return GWEN_ERROR_GENERIC;
+  }
+}
+
+
+
+int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
+{
+  GWB_BUILD_CMD_LIST2 *oldRunningQueue;
+  GWB_BUILD_CMD *bcmd;
+  int changes=0;
+  int errors=0;
+
+  oldRunningQueue=bctx->runningQueue;
+  bctx->runningQueue=GWB_BuildCmd_List2_new();
+
+  while( (bcmd=GWB_BuildCmd_List2_GetFront(oldRunningQueue)) ) {
+    GWEN_PROCESS *process;
+    GWEN_PROCESS_STATE pstate;
+
+    GWB_BuildCmd_List2_PopFront(oldRunningQueue);
+
+    process=GWB_BuildCmd_GetCurrentProcess(bcmd);
+    pstate=GWEN_Process_CheckState(process);
+    if (pstate!=GWEN_ProcessStateRunning) {
+      changes++;
+      if (pstate==GWEN_ProcessStateExited) {
+        int result;
+
+        result=GWEN_Process_GetResult(process);
+        if (result) {
+          DBG_ERROR(NULL, "Command exited with result %d", result);
+          GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
+          errors++;
+        }
+        else {
+          GWB_KEYVALUEPAIR *nextCommand;
+
+          /* process successfully finished */
+          _signalJobFinished(bcmd);
+          nextCommand=GWB_KeyValuePair_List_Next(GWB_BuildCmd_GetCurrentCommand(bcmd));
+          GWB_BuildCmd_SetCurrentCommand(bcmd, nextCommand);
+          if (nextCommand)
+            GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+          else
+            GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
+        }
+      }
+      else {
+        DBG_ERROR(NULL, "Command aborted (status: %d)", pstate);
+        GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
+        errors++;
+      }
+      GWB_BuildCmd_SetCurrentProcess(bcmd, NULL); /* no longer running */
+    }
+    else
+      GWB_BuildCmd_List2_PushBack(bctx->runningQueue, bcmd); /* still running, put back */
+  } /* while still commands in running queue */
+
+  GWB_BuildCmd_List2_free(oldRunningQueue);
+
+  if (errors)
+    return GWEN_ERROR_GENERIC;
+  return changes;
+}
+
+
+
+void _signalJobFinished(GWB_BUILD_CMD *bcmd)
+{
+  GWB_FILE_LIST2 *outFileList;
+
+  outFileList=GWB_BuildCmd_GetOutFileList2(bcmd);
+  if (outFileList) {
+    GWB_FILE_LIST2_ITERATOR *it;
+
+    it=GWB_File_List2_First(outFileList);
+    if (it) {
+      GWB_FILE *file;
+
+      file=GWB_File_List2Iterator_Data(it);
+      while(file) {
+        GWB_BUILD_CMD_LIST2 *waitingCommands;
+
+        waitingCommands=GWB_File_GetWaitingBuildCmdList2(file);
+        if (waitingCommands)
+          _decBlockingFilesInWaitingBuildCommands(waitingCommands);
+        file=GWB_File_List2Iterator_Next(it);
+      }
+      GWB_File_List2Iterator_free(it);
+    }
+  }
+
+}
+
+
+
+void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands)
+{
+  GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+  it=GWB_BuildCmd_List2_First(waitingCommands);
+  if (it) {
+    GWB_BUILD_CMD *bcmd;
+
+    bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+    while(bcmd) {
+      GWB_BuildCmd_DecBlockingFiles(bcmd);
+      bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+    }
+
+    GWB_BuildCmd_List2Iterator_free(it);
+  }
+}
+
+
 
 
 

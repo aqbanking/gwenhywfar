@@ -68,6 +68,8 @@ void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd)
   if (bcmd) {
     GWEN_LIST_FINI(GWB_BUILD_CMD, bcmd);
 
+    GWB_BuildCmd_SetCurrentProcess(bcmd, NULL);
+    GWB_BuildCmd_SetCurrentCommand(bcmd, NULL);
     GWB_KeyValuePair_List_free(bcmd->prepareCommandList);
     GWB_KeyValuePair_List_free(bcmd->buildCommandList);
 
@@ -135,6 +137,13 @@ int GWB_BuildCmd_GetBlockingFiles(const GWB_BUILD_CMD *bcmd)
 
 
 
+void GWB_BuildCmd_SetBlockingFiles(GWB_BUILD_CMD *bcmd, int i)
+{
+  bcmd->blockingFiles=i;
+}
+
+
+
 int GWB_BuildCmd_IncBlockingFiles(GWB_BUILD_CMD *bcmd)
 {
   return ++(bcmd->blockingFiles);
@@ -179,6 +188,44 @@ void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file)
   if (file)
     GWB_File_List2_PushBack(bcmd->outFileList2, file);
 }
+
+
+
+GWEN_PROCESS *GWB_BuildCmd_GetCurrentProcess(const GWB_BUILD_CMD *bcmd)
+{
+  return bcmd->currentProcess;
+}
+
+
+
+void GWB_BuildCmd_SetCurrentProcess(GWB_BUILD_CMD *bcmd, GWEN_PROCESS *process)
+{
+  if (bcmd->currentProcess) {
+    if (GWEN_Process_CheckState(bcmd->currentProcess)==GWEN_ProcessStateRunning) {
+      DBG_ERROR(NULL, "Process is still running!");
+      GWEN_Process_Terminate(bcmd->currentProcess);
+    }
+    GWEN_Process_free(bcmd->currentProcess);
+  }
+  bcmd->currentProcess=process;
+}
+
+
+
+GWB_KEYVALUEPAIR *GWB_BuildCmd_GetCurrentCommand(const GWB_BUILD_CMD *bcmd)
+{
+  return bcmd->currentCommand;
+}
+
+
+
+void GWB_BuildCmd_SetCurrentCommand(GWB_BUILD_CMD *bcmd, GWB_KEYVALUEPAIR *cmd)
+{
+  bcmd->currentCommand=cmd;
+}
+
+
+
 
 
 
@@ -375,6 +422,27 @@ void _readFileIdsFromXml(GWEN_XMLNODE *xmlNode,
         GWB_File_List2_PushBack(destFileList, file);
     }
     xmlEntry=GWEN_XMLNode_FindNextTag(xmlEntry, groupName, NULL, NULL);
+  }
+}
+
+
+
+void GWB_BuildCmd_List2_FreeAll(GWB_BUILD_CMD_LIST2 *cmdList)
+{
+  if (cmdList) {
+    GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+    it=GWB_BuildCmd_List2_First(cmdList);
+    if (it) {
+      GWB_BUILD_CMD *cmd;
+
+      cmd=GWB_BuildCmd_List2Iterator_Data(it);
+      while(cmd) {
+	GWB_BuildCmd_free(cmd);
+        cmd=GWB_BuildCmd_List2Iterator_Next(it);
+      }
+    }
+    GWB_BuildCmd_List2_free(cmdList);
   }
 }
 

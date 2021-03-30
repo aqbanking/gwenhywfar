@@ -25,6 +25,9 @@ struct GWB_BUILD_CMD {
   int blockingFiles;
   GWB_FILE_LIST2 *inFileList2;
   GWB_FILE_LIST2 *outFileList2;
+
+  GWEN_PROCESS *currentProcess;
+  GWB_KEYVALUEPAIR *currentCommand;
 };
 
 

@@ -115,13 +115,6 @@ int test_ReadProject(int argc, char **argv)
   }
   DBG_ERROR(NULL, "Build commands successfully created.");
 
-  rv=GWB_BuildCtx_SetupDependencies(buildCtx);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error setting up dependencies for build commands.");
-    return 2;
-  }
-  DBG_ERROR(NULL, "Build dependencies successfully created.");
-
   //GWB_Project_Dump(project, 2, 0);
 
   //DBG_ERROR(NULL, "Build context:");
@@ -138,6 +131,22 @@ int test_ReadProject(int argc, char **argv)
     else
       GWB_BuildCtx_WriteToXmlFile(buildCtx2, "buildctx2.xml");
   }
+
+  /* prepare */
+  rv=GWB_BuildCtx_Run(buildCtx, 10, 1);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error preparing builds.");
+    return 2;
+  }
+  DBG_ERROR(NULL, "Build successfully prepared.");
+
+  /* build */
+  rv=GWB_BuildCtx_Run(buildCtx, 10, 0);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error building builds.");
+    return 2;
+  }
+  DBG_ERROR(NULL, "Build successfully done.");
 
   return 0;
 }

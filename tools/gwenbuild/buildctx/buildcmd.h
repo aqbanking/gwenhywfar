@@ -14,6 +14,7 @@
 #include <gwenhywfar/list.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/process.h>
 
 
 typedef struct GWB_BUILD_CMD GWB_BUILD_CMD;
@@ -40,6 +41,7 @@ void GWB_BuildCmd_AddBuildCommand(GWB_BUILD_CMD *bcmd, const char *cmd, const ch
 
 
 int GWB_BuildCmd_GetBlockingFiles(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetBlockingFiles(GWB_BUILD_CMD *bcmd, int i);
 int GWB_BuildCmd_IncBlockingFiles(GWB_BUILD_CMD *bcmd);
 int GWB_BuildCmd_DecBlockingFiles(GWB_BUILD_CMD *bcmd);
 
@@ -50,8 +52,19 @@ GWB_FILE_LIST2 *GWB_BuildCmd_GetOutFileList2(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
 
+
+GWEN_PROCESS *GWB_BuildCmd_GetCurrentProcess(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetCurrentProcess(GWB_BUILD_CMD *bcmd, GWEN_PROCESS *process);
+
+GWB_KEYVALUEPAIR *GWB_BuildCmd_GetCurrentCommand(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetCurrentCommand(GWB_BUILD_CMD *bcmd, GWB_KEYVALUEPAIR *cmd);
+
+
 void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
 GWB_BUILD_CMD *GWB_BuildCmd_fromXml(GWEN_XMLNODE *xmlNode, GWB_FILE_LIST2 *fileList);
+
+
+void GWB_BuildCmd_List2_FreeAll(GWB_BUILD_CMD_LIST2 *cmdList);
 
 
 void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent);
