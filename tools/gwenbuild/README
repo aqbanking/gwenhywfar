@@ -227,3 +227,13 @@ Virtual functions
 # shared lib:
 gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--whole-archive draw/libaqdg_draw.a
 
+
+
+TODO:
+- BuildCtx bauen lassen (zuerst simple mit nur einem Process, spaeter mit mehreren)
+- Symbol Visibility verwenden
+- Dependency Tracking einbauen
+- SharedLib implementieren
+- Program implementieren
+- DIST implementieren (tarball bauen)
+
