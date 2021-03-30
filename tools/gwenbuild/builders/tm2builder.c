@@ -284,14 +284,16 @@ void _addIncludesAndTm2flags(const GWB_CONTEXT *context, GWEN_BUFFER *argBuffer)
   /* add includes */
   kvpList=GWB_Context_GetIncludeList(context);
   if (kvpList) {
-    GWEN_Buffer_AppendString(argBuffer, " ");
+    if (GWEN_Buffer_GetUsedBytes(argBuffer))
+      GWEN_Buffer_AppendString(argBuffer, " ");
     GWB_KeyValuePair_List_SampleValuesByKey(kvpList, "tm2", NULL, " ", argBuffer);
   }
 
   /* add tm2flags */
   s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "tm2flags", 0, NULL);
   if (s && *s) {
-    GWEN_Buffer_AppendString(argBuffer, " ");
+    if (GWEN_Buffer_GetUsedBytes(argBuffer))
+      GWEN_Buffer_AppendString(argBuffer, " ");
     GWEN_Buffer_AppendString(argBuffer, s);
   }
 }
