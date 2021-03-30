@@ -30,9 +30,17 @@ void _writeKeyValuePairListToXml(const GWB_KEYVALUEPAIR_LIST *kvpList,
                                  const char *keyVarName, const char *valueVarName);
 void _writeKeyValuePairToXml(const GWB_KEYVALUEPAIR *kvp, GWEN_XMLNODE *xmlNode,
                              const char *keyVarName, const char *valueVarName);
-void _writeIdsFromFile2ListToXml(const GWB_FILE_LIST2 *fileList2,
-                                 GWEN_XMLNODE *xmlNode,
-                                 const char *groupName);
+void _writeIdsFromFile2ListToXml(const GWB_FILE_LIST2 *fileList2, GWEN_XMLNODE *xmlNode, const char *groupName);
+
+void _readKeyValuePairListFromXml(GWB_KEYVALUEPAIR_LIST *kvpList,
+                                  GWEN_XMLNODE *xmlNode,
+                                  const char *groupName,
+                                  const char *keyVarName,
+                                  const char *valueVarName);
+GWB_KEYVALUEPAIR *_readKeyValuePairFromXml(GWEN_XMLNODE *xmlNode, const char *keyVarName, const char *valueVarName);
+void _readFileIdsFromXml(GWEN_XMLNODE *xmlNode,
+                         const char *groupName,
+                         GWB_FILE_LIST2 *ctxFileList, GWB_FILE_LIST2 *destFileList);
 
 
 
@@ -214,6 +222,38 @@ void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode)
 
 
 
+GWB_BUILD_CMD *GWB_BuildCmd_fromXml(GWEN_XMLNODE *xmlNode, GWB_FILE_LIST2 *fileList)
+{
+  GWB_BUILD_CMD *bcmd;
+  GWEN_XMLNODE *xmlGroupNode;
+  const char *s;
+
+  bcmd=GWB_BuildCmd_new();
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "folder", NULL);
+  GWB_BuildCmd_SetFolder(bcmd, s);
+
+  xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "prepareCommands", NULL, NULL);
+  if (xmlGroupNode)
+    _readKeyValuePairListFromXml(bcmd->prepareCommandList, xmlGroupNode, "command", "cmd", "args");
+
+  xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "buildCommands", NULL, NULL);
+  if (xmlGroupNode)
+    _readKeyValuePairListFromXml(bcmd->buildCommandList, xmlGroupNode, "command", "cmd", "args");
+
+  xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "inputFiles", NULL, NULL);
+  if (xmlGroupNode)
+    _readFileIdsFromXml(xmlGroupNode, "file", fileList, bcmd->inFileList2);
+
+  xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "outputFiles", NULL, NULL);
+  if (xmlGroupNode)
+    _readFileIdsFromXml(xmlGroupNode, "file", fileList, bcmd->outFileList2);
+
+  return bcmd;
+}
+
+
+
 void _writeKeyValuePairListToXml(const GWB_KEYVALUEPAIR_LIST *kvpList,
                                  GWEN_XMLNODE *xmlNode,
                                  const char *groupName,
@@ -250,6 +290,39 @@ void _writeKeyValuePairToXml(const GWB_KEYVALUEPAIR *kvp, GWEN_XMLNODE *xmlNode,
 
 
 
+void _readKeyValuePairListFromXml(GWB_KEYVALUEPAIR_LIST *kvpList,
+                                  GWEN_XMLNODE *xmlNode,
+                                  const char *groupName,
+                                  const char *keyVarName,
+                                  const char *valueVarName)
+{
+  GWEN_XMLNODE *xmlEntry;
+
+  xmlEntry=GWEN_XMLNode_FindFirstTag(xmlNode, groupName, NULL, NULL);
+  while(xmlEntry) {
+    GWB_KEYVALUEPAIR *kvp;
+
+    kvp=_readKeyValuePairFromXml(xmlEntry, keyVarName, valueVarName);
+    if (kvp)
+      GWB_KeyValuePair_List_Add(kvp, kvpList);
+    xmlEntry=GWEN_XMLNode_FindNextTag(xmlEntry, groupName, NULL, NULL);
+  }
+}
+
+
+
+GWB_KEYVALUEPAIR *_readKeyValuePairFromXml(GWEN_XMLNODE *xmlNode, const char *keyVarName, const char *valueVarName)
+{
+  const char *key;
+  const char *value;
+
+  key=GWEN_XMLNode_GetCharValue(xmlNode, keyVarName, "NULL");
+  value=GWEN_XMLNode_GetCharValue(xmlNode, valueVarName, "NULL");
+  return GWB_KeyValuePair_new(key, value);
+}
+
+
+
 void _writeIdsFromFile2ListToXml(const GWB_FILE_LIST2 *fileList2,
                                  GWEN_XMLNODE *xmlNode,
                                  const char *groupName)
@@ -275,6 +348,35 @@ void _writeIdsFromFile2ListToXml(const GWB_FILE_LIST2 *fileList2,
   }
 }
 
+
+
+void _readFileIdsFromXml(GWEN_XMLNODE *xmlNode,
+                         const char *groupName,
+                         GWB_FILE_LIST2 *ctxFileList, GWB_FILE_LIST2 *destFileList)
+{
+  GWEN_XMLNODE *xmlEntry;
+
+  xmlEntry=GWEN_XMLNode_FindFirstTag(xmlNode, groupName, NULL, NULL);
+  while(xmlEntry) {
+    uint32_t id;
+
+    id=(uint32_t) GWEN_XMLNode_GetIntProperty(xmlEntry, "id", 0);
+    if (id==0) {
+      DBG_ERROR(NULL, "FILE has no id");
+    }
+    else {
+      GWB_FILE *file;
+
+      file=GWB_File_List2_GetFileById(ctxFileList, id);
+      if (file==NULL) {
+        DBG_ERROR(NULL, "FILE %d not found", (int) id);
+      }
+      else
+        GWB_File_List2_PushBack(destFileList, file);
+    }
+    xmlEntry=GWEN_XMLNode_FindNextTag(xmlEntry, groupName, NULL, NULL);
+  }
+}
 
 
 

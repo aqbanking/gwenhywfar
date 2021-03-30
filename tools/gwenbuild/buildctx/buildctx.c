@@ -14,12 +14,20 @@
 
 #include "gwenbuild/buildctx/buildctx_p.h"
 
+#include <gwenhywfar/debug.h>
+
 
 
 static void _setupDepsForCmd(GWB_BUILD_CMD *bcmd);
+
 void _writeFileList2ToXml(const GWB_FILE_LIST2 *fileList, GWEN_XMLNODE *xmlNode, const char *groupName);
+void _readFilesFromXml(GWEN_XMLNODE *xmlNode, const char *groupName, GWB_FILE_LIST2 *destFileList);
+
 void _writeCommandList2ToXml(const GWB_BUILD_CMD_LIST2 *commandList, GWEN_XMLNODE *xmlNode, const char *groupName);
+void _readCommandsFromXml(GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode, const char *groupName);
+
 void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *varName);
+uint32_t _readFlagsFromChar(const char *flagsAsText);
 
 
 
@@ -232,6 +240,26 @@ void GWB_BuildCtx_toXml(const GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode)
 
 
 
+GWB_BUILD_CONTEXT *GWB_BuildCtx_fromXml(GWEN_XMLNODE *xmlNode)
+{
+  GWB_BUILD_CONTEXT *bctx;
+  GWEN_XMLNODE *xmlGroupNode;
+
+  bctx=GWB_BuildCtx_new();
+
+  xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "fileList", NULL, NULL);
+  if (xmlGroupNode)
+    _readFilesFromXml(xmlGroupNode, "file", bctx->fileList);
+
+  xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "commandList", NULL, NULL);
+  if (xmlGroupNode)
+    _readCommandsFromXml(bctx, xmlGroupNode, "command");
+
+  return bctx;
+}
+
+
+
 void _writeCommandList2ToXml(const GWB_BUILD_CMD_LIST2 *commandList, GWEN_XMLNODE *xmlNode, const char *groupName)
 {
   GWB_BUILD_CMD_LIST2_ITERATOR *it;
@@ -239,7 +267,6 @@ void _writeCommandList2ToXml(const GWB_BUILD_CMD_LIST2 *commandList, GWEN_XMLNOD
   it=GWB_BuildCmd_List2_First(commandList);
   if (it) {
     const GWB_BUILD_CMD *cmd;
-
 
     cmd=GWB_BuildCmd_List2Iterator_Data(it);
     while(cmd) {
@@ -321,6 +348,98 @@ void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *var
     GWEN_Buffer_free(dbuf);
   }
 }
+
+
+
+void _readCommandsFromXml(GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode, const char *groupName)
+{
+  GWEN_XMLNODE *xmlEntry;
+
+  xmlEntry=GWEN_XMLNode_FindFirstTag(xmlNode, groupName, NULL, NULL);
+  while(xmlEntry) {
+    GWB_BUILD_CMD *bcmd;
+
+    bcmd=GWB_BuildCmd_fromXml(xmlEntry, bctx->fileList);
+    GWB_BuildCmd_List2_PushBack(bctx->commandList, bcmd);
+    xmlEntry=GWEN_XMLNode_FindNextTag(xmlEntry, groupName, NULL, NULL);
+  }
+}
+
+
+
+void _readFilesFromXml(GWEN_XMLNODE *xmlNode,
+                       const char *groupName,
+                       GWB_FILE_LIST2 *destFileList)
+{
+  GWEN_XMLNODE *xmlEntry;
+
+  xmlEntry=GWEN_XMLNode_FindFirstTag(xmlNode, groupName, NULL, NULL);
+  while(xmlEntry) {
+    uint32_t id;
+
+    id=(uint32_t) GWEN_XMLNode_GetIntProperty(xmlEntry, "id", 0);
+    if (id==0) {
+      DBG_ERROR(NULL, "FILE has no id");
+    }
+    else {
+      GWB_FILE *file;
+      const char *folder;
+      const char *name;
+      const char *fileType;
+      const char *flagsAsText;
+      uint32_t flags;
+
+      folder=GWEN_XMLNode_GetCharValue(xmlEntry, "folder", NULL);
+      name=GWEN_XMLNode_GetCharValue(xmlEntry, "name", NULL);
+      fileType=GWEN_XMLNode_GetCharValue(xmlEntry, "type", NULL);
+      flagsAsText=GWEN_XMLNode_GetCharValue(xmlEntry, "flags", NULL);
+      flags=_readFlagsFromChar(flagsAsText);
+
+      file=GWB_File_new(folder, name, id);
+      GWB_File_SetFlags(file, flags);
+      GWB_File_SetFileType(file, fileType);
+
+      GWB_File_List2_PushBack(destFileList, file);
+    }
+    xmlEntry=GWEN_XMLNode_FindNextTag(xmlEntry, groupName, NULL, NULL);
+  }
+}
+
+
+
+uint32_t _readFlagsFromChar(const char *flagsAsText)
+{
+  GWEN_STRINGLIST *sl;
+  uint32_t flags=0;
+
+  sl=GWEN_StringList_fromString(flagsAsText, " ", 1);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        if (strcasecmp(s, "DIST")==0)
+          flags|=GWB_FILE_FLAGS_DIST;
+        else if (strcasecmp(s, "INSTALL")==0)
+          flags|=GWB_FILE_FLAGS_INSTALL;
+        else if (strcasecmp(s, "GENERATED")==0)
+          flags|=GWB_FILE_FLAGS_GENERATED;
+        else {
+          DBG_ERROR(NULL, "Unexpected FILE flag \"%s\"", s);
+        }
+      }
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(sl);
+  }
+
+  return flags;
+}
+
 
 
 void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent)

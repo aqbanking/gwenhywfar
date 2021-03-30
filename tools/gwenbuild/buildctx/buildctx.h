@@ -39,6 +39,7 @@ void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *
 int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx);
 
 void GWB_BuildCtx_toXml(const GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode);
+GWB_BUILD_CONTEXT *GWB_BuildCtx_fromXml(GWEN_XMLNODE *xmlNode);
 
 
 void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent);

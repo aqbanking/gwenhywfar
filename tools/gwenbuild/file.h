@@ -64,6 +64,7 @@ void GWB_File_AddWaitingBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd);
 
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);
 GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, const char *folder, const char *fname);
+GWB_FILE *GWB_File_List2_GetFileById(const GWB_FILE_LIST2 *fileList, uint32_t id);
 
 void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
 GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt);

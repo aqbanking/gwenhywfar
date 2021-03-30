@@ -51,6 +51,7 @@ void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
 
 void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
+GWB_BUILD_CMD *GWB_BuildCmd_fromXml(GWEN_XMLNODE *xmlNode, GWB_FILE_LIST2 *fileList);
 
 
 void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent);
