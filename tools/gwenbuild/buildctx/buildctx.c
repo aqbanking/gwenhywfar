@@ -619,7 +619,7 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
     }
 
     if (startedCommands==0 && changedCommands==0) {
-      DBG_ERROR(NULL, "Nothing changed, sleeping...");
+      DBG_DEBUG(NULL, "Nothing changed, sleeping...");
       sleep(3);
     }
 
@@ -709,13 +709,8 @@ void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx)
     bcmd=GWB_BuildCmd_List2Iterator_Data(it);
     while(bcmd) {
       if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
-        GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Adding command to waiting queue");
         GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
       }
-      else {
-        GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Command has no current command, not adding to waiting queue");
-      }
-
       bcmd=GWB_BuildCmd_List2Iterator_Next(it);
     }
     GWB_BuildCmd_List2Iterator_free(it);
@@ -741,10 +736,8 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
       if (GWB_BuildCmd_GetBlockingFiles(bcmd)==0) {
         int rv;
 
-        GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Starting command");
         rv=_startCommand(bcmd);
         if (rv<0) {
-          GWB_BuildCmd_PrintDescriptionWithText(bcmd, 2, "Error starting command");
           GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
           errors++;
         }
@@ -790,14 +783,13 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
       if (folder && *folder)
         GWEN_Process_SetFolder(process, folder);
       GWB_BuildCmd_SetCurrentProcess(bcmd, process);
-      DBG_ERROR(NULL, "Starting \"%s %s\"", cmd, args);
       pstate=GWEN_Process_Start(process, cmd, args);
       if (pstate!=GWEN_ProcessStateRunning) {
         DBG_ERROR(NULL, "Error starting command process (%d)", pstate);
         GWB_BuildCmd_SetCurrentProcess(bcmd, NULL);
         return GWEN_ERROR_GENERIC;
       }
-      DBG_ERROR(NULL, "Process started");
+      DBG_DEBUG(NULL, "Process started");
       return 0;
     }
     else {
