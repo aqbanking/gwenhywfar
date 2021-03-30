@@ -24,6 +24,17 @@ GWEN_LIST2_FUNCTIONS(GWB_BUILD_CMD, GWB_BuildCmd);
 
 
 
+void _writeKeyValuePairListToXml(const GWB_KEYVALUEPAIR_LIST *kvpList,
+                                 GWEN_XMLNODE *xmlNode,
+                                 const char *groupName,
+                                 const char *keyVarName, const char *valueVarName);
+void _writeKeyValuePairToXml(const GWB_KEYVALUEPAIR *kvp, GWEN_XMLNODE *xmlNode,
+                             const char *keyVarName, const char *valueVarName);
+void _writeIdsFromFile2ListToXml(const GWB_FILE_LIST2 *fileList2,
+                                 GWEN_XMLNODE *xmlNode,
+                                 const char *groupName);
+
+
 
 
 GWB_BUILD_CMD *GWB_BuildCmd_new(void)
@@ -160,6 +171,112 @@ void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file)
   if (file)
     GWB_File_List2_PushBack(bcmd->outFileList2, file);
 }
+
+
+
+void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode)
+{
+  if (bcmd->folder)
+    GWEN_XMLNode_SetCharValue(xmlNode, "folder", bcmd->folder);
+
+  if (bcmd->prepareCommandList) {
+    GWEN_XMLNODE *xmlGroupNode;
+
+    xmlGroupNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "prepareCommands");
+    _writeKeyValuePairListToXml(bcmd->prepareCommandList, xmlGroupNode, "command", "cmd", "args");
+    GWEN_XMLNode_AddChild(xmlNode, xmlGroupNode);
+  }
+
+  if (bcmd->buildCommandList) {
+    GWEN_XMLNODE *xmlGroupNode;
+
+    xmlGroupNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "buildCommands");
+    _writeKeyValuePairListToXml(bcmd->buildCommandList, xmlGroupNode, "command", "cmd", "args");
+    GWEN_XMLNode_AddChild(xmlNode, xmlGroupNode);
+  }
+
+  if (bcmd->inFileList2) {
+    GWEN_XMLNODE *xmlGroupNode;
+
+    xmlGroupNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "inputFiles");
+    _writeIdsFromFile2ListToXml(bcmd->inFileList2, xmlGroupNode, "file");
+    GWEN_XMLNode_AddChild(xmlNode, xmlGroupNode);
+  }
+
+  if (bcmd->outFileList2) {
+    GWEN_XMLNODE *xmlGroupNode;
+
+    xmlGroupNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "outputFiles");
+    _writeIdsFromFile2ListToXml(bcmd->outFileList2, xmlGroupNode, "file");
+    GWEN_XMLNode_AddChild(xmlNode, xmlGroupNode);
+  }
+}
+
+
+
+void _writeKeyValuePairListToXml(const GWB_KEYVALUEPAIR_LIST *kvpList,
+                                 GWEN_XMLNODE *xmlNode,
+                                 const char *groupName,
+                                 const char *keyVarName, const char *valueVarName)
+{
+  const GWB_KEYVALUEPAIR *kvp;
+
+  kvp=GWB_KeyValuePair_List_First(kvpList);
+  while(kvp) {
+    GWEN_XMLNODE *entryNode;
+
+    entryNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, groupName);
+    _writeKeyValuePairToXml(kvp, entryNode, keyVarName, valueVarName);
+    GWEN_XMLNode_AddChild(xmlNode, entryNode);
+    kvp=GWB_KeyValuePair_List_Next(kvp);
+  }
+}
+
+
+
+void _writeKeyValuePairToXml(const GWB_KEYVALUEPAIR *kvp, GWEN_XMLNODE *xmlNode,
+                             const char *keyVarName, const char *valueVarName)
+{
+  const char *key;
+  const char *value;
+
+  key=GWB_KeyValuePair_GetKey(kvp);
+  value=GWB_KeyValuePair_GetValue(kvp);
+  if (key)
+    GWEN_XMLNode_SetCharValue(xmlNode, keyVarName, key);
+  if (value)
+    GWEN_XMLNode_SetCharValue(xmlNode, valueVarName, value);
+}
+
+
+
+void _writeIdsFromFile2ListToXml(const GWB_FILE_LIST2 *fileList2,
+                                 GWEN_XMLNODE *xmlNode,
+                                 const char *groupName)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(fileList2);
+  if (it) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      GWEN_XMLNODE *entryNode;
+      uint32_t id;
+
+      entryNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, groupName);
+      id=GWB_File_GetId(file);
+      GWEN_XMLNode_SetIntProperty(entryNode, "id", (int) id);
+      GWEN_XMLNode_AddChild(xmlNode, entryNode);
+      file=GWB_File_List2Iterator_Next(it);
+    }
+    GWB_File_List2Iterator_free(it);
+  }
+}
+
+
+
 
 
 

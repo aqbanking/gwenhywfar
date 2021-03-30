@@ -10,6 +10,8 @@
 #ifndef GWBUILD_BUILDCTX_H
 #define GWBUILD_BUILDCTX_H
 
+#include <gwenhywfar/xml.h>
+
 
 typedef struct GWB_BUILD_CONTEXT GWB_BUILD_CONTEXT;
 
@@ -35,6 +37,8 @@ void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *b
 void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
 int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx);
+
+void GWB_BuildCtx_toXml(const GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode);
 
 
 void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent);

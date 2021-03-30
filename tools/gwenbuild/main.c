@@ -127,6 +127,19 @@ int test_ReadProject(int argc, char **argv)
   DBG_ERROR(NULL, "Build context:");
   GWB_BuildCtx_Dump(buildCtx, 2);
 
+  if (1) {
+    GWEN_XMLNODE *xmlNode;
+    GWEN_XMLNODE *xmlBuildCtx;
+
+    xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+    xmlBuildCtx=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "BuildContext");
+    GWB_BuildCtx_toXml(buildCtx, xmlBuildCtx);
+    GWEN_XMLNode_AddChild(xmlNode, xmlBuildCtx);
+
+    GWEN_XMLNode_Dump(xmlNode, 2);
+    GWEN_XMLNode_WriteFile(xmlNode, "buildctx.xml", GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  }
+
   return 0;
 }
 

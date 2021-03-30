@@ -15,6 +15,7 @@
 #include "gwenbuild/gwenbuild_p.h"
 #include "gwenbuild/builders/cbuilder.h"
 #include "gwenbuild/builders/staticlib.h"
+#include "gwenbuild/builders/tmplib.h"
 #include "gwenbuild/builders/tm2builder.h"
 #include "gwenbuild/builder_be.h"
 
@@ -22,10 +23,12 @@
 #include <gwenhywfar/directory.h>
 
 
+/* Changes these two functions for new target types or new source types */
+GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file);
+GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target);
 
-GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context, GWB_FILE *file);
 int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target);
-int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
+int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project, 
                                               GWB_TARGET *target,
                                               GWB_FILE_LIST2 *sourceFileList,
                                               GWB_FILE_LIST2 *newOutputList);
@@ -274,18 +277,21 @@ void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent
     fprintf(stderr, "%s = ", sName);
 
   if (file) {
+    uint32_t id;
     const char *sFolder;
     const char *sName;
     const char *sInstallPath;
     const char *sFileType;
     uint32_t flags;
-  
+
+    id=GWB_File_GetId(file);
     sFolder=GWB_File_GetFolder(file);
     sName=GWB_File_GetName(file);
     flags=GWB_File_GetFlags(file);
     sFileType=GWB_File_GetFileType(file);
     sInstallPath=GWB_File_GetInstallPath(file);
 
+    fprintf(stderr, "[%5d] ", (int) id);
     if (sFolder && *sFolder)
       fprintf(stderr, "%s/", sFolder);
     fprintf(stderr, "%s", sName?sName:"<no name>");
@@ -443,10 +449,7 @@ void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl,
 
 int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 {
-  GWENBUILD *gwenbuild;
   GWB_TARGET_LIST2 *targetList;
-
-  gwenbuild=GWB_Project_GetGwbuild(project);
 
   targetList=GWB_Project_GetTargetList(project);
   if (targetList) {
@@ -459,26 +462,11 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project)
 
       target=GWB_Target_List2Iterator_Data(it);
       while(target) {
-        GWB_BUILDER *builder=NULL;
+        GWB_BUILDER *builder;
 
-        switch(GWB_Target_GetTargetType(target)) {
-        case GWBUILD_TargetType_Invalid:
-        case GWBUILD_TargetType_None:
-          break;
-        case GWBUILD_TargetType_InstallLibrary:
-          break;
-        case GWBUILD_TargetType_ConvenienceLibrary:
-          builder=GWEN_StaticLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
-          break;
-        case GWBUILD_TargetType_Program:
-          break;
-        case GWBUILD_TargetType_Objects:
-          break;
-        }
+        builder=_genBuilderForTarget(project, target);
         if (builder==NULL) {
-          DBG_ERROR(NULL,
-                    "Could not create builder for type \"%s\"",
-                    GWBUILD_TargetType_toString(GWB_Target_GetTargetType(target)));
+          DBG_INFO(NULL, "here)");
           GWB_Target_List2Iterator_free(it);
           return GWEN_ERROR_GENERIC;
         }
@@ -542,17 +530,20 @@ int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
 
 
 
-int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
+int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project, 
                                               GWB_TARGET *target,
                                               GWB_FILE_LIST2 *sourceFileList,
                                               GWB_FILE_LIST2 *newOutputList)
 {
+  GWENBUILD *gwenbuild;
   GWB_BUILDER *targetBuilder;
   GWB_FILE_LIST2_ITERATOR *it;
   GWB_CONTEXT *context;
 
+  gwenbuild=GWB_Project_GetGwbuild(project);
   context=GWB_Target_GetContext(target);
   targetBuilder=GWB_Target_GetBuilder(target);
+
   it=GWB_File_List2_First(sourceFileList);
   if (it) {
     GWB_FILE *file;
@@ -571,7 +562,7 @@ int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
       else {
         GWB_BUILDER *sourceBuilder;
 
-        sourceBuilder=_genBuilderForSourceFile(project, context, file);
+        sourceBuilder=_genBuilderForSourceFile(gwenbuild, context, file);
         if (sourceBuilder) {
           GWB_FILE_LIST2 *buildersOutputFileList;
 
@@ -589,44 +580,6 @@ int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
   }
 
   return 0;
-}
-
-
-
-GWB_BUILDER *_genBuilderForSourceFile(GWB_PROJECT *project, GWB_CONTEXT *context, GWB_FILE *file)
-{
-  const char *name;
-  const char *ext;
-  GWENBUILD *gwenbuild;
-  GWB_BUILDER *builder;
-
-  gwenbuild=GWB_Project_GetGwbuild(project);
-
-  name=GWB_File_GetName(file);
-  if (!(name && *name)) {
-    DBG_ERROR(NULL, "No file name.");
-    return NULL;
-  }
-  ext=GWB_File_GetExt(file);
-  if (ext==NULL) {
-    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\"", name);
-    return NULL;
-  }
-  ext++;
-
-  if (strcasecmp(ext, "c")==0)
-    builder=GWEN_CBuilder_new(gwenbuild, context);
-  else if (strcasecmp(ext, "t2d")==0)
-    builder=GWEN_Tm2Builder_new(gwenbuild, context);
-  /* add more here */
-  else {
-    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
-    return NULL;
-  }
-
-  GWB_Builder_AddSourceFile(builder, file);
-
-  return builder;
 }
 
 
@@ -769,6 +722,85 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
   return NULL;
 }
 
+
+
+
+
+
+
+
+/*
+ * --------------------------------------------------------------------------------------------
+ * Add new targets or known source types below.
+ * --------------------------------------------------------------------------------------------
+ */
+
+
+GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file)
+{
+  const char *name;
+  const char *ext;
+  GWB_BUILDER *builder;
+
+  name=GWB_File_GetName(file);
+  if (!(name && *name)) {
+    DBG_ERROR(NULL, "No file name.");
+    return NULL;
+  }
+  ext=GWB_File_GetExt(file);
+  if (ext==NULL) {
+    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\"", name);
+    return NULL;
+  }
+  ext++;
+
+  if (strcasecmp(ext, "c")==0)
+    builder=GWEN_CBuilder_new(gwenbuild, context);
+  else if (strcasecmp(ext, "t2d")==0 || strcasecmp(ext, "xml")==0)
+    builder=GWEN_Tm2Builder_new(gwenbuild, context);
+  /* add more here */
+  else {
+    DBG_ERROR(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
+    return NULL;
+  }
+
+  GWB_Builder_AddSourceFile(builder, file);
+
+  return builder;
+}
+
+
+
+GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
+{
+  GWB_BUILDER *builder=NULL;
+  GWENBUILD *gwenbuild;
+
+  gwenbuild=GWB_Project_GetGwbuild(project);
+  
+  switch(GWB_Target_GetTargetType(target)) {
+  case GWBUILD_TargetType_Invalid:
+  case GWBUILD_TargetType_None:
+    break;
+  case GWBUILD_TargetType_InstallLibrary:
+    break;
+  case GWBUILD_TargetType_ConvenienceLibrary:
+    builder=GWEN_TmpLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
+    break;
+  case GWBUILD_TargetType_Program:
+    break;
+  case GWBUILD_TargetType_Objects:
+    break;
+  }
+  if (builder==NULL) {
+    DBG_ERROR(NULL,
+              "Could not create builder for type \"%s\"",
+              GWBUILD_TargetType_toString(GWB_Target_GetTargetType(target)));
+    return NULL;
+  }
+
+  return builder;
+}
 
 
 

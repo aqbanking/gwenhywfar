@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/list.h>
 #include <gwenhywfar/list2.h>
+#include <gwenhywfar/xml.h>
 
 
 typedef struct GWB_BUILD_CMD GWB_BUILD_CMD;
@@ -47,6 +48,9 @@ void GWB_BuildCmd_AddInFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
 GWB_FILE_LIST2 *GWB_BuildCmd_GetOutFileList2(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file);
+
+
+void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
 
 
 void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent);

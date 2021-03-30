@@ -8,6 +8,7 @@ noinst_LTLIBRARIES=libgwb_builders.la
 libgwb_builders_la_SOURCES=\
  cbuilder.c \
  staticlib.c \
+ tmplib.c \
  tm2builder.c
 
 
@@ -16,6 +17,8 @@ noinst_HEADERS=\
  cbuilder_p.h \
  staticlib.h \
  staticlib_p.h \
+ tmplib.h \
+ tmplib_p.h \
  tm2builder.h \
  tm2builder_p.h
 
