@@ -111,6 +111,19 @@ GWENHYWFAR_API
 void GWEN_Process_SubFlags(GWEN_PROCESS *pr, uint32_t f);
 
 /**
+ * Get working dir for the new process.
+ */
+GWENHYWFAR_API
+const char *GWEN_Process_GetFolder(const GWEN_PROCESS *pr);
+
+/**
+ * Set working dir for the new process.
+ */
+GWENHYWFAR_API
+void GWEN_Process_SetFolder(GWEN_PROCESS *pr, const char *s);
+
+
+/**
  * Starts the given process.
  * @param pr pointer to process data
  * @param prg path and name of the program to start

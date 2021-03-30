@@ -71,6 +71,7 @@ void GWEN_Process_free(GWEN_PROCESS *pr)
 {
   if (pr) {
     /* close handles */
+    free(pr->folder);
     CloseHandle(pr->processInfo.hThread);
     CloseHandle(pr->processInfo.hProcess);
     GWEN_SyncIo_free(pr->stdIn);
@@ -161,7 +162,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                     TRUE,              /* fInheritHandles */
                     0,                 /* fdwCreate */
                     NULL,              /* lpvEnvironment */
-                    NULL,              /* lpszCurDir */
+                    pr->folder,        /* lpszCurDir */
                     &si,               /* lpsiStartInfo */
                     &(pr->processInfo) /* lppiProcInfo */
                    )!=TRUE) {
@@ -280,6 +281,21 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr)
   }
 
   return 0;
+}
+
+
+
+const char *GWEN_Process_GetFolder(const GWEN_PROCESS *pr)
+{
+  return pr->folder;
+}
+
+
+
+void GWEN_Process_SetFolder(GWEN_PROCESS *pr, const char *s)
+{
+  free(pr->folder);
+  pr->folder=s?strdup(s):NULL;
 }
 
 

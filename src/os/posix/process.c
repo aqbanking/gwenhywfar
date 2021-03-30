@@ -171,6 +171,8 @@ void GWEN_Process_free(GWEN_PROCESS *pr)
     if (--(pr->usage)==0) {
       /* unlink from list */
       GWEN_LIST_DEL(GWEN_PROCESS, pr, &GWEN_Process_ProcessList);
+
+      free(pr->folder);
       GWEN_SyncIo_free(pr->stdIn);
       GWEN_SyncIo_free(pr->stdOut);
       GWEN_SyncIo_free(pr->stdErr);
@@ -215,6 +217,12 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   /* child */
   DBG_DEBUG(GWEN_LOGDOMAIN, "I'm the child process");
+  if (pr->folder) {
+    if (chdir(pr->folder)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Aborting due to error on chdir(%s): %s", pr->folder, strerror(errno));
+      exit(2);
+    }
+  }
   _setupRedirectionsInChild(pr);
 
   _setupArgsAndExec(prg, args);
@@ -459,6 +467,21 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr)
   }
   /* wait for process to respond to kill signal (should not take long) */
   return GWEN_Process_Wait(pr);
+}
+
+
+
+const char *GWEN_Process_GetFolder(const GWEN_PROCESS *pr)
+{
+  return pr->folder;
+}
+
+
+
+void GWEN_Process_SetFolder(GWEN_PROCESS *pr, const char *s)
+{
+  free(pr->folder);
+  pr->folder=s?strdup(s):NULL;
 }
 
 
