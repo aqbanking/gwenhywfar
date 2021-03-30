@@ -22,6 +22,10 @@ typedef struct GWB_BUILD_CONTEXT GWB_BUILD_CONTEXT;
 GWB_BUILD_CONTEXT *GWB_BuildCtx_new();
 void GWB_BuildCtx_free(GWB_BUILD_CONTEXT *bctx);
 
+GWB_BUILD_CONTEXT *GWB_BuildCtx_ReadFromXmlFile(const char *fileName);
+int GWB_BuildCtx_WriteToXmlFile(const GWB_BUILD_CONTEXT *buildCtx, const char *fileName);
+
+
 GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_GetCommandList(const GWB_BUILD_CONTEXT *bctx);
 void GWB_BuildCtx_AddCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd);
 

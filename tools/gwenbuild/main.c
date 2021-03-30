@@ -122,22 +122,21 @@ int test_ReadProject(int argc, char **argv)
   }
   DBG_ERROR(NULL, "Build dependencies successfully created.");
 
-  GWB_Project_Dump(project, 2, 0);
+  //GWB_Project_Dump(project, 2, 0);
 
-  DBG_ERROR(NULL, "Build context:");
-  GWB_BuildCtx_Dump(buildCtx, 2);
+  //DBG_ERROR(NULL, "Build context:");
+  //GWB_BuildCtx_Dump(buildCtx, 2);
 
+  GWB_BuildCtx_WriteToXmlFile(buildCtx, "buildctx.xml");
   if (1) {
-    GWEN_XMLNODE *xmlNode;
-    GWEN_XMLNODE *xmlBuildCtx;
+    GWB_BUILD_CONTEXT *buildCtx2;
 
-    xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-    xmlBuildCtx=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "BuildContext");
-    GWB_BuildCtx_toXml(buildCtx, xmlBuildCtx);
-    GWEN_XMLNode_AddChild(xmlNode, xmlBuildCtx);
-
-    GWEN_XMLNode_Dump(xmlNode, 2);
-    GWEN_XMLNode_WriteFile(xmlNode, "buildctx.xml", GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+    buildCtx2=GWB_BuildCtx_ReadFromXmlFile("buildctx.xml");
+    if (buildCtx2==NULL) {
+      DBG_ERROR(NULL, "Error reading build context from file");
+    }
+    else
+      GWB_BuildCtx_WriteToXmlFile(buildCtx2, "buildctx2.xml");
   }
 
   return 0;

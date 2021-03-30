@@ -442,6 +442,66 @@ uint32_t _readFlagsFromChar(const char *flagsAsText)
 
 
 
+GWB_BUILD_CONTEXT *GWB_BuildCtx_ReadFromXmlFile(const char *fileName)
+{
+  GWB_BUILD_CONTEXT *buildCtx;
+  GWEN_XMLNODE *xmlNode;
+  GWEN_XMLNODE *xmlBuildCtx;
+  int rv;
+
+  xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(xmlNode, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error reading BuildContext file \"%s\": Bad XML (%d)", fileName, rv);
+    GWEN_XMLNode_free(xmlNode);
+    return NULL;
+  }
+
+  xmlBuildCtx=GWEN_XMLNode_FindFirstTag(xmlNode, "BuildContext", NULL, NULL);
+  if (xmlBuildCtx==NULL) {
+    DBG_ERROR(NULL, "XML file \"%s\" doesn not contain a BuildContext element,", fileName);
+    GWEN_XMLNode_free(xmlNode);
+    return NULL;
+  }
+
+  buildCtx=GWB_BuildCtx_fromXml(xmlBuildCtx);
+  GWEN_XMLNode_free(xmlNode);
+
+  rv=GWB_BuildCtx_SetupDependencies(buildCtx);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error determining build dependencies for BuildContext in file \"%s\"", fileName);
+    GWB_BuildCtx_free(buildCtx);
+    return NULL;
+  }
+
+  return buildCtx;
+}
+
+
+
+int GWB_BuildCtx_WriteToXmlFile(const GWB_BUILD_CONTEXT *buildCtx, const char *fileName)
+{
+  GWEN_XMLNODE *xmlNode;
+  GWEN_XMLNODE *xmlBuildCtx;
+  int rv;
+
+  xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  xmlBuildCtx=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "BuildContext");
+  GWB_BuildCtx_toXml(buildCtx, xmlBuildCtx);
+  GWEN_XMLNode_AddChild(xmlNode, xmlBuildCtx);
+
+  rv=GWEN_XMLNode_WriteFile(xmlNode, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  GWEN_XMLNode_free(xmlNode);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error writing BuildContext to file \"%s\" (%d)", fileName, rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent)
 {
   int i;
