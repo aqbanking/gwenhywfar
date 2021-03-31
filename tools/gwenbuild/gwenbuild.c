@@ -14,6 +14,7 @@
 
 #include "gwenbuild/gwenbuild_p.h"
 #include "gwenbuild/builders/cbuilder.h"
+#include "gwenbuild/builders/sharedlib.h"
 #include "gwenbuild/builders/staticlib.h"
 #include "gwenbuild/builders/tmplib.h"
 #include "gwenbuild/builders/tm2builder.h"
@@ -783,6 +784,8 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
   case GWBUILD_TargetType_None:
     break;
   case GWBUILD_TargetType_InstallLibrary:
+    /* TODO: take project's "shared" attribute into account */
+    builder=GWB_SharedLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
     break;
   case GWBUILD_TargetType_ConvenienceLibrary:
     builder=GWEN_TmpLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));

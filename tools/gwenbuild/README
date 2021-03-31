@@ -230,7 +230,6 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 
 
 TODO:
-- BuildCtx bauen lassen (zuerst simple mit nur einem Process, spaeter mit mehreren)
 - Symbol Visibility verwenden
 - Dependency Tracking einbauen
 - SharedLib implementieren
