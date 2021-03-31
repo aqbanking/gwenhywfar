@@ -70,6 +70,10 @@ void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd)
 
     GWB_BuildCmd_SetCurrentProcess(bcmd, NULL);
     GWB_BuildCmd_SetCurrentCommand(bcmd, NULL);
+
+    free(bcmd->buildMessage);
+    free(bcmd->folder);
+
     GWB_KeyValuePair_List_free(bcmd->prepareCommandList);
     GWB_KeyValuePair_List_free(bcmd->buildCommandList);
 
@@ -92,6 +96,21 @@ void GWB_BuildCmd_SetFolder(GWB_BUILD_CMD *bcmd, const char *s)
 {
   free(bcmd->folder);
   bcmd->folder=s?strdup(s):NULL;
+}
+
+
+
+const char *GWB_BuildCmd_GetBuildMessage(const GWB_BUILD_CMD *bcmd)
+{
+  return bcmd->buildMessage;
+}
+
+
+
+void GWB_BuildCmd_SetBuildMessage(GWB_BUILD_CMD *bcmd, const char *s)
+{
+  free(bcmd->buildMessage);
+  bcmd->buildMessage=s?strdup(s):NULL;
 }
 
 
@@ -234,6 +253,9 @@ void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode)
   if (bcmd->folder)
     GWEN_XMLNode_SetCharValue(xmlNode, "folder", bcmd->folder);
 
+  if (bcmd->buildMessage)
+    GWEN_XMLNode_SetCharValue(xmlNode, "buildMessage", bcmd->buildMessage);
+
   if (bcmd->prepareCommandList) {
     GWEN_XMLNODE *xmlGroupNode;
 
@@ -279,6 +301,10 @@ GWB_BUILD_CMD *GWB_BuildCmd_fromXml(GWEN_XMLNODE *xmlNode, GWB_FILE_LIST2 *fileL
 
   s=GWEN_XMLNode_GetCharValue(xmlNode, "folder", NULL);
   GWB_BuildCmd_SetFolder(bcmd, s);
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "buildMessage", NULL);
+  GWB_BuildCmd_SetBuildMessage(bcmd, s);
+
 
   xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "prepareCommands", NULL, NULL);
   if (xmlGroupNode)

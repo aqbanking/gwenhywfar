@@ -19,6 +19,8 @@ struct GWB_BUILD_CMD {
 
   char *folder;
 
+  char *buildMessage;
+
   GWB_KEYVALUEPAIR_LIST *prepareCommandList;
   GWB_KEYVALUEPAIR_LIST *buildCommandList;
 

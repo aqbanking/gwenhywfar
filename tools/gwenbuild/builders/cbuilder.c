@@ -37,6 +37,7 @@ static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 
 static GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *inFile, GWB_FILE *outFile);
+static void _genBuildMessage(GWB_BUILD_CMD *bcmd, const GWB_FILE *inFile);
 static void _addDefinesIncludesAndCflags(const GWB_CONTEXT *context, GWEN_BUFFER *argBuffer);
 
 
@@ -250,7 +251,8 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *
 
   _addDefinesIncludesAndCflags(context, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " -c -fPIC "); /* compile arguments */
-  GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
+  //GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
+  GWB_Builder_AddAbsFileNameToBuffer(context, inFile, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " -o ");
   GWB_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
 
@@ -263,9 +265,29 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *
   GWB_BuildCtx_AddInFileToCtxAndCmd(bctx, bcmd, inFile);
   GWB_BuildCtx_AddOutFileToCtxAndCmd(bctx, bcmd, outFile);
 
+  _genBuildMessage(bcmd, inFile);
+
   return bcmd;
 }
 
+
+
+void _genBuildMessage(GWB_BUILD_CMD *bcmd, const GWB_FILE *inFile)
+{
+  GWEN_BUFFER *buf;
+  const char *folder;
+  const char *name;
+
+  folder=GWB_File_GetFolder(inFile);
+  name=GWB_File_GetName(inFile);
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendArgs(buf, "Compiling \"%s%s%s\"",
+                         folder?folder:"",
+                         folder?"/":"",
+                         name?name:"<no name>");
+  GWB_BuildCmd_SetBuildMessage(bcmd, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
+}
 
 
 void _addDefinesIncludesAndCflags(const GWB_CONTEXT *context, GWEN_BUFFER *argBuffer)

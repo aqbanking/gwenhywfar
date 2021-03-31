@@ -16,6 +16,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/memory.h>
+#include <gwenhywfar/directory.h>
 
 
 
@@ -253,12 +254,40 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
   GWEN_Buffer_free(relBuffer);
   GWEN_Buffer_free(realFileFolderBuffer);
 }
-/*
- /home/martin/projekte/c/0_current/aqbanking/gwenhywfar/branch-5/tools/gwenbuild/src/lib/aqdiagram
- /home/martin/projekte/c/0_current/aqbanking/gwenhywfar/gwbuild/aqdiagram/src/lib/aqdiagram
- ../../../../../gwbuild/aqdiagram/src/lib/aqdiagram !!!
- ../../../../../..//aqdiagram/src/lib/aqdiagram ???
-*/
+
+
+
+void GWB_Builder_AddAbsFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer)
+{
+  const char *folder;
+  const char *initialSourceDir;
+  GWEN_BUFFER *realFileFolderBuffer;
+  GWEN_BUFFER *absBuffer;
+
+  initialSourceDir=GWB_Context_GetInitialSourceDir(context);
+
+  folder=GWB_File_GetFolder(file);
+
+  realFileFolderBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
+    GWEN_Buffer_AppendString(realFileFolderBuffer, initialSourceDir);
+    GWEN_Buffer_AppendString(realFileFolderBuffer, GWEN_DIR_SEPARATOR_S);
+  }
+  GWEN_Buffer_AppendString(realFileFolderBuffer, folder);
+
+  absBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Directory_GetAbsoluteFolderPath(GWEN_Buffer_GetStart(realFileFolderBuffer), absBuffer);
+
+  if (GWEN_Buffer_GetUsedBytes(absBuffer))
+    GWEN_Buffer_AppendString(absBuffer, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(absBuffer, GWB_File_GetName(file));
+
+  GWEN_Buffer_AppendString(argBuffer, GWEN_Buffer_GetStart(absBuffer));
+
+  GWEN_Buffer_free(absBuffer);
+  GWEN_Buffer_free(realFileFolderBuffer);
+}
+
 
 
 void GWB_Builder_Dump(const GWB_BUILDER *builder, int indent, int fullDump)

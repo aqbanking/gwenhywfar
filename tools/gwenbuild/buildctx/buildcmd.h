@@ -33,6 +33,10 @@ void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd);
 const char *GWB_BuildCmd_GetFolder(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_SetFolder(GWB_BUILD_CMD *bcmd, const char *s);
 
+const char *GWB_BuildCmd_GetBuildMessage(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetBuildMessage(GWB_BUILD_CMD *bcmd, const char *s);
+
+
 GWB_KEYVALUEPAIR_LIST *GWB_BuildCmd_GetPrepareCommandList(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_AddPrepareCommand(GWB_BUILD_CMD *bcmd, const char *cmd, const char *args);
 

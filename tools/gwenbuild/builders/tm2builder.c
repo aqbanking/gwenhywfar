@@ -38,6 +38,7 @@ static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 static GWB_BUILD_CMD *_genCmds(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *inFile, GWB_FILE *outFile);
 static void _genBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile);
 static void _genPrepareCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile);
+static void _genBuildMessage(GWB_BUILD_CMD *bcmd, const GWB_FILE *inFile);
 static void _addIncludesAndTm2flags(const GWB_CONTEXT *context, GWEN_BUFFER *argBuffer);
 
 
@@ -227,6 +228,8 @@ GWB_BUILD_CMD *_genCmds(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE 
   GWB_BuildCtx_AddInFileToCtxAndCmd(bctx, bcmd, inFile);
   GWB_BuildCtx_AddOutFileToCtxAndCmd(bctx, bcmd, outFile);
 
+  _genBuildMessage(bcmd, inFile);
+
   return bcmd;
 }
 
@@ -272,6 +275,25 @@ void _genPrepareCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWB_FILE *inFile)
   /* we have everything, create cmd now */
   GWB_BuildCmd_AddPrepareCommand(bcmd, "typemaker2", GWEN_Buffer_GetStart(argBuffer));
   GWEN_Buffer_free(argBuffer);
+}
+
+
+
+void _genBuildMessage(GWB_BUILD_CMD *bcmd, const GWB_FILE *inFile)
+{
+  GWEN_BUFFER *buf;
+  const char *folder;
+  const char *name;
+
+  folder=GWB_File_GetFolder(inFile);
+  name=GWB_File_GetName(inFile);
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendArgs(buf, "Generating source files from \"%s%s%s\"",
+                         folder?folder:"",
+                         folder?"/":"",
+                         name?name:"<no name>");
+  GWB_BuildCmd_SetBuildMessage(bcmd, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
 }
 
 

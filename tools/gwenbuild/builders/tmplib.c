@@ -37,6 +37,7 @@ static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 
 static GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_LIST2 *inFileList, GWB_FILE *outFile);
+static void _genBuildMessage(GWB_BUILD_CMD *bcmd, const GWB_FILE *outFile);
 
 
 
@@ -279,8 +280,27 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_L
   GWB_BuildCtx_AddInFilesToCtxAndCmd(bctx, bcmd, inFileList);
   GWB_BuildCtx_AddOutFileToCtxAndCmd(bctx, bcmd, outFile);
 
+  _genBuildMessage(bcmd, outFile);
+
   return bcmd;
 }
 
 
+
+void _genBuildMessage(GWB_BUILD_CMD *bcmd, const GWB_FILE *outFile)
+{
+  GWEN_BUFFER *buf;
+  const char *folder;
+  const char *name;
+
+  folder=GWB_File_GetFolder(outFile);
+  name=GWB_File_GetName(outFile);
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendArgs(buf, "Linking \"%s%s%s\"",
+                         folder?folder:"",
+                         folder?"/":"",
+                         name?name:"<no name>");
+  GWB_BuildCmd_SetBuildMessage(bcmd, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
+}
 
