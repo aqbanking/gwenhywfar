@@ -613,7 +613,7 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
     }
 
     changedCommands=_checkRunningQueue(bctx);
-    if (changedCommands<0) {
+    if (changedCommands<0) { /* error */
       _abortAllCommands(bctx);
       return GWEN_ERROR_GENERIC;
     }
