@@ -232,7 +232,6 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 TODO:
 - Symbol Visibility verwenden
 - Dependency Tracking einbauen
-- SharedLib implementieren
 - Program implementieren
 - DIST implementieren (tarball bauen)
 
