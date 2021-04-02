@@ -13,11 +13,6 @@
 
 
 #include "gwenbuild/gwenbuild_p.h"
-#include "gwenbuild/builders/cbuilder.h"
-#include "gwenbuild/builders/sharedlib.h"
-#include "gwenbuild/builders/staticlib.h"
-#include "gwenbuild/builders/tmplib.h"
-#include "gwenbuild/builders/tm2builder.h"
 #include "gwenbuild/builders/genericbuilder.h"
 #include "gwenbuild/builder_be.h"
 
