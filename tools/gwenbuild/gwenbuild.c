@@ -364,6 +364,27 @@ void GWBUILD_Debug_PrintTargetList2(const char *sName, const GWB_TARGET_LIST2 *t
 
 
 
+void GWBUILD_Debug_PrintOptionList(const char *sName, const GWB_OPTION_LIST *optionList, int indent)
+{
+  int i;
+
+  for(i=0; i<indent; i++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "%s:\n", sName);
+
+  if (optionList) {
+    const GWB_OPTION *option;
+
+    option=GWB_Option_List_First(optionList);
+    while(option) {
+      GWB_Option_Dump(option, indent+2);
+      option=GWB_Option_List_Next(option);
+    }
+  }
+}
+
+
+
 void GWBUILD_Debug_PrintBuilderList2(const char *sName, const GWB_BUILDER_LIST2 *builderList2, int indent, int fullDump)
 {
   int i;

@@ -19,6 +19,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/i18n.h>
+#include <gwenhywfar/text.h>
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
@@ -34,6 +35,8 @@
 static int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 static int _prepare(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 static int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
 
 
 
@@ -103,7 +106,7 @@ int test_ReadProject(int argc, char **argv)
   }
 
   folder=argv[1];
-  project=GWB_Parser_ReadBuildTree(gwenbuild, folder);
+  project=GWB_Parser_ReadBuildTree(gwenbuild, folder, NULL);
   if (project==NULL) {
     DBG_ERROR(NULL, "Error reading build files.");
     return 2;
@@ -342,6 +345,7 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   GWB_PROJECT *project;
   GWB_BUILD_CONTEXT *buildCtx;
   const char *folder;
+  GWB_KEYVALUEPAIR_LIST *givenOptionList;
   int rv;
   const GWEN_ARGS args[]= {
     {
@@ -354,6 +358,17 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "folder",                       /* long option */
       "Folder containing sources",  /* short description */
       "Folder containing sources"   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "option",                      /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "O",                          /* short option */
+      "option",                      /* long option */
+      "Set option (OPTION=VALUE)",  /* short description */
+      "Set option (OPTION=VALUE)"   /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -404,9 +419,12 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 1;
   }
 
+  givenOptionList=_readOptionsFromDb(db);
+
+
   gwenbuild=GWBUILD_new();
 
-  project=GWB_Parser_ReadBuildTree(gwenbuild, folder);
+  project=GWB_Parser_ReadBuildTree(gwenbuild, folder, givenOptionList);
   if (project==NULL) {
     fprintf(stderr, "ERROR: Error reading build files.\n");
     return 2;
@@ -432,7 +450,7 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
 #if 0
   DBG_ERROR(NULL, "Project:");
-  GWB_Project_Dump(project, 2, 0);
+  GWB_Project_Dump(project, 2, 1);
 #endif
 
   return 0;
@@ -584,6 +602,45 @@ int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
 
 
+
+GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db)
+{
+  int i;
+  GWB_KEYVALUEPAIR_LIST *kvpList;
+
+  kvpList=GWB_KeyValuePair_List_new();
+  for (i=0; i<100; i++) {
+    const char *sOption;
+    GWEN_STRINGLIST *sl;
+
+    sOption=GWEN_DB_GetCharValue(db, "option", i, NULL);
+    if (sOption==NULL)
+      break;
+
+    sl=GWEN_StringList_fromString2(sOption, "=", 0, GWEN_TEXT_FLAGS_DEL_QUOTES | GWEN_TEXT_FLAGS_CHECK_BACKSLASH);
+    if (sl) {
+      const char *name;
+      const char *value;
+
+      name=GWEN_StringList_StringAt(sl, 0);
+      value=GWEN_StringList_StringAt(sl, 1);
+      if (name) {
+        GWB_KEYVALUEPAIR *kvp;
+
+        kvp=GWB_KeyValuePair_new(name, value);
+        GWB_KeyValuePair_List_Add(kvp, kvpList);
+      }
+      GWEN_StringList_free(sl);
+    }
+  } /* for */
+
+  if (GWB_KeyValuePair_List_GetCount(kvpList)==0) {
+    GWB_KeyValuePair_List_free(kvpList);
+    return NULL;
+  }
+
+  return kvpList;
+}
 
 
 

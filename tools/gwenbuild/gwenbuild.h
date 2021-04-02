@@ -31,6 +31,7 @@ typedef enum {
 #include "gwenbuild/target.h"
 #include "gwenbuild/project.h"
 #include "gwenbuild/buildctx/buildctx.h"
+#include "gwenbuild/option.h"
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
@@ -78,6 +79,7 @@ void GWBUILD_Debug_PrintBuilderList2(const char *sName, const GWB_BUILDER_LIST2 
 void GWBUILD_Debug_PrintBuildCmdList2(const char *sName, const GWB_BUILD_CMD_LIST2 *buildCmdList2, int indent);
 void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl, int indent);
 void GWBUILD_Debug_PrintFile(const char *sName, const GWB_FILE *file, int indent);
+void GWBUILD_Debug_PrintOptionList(const char *sName, const GWB_OPTION_LIST *optionList, int indent);
 
 
 

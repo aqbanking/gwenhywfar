@@ -25,6 +25,10 @@ struct GWB_PROJECT {
 
   GWB_KEYVALUEPAIR_LIST *defineList;
 
+  GWB_KEYVALUEPAIR_LIST *givenOptionList;
+
+  GWB_OPTION_LIST *optionList;
+
   char *projectName;
   int versionMajor;
   int versionMinor;

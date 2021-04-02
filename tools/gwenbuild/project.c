@@ -31,6 +31,8 @@ GWB_PROJECT *GWB_Project_new(GWENBUILD *gwbuild, GWB_CONTEXT *ctx)
   project->fileList=GWB_File_List2_new();
   project->targetList=GWB_Target_List2_new();
   project->builderList=GWB_Builder_List2_new();
+  project->optionList=GWB_Option_List_new();
+  project->givenOptionList=GWB_KeyValuePair_List_new();
 
   return project;
 }
@@ -40,6 +42,8 @@ GWB_PROJECT *GWB_Project_new(GWENBUILD *gwbuild, GWB_CONTEXT *ctx)
 void GWB_Project_free(GWB_PROJECT *project)
 {
   if (project) {
+    GWB_KeyValuePair_List_free(project->givenOptionList);
+    GWB_Option_List_free(project->optionList);
     GWB_File_List2_free(project->fileList);
     GWB_Context_free(project->contextTree);
     GWB_Target_List2_free(project->targetList);
@@ -291,6 +295,74 @@ if (project->defineList==NULL)
 
 
 
+GWB_OPTION_LIST *GWB_Project_GetOptionList(const GWB_PROJECT *project)
+{
+  return project->optionList;
+}
+
+
+
+void GWB_Project_AddOption(GWB_PROJECT *project, GWB_OPTION *option)
+{
+  GWB_Option_List_Add(option, project->optionList);
+}
+
+
+
+GWB_OPTION *GWB_Project_GetOptionById(const GWB_PROJECT *project, const char *optionId)
+{
+  GWB_OPTION *option;
+
+  option=GWB_Option_List_First(project->optionList);
+  while(option) {
+    const char *sName;
+
+    sName=GWB_Option_GetId(option);
+    if (sName && strcasecmp(sName, optionId)==0)
+      return option;
+    option=GWB_Option_List_Next(option);
+  }
+
+  return NULL;
+}
+
+
+
+GWB_KEYVALUEPAIR_LIST *GWB_Project_GetGivenOptionList(const GWB_PROJECT *project)
+{
+  return project->givenOptionList;
+}
+
+
+
+void GWB_Project_SetGivenOptionList(GWB_PROJECT *project, GWB_KEYVALUEPAIR_LIST *kvpList)
+{
+  GWB_KeyValuePair_List_free(project->givenOptionList);
+  project->givenOptionList=kvpList;
+}
+
+
+
+void GWB_Project_SetGivenOption(GWB_PROJECT *project, const char *name, const char *value)
+{
+  GWB_KEYVALUEPAIR *kvp;
+
+  kvp=GWB_KeyValuePair_new(name, value);
+  GWB_KeyValuePair_List_Add(kvp, project->givenOptionList);
+}
+
+
+
+const char *GWB_Project_GetGivenOption(const GWB_PROJECT *project, const char *name)
+{
+  return GWB_KeyValuePair_List_GetValue(project->givenOptionList, name);
+}
+
+
+
+
+
+
 void GWB_Project_Dump(const GWB_PROJECT *project, int indent, int fullDump)
 {
   int i;
@@ -320,7 +392,9 @@ void GWB_Project_Dump(const GWB_PROJECT *project, int indent, int fullDump)
   GWBUILD_Debug_PrintFileList2("fileList", project->fileList, indent+2);
   GWBUILD_Debug_PrintTargetList2("targetList", project->targetList, indent+2, fullDump);
   GWBUILD_Debug_PrintKvpList("defineList", project->defineList, indent+2);
+  GWBUILD_Debug_PrintKvpList("givenOptionList", project->givenOptionList, indent+2);
   GWBUILD_Debug_PrintBuilderList2("builderList", project->builderList, indent+2, fullDump);
+  GWBUILD_Debug_PrintOptionList("optionList", project->optionList, indent+2);
 }
 
 

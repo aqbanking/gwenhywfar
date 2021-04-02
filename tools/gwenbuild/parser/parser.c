@@ -35,7 +35,7 @@ static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newV
 
 
 
-GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir)
+GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir, GWB_KEYVALUEPAIR_LIST *givenOptionList)
 {
   GWB_CONTEXT *currentContext;
   GWEN_XMLNODE *xmlNewFile;
@@ -67,6 +67,8 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir)
   }
 
   project=GWB_Project_new(gwbuild, currentContext);
+  if (givenOptionList)
+    GWB_Project_SetGivenOptionList(project, givenOptionList);
 
   rv=GWB_ParseProject(project, currentContext, xmlProject);
   if (rv<0) {

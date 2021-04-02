@@ -276,3 +276,32 @@ TODO:
 - change cmd in BuildCmd into its own struct to also take a command description
 
 
+
+<ifVarMatches  id="someOption" match="someValue" >
+<ifVarHasValue id="plugins"    match="file" >
+
+
+<option id"prefix" type="string">
+  <default>/usr/local</default>
+</option>
+
+->option_prefix
+
+<option id="plugins" type="stringlist">
+  <choices>file dir</choices>
+  <default>file dir</default>
+</option>
+
+->option_plugins (mehrere values, einer fuer jeden Eintrag)
+
+
+
+
+struct GWB_OPTION:
+- id
+- type (string, stringlist)
+- default
+- kvplist<aliases>
+
+
+

@@ -17,7 +17,8 @@ gwbuild_SOURCES=\
   gwenbuild.c \
   keyvaluepair.c \
   target.c \
-  project.c
+  project.c \
+  option.c
 
 
 
@@ -36,7 +37,9 @@ noinst_HEADERS= \
   target.h \
   target_p.h \
   project.h \
-  project_p.h
+  project_p.h \
+  option.h \
+  option_p.h
 
 
 

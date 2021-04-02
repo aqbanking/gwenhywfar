@@ -22,7 +22,7 @@
 
 
 
-GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir);
+GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir, GWB_KEYVALUEPAIR_LIST *givenOptionList);
 
 
 
