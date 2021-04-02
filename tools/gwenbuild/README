@@ -273,3 +273,7 @@ TODO:
         - nothing to change
 
 
+TODO:
+- change cmd in BuildCmd into its own struct to also take a command description
+
+
