@@ -197,6 +197,8 @@ int _checkVersion(GWEN_DB_NODE *db,
   GWEN_Buffer_free(stdOutBuffer);
 
   GWB_Parser_SetItemValue(db, sId, "_EXISTS", (rv==0)?"TRUE":"FALSE");
+  fprintf(stdout, " dep %s: %s\n", sId, (rv==0)?"found":"not found");
+
   return (rv==0)?0:GWEN_ERROR_NOT_FOUND;
 }
 

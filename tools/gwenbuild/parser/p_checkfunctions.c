@@ -100,6 +100,8 @@ void _setVarFunctionExists(GWEN_DB_NODE *db, const char *header, int exists)
 {
   GWEN_BUFFER *nameBuf;
 
+  fprintf(stdout, " function %s: %s\n", header, exists?"found":"not found");
+
   nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(nameBuf, header);
   _replacePointWithUnderscore(GWEN_Buffer_GetStart(nameBuf));

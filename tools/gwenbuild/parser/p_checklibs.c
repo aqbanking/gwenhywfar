@@ -130,10 +130,13 @@ int _parseLib(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *x
     GWEN_Buffer_AppendString(dbuf, sName);
     GWB_Parser_SetItemValue(db, sId, "_LIBS", GWEN_Buffer_GetStart(dbuf));
     GWEN_Buffer_free(dbuf);
-  }
-  else
-    GWB_Parser_SetItemValue(GWB_Context_GetVars(currentContext), sId, "_EXISTS", "FALSE");
 
+    fprintf(stdout, " lib %s: found\n", sName);
+  }
+  else {
+    GWB_Parser_SetItemValue(GWB_Context_GetVars(currentContext), sId, "_EXISTS", "FALSE");
+    fprintf(stdout, " lib %s: not found\n", sName);
+  }
   return 0;
 }
 
