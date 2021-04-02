@@ -273,6 +273,32 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
 
 
 
+void GWB_Builder_AddRelativeFolderToBuffer(const GWB_CONTEXT *context, const char *folder, int useBuildDir, GWEN_BUFFER *argBuffer)
+{
+  const char *buildDir;
+  const char *initialSourceDir;
+  GWEN_BUFFER *realFileFolderBuffer;
+  GWEN_BUFFER *relBuffer;
+
+  buildDir=GWB_Context_GetCurrentBuildDir(context);
+  initialSourceDir=GWB_Context_GetInitialSourceDir(context);
+
+  realFileFolderBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  if (!useBuildDir) {
+    GWEN_Buffer_AppendString(realFileFolderBuffer, initialSourceDir);
+    GWEN_Buffer_AppendString(realFileFolderBuffer, GWEN_DIR_SEPARATOR_S);
+  }
+  GWEN_Buffer_AppendString(realFileFolderBuffer, folder);
+
+  relBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Path_GetPathBetween(buildDir, GWEN_Buffer_GetStart(realFileFolderBuffer), relBuffer);
+  GWEN_Buffer_AppendString(argBuffer, GWEN_Buffer_GetStart(relBuffer));
+  GWEN_Buffer_free(relBuffer);
+  GWEN_Buffer_free(realFileFolderBuffer);
+}
+
+
+
 void GWB_Builder_AddAbsFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer)
 {
   const char *folder;

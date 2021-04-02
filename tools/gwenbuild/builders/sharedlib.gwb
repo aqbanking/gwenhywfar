@@ -3,8 +3,8 @@
 <GwenBuilder name="SharedLib">
 
   <inputFiles>
-    <acceptedInputTypes>object</acceptInputTypes>
-    <acceptedInputFiles>*.o</acceptInputFiles>
+    <acceptedInputTypes>object</acceptedInputTypes>
+    <acceptedInputFiles>*.o</acceptedInputFiles>
   </inputFiles>
 
   <outputFiles>
@@ -18,33 +18,45 @@
   </targetLinkSpecs>
   
   <buildCommands>
-    <cmd tool="cc">
+    <cmd tool="$(cc)">
       <args>
         <fixed>-shared -fPIC -nostdlib -Wl,-no-undefined -Wl,-soname,lib$(target_name).so.$(target_so_version_effective)</fixed>
+        <blank/>
         <inputFiles match="*.o" />
+        <blank/>
         <fixed>-o</fixed>
         <blank/>
         <outputFiles index="0" />
+        <blank/>
         <ifHasSubTargetLibs>
           <fixed>-Wl,--whole-archive</fixed>
           <blank/>
           <subTargetLibs/>
+          <blank/>
         </ifHasSubTargetLibs>
-        <libraries/>
+        <ifHasLibraries>
+          <fixed>-Wl,--no-whole-archive</fixed>
+          <blank/>
+          <libraries/>
+        </ifHasLibraries>
       </args>
     </cmd>
 
     <cmd tool="ln">
       <args>
-        -s lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
-           lib$(target_name).so.$(target_so_version_effective)
+        <fixed>
+          -s lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
+             lib$(target_name).so.$(target_so_version_effective)
+        </fixed>
       </args>
     </cmd>
 
     <cmd tool="ln">
       <args>
-        -s lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
-           lib$(target_name).so
+        <fixed>
+          -s lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
+             lib$(target_name).so
+        </fixed>
       </args>
     </cmd>
 

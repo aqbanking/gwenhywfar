@@ -37,6 +37,7 @@ GWB_BUILDER_ADDSOURCEFILE_FN GWB_Builder_SetAddSourceFileFn(GWB_BUILDER *builder
 void GWB_Builder_AddFileNamesToBuffer(const GWB_CONTEXT *context, const GWB_FILE_LIST2 *inFileList, GWEN_BUFFER *argBuffer);
 void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer);
 void GWB_Builder_AddAbsFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE *file, GWEN_BUFFER *argBuffer);
+void GWB_Builder_AddRelativeFolderToBuffer(const GWB_CONTEXT *context, const char *folder, int useBuildDir, GWEN_BUFFER *argBuffer);
 
 
 

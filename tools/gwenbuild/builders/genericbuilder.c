@@ -27,6 +27,7 @@
 GWEN_INHERIT(GWB_BUILDER, GWB_BUILDER_GENERIC);
 
 
+GWB_BUILDER *GWB_GenericBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWEN_XMLNODE *xmlDescr);
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
@@ -55,10 +56,58 @@ void _readArgsIncludes(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER 
 void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 void _readArgsUsedSubTargets(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
 
 void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
 GWB_FILE *_getFileAtPosInList2(GWB_FILE_LIST2 *filesList, int index);
 void _addStringListToBuffer(GWEN_STRINGLIST *sl, GWEN_BUFFER *argsBuffer);
+
+
+
+
+GWB_BUILDER *GWB_GenericBuilder_Factory(GWENBUILD *gwenbuild, GWB_CONTEXT *context, const char *builderName)
+{
+  GWB_BUILDER *builder;
+  GWEN_BUFFER *nameBuf;
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlDescr;
+  int rv;
+
+  nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(nameBuf, BUILDERDATADIR GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(nameBuf, builderName);
+  GWEN_Buffer_AppendString(nameBuf, ".gwb");
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(xmlRoot, GWEN_Buffer_GetStart(nameBuf), GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  if (rv<0) {
+    DBG_ERROR(NULL,
+              "No description for builder type \"%s\" found (%d, tried \"%s\")",
+              builderName, rv, GWEN_Buffer_GetStart(nameBuf));
+    GWEN_Buffer_free(nameBuf);
+    return NULL;
+  }
+
+  xmlDescr=GWEN_XMLNode_FindFirstTag(xmlRoot, "GwenBuilder", NULL, NULL);
+  if (xmlDescr==NULL) {
+    DBG_ERROR(NULL, "No <GwenBuilder> element found in file \"%s\"", GWEN_Buffer_GetStart(nameBuf));
+    GWEN_XMLNode_free(xmlRoot);
+    GWEN_Buffer_free(nameBuf);
+    return NULL;
+  }
+  GWEN_XMLNode_UnlinkChild(xmlRoot, xmlDescr);
+  GWEN_XMLNode_free(xmlRoot);
+
+  builder=GWB_GenericBuilder_new(gwenbuild, context, xmlDescr);
+  if (builder==NULL) {
+    DBG_ERROR(NULL, "Error in file \"%s\"", GWEN_Buffer_GetStart(nameBuf));
+    GWEN_XMLNode_free(xmlDescr);
+    GWEN_Buffer_free(nameBuf);
+    return NULL;
+  }
+  GWEN_Buffer_free(nameBuf);
+  return builder;
+}
 
 
 
@@ -222,14 +271,44 @@ void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f)
   GWB_Builder_AddInputFile(builder, f);
 
   fileList=GWB_Builder_GetOutputFileList2(builder);
-  if (!(fileList && GWB_File_List2_GetSize(fileList)>0))
+  if (!(fileList && GWB_File_List2_GetSize(fileList)>0)) {
     _setupAfterAddingFirstInputFile(builder);
+  }
 }
 
 
 
 void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder)
 {
+  GWB_BUILDER_GENERIC *xbuilder;
+  GWB_FILE_LIST2 *fileList;
+
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
+
+  fileList=GWB_Builder_GetInputFileList2(builder);
+  if (fileList) {
+    GWB_FILE *file;
+
+    file=GWB_File_List2_GetFront(fileList);
+    if (file) {
+      const char *s;
+
+      s=GWB_File_GetName(file);
+      if (s) {
+        const char *ptrToPoint;
+
+        ptrToPoint=strrchr(s, '.');
+        if (ptrToPoint) {
+          char *copyOfName;
+
+          copyOfName=strndup(s, (ptrToPoint-s));
+          GWEN_DB_SetCharValue(xbuilder->dbVars, GWEN_DB_FLAGS_DEFAULT, "firstInputFileNoExt", copyOfName);
+          free(copyOfName);
+        }
+      }
+    }
+  }
+
   _setupOutFiles(builder);
   _setupTargetLinkSpec(builder);
 }
@@ -294,7 +373,6 @@ void _setupOutFiles(GWB_BUILDER *builder)
       nFile=GWEN_XMLNode_FindNextTag(nFile, "file", NULL, NULL);
     } /* while nFile */
   } /* if nOutputFiles */
-
 }
 
 
@@ -408,8 +486,14 @@ void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd)
     while(n) {
       const char *sToolName;
       GWEN_BUFFER *argsBuffer;
+      GWEN_BUFFER *toolNameBuffer;
 
+      toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
       sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
+      if (sToolName) {
+        GWEN_DB_ReplaceVars(xbuilder->dbVars, sToolName, toolNameBuffer);
+        sToolName=GWEN_Buffer_GetStart(toolNameBuffer);
+      }
       argsBuffer=_readArgs(builder, bcmd, n);
       if (argsBuffer) {
 	GWB_BuildCmd_AddBuildCommand(bcmd, sToolName, GWEN_Buffer_GetStart(argsBuffer));
@@ -417,6 +501,8 @@ void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd)
       }
       else
 	GWB_BuildCmd_AddBuildCommand(bcmd, sToolName, NULL);
+
+      GWEN_Buffer_free(toolNameBuffer);
 
       n=GWEN_XMLNode_FindNextTag(n, "cmd", NULL, NULL);
     }
@@ -499,6 +585,8 @@ void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArg
 	_readArgsIncludes(builder, n, argsBuffer);
       else if (strcasecmp(sTagName, "defines")==0)
 	_readArgsDefines(builder, argsBuffer);
+      else if (strcasecmp(sTagName, "ifHasLibraries")==0)
+	_readArgsIfHasLibraries(builder, bcmd, n, argsBuffer);
       else if (strcasecmp(sTagName, "libraries")==0)
 	_readArgsLibraries(builder, argsBuffer);
       else if (strcasecmp(sTagName, "blank")==0) {
@@ -542,7 +630,9 @@ void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFE
   if (inFilesList) {
     int index;
     const char *pattern;
+    int useAbsPath;
 
+    useAbsPath=(strcasecmp(GWEN_XMLNode_GetProperty(xmlNode, "mode", "relpath"), "abspath")==0)?1:0;
     pattern=GWEN_XMLNode_GetProperty(xmlNode, "match", NULL);
     index=GWEN_XMLNode_GetIntProperty(xmlNode, "index", -1);
 
@@ -550,11 +640,15 @@ void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFE
       GWB_FILE *file;
 
       file=_getFileAtPosInList2(inFilesList, index);
-      if (file)
-	GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
+      if (file) {
+        if (useAbsPath)
+          GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
+        else
+          GWB_Builder_AddFileNameToBuffer(context, file, argsBuffer);
+      }
     }
     else
-      _addMatchingFiles(builder, inFilesList, pattern, 1, argsBuffer);
+      _addMatchingFiles(builder, inFilesList, pattern, useAbsPath, argsBuffer);
   }
 }
 
@@ -563,14 +657,17 @@ void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFE
 void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer)
 {
   GWB_CONTEXT *context;
-  GWB_FILE_LIST2 *outFilesList;
+  GWB_FILE_LIST2 *filesList;
 
   context=GWB_Builder_GetContext(builder);
 
-  outFilesList=GWB_Builder_GetOutputFileList2(builder);
-  if (outFilesList) {
+  filesList=GWB_Builder_GetOutputFileList2(builder);
+  if (filesList) {
     int index;
     const char *pattern;
+    int useAbsPath;
+
+    useAbsPath=(strcasecmp(GWEN_XMLNode_GetProperty(xmlNode, "mode", "relpath"), "abspath")==0)?1:0;
 
     pattern=GWEN_XMLNode_GetProperty(xmlNode, "match", NULL);
     index=GWEN_XMLNode_GetIntProperty(xmlNode, "index", -1);
@@ -578,12 +675,16 @@ void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFF
     if (index>=0) {
       GWB_FILE *file;
 
-      file=_getFileAtPosInList2(outFilesList, index);
-      if (file)
-	GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
+      file=_getFileAtPosInList2(filesList, index);
+      if (file) {
+        if (useAbsPath)
+          GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
+        else
+          GWB_Builder_AddFileNameToBuffer(context, file, argsBuffer);
+      }
     }
     else
-      _addMatchingFiles(builder, outFilesList, pattern, 0, argsBuffer); /* 0=add relative not absolute path */
+      _addMatchingFiles(builder, filesList, pattern, useAbsPath, argsBuffer);
   }
 }
 
@@ -628,6 +729,21 @@ void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWE
 
 
 
+void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer)
+{
+  GWB_CONTEXT *context;
+  GWB_TARGET *target;
+  GWEN_STRINGLIST *sl;
+
+  context=GWB_Builder_GetContext(builder);
+  target=GWB_Context_GetCurrentTarget(context);
+  sl=GWB_Target_GetUsedLibraryNameList(target);
+  if (sl && GWEN_StringList_Count(sl)>0)
+    _readArgsLoop(builder, bcmd, xmlNode, argsBuffer);
+}
+
+
+
 void _readArgsIncludes(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer)
 {
   GWB_CONTEXT *context;
@@ -652,7 +768,7 @@ void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer)
   GWB_KEYVALUEPAIR_LIST *kvpList;
 
   context=GWB_Builder_GetContext(builder);
-  kvpList=GWB_Context_GetIncludeList(context);
+  kvpList=GWB_Context_GetDefineList(context);
   if (kvpList)
     GWB_KeyValuePair_List_WriteAllPairsToBuffer(kvpList, "-D", "=", " ", argsBuffer);
 }
@@ -679,7 +795,9 @@ void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const ch
 	fname=GWB_File_GetName(file);
 	if (fname) {
 	  if (pattern==NULL || -1!=GWEN_Text_ComparePattern(fname, pattern, 0)) {
-	    if (addAbs)
+            if (GWEN_Buffer_GetUsedBytes(argsBuffer))
+              GWEN_Buffer_AppendString(argsBuffer, " ");
+            if (addAbs)
 	      GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
 	    else
 	      GWB_Builder_AddFileNameToBuffer(context, file, argsBuffer);

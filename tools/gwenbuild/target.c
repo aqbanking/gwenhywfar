@@ -239,15 +239,16 @@ void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump)
     fprintf(stderr, " ");
   fprintf(stderr, "Target:\n");
 
-  GWBUILD_Debug_PrintValue(     "name..............", target->name, indent+2);
-  GWBUILD_Debug_PrintValue(     "type..............", GWBUILD_TargetType_toString(target->targetType), indent+2);
-  GWBUILD_Debug_PrintIntValue(  "soVersionCurrent..", target->soVersionCurrent, indent+2);
-  GWBUILD_Debug_PrintIntValue(  "soVersionAge......", target->soVersionAge, indent+2);
-  GWBUILD_Debug_PrintIntValue(  "soVersionRevision.", target->soVersionRevision, indent+2);
-  GWBUILD_Debug_PrintFileList2( "sourceFileList....", target->sourceFileList, indent+2);
-  GWBUILD_Debug_PrintStringList("usedTargetNameList", target->usedTargetNameList, indent+2);
-  GWBUILD_Debug_PrintStringList("usedLibraryList...", target->usedLibraryList, indent+2);
-  GWBUILD_Debug_PrintFile(      "outputFile........", target->outputFile, indent+2);
+  GWBUILD_Debug_PrintValue(     "name..................", target->name, indent+2);
+  GWBUILD_Debug_PrintValue(     "type..................", GWBUILD_TargetType_toString(target->targetType), indent+2);
+  GWBUILD_Debug_PrintIntValue(  "soVersionCurrent......", target->soVersionCurrent, indent+2);
+  GWBUILD_Debug_PrintIntValue(  "soVersionAge..........", target->soVersionAge, indent+2);
+  GWBUILD_Debug_PrintIntValue(  "soVersionRevision.....", target->soVersionRevision, indent+2);
+  GWBUILD_Debug_PrintFileList2( "sourceFileList........", target->sourceFileList, indent+2);
+  GWBUILD_Debug_PrintStringList("usedTargetNameList....", target->usedTargetNameList, indent+2);
+  GWBUILD_Debug_PrintStringList("usedTargetLinkSpecList", target->usedTargetLinkSpecList, indent+2);
+  GWBUILD_Debug_PrintStringList("usedLibraryList.......", target->usedLibraryList, indent+2);
+  GWBUILD_Debug_PrintFile(      "outputFile............", target->outputFile, indent+2);
   if (fullDump)
     GWB_Context_Dump(target->context, indent+2);
 

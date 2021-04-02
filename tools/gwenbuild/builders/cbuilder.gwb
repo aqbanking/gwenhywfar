@@ -3,8 +3,8 @@
 <GwenBuilder name="CBuilder" maxinputfiles="1">
 
   <inputFiles>
-    <acceptedInputTypes>c</acceptInputTypes>
-    <acceptedInputFiles>*.c</acceptInputFiles>
+    <acceptedInputTypes>c</acceptedInputTypes>
+    <acceptedInputFiles>*.c</acceptedInputFiles>
   </inputFiles>
   
   <outputFiles>
@@ -15,13 +15,18 @@
   
   
   <buildCommands>
-    <cmd tool="cc">
+    <cmd tool="$(cc)">
       <args>
         <fixed>-c -fPIC -DPIC</fixed>
+        <blank/>
         <defines />
+        <blank/>
         <includes type="c" />
-        <inputFiles match="*.c" />
+        <blank/>
+        <inputFiles match="*.c" mode="abspath" />
+        <blank/>
         <fixed>-o</fixed>
+        <blank/>
         <outputFiles index=0 />
       </args>
     </cmd>

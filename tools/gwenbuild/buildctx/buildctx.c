@@ -779,13 +779,14 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
       GWEN_PROCESS *process;
       GWEN_PROCESS_STATE pstate;
 
-      if (0) {
+      if (1) {
 	const char *buildMessage;
 
 	buildMessage=GWB_BuildCmd_GetBuildMessage(bcmd);
 	if (buildMessage)
 	  fprintf(stdout, "%s [%s]\r", buildMessage, cmd);
       }
+      fprintf(stdout, "%s %s\n", cmd, args);
       process=GWEN_Process_new();
       if (folder && *folder)
         GWEN_Process_SetFolder(process, folder);

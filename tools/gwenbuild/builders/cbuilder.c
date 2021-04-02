@@ -250,7 +250,7 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE *
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   _addDefinesIncludesAndCflags(context, argBuffer);
-  GWEN_Buffer_AppendString(argBuffer, " -c -fPIC "); /* compile arguments */
+  GWEN_Buffer_AppendString(argBuffer, " -c -fPIC -DPIC "); /* compile arguments */
   //GWB_Builder_AddFileNameToBuffer(context, inFile, argBuffer);
   GWB_Builder_AddAbsFileNameToBuffer(context, inFile, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " -o ");

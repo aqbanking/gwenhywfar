@@ -18,6 +18,7 @@
 #include "gwenbuild/builders/staticlib.h"
 #include "gwenbuild/builders/tmplib.h"
 #include "gwenbuild/builders/tm2builder.h"
+#include "gwenbuild/builders/genericbuilder.h"
 #include "gwenbuild/builder_be.h"
 
 #include <gwenhywfar/debug.h>
@@ -656,10 +657,14 @@ int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRIN
 
 int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget)
 {
+  GWB_CONTEXT *context;
   GWB_BUILDER *targetBuilder;
   GWB_BUILDER *subTargetBuilder;
   GWB_FILE_LIST2 *subTargetOutputFileList;
   GWB_FILE *subTargetFile;
+  const char *s;
+
+  context=GWB_Target_GetContext(target);
 
   targetBuilder=GWB_Target_GetBuilder(target);
   if (targetBuilder==NULL) {
@@ -683,6 +688,23 @@ int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget)
     return GWEN_ERROR_GENERIC;
   }
   GWB_Builder_AddInputFile(targetBuilder, subTargetFile);
+
+  s=GWB_Builder_GetTargetLinkSpec(subTargetBuilder);
+  if (s && *s) {
+    const char *folder;
+    GWEN_BUFFER *linkSpecBuffer;
+
+    /* determine path */
+    folder=GWB_File_GetFolder(subTargetFile);
+
+    linkSpecBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(linkSpecBuffer, "-L");
+    GWB_Builder_AddRelativeFolderToBuffer(context, folder, 1, linkSpecBuffer); /* useBuildDir=1 */
+    GWEN_Buffer_AppendString(linkSpecBuffer, " ");
+    GWEN_Buffer_AppendString(linkSpecBuffer, s);
+    GWB_Target_AddUsedTargetLinkSpec(target, GWEN_Buffer_GetStart(linkSpecBuffer));
+    GWEN_Buffer_free(linkSpecBuffer);
+  }
   return 0;
 }
 
@@ -755,13 +777,21 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
   }
   ext++;
 
-  if (strcasecmp(ext, "c")==0)
-    builder=GWEN_CBuilder_new(gwenbuild, context);
+
+  if (strcasecmp(ext, "c")==0) {
+    //builder=GWEN_CBuilder_new(gwenbuild, context);
+    builder=GWB_GenericBuilder_Factory(gwenbuild, context, "cbuilder");
+  }
   else if (strcasecmp(ext, "t2d")==0 || strcasecmp(ext, "xml")==0)
     builder=GWEN_Tm2Builder_new(gwenbuild, context);
   /* add more here */
   else {
     DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
+    return NULL;
+  }
+
+  if (builder==NULL) {
+    DBG_ERROR(NULL, "Could not create builder for type \"%s\"", ext);
     return NULL;
   }
 
@@ -785,10 +815,12 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
     break;
   case GWBUILD_TargetType_InstallLibrary:
     /* TODO: take project's "shared" attribute into account */
-    builder=GWB_SharedLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
+    //builder=GWB_SharedLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
+    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "sharedlib");
     break;
   case GWBUILD_TargetType_ConvenienceLibrary:
-    builder=GWEN_TmpLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
+    //builder=GWEN_TmpLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
+    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "tmplib");
     break;
   case GWBUILD_TargetType_Program:
     break;

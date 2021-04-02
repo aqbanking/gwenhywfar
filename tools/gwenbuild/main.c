@@ -430,6 +430,11 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 3;
   }
 
+#if 0
+  DBG_ERROR(NULL, "Project:");
+  GWB_Project_Dump(project, 2, 0);
+#endif
+
   return 0;
 }
 

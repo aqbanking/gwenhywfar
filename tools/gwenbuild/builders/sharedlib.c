@@ -284,12 +284,13 @@ GWB_BUILD_CMD *_genCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx, GWB_FILE_L
   }
 
   _appendFileNamesExceptStaticLibs(context, argBuffer, inFileList);
-  _appendTargetsUsedLibraries(target, argBuffer);
   _appendFileNamesOfStaticLibs(context, argBuffer, inFileList);
 
   GWEN_Buffer_AppendString(argBuffer, " -o ");
   GWB_Builder_AddFileNameToBuffer(context, outFile, argBuffer);
   GWEN_Buffer_AppendString(argBuffer, " ");
+
+  _appendTargetsUsedLibraries(target, argBuffer);
 
   /* command to create libXX.so */
   bcmd=GWB_BuildCmd_new();
