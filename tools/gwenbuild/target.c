@@ -32,6 +32,7 @@ GWB_TARGET *GWB_Target_new(GWB_PROJECT *project)
   target->sourceFileList=GWB_File_List2_new();
   target->usedTargetNameList=GWEN_StringList_new();
   target->usedLibraryList=GWEN_StringList_new();
+  target->usedTargetLinkSpecList=GWEN_StringList_new();
   target->project=project;
 
   return target;
@@ -45,6 +46,8 @@ void GWB_Target_free(GWB_TARGET *target)
     free(target->name);
     GWB_File_List2_free(target->sourceFileList);
     GWEN_StringList_free(target->usedTargetNameList);
+    GWEN_StringList_free(target->usedTargetLinkSpecList);
+    GWEN_StringList_free(target->usedLibraryList);
 
     GWEN_FREE_OBJECT(target);
   }
@@ -180,6 +183,23 @@ void GWB_Target_AddUsedLibraryName(GWB_TARGET *target, const char *s)
     target->usedLibraryList=GWEN_StringList_new();
   GWEN_StringList_AppendString(target->usedLibraryList, s, 0, 1);
 }
+
+
+
+GWEN_STRINGLIST *GWB_Target_GetUsedTargetLinkSpecList(const GWB_TARGET *target)
+{
+  return target->usedTargetLinkSpecList;
+}
+
+
+
+void GWB_Target_AddUsedTargetLinkSpec(GWB_TARGET *target, const char *s)
+{
+  if (target->usedTargetLinkSpecList==NULL)
+    target->usedTargetLinkSpecList=GWEN_StringList_new();
+  GWEN_StringList_AppendString(target->usedTargetLinkSpecList, s, 0, 1);
+}
+
 
 
 

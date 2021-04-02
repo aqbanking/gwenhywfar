@@ -62,6 +62,10 @@ GWEN_STRINGLIST *GWB_Target_GetUsedLibraryNameList(const GWB_TARGET *target);
 void GWB_Target_AddUsedLibraryName(GWB_TARGET *target, const char *s);
 
 
+GWEN_STRINGLIST *GWB_Target_GetUsedTargetLinkSpecList(const GWB_TARGET *target);
+void GWB_Target_AddUsedTargetLinkSpec(GWB_TARGET *target, const char *s);
+
+
 GWB_BUILDER *GWB_Target_GetBuilder(const GWB_TARGET *target);
 void GWB_Target_SetBuilder(GWB_TARGET *target, GWB_BUILDER *builder);
 

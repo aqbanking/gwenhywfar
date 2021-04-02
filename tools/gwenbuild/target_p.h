@@ -28,6 +28,7 @@ struct GWB_TARGET {
   GWEN_STRINGLIST *usedTargetNameList;
 
   GWEN_STRINGLIST *usedLibraryList; /* LDFLAGS */
+  GWEN_STRINGLIST *usedTargetLinkSpecList;
 
   GWB_BUILDER *builder;
   GWB_FILE *outputFile;

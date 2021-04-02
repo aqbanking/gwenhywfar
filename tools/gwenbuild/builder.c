@@ -45,6 +45,7 @@ void GWB_Builder_free(GWB_BUILDER *builder)
   if (builder) {
     GWEN_INHERIT_FINI(GWB_BUILDER, builder);
 
+    free(builder->targetLinkSpec);
     free(builder->typeName);
     GWB_File_List2_free(builder->inputFileList2);
     GWB_File_List2_free(builder->outputFileList2);
@@ -70,6 +71,21 @@ uint32_t GWB_Builder_GetId(const GWB_BUILDER *builder)
 const char *GWB_Builder_GetTypeName(const GWB_BUILDER *builder)
 {
   return builder->typeName;
+}
+
+
+
+const char *GWB_Builder_GetTargetLinkSpec(const GWB_BUILDER *builder)
+{
+  return builder->targetLinkSpec;
+}
+
+
+
+void GWB_Builder_SetTargetLinkSpec(GWB_BUILDER *builder, const char *s)
+{
+  free(builder->targetLinkSpec);
+  builder->targetLinkSpec=s?strdup(s):NULL;
 }
 
 

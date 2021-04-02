@@ -7,6 +7,7 @@ noinst_LTLIBRARIES=libgwb_builders.la
 
 libgwb_builders_la_SOURCES=\
  cbuilder.c \
+ genericbuilder.c \
  sharedlib.c \
  staticlib.c \
  tmplib.c \
@@ -16,6 +17,8 @@ libgwb_builders_la_SOURCES=\
 noinst_HEADERS=\
  cbuilder.h \
  cbuilder_p.h \
+ genericbuilder.h \
+ genericbuilder_p.h \
  sharedlib.h \
  sharedlib_p.h \
  staticlib.h \
@@ -24,5 +27,11 @@ noinst_HEADERS=\
  tmplib_p.h \
  tm2builder.h \
  tm2builder_p.h
+
+
+builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders
+dist_builderdata_DATA=\
+  cbuilder.gwb \
+  sharedlib.gwb
 
 

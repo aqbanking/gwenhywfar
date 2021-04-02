@@ -1,0 +1,33 @@
+<?xml?>
+
+<GwenBuilder name="CBuilder" maxinputfiles="1">
+
+  <inputFiles>
+    <acceptedInputTypes>c</acceptInputTypes>
+    <acceptedInputFiles>*.c</acceptInputFiles>
+  </inputFiles>
+  
+  <outputFiles>
+    <file type="object">
+        $(firstInputFileNoExt).o
+    </file>
+  </outputFiles>
+  
+  
+  <buildCommands>
+    <cmd tool="cc">
+      <args>
+        <fixed>-c -fPIC -DPIC</fixed>
+        <defines />
+        <includes type="c" />
+        <inputFiles match="*.c" />
+        <fixed>-o</fixed>
+        <outputFiles index=0 />
+      </args>
+    </cmd>
+    
+  </buildCommands>
+  
+
+
+</GwenBuilder>

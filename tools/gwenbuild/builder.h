@@ -33,6 +33,10 @@ GWENBUILD *GWB_Builder_GetGwenbuild(const GWB_BUILDER *builder);
 const char *GWB_Builder_GetTypeName(const GWB_BUILDER *builder);
 uint32_t GWB_Builder_GetId(const GWB_BUILDER *builder);
 
+const char *GWB_Builder_GetTargetLinkSpec(const GWB_BUILDER *builder);
+void GWB_Builder_SetTargetLinkSpec(GWB_BUILDER *builder, const char *s);
+
+
 GWB_CONTEXT *GWB_Builder_GetContext(const GWB_BUILDER *builder);
 
 GWB_FILE_LIST2 *GWB_Builder_GetInputFileList2(const GWB_BUILDER *builder);

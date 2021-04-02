@@ -21,6 +21,8 @@ struct GWB_BUILDER {
 
   char *typeName;
 
+  char *targetLinkSpec;
+
   GWENBUILD *gwenbuild;
 
   GWB_CONTEXT *context;
