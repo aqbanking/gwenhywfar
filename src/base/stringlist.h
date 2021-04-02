@@ -149,6 +149,15 @@ GWENHYWFAR_API void GWEN_StringList_RemoveFirstString(GWEN_STRINGLIST *sl);
 
 
 /**
+ * Append duplicates of the entries in the source list to the destination list.
+ * The source list is not modified.
+ */
+GWENHYWFAR_API void GWEN_StringList_AppendStringList(GWEN_STRINGLIST *slDest,
+                                                     const GWEN_STRINGLIST *slSource,
+                                                     int checkDouble);
+
+
+/**
  * Checks whether the given string already exists within in the
  * string list.
  * @return !=0 if found, 0 otherwise

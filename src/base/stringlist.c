@@ -894,3 +894,17 @@ void GWEN_StringList_RemoveCommonFirstEntries(GWEN_STRINGLIST *sl1, GWEN_STRINGL
 
 
 
+void GWEN_StringList_AppendStringList(GWEN_STRINGLIST *slDest, const GWEN_STRINGLIST *slSource, int checkDouble)
+{
+  if (slSource) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=slSource->first;
+    while (se) {
+      if (se->data && *(se->data))
+        GWEN_StringList_AppendString(slDest, se->data, 0, checkDouble);
+      se=se->next;
+    } /* while */
+  }
+}
+
