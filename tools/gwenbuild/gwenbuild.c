@@ -782,8 +782,10 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
     //builder=GWEN_CBuilder_new(gwenbuild, context);
     builder=GWB_GenericBuilder_Factory(gwenbuild, context, "cbuilder");
   }
-  else if (strcasecmp(ext, "t2d")==0 || strcasecmp(ext, "xml")==0)
-    builder=GWEN_Tm2Builder_new(gwenbuild, context);
+  else if (strcasecmp(ext, "t2d")==0 || strcasecmp(ext, "xml")==0) {
+    //builder=GWEN_Tm2Builder_new(gwenbuild, context);
+    builder=GWB_GenericBuilder_Factory(gwenbuild, context, "tm2builder");
+  }
   /* add more here */
   else {
     DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);

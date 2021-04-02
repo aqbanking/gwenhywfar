@@ -221,6 +221,8 @@ void _setupVariables(GWB_BUILDER *builder)
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT, "target_so_version_revision", soRevision);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT, "target_so_version_effective", soCurrent-soAge);
 
+  GWEN_DB_AddGroupChildren(db, GWB_Context_GetVars(context));
+
   s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "cflags", 0, NULL);
   if (s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "cflags", s);
@@ -228,6 +230,10 @@ void _setupVariables(GWB_BUILDER *builder)
   s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "ldflags", 0, NULL);
   if (s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "ldflags", s);
+
+  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "tm2flags", 0, NULL);
+  if (s)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "tm2flags", s);
 
   s=GWBUILD_GetToolNameCC(gwenbuild);
   if (s)
@@ -248,7 +254,6 @@ void _setupVariables(GWB_BUILDER *builder)
   s=GWBUILD_GetToolNameRANLIB(gwenbuild);
   if (s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "RANLIB", s);
-
 }
 
 

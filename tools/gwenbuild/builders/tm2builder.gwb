@@ -1,0 +1,44 @@
+<?xml?>
+
+<GwenBuilder name="Tm2Builder">
+
+  <inputFiles>
+    <acceptedInputTypes>tm2</acceptedInputTypes>
+    <acceptedInputFiles>*.t2d</acceptedInputFiles>
+  </inputFiles>
+
+  <outputFiles>
+    <file type="c">
+        $(firstInputFileNoExt).c
+    </file>
+  </outputFiles>
+  
+  <buildCommands>
+    <cmd tool="typemaker2">
+      <args>
+        <fixed>$(tm2flags)</fixed>
+        <blank/>
+        <includes type="tm2" />
+        <blank/>
+        <inputFiles match="*.t2d" mode="abspath" />
+      </args>
+    </cmd>
+  </buildCommands>
+
+  <prepareCommands>
+    <cmd tool="typemaker2">
+      <args>
+        <fixed>$(tm2flags)</fixed>
+        <blank/>
+        <fixed>--defs-only</fixed>
+        <blank/>
+        <includes type="tm2" />
+        <blank/>
+        <inputFiles match="*.t2d" mode="abspath" />
+      </args>
+    </cmd>
+  </prepareCommands>
+  
+
+
+</GwenBuilder>

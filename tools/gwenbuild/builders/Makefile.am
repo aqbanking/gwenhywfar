@@ -34,6 +34,7 @@ dist_builderdata_DATA=\
   cbuilder.gwb \
   sharedlib.gwb \
   staticlib.gwb \
-  tmplib.gwb
+  tmplib.gwb \
+  tm2builder.gwb
 
 
