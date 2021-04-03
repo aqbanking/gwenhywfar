@@ -17,6 +17,8 @@
 struct GWB_BUILD_CMD {
   GWEN_LIST_ELEMENT(GWB_BUILD_CMD)
 
+  char *builderName;
+
   char *folder;
 
   char *buildMessage;

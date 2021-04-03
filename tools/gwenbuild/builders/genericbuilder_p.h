@@ -20,6 +20,7 @@
 
 typedef struct GWB_BUILDER_GENERIC GWB_BUILDER_GENERIC;
 struct GWB_BUILDER_GENERIC {
+  char *builderName;
   char *toolName;
   GWEN_DB_NODE *dbVars;
   GWEN_XMLNODE *xmlDescr;

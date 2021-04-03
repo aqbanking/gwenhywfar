@@ -106,6 +106,7 @@ GWB_BUILDER *GWB_GenericBuilder_Factory(GWENBUILD *gwenbuild, GWB_CONTEXT *conte
     return NULL;
   }
   GWEN_Buffer_free(nameBuf);
+
   return builder;
 }
 
@@ -127,6 +128,8 @@ GWB_BUILDER *GWB_GenericBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, 
   builder=GWB_Builder_new(gwenbuild, context, s);
   GWEN_NEW_OBJECT(GWB_BUILDER_GENERIC, xbuilder);
   GWEN_INHERIT_SETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder, xbuilder, _freeData);
+
+  xbuilder->builderName=strdup(s);
 
   xbuilder->dbVars=GWEN_DB_Group_new("vars");
   xbuilder->xmlDescr=xmlDescr;
@@ -152,6 +155,7 @@ void _freeData(GWEN_UNUSED void *bp, void *p)
   GWEN_DB_Group_free(xbuilder->dbVars);
   GWEN_XMLNode_free(xbuilder->xmlDescr);
   free(xbuilder->toolName);
+  free(xbuilder->builderName);
   GWEN_FREE_OBJECT(xbuilder);
 }
 
@@ -457,12 +461,15 @@ int _isAcceptableInput(GWEN_UNUSED GWB_BUILDER *builder, const GWB_FILE *f)
 
 int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
 {
+  GWB_BUILDER_GENERIC *xbuilder;
   GWB_CONTEXT *context;
   GWB_BUILD_CMD *bcmd;
 
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
   context=GWB_Builder_GetContext(builder);
 
   bcmd=GWB_BuildCmd_new();
+  GWB_BuildCmd_SetBuilderName(bcmd, xbuilder->builderName);
   GWB_BuildCmd_SetFolder(bcmd, GWB_Context_GetCurrentBuildDir(context));
 
   _addBuildCommands(builder, bcmd);

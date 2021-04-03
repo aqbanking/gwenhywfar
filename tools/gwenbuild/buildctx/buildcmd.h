@@ -30,6 +30,10 @@ GWB_BUILD_CMD *GWB_BuildCmd_new(void);
 void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd);
 
 
+const char *GWB_BuildCmd_GetBuilderName(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetBuilderName(GWB_BUILD_CMD *bcmd, const char *s);
+
+
 const char *GWB_BuildCmd_GetFolder(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_SetFolder(GWB_BUILD_CMD *bcmd, const char *s);
 

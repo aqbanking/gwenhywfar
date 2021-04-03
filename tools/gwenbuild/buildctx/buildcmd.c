@@ -73,6 +73,7 @@ void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd)
 
     free(bcmd->buildMessage);
     free(bcmd->folder);
+    free(bcmd->builderName);
 
     GWB_KeyValuePair_List_free(bcmd->prepareCommandList);
     GWB_KeyValuePair_List_free(bcmd->buildCommandList);
@@ -82,6 +83,24 @@ void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd)
     GWEN_FREE_OBJECT(bcmd);
   }
 }
+
+
+
+const char *GWB_BuildCmd_GetBuilderName(const GWB_BUILD_CMD *bcmd)
+{
+  return bcmd->builderName;
+}
+
+
+
+void GWB_BuildCmd_SetBuilderName(GWB_BUILD_CMD *bcmd, const char *s)
+{
+  free(bcmd->builderName);
+  bcmd->builderName=s?strdup(s):NULL;
+}
+
+
+
 
 
 
@@ -250,6 +269,9 @@ void GWB_BuildCmd_SetCurrentCommand(GWB_BUILD_CMD *bcmd, GWB_KEYVALUEPAIR *cmd)
 
 void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode)
 {
+  if (bcmd->builderName)
+    GWEN_XMLNode_SetCharValue(xmlNode, "builderName", bcmd->builderName);
+
   if (bcmd->folder)
     GWEN_XMLNode_SetCharValue(xmlNode, "folder", bcmd->folder);
 
@@ -298,6 +320,9 @@ GWB_BUILD_CMD *GWB_BuildCmd_fromXml(GWEN_XMLNODE *xmlNode, GWB_FILE_LIST2 *fileL
   const char *s;
 
   bcmd=GWB_BuildCmd_new();
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "builderName", NULL);
+  GWB_BuildCmd_SetBuilderName(bcmd, s);
 
   s=GWEN_XMLNode_GetCharValue(xmlNode, "folder", NULL);
   GWB_BuildCmd_SetFolder(bcmd, s);
