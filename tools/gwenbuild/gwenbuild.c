@@ -841,6 +841,7 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
     builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "tmplib");
     break;
   case GWBUILD_TargetType_Program:
+    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "app");
     break;
   case GWBUILD_TargetType_Objects:
     break;

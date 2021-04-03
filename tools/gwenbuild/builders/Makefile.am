@@ -16,6 +16,7 @@ noinst_HEADERS=\
 
 builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders
 dist_builderdata_DATA=\
+  app.gwb \
   cbuilder.gwb \
   sharedlib.gwb \
   staticlib.gwb \
