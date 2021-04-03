@@ -148,7 +148,7 @@ int test_ReadProject(int argc, char **argv)
   }
 
   /* prepare */
-  rv=GWB_BuildCtx_Run(buildCtx, 10, 1);
+  rv=GWB_BuildCtx_Run(buildCtx, 10, 1, NULL);
   if (rv<0) {
     DBG_ERROR(NULL, "Error preparing builds.");
     return 2;
@@ -156,7 +156,7 @@ int test_ReadProject(int argc, char **argv)
   DBG_ERROR(NULL, "Build successfully prepared.");
 
   /* build */
-  rv=GWB_BuildCtx_Run(buildCtx, 10, 0);
+  rv=GWB_BuildCtx_Run(buildCtx, 10, 0, NULL);
   if (rv<0) {
     DBG_ERROR(NULL, "Error building builds.");
     return 2;
@@ -510,7 +510,7 @@ int _prepare(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
 
   /* prepare */
-  rv=GWB_BuildCtx_Run(buildCtx, 10, 1);
+  rv=GWB_BuildCtx_Run(buildCtx, 10, 1, NULL);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error preparing builds.\n");
     return 2;
@@ -527,6 +527,7 @@ int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   GWB_BUILD_CONTEXT *buildCtx;
   int rv;
   int numThreads;
+  const char *builderName;
   const GWEN_ARGS args[]= {
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -538,6 +539,17 @@ int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "jobs",                       /* long option */
       "Specify number of parallel jobs",      /* short description */
       "Specify number of parallel jobs"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "builder",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "B",                          /* short option */
+      "builder",                    /* long option */
+      "Specify builder for which to build (CBuilder, Tm2Builder)",      /* short description */
+      "Specify builder for which to build (CBuilder, Tm2Builder"       /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -580,6 +592,7 @@ int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
 
   numThreads=GWEN_DB_GetIntValue(db, "jobs", 0, 1);
+  builderName=GWEN_DB_GetCharValue(db, "builder", 0, NULL);
 
   buildCtx=GWB_BuildCtx_ReadFromXmlFile("buildctx.xml");
   if (buildCtx==NULL) {
@@ -589,7 +602,7 @@ int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
 
   /* build */
-  rv=GWB_BuildCtx_Run(buildCtx, numThreads, 0);
+  rv=GWB_BuildCtx_Run(buildCtx, numThreads, 0, builderName);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error building builds.\n");
     GWEN_DB_Group_free(db);

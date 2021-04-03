@@ -57,6 +57,7 @@ void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 void _readArgsUsedSubTargets(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
 void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 
 void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
 GWB_FILE *_getFileAtPosInList2(GWB_FILE_LIST2 *filesList, int index);
@@ -600,7 +601,9 @@ void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArg
       else if (strcasecmp(sTagName, "ifHasLibraries")==0)
 	_readArgsIfHasLibraries(builder, bcmd, n, argsBuffer);
       else if (strcasecmp(sTagName, "libraries")==0)
-	_readArgsLibraries(builder, argsBuffer);
+        _readArgsLibraries(builder, argsBuffer);
+      else if (strcasecmp(sTagName, "haveConfigH")==0)
+        _readArgsHaveConfigH(builder, argsBuffer);
       else if (strcasecmp(sTagName, "blank")==0) {
 	GWEN_Buffer_AppendString(argsBuffer, " ");
       }
@@ -783,6 +786,23 @@ void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer)
   kvpList=GWB_Context_GetDefineList(context);
   if (kvpList)
     GWB_KeyValuePair_List_WriteAllPairsToBuffer(kvpList, "-D", "=", " ", argsBuffer);
+}
+
+
+
+void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer)
+{
+  GWB_CONTEXT *context;
+  GWB_TARGET *target;
+  GWB_PROJECT *project;
+
+  context=GWB_Builder_GetContext(builder);
+  target=GWB_Context_GetCurrentTarget(context);
+  project=GWB_Target_GetProject(target);
+
+  if (GWB_Project_GetFlags(project) & GWB_PROJECT_FLAGS_CONFIG_H) {
+    GWEN_Buffer_AppendString(argsBuffer, " -DHAVE_CONFIG_H ");
+  }
 }
 
 

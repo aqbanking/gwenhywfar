@@ -38,7 +38,7 @@ void _clearDepsInCommands(GWB_BUILD_CONTEXT *bctx);
 void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx);
 
 void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
-void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx);
+void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName);
 void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
 int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
 int _startCommand(GWB_BUILD_CMD *bcmd);
@@ -590,7 +590,7 @@ void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent)
 
 
 
-int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrepareCommands)
+int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrepareCommands, const char *builderName)
 {
   int waitingJobs;
   int runningJobs;
@@ -598,7 +598,7 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
   _setupDependencies(bctx);
   _setupCommands(bctx, usePrepareCommands);
   _createCommandQueues(bctx);
-  _initiallyFillQueues(bctx);
+  _initiallyFillQueues(bctx, builderName);
 
   waitingJobs=GWB_BuildCmd_List2_GetSize(bctx->waitingQueue);
   runningJobs=GWB_BuildCmd_List2_GetSize(bctx->runningQueue);
@@ -698,7 +698,7 @@ void _createCommandQueues(GWB_BUILD_CONTEXT *bctx)
 
 
 
-void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx)
+void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName)
 {
   GWB_BUILD_CMD_LIST2_ITERATOR *it;
 
@@ -706,12 +706,28 @@ void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx)
   if (it) {
     GWB_BUILD_CMD *bcmd;
 
-    bcmd=GWB_BuildCmd_List2Iterator_Data(it);
-    while(bcmd) {
-      if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
-        GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+    if (builderName && *builderName) {
+      bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+      while(bcmd) {
+        const char *s;
+
+        s=GWB_BuildCmd_GetBuilderName(bcmd);
+        if (s && strcasecmp(s, builderName)==0) {
+          if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
+            GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+          }
+        }
+        bcmd=GWB_BuildCmd_List2Iterator_Next(it);
       }
-      bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+    }
+    else {
+      bcmd=GWB_BuildCmd_List2Iterator_Data(it);
+      while(bcmd) {
+        if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
+          GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+        }
+        bcmd=GWB_BuildCmd_List2Iterator_Next(it);
+      }
     }
     GWB_BuildCmd_List2Iterator_free(it);
   }

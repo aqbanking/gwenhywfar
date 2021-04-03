@@ -22,7 +22,8 @@ typedef struct GWB_PROJECT GWB_PROJECT;
 #include "gwenbuild/option.h"
 
 
-#define GWB_PROJECT_FLAGS_SHARED 0x0001
+#define GWB_PROJECT_FLAGS_SHARED   0x0001
+#define GWB_PROJECT_FLAGS_CONFIG_H 0x0002
 
 
 
