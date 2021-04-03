@@ -234,6 +234,7 @@ GWB_TARGET *GWB_Project_GetTargetByName(const GWB_PROJECT *project, const char *
         s=GWB_Target_GetName(target);
         if (s && strcasecmp(s, name)==0)
           break;
+        target=GWB_Target_List2Iterator_Next(it);
       }
       GWB_Target_List2Iterator_free(it);
       if (target)
