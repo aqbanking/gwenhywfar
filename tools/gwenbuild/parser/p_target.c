@@ -105,9 +105,9 @@ GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_
 
   db=GWB_Context_GetVars(currentContext);
   GWEN_DB_SetCharValue(db, flags, "target_name", GWB_Target_GetName(target));
-  GWEN_DB_SetIntValue(db, flags, "target_so_current", GWB_Target_GetSoVersionCurrent(target));
-  GWEN_DB_SetIntValue(db, flags, "target_so_age", GWB_Target_GetSoVersionAge(target));
-  GWEN_DB_SetIntValue(db, flags, "target_so_revision", GWB_Target_GetSoVersionRevision(target));
+  GWEN_DB_SetCharValueFromInt(db, flags, "target_so_current", GWB_Target_GetSoVersionCurrent(target));
+  GWEN_DB_SetCharValueFromInt(db, flags, "target_so_age", GWB_Target_GetSoVersionAge(target));
+  GWEN_DB_SetCharValueFromInt(db, flags, "target_so_revision", GWB_Target_GetSoVersionRevision(target));
 
   return target;
 }
@@ -132,8 +132,6 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if ((strcasecmp(name, "sources")==0) || (strcasecmp(name, "headers")==0))
         rv=_parseSourcesOrHeaders(project, currentContext, n);
-      else if (strcasecmp(name, "setVar")==0)
-        rv=GWB_Parser_ParseSetVar(currentContext, n);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "includes")==0)
@@ -144,10 +142,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=_parseLibraries(currentContext, n);
       else if (strcasecmp(name, "target")==0)
         rv=GWB_ParseTarget(project, currentContext, n);
-      else {
-        DBG_DEBUG(NULL, "Element not handled");
-        rv=0;
-      }
+      else
+        rv=GWB_Parser_ParseWellKnownElements(project, currentContext, n, _parseChildNodes);
       if (rv<0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Error in element \"%s\", aborting", name);
         return rv;
@@ -321,7 +317,7 @@ int _parseDefines(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
   int rv;
   const char *varName;
   const char *value;
-  int quoted;
+  const char *quoted;
 
   rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
   if (rv<0) {
@@ -329,14 +325,14 @@ int _parseDefines(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     return rv;
   }
 
-  quoted=GWEN_XMLNode_GetIntProperty(xmlNode, "quoted", 0);
+  quoted=GWEN_XMLNode_GetProperty(xmlNode, "quoted", "FALSE");
   varName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   value=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
   if (!(varName && *varName)) {
     DBG_ERROR(NULL, "Missing variable name in DEFINE");
     return GWEN_ERROR_GENERIC;
   }
-  if (quoted) {
+  if (quoted && strcasecmp(quoted, "TRUE")==0) {
     GWEN_BUFFER *dbuf;
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);

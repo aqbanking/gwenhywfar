@@ -277,10 +277,6 @@ TODO:
 
 
 
-<ifVarMatches  id="someOption" match="someValue" >
-<ifVarHasValue id="plugins"    match="file" >
-
-
 <option id"prefix" type="string">
   <default>/usr/local</default>
 </option>
@@ -304,4 +300,11 @@ struct GWB_OPTION:
 - kvplist<aliases>
 
 
+
+NEXT:
+- <ifVarMatches  name="someOption" value="someValue" >
+- <ifVarHasValue name="plugins"    value="file" >
+- shared vs. static
+- write file
+- GWEN_Text_ReplaceVars: auch "@" akzeptieren
 

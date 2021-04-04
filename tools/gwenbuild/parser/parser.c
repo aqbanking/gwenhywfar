@@ -19,6 +19,7 @@
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/process.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/text.h>
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -30,6 +31,14 @@
 static void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db);
 static void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName);
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
+static int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseIfVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
+static int _parseIfNotVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
+static int _parseIfVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
+static int _parseIfNotVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
+static int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+
+static int _parseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
 
 
@@ -132,6 +141,8 @@ GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, c
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topsrcdir", GWB_Context_GetTopSourceDir(newContext));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", GWB_Context_GetCurrentBuildDir(newContext));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "srcdir", GWB_Context_GetCurrentSourceDir(newContext));
+
+  GWEN_DB_DeleteGroup(db, "local");
 
   return newContext;
 }
@@ -240,7 +251,10 @@ GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(const GWB_CONTEXT *curren
         GWEN_Buffer_free(buf);
         return NULL;
       }
-
+      if (GWEN_Buffer_GetUsedBytes(buf)==0) {
+        GWEN_Buffer_free(buf);
+        return NULL;
+      }
       return buf;
     }
   }
@@ -324,7 +338,7 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
 
 
 
-int GWB_Parser_ParseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   const char *sName;
   const char *sMode;
@@ -351,6 +365,271 @@ int GWB_Parser_ParseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
       _appendVarValue(db, sName, GWEN_Buffer_GetStart(buf));
     GWEN_Buffer_free(buf);
   }
+  else {
+    if (strcasecmp(sMode, "replace")==0) {
+      GWEN_DB_DeleteVar(db, sName);
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _parseIfVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWB_PARSER_PARSE_ELEMENT_FN fn)
+{
+  const char *sName;
+  const char *sPattern;
+  const char *sValueInDb;
+  GWEN_DB_NODE *db;
+  GWEN_XMLNODE *xmlThen;
+  GWEN_XMLNODE *xmlElse;
+  int rv;
+
+  xmlThen=GWEN_XMLNode_FindFirstTag(xmlNode, "then", NULL, NULL);
+  xmlElse=GWEN_XMLNode_FindFirstTag(xmlNode, "else", NULL, NULL);
+
+  db=GWB_Context_GetVars(currentContext);
+
+  sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(sName && *sName)) {
+    DBG_ERROR(NULL, "No name for <ifVarMatches>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  sPattern=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
+  if (!(sPattern && *sPattern)) {
+    DBG_ERROR(NULL, "No value for <ifVarMatches>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  sValueInDb=GWEN_DB_GetCharValue(db, sName, 0, NULL);
+  if (!(sValueInDb && *sValueInDb)) {
+    DBG_ERROR(NULL, "No value for \"%s\" in db for <ifVarMatches>", sName);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (-1!=GWEN_Text_ComparePattern(sValueInDb, sPattern, 0)) {
+    rv=fn(project, currentContext, xmlThen?xmlThen:xmlNode);
+    if (rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    if (xmlElse) {
+      rv=fn(project, currentContext, xmlElse);
+      if (rv<0) {
+        DBG_INFO(NULL, "here (%d)", rv);
+        return rv;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _parseIfNotVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWB_PARSER_PARSE_ELEMENT_FN fn)
+{
+  const char *sName;
+  const char *sPattern;
+  const char *sValueInDb;
+  GWEN_DB_NODE *db;
+  GWEN_XMLNODE *xmlThen;
+  GWEN_XMLNODE *xmlElse;
+  int rv;
+
+  xmlThen=GWEN_XMLNode_FindFirstTag(xmlNode, "then", NULL, NULL);
+  xmlElse=GWEN_XMLNode_FindFirstTag(xmlNode, "else", NULL, NULL);
+
+  db=GWB_Context_GetVars(currentContext);
+
+  sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(sName && *sName)) {
+    DBG_ERROR(NULL, "No name for <ifVarMatches>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  sPattern=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
+  if (!(sPattern && *sPattern)) {
+    DBG_ERROR(NULL, "No value for <ifVarMatches>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  sValueInDb=GWEN_DB_GetCharValue(db, sName, 0, NULL);
+  if (!(sValueInDb && *sValueInDb)) {
+    DBG_ERROR(NULL, "No value for \"%s\" in db for <ifVarMatches>", sName);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (-1==GWEN_Text_ComparePattern(sValueInDb, sPattern, 0)) {
+    rv=fn(project, currentContext, xmlThen?xmlThen:xmlNode);
+    if (rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    if (xmlElse) {
+      rv=fn(project, currentContext, xmlElse);
+      if (rv<0) {
+        DBG_INFO(NULL, "here (%d)", rv);
+        return rv;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _parseIfVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWB_PARSER_PARSE_ELEMENT_FN fn)
+{
+  int rv;
+  GWEN_XMLNODE *xmlThen;
+  GWEN_XMLNODE *xmlElse;
+
+  xmlThen=GWEN_XMLNode_FindFirstTag(xmlNode, "then", NULL, NULL);
+  xmlElse=GWEN_XMLNode_FindFirstTag(xmlNode, "else", NULL, NULL);
+  rv=_varHasValue(currentContext, xmlNode);
+  if (rv<0)
+    return rv;
+  if (rv) {
+    return fn(project, currentContext, xmlThen?xmlThen:xmlNode);
+  }
+  else {
+    if (xmlElse)
+      return fn(project, currentContext, xmlElse);
+  }
+  return 0;
+}
+
+
+
+int _parseIfNotVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWB_PARSER_PARSE_ELEMENT_FN fn)
+{
+  int rv;
+  GWEN_XMLNODE *xmlThen;
+  GWEN_XMLNODE *xmlElse;
+
+  xmlThen=GWEN_XMLNode_FindFirstTag(xmlNode, "then", NULL, NULL);
+  xmlElse=GWEN_XMLNode_FindFirstTag(xmlNode, "else", NULL, NULL);
+  rv=_varHasValue(currentContext, xmlNode);
+  if (rv<0)
+    return rv;
+  if (rv==0) {
+    return fn(project, currentContext, xmlThen?xmlThen:xmlNode);
+  }
+  else {
+    if (xmlElse)
+      return fn(project, currentContext, xmlElse);
+  }
+  return 0;
+}
+
+
+
+int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  const char *sName;
+  const char *sPattern;
+  GWEN_DB_NODE *db;
+  int i;
+
+  db=GWB_Context_GetVars(currentContext);
+
+  sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(sName && *sName)) {
+    DBG_ERROR(NULL, "No name for <ifVarMatches>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  sPattern=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
+  if (!(sPattern && *sPattern)) {
+    DBG_ERROR(NULL, "No value for <ifVarMatches>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  for (i=0; i<100; i++) {
+    const char *sValueInDb;
+
+    sValueInDb=GWEN_DB_GetCharValue(db, sName, i, NULL);
+    if (!sValueInDb)
+      break;
+    if (-1!=GWEN_Text_ComparePattern(sValueInDb, sPattern, 0))
+      return 1;
+  }
+
+  return 0;
+}
+
+
+
+int _parseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  const char *fileName;
+  const char *currentSrcDir;
+  GWEN_BUFFER *fileNameBuffer;
+  GWEN_BUFFER *fileBufferIn;
+  GWEN_BUFFER *fileBufferOut;
+  int rv;
+
+  fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(fileName && *fileName)) {
+    DBG_ERROR(NULL, "No name for <writeFile>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  currentSrcDir=GWB_Context_GetCurrentSourceDir(currentContext);
+
+  fileNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  if (currentSrcDir && *currentSrcDir) {
+    GWEN_Buffer_AppendString(fileNameBuffer, currentSrcDir);
+    GWEN_Buffer_AppendString(fileNameBuffer, GWEN_DIR_SEPARATOR_S);
+  }
+  GWEN_Buffer_AppendString(fileNameBuffer, fileName);
+  GWEN_Buffer_AppendString(fileNameBuffer, ".in");
+
+  fileBufferIn=GWEN_Buffer_new(0, 256, 0, 1);
+
+  rv=GWEN_SyncIo_Helper_ReadFile(GWEN_Buffer_GetStart(fileNameBuffer), fileBufferIn);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not read \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
+    GWEN_Buffer_free(fileBufferIn);
+    GWEN_Buffer_free(fileNameBuffer);
+    return rv;
+  }
+
+  fileBufferOut=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWB_Parser_ReplaceVarsBetweenAtSigns(GWEN_Buffer_GetStart(fileBufferIn),
+                                          fileBufferOut,
+                                          GWB_Context_GetVars(currentContext));
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error translating content of file \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
+    GWEN_Buffer_free(fileBufferOut);
+    GWEN_Buffer_free(fileBufferIn);
+    GWEN_Buffer_free(fileNameBuffer);
+    return rv;
+  }
+
+  unlink(fileName);
+  rv=GWEN_SyncIo_Helper_WriteFile(fileName,
+                                  (const uint8_t*)GWEN_Buffer_GetStart(fileBufferOut),
+                                  GWEN_Buffer_GetUsedBytes(fileBufferOut));
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not write \"%sh\" (%d)", fileName, rv);
+    GWEN_Buffer_free(fileBufferOut);
+    GWEN_Buffer_free(fileBufferIn);
+    GWEN_Buffer_free(fileNameBuffer);
+    return rv;
+  }
+
+  GWEN_Buffer_free(fileBufferOut);
+  GWEN_Buffer_free(fileBufferIn);
+  GWEN_Buffer_free(fileNameBuffer);
 
   return 0;
 }
@@ -391,6 +670,108 @@ void GWB_Parser_SetItemValue(GWEN_DB_NODE *db, const char *sId, const char *suff
                        value);
   GWEN_Buffer_free(varNameBuffer);
 }
+
+
+
+
+int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_DB_NODE *db)
+{
+  const char *p;
+
+#if 0
+  DBG_ERROR(NULL, "Using vars:");
+  GWEN_DB_Dump(db, 2);
+#endif
+
+  p=s;
+  while (*p) {
+    if (*p=='@') {
+      p++;
+      if (*p=='@')
+        GWEN_Buffer_AppendByte(dbuf, '@');
+      else {
+        const char *pStart;
+
+        pStart=p;
+        while (*p && *p!='@')
+          p++;
+        if (*p!='@') {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
+          return GWEN_ERROR_BAD_DATA;
+        }
+        else {
+          int len;
+          char *rawName;
+          const char *value;
+
+          len=p-pStart;
+          if (len<1) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+            return GWEN_ERROR_BAD_DATA;
+          }
+          rawName=(char *) malloc(len+1);
+          assert(rawName);
+          memmove(rawName, pStart, len);
+          rawName[len]=0;
+
+          /*DBG_ERROR(NULL, "Setting data from variable \"%s\"", rawName);*/
+          value=GWEN_DB_GetCharValue(db, rawName, 0, NULL);
+          if (value)
+            GWEN_Buffer_AppendString(dbuf, value);
+          else {
+            DBG_WARN(NULL, "Warning: Empty value for DB var \"%s\"", rawName);
+          }
+          free(rawName);
+        }
+      }
+      p++;
+    }
+    else {
+      GWEN_Buffer_AppendByte(dbuf, *p);
+      p++;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int GWB_Parser_ParseWellKnownElements(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn)
+{
+  const char *name;
+
+  name=GWEN_XMLNode_GetData(n);
+  if (name && *name) {
+    int rv;
+
+    DBG_DEBUG(NULL, "Handling element \"%s\"", name);
+
+    if (strcasecmp(name, "writeFile")==0)
+      rv=_parseWriteFile(currentContext, n);
+    else if (strcasecmp(name, "setVar")==0)
+      rv=_parseSetVar(currentContext, n);
+    else if (strcasecmp(name, "ifVarMatches")==0)
+      rv=_parseIfVarMatches(project, currentContext, n, fn);
+    else if (strcasecmp(name, "ifNotVarMatches")==0)
+      rv=_parseIfNotVarMatches(project, currentContext, n, fn);
+    else if (strcasecmp(name, "ifVarHasValue")==0)
+      rv=_parseIfVarHasValue(project, currentContext, n, fn);
+    else if (strcasecmp(name, "ifNotVarHasValue")==0)
+      rv=_parseIfNotVarHasValue(project, currentContext, n, fn);
+    else {
+      DBG_DEBUG(NULL, "Element not handled here, ignoring");
+      rv=1;
+    }
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in element \"%s\", aborting", name);
+      return rv;
+    }
+  }
+
+  return 0;
+}
+
 
 
 
