@@ -292,7 +292,10 @@ void GWB_Builder_AddRelativeFolderToBuffer(const GWB_CONTEXT *context, const cha
 
   relBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Path_GetPathBetween(buildDir, GWEN_Buffer_GetStart(realFileFolderBuffer), relBuffer);
-  GWEN_Buffer_AppendString(argBuffer, GWEN_Buffer_GetStart(relBuffer));
+  if (GWEN_Buffer_GetUsedBytes(relBuffer)>0)
+    GWEN_Buffer_AppendString(argBuffer, GWEN_Buffer_GetStart(relBuffer));
+  else
+    GWEN_Buffer_AppendString(argBuffer, ".");
   GWEN_Buffer_free(relBuffer);
   GWEN_Buffer_free(realFileFolderBuffer);
 }
