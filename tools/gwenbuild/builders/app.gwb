@@ -24,17 +24,9 @@
         <blank/>
         <outputFiles index="0" />
         <blank/>
-        <ifHasSubTargetLibs>
-          <fixed>-Wl,--whole-archive</fixed>
-          <blank/>
-          <subTargetLibs/>
-          <blank/>
-        </ifHasSubTargetLibs>
-        <ifHasLibraries>
-          <fixed>-Wl,--no-whole-archive</fixed>
-          <blank/>
-          <libraries/>
-        </ifHasLibraries>
+        <subTargetLibs/>
+        <blank/>
+        <libraries/>
       </args>
     </cmd>
 
