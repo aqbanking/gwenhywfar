@@ -7,16 +7,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_TRYCOMPILE_H
-#define GWBUILD_TRYCOMPILE_H
+#ifndef GWBUILD_PARSER_CHECKCOMPILER_H
+#define GWBUILD_PARSER_CHECKCOMPILER_H
 
 
-#include "gwenbuild/gwenbuild.h"
+#include "gwenbuild/project.h"
+
+#include <gwenhywfar/xml.h>
 
 
-int GWB_Tools_TryCompile(GWENBUILD *gwbuild, const char *testCode);
 
-int GWB_Tools_CheckCompilerArgs(GWENBUILD *gwbuild, const char *compilerArgs);
+int GWB_ParseCheckCompiler(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
