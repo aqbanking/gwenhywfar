@@ -19,6 +19,8 @@
       <args>
         <fixed>-c -fPIC -DPIC</fixed>
         <blank/>
+        <fixed>$(cflags) $(local/cflags)</fixed>
+        <blank/>
         <haveConfigH/>
         <defines />
         <blank/>
