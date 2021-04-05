@@ -345,6 +345,7 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   GWB_PROJECT *project;
   GWB_BUILD_CONTEXT *buildCtx;
   const char *folder;
+  int doDump;
   GWB_KEYVALUEPAIR_LIST *givenOptionList;
   int rv;
   const GWEN_ARGS args[]= {
@@ -369,6 +370,17 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "option",                      /* long option */
       "Set option (OPTION=VALUE)",  /* short description */
       "Set option (OPTION=VALUE)"   /* long description */
+    },
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "dump",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      NULL,                          /* short option */
+      "dump",                      /* long option */
+      "Dump read build context",  /* short description */
+      "Dump read build context"   /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -409,6 +421,8 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 0;
   }
 
+  doDump=GWEN_DB_GetIntValue(db, "dump", 0, 0);
+
   folder=GWEN_DB_GetCharValue(db, "folder", 0, NULL);
   if (!(folder && *folder)) {
     fprintf(stderr, "ERROR: Folder needed.\n");
@@ -448,10 +462,9 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 3;
   }
 
-#if 0
-  DBG_ERROR(NULL, "Project:");
-  GWB_Project_Dump(project, 2, 1);
-#endif
+  if (doDump) {
+    GWB_Project_Dump(project, 2, 1);
+  }
 
   return 0;
 }
