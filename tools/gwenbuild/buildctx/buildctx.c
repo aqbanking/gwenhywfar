@@ -862,13 +862,14 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
           GWB_KEYVALUEPAIR *nextCommand;
 
           /* process successfully finished */
-          _signalJobFinished(bcmd);
           nextCommand=GWB_KeyValuePair_List_Next(GWB_BuildCmd_GetCurrentCommand(bcmd));
           GWB_BuildCmd_SetCurrentCommand(bcmd, nextCommand);
           if (nextCommand)
             GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
-          else
+          else {
+            _signalJobFinished(bcmd);
             GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
+          }
         }
       }
       else {
