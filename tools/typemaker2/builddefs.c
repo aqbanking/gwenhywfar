@@ -151,6 +151,7 @@ int buildDefs(GWEN_DB_NODE *dbArgs)
     else {
       if (i==0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "No input");
+	GWEN_DB_Dump(dbArgs, 2);
         return 1;
       }
     }
