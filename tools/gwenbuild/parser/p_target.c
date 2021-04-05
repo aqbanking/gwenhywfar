@@ -130,7 +130,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
       if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
-      else if ((strcasecmp(name, "sources")==0) || (strcasecmp(name, "headers")==0))
+      else if ((strcasecmp(name, "sources")==0) || (strcasecmp(name, "headers")==0) || (strcasecmp(name, "data")==0))
         rv=_parseSourcesOrHeaders(project, currentContext, n);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
