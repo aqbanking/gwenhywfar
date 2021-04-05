@@ -18,6 +18,7 @@
   </targetLinkSpecs>
   
   <buildCommands>
+
     <cmd tool="$(cc)">
       <args>
         <fixed>-shared -fPIC -nostdlib -Wl,-no-undefined -Wl,-soname,lib$(target_name).so.$(target_so_version_effective)</fixed>
@@ -39,6 +40,12 @@
           <blank/>
           <libraries/>
         </ifHasLibraries>
+      </args>
+    </cmd>
+
+    <cmd tool="rm" ignoreResult="TRUE">
+      <args>
+        <fixed>lib$(target_name).so.$(target_so_version_effective) lib$(target_name).so</fixed>
       </args>
     </cmd>
 
