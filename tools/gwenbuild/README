@@ -1,228 +1,74 @@
 
+GwenBuild
+=========
+
+GwenBuild is yet another build system.
+
+"autotools" (automake, autoconf) are really cool and they work in almost every case as expected.
+However, they are extremely slow which is a problem with larger projects containing many source files
+and convenience libraries. Also, they are hard to debug if you encounter unusual problems, e.g. in AqBanking
+we have the problem that sometimes not all sources/convenience libraries are correctly rebuilt after source code
+changes and up to now I have no idea why that is.
+
+A nice solution would be to switch to "cmake", especially when using their build target "ninja" which is
+astonishingly fast. "cmake" is quite easy to setup for simple projects, however, it is not that easy to change larger projects 
+to use it. Also, there is quite a steep learning curve.
+
+"meson" is another good alternative since it also uses "ninja" and is therefore also extremely fast. But I wasn't able to
+adapt my projects to use "meson" because some features I needed for e.g. AqFinance or AqBanking required a version of "meson" newer 
+than what is provided by the distribution I'm currently working with.
+
+Out of curiosity "gwenbuild" was started. I wanted to see how fast a build system can be and how hard it would be to write one.
+Gwenbuild is a tool inside the library gwenhywfar, which is a base library for all my projects. Therefore it is always available in 
+the required version for depending projects. Gwenhywfar itself will not be ported to use this build system to avoid the 
+hen-and-egg-problem.
+
+
+The following major goals were identified before development started:
+- needs to be much faster than autotools/make
+- needs to provide library, header and function search functions
+- needs to be able to generate a "config.h" file
+- needs to be able to rewrite files by replacing placeholders in source files (like "sed" does in ./configure)
+- needs to be simple to setup
+- needs to have support for typemaker2 source files
+- needs to allow out-of-source build
+- should be easy to extend
+- should handle dependency trees
+
+
+
+QuickStart for Users
+--------------------
+
+- create a new folder in which to build, there:
+- "gwbuild setup -f PATH_TO_SOURCE_FOLDER"
+- "gwbuild prepare"
+- "gwbuild build -j MAX_NUMBER_OF_PARALLEL_JOBS"
+
+After changing source files only the last step needs to be repeated.
+
+
+
+QuickStart for Development
+--------------------------
+
+- builder (modules which generate commands to compile or link source files) are defined in XML files in "builders/" (see *.gwb files).
+- new builders should be added in file "gwenbuild.c" in functions "_genBuilderForSourceFile()" and "_genBuilderForTarget()" at
+  the bottom of that file.
+
+
+
+
+Some notes to myself
+====================
+
 https://docencia.ac.upc.edu/FIB/USO/Bibliografia/unix-c-libraries.html
 
 
-  Context (tree):
-  - refCounter
-  - folder
-  - defines
-  - includes
-  - environment vars (CFLAGS etc)
-  - vars (prefix, project_so_current etc)
-  
-  File:
-  - id
-  - name
-  - type (c, cpp, tm2, obj, asm, nvcpp, resource, const)
-  - generator (ccompiler, typemaker2, linker etc)
-  - flags: dist, built
-  - installToFolder
-  - pointer to context
 
-  - runtimeFlags: built_in_this_session
-  - stat: datetime
-  - FILE_LIST2 *blockingFiles;
-  - FILE_LIST2 *blockedFiles;
-  - FILE_LIST2 *dependecies;
-  
 
- Build dependecies:
+Build dependecies:
    cc -E -I INCLUDE_FOLDER -M -MF DEPOUTFILE SRCFILE
-
-Immer im build-dir kompilieren/builden
-
-
-
-Reading files:
-
-
-- project
-  - options
-  - dependencies
-  - checkHeaders
-  - checkFunctions
-
-  - subdirs (ContextWechsel)
-  - target (ContextWechsel)
-    - includes   ->context
-    - defines    ->context
-    - sources    ->context
-    - headers    ->context
-    - data       ->context
-    - libraries  ->target
-    - useTargets ->target
-    - ifOptionContains etc
-
-
-Context-Aenderung:
-- bei enter eines <subdirs>:
-  - neuen Context erstellen
-    - newCtx->topBuildDir=SUBDIR+oldCtx->topBuildDir
-    - newCtx->topSourceDir=SUBDIR+oldCtx->topSourceDir
-    - newCtx->currentBuildDir=oldCtx->currentBuildDir+"/"+SUBDIR
-    - newCtx->currentSourceDir=oldCtx->currentSourceDir+"/"+SUBDIR
-    - clear includeList
-    - clear defineList
-    - copy vars
-    - clear sourceFileList2
-    - copy currentTarget
-- bei beginn eines <target>
-  - neuen Context erstellen
-    - copy all
-    - clear includeList
-    - clear defineList
-    - clear sourceFileList2
-    - set new target
-
-
-main structure:
-- list2<FILE>
-- tree2<CONTEXT>
-- list2<TARGET>
-- db fuer deps, globale variablen wie:
-  - prefix
-  - deps
-  - options
-
-
-beim erzeugen eines builders:
-- ermittle Dateien fuer getOutputFiles() anhand der inputs
-- fuege diese Dateien der list main->files hinzu, erzeuge id etc
-
-
-
-Durchgang:
-- alle Contexte und targets sammeln
-
-
-Durchgang
-- fuer jedes Target:
-  - erzeuge builder
-  
-- fuer jeden Context unterhalb des Target:
-  - fuer jedes SourceFile
-    - target->builder->isAcceptableInput()?
-      - ja: target->builder->addInput(FILE)
-      - nein: 
-        - erzeuge builder nach quelldateityp
-        - fuer jedes (builder->getOutputFiles())
-          - add to current SourceFile list
-
-- fuer jedes Target:
-    - usedTargetList?
-      - fuer jedes usedTarget:
-        - ConvenienceLib oder installLib?
-          - ja:
-            - schon in der stringlist?
-              - ja: circular dependency, FEHLER!
-              - nein: 
-              - dep->builder->outputFileList()->empty?
-                - ja:
-                 - dep->builder->generateOutputFileList()
-              - fuege als inputFile zum aktuellen Builder hinzu: dep->builder->outputFileList->Front()
-          - nein: FEHLER!
-    - builder->generateOutputFileList()
-
-- fuer jeden builder:
-  - erzeuge buildcmd
-
-
-
-Durchgang: Handle used targets
-- fuer jedes Target:
-  - fuer jedes usedTarget
-    - erstes (usedTarget->builder->getOutputFiles())
-      - file->addWaitingBuilder(target->builder)
-      - target->builder->incBlockingFiles()
-
-
-<-------- we are here
-
-
-Durchgang
-- fuer jeden buildCmd
-  - fuer jedes inputFile
-    - flags::generated?
-      - file->addWaitingBuildCmd(buildCmd)
-      - buildcmd->incBlockingFiles()
-
-
-Durchgang
-- fuer jeden Builder
-  - blockingFiles==0?
-    ja: add to runnableBuilderList
-
-
-Durchgang (tatsaechliches bauen)
-  - fuer jeden builder in runnableBuilderList
-    - builder->run()
-    - fuer jedes builder->getOutputFiles()
-      - fuer jeden file->getWaitingBuilders()
-        - builder->decBlockingFiles()
-        - builder->blockingFiles==0?
-          ja: add builder to runnableBuilderList
-        - file->removeWaitingBuilder
-        
-      
-Am Ende nur noch:
-- list<builder>
-- list<file>
-Nur diese Objects muessen gespeichert werden fuers Compilieren.
-In den Buildern schon die Kommandozeilen speichern.
-Der Rest muss dann nicht mehr geladen werden.
-
-
-
-Builders
-========
-
-SharedLibBuilder
-- input: *.o
-- output:*.so.x.y.z
-
-
-StaticLibBuilder
-- input:  *.o
-- output: *.a
-
-CBuilder:
-- input: *.c
-- output: *.o
-
-CxxBuilder:
-- input: *.cpp
-- output: *.o
-
-Tm2Builder:
-- input: *.t2d
-- output: *.c, *.h
-
-
-Virtual functions
-- setupOutputFiles() [call after adding last input file]
-- isAcceptableInput(const FILE *f)
-- prepare()
-  - c, cxx: do nothing
-  - tm2: create definition files only
-- run()
-  - generate arguments
-  - get build path, cd into it
-  - run command
-
-
-  Builder: 
-  - destType
-  - srcType
-  - makeFile(BUILDER, FILE)
-  - addDeps(BUILDER, FILE)
-  
-  Example builders:
-  - tm2_to_c_h_tm2
-  - c_to_obj
-  - obj_to_so
-  - obj_to_a
-  - res_to_c
-
 
 # shared lib:
 gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--whole-archive draw/libaqdg_draw.a
@@ -236,75 +82,6 @@ TODO:
 - DIST implementieren (tarball bauen)
 
 
-
-
-
-- QUEUES:
-  - waiting
-  - running
-  - runnable
-  - finished
-
-- fuer jedes BuildCmd in runningQueue:
-  - process?
-    - process running?
-      - nein:
-      . - remove from runningQueue
-      . - SetProcess(NULL)
-      . - exited?
-      .   - ja:
-      .   . - currentCommand: more?
-      .   .   - ja:
-      .   .   . - setCurrentCommand(next)
-      .   .   . - move to runnableQueue   
-      .   .   - nein: 
-      .   .     - move to finishedQueue
-      .   .     - fuer jedes OutputFile
-      .   .       - fuer jedes WaitingBuildCommand:
-      .   .         - WaitingBuildCommand->decBlockingFile
-      .   .           - 0?
-      .   .             - move WaitingBuildCommand ->runnableCommands
-      .   .
-      .   .     
-      .   - nein:
-      .     - move to finishedQueue
-      - ja:
-        - nothing to change
-
-
-TODO:
-- change cmd in BuildCmd into its own struct to also take a command description
-
-
-
-<option id"prefix" type="string">
-  <default>/usr/local</default>
-</option>
-
-->option_prefix
-
-<option id="plugins" type="stringlist">
-  <choices>file dir</choices>
-  <default>file dir</default>
-</option>
-
-->option_plugins (mehrere values, einer fuer jeden Eintrag)
-
-
-
-
-struct GWB_OPTION:
-- id
-- type (string, stringlist)
-- default
-- kvplist<aliases>
-
-
-
 NEXT:
-- <ifVarMatches  name="someOption" value="someValue" >
-- <ifVarHasValue name="plugins"    value="file" >
 - shared vs. static
-- write file
-- GWEN_Text_ReplaceVars: auch "@" akzeptieren
 
