@@ -25,6 +25,7 @@
         <outputFiles index="0" />
         <blank/>
         <inputFiles match="*.o" />
+        <inputFiles match="*.a" />
       </args>
     </cmd>
 
