@@ -21,9 +21,6 @@
 
 
 
-static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-int _parseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-
 int _checkAgainstGivenOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWB_OPTION *option);
 int _checkStringOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue);
 int _checkStringListOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue);
@@ -33,58 +30,7 @@ int _checkStringListOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, cons
 
 
 
-int GWB_ParseOptions(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
-{
-  int rv;
-
-  rv=_parseChildNodes(project, currentContext, xmlNode);
-  if (rv<0) {
-    DBG_INFO(NULL, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
-{
-  GWEN_XMLNODE *n;
-
-  n=GWEN_XMLNode_GetFirstTag(xmlNode);
-  while (n) {
-    const char *name;
-
-    name=GWEN_XMLNode_GetData(n);
-    if (name && *name) {
-      int rv;
-
-      DBG_DEBUG(NULL, "Handling element \"%s\"", name);
-
-      if (strcasecmp(name, "subdirs")==0)
-        rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
-      else if (strcasecmp(name, "option")==0)
-        rv=_parseOption(project, currentContext, n);
-      else {
-        DBG_DEBUG(NULL, "Element not handled");
-        rv=0;
-      }
-      if (rv<0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error in element \"%s\", aborting", name);
-        return rv;
-      }
-    }
-
-    n=GWEN_XMLNode_GetNextTag(n);
-  }
-
-  return 0;
-}
-
-
-
-int _parseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int GWB_ParseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   const char *sId;
   int otype;

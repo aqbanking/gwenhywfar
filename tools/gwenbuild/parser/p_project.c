@@ -16,6 +16,7 @@
 #include "gwenbuild/parser/p_checkfunctions.h"
 #include "gwenbuild/parser/p_checkheaders.h"
 #include "gwenbuild/parser/p_checklibs.h"
+#include "gwenbuild/parser/p_checkcompiler.h"
 #include "gwenbuild/parser/p_dependencies.h"
 #include "gwenbuild/parser/p_options.h"
 #include "gwenbuild/parser/p_target.h"
@@ -87,6 +88,16 @@ int GWB_ParseProject(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
     return rv;
   }
 
+  if (GWB_Project_GetFlags(project) & GWB_PROJECT_FLAGS_CONFIG_H) {
+    int rv;
+
+    rv=_writeConfigH(project);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error writing config.h, aborting");
+      return rv;
+    }
+  }
+
   return 0;
 }
 
@@ -107,8 +118,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
       DBG_DEBUG(NULL, "Handling element \"%s\"", name);
 
-      if (strcasecmp(name, "options")==0)
-        rv=GWB_ParseOptions(project, currentContext, n);
+      if (strcasecmp(name, "option")==0)
+        rv=GWB_ParseOption(project, currentContext, n);
       else if (strcasecmp(name, "dependencies")==0)
         rv=GWB_ParseDependencies(project, currentContext, n);
       else if (strcasecmp(name, "checkheaders")==0)
@@ -117,6 +128,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_ParseCheckFunctions(project, currentContext, n);
       else if (strcasecmp(name, "checklibs")==0)
         rv=GWB_ParseCheckLibs(project, currentContext, n);
+      else if (strcasecmp(name, "checkCompiler")==0)
+        rv=GWB_ParseCheckCompiler(project, currentContext, n);
       else if (strcasecmp(name, "target")==0)
         rv=GWB_ParseTarget(project, currentContext, n);
       else if (strcasecmp(name, "define")==0)
@@ -132,16 +145,6 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
     }
 
     n=GWEN_XMLNode_GetNextTag(n);
-  }
-
-  if (GWB_Project_GetFlags(project) & GWB_PROJECT_FLAGS_CONFIG_H) {
-    int rv;
-
-    rv=_writeConfigH(project);
-    if (rv<0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Error writing config.h, aborting");
-      return rv;
-    }
   }
 
   return 0;
