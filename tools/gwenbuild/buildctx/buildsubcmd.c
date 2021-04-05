@@ -27,6 +27,7 @@ GWB_BUILD_SUBCMD *GWB_BuildSubCmd_new(void)
   GWB_BUILD_SUBCMD *cmd;
 
   GWEN_NEW_OBJECT(GWB_BUILD_SUBCMD, cmd);
+  GWEN_LIST_INIT(GWB_BUILD_SUBCMD, cmd);
 
   return cmd;
 }
@@ -36,6 +37,7 @@ GWB_BUILD_SUBCMD *GWB_BuildSubCmd_new(void)
 void GWB_BuildSubCmd_free(GWB_BUILD_SUBCMD *cmd)
 {
   if (cmd) {
+    GWEN_LIST_FINI(GWB_BUILD_SUBCMD, cmd);
     free(cmd->command);
     free(cmd->arguments);
     free(cmd->buildMessage);

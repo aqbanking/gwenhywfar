@@ -45,6 +45,7 @@ static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 
 void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
+void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
 
 GWEN_BUFFER *_readArgs(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
 void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArgs, GWEN_BUFFER *argsBuffer);
@@ -488,18 +489,34 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
 
 void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd)
 {
+  _addCommands(builder, bcmd, "buildCommands", GWB_BuildCmd_GetBuildCommandList(bcmd));
+}
+
+
+
+void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd)
+{
+  _addCommands(builder, bcmd, "prepareCommands", GWB_BuildCmd_GetPrepareCommandList(bcmd));
+}
+
+
+
+void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList)
+{
   GWB_BUILDER_GENERIC *xbuilder;
   GWEN_XMLNODE *n;
 
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
 
-  n=GWEN_XMLNode_FindFirstTag(xbuilder->xmlDescr, "buildCommands", NULL, NULL);
+  n=GWEN_XMLNode_FindFirstTag(xbuilder->xmlDescr, groupName, NULL, NULL);
   if (n) {
     n=GWEN_XMLNode_FindFirstTag(n, "cmd", NULL, NULL);
     while(n) {
       const char *sToolName;
       GWEN_BUFFER *argsBuffer;
       GWEN_BUFFER *toolNameBuffer;
+      GWB_BUILD_SUBCMD *cmd;
+      const char *s;
 
       toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
       sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
@@ -507,45 +524,22 @@ void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd)
         GWEN_DB_ReplaceVars(xbuilder->dbVars, sToolName, toolNameBuffer);
         sToolName=GWEN_Buffer_GetStart(toolNameBuffer);
       }
+
+      cmd=GWB_BuildSubCmd_new();
+      GWB_BuildSubCmd_SetCommand(cmd, sToolName);
+
+      s=GWEN_XMLNode_GetProperty(n, "ignoreResult", "FALSE");
+      if (s && strcasecmp(s, "TRUE")==0)
+        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
+
       argsBuffer=_readArgs(builder, bcmd, n);
       if (argsBuffer) {
-	GWB_BuildCmd_AddBuildCommand(bcmd, sToolName, GWEN_Buffer_GetStart(argsBuffer));
-	GWEN_Buffer_free(argsBuffer);
+        GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));
+        GWEN_Buffer_free(argsBuffer);
       }
-      else
-	GWB_BuildCmd_AddBuildCommand(bcmd, sToolName, NULL);
+      GWB_BuildSubCmd_List_Add(cmd, cmdList);
 
       GWEN_Buffer_free(toolNameBuffer);
-
-      n=GWEN_XMLNode_FindNextTag(n, "cmd", NULL, NULL);
-    }
-  }
-}
-
-
-
-void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd)
-{
-  GWB_BUILDER_GENERIC *xbuilder;
-  GWEN_XMLNODE *n;
-
-  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
-
-  n=GWEN_XMLNode_FindFirstTag(xbuilder->xmlDescr, "prepareCommands", NULL, NULL);
-  if (n) {
-    n=GWEN_XMLNode_FindFirstTag(n, "cmd", NULL, NULL);
-    while(n) {
-      const char *sToolName;
-      GWEN_BUFFER *argsBuffer;
-
-      sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
-      argsBuffer=_readArgs(builder, bcmd, n);
-      if (argsBuffer) {
-	GWB_BuildCmd_AddPrepareCommand(bcmd, sToolName, GWEN_Buffer_GetStart(argsBuffer));
-	GWEN_Buffer_free(argsBuffer);
-      }
-      else
-	GWB_BuildCmd_AddPrepareCommand(bcmd, sToolName, NULL);
 
       n=GWEN_XMLNode_FindNextTag(n, "cmd", NULL, NULL);
     }

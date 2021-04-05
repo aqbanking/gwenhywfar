@@ -23,15 +23,15 @@ struct GWB_BUILD_CMD {
 
   char *buildMessage;
 
-  GWB_KEYVALUEPAIR_LIST *prepareCommandList;
-  GWB_KEYVALUEPAIR_LIST *buildCommandList;
+  GWB_BUILD_SUBCMD_LIST *prepareCommandList;
+  GWB_BUILD_SUBCMD_LIST *buildCommandList;
 
   int blockingFiles;
   GWB_FILE_LIST2 *inFileList2;
   GWB_FILE_LIST2 *outFileList2;
 
   GWEN_PROCESS *currentProcess;
-  GWB_KEYVALUEPAIR *currentCommand;
+  GWB_BUILD_SUBCMD *currentCommand;
 };
 
 

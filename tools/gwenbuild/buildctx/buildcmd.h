@@ -23,6 +23,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_BUILD_CMD, GWB_BuildCmd);
 
 #include "gwenbuild/file.h"
 #include "gwenbuild/keyvaluepair.h"
+#include "gwenbuild/buildctx/buildsubcmd.h"
 
 
 
@@ -41,11 +42,11 @@ const char *GWB_BuildCmd_GetBuildMessage(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_SetBuildMessage(GWB_BUILD_CMD *bcmd, const char *s);
 
 
-GWB_KEYVALUEPAIR_LIST *GWB_BuildCmd_GetPrepareCommandList(const GWB_BUILD_CMD *bcmd);
-void GWB_BuildCmd_AddPrepareCommand(GWB_BUILD_CMD *bcmd, const char *cmd, const char *args);
+GWB_BUILD_SUBCMD_LIST *GWB_BuildCmd_GetPrepareCommandList(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_AddPrepareCommand(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *cmd);
 
-GWB_KEYVALUEPAIR_LIST *GWB_BuildCmd_GetBuildCommandList(const GWB_BUILD_CMD *bcmd);
-void GWB_BuildCmd_AddBuildCommand(GWB_BUILD_CMD *bcmd, const char *cmd, const char *args);
+GWB_BUILD_SUBCMD_LIST *GWB_BuildCmd_GetBuildCommandList(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_AddBuildCommand(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *cmd);
 
 
 int GWB_BuildCmd_GetBlockingFiles(const GWB_BUILD_CMD *bcmd);
@@ -64,8 +65,8 @@ void GWB_BuildCmd_AddOutFile(GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 GWEN_PROCESS *GWB_BuildCmd_GetCurrentProcess(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_SetCurrentProcess(GWB_BUILD_CMD *bcmd, GWEN_PROCESS *process);
 
-GWB_KEYVALUEPAIR *GWB_BuildCmd_GetCurrentCommand(const GWB_BUILD_CMD *bcmd);
-void GWB_BuildCmd_SetCurrentCommand(GWB_BUILD_CMD *bcmd, GWB_KEYVALUEPAIR *cmd);
+GWB_BUILD_SUBCMD *GWB_BuildCmd_GetCurrentCommand(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetCurrentCommand(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *cmd);
 
 
 void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);

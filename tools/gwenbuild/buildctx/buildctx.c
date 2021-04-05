@@ -673,14 +673,14 @@ void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands)
 
     bcmd=GWB_BuildCmd_List2Iterator_Data(it);
     while(bcmd) {
-      GWB_KEYVALUEPAIR_LIST *cmdList;
+      GWB_BUILD_SUBCMD_LIST *cmdList;
   
       if (forPrepareCommands)
         cmdList=GWB_BuildCmd_GetPrepareCommandList(bcmd);
       else
         cmdList=GWB_BuildCmd_GetBuildCommandList(bcmd);
       if (cmdList)
-        GWB_BuildCmd_SetCurrentCommand(bcmd, GWB_KeyValuePair_List_First(cmdList));
+        GWB_BuildCmd_SetCurrentCommand(bcmd, GWB_BuildSubCmd_List_First(cmdList));
       bcmd=GWB_BuildCmd_List2Iterator_Next(it);
     }
     GWB_BuildCmd_List2Iterator_free(it);
@@ -779,7 +779,7 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
 
 int _startCommand(GWB_BUILD_CMD *bcmd)
 {
-  GWB_KEYVALUEPAIR *currentCommand;
+  GWB_BUILD_SUBCMD *currentCommand;
 
   currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
   if (currentCommand) {
@@ -788,21 +788,20 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
     const char *args;
 
     folder=GWB_BuildCmd_GetFolder(bcmd);
-    cmd=GWB_KeyValuePair_GetKey(currentCommand);
-    args=GWB_KeyValuePair_GetValue(currentCommand);
+    cmd=GWB_BuildSubCmd_GetCommand(currentCommand);
+    args=GWB_BuildSubCmd_GetArguments(currentCommand);
 
     if (cmd && *cmd) {
       GWEN_PROCESS *process;
       GWEN_PROCESS_STATE pstate;
+      const char *buildMessage;
 
-      if (1) {
-	const char *buildMessage;
+      buildMessage=GWB_BuildSubCmd_GetBuildMessage(currentCommand);
+      if (buildMessage)
+        fprintf(stdout, "%s [%s]\r", buildMessage, cmd);
+      else
+        fprintf(stdout, "%s %s\n", cmd, args);
 
-	buildMessage=GWB_BuildCmd_GetBuildMessage(bcmd);
-	if (buildMessage)
-	  fprintf(stdout, "%s [%s]\r", buildMessage, cmd);
-      }
-      fprintf(stdout, "%s %s\n", cmd, args);
       process=GWEN_Process_new();
       if (folder && *folder)
         GWEN_Process_SetFolder(process, folder);
@@ -842,9 +841,10 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
   while( (bcmd=GWB_BuildCmd_List2_GetFront(oldRunningQueue)) ) {
     GWEN_PROCESS *process;
     GWEN_PROCESS_STATE pstate;
+    GWB_BUILD_SUBCMD *currentCommand;
 
     GWB_BuildCmd_List2_PopFront(oldRunningQueue);
-
+    currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
     process=GWB_BuildCmd_GetCurrentProcess(bcmd);
     pstate=GWEN_Process_CheckState(process);
     if (pstate!=GWEN_ProcessStateRunning) {
@@ -853,16 +853,16 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
         int result;
 
         result=GWEN_Process_GetResult(process);
-        if (result) {
+        if (result && !(GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT)) {
           DBG_ERROR(NULL, "Command exited with result %d", result);
           GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
           errors++;
         }
         else {
-          GWB_KEYVALUEPAIR *nextCommand;
+          GWB_BUILD_SUBCMD *nextCommand;
 
           /* process successfully finished */
-          nextCommand=GWB_KeyValuePair_List_Next(GWB_BuildCmd_GetCurrentCommand(bcmd));
+          nextCommand=GWB_BuildSubCmd_List_Next(currentCommand);
           GWB_BuildCmd_SetCurrentCommand(bcmd, nextCommand);
           if (nextCommand)
             GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
