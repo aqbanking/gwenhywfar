@@ -60,6 +60,7 @@ void GWB_Project_SetGivenOption(GWB_PROJECT *project, const char *name, const ch
 const char *GWB_Project_GetGivenOption(const GWB_PROJECT *project, const char *name);
 
 
+GWB_FILE_LIST2 *GWB_Project_GetFileList(const GWB_PROJECT *project);
 GWB_FILE *GWB_Project_GetFileByPathAndName(const GWB_PROJECT *project, const char *folder, const char *fname);
 void GWB_Project_AddFile(GWB_PROJECT *project, GWB_FILE *file);
 

@@ -37,6 +37,7 @@ static int _prepare(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 static int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
+static int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName);
 
 
 
@@ -462,6 +463,12 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 3;
   }
 
+  rv=_writeProjectFileList(project, "files.xml");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error writing file list file.\n");
+    return 3;
+  }
+
   if (doDump) {
     GWB_Project_Dump(project, 2, 1);
   }
@@ -668,6 +675,34 @@ GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db)
   return kvpList;
 }
 
+
+
+int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName)
+{
+  GWB_FILE_LIST2 *fileList;
+
+  fileList=GWB_Project_GetFileList(project);
+  if (fileList) {
+    GWEN_XMLNODE *xmlNode;
+    GWEN_XMLNODE *xmlFileList;
+    int rv;
+  
+    xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+    xmlFileList=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "FileList");
+    GWB_File_List2_WriteXml(fileList, xmlFileList, "file");
+    GWEN_XMLNode_AddChild(xmlNode, xmlFileList);
+  
+    rv=GWEN_XMLNode_WriteFile(xmlNode, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+    GWEN_XMLNode_free(xmlNode);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Error writing FileList to file \"%s\" (%d)", fileName, rv);
+      return rv;
+    }
+
+  }
+
+  return 0;
+}
 
 
 

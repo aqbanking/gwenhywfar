@@ -11,6 +11,7 @@
 #define GWBUILD_FILE_H
 
 #include <gwenhywfar/list2.h>
+#include <gwenhywfar/xml.h>
 
 
 typedef struct GWB_FILE GWB_FILE;
@@ -58,6 +59,10 @@ const char *GWB_File_GetFileType(const GWB_FILE *f);
 void GWB_File_SetFileType(GWB_FILE *f, const char *s);
 
 
+void GWB_File_toXml(const GWB_FILE *file, GWEN_XMLNODE *xmlNode);
+GWB_FILE *GWB_File_fromXml(GWEN_XMLNODE *xmlNode);
+
+
 GWB_BUILD_CMD_LIST2 *GWB_File_GetWaitingBuildCmdList2(const GWB_FILE *f);
 void GWB_File_AddWaitingBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd);
 void GWB_File_ClearWaitingBuildCmds(GWB_FILE *file);
@@ -66,6 +71,10 @@ void GWB_File_ClearWaitingBuildCmds(GWB_FILE *file);
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);
 GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, const char *folder, const char *fname);
 GWB_FILE *GWB_File_List2_GetFileById(const GWB_FILE_LIST2 *fileList, uint32_t id);
+
+void GWB_File_List2_WriteXml(const GWB_FILE_LIST2 *fileList, GWEN_XMLNODE *xmlNode, const char *groupName);
+void GWB_File_List2_ReadXml(GWEN_XMLNODE *xmlNode, const char *groupName, GWB_FILE_LIST2 *destFileList);
+
 
 void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
 GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt);

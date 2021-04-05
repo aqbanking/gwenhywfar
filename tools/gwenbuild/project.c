@@ -182,6 +182,13 @@ void GWB_Project_DelFlags(GWB_PROJECT *project, uint32_t fl)
 
 
 
+GWB_FILE_LIST2 *GWB_Project_GetFileList(const GWB_PROJECT *project)
+{
+  return project->fileList;
+}
+
+
+
 GWB_FILE *GWB_Project_GetFileByPathAndName(const GWB_PROJECT *project, const char *folder, const char *fname)
 {
   return GWB_File_List2_GetFileByPathAndName(project->fileList, folder, fname);

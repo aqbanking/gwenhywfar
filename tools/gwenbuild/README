@@ -65,8 +65,6 @@ Some notes to myself
 https://docencia.ac.upc.edu/FIB/USO/Bibliografia/unix-c-libraries.html
 
 
-
-
 Build dependecies:
    cc -E -I INCLUDE_FOLDER -M -MF DEPOUTFILE SRCFILE
 
@@ -75,10 +73,9 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 
 
 
+
 TODO:
-- Symbol Visibility verwenden
 - Dependency Tracking einbauen
-- Program implementieren
 - DIST implementieren (tarball bauen)
 
 
