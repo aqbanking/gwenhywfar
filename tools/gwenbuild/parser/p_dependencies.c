@@ -21,7 +21,7 @@
 #include <gwenhywfar/syncio.h>
 
 #include <unistd.h>
-
+#include <ctype.h>
 
 
 
@@ -42,6 +42,8 @@ static int _callPkgConfig(GWEN_DB_NODE *db,
                           const char *args);
 
 void _replaceControlCharsWithBlanks(char *ptr);
+int _retrieveVariables(GWB_CONTEXT *currentContext, GWEN_DB_NODE *db, const char *sId, const char *sName, GWEN_XMLNODE *xmlNode);
+int _retrieveVariable(GWEN_DB_NODE *db, const char *sId, const char *sName, const char *variableName);
 
 
 
@@ -134,6 +136,8 @@ int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
                    sMinVersion,
                    sMaxVersion);
   if (rv==0) {
+    GWEN_XMLNODE *n;
+
     rv=_retrieveCflags(GWB_Context_GetVars(currentContext), sId, sName);
     if (rv<0) {
       DBG_INFO(NULL, "here (%d)", rv);
@@ -144,10 +148,51 @@ int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
       DBG_INFO(NULL, "here (%d)", rv);
       return rv;
     }
+
+    n=GWEN_XMLNode_FindFirstTag(xmlNode, "variables", NULL, NULL);
+    if (n) {
+      rv=_retrieveVariables(currentContext, GWB_Context_GetVars(currentContext), sId, sName, n);
+      if (rv<0) {
+        DBG_INFO(NULL, "here (%d)", rv);
+        return rv;
+      }
+    }
   }
   else if (rv!=GWEN_ERROR_NOT_FOUND) {
     DBG_INFO(NULL, "here (%d)", rv);
     return rv;
+  }
+
+  return 0;
+}
+
+
+
+int _retrieveVariables(GWB_CONTEXT *currentContext, GWEN_DB_NODE *db, const char *sId, const char *sName, GWEN_XMLNODE *xmlNode)
+{
+  GWEN_STRINGLIST *slVariables;
+
+  slVariables=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  if (slVariables) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(slVariables);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        int rv;
+
+        rv=_retrieveVariable(db, sId, sName, s);
+        if (rv<0) {
+          DBG_ERROR(NULL, "Error retrieving variable \"%s\" for dependency \"%s\"", s, sId);
+          GWEN_StringList_free(slVariables);
+          return rv;
+        }
+      }
+      se=GWEN_StringListEntry_Next(se);
+    }
   }
 
   return 0;
@@ -224,6 +269,36 @@ int _retrieveLdflags(GWEN_DB_NODE *db, const char *sId, const char *sName)
   int rv;
 
   rv=_callPkgConfig(db, sId, sName, "_LIBS", "--libs");
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error running pkg-config (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int _retrieveVariable(GWEN_DB_NODE *db, const char *sId, const char *sName, const char *variableName)
+{
+  int rv;
+  GWEN_BUFFER *varArgBuffer;
+  GWEN_BUFFER *varSuffixBuffer;
+  const char *s;
+
+  varArgBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(varArgBuffer, "--variable=");
+  GWEN_Buffer_AppendString(varArgBuffer, variableName);
+
+  varSuffixBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(varSuffixBuffer, "_");
+  s=variableName;
+  while(*s)
+    GWEN_Buffer_AppendByte(varSuffixBuffer, toupper(*(s++)));
+
+  rv=_callPkgConfig(db, sId, sName, GWEN_Buffer_GetStart(varSuffixBuffer), GWEN_Buffer_GetStart(varArgBuffer));
+  GWEN_Buffer_free(varSuffixBuffer);
+  GWEN_Buffer_free(varArgBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running pkg-config (%d)", rv);
     return rv;
