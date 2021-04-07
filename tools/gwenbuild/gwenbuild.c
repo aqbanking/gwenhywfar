@@ -766,8 +766,6 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
 
 
 
-
-
 /*
  * --------------------------------------------------------------------------------------------
  * Add new targets or known source types below.
@@ -777,6 +775,7 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
 
 GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file)
 {
+  const char *builderName;
   const char *name;
   const char *ext;
   GWB_BUILDER *builder;
@@ -791,23 +790,24 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
     DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\"", name);
     return NULL;
   }
-  ext++;
 
+  builderName=GWB_File_GetBuilder(file);
+  if (!(builderName && *builderName)) {
+    DBG_INFO(NULL, "Determining builder type for file \%s\"", name);
+    if (strcasecmp(ext, ".c")==0)
+      builderName="cbuilder";
+    else if (strcasecmp(ext, ".t2d")==0 || strcasecmp(ext, ".xml")==0)
+      builderName="tm2builder";
+    /* add more here */
+    else {
+      DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
+      return NULL;
+    }
+    GWB_File_SetBuilder(file, builderName);
+  }
 
-  if (strcasecmp(ext, "c")==0) {
-    //builder=GWEN_CBuilder_new(gwenbuild, context);
-    builder=GWB_GenericBuilder_Factory(gwenbuild, context, "cbuilder");
-  }
-  else if (strcasecmp(ext, "t2d")==0 || strcasecmp(ext, "xml")==0) {
-    //builder=GWEN_Tm2Builder_new(gwenbuild, context);
-    builder=GWB_GenericBuilder_Factory(gwenbuild, context, "tm2builder");
-  }
-  /* add more here */
-  else {
-    DBG_DEBUG(NULL, "Unable to determine builder for source file \"%s\" (unhandled ext)", name);
-    return NULL;
-  }
-
+  DBG_INFO(NULL, "Selected builder type is for file \%s\" is \"%s\"", name, builderName);
+  builder=GWB_GenericBuilder_Factory(gwenbuild, context, builderName);
   if (builder==NULL) {
     DBG_ERROR(NULL, "Could not create builder for type \"%s\"", ext);
     return NULL;

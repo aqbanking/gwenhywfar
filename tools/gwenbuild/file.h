@@ -51,6 +51,10 @@ void GWB_File_SetName(GWB_FILE *f, const char *s);
 const char *GWB_File_GetExt(const GWB_FILE *f);
 
 
+const char *GWB_File_GetBuilder(const GWB_FILE *f);
+void GWB_File_SetBuilder(GWB_FILE *f, const char *s);
+
+
 const char *GWB_File_GetInstallPath(const GWB_FILE *f);
 void GWB_File_SetInstallPath(GWB_FILE *f, const char *s);
 

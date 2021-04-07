@@ -68,6 +68,10 @@ https://docencia.ac.upc.edu/FIB/USO/Bibliografia/unix-c-libraries.html
 Build dependecies:
    cc -E -I INCLUDE_FOLDER -M -MF DEPOUTFILE SRCFILE
 
+or 
+   $(CC) $(CFLAGS) -MM *.c > Makefile.deps
+   
+
 # shared lib:
 gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--whole-archive draw/libaqdg_draw.a
 

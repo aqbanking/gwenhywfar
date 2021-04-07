@@ -34,6 +34,8 @@ struct GWB_TARGET {
   GWB_FILE *outputFile;
 
   GWB_PROJECT *project;
+
+  char *installPath;
 };
 
 

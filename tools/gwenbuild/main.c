@@ -31,13 +31,20 @@
 #define I18S(msg) msg
 
 
+#define ARGS_COMMAND_SETUP   0x0001
+#define ARGS_COMMAND_PREPARE 0x0002
+#define ARGS_COMMAND_BUILD   0x0004
 
-static int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv);
-static int _prepare(GWEN_DB_NODE *dbArgs, int argc, char **argv);
-static int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+int _setup(GWEN_DB_NODE *dbArgs);
+int _prepare(GWEN_DB_NODE *dbArgs);
+int _build(GWEN_DB_NODE *dbArgs);
+
 
 static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
 static int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName);
+int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db);
+
 
 
 
@@ -91,145 +98,14 @@ int _setSignalHandlers() {
 
 
 
-int test_ReadProject(int argc, char **argv)
-{
-  GWENBUILD *gwenbuild;
-  GWB_PROJECT *project;
-  GWB_BUILD_CONTEXT *buildCtx;
-  const char *folder;
-  int rv;
-
-  gwenbuild=GWBUILD_new();
-
-  if (argc<2) {
-    DBG_ERROR(NULL, "Folder needed");
-    return 1;
-  }
-
-  folder=argv[1];
-  project=GWB_Parser_ReadBuildTree(gwenbuild, folder, NULL);
-  if (project==NULL) {
-    DBG_ERROR(NULL, "Error reading build files.");
-    return 2;
-  }
-
-  //DBG_ERROR(NULL, "Tree successfully loaded.");
-  //GWB_Project_Dump(project, 2);
-
-  rv=GWBUILD_MakeBuildersForTargets(project);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error making builders for targets.");
-    return 2;
-  }
-  DBG_ERROR(NULL, "Targets successfully created.");
-
-  buildCtx=GWBUILD_MakeBuildCommands(project);
-  if (buildCtx==NULL) {
-    GWB_Project_Dump(project, 2, 0);
-    DBG_ERROR(NULL, "Could not generate build commands");
-    return 2;
-  }
-  DBG_ERROR(NULL, "Build commands successfully created.");
-
-  //GWB_Project_Dump(project, 2, 0);
-
-  //DBG_ERROR(NULL, "Build context:");
-  //GWB_BuildCtx_Dump(buildCtx, 2);
-
-  GWB_BuildCtx_WriteToXmlFile(buildCtx, "buildctx.xml");
-  if (1) {
-    GWB_BUILD_CONTEXT *buildCtx2;
-
-    buildCtx2=GWB_BuildCtx_ReadFromXmlFile("buildctx.xml");
-    if (buildCtx2==NULL) {
-      DBG_ERROR(NULL, "Error reading build context from file");
-    }
-    else
-      GWB_BuildCtx_WriteToXmlFile(buildCtx2, "buildctx2.xml");
-  }
-
-  /* prepare */
-  rv=GWB_BuildCtx_Run(buildCtx, 10, 1, NULL);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error preparing builds.");
-    return 2;
-  }
-  DBG_ERROR(NULL, "Build successfully prepared.");
-
-  /* build */
-  rv=GWB_BuildCtx_Run(buildCtx, 10, 0, NULL);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error building builds.");
-    return 2;
-  }
-  DBG_ERROR(NULL, "Build successfully done.");
-
-  return 0;
-}
-
-
-
-
-
-
-int main2(int argc, char **argv)
-{
-  int rv;
-  GWEN_GUI *gui;
-
-#ifdef HAVE_SIGNAL_H
-  signal(SIGCHLD, _signalHandler);
-  //_setSignalHandlers();
-#endif
-
-  rv=GWEN_Init();
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error on GWEN_Init (%d)", rv);
-    return 2;
-  }
-
-  gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetGui(gui);
-
-  GWEN_Logger_Open(0, "gwenbuild", 0,
-                   GWEN_LoggerType_Console,
-                   GWEN_LoggerFacility_User);
-
-  GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Info);
-
-  rv=test_ReadProject(argc, argv);
-  if (rv) {
-    DBG_ERROR(NULL, "here (%d)", rv);
-    return 3;
-  }
-
-
-  return 0;
-}
-
-
-
-
 int main(int argc, char **argv)
 {
-  GWEN_DB_NODE *db;
-  const char *cmd;
+  GWEN_DB_NODE *dbArgs;
   int rv;
   int err;
+  uint32_t commands=0;
+  const char *s;
   GWEN_GUI *gui;
-  const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,             /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
-  };
 
 #ifdef HAVE_SIGNAL_H
   signal(SIGCHLD, _signalHandler);
@@ -250,82 +126,51 @@ int main(int argc, char **argv)
                    GWEN_LoggerFacility_User);
 
   GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Warning);
-  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
 
-  db=GWEN_DB_Group_new("arguments");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
-                     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
-                     args,
-                     db);
-  if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments main\n");
-    GWEN_DB_Group_free(db);
+  dbArgs=GWEN_DB_Group_new("args");
+  rv=_readArgsIntoDb(argc, argv, dbArgs);
+  if (rv<0) {
     return 1;
   }
-  else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
 
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("GWEN's Build Tool"));
-    GWEN_Buffer_AppendString(ubuf,
-                             " (Gwenhywfar v" GWENHYWFAR_VERSION_FULL_STRING ")\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("Usage: "));
-    GWEN_Buffer_AppendString(ubuf, argv[0]);
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N(" [GLOBAL OPTIONS] COMMAND "
-                                  "[LOCAL OPTIONS]\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("\nGlobal Options:\n"));
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      GWEN_DB_Group_free(db);
-      return 1;
+  s=GWEN_DB_GetCharValue(dbArgs, "loglevel", 0, NULL);
+  if (s && *s) {
+    GWEN_LOGGER_LEVEL level;
+
+    level=GWEN_Logger_Name2Level(s);
+    if (level==GWEN_LoggerLevel_Unknown) {
     }
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("\nCommands:\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  setup:\n"
-                                  "    Setup build system (e.g. read all 0BUILD files for your project and create build commands)"
-                                  "\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  prepare:\n"
-                                  "    Prepare sources (e.g. typemaker2 generated files)"
-                                  "\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  build:\n"
-                                  "    Build your project\n\n"));
-
-    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-    GWEN_DB_Group_free(db);
-    return 0;
-  }
-  if (rv) {
-    argc-=rv-1;
-    argv+=rv-1;
+    else
+      GWEN_Logger_SetLevel(NULL, level);
   }
 
-  cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
-  if (!cmd) {
-    fprintf(stderr, "ERROR: Command needed.\n");
-    return 1;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "setup", 0, 0)?ARGS_COMMAND_SETUP:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
+
+
+  if (commands & ARGS_COMMAND_SETUP) {
+    rv=_setup(dbArgs);
+    if (rv!=0) {
+      fprintf(stderr, "ERROR: Error on setup build environment.\n");
+      return rv;
+    }
   }
 
-  if (strcasecmp(cmd, "setup")==0) {
-    rv=_setup(db, argc, argv);
+  if (commands & ARGS_COMMAND_PREPARE) {
+    rv=_prepare(dbArgs);
+    if (rv!=0) {
+      fprintf(stderr, "ERROR: Error on preparing build environment.\n");
+      return rv;
+    }
   }
-  else if (strcasecmp(cmd, "prepare")==0) {
-    rv=_prepare(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "build")==0) {
-    rv=_build(db, argc, argv);
-  }
-  else {
-    fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
-    rv=1;
+
+  if ((commands & ARGS_COMMAND_BUILD) || (commands==0)) {
+    rv=_build(dbArgs);
+    if (rv!=0) {
+      fprintf(stderr, "ERROR: Error on building.\n");
+      return rv;
+    }
   }
 
   err=GWEN_Fini();
@@ -334,14 +179,14 @@ int main(int argc, char **argv)
             "WARNING: Could not deinitialize Gwenhywfar.\n");
   }
 
-  return rv;
+  return 0;
 }
 
 
 
-int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+
+int _setup(GWEN_DB_NODE *dbArgs)
 {
-  GWEN_DB_NODE *db;
   GWENBUILD *gwenbuild;
   GWB_PROJECT *project;
   GWB_BUILD_CONTEXT *buildCtx;
@@ -349,82 +194,10 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   int doDump;
   GWB_KEYVALUEPAIR_LIST *givenOptionList;
   int rv;
-  const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "folder",                       /* name */
-      1,                            /* minnum */
-      1,                            /* maxnum */
-      "f",                          /* short option */
-      "folder",                       /* long option */
-      "Folder containing sources",  /* short description */
-      "Folder containing sources"   /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "option",                      /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "O",                          /* short option */
-      "option",                      /* long option */
-      "Set option (OPTION=VALUE)",  /* short description */
-      "Set option (OPTION=VALUE)"   /* long description */
-    },
-    {
-      0,                            /* flags */
-      GWEN_ArgsType_Int,            /* type */
-      "dump",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      NULL,                          /* short option */
-      "dump",                      /* long option */
-      "Dump read build context",  /* short description */
-      "Dump read build context"   /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,             /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
-  };
 
-  db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
-  if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
-    return 1;
-  }
-  else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
+  doDump=GWEN_DB_GetIntValue(dbArgs, "dump", 0, 0);
 
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-    fprintf(stdout,
-            I18N("This command sets up the build folder.\n"
-                 "Arguments:\n"
-                 "%s\n"),
-            GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-    return 0;
-  }
-
-  doDump=GWEN_DB_GetIntValue(db, "dump", 0, 0);
-
-  folder=GWEN_DB_GetCharValue(db, "folder", 0, NULL);
+  folder=GWEN_DB_GetCharValue(dbArgs, "folder", 0, NULL);
   if (!(folder && *folder)) {
     fprintf(stderr, "ERROR: Folder needed.\n");
     return 1;
@@ -434,7 +207,7 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 1;
   }
 
-  givenOptionList=_readOptionsFromDb(db);
+  givenOptionList=_readOptionsFromDb(dbArgs);
 
 
   gwenbuild=GWBUILD_new();
@@ -457,13 +230,19 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 2;
   }
 
-  rv=GWB_BuildCtx_WriteToXmlFile(buildCtx, "buildctx.xml");
+  rv=GWB_BuildCtx_WriteToXmlFile(buildCtx, ".gwbuild.ctx");
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing build context file.\n");
     return 3;
   }
 
-  rv=_writeProjectFileList(project, "files.xml");
+  rv=_writeProjectFileList(project, ".gwbuild.files");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error writing file list file.\n");
+    return 3;
+  }
+
+  rv=GWEN_DB_WriteFile(dbArgs, ".gwbuild.args", GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing file list file.\n");
     return 3;
@@ -478,52 +257,12 @@ int _setup(GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
 
 
-int _prepare(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+int _prepare(GWEN_UNUSED GWEN_DB_NODE *dbArgs)
 {
-  GWEN_DB_NODE *db;
   GWB_BUILD_CONTEXT *buildCtx;
   int rv;
-  const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,             /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
-  };
 
-  db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
-  if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
-    return 1;
-  }
-  else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
-
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-    fprintf(stdout,
-            I18N("This command sets up the build folder.\n"
-                 "Arguments:\n"
-                 "%s\n"),
-            GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-    return 0;
-  }
-
-  buildCtx=GWB_BuildCtx_ReadFromXmlFile("buildctx.xml");
+  buildCtx=GWB_BuildCtx_ReadFromXmlFile(".gwbuild.ctx");
   if (buildCtx==NULL) {
     fprintf(stderr, "ERROR: Error reading build context from file.\n");
     return 1;
@@ -541,97 +280,33 @@ int _prepare(GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
 
 
-int _build(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+int _build(GWEN_DB_NODE *dbArgs)
 {
-  GWEN_DB_NODE *db;
   GWB_BUILD_CONTEXT *buildCtx;
   int rv;
   int numThreads;
   const char *builderName;
-  const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Int,            /* type */
-      "jobs",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "j",                          /* short option */
-      "jobs",                       /* long option */
-      "Specify number of parallel jobs",      /* short description */
-      "Specify number of parallel jobs"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "builder",                    /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "B",                          /* short option */
-      "builder",                    /* long option */
-      "Specify builder for which to build (CBuilder, Tm2Builder)",      /* short description */
-      "Specify builder for which to build (CBuilder, Tm2Builder"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,             /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
-  };
 
-  db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
-  if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
-    return 1;
-  }
-  else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
+  numThreads=GWEN_DB_GetIntValue(dbArgs, "jobs", 0, 1);
+  builderName=GWEN_DB_GetCharValue(dbArgs, "builder", 0, NULL);
 
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-    fprintf(stdout,
-            I18N("This command sets up the build folder.\n"
-                 "Arguments:\n"
-                 "%s\n"),
-            GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-    GWEN_DB_Group_free(db);
-    return 0;
-  }
-
-  numThreads=GWEN_DB_GetIntValue(db, "jobs", 0, 1);
-  builderName=GWEN_DB_GetCharValue(db, "builder", 0, NULL);
-
-  buildCtx=GWB_BuildCtx_ReadFromXmlFile("buildctx.xml");
+  buildCtx=GWB_BuildCtx_ReadFromXmlFile(".gwbuild.ctx");
   if (buildCtx==NULL) {
     fprintf(stderr, "ERROR: Error reading build context from file.\n");
-    GWEN_DB_Group_free(db);
-    return 1;
+    return 2;
   }
 
   /* build */
   rv=GWB_BuildCtx_Run(buildCtx, numThreads, 0, builderName);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error building builds.\n");
-    GWEN_DB_Group_free(db);
-    return 2;
+    return 3;
   }
 
-  GWEN_DB_Group_free(db);
   return 0;
 }
+
+
 
 
 
@@ -700,6 +375,98 @@ int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName)
     }
 
   }
+
+  return 0;
+}
+
+
+
+int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
+{
+  int i=1;
+
+  while(i<argc) {
+    const char *s;
+    int val;
+
+    s=argv[i];
+    if (s) {
+      if (*s!='-') {
+        /* no option, probably path to source folder */
+        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "folder", s);
+      }
+      else {
+        if (strncasecmp(s, "-O", 2)==0) {
+          /* options */
+          s+=2;
+          if (*s==0) {
+            i++;
+            if (i>=argc) {
+              DBG_ERROR(NULL, "Missing argument for \"-O\"");
+              return GWEN_ERROR_INVALID;
+            }
+            s=argv[i];
+          }
+          if (s && *s)
+            GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "option", s);
+        }
+        if (strncasecmp(s, "-B", 2)==0) {
+          /* builder */
+          s+=2;
+          if (*s==0) {
+            i++;
+            if (i>=argc) {
+              DBG_ERROR(NULL, "Missing argument for \"-B\"");
+              return GWEN_ERROR_INVALID;
+            }
+            s=argv[i];
+          }
+          if (s && *s)
+            GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "builder", s);
+        }
+        if (strncasecmp(s, "-L", 2)==0) {
+          /* loglevel */
+          s+=2;
+          if (*s==0) {
+            i++;
+            if (i>=argc) {
+              DBG_ERROR(NULL, "Missing argument for \"-L\"");
+              return GWEN_ERROR_INVALID;
+            }
+            s=argv[i];
+          }
+          if (s && *s)
+            GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "loglevel", s);
+        }
+        else if (strcasecmp(s, "--dump")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dump", 1);
+        else if (strcasecmp(s, "-p")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "prepare", 1);
+        else if (strcasecmp(s, "-s")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+        else if (strcasecmp(s, "-b")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "build", 1);
+        else if (strncasecmp(s, "-j", 2)==0) {
+          /* jobs */
+          s+=2;
+          if (*s==0) {
+            i++;
+            if (i>=argc) {
+              DBG_ERROR(NULL, "Missing argument for \"-j\"");
+              return GWEN_ERROR_INVALID;
+            }
+            s=argv[i];
+          }
+          if (1!=sscanf(s, "%d", &val)) {
+            DBG_ERROR(NULL, "Non-integer argument for \"-j\"");
+            return GWEN_ERROR_INVALID;
+          }
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "jobs", val);
+        }
+      }
+    }
+    i++;
+  } /* while */
 
   return 0;
 }

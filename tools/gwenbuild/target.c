@@ -43,6 +43,7 @@ GWB_TARGET *GWB_Target_new(GWB_PROJECT *project)
 void GWB_Target_free(GWB_TARGET *target)
 {
   if (target) {
+    free(target->installPath);
     free(target->name);
     GWB_File_List2_free(target->sourceFileList);
     GWEN_StringList_free(target->usedTargetNameList);
@@ -91,6 +92,21 @@ GWBUILD_TARGETTYPE GWB_Target_GetTargetType(const GWB_TARGET *target)
 void GWB_Target_SetTargetType(GWB_TARGET *target, GWBUILD_TARGETTYPE t)
 {
   target->targetType=t;
+}
+
+
+
+const char *GWB_Target_GetInstallPath(const GWB_TARGET *target)
+{
+  return target->installPath;
+}
+
+
+
+void GWB_Target_SetInstallPath(GWB_TARGET *target, const char *s)
+{
+  free(target->installPath);
+  target->installPath=s?strdup(s):NULL;
 }
 
 

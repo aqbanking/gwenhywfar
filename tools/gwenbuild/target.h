@@ -39,6 +39,10 @@ GWBUILD_TARGETTYPE GWB_Target_GetTargetType(const GWB_TARGET *target);
 void GWB_Target_SetTargetType(GWB_TARGET *target, GWBUILD_TARGETTYPE t);
 
 
+const char *GWB_Target_GetInstallPath(const GWB_TARGET *target);
+void GWB_Target_SetInstallPath(GWB_TARGET *target, const char *s);
+
+
 GWB_PROJECT *GWB_Target_GetProject(const GWB_TARGET *target);
 
 

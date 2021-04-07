@@ -8,7 +8,7 @@
   </inputFiles>
 
   <outputFiles>
-    <file type="sharedlib">
+    <file type="sharedlib" install="target" >
       lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
     </file>
   </outputFiles>
@@ -69,6 +69,31 @@
 
     
   </buildCommands>
+
+
+  <!-- not yet... -->
+  <postInstallCommands>
+
+    <cmd tool="cp" ignoreResult="FALSE">
+      <args>
+        <fixed>
+          lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
+        </fixed>
+        <blank/>
+        <fixed>
+          lib$(target_name).so.$(target_so_version_effective)
+        </fixed>
+        <blank/>
+        <fixed>
+          lib$(target_name).so
+        </fixed>
+        <blank/>
+        <outputFiles index="0" useField="installPath"/>
+        <fixed>/</fixed>
+      </args>
+    </cmd>
+
+  </postInstallCommands>
   
 
 

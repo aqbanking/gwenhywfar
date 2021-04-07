@@ -98,6 +98,9 @@ GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_
   }
   GWB_Target_SetTargetType(target, targetType);
 
+  s=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
+  GWB_Target_SetInstallPath(target, s);
+
   GWB_Target_SetSoVersion(target,
                           GWEN_XMLNode_GetIntProperty(xmlNode, "so_current", 0),
                           GWEN_XMLNode_GetIntProperty(xmlNode, "so_age", 0),
@@ -167,6 +170,7 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
   const char *installPath;
   const char *fileType;
   const char *currentFolder;
+  const char *builder;
   GWEN_STRINGLIST *fileNameList;
 
   target=GWB_Context_GetCurrentTarget(currentContext);
@@ -184,6 +188,7 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
   currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
 
   fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", NULL);
+  builder=GWEN_XMLNode_GetProperty(xmlNode, "builder", NULL);
 
   installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
   if (installPath && *installPath)
@@ -215,6 +220,8 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
           GWB_File_SetInstallPath(file, installPath);
         if (fileType)
           GWB_File_SetFileType(file, fileType);
+        if (builder)
+          GWB_File_SetBuilder(file, builder);
         GWB_Context_AddSourceFile(currentContext, file);
         //GWB_Target_AddSourceFile(target, file);
       }

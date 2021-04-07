@@ -350,34 +350,47 @@ void _setupOutFiles(GWB_BUILDER *builder)
     nFile=GWEN_XMLNode_FindFirstTag(nOutputFiles, "file", NULL, NULL);
     while (nFile) {
       const char *sFileType;
+      const char *sInstall;
       GWEN_BUFFER *nbuf;
 
       sFileType=GWEN_XMLNode_GetProperty(nFile, "type", NULL);
+      sInstall=GWEN_XMLNode_GetProperty(nFile, "install", NULL);
       nbuf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, nFile);
       if (nbuf) {
 	GWB_FILE *fileOut;
 	GWB_FILE *storedFile;
+        const char *sTargetInstallPath=NULL;
 
-	fileOut=GWB_File_new(folder, GWEN_Buffer_GetStart(nbuf), 0);
-	GWEN_Buffer_free(nbuf);
+        fileOut=GWB_File_new(folder, GWEN_Buffer_GetStart(nbuf), 0);
+        GWEN_Buffer_free(nbuf);
 
-	if (sFileType)
-	  GWB_File_SetFileType(fileOut, sFileType);
-	GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
+        if (sFileType)
+          GWB_File_SetFileType(fileOut, sFileType);
+
+        if (sInstall && strcasecmp(sInstall, "target")==0)
+          sTargetInstallPath=GWB_Target_GetInstallPath(target);
+
+        GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
 
 	storedFile=GWB_Project_GetFileByPathAndName(project,
 						    GWB_File_GetFolder(fileOut),
 						    GWB_File_GetName(fileOut));
 	if (storedFile) {
 	  GWB_File_free(fileOut);
-	  fileOut=storedFile;
-	  GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
-	  if (GWB_File_GetFileType(fileOut)==NULL)
-	    GWB_File_SetFileType(fileOut, sFileType);
-	}
-	else {
-	  GWB_Project_AddFile(project, fileOut);
-	}
+          fileOut=storedFile;
+        }
+        else
+          GWB_Project_AddFile(project, fileOut);
+
+        GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
+        if (GWB_File_GetFileType(fileOut)==NULL)
+          GWB_File_SetFileType(fileOut, sFileType);
+
+        if (sTargetInstallPath && *sTargetInstallPath) {
+          GWB_File_SetInstallPath(fileOut, sTargetInstallPath);
+          GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_INSTALL);
+        }
+
 	GWB_Builder_AddOutputFile(builder, fileOut);
       } /* if nbuf */
 
@@ -674,22 +687,32 @@ void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFF
   if (filesList) {
     int index;
     const char *pattern;
+    const char *useField;
     int useAbsPath;
 
     useAbsPath=(strcasecmp(GWEN_XMLNode_GetProperty(xmlNode, "mode", "relpath"), "abspath")==0)?1:0;
 
     pattern=GWEN_XMLNode_GetProperty(xmlNode, "match", NULL);
     index=GWEN_XMLNode_GetIntProperty(xmlNode, "index", -1);
-
+    useField=GWEN_XMLNode_GetProperty(xmlNode, "useFields", NULL);
     if (index>=0) {
       GWB_FILE *file;
 
       file=_getFileAtPosInList2(filesList, index);
       if (file) {
-        if (useAbsPath)
-          GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
-        else
-          GWB_Builder_AddFileNameToBuffer(context, file, argsBuffer);
+        if (useField && strcasecmp(useField, "installPath")==0) {
+          const char *s;
+
+          s=GWB_File_GetInstallPath(file);
+          if (s)
+            GWEN_Buffer_AppendString(argsBuffer, s);
+        }
+        else {
+          if (useAbsPath)
+            GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
+          else
+            GWB_Builder_AddFileNameToBuffer(context, file, argsBuffer);
+        }
       }
     }
     else

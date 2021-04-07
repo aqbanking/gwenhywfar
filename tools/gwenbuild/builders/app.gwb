@@ -8,7 +8,7 @@
   </inputFiles>
 
   <outputFiles>
-    <file type="App">
+    <file type="App" install="target" >
       $(target_name)$(exeext)
     </file>
   </outputFiles>
