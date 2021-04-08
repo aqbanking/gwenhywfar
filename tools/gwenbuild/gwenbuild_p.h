@@ -23,6 +23,9 @@ struct GWENBUILD {
   char *toolNameLD;
   char *toolNameAR;
   char *toolNameRANLIB;
+
+  GWEN_STRINGLIST *buildFilenameList;
+
 };
 
 

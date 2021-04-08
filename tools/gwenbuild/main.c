@@ -21,6 +21,16 @@
 #include <gwenhywfar/i18n.h>
 #include <gwenhywfar/text.h>
 
+/* for stat */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+/* for strerror */
+#include <errno.h>
+#include <string.h>
+
+
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
@@ -36,14 +46,21 @@
 #define ARGS_COMMAND_BUILD   0x0004
 
 
-int _setup(GWEN_DB_NODE *dbArgs);
-int _prepare(GWEN_DB_NODE *dbArgs);
-int _build(GWEN_DB_NODE *dbArgs);
+static int _setup(GWEN_DB_NODE *dbArgs);
+static int _prepare(GWEN_DB_NODE *dbArgs);
+static int _build(GWEN_DB_NODE *dbArgs);
 
+static int _repeatLastSetup(const char *fileName);
 
 static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
 static int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName);
-int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db);
+static int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName);
+static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
+static int _buildFilesChanged(const char *fileName);
+static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
+static time_t _getModificationTimeOfFile(const char *filename);
+
+static int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db);
 
 
 
@@ -242,6 +259,8 @@ int _setup(GWEN_DB_NODE *dbArgs)
     return 3;
   }
 
+  _writeBuildFileList(gwenbuild, ".gwbuild.buildfiles");
+
   rv=GWEN_DB_WriteFile(dbArgs, ".gwbuild.args", GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing file list file.\n");
@@ -261,6 +280,15 @@ int _prepare(GWEN_UNUSED GWEN_DB_NODE *dbArgs)
 {
   GWB_BUILD_CONTEXT *buildCtx;
   int rv;
+
+  if (_buildFilesChanged(".gwbuild.buildfiles")) {
+    fprintf(stdout, "Build files changed, repeating last setup command.\n");
+    rv=_repeatLastSetup(".gwbuild.args");
+    if (rv<0) {
+      DBG_INFO(NULL, "here");
+      return rv;
+    }
+  }
 
   buildCtx=GWB_BuildCtx_ReadFromXmlFile(".gwbuild.ctx");
   if (buildCtx==NULL) {
@@ -290,6 +318,15 @@ int _build(GWEN_DB_NODE *dbArgs)
   numThreads=GWEN_DB_GetIntValue(dbArgs, "jobs", 0, 1);
   builderName=GWEN_DB_GetCharValue(dbArgs, "builder", 0, NULL);
 
+  if (_buildFilesChanged(".gwbuild.buildfiles")) {
+    fprintf(stdout, "Build files changed, repeating last setup command.\n");
+    rv=_repeatLastSetup(".gwbuild.args");
+    if (rv<0) {
+      DBG_INFO(NULL, "here");
+      return rv;
+    }
+  }
+
   buildCtx=GWB_BuildCtx_ReadFromXmlFile(".gwbuild.ctx");
   if (buildCtx==NULL) {
     fprintf(stderr, "ERROR: Error reading build context from file.\n");
@@ -302,6 +339,32 @@ int _build(GWEN_DB_NODE *dbArgs)
     fprintf(stderr, "ERROR: Error building builds.\n");
     return 3;
   }
+
+  return 0;
+}
+
+
+
+int _repeatLastSetup(const char *fileName)
+{
+  int rv;
+  GWEN_DB_NODE *db;
+
+  db=GWEN_DB_Group_new("args");
+  rv=GWEN_DB_ReadFile(db, fileName, GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error reading arguments from previous run (file \"%s\")", fileName);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+
+  rv=_setup(db);
+  if (rv!=0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+  GWEN_DB_Group_free(db);
 
   return 0;
 }
@@ -381,6 +444,171 @@ int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName)
 
 
 
+int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName)
+{
+  GWEN_STRINGLIST *sl;
+
+  sl=GWBUILD_GetBuildFilenameList(gwenbuild);
+  if (sl) {
+    GWEN_XMLNODE *xmlRoot;
+    GWEN_XMLNODE *xmlFileList;
+    GWEN_STRINGLISTENTRY *se;
+    int rv;
+
+    xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+    xmlFileList=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "BuildFiles");
+    GWEN_XMLNode_AddChild(xmlRoot, xmlFileList);
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        GWEN_XMLNODE *xmlFile;
+        GWEN_XMLNODE *xmlFileName;
+
+        xmlFile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "File");
+        xmlFileName=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, s);
+        GWEN_XMLNode_AddChild(xmlFile, xmlFileName);
+        GWEN_XMLNode_AddChild(xmlFileList, xmlFile);
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+
+    rv=GWEN_XMLNode_WriteFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+    GWEN_XMLNode_free(xmlRoot);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Error writing build file list to file \"%s\" (%d)", fileName, rv);
+      return rv;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _buildFilesChanged(const char *fileName)
+{
+  GWEN_STRINGLIST *slFileNameList;
+
+  slFileNameList=_readBuildFileList(fileName);
+  if (slFileNameList) {
+    if (_filesChanged(fileName, slFileNameList)) {
+      GWEN_StringList_free(slFileNameList);
+      return 1;
+    }
+    GWEN_StringList_free(slFileNameList);
+  }
+
+  return 0;
+}
+
+
+int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList)
+{
+  time_t mtSourceFile;
+  GWEN_STRINGLISTENTRY *se;
+
+  mtSourceFile=_getModificationTimeOfFile(fileName);
+  if (mtSourceFile==(time_t) 0) {
+    DBG_INFO(NULL, "here");
+    return 1; /* assume changed */
+  }
+
+  se=GWEN_StringList_FirstEntry(slFileNameList);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s) {
+      time_t mt;
+
+      mt=_getModificationTimeOfFile(s);
+      if (mt!=(time_t) 0) {
+        if (difftime(mt, mtSourceFile)>0) {
+          DBG_ERROR(NULL, "File \"%s\" changed.", s);
+          return 1;
+        }
+      }
+    }
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  DBG_ERROR(NULL, "Files unchanged since last setup.");
+  return 0;
+}
+
+
+
+time_t _getModificationTimeOfFile(const char *filename)
+{
+  struct stat st;
+
+  if (stat(filename, &st)==-1) {
+    DBG_ERROR(NULL, "Error on stat(%s): %s", filename, strerror(errno));
+    return (time_t) 0;
+  }
+
+  return st.st_mtime;
+}
+
+
+
+GWEN_STRINGLIST *_readBuildFileList(const char *fileName)
+{
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlFileList;
+  int rv;
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error reading build file list from \"%s\"", fileName);
+    GWEN_XMLNode_free(xmlRoot);
+    return NULL;
+  }
+
+  xmlFileList=GWEN_XMLNode_FindFirstTag(xmlRoot, "BuildFiles", NULL, NULL);
+  if (xmlFileList) {
+    GWEN_STRINGLIST *sl;
+    GWEN_XMLNODE *xmlFile;
+
+    sl=GWEN_StringList_new();
+    xmlFile=GWEN_XMLNode_FindFirstTag(xmlFileList, "File", NULL, NULL);
+    while(xmlFile) {
+      GWEN_XMLNODE *xmlFileName;
+
+      xmlFileName=GWEN_XMLNode_GetFirstData(xmlFile);
+      if (xmlFileName) {
+        const char *s;
+
+        s=GWEN_XMLNode_GetData(xmlFileName);
+        if (s && *s)
+          GWEN_StringList_AppendString(sl, s, 0, 1);
+      }
+
+      xmlFile=GWEN_XMLNode_FindNextTag(xmlFile, "File", NULL, NULL);
+    }
+
+    if (GWEN_StringList_Count(sl)==0) {
+      GWEN_StringList_free(sl);
+      GWEN_XMLNode_free(xmlRoot);
+      return NULL;
+    }
+    GWEN_XMLNode_free(xmlRoot);
+    return sl;
+  }
+
+  GWEN_XMLNode_free(xmlRoot);
+  return NULL;
+}
+
+
+
 int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
 {
   int i=1;
@@ -394,6 +622,8 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
       if (*s!='-') {
         /* no option, probably path to source folder */
         GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "folder", s);
+        /* folder only needed in setup mode, assume that */
+        GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
       }
       else {
         if (strncasecmp(s, "-O", 2)==0) {

@@ -60,7 +60,7 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir, GW
   GWEN_DB_SetCharValue(GWB_Context_GetVars(currentContext), GWEN_DB_FLAGS_OVERWRITE_VARS, "prefix", "/usr/local");
 
 
-  xmlNewFile=GWB_Parser_ReadBuildFile(currentContext, GWB_PARSER_FILENAME);
+  xmlNewFile=GWB_Parser_ReadBuildFile(gwbuild, currentContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
     DBG_ERROR(NULL, "No valid node found in build file of folder \"%s\"", srcDir);
     GWB_Context_free(currentContext);
@@ -164,7 +164,7 @@ GWB_CONTEXT *GWB_Parser_CopyContextForTarget(const GWB_CONTEXT *sourceContext)
 
 
 
-GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const char *fileName)
+GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName)
 {
   GWEN_BUFFER *fileNameBuf;
   const char *s;
@@ -196,6 +196,25 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(const GWB_CONTEXT *currentContext, const 
     GWEN_XMLNode_free(xmlDocNode);
     GWEN_Buffer_free(fileNameBuf);
     return NULL;
+  }
+
+  if (1) {
+    GWEN_BUFFER *buildFilenameBuffer;
+    const char *buildDir;
+    const char *initialSourceDir;
+
+    initialSourceDir=GWB_Context_GetInitialSourceDir(currentContext);
+    buildDir=GWB_Context_GetCurrentBuildDir(currentContext);
+    buildFilenameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buildFilenameBuffer, initialSourceDir);
+    if (buildDir) {
+      GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
+      GWEN_Buffer_AppendString(buildFilenameBuffer, buildDir);
+    }
+    GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
+    GWEN_Buffer_AppendString(buildFilenameBuffer, fileName);
+    GWBUILD_AddBuildFilename(gwbuild, GWEN_Buffer_GetStart(buildFilenameBuffer));
+    GWEN_Buffer_free(buildFilenameBuffer);
   }
 
   GWEN_XMLNode_UnlinkChild(xmlDocNode, xmlGwbuildNode);
@@ -316,7 +335,7 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
 
   newContext=GWB_Parser_CopyContextForSubdir(currentContext, sFolder);
 
-  xmlNewFile=GWB_Parser_ReadBuildFile(newContext, GWB_PARSER_FILENAME);
+  xmlNewFile=GWB_Parser_ReadBuildFile(GWB_Project_GetGwbuild(project), newContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
     DBG_ERROR(NULL, "No valid node found in build file of subdir \"%s\"", sFolder);
     GWB_Context_free(newContext);

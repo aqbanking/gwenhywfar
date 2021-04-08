@@ -47,6 +47,7 @@ GWENBUILD *GWBUILD_new(void)
   GWBUILD_SetToolNameLD(gwenbuild, "ld");
   GWBUILD_SetToolNameAR(gwenbuild, "ar");
   GWBUILD_SetToolNameRANLIB(gwenbuild, "ranlib");
+  gwenbuild->buildFilenameList=GWEN_StringList_new();
 
   return gwenbuild;
 }
@@ -61,6 +62,7 @@ void GWBUILD_free(GWENBUILD *gwenbuild)
     free(gwenbuild->toolNameLD);
     free(gwenbuild->toolNameAR);
     free(gwenbuild->toolNameRANLIB);
+    GWEN_StringList_free(gwenbuild->buildFilenameList);
 
     GWEN_FREE_OBJECT(gwenbuild);
   }
@@ -155,6 +157,23 @@ void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s)
   else
     gwenbuild->toolNameRANLIB=NULL;
 }
+
+
+
+GWEN_STRINGLIST *GWBUILD_GetBuildFilenameList(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->buildFilenameList;
+}
+
+
+
+void GWBUILD_AddBuildFilename(GWENBUILD *gwenbuild, const char *s)
+{
+  GWEN_StringList_AppendString(gwenbuild->buildFilenameList, s, 0, 1);
+}
+
+
+
 
 
 

@@ -64,6 +64,10 @@ const char *GWBUILD_GetToolNameRANLIB(const GWENBUILD *gwenbuild);
 void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s);
 
 
+GWEN_STRINGLIST *GWBUILD_GetBuildFilenameList(const GWENBUILD *gwenbuild);
+void GWBUILD_AddBuildFilename(GWENBUILD *gwenbuild, const char *s);
+
+
 
 
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s);
