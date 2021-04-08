@@ -28,6 +28,9 @@
         <blank/>
         <libraries/>
       </args>
+      <buildMessage>
+        Linking '$(target_name)$(exeext)'
+      </buildMessage>
     </cmd>
 
   </buildCommands>

@@ -19,6 +19,17 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
 
+/* for stat */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+/* for strerror */
+#include <errno.h>
+#include <string.h>
+
+
+
 
 /* Changes these two functions for new target types or new source types */
 GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file);
@@ -475,7 +486,7 @@ void GWBUILD_Debug_PrintStringList(const char *sName, const GWEN_STRINGLIST *sl,
       s=GWEN_StringListEntry_Data(se);
       for(i=0; i<indent+2; i++)
         fprintf(stderr, " ");
-      fprintf(stderr, "%s\n", (s && *s)?s:"<empty>");
+      fprintf(stderr, "[%s]\n", (s && *s)?s:"<empty>");
 
       se=GWEN_StringListEntry_Next(se);
     }
@@ -778,6 +789,20 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
     }
   }
   return NULL;
+}
+
+
+
+time_t GWBUILD_GetModificationTimeOfFile(const char *filename)
+{
+  struct stat st;
+
+  if (stat(filename, &st)==-1) {
+    DBG_ERROR(NULL, "Error on stat(%s): %s", filename, strerror(errno));
+    return (time_t) 0;
+  }
+
+  return st.st_mtime;
 }
 
 

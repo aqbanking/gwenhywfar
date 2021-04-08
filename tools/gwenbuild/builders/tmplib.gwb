@@ -22,6 +22,9 @@
       <args>
         <outputFiles index="0" />
       </args>
+      <buildMessage>
+        Deleting old 'lib$(target_name).a'
+      </buildMessage>
     </cmd>
 
     <cmd tool="$(ar)">
@@ -33,12 +36,18 @@
         <inputFiles match="*.o" />
         <inputFiles match="*.a" />
       </args>
+      <buildMessage>
+        Linking 'lib$(target_name).a'
+      </buildMessage>
     </cmd>
 
     <cmd tool="$(ranlib)">
       <args>
         <outputFiles index="0" />
       </args>
+      <buildMessage>
+        Indexing 'lib$(target_name).a'
+      </buildMessage>
     </cmd>
 
   </buildCommands>

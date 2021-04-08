@@ -121,6 +121,52 @@ void GWB_BuildSubCmd_SetBuildMessage(GWB_BUILD_SUBCMD *cmd, const char *s)
 
 
 
+const char *GWB_BuildSubCmd_GetMainInputFilePath(const GWB_BUILD_SUBCMD *cmd)
+{
+  return cmd->mainInputFilePath;
+}
+
+
+
+void GWB_BuildSubCmd_SetMainInputFilePath(GWB_BUILD_SUBCMD *cmd, const char *s)
+{
+  free(cmd->mainInputFilePath);
+  cmd->mainInputFilePath=s?strdup(s):NULL;
+}
+
+
+
+const char *GWB_BuildSubCmd_GetMainOutputFilePath(const GWB_BUILD_SUBCMD *cmd)
+{
+  return cmd->mainOutputFilePath;
+}
+
+
+
+void GWB_BuildSubCmd_SetMainOutputFilePath(GWB_BUILD_SUBCMD *cmd, const char *s)
+{
+  free(cmd->mainOutputFilePath);
+  cmd->mainOutputFilePath=s?strdup(s):NULL;
+}
+
+
+
+const char *GWB_BuildSubCmd_GetDepFilePath(const GWB_BUILD_SUBCMD *cmd)
+{
+  return cmd->depFilePath;
+}
+
+
+
+void GWB_BuildSubCmd_SetDepFilePath(GWB_BUILD_SUBCMD *cmd, const char *s)
+{
+  free(cmd->depFilePath);
+  cmd->depFilePath=s?strdup(s):NULL;
+}
+
+
+
+
 void GWB_BuildSubCmd_toXml(const GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNode_SetIntValue(xmlNode, "flags", cmd->flags);
@@ -133,6 +179,15 @@ void GWB_BuildSubCmd_toXml(const GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
 
   if (cmd->buildMessage)
     GWEN_XMLNode_SetCharValue(xmlNode, "buildMessage", cmd->buildMessage);
+
+  if (cmd->mainInputFilePath)
+    GWEN_XMLNode_SetCharValue(xmlNode, "mainInputFilePath", cmd->mainInputFilePath);
+
+  if (cmd->mainOutputFilePath)
+    GWEN_XMLNode_SetCharValue(xmlNode, "mainOutputFilePath", cmd->mainOutputFilePath);
+
+  if (cmd->depFilePath)
+    GWEN_XMLNode_SetCharValue(xmlNode, "depFilePath", cmd->depFilePath);
 }
 
 
@@ -154,6 +209,15 @@ GWB_BUILD_SUBCMD *GWB_BuildSubCmd_fromXml(GWEN_XMLNODE *xmlNode)
 
   s=GWEN_XMLNode_GetCharValue(xmlNode, "buildMessage", NULL);
   GWB_BuildSubCmd_SetBuildMessage(cmd, s);
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "mainInputFilePath", NULL);
+  GWB_BuildSubCmd_SetMainInputFilePath(cmd, s);
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "mainOutputFilePath", NULL);
+  GWB_BuildSubCmd_SetMainOutputFilePath(cmd, s);
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "depFilePath", NULL);
+  GWB_BuildSubCmd_SetDepFilePath(cmd, s);
 
   return cmd;
 }

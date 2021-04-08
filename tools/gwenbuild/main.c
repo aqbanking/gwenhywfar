@@ -21,16 +21,6 @@
 #include <gwenhywfar/i18n.h>
 #include <gwenhywfar/text.h>
 
-/* for stat */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-/* for strerror */
-#include <errno.h>
-#include <string.h>
-
-
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
@@ -58,7 +48,6 @@ static int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName)
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
 static int _buildFilesChanged(const char *fileName);
 static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
-static time_t _getModificationTimeOfFile(const char *filename);
 
 static int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db);
 
@@ -507,12 +496,13 @@ int _buildFilesChanged(const char *fileName)
 }
 
 
+
 int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList)
 {
   time_t mtSourceFile;
   GWEN_STRINGLISTENTRY *se;
 
-  mtSourceFile=_getModificationTimeOfFile(fileName);
+  mtSourceFile=GWBUILD_GetModificationTimeOfFile(fileName);
   if (mtSourceFile==(time_t) 0) {
     DBG_INFO(NULL, "here");
     return 1; /* assume changed */
@@ -526,7 +516,7 @@ int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList)
     if (s && *s) {
       time_t mt;
 
-      mt=_getModificationTimeOfFile(s);
+      mt=GWBUILD_GetModificationTimeOfFile(s);
       if (mt!=(time_t) 0) {
         if (difftime(mt, mtSourceFile)>0) {
           DBG_ERROR(NULL, "File \"%s\" changed.", s);
@@ -540,20 +530,6 @@ int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList)
 
   DBG_ERROR(NULL, "Files unchanged since last setup.");
   return 0;
-}
-
-
-
-time_t _getModificationTimeOfFile(const char *filename)
-{
-  struct stat st;
-
-  if (stat(filename, &st)==-1) {
-    DBG_ERROR(NULL, "Error on stat(%s): %s", filename, strerror(errno));
-    return (time_t) 0;
-  }
-
-  return st.st_mtime;
 }
 
 

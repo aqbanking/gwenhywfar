@@ -47,6 +47,12 @@ void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
 
+void _readMainInputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
+void _readMainOutputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
+static void _readDepFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
+GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
+void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
+
 GWEN_BUFFER *_readArgs(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
 void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArgs, GWEN_BUFFER *argsBuffer);
 void _readArgsFixed(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
@@ -308,6 +314,7 @@ void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder)
       if (s) {
         const char *ptrToPoint;
 
+        GWEN_DB_SetCharValue(xbuilder->dbVars, GWEN_DB_FLAGS_DEFAULT, "firstInputFile", s);
         ptrToPoint=strrchr(s, '.');
         if (ptrToPoint) {
           char *copyOfName;
@@ -545,11 +552,28 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
       if (s && strcasecmp(s, "TRUE")==0)
         GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
 
+      s=GWEN_XMLNode_GetProperty(n, "checkDates", "TRUE");
+      if (s && strcasecmp(s, "TRUE")==0)
+        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DATES);
+
+      s=GWEN_XMLNode_GetProperty(n, "checkDepends", "FALSE");
+      if (s && strcasecmp(s, "TRUE")==0)
+        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
+
       argsBuffer=_readArgs(builder, bcmd, n);
       if (argsBuffer) {
         GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));
         GWEN_Buffer_free(argsBuffer);
       }
+
+      _readMainInputFile(builder, cmd, n);
+      _readMainOutputFile(builder, cmd, n);
+      _readDepFile(builder, cmd, n);
+
+      _readBuildMessage(builder, cmd, n);
+
+
+      /* done */
       GWB_BuildSubCmd_List_Add(cmd, cmdList);
 
       GWEN_Buffer_free(toolNameBuffer);
@@ -557,6 +581,134 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
       n=GWEN_XMLNode_FindNextTag(n, "cmd", NULL, NULL);
     }
   }
+}
+
+
+
+void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
+{
+  GWB_BUILDER_GENERIC *xbuilder;
+  GWEN_XMLNODE *xmlMsg;
+
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
+
+  xmlMsg=GWEN_XMLNode_FindFirstTag(xmlNode, "buildMessage", NULL, NULL);
+  if (xmlMsg) {
+    GWEN_BUFFER *buf;
+
+    buf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, xmlMsg);
+    if (buf) {
+      GWB_BuildSubCmd_SetBuildMessage(cmd, GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+    }
+  }
+}
+
+
+
+void _readMainInputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
+{
+  GWEN_XMLNODE *xmlFile;
+
+  xmlFile=GWEN_XMLNode_FindFirstTag(xmlNode, "mainInputFile", NULL, NULL);
+  if (xmlFile) {
+    GWB_CONTEXT *context;
+    GWB_FILE_LIST2 *filesList;
+    GWEN_BUFFER *filenameBuffer;
+
+    context=GWB_Builder_GetContext(builder);
+    filesList=GWB_Builder_GetInputFileList2(builder);
+
+    filenameBuffer=_readMainFilename(context, xmlFile, filesList);
+    if (filenameBuffer) {
+      GWB_BuildSubCmd_SetMainInputFilePath(cmd, GWEN_Buffer_GetStart(filenameBuffer));
+      GWEN_Buffer_free(filenameBuffer);
+    }
+  }
+}
+
+
+
+void _readMainOutputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
+{
+  GWEN_XMLNODE *xmlFile;
+
+  xmlFile=GWEN_XMLNode_FindFirstTag(xmlNode, "mainOutputFile", NULL, NULL);
+  if (xmlFile) {
+    GWB_CONTEXT *context;
+    GWB_FILE_LIST2 *filesList;
+    GWEN_BUFFER *filenameBuffer;
+
+    context=GWB_Builder_GetContext(builder);
+    filesList=GWB_Builder_GetOutputFileList2(builder);
+
+    filenameBuffer=_readMainFilename(context, xmlFile, filesList);
+    if (filenameBuffer) {
+      GWB_BuildSubCmd_SetMainOutputFilePath(cmd, GWEN_Buffer_GetStart(filenameBuffer));
+      GWEN_Buffer_free(filenameBuffer);
+    }
+  }
+}
+
+
+
+void _readDepFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
+{
+  GWEN_XMLNODE *xmlFile;
+
+  xmlFile=GWEN_XMLNode_FindFirstTag(xmlNode, "depFile", NULL, NULL);
+  if (xmlFile) {
+    GWB_CONTEXT *context;
+    GWB_FILE_LIST2 *filesList;
+    GWEN_BUFFER *filenameBuffer;
+
+    context=GWB_Builder_GetContext(builder);
+    filesList=GWB_Builder_GetOutputFileList2(builder);
+
+    filenameBuffer=_readMainFilename(context, xmlFile, filesList);
+    if (filenameBuffer) {
+      GWB_BuildSubCmd_SetDepFilePath(cmd, GWEN_Buffer_GetStart(filenameBuffer));
+      GWEN_Buffer_free(filenameBuffer);
+    }
+  }
+}
+
+
+
+GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList)
+{
+  if (filesList) {
+    int index;
+
+    index=GWEN_XMLNode_GetIntProperty(xmlFile, "index", -1);
+    if (index>=0) {
+      GWB_FILE *file;
+
+      file=_getFileAtPosInList2(filesList, index);
+      if (file) {
+        GWEN_BUFFER *filenameBuffer;
+        const char *s;
+
+        filenameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+        if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
+          s=GWB_Context_GetInitialSourceDir(context);
+          if (s && *s) {
+            GWEN_Buffer_AppendString(filenameBuffer, s);
+            GWEN_Buffer_AppendString(filenameBuffer, GWEN_DIR_SEPARATOR_S);
+          }
+        }
+        s=GWB_File_GetFolder(file);
+        if (s && *s) {
+          GWEN_Buffer_AppendString(filenameBuffer, s);
+          GWEN_Buffer_AppendString(filenameBuffer, GWEN_DIR_SEPARATOR_S);
+        }
+        GWEN_Buffer_AppendString(filenameBuffer, GWB_File_GetName(file));
+        return filenameBuffer;
+      }
+    }
+  }
+  return NULL;
 }
 
 

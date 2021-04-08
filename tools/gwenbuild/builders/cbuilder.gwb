@@ -8,14 +8,39 @@
   </inputFiles>
   
   <outputFiles>
-    <file type="object">
-        $(firstInputFileNoExt).o
-    </file>
+    <file type="object" >$(firstInputFileNoExt).o</file>
+    <file type="depfile">$(firstInputFileNoExt).d</file>
   </outputFiles>
   
   
   <buildCommands>
-    <cmd tool="$(cc)">
+    <!-- depend file -->
+    <cmd tool="$(cc)" checkDates="TRUE" >
+      <args>
+        <fixed>-c -fPIC -DPIC</fixed>
+        <blank/>
+        <fixed>$(cflags) $(local/cflags)</fixed>
+        <blank/>
+        <haveConfigH/>
+        <defines />
+        <blank/>
+        <includes type="c" />
+        <blank/>
+        <fixed>-MM</fixed>
+        <blank/>
+        <inputFiles match="*.c" mode="abspath" />
+        <blank/>
+        <fixed>-o</fixed>
+        <blank/>
+        <outputFiles index=1 />
+      </args>
+      <mainInputFile index="0" />
+      <mainOutputFile index="1" />
+      <buildMessage>Creating depfile for '$(firstInputFile)'</buildMessage>
+    </cmd>
+
+    <!-- object file -->
+    <cmd tool="$(cc)" checkDates="TRUE" checkDepends="TRUE"  >
       <args>
         <fixed>-c -fPIC -DPIC</fixed>
         <blank/>
@@ -30,8 +55,12 @@
         <blank/>
         <fixed>-o</fixed>
         <blank/>
-        <outputFiles index=0 />
+        <outputFiles index="0" />
       </args>
+      <mainInputFile index="0" />
+      <mainOutputFile index="0" />
+      <depFile index="1" />
+      <buildMessage>Compiling '$(firstInputFile)'</buildMessage>
     </cmd>
     
   </buildCommands>

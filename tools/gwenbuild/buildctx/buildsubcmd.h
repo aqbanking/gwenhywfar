@@ -22,6 +22,10 @@ GWEN_LIST_FUNCTION_DEFS(GWB_BUILD_SUBCMD, GWB_BuildSubCmd);
 
 #define GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT 0x0001
 
+#define GWB_BUILD_SUBCMD_FLAGS_CHECK_DATES   0x0002
+#define GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS 0x0004
+
+
 
 
 GWB_BUILD_SUBCMD *GWB_BuildSubCmd_new(void);
@@ -41,6 +45,18 @@ void GWB_BuildSubCmd_SetArguments(GWB_BUILD_SUBCMD *cmd, const char *s);
 
 const char *GWB_BuildSubCmd_GetBuildMessage(const GWB_BUILD_SUBCMD *cmd);
 void GWB_BuildSubCmd_SetBuildMessage(GWB_BUILD_SUBCMD *cmd, const char *s);
+
+
+const char *GWB_BuildSubCmd_GetMainInputFilePath(const GWB_BUILD_SUBCMD *cmd);
+void GWB_BuildSubCmd_SetMainInputFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
+
+const char *GWB_BuildSubCmd_GetMainOutputFilePath(const GWB_BUILD_SUBCMD *cmd);
+void GWB_BuildSubCmd_SetMainOutputFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
+
+const char *GWB_BuildSubCmd_GetDepFilePath(const GWB_BUILD_SUBCMD *cmd);
+void GWB_BuildSubCmd_SetDepFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
+
+
 
 void GWB_BuildSubCmd_toXml(const GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 GWB_BUILD_SUBCMD *GWB_BuildSubCmd_fromXml(GWEN_XMLNODE *xmlNode);

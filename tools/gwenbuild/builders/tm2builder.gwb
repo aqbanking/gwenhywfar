@@ -14,7 +14,7 @@
   </outputFiles>
   
   <buildCommands>
-    <cmd tool="typemaker2">
+    <cmd tool="typemaker2" checkDates="TRUE" >
       <args>
         <fixed>$(tm2flags)</fixed>
         <blank/>
@@ -22,11 +22,14 @@
         <blank/>
         <inputFiles match="*.t2d" mode="abspath" />
       </args>
+      <buildMessage>Generating sources from '$(firstInputFile)'</buildMessage>
+      <mainInputFile index="0" />
+      <mainOutputFile index="0" />
     </cmd>
   </buildCommands>
 
   <prepareCommands>
-    <cmd tool="typemaker2">
+    <cmd tool="typemaker2" checkDates="TRUE" >
       <args>
         <fixed>$(tm2flags)</fixed>
         <blank/>
@@ -36,6 +39,9 @@
         <blank/>
         <inputFiles match="*.t2d" mode="abspath" />
       </args>
+      <buildMessage>Generating type definitions from '$(firstInputFile)'</buildMessage>
+      <mainInputFile index="0" />
+      <mainOutputFile index="0" />
     </cmd>
   </prepareCommands>
   

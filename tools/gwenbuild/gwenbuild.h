@@ -38,6 +38,8 @@ typedef enum {
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/buffer.h>
 
+#include <time.h>
+
 
 
 GWENBUILD *GWBUILD_new(void);
@@ -68,10 +70,11 @@ GWEN_STRINGLIST *GWBUILD_GetBuildFilenameList(const GWENBUILD *gwenbuild);
 void GWBUILD_AddBuildFilename(GWENBUILD *gwenbuild, const char *s);
 
 
-
-
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s);
 const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt);
+
+time_t GWBUILD_GetModificationTimeOfFile(const char *filename);
+
 
 void GWBUILD_Debug_PrintValue(const char *sName, const char *sValue, int indent);
 void GWBUILD_Debug_PrintIntValue(const char *sName, int value, int indent);

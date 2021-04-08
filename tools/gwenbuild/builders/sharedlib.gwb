@@ -47,12 +47,18 @@
           <libraries/>
         </ifHasLibraries>
       </args>
+      <buildMessage>
+        Linking 'lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)'
+      </buildMessage>
     </cmd>
 
     <cmd tool="rm" ignoreResult="TRUE">
       <args>
         <fixed>lib$(target_name).so.$(target_so_version_effective) lib$(target_name).so</fixed>
       </args>
+      <buildMessage>
+        Deleting old symbolic links for 'lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)'
+      </buildMessage>
     </cmd>
 
     <cmd tool="ln">
@@ -62,6 +68,9 @@
              lib$(target_name).so.$(target_so_version_effective)
         </fixed>
       </args>
+      <buildMessage>
+        Creating symbolic link 'lib$(target_name).so.$(target_so_version_effective)'
+      </buildMessage>
     </cmd>
 
     <cmd tool="ln">
@@ -71,6 +80,9 @@
              lib$(target_name).so
         </fixed>
       </args>
+      <buildMessage>
+        Creating symbolic link 'lib$(target_name).so'
+      </buildMessage>
     </cmd>
 
     
