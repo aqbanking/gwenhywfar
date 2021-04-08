@@ -11,6 +11,12 @@
     <file type="sharedlib" install="target" >
       lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
     </file>
+    <file type="symlink" install="target" >
+      lib$(target_name).so.$(target_so_version_effective)
+    </file>
+    <file type="symlink" install="target" >
+      lib$(target_name).so
+    </file>
   </outputFiles>
   
   <targetLinkSpecs>

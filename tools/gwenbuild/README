@@ -41,9 +41,9 @@ QuickStart for Users
 --------------------
 
 - create a new folder in which to build, there:
-- "gwbuild setup -f PATH_TO_SOURCE_FOLDER"
-- "gwbuild prepare"
-- "gwbuild build -j MAX_NUMBER_OF_PARALLEL_JOBS"
+- "gwbuild PATH_TO_SOURCE_FOLDER"
+- "gwbuild -p"
+- "gwbuild -jMAX_NUMBER_OF_PARALLEL_JOBS"
 
 After changing source files only the last step needs to be repeated.
 
