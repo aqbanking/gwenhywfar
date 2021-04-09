@@ -18,6 +18,8 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/stringlist.h>
 
 /* for stat */
 #include <sys/types.h>
@@ -53,11 +55,6 @@ GWENBUILD *GWBUILD_new(void)
   GWENBUILD *gwenbuild;
 
   GWEN_NEW_OBJECT(GWENBUILD, gwenbuild);
-  GWBUILD_SetToolNameCC(gwenbuild, "gcc");
-  GWBUILD_SetToolNameCXX(gwenbuild, "g++");
-  GWBUILD_SetToolNameLD(gwenbuild, "ld");
-  GWBUILD_SetToolNameAR(gwenbuild, "ar");
-  GWBUILD_SetToolNameRANLIB(gwenbuild, "ranlib");
   gwenbuild->buildFilenameList=GWEN_StringList_new();
 
   return gwenbuild;
@@ -68,105 +65,10 @@ GWENBUILD *GWBUILD_new(void)
 void GWBUILD_free(GWENBUILD *gwenbuild)
 {
   if (gwenbuild) {
-    free(gwenbuild->toolNameCC);
-    free(gwenbuild->toolNameCXX);
-    free(gwenbuild->toolNameLD);
-    free(gwenbuild->toolNameAR);
-    free(gwenbuild->toolNameRANLIB);
     GWEN_StringList_free(gwenbuild->buildFilenameList);
 
     GWEN_FREE_OBJECT(gwenbuild);
   }
-}
-
-
-
-const char *GWBUILD_GetToolNameCC(const GWENBUILD *gwenbuild)
-{
-  return gwenbuild->toolNameCC;
-}
-
-
-
-void GWBUILD_SetToolNameCC(GWENBUILD *gwenbuild, const char *s)
-{
-  free(gwenbuild->toolNameCC);
-  if (s)
-    gwenbuild->toolNameCC=strdup(s);
-  else
-    gwenbuild->toolNameCC=NULL;
-}
-
-
-
-const char *GWBUILD_GetToolNameCXX(const GWENBUILD *gwenbuild)
-{
-  return gwenbuild->toolNameCXX;
-}
-
-
-
-void GWBUILD_SetToolNameCXX(GWENBUILD *gwenbuild, const char *s)
-{
-  free(gwenbuild->toolNameCXX);
-  if (s)
-    gwenbuild->toolNameCXX=strdup(s);
-  else
-    gwenbuild->toolNameCXX=NULL;
-}
-
-
-
-const char *GWBUILD_GetToolNameLD(const GWENBUILD *gwenbuild)
-{
-  return gwenbuild->toolNameLD;
-}
-
-
-
-void GWBUILD_SetToolNameLD(GWENBUILD *gwenbuild, const char *s)
-{
-  free(gwenbuild->toolNameLD);
-  if (s)
-    gwenbuild->toolNameLD=strdup(s);
-  else
-    gwenbuild->toolNameLD=NULL;
-}
-
-
-
-const char *GWBUILD_GetToolNameAR(const GWENBUILD *gwenbuild)
-{
-  return gwenbuild->toolNameAR;
-}
-
-
-
-void GWBUILD_SetToolNameAR(GWENBUILD *gwenbuild, const char *s)
-{
-  free(gwenbuild->toolNameAR);
-  if (s)
-    gwenbuild->toolNameAR=strdup(s);
-  else
-    gwenbuild->toolNameAR=NULL;
-}
-
-
-
-const char *GWBUILD_GetToolNameRANLIB(const GWENBUILD *gwenbuild)
-{
-  return gwenbuild->toolNameRANLIB;
-}
-
-
-
-void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s)
-{
-  free(gwenbuild->toolNameRANLIB);
-  if (s)
-    gwenbuild->toolNameRANLIB=strdup(s);
-  else
-    gwenbuild->toolNameRANLIB=NULL;
 }
 
 
@@ -181,6 +83,22 @@ GWEN_STRINGLIST *GWBUILD_GetBuildFilenameList(const GWENBUILD *gwenbuild)
 void GWBUILD_AddBuildFilename(GWENBUILD *gwenbuild, const char *s)
 {
   GWEN_StringList_AppendString(gwenbuild->buildFilenameList, s, 0, 1);
+}
+
+
+
+GWEN_STRINGLIST *GWBUILD_GetPathFromEnvironment()
+{
+  const char *s;
+
+  s=getenv("PATH");
+  if (s && *s)
+    return GWEN_StringList_fromString2(s, ":;", 1,
+                                       GWEN_TEXT_FLAGS_DEL_QUOTES |
+                                       GWEN_TEXT_FLAGS_CHECK_BACKSLASH |
+                                       GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+                                       GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS);
+  return NULL;
 }
 
 
@@ -805,6 +723,109 @@ time_t GWBUILD_GetModificationTimeOfFile(const char *filename)
   return st.st_mtime;
 }
 
+
+/* code from https://stackoverflow.com/questions/152016/detecting-cpu-architecture-compile-time
+ */
+const char *GWBUILD_GetHostArch() { //Get current architecture, detectx nearly every architecture. Coded by Freak
+#if defined(__x86_64__) || defined(_M_X64)
+  return "x86_64";
+#elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
+  return "x86_32";
+#elif defined(__ARM_ARCH_2__)
+  return "ARM2";
+#elif defined(__ARM_ARCH_3__) || defined(__ARM_ARCH_3M__)
+  return "ARM3";
+#elif defined(__ARM_ARCH_4T__) || defined(__TARGET_ARM_4T)
+  return "ARM4T";
+#elif defined(__ARM_ARCH_5_) || defined(__ARM_ARCH_5E_)
+  return "ARM5"
+#elif defined(__ARM_ARCH_6T2_) || defined(__ARM_ARCH_6T2_)
+    return "ARM6T2";
+#elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__)
+  return "ARM6";
+#elif defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
+  return "ARM7";
+#elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
+  return "ARM7A";
+#elif defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
+  return "ARM7R";
+#elif defined(__ARM_ARCH_7M__)
+  return "ARM7M";
+#elif defined(__ARM_ARCH_7S__)
+  return "ARM7S";
+#elif defined(__aarch64__) || defined(_M_ARM64)
+  return "ARM64";
+#elif defined(mips) || defined(__mips__) || defined(__mips)
+  return "MIPS";
+#elif defined(__sh__)
+  return "SUPERH";
+#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) || defined(_ARCH_PPC)
+  return "POWERPC";
+#elif defined(__PPC64__) || defined(__ppc64__) || defined(_ARCH_PPC64)
+  return "POWERPC64";
+#elif defined(__sparc__) || defined(__sparc)
+  return "SPARC";
+#elif defined(__m68k__)
+  return "M68K";
+#else
+  return "UNKNOWN";
+#endif
+}
+
+
+
+const char *GWBUILD_GetHostSystem() {
+#if defined(__linux__)
+  return "linux";
+#elif defined(__sun)
+  return "solaris";
+#elif defined(__FreeBSD__)
+  return "freebsd";
+#elif defined(__NetBSD__)
+  return "netbsd";
+#elif defined(__OpenBSD__)
+  return "openbsd";
+#elif defined(__APPLE__)
+  return "osx";
+#elif defined(__hpux)
+  return "hpux";
+
+#elif defined(__osf__)
+  return "tru64";
+#elif defined(__sgi)
+  return "irix";
+#elif defined(_AIX)
+  return "aix";
+#elif defined(_WIN32)
+  return "windows";
+#else
+  return "unknown";
+#endif
+}
+
+
+
+const char *GWBUILD_GetArchFromTriplet(const char *sTriplet)
+{
+  if (-1!=GWEN_Text_ComparePattern(sTriplet, "*x86_64*", 0))
+    return "x86_64";
+  else if (-1!=GWEN_Text_ComparePattern(sTriplet, "*i?86*", 0))
+    return "x86_32";
+  else
+    return "unknown";
+}
+
+
+
+const char *GWBUILD_GetSystemFromTriplet(const char *sTriplet)
+{
+  if (-1!=GWEN_Text_ComparePattern(sTriplet, "*mingw*", 0))
+    return "windows";
+  else if (-1!=GWEN_Text_ComparePattern(sTriplet, "*linux*", 0))
+    return "linux";
+  else
+    return "unknown";
+}
 
 
 

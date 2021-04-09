@@ -19,11 +19,13 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
+#include <ctype.h>
+
 
 
 int _checkAgainstGivenOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWB_OPTION *option);
 int _checkStringOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue);
-int _checkStringListOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue);
+int _checkStringListOption(GWB_PROJECT *project, GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue);
 
 
 
@@ -65,6 +67,10 @@ int GWB_ParseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   s=GWEN_XMLNode_GetCharValue(xmlNode, "default", NULL);
   if (s)
     GWB_Option_SetDefaultValue(option, s);
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "definePrefix", NULL);
+  if (s)
+    GWB_Option_SetDefinePrefix(option, s);
 
   s=GWEN_XMLNode_GetCharValue(xmlNode, "choices", NULL);
   if (s) {
@@ -124,7 +130,7 @@ int _checkAgainstGivenOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, 
       rv=_checkStringOption(option, currentContext, givenValue);
       break;
     case GWB_OptionType_StringList:
-      rv=_checkStringListOption(option, currentContext, givenValue);
+      rv=_checkStringListOption(project, option, currentContext, givenValue);
       break;
     }
     if (rv<0)
@@ -177,11 +183,13 @@ int _checkStringOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, const ch
 
 
 
-int _checkStringListOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue)
+int _checkStringListOption(GWB_PROJECT *project, GWB_OPTION *option, GWB_CONTEXT *currentContext, const char *givenValue)
 {
   const char *optionId;
+  const char *definePrefix;
 
   optionId=GWB_Option_GetId(option);
+  definePrefix=GWB_Option_GetDefinePrefix(option);
   fprintf(stdout, " option %s: ", optionId);
   if (givenValue) {
     const char *s;
@@ -218,6 +226,17 @@ int _checkStringListOption(GWB_OPTION *option, GWB_CONTEXT *currentContext, cons
                                0,
                                GWEN_Buffer_GetStart(nameBuffer), sCurrentGivenValue);
           fprintf(stdout, "%s ", sCurrentGivenValue);
+          if (definePrefix) {
+            GWEN_BUFFER *dbuf;
+
+            dbuf=GWEN_Buffer_new(0, 64, 0, 1);
+            GWEN_Buffer_AppendString(dbuf, definePrefix);
+            s=sCurrentGivenValue;
+            while(*s)
+              GWEN_Buffer_AppendByte(dbuf, toupper(*(s++)));
+            GWB_Project_SetDefine(project, GWEN_Buffer_GetStart(dbuf), "1");
+            GWEN_Buffer_free(dbuf);
+          }
         }
 
         se=GWEN_StringListEntry_Next(se);

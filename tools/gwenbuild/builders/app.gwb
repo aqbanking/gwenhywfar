@@ -14,7 +14,7 @@
   </outputFiles>
   
   <buildCommands>
-    <cmd tool="$(cc)">
+    <cmd tool="$(GWBUILD_TOOL_CC)">
       <args>
         <fixed>-fPIC</fixed>
         <blank/>

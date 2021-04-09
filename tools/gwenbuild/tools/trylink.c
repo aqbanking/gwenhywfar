@@ -23,7 +23,7 @@
 
 
 
-int GWB_Tools_TryLink(GWENBUILD *gwbuild, const char *testCode, const char *libName)
+int GWB_Tools_TryLink(GWB_CONTEXT *context, const char *testCode, const char *libName)
 {
   GWEN_BUFFER *argBuffer;
   GWEN_BUFFER *stdOutBuffer;
@@ -31,7 +31,7 @@ int GWB_Tools_TryLink(GWENBUILD *gwbuild, const char *testCode, const char *libN
   const char *toolName;
   int rv;
 
-  toolName=GWBUILD_GetToolNameCC(gwbuild);
+  toolName=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "GWBUILD_TOOL_CC", 0, "gcc");
   if (!(toolName && *toolName)) {
     DBG_ERROR(NULL, "No tool name for \"CC\"");
     return GWEN_ERROR_INTERNAL;

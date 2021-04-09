@@ -28,8 +28,6 @@
 
 
 
-static void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db);
-static void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName);
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
 static int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseIfVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
@@ -44,33 +42,29 @@ static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newV
 
 
 
-GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir, GWB_KEYVALUEPAIR_LIST *givenOptionList)
+GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild,
+                                      GWB_CONTEXT *currentContext,
+                                      const char *srcDir,
+                                      GWB_KEYVALUEPAIR_LIST *givenOptionList)
 {
-  GWB_CONTEXT *currentContext;
   GWEN_XMLNODE *xmlNewFile;
   GWEN_XMLNODE *xmlProject;
   GWB_PROJECT *project;
   int rv;
 
-  currentContext=GWB_Context_new();
   GWB_Context_SetInitialSourceDir(currentContext, srcDir);
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
   GWB_Context_SetCurrentSourceDir(currentContext, srcDir);
-  _copySomeEnvironmentVariablesToDb(GWB_Context_GetVars(currentContext));
-  GWEN_DB_SetCharValue(GWB_Context_GetVars(currentContext), GWEN_DB_FLAGS_OVERWRITE_VARS, "prefix", "/usr/local");
-
 
   xmlNewFile=GWB_Parser_ReadBuildFile(gwbuild, currentContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
     DBG_ERROR(NULL, "No valid node found in build file of folder \"%s\"", srcDir);
-    GWB_Context_free(currentContext);
     return NULL;
   }
 
   xmlProject=GWEN_XMLNode_FindFirstTag(xmlNewFile, "project", NULL, NULL);
   if (xmlProject==NULL) {
     DBG_ERROR(NULL, "No project node found in build file of folder \"%s\"", srcDir);
-    GWB_Context_free(currentContext);
     GWEN_XMLNode_free(xmlNewFile);
     return NULL;
   }
@@ -89,28 +83,6 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild, const char *srcDir, GW
 
   GWEN_XMLNode_free(xmlNewFile);
   return project;
-}
-
-
-
-void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db)
-{
-  _copyEnvironmentVariableToDb(db, "CFLAGS", "CFLAGS");
-  _copyEnvironmentVariableToDb(db, "CXXFLAGS", "CXXFLAGS");
-  _copyEnvironmentVariableToDb(db, "CPPFLAGS", "CPPFLAGS");
-  _copyEnvironmentVariableToDb(db, "LDFLAGS", "LDFLAGS");
-  _copyEnvironmentVariableToDb(db, "TM2FLAGS", "TM2FLAGS");
-}
-
-
-
-void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName)
-{
-  const char *s;
-
-  s=getenv(envName);
-  if (s && *s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, dbVarName, s);
 }
 
 

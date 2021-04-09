@@ -14,7 +14,7 @@
   </outputFiles>
   
   <buildCommands>
-    <cmd tool="typemaker2" checkDates="TRUE" >
+    <cmd tool="$(GWBUILD_TOOL_TYPEMAKER2)" checkDates="TRUE" >
       <args>
         <fixed>$(tm2flags)</fixed>
         <blank/>
@@ -29,7 +29,7 @@
   </buildCommands>
 
   <prepareCommands>
-    <cmd tool="typemaker2" checkDates="TRUE" >
+    <cmd tool="$(GWBUILD_TOOL_TYPEMAKER2)" checkDates="TRUE" >
       <args>
         <fixed>$(tm2flags)</fixed>
         <blank/>

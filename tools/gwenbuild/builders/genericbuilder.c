@@ -200,72 +200,20 @@ void _readMainSettingsFromXml(GWB_BUILDER *builder)
 void _setupVariables(GWB_BUILDER *builder)
 {
   GWB_BUILDER_GENERIC *xbuilder;
-  GWENBUILD *gwenbuild;
   GWB_CONTEXT *context;
-  GWB_TARGET *target;
   const char *s;
   GWEN_DB_NODE *db;
-  int soCurrent;
-  int soAge;
-  int soRevision;
 
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
 
-  gwenbuild=GWB_Builder_GetGwenbuild(builder);
   db=xbuilder->dbVars;
   context=GWB_Builder_GetContext(builder);
-  target=GWB_Context_GetCurrentTarget(context);
-
-  soCurrent=GWB_Target_GetSoVersionCurrent(target);
-  soAge=GWB_Target_GetSoVersionAge(target);
-  soRevision=GWB_Target_GetSoVersionRevision(target);
 
   s=GWB_Context_GetCurrentRelativeDir(context);
   if (s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "folder", s);
 
-  s=GWB_Target_GetName(target);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "target_name", s);
-
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT, "target_so_version_current", soCurrent);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT, "target_so_version_age", soAge);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT, "target_so_version_revision", soRevision);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT, "target_so_version_effective", soCurrent-soAge);
-
   GWEN_DB_AddGroupChildren(db, GWB_Context_GetVars(context));
-
-  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "cflags", 0, NULL);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "cflags", s);
-
-  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "ldflags", 0, NULL);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "ldflags", s);
-
-  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "tm2flags", 0, NULL);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "tm2flags", s);
-
-  s=GWBUILD_GetToolNameCC(gwenbuild);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "CC", s);
-
-  s=GWBUILD_GetToolNameCXX(gwenbuild);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "CXX", s);
-
-  s=GWBUILD_GetToolNameLD(gwenbuild);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "LD", s);
-
-  s=GWBUILD_GetToolNameAR(gwenbuild);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "AR", s);
-
-  s=GWBUILD_GetToolNameRANLIB(gwenbuild);
-  if (s)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, "RANLIB", s);
 }
 
 

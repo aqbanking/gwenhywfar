@@ -19,6 +19,7 @@ struct GWB_OPTION {
   char *id;
   int optionType;
   char *defaultValue;
+  char *definePrefix;
 
   GWB_KEYVALUEPAIR_LIST *aliasList;
   GWEN_STRINGLIST *choiceList;

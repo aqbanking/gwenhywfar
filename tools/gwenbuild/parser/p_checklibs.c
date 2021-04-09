@@ -78,7 +78,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
 
 
-int _parseLib(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseLib(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   int rv;
   const char *sId;
@@ -112,11 +112,11 @@ int _parseLib(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *x
     GWEN_BUFFER *codeBuf;
 
     codeBuf=_createTestCodeForLib(sFunction);
-    rv=GWB_Tools_TryLink(GWB_Project_GetGwbuild(project), GWEN_Buffer_GetStart(codeBuf), sName);
+    rv=GWB_Tools_TryLink(currentContext, GWEN_Buffer_GetStart(codeBuf), sName);
     GWEN_Buffer_free(codeBuf);
   }
   else
-    rv=GWB_Tools_TryLink(GWB_Project_GetGwbuild(project), "int main(int argc, char **argv) {return 0;}", sName);
+    rv=GWB_Tools_TryLink(currentContext, "int main(int argc, char **argv) {return 0;}", sName);
   if (rv<0) {
     DBG_INFO(NULL, "here (%d)", rv);
     return rv;

@@ -14,9 +14,9 @@
 #include "gwenbuild/gwenbuild.h"
 
 
-int GWB_Tools_TryCompile(GWENBUILD *gwbuild, const char *testCode);
+int GWB_Tools_TryCompile(GWB_CONTEXT *context, const char *testCode);
 
-int GWB_Tools_CheckCompilerArgs(GWENBUILD *gwbuild, const char *compilerArgs);
+int GWB_Tools_CheckCompilerArgs(GWB_CONTEXT *context, const char *compilerArgs);
 
 
 

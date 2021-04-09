@@ -23,14 +23,14 @@
 
 
 
-int GWB_Tools_TryCompile(GWENBUILD *gwbuild, const char *testCode)
+int GWB_Tools_TryCompile(GWB_CONTEXT *context, const char *testCode)
 {
   GWEN_BUFFER *stdOutBuffer;
   GWEN_BUFFER *stdErrBuffer;
   const char *toolName;
   int rv;
 
-  toolName=GWBUILD_GetToolNameCC(gwbuild);
+  toolName=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "GWBUILD_TOOL_CC", 0, "gcc");
   if (!(toolName && *toolName)) {
     DBG_ERROR(NULL, "No tool name for \"CC\"");
     return GWEN_ERROR_INTERNAL;
@@ -64,7 +64,7 @@ int GWB_Tools_TryCompile(GWENBUILD *gwbuild, const char *testCode)
 
 
 
-int GWB_Tools_CheckCompilerArgs(GWENBUILD *gwbuild, const char *compilerArgs)
+int GWB_Tools_CheckCompilerArgs(GWB_CONTEXT *context, const char *compilerArgs)
 {
   GWEN_BUFFER *stdOutBuffer;
   GWEN_BUFFER *stdErrBuffer;
@@ -74,7 +74,7 @@ int GWB_Tools_CheckCompilerArgs(GWENBUILD *gwbuild, const char *compilerArgs)
   GWEN_BUFFER *argBuffer;
 
 
-  toolName=GWBUILD_GetToolNameCC(gwbuild);
+  toolName=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "GWBUILD_TOOL_CC", 0, "gcc");
   if (!(toolName && *toolName)) {
     DBG_ERROR(NULL, "No tool name for \"CC\"");
     return GWEN_ERROR_INTERNAL;

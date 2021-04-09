@@ -22,19 +22,19 @@
 
 
 
-static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-static int _parseArg(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseChildNodes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseArg(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 
 
 
 
 
-int GWB_ParseCheckCompiler(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int GWB_ParseCheckCompiler(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   int rv;
 
-  rv=_parseChildNodes(project, currentContext, xmlNode);
+  rv=_parseChildNodes(currentContext, xmlNode);
   if (rv<0) {
     DBG_INFO(NULL, "here (%d)", rv);
     return rv;
@@ -45,7 +45,7 @@ int GWB_ParseCheckCompiler(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
 
 
 
-int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseChildNodes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNODE *n;
 
@@ -60,7 +60,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
       DBG_DEBUG(NULL, "Handling element \"%s\"", name);
 
       if (strcasecmp(name, "arg")==0)
-        rv=_parseArg(project, currentContext, n);
+        rv=_parseArg(currentContext, n);
       else {
         DBG_INFO(NULL, "Element not handled");
         rv=0;
@@ -79,7 +79,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
 
 
-int _parseArg(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseArg(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   int rv;
   const char *sName;
@@ -102,7 +102,7 @@ int _parseArg(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *x
 
   argsBuffer=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, xmlNode);
   if (argsBuffer) {
-    rv=GWB_Tools_CheckCompilerArgs(GWB_Project_GetGwbuild(project), GWEN_Buffer_GetStart(argsBuffer));
+    rv=GWB_Tools_CheckCompilerArgs(currentContext, GWEN_Buffer_GetStart(argsBuffer));
     if (rv<0) {
       DBG_INFO(NULL, "here (%d)", rv);
       return rv;

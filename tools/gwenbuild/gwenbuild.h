@@ -50,24 +50,19 @@ int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project);
 GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project);
 
 
-const char *GWBUILD_GetToolNameCC(const GWENBUILD *gwenbuild);
-void GWBUILD_SetToolNameCC(GWENBUILD *gwenbuild, const char *s);
-
-const char *GWBUILD_GetToolNameCXX(const GWENBUILD *gwenbuild);
-void GWBUILD_SetToolNameCXX(GWENBUILD *gwenbuild, const char *s);
-
-const char *GWBUILD_GetToolNameLD(const GWENBUILD *gwenbuild);
-void GWBUILD_SetToolNameLD(GWENBUILD *gwenbuild, const char *s);
-
-const char *GWBUILD_GetToolNameAR(const GWENBUILD *gwenbuild);
-void GWBUILD_SetToolNameAR(GWENBUILD *gwenbuild, const char *s);
-
-const char *GWBUILD_GetToolNameRANLIB(const GWENBUILD *gwenbuild);
-void GWBUILD_SetToolNameRANLIB(GWENBUILD *gwenbuild, const char *s);
-
-
 GWEN_STRINGLIST *GWBUILD_GetBuildFilenameList(const GWENBUILD *gwenbuild);
 void GWBUILD_AddBuildFilename(GWENBUILD *gwenbuild, const char *s);
+
+
+const char *GWBUILD_GetHostArch(void);
+const char *GWBUILD_GetHostSystem(void);
+
+const char *GWBUILD_GetArchFromTriplet(const char *sTriplet);
+const char *GWBUILD_GetSystemFromTriplet(const char *sTriplet);
+
+
+GWEN_STRINGLIST *GWBUILD_GetPathFromEnvironment(void);
+
 
 
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s);

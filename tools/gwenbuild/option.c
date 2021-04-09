@@ -49,6 +49,7 @@ void GWB_Option_free(GWB_OPTION *option)
     GWEN_LIST_FINI(GWB_OPTION, option);
     free(option->id);
     free(option->defaultValue);
+    free(option->definePrefix);
 
     GWEN_StringList_free(option->choiceList);
     GWB_KeyValuePair_List_free(option->aliasList);
@@ -152,6 +153,22 @@ void GWB_Option_AddChoice(GWB_OPTION *option, const char *s)
 
 
 
+const char *GWB_Option_GetDefinePrefix(const GWB_OPTION *option)
+{
+  return option->definePrefix;
+}
+
+
+
+void GWB_Option_SetDefinePrefix(GWB_OPTION *option, const char *s)
+{
+  free(option->definePrefix);
+  option->definePrefix=s?strdup(s):NULL;
+}
+
+
+
+
 void GWB_Option_Dump(const GWB_OPTION *option, int indent)
 {
   int i;
@@ -162,6 +179,7 @@ void GWB_Option_Dump(const GWB_OPTION *option, int indent)
 
   GWBUILD_Debug_PrintValue(     "id..........", option->id, indent+2);
   GWBUILD_Debug_PrintValue(     "defaultValue", option->defaultValue, indent+2);
+  GWBUILD_Debug_PrintValue(     "definePrefix", option->definePrefix, indent+2);
   GWBUILD_Debug_PrintKvpList(   "aliasList...", option->aliasList, indent+2);
   GWBUILD_Debug_PrintStringList("choiceList..", option->choiceList, indent+2);
 }

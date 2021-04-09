@@ -14,7 +14,7 @@
 
 
 
-int GWB_Tools_TryLink(GWENBUILD *gwbuild, const char *testCode, const char *libName);
+int GWB_Tools_TryLink(GWB_CONTEXT *context, const char *testCode, const char *libName);
 
 
 

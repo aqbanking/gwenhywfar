@@ -51,6 +51,10 @@ int GWB_Option_IsValidChoice(const GWB_OPTION *option, const char *s);
 void GWB_Option_AddChoice(GWB_OPTION *option, const char *s);
 
 
+const char *GWB_Option_GetDefinePrefix(const GWB_OPTION *option);
+void GWB_Option_SetDefinePrefix(GWB_OPTION *option, const char *s);
+
+
 void GWB_Option_Dump(const GWB_OPTION *option, int indent);
 
 

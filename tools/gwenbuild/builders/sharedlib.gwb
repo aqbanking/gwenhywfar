@@ -9,10 +9,10 @@
 
   <outputFiles>
     <file type="sharedlib" install="target" >
-      lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
+      lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
     </file>
     <file type="symlink" install="target" >
-      lib$(target_name).so.$(target_so_version_effective)
+      lib$(target_name).so.$(target_so_effective)
     </file>
     <file type="symlink" install="target" >
       lib$(target_name).so
@@ -25,9 +25,9 @@
   
   <buildCommands>
 
-    <cmd tool="$(cc)">
+    <cmd tool="$(GWBUILD_TOOL_CC)">
       <args>
-        <fixed>-shared -fPIC -nostdlib -Wl,-no-undefined -Wl,-soname,lib$(target_name).so.$(target_so_version_effective)</fixed>
+        <fixed>-shared -fPIC -nostdlib -Wl,-no-undefined -Wl,-soname,lib$(target_name).so.$(target_so_effective)</fixed>
         <blank/>
         <inputFiles match="*.o" />
         <blank/>
@@ -48,35 +48,35 @@
         </ifHasLibraries>
       </args>
       <buildMessage>
-        Linking 'lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)'
+        Linking 'lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)'
       </buildMessage>
     </cmd>
 
     <cmd tool="rm" ignoreResult="TRUE">
       <args>
-        <fixed>lib$(target_name).so.$(target_so_version_effective) lib$(target_name).so</fixed>
+        <fixed>lib$(target_name).so.$(target_so_effective) lib$(target_name).so</fixed>
       </args>
       <buildMessage>
-        Deleting old symbolic links for 'lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)'
+        Deleting old symbolic links for 'lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)'
       </buildMessage>
     </cmd>
 
     <cmd tool="ln">
       <args>
         <fixed>
-          -s lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
-             lib$(target_name).so.$(target_so_version_effective)
+          -s lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
+             lib$(target_name).so.$(target_so_effective)
         </fixed>
       </args>
       <buildMessage>
-        Creating symbolic link 'lib$(target_name).so.$(target_so_version_effective)'
+        Creating symbolic link 'lib$(target_name).so.$(target_so_effective)'
       </buildMessage>
     </cmd>
 
     <cmd tool="ln">
       <args>
         <fixed>
-          -s lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
+          -s lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
              lib$(target_name).so
         </fixed>
       </args>
@@ -95,11 +95,11 @@
     <cmd tool="cp" ignoreResult="FALSE">
       <args>
         <fixed>
-          lib$(target_name).so.$(target_so_version_effective).$(target_so_version_age).$(target_so_version_revision)
+          lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
         </fixed>
         <blank/>
         <fixed>
-          lib$(target_name).so.$(target_so_version_effective)
+          lib$(target_name).so.$(target_so_effective)
         </fixed>
         <blank/>
         <fixed>

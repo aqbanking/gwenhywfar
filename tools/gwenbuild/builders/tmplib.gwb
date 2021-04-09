@@ -27,7 +27,7 @@
       </buildMessage>
     </cmd>
 
-    <cmd tool="$(ar)">
+    <cmd tool="$(GWBUILD_TOOL_AR)">
       <args>
         <fixed>Trc</fixed>
         <blank/>
@@ -41,7 +41,7 @@
       </buildMessage>
     </cmd>
 
-    <cmd tool="$(ranlib)">
+    <cmd tool="$(GWBUILD_TOOL_RANLIB)">
       <args>
         <outputFiles index="0" />
       </args>
