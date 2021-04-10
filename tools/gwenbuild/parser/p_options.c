@@ -68,7 +68,7 @@ int GWB_ParseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   if (s)
     GWB_Option_SetDefaultValue(option, s);
 
-  s=GWEN_XMLNode_GetCharValue(xmlNode, "definePrefix", NULL);
+  s=GWEN_XMLNode_GetProperty(xmlNode, "definePrefix", NULL);
   if (s)
     GWB_Option_SetDefinePrefix(option, s);
 
@@ -233,7 +233,7 @@ int _checkStringListOption(GWB_PROJECT *project, GWB_OPTION *option, GWB_CONTEXT
             GWEN_Buffer_AppendString(dbuf, definePrefix);
             s=sCurrentGivenValue;
             while(*s)
-              GWEN_Buffer_AppendByte(dbuf, toupper(*(s++)));
+	      GWEN_Buffer_AppendByte(dbuf, toupper(*(s++)));
             GWB_Project_SetDefine(project, GWEN_Buffer_GetStart(dbuf), "1");
             GWEN_Buffer_free(dbuf);
           }
