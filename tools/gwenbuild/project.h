@@ -38,11 +38,12 @@ GWB_CONTEXT *GWB_Project_GetRootContext(const GWB_PROJECT *project);
 const char *GWB_Project_GetProjectName(const GWB_PROJECT *project);
 void GWB_Project_SetProjectName(GWB_PROJECT *project, const char *s);
 
-void GWB_Project_SetVersion(GWB_PROJECT *project, int vMajor, int vMinor, int vPatchlevel, int vBuild);
+void GWB_Project_SetVersion(GWB_PROJECT *project, int vMajor, int vMinor, int vPatchlevel, int vBuild, const char *vTag);
 int GWB_Project_GetVersionMajor(const GWB_PROJECT *project);
 int GWB_Project_GetVersionMinor(const GWB_PROJECT *project);
 int GWB_Project_GetVersionPatchlevel(const GWB_PROJECT *project);
 int GWB_Project_GetVersionBuild(const GWB_PROJECT *project);
+const char *GWB_Project_GetVersionTag(const GWB_PROJECT *project);
 
 void GWB_Project_SetSoVersion(GWB_PROJECT *project, int vCurrent, int vAge, int vRevision);
 int GWB_Project_GetSoVersionCurrent(const GWB_PROJECT *project);

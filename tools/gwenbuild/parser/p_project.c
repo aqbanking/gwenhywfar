@@ -61,7 +61,8 @@ int GWB_ParseProject(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
                          GWEN_XMLNode_GetIntProperty(xmlNode, "vmajor", 0),
                          GWEN_XMLNode_GetIntProperty(xmlNode, "vminor", 0),
                          GWEN_XMLNode_GetIntProperty(xmlNode, "vpatchlevel", 0),
-                         GWEN_XMLNode_GetIntProperty(xmlNode, "vbuild", 0));
+                         GWEN_XMLNode_GetIntProperty(xmlNode, "vbuild", 0),
+                         GWEN_XMLNode_GetProperty(xmlNode, "vtag", NULL));
 
   GWB_Project_SetSoVersion(project,
                            GWEN_XMLNode_GetIntProperty(xmlNode, "so_current", 0),
@@ -69,11 +70,15 @@ int GWB_ParseProject(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
                            GWEN_XMLNode_GetIntProperty(xmlNode, "so_revision", 0));
 
   db=GWB_Context_GetVars(currentContext);
+
   GWEN_DB_SetCharValue(db, flags, "project_name", GWB_Project_GetProjectName(project));
   GWEN_DB_SetCharValueFromInt(db, flags, "project_vmajor", GWB_Project_GetVersionMajor(project));
   GWEN_DB_SetCharValueFromInt(db, flags, "project_vminor", GWB_Project_GetVersionMinor(project));
   GWEN_DB_SetCharValueFromInt(db, flags, "project_vpatchlevel", GWB_Project_GetVersionPatchlevel(project));
   GWEN_DB_SetCharValueFromInt(db, flags, "project_vbuild", GWB_Project_GetVersionBuild(project));
+  s=GWB_Project_GetVersionTag(project);
+  GWEN_DB_SetCharValue(db, flags, "project_vtag", s);
+
 
   GWEN_DB_SetCharValueFromInt(db, flags, "project_so_current", GWB_Project_GetSoVersionCurrent(project));
   GWEN_DB_SetCharValueFromInt(db, flags, "project_so_age", GWB_Project_GetSoVersionAge(project));

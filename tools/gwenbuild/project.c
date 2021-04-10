@@ -49,6 +49,7 @@ void GWB_Project_free(GWB_PROJECT *project)
     GWB_Target_List2_free(project->targetList);
     GWB_Builder_List2_free(project->builderList);
     GWB_KeyValuePair_List_free(project->defineList);
+    free(project->versionTag);
 
     GWEN_FREE_OBJECT(project);
   }
@@ -82,12 +83,14 @@ void GWB_Project_SetProjectName(GWB_PROJECT *project, const char *s)
 
 
 
-void GWB_Project_SetVersion(GWB_PROJECT *project, int vMajor, int vMinor, int vPatchlevel, int vBuild)
+void GWB_Project_SetVersion(GWB_PROJECT *project, int vMajor, int vMinor, int vPatchlevel, int vBuild, const char *vTag)
 {
   project->versionMajor=vMajor;
   project->versionMinor=vMinor;
   project->versionPatchlevel=vPatchlevel;
   project->versionBuild=vBuild;
+  free(project->versionTag);
+  project->versionTag=vTag?strdup(vTag):NULL;
 }
 
 
@@ -116,6 +119,13 @@ int GWB_Project_GetVersionPatchlevel(const GWB_PROJECT *project)
 int GWB_Project_GetVersionBuild(const GWB_PROJECT *project)
 {
   return project->versionBuild;
+}
+
+
+
+const char *GWB_Project_GetVersionTag(const GWB_PROJECT *project)
+{
+    return project->versionTag;
 }
 
 
@@ -385,6 +395,7 @@ void GWB_Project_Dump(const GWB_PROJECT *project, int indent, int fullDump)
   GWBUILD_Debug_PrintIntValue("versionMinor.....", project->versionMinor, indent+2);
   GWBUILD_Debug_PrintIntValue("versionPatchlevel", project->versionPatchlevel, indent+2);
   GWBUILD_Debug_PrintIntValue("versionBuild.....", project->versionBuild, indent+2);
+  GWBUILD_Debug_PrintValue(   "versionTag.......", project->versionTag, indent+2);
   GWBUILD_Debug_PrintIntValue("soVersionCurrent.", project->soVersionCurrent, indent+2);
   GWBUILD_Debug_PrintIntValue("soVersionAge.....", project->soVersionAge, indent+2);
   GWBUILD_Debug_PrintIntValue("soVersionRevision", project->soVersionRevision, indent+2);

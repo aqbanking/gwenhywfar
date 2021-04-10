@@ -34,6 +34,7 @@ struct GWB_PROJECT {
   int versionMinor;
   int versionPatchlevel;
   int versionBuild;
+  char *versionTag;
 
   int soVersionCurrent;
   int soVersionAge;
