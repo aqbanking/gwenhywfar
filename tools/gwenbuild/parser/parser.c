@@ -111,7 +111,8 @@ GWB_CONTEXT *GWB_Parser_CopyContextForSubdir(const GWB_CONTEXT *sourceContext, c
   db=GWB_Context_GetVars(newContext);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topbuilddir", GWB_Context_GetTopBuildDir(newContext));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topsrcdir", GWB_Context_GetTopSourceDir(newContext));
-  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", GWB_Context_GetCurrentBuildDir(newContext));
+  //GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", GWB_Context_GetCurrentBuildDir(newContext));
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", ".");
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "srcdir", GWB_Context_GetCurrentSourceDir(newContext));
 
   GWEN_DB_DeleteGroup(db, "local");
@@ -307,6 +308,7 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
 
   newContext=GWB_Parser_CopyContextForSubdir(currentContext, sFolder);
 
+  fprintf(stdout, "Entering folder \"%s\"\n", sFolder);
   xmlNewFile=GWB_Parser_ReadBuildFile(GWB_Project_GetGwbuild(project), newContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
     DBG_ERROR(NULL, "No valid node found in build file of subdir \"%s\"", sFolder);
@@ -324,6 +326,7 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
   GWEN_XMLNode_free(xmlNewFile);
 
   GWB_Context_Tree2_AddChild(currentContext, newContext);
+  fprintf(stdout, "Leaving folder  \"%s\"\n", sFolder);
   return 0;
 }
 
@@ -342,6 +345,12 @@ int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
   if (!(sName && *sName)) {
     DBG_ERROR(NULL, "No name for <setVar>");
     return GWEN_ERROR_GENERIC;
+  }
+
+  if (GWEN_XMLNode_GetProperty(xmlNode, "value", NULL)) {
+    DBG_WARN(NULL,
+	     "%s: Please dont use property \"value\", just store the value between <setVar> and </setVar>",
+	     sName);
   }
 
   sMode=GWEN_XMLNode_GetProperty(xmlNode, "mode", "replace");
