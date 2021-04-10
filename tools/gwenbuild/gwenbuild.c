@@ -706,6 +706,8 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
       return buildCtx;
     }
   }
+
+  DBG_ERROR(NULL, "No targets in 0BUILD files");
   return NULL;
 }
 
@@ -716,7 +718,7 @@ time_t GWBUILD_GetModificationTimeOfFile(const char *filename)
   struct stat st;
 
   if (stat(filename, &st)==-1) {
-    DBG_ERROR(NULL, "Error on stat(%s): %s", filename, strerror(errno));
+    DBG_INFO(NULL, "Error on stat(%s): %s", filename, strerror(errno));
     return (time_t) 0;
   }
 

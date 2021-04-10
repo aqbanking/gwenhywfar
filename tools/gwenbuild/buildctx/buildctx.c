@@ -917,7 +917,7 @@ int _file1IsNewerThanFile2(const char *filename1, const char *filename2)
   if (filename2) {
     t2=GWBUILD_GetModificationTimeOfFile(filename2);
     if (t2==0) {
-      DBG_ERROR(NULL, "No time for \"%s\"", filename2);
+      DBG_INFO(NULL, "No time for \"%s\"", filename2);
     }
   }
   if (t1==0 || t2==0) {
