@@ -4,7 +4,7 @@
 
   <inputFiles>
     <acceptedInputTypes>tm2</acceptedInputTypes>
-    <acceptedInputFiles>*.t2d</acceptedInputFiles>
+    <acceptedInputFiles>*.t2d *.xml</acceptedInputFiles>
   </inputFiles>
 
   <outputFiles>
@@ -21,6 +21,7 @@
         <includes type="tm2" />
         <blank/>
         <inputFiles match="*.t2d" mode="abspath" />
+        <inputFiles match="*.xml" mode="abspath" />
       </args>
       <buildMessage>Generating sources from '$(firstInputFile)'</buildMessage>
       <mainInputFile index="0" />
@@ -38,6 +39,7 @@
         <includes type="tm2" />
         <blank/>
         <inputFiles match="*.t2d" mode="abspath" />
+        <inputFiles match="*.xml" mode="abspath" />
       </args>
       <buildMessage>Generating type definitions from '$(firstInputFile)'</buildMessage>
       <mainInputFile index="0" />
