@@ -83,10 +83,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if (strcasecmp(name, "dep")==0)
         rv=_parseDep(currentContext, n);
-      else {
-        DBG_DEBUG(NULL, "Element not handled");
-        rv=0;
-      }
+      else
+        rv=GWB_Parser_ParseWellKnownElements(project, currentContext, n, _parseChildNodes);
       if (rv<0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Error in element \"%s\", aborting", name);
         return rv;
