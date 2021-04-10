@@ -21,7 +21,7 @@
 
 static GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, int alwaysDist);
+static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, int alwaysDist, int isSource);
 static int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseLibraries(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
@@ -136,11 +136,11 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
       if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if (strcasecmp(name, "sources")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1);
+        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 1);
       else if (strcasecmp(name, "headers")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1);
+        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "data")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1);
+        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "includes")==0)
@@ -167,7 +167,7 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 
 
 
-int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, int alwaysDist)
+int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, int alwaysDist, int isSource)
 {
   GWB_TARGET *target;
   uint32_t flags=0;
@@ -228,7 +228,8 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
           GWB_File_SetFileType(file, fileType);
         if (builder)
           GWB_File_SetBuilder(file, builder);
-        GWB_Context_AddSourceFile(currentContext, file);
+        if (isSource)
+          GWB_Context_AddSourceFile(currentContext, file);
         //GWB_Target_AddSourceFile(target, file);
       }
 
