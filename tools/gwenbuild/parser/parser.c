@@ -199,11 +199,11 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
 
 
 
-GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode)
 {
   GWEN_BUFFER *buf;
 
-  buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, xmlNode);
+  buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(db, xmlNode);
   if (buf) {
     GWEN_STRINGLIST *sl;
 
@@ -223,7 +223,7 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(const GWB_CONTEXT *current
 
 
 
-GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(const GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNODE *xmlData;
 
@@ -237,7 +237,7 @@ GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(const GWB_CONTEXT *curren
       GWEN_BUFFER *buf;
 
       buf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=GWEN_DB_ReplaceVars(GWB_Context_GetVars(currentContext), s, buf);
+      rv=GWEN_DB_ReplaceVars(db, s, buf);
       if(rv<0) {
         DBG_INFO(NULL, "here (%d)", rv);
         GWEN_Buffer_free(buf);
@@ -260,7 +260,7 @@ int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, G
 {
   GWEN_STRINGLIST *sl;
 
-  sl=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  sl=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
 
@@ -355,7 +355,7 @@ int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 
   sMode=GWEN_XMLNode_GetProperty(xmlNode, "mode", "replace");
 
-  buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, xmlNode);
+  buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWB_Context_GetVars(currentContext), xmlNode);
   if (buf && GWEN_Buffer_GetUsedBytes(buf)) {
     if (strcasecmp(sMode, "replace")==0)
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, sName, GWEN_Buffer_GetStart(buf));

@@ -29,6 +29,7 @@ GWEN_LIST_FUNCTION_DEFS(GWB_BUILD_SUBCMD, GWB_BuildSubCmd);
 
 
 GWB_BUILD_SUBCMD *GWB_BuildSubCmd_new(void);
+GWB_BUILD_SUBCMD *GWB_BuildSubCmd_dup(const GWB_BUILD_SUBCMD *origCmd);
 void GWB_BuildSubCmd_free(GWB_BUILD_SUBCMD *cmd);
 
 
@@ -60,6 +61,8 @@ void GWB_BuildSubCmd_SetDepFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
 
 void GWB_BuildSubCmd_toXml(const GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 GWB_BUILD_SUBCMD *GWB_BuildSubCmd_fromXml(GWEN_XMLNODE *xmlNode);
+
+GWB_BUILD_SUBCMD_LIST *GWB_BuildSubCmd_List_dup(const GWB_BUILD_SUBCMD_LIST *cmdList);
 
 
 #endif

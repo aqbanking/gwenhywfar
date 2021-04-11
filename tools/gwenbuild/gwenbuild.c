@@ -46,6 +46,10 @@ int _addSubTargets(GWB_PROJECT *project);
 int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRINGLIST *usedTargetList);
 int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget);
 
+int _addBuildCommandsFromBuilder(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
+void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
+static void _addFilesToBuildCtx(GWB_BUILD_CONTEXT *buildCtx, GWB_FILE_LIST2 *fileList);
+
 
 
 
@@ -676,6 +680,26 @@ int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget)
 
 GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
 {
+  int rv;
+  GWB_BUILD_CONTEXT *buildCtx;
+
+  buildCtx=GWB_BuildCtx_new();
+  
+  rv=_addBuildCommandsFromBuilder(project, buildCtx);
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    GWB_BuildCtx_free(buildCtx);
+    return NULL;
+  }
+  _addExplicitBuildCommandsFromTargets(project, buildCtx);
+
+  return buildCtx;
+}
+
+
+
+int _addBuildCommandsFromBuilder(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx)
+{
   GWB_BUILDER_LIST2 *builderList;
 
   builderList=GWB_Project_GetBuilderList(project);
@@ -684,10 +708,8 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
 
     it=GWB_Builder_List2_First(builderList);
     if (it) {
-      GWB_BUILD_CONTEXT *buildCtx;
       GWB_BUILDER *builder;
 
-      buildCtx=GWB_BuildCtx_new();
       builder=GWB_Builder_List2Iterator_Data(it);
       while(builder) {
         int rv;
@@ -696,19 +718,82 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
         if (rv<0) {
           DBG_INFO(NULL, "here (%d)", rv);
           GWB_Builder_List2Iterator_free(it);
-          GWB_BuildCtx_free(buildCtx);
-          return NULL;
+          return rv;
         }
         builder=GWB_Builder_List2Iterator_Next(it);
       }
 
       GWB_Builder_List2Iterator_free(it);
-      return buildCtx;
+      return 0;
     }
   }
 
   DBG_ERROR(NULL, "No targets in 0BUILD files");
-  return NULL;
+  return GWEN_ERROR_NO_DATA;
+}
+
+
+
+void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx)
+{
+  GWB_TARGET_LIST2 *targetList;
+
+  targetList=GWB_Project_GetTargetList(project);
+  if (targetList) {
+    GWB_TARGET_LIST2_ITERATOR *it;
+
+    it=GWB_Target_List2_First(targetList);
+    if (it) {
+      GWB_TARGET *target;
+
+      target=GWB_Target_List2Iterator_Data(it);
+      while(target) {
+        GWB_BUILD_CMD_LIST *explicitBuildCmdList;
+
+        explicitBuildCmdList=GWB_Target_GetExplicitBuildList(target);
+        if (explicitBuildCmdList) {
+          GWB_BUILD_CMD *cmd;
+
+          cmd=GWB_BuildCmd_List_First(explicitBuildCmdList);
+          while(cmd) {
+            _addFilesToBuildCtx(buildCtx, GWB_BuildCmd_GetInFileList2(cmd));  /* assigns ids etc */
+            _addFilesToBuildCtx(buildCtx, GWB_BuildCmd_GetOutFileList2(cmd));
+            GWB_BuildCtx_AddCommand(buildCtx, GWB_BuildCmd_dup(cmd));
+            cmd=GWB_BuildCmd_List_Next(cmd);
+          }
+        }
+        target=GWB_Target_List2Iterator_Next(it);
+      }
+
+      GWB_Target_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+void _addFilesToBuildCtx(GWB_BUILD_CONTEXT *buildCtx, GWB_FILE_LIST2 *fileList)
+{
+  if (fileList) {
+    GWB_FILE_LIST2_ITERATOR *it;
+
+    it=GWB_File_List2_First(fileList);
+    if (it) {
+      GWB_FILE *file;
+
+      file=GWB_File_List2Iterator_Data(it);
+      while(file) {
+        GWB_FILE *copyOfFile;
+
+        copyOfFile=GWB_File_dup(file);
+        GWB_BuildCtx_AddFile(buildCtx, copyOfFile);
+        GWB_File_SetId(file, GWB_File_GetId(copyOfFile));
+        file=GWB_File_List2Iterator_Next(it);
+      }
+
+      GWB_File_List2Iterator_free(it);
+    }
+  }
 }
 
 
@@ -827,6 +912,46 @@ const char *GWBUILD_GetSystemFromTriplet(const char *sTriplet)
     return "linux";
   else
     return "unknown";
+}
+
+
+
+void GWBUILD_AddFilesFromStringList(GWB_FILE_LIST2 *mainFileList,
+                                    const char *sFolder,
+                                    const GWEN_STRINGLIST *fileNameList,
+                                    GWB_FILE_LIST2 *outFileList,
+                                    uint32_t flagsToAdd,
+                                    int copyFileForOutList)
+{
+  if (fileNameList) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(fileNameList);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        GWB_FILE *file;
+
+        file=GWB_File_List2_GetFileByPathAndName(mainFileList, sFolder, s);
+        if (file==NULL) {
+          file=GWB_File_new(sFolder, s, 0);
+          GWB_File_List2_PushBack(mainFileList, file);
+        }
+
+        GWB_File_AddFlags(file, flagsToAdd);
+        if (outFileList) {
+          if (copyFileForOutList)
+            GWB_File_List2_PushBack(outFileList, GWB_File_dup(file));
+          else
+            GWB_File_List2_PushBack(outFileList, file);
+        }
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
 }
 
 

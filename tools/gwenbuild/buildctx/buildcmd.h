@@ -28,6 +28,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_BUILD_CMD, GWB_BuildCmd);
 
 
 GWB_BUILD_CMD *GWB_BuildCmd_new(void);
+GWB_BUILD_CMD *GWB_BuildCmd_dup(GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd);
 
 

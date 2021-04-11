@@ -36,6 +36,8 @@ struct GWB_TARGET {
   GWB_PROJECT *project;
 
   char *installPath;
+
+  GWB_BUILD_CMD_LIST *explicitBuildList;
 };
 
 

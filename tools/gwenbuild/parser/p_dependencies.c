@@ -170,7 +170,7 @@ int _retrieveVariables(GWB_CONTEXT *currentContext, GWEN_DB_NODE *db, const char
 {
   GWEN_STRINGLIST *slVariables;
 
-  slVariables=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  slVariables=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
   if (slVariables) {
     GWEN_STRINGLISTENTRY *se;
 

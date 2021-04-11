@@ -34,6 +34,29 @@ GWB_BUILD_SUBCMD *GWB_BuildSubCmd_new(void)
 
 
 
+GWB_BUILD_SUBCMD *GWB_BuildSubCmd_dup(const GWB_BUILD_SUBCMD *origCmd)
+{
+  if (origCmd==NULL)
+    return NULL;
+  else {
+    GWB_BUILD_SUBCMD *cmd;
+
+    cmd=GWB_BuildSubCmd_new();
+    cmd->flags=origCmd->flags;
+    cmd->command=(origCmd->command)?strdup(origCmd->command):NULL;
+    cmd->arguments=(origCmd->arguments)?strdup(origCmd->arguments):NULL;
+    cmd->buildMessage=(origCmd->buildMessage)?strdup(origCmd->buildMessage):NULL;
+    cmd->mainInputFilePath=(origCmd->mainInputFilePath)?strdup(origCmd->mainInputFilePath):NULL;
+    cmd->mainOutputFilePath=(origCmd->mainOutputFilePath)?strdup(origCmd->mainOutputFilePath):NULL;
+    cmd->depFilePath=(origCmd->depFilePath)?strdup(origCmd->depFilePath):NULL;
+
+    return cmd;
+  }
+
+}
+
+
+
 void GWB_BuildSubCmd_free(GWB_BUILD_SUBCMD *cmd)
 {
   if (cmd) {
@@ -222,6 +245,22 @@ GWB_BUILD_SUBCMD *GWB_BuildSubCmd_fromXml(GWEN_XMLNODE *xmlNode)
   return cmd;
 }
 
+
+
+GWB_BUILD_SUBCMD_LIST *GWB_BuildSubCmd_List_dup(const GWB_BUILD_SUBCMD_LIST *cmdList)
+{
+  GWB_BUILD_SUBCMD_LIST *newList;
+  GWB_BUILD_SUBCMD *cmd;
+
+  newList=GWB_BuildSubCmd_List_new();
+  cmd=GWB_BuildSubCmd_List_First(cmdList);
+  while(cmd) {
+    GWB_BuildSubCmd_List_Add(GWB_BuildSubCmd_dup(cmd), newList);
+    cmd=GWB_BuildSubCmd_List_Next(cmd);
+  }
+
+  return newList;
+}
 
 
 

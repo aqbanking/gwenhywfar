@@ -100,7 +100,7 @@ int _parseArg(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     return GWEN_ERROR_GENERIC;
   }
 
-  argsBuffer=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, xmlNode);
+  argsBuffer=GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWB_Context_GetVars(currentContext), xmlNode);
   if (argsBuffer) {
     rv=GWB_Tools_CheckCompilerArgs(currentContext, GWEN_Buffer_GetStart(argsBuffer));
     if (rv<0) {

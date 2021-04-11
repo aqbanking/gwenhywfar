@@ -57,6 +57,42 @@ GWB_BUILD_CMD *GWB_BuildCmd_new(void)
 
 
 
+GWB_BUILD_CMD *GWB_BuildCmd_dup(GWB_BUILD_CMD *origCmd)
+{
+  GWB_BUILD_CMD *bcmd;
+
+  GWEN_NEW_OBJECT(GWB_BUILD_CMD, bcmd);
+  GWEN_LIST_INIT(GWB_BUILD_CMD, bcmd);
+
+  bcmd->builderName=(origCmd->builderName)?strdup(origCmd->builderName):NULL;
+  bcmd->folder=(origCmd->folder)?strdup(origCmd->folder):NULL;
+  bcmd->buildMessage=(origCmd->buildMessage)?strdup(origCmd->buildMessage):NULL;
+  if (origCmd->prepareCommandList)
+    bcmd->prepareCommandList=GWB_BuildSubCmd_List_dup(origCmd->prepareCommandList);
+  else
+    bcmd->prepareCommandList=GWB_BuildSubCmd_List_new();
+
+  if (origCmd->buildCommandList)
+    bcmd->buildCommandList=GWB_BuildSubCmd_List_dup(origCmd->buildCommandList);
+  else
+    bcmd->buildCommandList=GWB_BuildSubCmd_List_new();
+  bcmd->blockingFiles=origCmd->blockingFiles;
+  if (origCmd->inFileList2)
+    bcmd->inFileList2=GWB_File_List2_dup(origCmd->inFileList2);
+  else
+    bcmd->inFileList2=GWB_File_List2_new();
+  if (origCmd->outFileList2)
+    bcmd->outFileList2=GWB_File_List2_dup(origCmd->outFileList2);
+  else
+    bcmd->outFileList2=GWB_File_List2_new();
+  bcmd->currentProcess=NULL;
+  bcmd->currentCommand=NULL;
+
+  return bcmd;
+}
+
+
+
 void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd)
 {
   if (bcmd) {

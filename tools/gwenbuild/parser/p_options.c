@@ -89,7 +89,7 @@ int GWB_ParseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
     GWEN_BUFFER *valueBuffer;
 
     sName=GWEN_XMLNode_GetProperty(n, "name", NULL);
-    valueBuffer=GWB_Parser_ReadXmlDataIntoBufferAndExpand(currentContext, n);
+    valueBuffer=GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWB_Context_GetVars(currentContext), n);
     if (valueBuffer) {
       GWB_Option_AddAlias(option, sName, GWEN_Buffer_GetStart(valueBuffer));
       GWEN_Buffer_free(valueBuffer);

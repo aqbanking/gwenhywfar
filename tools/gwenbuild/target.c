@@ -34,6 +34,8 @@ GWB_TARGET *GWB_Target_new(GWB_PROJECT *project)
   target->usedLibraryList=GWEN_StringList_new();
   target->usedTargetLinkSpecList=GWEN_StringList_new();
   target->project=project;
+  target->explicitBuildList=GWB_BuildCmd_List_new();
+
 
   return target;
 }
@@ -49,6 +51,7 @@ void GWB_Target_free(GWB_TARGET *target)
     GWEN_StringList_free(target->usedTargetNameList);
     GWEN_StringList_free(target->usedTargetLinkSpecList);
     GWEN_StringList_free(target->usedLibraryList);
+    GWB_BuildCmd_List_free(target->explicitBuildList);
 
     GWEN_FREE_OBJECT(target);
   }
@@ -244,6 +247,22 @@ void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f)
 {
   target->outputFile=f;
 }
+
+
+
+GWB_BUILD_CMD_LIST *GWB_Target_GetExplicitBuildList(const GWB_TARGET *target)
+{
+  return target->explicitBuildList;
+}
+
+
+
+void GWB_Target_AddExplicitBuild(GWB_TARGET *target, GWB_BUILD_CMD *bcmd)
+{
+  GWB_BuildCmd_List_Add(bcmd, target->explicitBuildList);
+}
+
+
 
 
 

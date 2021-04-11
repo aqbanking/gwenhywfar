@@ -44,7 +44,7 @@ int GWB_ParseCheckHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
     return rv;
   }
 
-  fileNameList=GWB_Parser_ReadXmlDataIntoStringList(currentContext, xmlNode);
+  fileNameList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
   if (fileNameList) {
     GWEN_STRINGLISTENTRY *se;
 

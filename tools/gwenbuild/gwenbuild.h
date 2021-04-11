@@ -64,6 +64,13 @@ const char *GWBUILD_GetSystemFromTriplet(const char *sTriplet);
 GWEN_STRINGLIST *GWBUILD_GetPathFromEnvironment(void);
 
 
+void GWBUILD_AddFilesFromStringList(GWB_FILE_LIST2 *mainFileList,
+                                    const char *sFolder,
+                                    const GWEN_STRINGLIST *fileNameList,
+                                    GWB_FILE_LIST2 *outFileList,
+                                    uint32_t flagsToAdd,
+                                    int copyFileForOutList);
+
 
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s);
 const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt);

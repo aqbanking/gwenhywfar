@@ -187,11 +187,11 @@ void _readMainSettingsFromXml(GWB_BUILDER *builder)
 
     n=GWEN_XMLNode_FindFirstTag(nInputFiles, "acceptedInputTypes", NULL, NULL);
     if (n)
-      xbuilder->acceptedInputTypes=GWB_Parser_ReadXmlDataIntoStringList(context, n);
+      xbuilder->acceptedInputTypes=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(context), n);
 
     n=GWEN_XMLNode_FindFirstTag(nInputFiles, "acceptedInputFiles", NULL, NULL);
     if (n)
-      xbuilder->acceptedInputExt=GWB_Parser_ReadXmlDataIntoStringList(context, n);
+      xbuilder->acceptedInputExt=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(context), n);
   }
 }
 

@@ -23,6 +23,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_TARGET, GWB_Target)
 #include "gwenbuild/builder.h"
 #include "gwenbuild/gwenbuild.h"
 #include "gwenbuild/project.h"
+#include "gwenbuild/buildctx/buildcmd.h"
 
 #include <gwenhywfar/stringlist.h>
 
@@ -75,6 +76,10 @@ void GWB_Target_SetBuilder(GWB_TARGET *target, GWB_BUILDER *builder);
 
 GWB_FILE *GWB_Target_GetOutputFile(const GWB_TARGET *target);
 void GWB_Target_SetOutputFile(GWB_TARGET *target, GWB_FILE *f);
+
+GWB_BUILD_CMD_LIST *GWB_Target_GetExplicitBuildList(const GWB_TARGET *target);
+void GWB_Target_AddExplicitBuild(GWB_TARGET *target, GWB_BUILD_CMD *bcmd);
+
 
 void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump);
 
