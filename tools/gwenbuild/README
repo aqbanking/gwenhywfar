@@ -92,10 +92,8 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 
 
 TODO:
-- Dependency Tracking einbauen
+- INSTALL implementieren
 - DIST implementieren (tarball bauen)
-
-
-NEXT:
+- CLEAN implementieren (einfach alle BUILT Dateien loeschen)
 - shared vs. static
 
