@@ -17,6 +17,7 @@
 #include "gwenbuild/parser/p_checkheaders.h"
 #include "gwenbuild/parser/p_checklibs.h"
 #include "gwenbuild/parser/p_checkcompiler.h"
+#include "gwenbuild/parser/p_checkprogs.h"
 #include "gwenbuild/parser/p_dependencies.h"
 #include "gwenbuild/parser/p_options.h"
 #include "gwenbuild/parser/p_target.h"
@@ -133,6 +134,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_ParseCheckFunctions(project, currentContext, n);
       else if (strcasecmp(name, "checklibs")==0)
         rv=GWB_ParseCheckLibs(project, currentContext, n);
+      else if (strcasecmp(name, "checkprogs")==0)
+        rv=GWB_ParseCheckProgs(project, currentContext, n);
       else if (strcasecmp(name, "checkCompiler")==0)
         rv=GWB_ParseCheckCompiler(project, currentContext, n);
       else if (strcasecmp(name, "target")==0)

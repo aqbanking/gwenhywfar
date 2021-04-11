@@ -11,6 +11,7 @@ libgwb_parser_la_SOURCES=\
  p_checkfunctions.c \
  p_checkheaders.c \
  p_checklibs.c \
+ p_checkprogs.c \
  p_checkcompiler.c \
  p_dependencies.c \
  p_options.c \
@@ -23,6 +24,7 @@ noinst_HEADERS=\
  p_checkheaders.h \
  p_checklibs.h \
  p_checkcompiler.h \
+ p_checkprogs.h \
  p_dependencies.h \
  p_options.h \
  p_project.h \
