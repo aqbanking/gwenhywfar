@@ -18,6 +18,7 @@ builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders
 dist_builderdata_DATA=\
   app.gwb \
   cbuilder.gwb \
+  cxxbuilder.gwb \
   sharedlib.gwb \
   staticlib.gwb \
   tmplib.gwb \

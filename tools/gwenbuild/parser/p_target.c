@@ -587,10 +587,6 @@ void _addFilePathsToDb(GWB_CONTEXT *currentContext,
       if (GWEN_Buffer_GetUsedBytes(fbuf))
         GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
       GWEN_Buffer_AppendString(fbuf, GWB_File_GetName(file));
-      DBG_ERROR(NULL, "Adding file \"%s\" to DB (%s)",
-                GWEN_Buffer_GetStart(fbuf),
-                varName);
-
       GWEN_DB_SetCharValue(db, 0, varName, GWEN_Buffer_GetStart(fbuf));
 
       GWEN_Buffer_Reset(fbuf);

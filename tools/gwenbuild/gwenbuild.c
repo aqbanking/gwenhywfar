@@ -988,6 +988,8 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
     DBG_INFO(NULL, "Determining builder type for file \%s\"", name);
     if (strcasecmp(ext, ".c")==0)
       builderName="cbuilder";
+    else if (strcasecmp(ext, ".cpp")==0)
+      builderName="cxxbuilder";
     else if (strcasecmp(ext, ".t2d")==0 || strcasecmp(ext, ".xml")==0)
       builderName="tm2builder";
     /* add more here */
