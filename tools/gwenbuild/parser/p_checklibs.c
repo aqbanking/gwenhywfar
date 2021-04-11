@@ -127,7 +127,7 @@ int _parseLib(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
     GWB_Parser_SetItemValue(db, sId, "_EXISTS", "TRUE");
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(dbuf, "-l");
-    GWEN_Buffer_AppendString(dbuf, sName);
+    GWEN_Buffer_AppendString(dbuf, sId);
     GWB_Parser_SetItemValue(db, sId, "_LIBS", GWEN_Buffer_GetStart(dbuf));
     GWEN_Buffer_free(dbuf);
 
