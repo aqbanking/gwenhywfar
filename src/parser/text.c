@@ -2150,7 +2150,7 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
           rawName[len]=0;
 
           index=_splitVariableNameInNameAndIndex(rawName, &name, &maxLen);
-          if (index<0) {
+          if (index<0 && index!=GWEN_ERROR_NO_ADDRESS) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Invalid variable name \"%s\"", rawName);
             free(rawName);
             return index;
@@ -2158,7 +2158,7 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
           free(rawName);
 
           posBeforeFn=GWEN_Buffer_GetPos(dbuf);
-          rv=fn(ptr, name, index, maxLen, dbuf);
+          rv=fn(ptr, name, (index==GWEN_ERROR_NO_ADDRESS)?-1:index, maxLen, dbuf);
           if (rv<0 && rv!=GWEN_ERROR_NO_DATA) {
             DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
             free(name);
@@ -2226,6 +2226,9 @@ int _splitVariableNameInNameAndIndex(const char *s, char **pVariableName, int *p
       DBG_ERROR(GWEN_LOGDOMAIN, "Bad index specification in variable name");
       free(name);
       return GWEN_ERROR_BAD_DATA;
+    }
+    if (p==pStart) {
+      index=GWEN_ERROR_NO_ADDRESS; /* meaning: ALL indices */
     }
   }
 

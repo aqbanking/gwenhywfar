@@ -69,6 +69,8 @@
  */
 
 static int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf);
+static int _writeVarValueToBuffer(GWEN_DB_NODE *db, const char *name, int index, GWEN_BUFFER *dstBuf);
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -1979,6 +1981,31 @@ int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, GWEN_
 
 int GWEN_DB_WriteVarValueToBuffer(GWEN_DB_NODE *db, const char *name, int index, GWEN_BUFFER *dstBuf)
 {
+  assert(db);
+
+  if (index<0) {
+    int i;
+
+    for (i=0; ; i++) {
+      int rv;
+
+      if (GWEN_Buffer_GetUsedBytes(dstBuf))
+        GWEN_Buffer_AppendString(dstBuf, " ");
+      rv=_writeVarValueToBuffer(db, name, i, dstBuf);
+      if (rv<0)
+        return rv;
+    }
+  }
+  else {
+    return _writeVarValueToBuffer(db, name, index, dstBuf);
+  }
+  return 0;
+}
+
+
+
+int _writeVarValueToBuffer(GWEN_DB_NODE *db, const char *name, int index, GWEN_BUFFER *dstBuf)
+{
   const char *valueString;
   int valueInt;
   char numbuf[32];
@@ -2006,6 +2033,7 @@ int GWEN_DB_WriteVarValueToBuffer(GWEN_DB_NODE *db, const char *name, int index,
   case GWEN_DB_NodeType_Unknown:
   default:
     return GWEN_ERROR_NO_DATA;
+
   }
 
   return 0;
