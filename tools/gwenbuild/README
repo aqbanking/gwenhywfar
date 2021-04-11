@@ -43,6 +43,7 @@ QuickStart for Users
 - create a new folder in which to build, there:
 - "gwbuild PATH_TO_SOURCE_FOLDER"
 - "gwbuild -p"
+- "gwbuild -B tm2builder" (sometimes needed explicitly)
 - "gwbuild -jMAX_NUMBER_OF_PARALLEL_JOBS"
 
 After changing source files only the last step needs to be repeated.
@@ -56,6 +57,17 @@ QuickStart for Development
 - new builders should be added in file "gwenbuild.c" in functions "_genBuilderForSourceFile()" and "_genBuilderForTarget()" at
   the bottom of that file.
 
+
+
+Current Status
+--------------
+
+gwenbuild is now able to compile C and C++ files, link shared libraries and temporary convenience libraries and generate source files
+from typemaker2 type description files. It also handles dependencies and custom build commands (like for XML merge) can now be defined
+which can also use gwenbuild's dependency handling.
+
+It can build using multiple processes in parallel. Compiling and linking AqBanking using 14 processes in parallel takes about 9 secs on 
+my machine now.
 
 
 
