@@ -96,4 +96,4 @@ TODO:
 - DIST implementieren (tarball bauen)
 - CLEAN implementieren (einfach alle BUILT Dateien loeschen)
 - shared vs. static
-
+- internal commands (or flag: delete destination file before build)
