@@ -313,39 +313,21 @@ void _setupOutFiles(GWB_BUILDER *builder)
       nbuf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, nFile);
       if (nbuf) {
 	GWB_FILE *fileOut;
-	GWB_FILE *storedFile;
         const char *sTargetInstallPath=NULL;
 
-        fileOut=GWB_File_new(folder, GWEN_Buffer_GetStart(nbuf), 0);
+        fileOut=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), folder, GWEN_Buffer_GetStart(nbuf));
         GWEN_Buffer_free(nbuf);
 
         if (sFileType)
           GWB_File_SetFileType(fileOut, sFileType);
-
         if (sInstall && strcasecmp(sInstall, "target")==0)
           sTargetInstallPath=GWB_Target_GetInstallPath(target);
-
         GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
-
-	storedFile=GWB_Project_GetFileByPathAndName(project,
-						    GWB_File_GetFolder(fileOut),
-						    GWB_File_GetName(fileOut));
-	if (storedFile) {
-	  GWB_File_free(fileOut);
-          fileOut=storedFile;
-        }
-        else
-          GWB_Project_AddFile(project, fileOut);
-
-        GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
-        if (GWB_File_GetFileType(fileOut)==NULL)
-          GWB_File_SetFileType(fileOut, sFileType);
 
         if (sTargetInstallPath && *sTargetInstallPath) {
           GWB_File_SetInstallPath(fileOut, sTargetInstallPath);
           GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_INSTALL);
         }
-
 	GWB_Builder_AddOutputFile(builder, fileOut);
       } /* if nbuf */
 

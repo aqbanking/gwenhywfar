@@ -230,11 +230,7 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
       if (sFileName && *sFileName) {
         GWB_FILE *file;
 
-        file=GWB_Project_GetFileByPathAndName(project, currentFolder, sFileName);
-        if (file==NULL) {
-          file=GWB_File_new(currentFolder, sFileName, 0);
-          GWB_Project_AddFile(project, file);
-        }
+        file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), currentFolder, sFileName);
         GWB_File_AddFlags(file, flags);
         if (installPath)
           GWB_File_SetInstallPath(file, installPath);

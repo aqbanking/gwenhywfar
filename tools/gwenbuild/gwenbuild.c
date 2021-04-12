@@ -934,12 +934,7 @@ void GWBUILD_AddFilesFromStringList(GWB_FILE_LIST2 *mainFileList,
       if (s && *s) {
         GWB_FILE *file;
 
-        file=GWB_File_List2_GetFileByPathAndName(mainFileList, sFolder, s);
-        if (file==NULL) {
-          file=GWB_File_new(sFolder, s, 0);
-          GWB_File_List2_PushBack(mainFileList, file);
-        }
-
+        file=GWB_File_List2_GetOrCreateFile(mainFileList, sFolder, s);
         GWB_File_AddFlags(file, flagsToAdd);
         if (outFileList) {
           if (copyFileForOutList)
