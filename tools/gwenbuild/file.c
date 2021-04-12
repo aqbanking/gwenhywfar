@@ -346,6 +346,42 @@ GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, co
 
 
 
+GWB_FILE *GWB_File_List2_GetOrCreateFile(GWB_FILE_LIST2 *fileList, const char *folder, const char *fname)
+{
+  GWEN_BUFFER *pathBuf;
+  char *s;
+  const char *realFolder;
+  const char *realFilename;
+  GWB_FILE *file;
+
+  pathBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (folder && *folder) {
+    GWEN_Buffer_AppendString(pathBuf, folder);
+    GWEN_Buffer_AppendString(pathBuf, GWEN_DIR_SEPARATOR_S);
+  }
+  GWEN_Buffer_AppendString(pathBuf, fname);
+  s=strrchr(GWEN_Buffer_GetStart(pathBuf), GWEN_DIR_SEPARATOR);
+  if (s) {
+    *s=0;
+    realFolder=GWEN_Buffer_GetStart(pathBuf);
+    realFilename=s+1;
+  }
+  else {
+    realFolder=NULL;
+    realFilename=GWEN_Buffer_GetStart(pathBuf);
+  }
+
+  file=GWB_File_List2_GetFileByPathAndName(fileList, realFolder, realFilename);
+  if (file==NULL) {
+    file=GWB_File_new(realFolder, realFilename, 0);
+    GWB_File_List2_PushBack(fileList, file);
+  }
+  GWEN_Buffer_free(pathBuf);
+  return file;
+}
+
+
+
 GWB_FILE *GWB_File_List2_GetFileById(const GWB_FILE_LIST2 *fileList, uint32_t id)
 {
   GWB_FILE_LIST2_ITERATOR *it;
