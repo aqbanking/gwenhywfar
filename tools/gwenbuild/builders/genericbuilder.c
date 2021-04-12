@@ -490,6 +490,10 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
       if (s && strcasecmp(s, "TRUE")==0)
         GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
 
+      s=GWEN_XMLNode_GetProperty(n, "deleteOutFileFirst", "FALSE");
+      if (s && strcasecmp(s, "TRUE")==0)
+        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES);
+
       argsBuffer=_readArgs(builder, bcmd, n);
       if (argsBuffer) {
         GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));

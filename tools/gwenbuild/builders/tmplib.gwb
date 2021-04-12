@@ -18,16 +18,7 @@
   </targetLinkSpecs>
   
   <buildCommands>
-    <cmd tool="rm" ignoreResult="TRUE">
-      <args>
-        <outputFiles index="0" />
-      </args>
-      <buildMessage>
-        Deleting old 'lib$(target_name).a'
-      </buildMessage>
-    </cmd>
-
-    <cmd tool="$(GWBUILD_TOOL_AR)">
+    <cmd tool="$(GWBUILD_TOOL_AR)" deleteOutFileFirst="TRUE" >
       <args>
         <fixed>Trc</fixed>
         <blank/>
@@ -36,18 +27,16 @@
         <inputFiles match="*.o" />
         <inputFiles match="*.a" />
       </args>
-      <buildMessage>
-        Linking 'lib$(target_name).a'
-      </buildMessage>
+      <mainOutputFile index="0" />
+      <buildMessage>Linking 'lib$(target_name).a'</buildMessage>
     </cmd>
 
     <cmd tool="$(GWBUILD_TOOL_RANLIB)">
       <args>
         <outputFiles index="0" />
       </args>
-      <buildMessage>
-        Indexing 'lib$(target_name).a'
-      </buildMessage>
+      <mainOutputFile index="0" />
+      <buildMessage>Indexing 'lib$(target_name).a'</buildMessage>
     </cmd>
 
   </buildCommands>

@@ -14,7 +14,7 @@
   </outputFiles>
   
   <buildCommands>
-    <cmd tool="$(GWBUILD_TOOL_CC)">
+    <cmd tool="$(GWBUILD_TOOL_CC)" deleteOutFileFirst="FALSE" >
       <args>
         <fixed>-fPIC</fixed>
         <blank/>
@@ -28,9 +28,8 @@
         <blank/>
         <libraries/>
       </args>
-      <buildMessage>
-        Linking '$(target_name)$(exeext)'
-      </buildMessage>
+      <mainOutputFile index="0" />
+      <buildMessage>Linking '$(target_name)$(exeext)'</buildMessage>
     </cmd>
 
   </buildCommands>

@@ -25,7 +25,7 @@
   
   <buildCommands>
 
-    <cmd tool="$(GWBUILD_TOOL_CC)">
+    <cmd tool="$(GWBUILD_TOOL_CC)" deleteOutFileFirst="TRUE" >
       <args>
         <fixed>-shared -fPIC -nostdlib -Wl,-no-undefined -Wl,-soname,lib$(target_name).so.$(target_so_effective)</fixed>
         <blank/>
@@ -47,39 +47,33 @@
           <libraries/>
         </ifHasLibraries>
       </args>
+      <mainOutputFile index="0" />
       <buildMessage>
         Linking 'lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)'
       </buildMessage>
     </cmd>
 
-    <cmd tool="rm" ignoreResult="TRUE">
-      <args>
-        <fixed>lib$(target_name).so.$(target_so_effective) lib$(target_name).so</fixed>
-      </args>
-      <buildMessage>
-        Deleting old symbolic links for 'lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)'
-      </buildMessage>
-    </cmd>
-
-    <cmd tool="ln">
+    <cmd tool="ln" deleteOutFileFirst="TRUE" >
       <args>
         <fixed>
           -s lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
              lib$(target_name).so.$(target_so_effective)
         </fixed>
       </args>
+      <mainOutputFile index="1" />
       <buildMessage>
         Creating symbolic link 'lib$(target_name).so.$(target_so_effective)'
       </buildMessage>
     </cmd>
 
-    <cmd tool="ln">
+    <cmd tool="ln" deleteOutFileFirst="TRUE" >
       <args>
         <fixed>
           -s lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
              lib$(target_name).so
         </fixed>
       </args>
+      <mainOutputFile index="2" />
       <buildMessage>
         Creating symbolic link 'lib$(target_name).so'
       </buildMessage>

@@ -424,6 +424,7 @@ int _parseBuildFiles(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
   GWB_BUILD_CMD *bcmd;
   GWB_BUILD_SUBCMD *buildSubCmd=NULL;
   GWEN_DB_NODE *dbForCmd;
+  const char *s;
 
   target=GWB_Context_GetCurrentTarget(currentContext);
   if (target==NULL) {
@@ -455,9 +456,26 @@ int _parseBuildFiles(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
       GWB_BuildCmd_free(bcmd);
       return GWEN_ERROR_GENERIC;
     }
+
+    s=GWEN_XMLNode_GetProperty(n, "deleteOutFileFirst", "FALSE");
+    if (s && strcasecmp(s, "TRUE")==0)
+      GWB_BuildSubCmd_AddFlags(buildSubCmd, GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES);
     GWB_BuildCmd_AddBuildCommand(bcmd, buildSubCmd);
   }
 
+  /* prepare dependencies */
+#if 0 // TODO!!
+  if (1) {
+    s=GWEN_DB_GetCharValue(dbForCmd, "INPUT", 0, NULL); /* this path is relative to the build dir, not correct!! */
+    if (s && *s)
+      GWB_BuildSubCmd_SetMainInputFilePath(buildSubCmd, s);
+
+    s=GWEN_DB_GetCharValue(dbForCmd, "OUTPUT", 0, NULL);
+    GWB_BuildSubCmd_SetMainOutputFilePath(buildSubCmd, s);
+  }
+#endif
+
+  /* pepare build message */
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "buildMessage", NULL, NULL);
   if (n) {
     GWEN_BUFFER *dbuf;

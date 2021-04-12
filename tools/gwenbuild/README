@@ -92,6 +92,7 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 
 
 TODO:
+- dependency checking: check all input files (especially for <buildFiles>)
 - INSTALL implementieren
 - DIST implementieren (tarball bauen)
 - CLEAN implementieren (einfach alle BUILT Dateien loeschen)

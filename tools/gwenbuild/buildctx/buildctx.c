@@ -951,6 +951,15 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
       GWEN_PROCESS_STATE pstate;
       const char *buildMessage;
 
+      if (GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES) {
+        const char *outFileName;
+
+        outFileName=GWB_BuildSubCmd_GetMainOutputFilePath(currentCommand);
+        if (outFileName && *outFileName) {
+          unlink(outFileName);
+        }
+      }
+
       buildMessage=GWB_BuildSubCmd_GetBuildMessage(currentCommand);
       if (buildMessage)
         fprintf(stdout, "%s [%s]\n", buildMessage, cmd);
