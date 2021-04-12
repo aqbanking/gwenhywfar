@@ -503,7 +503,8 @@ void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *var
       GWEN_Buffer_AppendString(dbuf, "GENERATED");
     }
 
-    GWEN_XMLNode_SetCharValue(xmlNode, varName, GWEN_Buffer_GetStart(dbuf));
+    if (GWEN_Buffer_GetUsedBytes(dbuf))
+      GWEN_XMLNode_SetCharValue(xmlNode, varName, GWEN_Buffer_GetStart(dbuf));
     GWEN_Buffer_free(dbuf);
   }
 }
