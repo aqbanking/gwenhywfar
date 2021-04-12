@@ -36,7 +36,7 @@ static int _parseIfVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentContext
 static int _parseIfNotVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
 static int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
-static int _parseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
 
 
@@ -568,13 +568,14 @@ int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 
 
 
-int _parseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   const char *fileName;
   const char *currentSrcDir;
   GWEN_BUFFER *fileNameBuffer;
   GWEN_BUFFER *fileBufferIn;
   GWEN_BUFFER *fileBufferOut;
+  GWB_FILE *file;
   int rv;
 
   fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
@@ -626,6 +627,20 @@ int _parseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     GWEN_Buffer_free(fileNameBuffer);
     return rv;
   }
+
+  /* add output file */
+  file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project),
+                                      GWB_Context_GetCurrentRelativeDir(currentContext),
+                                      fileName);
+  GWB_File_AddFlags(file, GWB_FILE_FLAGS_GENERATED);
+
+  /* add input file */
+  GWEN_Buffer_Reset(fileNameBuffer);
+  GWEN_Buffer_AppendString(fileNameBuffer, fileName);
+  GWEN_Buffer_AppendString(fileNameBuffer, ".in");
+  GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project),
+                                 GWB_Context_GetCurrentRelativeDir(currentContext),
+                                 GWEN_Buffer_GetStart(fileNameBuffer));
 
   GWEN_Buffer_free(fileBufferOut);
   GWEN_Buffer_free(fileBufferIn);
@@ -748,7 +763,7 @@ int GWB_Parser_ParseWellKnownElements(GWB_PROJECT *project, GWB_CONTEXT *current
     DBG_DEBUG(NULL, "Handling element \"%s\"", name);
 
     if (strcasecmp(name, "writeFile")==0)
-      rv=_parseWriteFile(currentContext, n);
+      rv=_parseWriteFile(project, currentContext, n);
     else if (strcasecmp(name, "setVar")==0)
       rv=_parseSetVar(currentContext, n);
     else if (strcasecmp(name, "ifVarMatches")==0)
