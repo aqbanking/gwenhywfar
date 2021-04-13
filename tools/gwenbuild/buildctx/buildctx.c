@@ -951,6 +951,10 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
       GWEN_PROCESS_STATE pstate;
       const char *buildMessage;
 
+#if 0
+      /* TODO: Need to determine the correct path here (MainOutputFilePath is relativ to the build dir,
+       * but this code is called from $(topbuilddir))
+       */
       if (GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES) {
         const char *outFileName;
 
@@ -959,6 +963,7 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
           unlink(outFileName);
         }
       }
+#endif
 
       buildMessage=GWB_BuildSubCmd_GetBuildMessage(currentCommand);
       if (buildMessage)

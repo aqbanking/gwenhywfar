@@ -53,6 +53,14 @@
       </buildMessage>
     </cmd>
 
+    <cmd tool="rm" ignoreResult="TRUE">
+      <args>
+        <fixed>lib$(target_name).so.$(target_so_effective) lib$(target_name).so</fixed>
+      </args>
+      <buildMessage>
+        Deleting old symbolic links for 'lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)'
+      </buildMessage>
+    </cmd>
     <cmd tool="ln" deleteOutFileFirst="TRUE" >
       <args>
         <fixed>
