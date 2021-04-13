@@ -682,8 +682,11 @@ GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project)
 {
   int rv;
   GWB_BUILD_CONTEXT *buildCtx;
+  GWB_CONTEXT *rootContext;
 
+  rootContext=GWB_Project_GetRootContext(project);
   buildCtx=GWB_BuildCtx_new();
+  GWB_BuildCtx_SetInitialSourceDir(buildCtx, GWB_Context_GetInitialSourceDir(rootContext));
   
   rv=_addBuildCommandsFromBuilder(project, buildCtx);
   if (rv<0) {

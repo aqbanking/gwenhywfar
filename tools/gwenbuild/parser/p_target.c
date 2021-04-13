@@ -31,7 +31,8 @@ static int _parseDefines(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseBuildFiles(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static void _parseBuildInputFiles(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static void _parseBuildOutputFiles(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-static GWB_BUILD_SUBCMD *_parseBuildCommand(GWB_CONTEXT *currentContext,
+static GWB_BUILD_SUBCMD *_parseBuildCommand(GWB_BUILD_CMD *bcmd,
+                                            GWB_CONTEXT *currentContext,
                                             GWEN_XMLNODE *xmlNode,
                                             GWEN_DB_NODE *dbForCmd);
 static void _addFilePathsToDb(GWB_CONTEXT *currentContext,
@@ -449,7 +450,7 @@ int _parseBuildFiles(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "cmd", NULL, NULL);
   if (n) {
-    buildSubCmd=_parseBuildCommand(currentContext, n, dbForCmd);
+    buildSubCmd=_parseBuildCommand(bcmd, currentContext, n, dbForCmd);
     if (buildSubCmd==NULL) {
       DBG_ERROR(NULL, "here");
       GWEN_DB_Group_free(dbForCmd);
@@ -459,7 +460,7 @@ int _parseBuildFiles(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 
     s=GWEN_XMLNode_GetProperty(n, "deleteOutFileFirst", "FALSE");
     if (s && strcasecmp(s, "TRUE")==0)
-      GWB_BuildSubCmd_AddFlags(buildSubCmd, GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES);
+      GWB_BuildCmd_AddFlags(bcmd, GWB_BUILD_CMD_FLAGS_DEL_OUTFILES);
     GWB_BuildCmd_AddBuildCommand(bcmd, buildSubCmd);
   }
 
@@ -540,7 +541,10 @@ void _parseBuildOutputFiles(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext, GW
 
 
 
-GWB_BUILD_SUBCMD *_parseBuildCommand(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbForCmd)
+GWB_BUILD_SUBCMD *_parseBuildCommand(GWB_BUILD_CMD *bcmd,
+                                     GWB_CONTEXT *currentContext,
+                                     GWEN_XMLNODE *xmlNode,
+                                     GWEN_DB_NODE *dbForCmd)
 {
   GWEN_BUFFER *dbuf;
   const char *toolName;
@@ -570,7 +574,7 @@ GWB_BUILD_SUBCMD *_parseBuildCommand(GWB_CONTEXT *currentContext, GWEN_XMLNODE *
 
   s=GWEN_XMLNode_GetProperty(xmlNode, "checkDates", "TRUE");
   if (s && strcasecmp(s, "TRUE")==0)
-    GWB_BuildSubCmd_AddFlags(buildSubCmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DATES);
+    GWB_BuildCmd_AddFlags(bcmd, GWB_BUILD_CMD_FLAGS_CHECK_DATES);
 
   return buildSubCmd;
 }

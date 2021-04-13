@@ -17,6 +17,7 @@
 
 struct GWB_BUILD_CONTEXT {
   int lastFileId;
+  char *initialSourceDir;
   GWB_BUILD_CMD_LIST2 *commandList;
   GWB_FILE_LIST2 *fileList;
 

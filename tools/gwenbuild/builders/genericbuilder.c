@@ -460,13 +460,23 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
 
   n=GWEN_XMLNode_FindFirstTag(xbuilder->xmlDescr, groupName, NULL, NULL);
   if (n) {
+    const char *s;
+
+    s=GWEN_XMLNode_GetProperty(n, "checkDates", "TRUE");
+    if (s && strcasecmp(s, "TRUE")==0)
+      GWB_BuildCmd_AddFlags(bcmd, GWB_BUILD_CMD_FLAGS_CHECK_DATES);
+  
+
+    s=GWEN_XMLNode_GetProperty(n, "deleteOutFileFirst", "FALSE");
+    if (s && strcasecmp(s, "TRUE")==0)
+      GWB_BuildCmd_AddFlags(bcmd, GWB_BUILD_CMD_FLAGS_DEL_OUTFILES);
+
     n=GWEN_XMLNode_FindFirstTag(n, "cmd", NULL, NULL);
     while(n) {
       const char *sToolName;
       GWEN_BUFFER *argsBuffer;
       GWEN_BUFFER *toolNameBuffer;
       GWB_BUILD_SUBCMD *cmd;
-      const char *s;
 
       toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
       sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
@@ -482,17 +492,9 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
       if (s && strcasecmp(s, "TRUE")==0)
         GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
 
-      s=GWEN_XMLNode_GetProperty(n, "checkDates", "TRUE");
-      if (s && strcasecmp(s, "TRUE")==0)
-        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DATES);
-
       s=GWEN_XMLNode_GetProperty(n, "checkDepends", "FALSE");
       if (s && strcasecmp(s, "TRUE")==0)
         GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
-
-      s=GWEN_XMLNode_GetProperty(n, "deleteOutFileFirst", "FALSE");
-      if (s && strcasecmp(s, "TRUE")==0)
-        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES);
 
       argsBuffer=_readArgs(builder, bcmd, n);
       if (argsBuffer) {

@@ -26,6 +26,10 @@ GWB_BUILD_CONTEXT *GWB_BuildCtx_ReadFromXmlFile(const char *fileName);
 int GWB_BuildCtx_WriteToXmlFile(const GWB_BUILD_CONTEXT *buildCtx, const char *fileName);
 
 
+const char *GWB_BuildCtx_GetInitialSourceDir(const GWB_BUILD_CONTEXT *bctx);
+void GWB_BuildCtx_SetInitialSourceDir(GWB_BUILD_CONTEXT *bctx, const char *s);
+
+
 GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_GetCommandList(const GWB_BUILD_CONTEXT *bctx);
 void GWB_BuildCtx_AddCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd);
 

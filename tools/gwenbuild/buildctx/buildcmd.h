@@ -21,6 +21,11 @@ typedef struct GWB_BUILD_CMD GWB_BUILD_CMD;
 GWEN_LIST_FUNCTION_DEFS(GWB_BUILD_CMD, GWB_BuildCmd);
 GWEN_LIST2_FUNCTION_DEFS(GWB_BUILD_CMD, GWB_BuildCmd);
 
+
+#define GWB_BUILD_CMD_FLAGS_CHECK_DATES   0x0002
+#define GWB_BUILD_CMD_FLAGS_DEL_OUTFILES  0x0008
+
+
 #include "gwenbuild/file.h"
 #include "gwenbuild/keyvaluepair.h"
 #include "gwenbuild/buildctx/buildsubcmd.h"
@@ -31,6 +36,11 @@ GWB_BUILD_CMD *GWB_BuildCmd_new(void);
 GWB_BUILD_CMD *GWB_BuildCmd_dup(GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_free(GWB_BUILD_CMD *bcmd);
 
+
+uint32_t GWB_BuildCmd_GetFlags(const GWB_BUILD_CMD *bcmd);
+void GWB_BuildCmd_SetFlags(GWB_BUILD_CMD *bcmd, uint32_t i);
+void GWB_BuildCmd_AddFlags(GWB_BUILD_CMD *bcmd, uint32_t i);
+void GWB_BuildCmd_DelFlags(GWB_BUILD_CMD *bcmd, uint32_t i);
 
 const char *GWB_BuildCmd_GetBuilderName(const GWB_BUILD_CMD *bcmd);
 void GWB_BuildCmd_SetBuilderName(GWB_BUILD_CMD *bcmd, const char *s);

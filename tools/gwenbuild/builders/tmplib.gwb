@@ -17,16 +17,8 @@
     -l$(target_name)
   </targetLinkSpecs>
   
-  <buildCommands>
-    <cmd tool="rm" ignoreResult="TRUE">
-      <args>
-        <outputFiles index="0" />
-      </args>
-      <buildMessage>
-        Deleting old 'lib$(target_name).a'
-      </buildMessage>
-    </cmd>
-    <cmd tool="$(GWBUILD_TOOL_AR)" deleteOutFileFirst="TRUE" >
+  <buildCommands deleteOutFileFirst="TRUE" checkDates="TRUE" >
+    <cmd tool="$(GWBUILD_TOOL_AR)" >
       <args>
         <fixed>Trc</fixed>
         <blank/>

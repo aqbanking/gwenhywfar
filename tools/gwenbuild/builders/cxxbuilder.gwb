@@ -13,9 +13,9 @@
   </outputFiles>
   
   
-  <buildCommands>
+  <buildCommands checkDates="TRUE" checkDepends="TRUE" >
     <!-- depend file -->
-    <cmd tool="$(GWBUILD_TOOL_CC)" checkDates="TRUE" >
+    <cmd tool="$(GWBUILD_TOOL_CC)" >
       <args>
         <fixed>-c -fPIC -DPIC</fixed>
         <blank/>
@@ -40,7 +40,7 @@
     </cmd>
 
     <!-- object file -->
-    <cmd tool="$(GWBUILD_TOOL_CC)" checkDates="TRUE" checkDepends="TRUE"  >
+    <cmd tool="$(GWBUILD_TOOL_CC)" >
       <args>
         <fixed>-c -fPIC -DPIC</fixed>
         <blank/>

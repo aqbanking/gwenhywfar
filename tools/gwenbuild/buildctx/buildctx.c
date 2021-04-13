@@ -45,22 +45,29 @@ void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
 void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName);
 void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
 int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
-int _startCommand(GWB_BUILD_CMD *bcmd);
+int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles);
 int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
 void _signalJobFinished(GWB_BUILD_CMD *bcmd);
 void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
 void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
 void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList);
 
-int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd);
+int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
 int _file1IsNewerThanFile2(const char *filename1, const char *filename2);
 void _finishCurrentCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *currentCommand);
 
-static int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd);
+static int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd, const char *firstOutFileName);
 static int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl);
 static GWEN_STRINGLIST *_getAbsoluteDeps(const char *folder, const char *fileName);
 static GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder);
 static GWEN_STRINGLIST *_readDepFile(const char *fileName);
+static GWEN_STRINGLIST *_fileListToTopBuildDirStringList(const char *initialSourceDir, GWB_FILE_LIST2 *fileList);
+
+int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
+int _checkTimesInFilesOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
+time_t _getHighestModificationTime(const GWEN_STRINGLIST *slFiles);
+time_t _getLowestModificationTime(const GWEN_STRINGLIST *slFiles);
+void _unlinkFilesInStringList(const GWEN_STRINGLIST *slFiles);
 
 
 
@@ -87,8 +94,25 @@ void GWB_BuildCtx_free(GWB_BUILD_CONTEXT *bctx)
     GWB_BuildCmd_List2_FreeAll(bctx->commandList);
     GWB_File_List2_FreeAll(bctx->fileList);
 
+    free(bctx->initialSourceDir);
+
     GWEN_FREE_OBJECT(bctx);
   }
+}
+
+
+
+const char *GWB_BuildCtx_GetInitialSourceDir(const GWB_BUILD_CONTEXT *bctx)
+{
+  return bctx->initialSourceDir;
+}
+
+
+
+void GWB_BuildCtx_SetInitialSourceDir(GWB_BUILD_CONTEXT *bctx, const char *s)
+{
+  free(bctx->initialSourceDir);
+  bctx->initialSourceDir=s?strdup(s):NULL;
 }
 
 
@@ -312,6 +336,9 @@ void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx)
 
 void GWB_BuildCtx_toXml(const GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode)
 {
+  if (bctx->initialSourceDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "initialSourceDir", bctx->initialSourceDir);
+
   if (bctx->fileList) {
     GWEN_XMLNODE *xmlGroupNode;
 
@@ -335,8 +362,13 @@ GWB_BUILD_CONTEXT *GWB_BuildCtx_fromXml(GWEN_XMLNODE *xmlNode)
 {
   GWB_BUILD_CONTEXT *bctx;
   GWEN_XMLNODE *xmlGroupNode;
+  const char *s;
 
   bctx=GWB_BuildCtx_new();
+
+  s=GWEN_XMLNode_GetCharValue(xmlNode, "initialSourceDir", NULL);
+  if (s)
+    GWB_BuildCtx_SetInitialSourceDir(bctx, s);
 
   xmlGroupNode=GWEN_XMLNode_FindFirstTag(xmlNode, "fileList", NULL, NULL);
   if (xmlGroupNode)
@@ -764,9 +796,17 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
     if (started<maxStartAllowed) {
       if (GWB_BuildCmd_GetBlockingFiles(bcmd)==0) {
         int rv;
+        GWEN_STRINGLIST *slInFiles;
+        GWEN_STRINGLIST *slOutFiles;
 
-	if (_needRunCurrentCommand(bcmd)) {
-	  rv=_startCommand(bcmd);
+        slInFiles=_fileListToTopBuildDirStringList(bctx->initialSourceDir,
+                                                   GWB_BuildCmd_GetInFileList2(bcmd));
+        slOutFiles=_fileListToTopBuildDirStringList(bctx->initialSourceDir,
+                                                    GWB_BuildCmd_GetOutFileList2(bcmd));
+
+        if (_needRunCurrentCommand(bcmd, slInFiles, slOutFiles)) {
+
+	  rv=_startCommand(bcmd, slOutFiles);
 	  if (rv<0) {
 	    GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
 	    errors++;
@@ -779,7 +819,9 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
 	else {
 	  _finishCurrentCommand(bctx, bcmd, GWB_BuildCmd_GetCurrentCommand(bcmd));
 	  started++;
-	}
+        }
+        GWEN_StringList_free(slOutFiles);
+        GWEN_StringList_free(slInFiles);
       }
       else
         GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
@@ -796,35 +838,88 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
 
 
 
-int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd)
+GWEN_STRINGLIST *_fileListToTopBuildDirStringList(const char *initialSourceDir, GWB_FILE_LIST2 *fileList)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWEN_STRINGLIST *sl;
+    GWB_FILE *file;
+    GWEN_BUFFER *fbuf;
+
+    sl=GWEN_StringList_new();
+    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      const char *s;
+
+      if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
+        if (initialSourceDir && *initialSourceDir) {
+          GWEN_Buffer_AppendString(fbuf, initialSourceDir);
+          GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
+        }
+      }
+      s=GWB_File_GetFolder(file);
+      if (s && *s) {
+        GWEN_Buffer_AppendString(fbuf, s);
+        GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      s=GWB_File_GetName(file);
+      GWEN_Buffer_AppendString(fbuf, s);
+
+      GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(fbuf), 0, 1);
+      GWEN_Buffer_Reset(fbuf);
+
+      file=GWB_File_List2Iterator_Next(it);
+    } /* while */
+    GWEN_Buffer_Reset(fbuf);
+    GWB_File_List2Iterator_free(it);
+
+    if (GWEN_StringList_Count(sl)==0) {
+      GWEN_StringList_free(sl);
+      return NULL;
+    }
+    return sl;
+  }
+
+  return NULL;
+}
+
+
+
+int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles)
 {
   GWB_BUILD_SUBCMD *currentCommand;
 
   currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
   if (currentCommand) {
-    uint32_t flags;
+    uint32_t cmdFlags;
+    uint32_t subCmdFlags;
 
-    flags=GWB_BuildSubCmd_GetFlags(currentCommand);
+    cmdFlags=GWB_BuildCmd_GetFlags(bcmd);
+    subCmdFlags=GWB_BuildSubCmd_GetFlags(currentCommand);
 
-    if (flags & GWB_BUILD_SUBCMD_FLAGS_CHECK_DATES) {
-      DBG_DEBUG(NULL, "Checking dates of \"%s\" vs \"%s\"",
-		GWB_BuildSubCmd_GetMainInputFilePath(currentCommand),
-		GWB_BuildSubCmd_GetMainOutputFilePath(currentCommand));
-      if (_file1IsNewerThanFile2(GWB_BuildSubCmd_GetMainInputFilePath(currentCommand),
-				 GWB_BuildSubCmd_GetMainOutputFilePath(currentCommand))) {
-	DBG_DEBUG(NULL, "First file is newer, rebuild needed.");
-	return 1;
+    if (cmdFlags & GWB_BUILD_CMD_FLAGS_CHECK_DATES) {
+      if (_inFilesNewerThanOutFiles(slInFiles, slOutFiles)) {
+        /* need rebuild */
+        DBG_DEBUG(NULL, "Input files newer than output files, rebuild needed");
+        return 1;
       }
     }
     else
+      /* dont check dates, always rebuild */
       return 1;
 
-    if (flags & GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS) {
+    if (subCmdFlags & GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS) {
       int rv;
 
-      rv=_checkDependencies(bcmd, currentCommand);
-      if (rv==-1)
-	return 0;
+      rv=_checkDependencies(bcmd, currentCommand, GWEN_StringList_FirstString(slOutFiles));
+      if (rv==-1) {
+        DBG_DEBUG(NULL, "Dependencies flag NO rebuild needed (%d)", rv);
+        return 0;
+      }
+      DBG_DEBUG(NULL, "Dependencies flag rebuild needed (%d)", rv);
       return 1;
     }
   }
@@ -834,28 +929,148 @@ int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd)
 
 
 
-int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd)
+/* return 0: no rebuild needed; 1: rebuild needed */
+int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles)
+{
+  time_t tiHighestInFileTime;
+  time_t tiLowestOutFileTime;
+
+  tiHighestInFileTime=_getHighestModificationTime(slInFiles);
+  tiLowestOutFileTime=_getHighestModificationTime(slOutFiles);
+  if (tiHighestInFileTime==0 || tiLowestOutFileTime==0) {
+    DBG_DEBUG(NULL, "Either input or output time not available");
+    return 1;
+  }
+  if (tiHighestInFileTime>tiLowestOutFileTime)
+    return 1;
+  return 0;
+}
+
+
+
+time_t _getLowestModificationTime(const GWEN_STRINGLIST *slFiles)
+{
+  time_t tiLowest=0;
+
+  if (slFiles) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(slFiles);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        time_t tiFile;
+
+        tiFile=GWBUILD_GetModificationTimeOfFile(s);
+        if (tiFile>0) {
+          if (tiLowest==0)
+            tiLowest=tiFile;
+          else if (tiFile<tiLowest)
+            tiLowest=tiFile;
+        }
+        else {
+          DBG_DEBUG(NULL, "No modification time for \"%s\"", s);
+        }
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+
+  return tiLowest;
+}
+
+
+
+time_t _getHighestModificationTime(const GWEN_STRINGLIST *slFiles)
+{
+  time_t tiHighest=0;
+
+  if (slFiles) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(slFiles);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        time_t tiFile;
+
+        tiFile=GWBUILD_GetModificationTimeOfFile(s);
+        if (tiFile>0) {
+          if (tiHighest==0)
+            tiHighest=tiFile;
+          else if (tiFile>tiHighest)
+            tiHighest=tiFile;
+        }
+        else {
+          DBG_DEBUG(NULL, "No modification time for \"%s\"", s);
+        }
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+
+  return tiHighest;
+}
+
+
+
+void _unlinkFilesInStringList(const GWEN_STRINGLIST *slFiles)
+{
+  if (slFiles) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(slFiles);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        DBG_DEBUG(NULL, "Deleting \"%s\"", s);
+        unlink(s);
+      }
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+}
+
+
+
+/* return 1: need rebuild, -1: Need no rebuild, 0: undecided */
+int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd, const char *firstOutFileName)
 {
   const char *depFileName;
   
   depFileName=GWB_BuildSubCmd_GetDepFilePath(subCmd);
-  if (depFileName) {
-    const char *outFileName;
-  
-    outFileName=GWB_BuildSubCmd_GetMainOutputFilePath(subCmd);
-    if (outFileName) {
-      GWEN_STRINGLIST *sl;
+  if (depFileName && firstOutFileName) {
+    GWEN_STRINGLIST *sl;
 
-      DBG_DEBUG(NULL, "Checking depend file \"%s\"", depFileName);
-      sl=_getAbsoluteDeps(GWB_BuildCmd_GetFolder(bcmd), depFileName);
-      if (sl) {
-	int rv;
+    DBG_DEBUG(NULL, "Checking depend file \"%s\"", depFileName);
+    sl=_getAbsoluteDeps(GWB_BuildCmd_GetFolder(bcmd), depFileName);
+    if (sl) {
+      int rv;
 
-	//GWBUILD_Debug_PrintStringList(depFileName, sl, 2);
-	rv=_checkDatesOfFileAgainstList(outFileName, sl);
-	GWEN_StringList_free(sl);
-	return rv;
-      }
+      //GWBUILD_Debug_PrintStringList(depFileName, sl, 2);
+      rv=_checkDatesOfFileAgainstList(firstOutFileName, sl);
+      GWEN_StringList_free(sl);
+      return rv;
+    }
+    else {
+      DBG_DEBUG(NULL, "Could not load depend file \"%s\"", depFileName);
+    }
+  }
+  else {
+    if (depFileName==NULL) {
+      DBG_DEBUG(NULL, "No depFileName for %s", firstOutFileName?firstOutFileName:"<no outfile name>");
+    }
+    if (firstOutFileName==NULL) {
+      DBG_DEBUG(NULL, "No outFileName");
     }
   }
 
@@ -871,6 +1086,7 @@ int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl
 
   tFile=GWBUILD_GetModificationTimeOfFile(fileName);
   if (tFile==0) {
+    DBG_DEBUG(NULL, "%s: No modification time, need rebuild", fileName);
     return 1; /* need rebuild */
   }
   se=GWEN_StringList_FirstEntry(sl);
@@ -882,11 +1098,14 @@ int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl
       if (s && *s) {
 	time_t tCurrent;
 
+        DBG_DEBUG(NULL, "  Checking dep: %s", s);
 	tCurrent=GWBUILD_GetModificationTimeOfFile(s);
-	if (tCurrent==0)
-	  return 1; /* need rebuild */
+        if (tCurrent==0) {
+          DBG_DEBUG(NULL, "No modification time for dependency \"%s\", need rebuild", s);
+          return 1; /* need rebuild */
+        }
 	if (difftime(tFile, tCurrent)<0.0) {
-	  DBG_DEBUG(NULL, "File \"%s\" is newer than \"%s\", rebuild needed", s, fileName);
+          DBG_DEBUG(NULL, "File \"%s\" is newer than \"%s\", rebuild needed", s, fileName);
 	  return 1; /* definately need rebuild */
 	}
       }
@@ -896,6 +1115,9 @@ int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl
 
     DBG_DEBUG(NULL, "No dependency is newer than file \"%s\", NO rebuild needed", fileName);
     return -1; /* definately no need for rebuild */
+  }
+  else {
+    DBG_DEBUG(NULL, "Empty dependency list, rebuild needed");
   }
 
   return 0;
@@ -911,7 +1133,7 @@ int _file1IsNewerThanFile2(const char *filename1, const char *filename2)
   if (filename1) {
     t1=GWBUILD_GetModificationTimeOfFile(filename1);
     if (t1==0) {
-      DBG_ERROR(NULL, "No time for \"%s\"", filename1);
+      DBG_DEBUG(NULL, "No time for \"%s\"", filename1);
     }
   }
   if (filename2) {
@@ -932,7 +1154,7 @@ int _file1IsNewerThanFile2(const char *filename1, const char *filename2)
 
 
 
-int _startCommand(GWB_BUILD_CMD *bcmd)
+int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles)
 {
   GWB_BUILD_SUBCMD *currentCommand;
 
@@ -951,19 +1173,12 @@ int _startCommand(GWB_BUILD_CMD *bcmd)
       GWEN_PROCESS_STATE pstate;
       const char *buildMessage;
 
-#if 0
-      /* TODO: Need to determine the correct path here (MainOutputFilePath is relativ to the build dir,
-       * but this code is called from $(topbuilddir))
-       */
-      if (GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_DEL_OUTFILES) {
-        const char *outFileName;
-
-        outFileName=GWB_BuildSubCmd_GetMainOutputFilePath(currentCommand);
-        if (outFileName && *outFileName) {
-          unlink(outFileName);
+      if (GWB_BuildSubCmd_List_Previous(currentCommand)==NULL) {
+        /* first command */
+        if (slOutFiles && (GWB_BuildCmd_GetFlags(bcmd) & GWB_BUILD_CMD_FLAGS_DEL_OUTFILES)) {
+          _unlinkFilesInStringList(slOutFiles);
         }
       }
-#endif
 
       buildMessage=GWB_BuildSubCmd_GetBuildMessage(currentCommand);
       if (buildMessage)

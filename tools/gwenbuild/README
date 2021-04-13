@@ -92,22 +92,11 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 
 
 TODO:
-- checkDates="xxx" und deleteOutFileFirst="xxx" schon bei BuildCmd anbringen
-- bei _startCommand():
-  - ermittle Pfade fuer InFiles
-  - ermittle Pfade fuer outfiles (koennen direkt verwendet werden, sind immer relativ zum topBuildDir)
-  - checke mtime der inFiles gegen outFiles (neuestes inFile > aeltestes outFile ?)
-  - check dependecies
-  - wenn dann build noetig ist:
-    - falls erstes Command:
-      - wenn deleteOutFileFirst="TRUE":
-        - unlink() alle outfiles
-- BuildCtx: InitialSourcePath hinzufuegen
-- dependency checking: check all input files (especially for <buildFiles>)
-  - outfiles koennen direkt benutzt werden (Pfade sind immer relativ zum topbuilddir)
-  - infiles muss der initialSourcePath vorangestellt werden
-- deleteOutFiles:
-  - direkt outfiles verwenden (Pfade sind immer relativ zum topbuilddir)
+- BuildSubCmd: 
+  - remove
+    - mainInputFilePath
+    - mainOutputFilePath
+  
 - eventuell Builder_AddCmds und <BuildFiles> angleichen (verwenden von GWEN_DB wie bei <BuildFiles>)
   -> commandsFromXml()
 
