@@ -215,6 +215,10 @@ int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
   if (installPath && *installPath)
     flags|=GWB_FILE_FLAGS_INSTALL;
 
+  s=GWEN_XMLNode_GetProperty(xmlNode, "generated", "FALSE");
+  if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
+    flags|=GWB_FILE_FLAGS_GENERATED;
+
   s=GWEN_XMLNode_GetProperty(xmlNode, "dist", alwaysDist?"TRUE":"FALSE");
   if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
     flags|=GWB_FILE_FLAGS_DIST;
