@@ -125,6 +125,8 @@ GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
       return GWBUILD_TargetType_Program;
     else if (strcasecmp(s, "Objects")==0)
       return GWBUILD_TargetType_Objects;
+    else if (strcasecmp(s, "Module")==0)
+      return GWBUILD_TargetType_Module;
     else {
       DBG_ERROR(NULL, "Invalid target type \"%s\"", s);
     }
@@ -147,6 +149,7 @@ const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt)
   case GWBUILD_TargetType_ConvenienceLibrary: return "ConvenienceLibrary";
   case GWBUILD_TargetType_Program:            return "program";
   case GWBUILD_TargetType_Objects:            return "objects";
+  case GWBUILD_TargetType_Module:             return "module";
   }
 
   return "invalid";
@@ -1036,6 +1039,9 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
     builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "app");
     break;
   case GWBUILD_TargetType_Objects:
+    break;
+  case GWBUILD_TargetType_Module:
+    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "module");
     break;
   }
   if (builder==NULL) {

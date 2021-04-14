@@ -22,6 +22,7 @@ typedef enum {
   GWBUILD_TargetType_ConvenienceLibrary,
   GWBUILD_TargetType_Program,
   GWBUILD_TargetType_Objects,
+  GWBUILD_TargetType_Module,
 } GWBUILD_TARGETTYPE;
 
 

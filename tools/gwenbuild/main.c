@@ -546,7 +546,7 @@ int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList)
     se=GWEN_StringListEntry_Next(se);
   }
 
-  DBG_ERROR(NULL, "Files unchanged since last setup.");
+  DBG_DEBUG(NULL, "Files unchanged since last setup.");
   return 0;
 }
 

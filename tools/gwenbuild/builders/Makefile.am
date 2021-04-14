@@ -19,6 +19,7 @@ dist_builderdata_DATA=\
   app.gwb \
   cbuilder.gwb \
   cxxbuilder.gwb \
+  module.gwb \
   sharedlib.gwb \
   staticlib.gwb \
   tmplib.gwb \
