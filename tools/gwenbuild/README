@@ -71,6 +71,23 @@ my machine now.
 
 
 
+How it Works Internally
+------------------------
+
+The first step is to setup the build environment. The user changes into an empty folder outside the source tree
+(or in a folder inside it like "build") and runs "gwbuild SRCFOLDER". In this run gwenbuild reads the 0BUILD files in the
+top source folder and all other 0BUILD files referred to inside the 0BUILD file(s) and collects all the info about targets and object
+files etc.
+From this run a "BuildContext" is generated. This structure contains a list of commands needed to compile and link the files of the
+project. This structure has no further knowledge of the generated project other than which files to compile/link and how the files
+of the project depend on each other.
+This build context is then used in the subsequent steps of the gwenbuild process like in "gwbuild -p" (prepare) and
+"gwbuild -b" (build).
+The last step usually is to install the generated files using "gwbuild -i". This step only reads a file containing the list
+of files to install and copies the files from the given list to their specified destinations. This step also has no knowledge
+of the project to build, it simply works on the install file list.
+
+
 
 Some notes to myself
 ====================

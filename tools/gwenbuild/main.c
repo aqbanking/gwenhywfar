@@ -36,6 +36,7 @@
 #define ARGS_COMMAND_PREPARE        0x0002
 #define ARGS_COMMAND_BUILD          0x0004
 #define ARGS_COMMAND_REPEAT_SETUP   0x0008
+#define ARGS_COMMAND_INSTALL        0x0010
 
 
 
@@ -171,6 +172,7 @@ int main(int argc, char **argv)
   commands|=GWEN_DB_GetIntValue(dbArgs, "repeatSetup", 0, 0)?ARGS_COMMAND_REPEAT_SETUP:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;
 
 
   if (commands & ARGS_COMMAND_SETUP) {
@@ -203,6 +205,11 @@ int main(int argc, char **argv)
       fprintf(stderr, "ERROR: Error on building.\n");
       return rv;
     }
+  }
+
+  if (commands & ARGS_COMMAND_INSTALL) {
+    fprintf(stderr, "ERROR: Install not yet implemented.\n");
+    return 1;
   }
 
   err=GWEN_Fini();
@@ -945,6 +952,8 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "repeatSetup", 1);
         else if (strcasecmp(s, "-b")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "build", 1);
+        else if (strcasecmp(s, "-i")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "install", 1);
         else if (strncasecmp(s, "-j", 2)==0) {
           /* jobs */
           s+=2;
