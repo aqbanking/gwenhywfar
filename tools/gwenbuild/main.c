@@ -43,8 +43,11 @@
 static int _setup(GWEN_DB_NODE *dbArgs);
 static int _prepare(GWEN_DB_NODE *dbArgs);
 static int _build(GWEN_DB_NODE *dbArgs);
+static int _installFiles(const char *fileName, const char *destDir);
 
 static int _repeatLastSetup(const char *fileName);
+
+static int _copyFile(const char *sSrcPath, const char *sDestPath);
 
 static int _prepareContextForSetup(GWB_CONTEXT *firstContext, GWEN_DB_NODE *dbArgs);
 static void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs);
@@ -60,6 +63,7 @@ static int _writeProjectFileList(const GWB_PROJECT *project, const char *fileNam
 static int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
 static int _writeInstallFileList(const GWB_PROJECT *project, const char *fileName);
+GWB_KEYVALUEPAIR_LIST *_readInstallFileList(const char *fileName);
 
 static int _buildFilesChanged(const char *fileName);
 static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
@@ -208,8 +212,11 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_INSTALL) {
-    fprintf(stderr, "ERROR: Install not yet implemented.\n");
-    return 1;
+    rv=_installFiles(".gwbuild.installfiles", getenv("DESTDIR"));
+    if (rv!=0) {
+      fprintf(stderr, "ERROR: Error on installing.\n");
+      return rv;
+    }
   }
 
   err=GWEN_Fini();
@@ -406,6 +413,74 @@ int _repeatLastSetup(const char *fileName)
 
 
 
+int _installFiles(const char *fileName, const char *destDir)
+{
+  GWB_KEYVALUEPAIR_LIST *kvpList;
+  GWB_KEYVALUEPAIR *kvp;
+  GWEN_BUFFER *destPathBuf;
+
+  kvpList=_readInstallFileList(fileName);
+  if (kvpList==NULL) {
+    DBG_ERROR(NULL, "Error reading install file list (file \"%s\")", fileName);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  destPathBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  kvp=GWB_KeyValuePair_List_First(kvpList);
+  while(kvp) {
+    const char *sDestPath;
+    const char *sSrcPath;
+    int rv;
+
+    sDestPath=GWB_KeyValuePair_GetKey(kvp);
+    sSrcPath=GWB_KeyValuePair_GetValue(kvp);
+    if (destDir) {
+      GWEN_Buffer_AppendString(destPathBuf, destDir);
+      GWEN_Buffer_AppendString(destPathBuf, GWEN_DIR_SEPARATOR_S);
+      GWEN_Buffer_AppendString(destPathBuf, sDestPath);
+      sDestPath=GWEN_Buffer_GetStart(destPathBuf);
+    }
+
+    rv=_copyFile(sSrcPath, sDestPath);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Error installing file \"%s\"\n", sSrcPath);
+      GWEN_Buffer_free(destPathBuf);
+      GWB_KeyValuePair_List_free(kvpList);
+      return 2;
+    }
+    GWEN_Buffer_Reset(destPathBuf);
+    kvp=GWB_KeyValuePair_List_Next(kvp);
+  }
+  GWEN_Buffer_free(destPathBuf);
+  GWB_KeyValuePair_List_free(kvpList);
+  return 0;
+}
+
+
+
+int _copyFile(const char *sSrcPath, const char *sDestPath)
+{
+  int rv;
+
+  fprintf(stdout, "Installing '%s'\n", sSrcPath);
+  rv=GWEN_Directory_GetPath(sDestPath,
+                            GWEN_DIR_FLAGS_PUBLIC_PATH | GWEN_DIR_FLAGS_PUBLIC_NAME |
+                            GWEN_PATH_FLAGS_VARIABLE|
+                            GWEN_PATH_FLAGS_CHECKROOT);
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=GWEN_SyncIo_Helper_CopyFile(sSrcPath, sDestPath);
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
 
 
 
@@ -571,6 +646,55 @@ int _writeInstallFileList(const GWB_PROJECT *project, const char *fileName)
   }
 
   return 0;
+}
+
+
+
+GWB_KEYVALUEPAIR_LIST *_readInstallFileList(const char *fileName)
+{
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlFileList;
+  int rv;
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error reading build file list from \"%s\"", fileName);
+    GWEN_XMLNode_free(xmlRoot);
+    return NULL;
+  }
+
+  xmlFileList=GWEN_XMLNode_FindFirstTag(xmlRoot, "InstallFiles", NULL, NULL);
+  if (xmlFileList) {
+    GWB_KEYVALUEPAIR_LIST *kvpList;
+    GWEN_XMLNODE *xmlFile;
+
+    kvpList=GWB_KeyValuePair_List_new();
+    xmlFile=GWEN_XMLNode_FindFirstTag(xmlFileList, "InstallFile", NULL, NULL);
+    while(xmlFile) {
+      GWB_KEYVALUEPAIR *kvp;
+      const char *sDestPath;
+      const char *sSrcPath;
+
+      sDestPath=GWEN_XMLNode_GetCharValue(xmlFile, "destination", NULL);
+      sSrcPath=GWEN_XMLNode_GetCharValue(xmlFile, "source", NULL);
+      kvp=GWB_KeyValuePair_new(sDestPath, sSrcPath);
+      GWB_KeyValuePair_List_Add(kvp, kvpList);
+
+      xmlFile=GWEN_XMLNode_FindNextTag(xmlFile, "InstallFile", NULL, NULL);
+    }
+    GWEN_XMLNode_free(xmlRoot);
+
+    if (GWB_KeyValuePair_List_GetCount(kvpList)==0) {
+      GWB_KeyValuePair_List_free(kvpList);
+      return NULL;
+    }
+
+    return kvpList;
+  }
+
+  GWEN_XMLNode_free(xmlRoot);
+  return NULL;
 }
 
 
