@@ -32,9 +32,11 @@
 #define I18S(msg) msg
 
 
-#define ARGS_COMMAND_SETUP   0x0001
-#define ARGS_COMMAND_PREPARE 0x0002
-#define ARGS_COMMAND_BUILD   0x0004
+#define ARGS_COMMAND_SETUP          0x0001
+#define ARGS_COMMAND_PREPARE        0x0002
+#define ARGS_COMMAND_BUILD          0x0004
+#define ARGS_COMMAND_REPEAT_SETUP   0x0008
+
 
 
 static int _setup(GWEN_DB_NODE *dbArgs);
@@ -166,6 +168,7 @@ int main(int argc, char **argv)
   }
 
   commands|=GWEN_DB_GetIntValue(dbArgs, "setup", 0, 0)?ARGS_COMMAND_SETUP:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "repeatSetup", 0, 0)?ARGS_COMMAND_REPEAT_SETUP:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
 
@@ -174,6 +177,14 @@ int main(int argc, char **argv)
     rv=_setup(dbArgs);
     if (rv!=0) {
       fprintf(stderr, "ERROR: Error on setup build environment.\n");
+      return rv;
+    }
+  }
+
+  if (commands & ARGS_COMMAND_REPEAT_SETUP) {
+    rv=_repeatLastSetup(".gwbuild.args");
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Error on repeating setup.\n");
       return rv;
     }
   }
@@ -930,6 +941,8 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "prepare", 1);
         else if (strcasecmp(s, "-s")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+        else if (strcasecmp(s, "-r")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "repeatSetup", 1);
         else if (strcasecmp(s, "-b")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "build", 1);
         else if (strncasecmp(s, "-j", 2)==0) {
