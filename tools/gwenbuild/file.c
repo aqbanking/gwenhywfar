@@ -434,6 +434,61 @@ void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2
 
 
 
+void GWB_File_WriteFileNameToTopBuildDirString(const GWB_FILE *file, const char *initialSourceDir, GWEN_BUFFER *fbuf)
+{
+  const char *s;
+
+  if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
+    if (initialSourceDir && *initialSourceDir) {
+      GWEN_Buffer_AppendString(fbuf, initialSourceDir);
+      GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
+    }
+  }
+  s=GWB_File_GetFolder(file);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(fbuf, s);
+    GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
+  }
+  s=GWB_File_GetName(file);
+  GWEN_Buffer_AppendString(fbuf, s);
+}
+
+
+
+GWEN_STRINGLIST *GWB_File_FileListToTopBuildDirStringList(const GWB_FILE_LIST2 *fileList, const char *initialSourceDir)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWEN_STRINGLIST *sl;
+    GWB_FILE *file;
+    GWEN_BUFFER *fbuf;
+
+    sl=GWEN_StringList_new();
+    fbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      GWB_File_WriteFileNameToTopBuildDirString(file, initialSourceDir, fbuf);
+      GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(fbuf), 0, 1);
+      GWEN_Buffer_Reset(fbuf);
+      file=GWB_File_List2Iterator_Next(it);
+    } /* while */
+    GWEN_Buffer_Reset(fbuf);
+    GWB_File_List2Iterator_free(it);
+
+    if (GWEN_StringList_Count(sl)==0) {
+      GWEN_StringList_free(sl);
+      return NULL;
+    }
+    return sl;
+  }
+
+  return NULL;
+}
+
+
+
 void GWB_File_toXml(const GWB_FILE *file, GWEN_XMLNODE *xmlNode)
 {
   GWEN_XMLNode_SetIntProperty(xmlNode, "id", (int) (file->id));

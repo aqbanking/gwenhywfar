@@ -12,6 +12,7 @@
 
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/stringlist.h>
 
 
 typedef struct GWB_FILE GWB_FILE;
@@ -87,6 +88,9 @@ void GWB_File_ReplaceExtension(GWB_FILE *file, const char *newExt);
 GWB_FILE *GWB_File_CopyObjectAndChangeExtension(const GWB_FILE *file, const char *newExt);
 
 void GWB_File_AddFileList2ToFileList2(GWB_FILE_LIST2 *sourceList, GWB_FILE_LIST2 *destList, const char *ext);
+
+void GWB_File_WriteFileNameToTopBuildDirString(const GWB_FILE *file, const char *initialSourceDir, GWEN_BUFFER *fbuf);
+GWEN_STRINGLIST *GWB_File_FileListToTopBuildDirStringList(const GWB_FILE_LIST2 *fileList, const char *initialSourceDir);
 
 
 #endif

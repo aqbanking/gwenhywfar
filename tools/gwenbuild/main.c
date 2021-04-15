@@ -56,8 +56,11 @@ static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
 static int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName);
 static int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
+static int _writeInstallFileList(const GWB_PROJECT *project, const char *fileName);
+
 static int _buildFilesChanged(const char *fileName);
 static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
+static GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileList, const char *initialSourceDir);
 
 static int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db);
 static int _handleStringArgument(int argc, char **argv, int *pIndex, const char *sArg, const char *sArgId,
@@ -274,6 +277,13 @@ int _setup(GWEN_DB_NODE *dbArgs)
     return 3;
   }
 
+  rv=_writeInstallFileList(project, ".gwbuild.installfiles");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error writing install file list.\n");
+    return 3;
+  }
+
+
   if (doDump) {
     GWB_Project_Dump(project, 2, 1);
   }
@@ -482,6 +492,56 @@ int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName)
       }
 
       se=GWEN_StringListEntry_Next(se);
+    }
+
+    rv=GWEN_XMLNode_WriteFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+    GWEN_XMLNode_free(xmlRoot);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Error writing build file list to file \"%s\" (%d)", fileName, rv);
+      return rv;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _writeInstallFileList(const GWB_PROJECT *project, const char *fileName)
+{
+  GWB_KEYVALUEPAIR_LIST *genFileList;
+  const char *initialSourceDir;
+
+  initialSourceDir=GWB_Context_GetInitialSourceDir(GWB_Project_GetRootContext(project));
+
+  genFileList=_generateInstallList(GWB_Project_GetFileList(project), initialSourceDir);
+  if (genFileList) {
+    GWB_KEYVALUEPAIR *kvp;
+    GWEN_XMLNODE *xmlRoot;
+    GWEN_XMLNODE *xmlFileList;
+    int rv;
+
+    xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+    xmlFileList=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InstallFiles");
+    GWEN_XMLNode_AddChild(xmlRoot, xmlFileList);
+
+    kvp=GWB_KeyValuePair_List_First(genFileList);
+    while(kvp) {
+      const char *sDestPath;
+      const char *sSrcPath;
+
+      sDestPath=GWB_KeyValuePair_GetKey(kvp);
+      sSrcPath=GWB_KeyValuePair_GetValue(kvp);
+      if (sDestPath && sSrcPath) {
+        GWEN_XMLNODE *xmlFile;
+
+        xmlFile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InstallFile");
+        GWEN_XMLNode_SetCharValue(xmlFile, "destination", sDestPath);
+        GWEN_XMLNode_SetCharValue(xmlFile, "source", sSrcPath);
+        GWEN_XMLNode_AddChild(xmlFileList, xmlFile);
+      }
+
+      kvp=GWB_KeyValuePair_List_Next(kvp);
     }
 
     rv=GWEN_XMLNode_WriteFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
@@ -769,6 +829,58 @@ void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const c
   s=getenv(envName);
   if (s && *s)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, dbVarName, s);
+}
+
+
+
+GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileList, const char *initialSourceDir)
+{
+  if (fileList) {
+    GWB_FILE_LIST2_ITERATOR *it;
+
+    it=GWB_File_List2_First(fileList);
+    if (it) {
+      GWB_FILE *file;
+      GWB_KEYVALUEPAIR_LIST *kvpList;
+      GWEN_BUFFER *keyBuf;
+      GWEN_BUFFER *valueBuf;
+
+      keyBuf=GWEN_Buffer_new(0, 256, 0, 1);
+      valueBuf=GWEN_Buffer_new(0, 256, 0, 1);
+      kvpList=GWB_KeyValuePair_List_new();
+      file=GWB_File_List2Iterator_Data(it);
+      while(file) {
+        if (GWB_File_GetFlags(file) & GWB_FILE_FLAGS_INSTALL) {
+          const char *s;
+          GWB_KEYVALUEPAIR *kvp;
+
+          s=GWB_File_GetInstallPath(file);
+          if (s && *s) {
+            GWEN_Buffer_AppendString(keyBuf, s);
+            GWEN_Buffer_AppendString(keyBuf, GWEN_DIR_SEPARATOR_S);
+            GWEN_Buffer_AppendString(keyBuf, GWB_File_GetName(file));
+
+            GWB_File_WriteFileNameToTopBuildDirString(file, initialSourceDir, valueBuf);
+            kvp=GWB_KeyValuePair_new(GWEN_Buffer_GetStart(keyBuf),  GWEN_Buffer_GetStart(valueBuf));
+            GWB_KeyValuePair_List_Add(kvp, kvpList);
+            GWEN_Buffer_Reset(valueBuf);
+            GWEN_Buffer_Reset(keyBuf);
+          }
+        }
+        file=GWB_File_List2Iterator_Next(it);
+      }
+      GWEN_Buffer_free(valueBuf);
+      GWEN_Buffer_free(keyBuf);
+      GWB_File_List2Iterator_free(it);
+      if (GWB_KeyValuePair_List_GetCount(kvpList)==0) {
+        GWB_KeyValuePair_List_free(kvpList);
+        return NULL;
+      }
+      return kvpList;
+    }
+  }
+
+  return NULL;
 }
 
 

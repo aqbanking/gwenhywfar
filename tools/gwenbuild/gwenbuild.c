@@ -957,8 +957,6 @@ void GWBUILD_AddFilesFromStringList(GWB_FILE_LIST2 *mainFileList,
 
 
 
-
-
 /*
  * --------------------------------------------------------------------------------------------
  * Add new targets or known source types below.

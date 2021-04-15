@@ -61,7 +61,6 @@ static int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGL
 static GWEN_STRINGLIST *_getAbsoluteDeps(const char *folder, const char *fileName);
 static GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder);
 static GWEN_STRINGLIST *_readDepFile(const char *fileName);
-static GWEN_STRINGLIST *_fileListToTopBuildDirStringList(const char *initialSourceDir, GWB_FILE_LIST2 *fileList);
 
 int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
 int _checkTimesInFilesOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
@@ -664,6 +663,11 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
     }
 
     if (startedCommands==0 && changedCommands==0) {
+      if (runningJobs==0) {
+        DBG_ERROR(NULL, "ERROR: No running jobs and none could be started, maybe circular dependencies?");
+        _abortAllCommands(bctx);
+        return GWEN_ERROR_GENERIC;
+      }
       DBG_DEBUG(NULL, "Nothing changed, sleeping...");
       sleep(3);
     }
@@ -799,11 +803,10 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
         GWEN_STRINGLIST *slInFiles;
         GWEN_STRINGLIST *slOutFiles;
 
-        slInFiles=_fileListToTopBuildDirStringList(bctx->initialSourceDir,
-                                                   GWB_BuildCmd_GetInFileList2(bcmd));
-        slOutFiles=_fileListToTopBuildDirStringList(bctx->initialSourceDir,
-                                                    GWB_BuildCmd_GetOutFileList2(bcmd));
-
+        slInFiles=GWB_File_FileListToTopBuildDirStringList(GWB_BuildCmd_GetInFileList2(bcmd),
+                                                           bctx->initialSourceDir);
+        slOutFiles=GWB_File_FileListToTopBuildDirStringList(GWB_BuildCmd_GetOutFileList2(bcmd),
+                                                            bctx->initialSourceDir);
         if (_needRunCurrentCommand(bcmd, slInFiles, slOutFiles)) {
 
 	  rv=_startCommand(bcmd, slOutFiles);
@@ -852,25 +855,9 @@ GWEN_STRINGLIST *_fileListToTopBuildDirStringList(const char *initialSourceDir, 
     fbuf=GWEN_Buffer_new(0, 256, 0, 1);
     file=GWB_File_List2Iterator_Data(it);
     while(file) {
-      const char *s;
-
-      if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
-        if (initialSourceDir && *initialSourceDir) {
-          GWEN_Buffer_AppendString(fbuf, initialSourceDir);
-          GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
-        }
-      }
-      s=GWB_File_GetFolder(file);
-      if (s && *s) {
-        GWEN_Buffer_AppendString(fbuf, s);
-        GWEN_Buffer_AppendString(fbuf, GWEN_DIR_SEPARATOR_S);
-      }
-      s=GWB_File_GetName(file);
-      GWEN_Buffer_AppendString(fbuf, s);
-
+      GWB_File_WriteFileNameToTopBuildDirString(file, initialSourceDir, fbuf);
       GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(fbuf), 0, 1);
       GWEN_Buffer_Reset(fbuf);
-
       file=GWB_File_List2Iterator_Next(it);
     } /* while */
     GWEN_Buffer_Reset(fbuf);
