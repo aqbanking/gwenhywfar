@@ -881,34 +881,40 @@ int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles
 
   currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
   if (currentCommand) {
-    uint32_t cmdFlags;
-    uint32_t subCmdFlags;
+    if (GWB_BuildSubCmd_List_Previous(currentCommand)==NULL) {
+      uint32_t cmdFlags;
+      uint32_t subCmdFlags;
 
-    cmdFlags=GWB_BuildCmd_GetFlags(bcmd);
-    subCmdFlags=GWB_BuildSubCmd_GetFlags(currentCommand);
+      cmdFlags=GWB_BuildCmd_GetFlags(bcmd);
+      subCmdFlags=GWB_BuildSubCmd_GetFlags(currentCommand);
 
-    if (cmdFlags & GWB_BUILD_CMD_FLAGS_CHECK_DATES) {
-      if (_inFilesNewerThanOutFiles(slInFiles, slOutFiles)) {
-        /* need rebuild */
-        DBG_DEBUG(NULL, "Input files newer than output files, rebuild needed");
+      if (cmdFlags & GWB_BUILD_CMD_FLAGS_CHECK_DATES) {
+        if (_inFilesNewerThanOutFiles(slInFiles, slOutFiles)) {
+          /* need rebuild */
+          DBG_DEBUG(NULL, "Input files newer than output files, rebuild needed");
+          return 1;
+        }
+      }
+      else
+        /* dont check dates, always rebuild */
+        return 1;
+
+      if (subCmdFlags & GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS) {
+        int rv;
+
+        rv=_checkDependencies(bcmd, currentCommand, GWEN_StringList_FirstString(slOutFiles));
+        if (rv==-1) {
+          DBG_DEBUG(NULL, "Dependencies flag NO rebuild needed (%d)", rv);
+          return 0;
+        }
+        DBG_DEBUG(NULL, "Dependencies flag rebuild needed (%d)", rv);
         return 1;
       }
     }
     else
-      /* dont check dates, always rebuild */
+      /* consecutive command, always rebuild, because the decision whether to rebuild
+       * is done when running the first command */
       return 1;
-
-    if (subCmdFlags & GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS) {
-      int rv;
-
-      rv=_checkDependencies(bcmd, currentCommand, GWEN_StringList_FirstString(slOutFiles));
-      if (rv==-1) {
-        DBG_DEBUG(NULL, "Dependencies flag NO rebuild needed (%d)", rv);
-        return 0;
-      }
-      DBG_DEBUG(NULL, "Dependencies flag rebuild needed (%d)", rv);
-      return 1;
-    }
   }
 
   return 0;
