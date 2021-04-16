@@ -220,6 +220,7 @@ int main(int argc, char **argv)
 }
 
 
+
 int _handleStringArgument(int argc, char **argv, int *pIndex, const char *sArg, const char *sArgId, const char *sVarName, GWEN_DB_NODE *db)
 {
   int i;

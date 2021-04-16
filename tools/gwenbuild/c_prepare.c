@@ -13,6 +13,7 @@
 
 
 #include "c_prepare.h"
+#include "c_setup.h"
 #include "utils.h"
 
 #include <gwenhywfar/debug.h>

@@ -18,6 +18,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
 
+#include <unistd.h>
+
 
 
 
