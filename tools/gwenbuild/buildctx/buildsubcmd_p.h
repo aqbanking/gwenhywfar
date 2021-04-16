@@ -23,8 +23,6 @@ struct GWB_BUILD_SUBCMD {
 
   char *buildMessage;
 
-  char *mainInputFilePath;
-  char *mainOutputFilePath;
   char *depFilePath;
 };
 

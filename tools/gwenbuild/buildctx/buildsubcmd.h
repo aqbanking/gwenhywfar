@@ -44,13 +44,6 @@ void GWB_BuildSubCmd_SetArguments(GWB_BUILD_SUBCMD *cmd, const char *s);
 const char *GWB_BuildSubCmd_GetBuildMessage(const GWB_BUILD_SUBCMD *cmd);
 void GWB_BuildSubCmd_SetBuildMessage(GWB_BUILD_SUBCMD *cmd, const char *s);
 
-
-const char *GWB_BuildSubCmd_GetMainInputFilePath(const GWB_BUILD_SUBCMD *cmd);
-void GWB_BuildSubCmd_SetMainInputFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
-
-const char *GWB_BuildSubCmd_GetMainOutputFilePath(const GWB_BUILD_SUBCMD *cmd);
-void GWB_BuildSubCmd_SetMainOutputFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
-
 const char *GWB_BuildSubCmd_GetDepFilePath(const GWB_BUILD_SUBCMD *cmd);
 void GWB_BuildSubCmd_SetDepFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
 

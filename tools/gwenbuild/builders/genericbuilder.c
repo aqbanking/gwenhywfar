@@ -47,8 +47,6 @@ void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
 
-void _readMainInputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
-void _readMainOutputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 static void _readDepFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
 void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
@@ -502,10 +500,7 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
         GWEN_Buffer_free(argsBuffer);
       }
 
-      _readMainInputFile(builder, cmd, n);
-      _readMainOutputFile(builder, cmd, n);
       _readDepFile(builder, cmd, n);
-
       _readBuildMessage(builder, cmd, n);
 
 
@@ -536,52 +531,6 @@ void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE
     if (buf) {
       GWB_BuildSubCmd_SetBuildMessage(cmd, GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
-    }
-  }
-}
-
-
-
-void _readMainInputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
-{
-  GWEN_XMLNODE *xmlFile;
-
-  xmlFile=GWEN_XMLNode_FindFirstTag(xmlNode, "mainInputFile", NULL, NULL);
-  if (xmlFile) {
-    GWB_CONTEXT *context;
-    GWB_FILE_LIST2 *filesList;
-    GWEN_BUFFER *filenameBuffer;
-
-    context=GWB_Builder_GetContext(builder);
-    filesList=GWB_Builder_GetInputFileList2(builder);
-
-    filenameBuffer=_readMainFilename(context, xmlFile, filesList);
-    if (filenameBuffer) {
-      GWB_BuildSubCmd_SetMainInputFilePath(cmd, GWEN_Buffer_GetStart(filenameBuffer));
-      GWEN_Buffer_free(filenameBuffer);
-    }
-  }
-}
-
-
-
-void _readMainOutputFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode)
-{
-  GWEN_XMLNODE *xmlFile;
-
-  xmlFile=GWEN_XMLNode_FindFirstTag(xmlNode, "mainOutputFile", NULL, NULL);
-  if (xmlFile) {
-    GWB_CONTEXT *context;
-    GWB_FILE_LIST2 *filesList;
-    GWEN_BUFFER *filenameBuffer;
-
-    context=GWB_Builder_GetContext(builder);
-    filesList=GWB_Builder_GetOutputFileList2(builder);
-
-    filenameBuffer=_readMainFilename(context, xmlFile, filesList);
-    if (filenameBuffer) {
-      GWB_BuildSubCmd_SetMainOutputFilePath(cmd, GWEN_Buffer_GetStart(filenameBuffer));
-      GWEN_Buffer_free(filenameBuffer);
     }
   }
 }
