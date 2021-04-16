@@ -122,3 +122,18 @@ TODO:
 - CLEAN implementieren (einfach alle BUILT Dateien loeschen)
 - shared vs. static
 - internal commands (or flag: delete destination file before build)
+
+
+
+-s           setup build environment
+-p           run preparation commands (needed e.g. if typemaker2 is used)
+-b           build targets
+-i           install files
+-c           cleanup; delete generated files
+-r           repeat setup command using the same arguments given to last setup
+-Oname=value specify options (can occur multiple times)
+-Bname       Only run commands for the given build (mostly used with 'tm2builder')
+-Lname       Set loglevel (debug, info, notice, warn, error)
+-Cname       Crosscompile for given environment (e-g- 'x86_64-w64-mingw32')
+-jvalue      Use the given number of parallel process for building
+

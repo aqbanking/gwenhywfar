@@ -82,6 +82,7 @@ static GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileLis
 static int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db);
 static int _handleStringArgument(int argc, char **argv, int *pIndex, const char *sArg, const char *sArgId,
                                  const char *sVarName, GWEN_DB_NODE *db);
+static void _printHelpScreen();
 
 
 
@@ -167,7 +168,7 @@ int main(int argc, char **argv)
 
   dbArgs=GWEN_DB_Group_new("args");
   rv=_readArgsIntoDb(argc, argv, dbArgs);
-  if (rv<0) {
+  if (rv<0 || rv==1) {
     return 1;
   }
 
@@ -1188,9 +1189,31 @@ GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileList, cons
 
 
 
+int _handleStringArgument(int argc, char **argv, int *pIndex, const char *sArg, const char *sArgId, const char *sVarName, GWEN_DB_NODE *db)
+{
+  int i;
+
+  i=*pIndex;
+  if (*sArg==0) {
+    i++;
+    if (i>=argc) {
+      DBG_ERROR(NULL, "Missing argument for \"%s\"", sArgId);
+      return GWEN_ERROR_INVALID;
+    }
+    sArg=argv[i];
+  }
+  if (sArg && *sArg)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, sVarName, sArg);
+  *pIndex=i;
+  return 0;
+}
+
+
+
 int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
 {
   int i=1;
+  int help=0;
 
   while(i<argc) {
     const char *s;
@@ -1229,6 +1252,10 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
         }
         else if (strcmp(s, "--dump")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dump", 1);
+	else if (strcmp(s, "--help")==0) {
+	  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "help", 1);
+	  help=1;
+	}
         else if (strcmp(s, "-p")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "prepare", 1);
         else if (strcmp(s, "-s")==0)
@@ -1263,29 +1290,83 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
     i++;
   } /* while */
 
-  return 0;
-}
-
-
-
-int _handleStringArgument(int argc, char **argv, int *pIndex, const char *sArg, const char *sArgId, const char *sVarName, GWEN_DB_NODE *db)
-{
-  int i;
-
-  i=*pIndex;
-  if (*sArg==0) {
-    i++;
-    if (i>=argc) {
-      DBG_ERROR(NULL, "Missing argument for \"%s\"", sArgId);
-      return GWEN_ERROR_INVALID;
-    }
-    sArg=argv[i];
+  if (help) {
+    _printHelpScreen();
+    return 1;
   }
-  if (sArg && *sArg)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, sVarName, sArg);
-  *pIndex=i;
+
   return 0;
 }
+
+
+
+void _printHelpScreen()
+{
+  fprintf(stdout,
+	  "\n"
+	  "Gwenhywfar Build Tool " GWENHYWFAR_VERSION_FULL_STRING "\n"
+	  "\n"
+	  "Building a project (e.g. compiling and linking) is done in multiple steps.\n"
+	  "\n"
+	  "1. Setup Build Environment\n"
+	  "-------------------------\n"
+	  "A. Create files named 0BUILD inside your project (see project AqFinance for\n"
+	  "example files).\n"
+	  "B. Create an empty folder and change into it (all next commands are run\n"
+	  "from there).\n"
+	  "You might want to use a folder like 'build' inside the source tree of\n"
+	  "your project.\n"
+	  "3. run\n"
+	  "      gwbuild PATH_TO_SOURCE_TREE\n"
+	  "e.g.  gwbuild ..\n"
+	  "\n"
+	  "2. Prepare Buidling\n"
+	  "-------------------\n"
+	  "      gwbuild -p\n"
+	  "This is only needed if your project uses typemaker2 to generate c-sources from\n"
+	  "XML files.\n"
+	  "This command makes typemaker2 create its derived type description files needed\n"
+	  "when referencing\n"
+	  "typemaker2 generated types inside another typemaker2 generated type.\n"
+	  "\n"
+	  "3. Build Typemaker2 Files\n"
+	  "-------------------------\n"
+	  "     gwbuild -Btm2builder\n"
+	  "This also is only needed if typemaker2 files are used in your project.\n"
+	  "\n"
+	  "4. Build All Other Targets\n"
+	  "--------------------------\n"
+	  "     gwbuild\n"
+	  "This uses a single process to compile and link the project files.\n"
+	  "If you have multiple processor cores/threads you can build multiple files in\n"
+	  "parallel:\n"
+	  "     gwbuild -j14\n"
+	  "This command uses 14 processes in parallel.\n"
+	  "The step can be repeated as often as needed. It will automatically check for\n"
+	  "changed files and try to only re-compile/link those modified files and others\n"
+	  "which depend on them.\n"
+	  "If you change a 0BUILD file gwbuild will automatically call the setup step\n"
+	  "using the same\n"
+	  "arguments given to the last setup command (-s). This typically leads to all\n"
+	  "files being re-build.\n"
+	  "\n"
+	  "Option List\n"
+	  "-----------\n"
+	  "-s           setup build environment\n"
+	  "-p           run preparation commands (needed e.g. if typemaker2 is used)\n"
+	  "-b           build targets\n"
+	  "-i           install files\n"
+	  "-c           cleanup; delete generated files\n"
+	  "-r           repeat setup command using the same arguments given to last setup\n"
+	  "-Oname=value specify options (can occur multiple times)\n"
+	  "-Bname       Only run commands for the given build (mostly used with\n"
+	  "             'tm2builder')\n"
+	  "-Lname       Set loglevel (debug, info, notice, warn, error)\n"
+	  "-Cname       Crosscompile for given environment (e-g- 'x86_64-w64-mingw32')\n"
+	  "-jvalue      Use the given number of parallel process for building\n"
+	 );
+}
+
 
 
 
