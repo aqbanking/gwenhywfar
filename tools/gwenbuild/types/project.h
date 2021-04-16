@@ -14,12 +14,12 @@
 typedef struct GWB_PROJECT GWB_PROJECT;
 
 
-#include "gwenbuild/gwenbuild.h"
-#include "gwenbuild/context.h"
-#include "gwenbuild/file.h"
-#include "gwenbuild/builder.h"
-#include "gwenbuild/target.h"
-#include "gwenbuild/option.h"
+#include "gwenbuild/types/gwenbuild.h"
+#include "gwenbuild/types/context.h"
+#include "gwenbuild/types/file.h"
+#include "gwenbuild/types/builder.h"
+#include "gwenbuild/types/target.h"
+#include "gwenbuild/types/option.h"
 
 
 #define GWB_PROJECT_FLAGS_SHARED   0x0001

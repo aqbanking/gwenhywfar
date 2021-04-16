@@ -11,7 +11,7 @@
 #define GWBUILD_PARSER_OPTIONS_H
 
 
-#include "gwenbuild/project.h"
+#include "gwenbuild/types/project.h"
 
 #include <gwenhywfar/xml.h>
 

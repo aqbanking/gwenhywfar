@@ -1,5 +1,5 @@
 /***************************************************************************
-    begin       : Fri Apr 02 2021
+    begin       : Mon Feb 08 2021
     copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -7,22 +7,23 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_OPTION_P_H
-#define GWBUILD_OPTION_P_H
+#ifndef GWBUILD_FILE_P_H
+#define GWBUILD_FILE_P_H
 
-#include "gwenbuild/option.h"
+#include "gwenbuild/types/file.h"
 
 
-struct GWB_OPTION {
-  GWEN_LIST_ELEMENT(GWB_OPTION)
+struct GWB_FILE {
+  char *folder;
+  char *name;
+  char *fileType;
+  char *installPath;
+  char *builder;
+  uint32_t id;
+  uint32_t flags;
 
-  char *id;
-  int optionType;
-  char *defaultValue;
-  char *definePrefix;
 
-  GWB_KEYVALUEPAIR_LIST *aliasList;
-  GWEN_STRINGLIST *choiceList;
+  GWB_BUILD_CMD_LIST2 *waitingBuildCmdList2;
 };
 
 

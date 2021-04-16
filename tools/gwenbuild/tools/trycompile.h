@@ -11,7 +11,7 @@
 #define GWBUILD_TRYCOMPILE_H
 
 
-#include "gwenbuild/gwenbuild.h"
+#include "gwenbuild/types/gwenbuild.h"
 
 
 int GWB_Tools_TryCompile(GWB_CONTEXT *context, const char *testCode);

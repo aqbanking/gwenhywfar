@@ -23,7 +23,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_FILE, GWB_File)
 #define GWB_FILE_FLAGS_GENERATED 0x0004
 
 
-#include "gwenbuild/context.h"
+#include "gwenbuild/types/context.h"
 #include "gwenbuild/buildctx/buildcmd.h"
 
 #include <inttypes.h>

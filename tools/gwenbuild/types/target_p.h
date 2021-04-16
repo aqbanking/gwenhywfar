@@ -11,7 +11,7 @@
 #define GWBUILD_TARGET_P_H
 
 
-#include "gwenbuild/target.h"
+#include "gwenbuild/types/target.h"
 
 
 struct GWB_TARGET {

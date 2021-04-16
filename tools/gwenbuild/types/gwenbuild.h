@@ -28,12 +28,12 @@ typedef enum {
 
 
 
-#include "gwenbuild/keyvaluepair.h"
-#include "gwenbuild/file.h"
-#include "gwenbuild/target.h"
-#include "gwenbuild/project.h"
+#include "gwenbuild/types/keyvaluepair.h"
+#include "gwenbuild/types/file.h"
+#include "gwenbuild/types/target.h"
+#include "gwenbuild/types/project.h"
 #include "gwenbuild/buildctx/buildctx.h"
-#include "gwenbuild/option.h"
+#include "gwenbuild/types/option.h"
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>

@@ -12,7 +12,7 @@
 #endif
 
 
-#include "gwenbuild/keyvaluepair_p.h"
+#include "gwenbuild/types/keyvaluepair_p.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/memory.h>

@@ -12,9 +12,9 @@
 #endif
 
 
-#include "gwenbuild/gwenbuild_p.h"
+#include "gwenbuild/types/gwenbuild_p.h"
 #include "gwenbuild/builders/genericbuilder.h"
-#include "gwenbuild/builder_be.h"
+#include "gwenbuild/types/builder_be.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
@@ -34,20 +34,20 @@
 
 
 /* Changes these two functions for new target types or new source types */
-GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file);
-GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target);
+static GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file);
+static GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target);
 
-int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target);
-int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project, 
-                                              GWB_TARGET *target,
-                                              GWB_FILE_LIST2 *sourceFileList,
-                                              GWB_FILE_LIST2 *newOutputList);
-int _addSubTargets(GWB_PROJECT *project);
-int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRINGLIST *usedTargetList);
-int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget);
+static int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target);
+static int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project, 
+                                                     GWB_TARGET *target,
+                                                     GWB_FILE_LIST2 *sourceFileList,
+                                                     GWB_FILE_LIST2 *newOutputList);
+static int _addSubTargets(GWB_PROJECT *project);
+static int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRINGLIST *usedTargetList);
+static int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget);
 
-int _addBuildCommandsFromBuilder(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
-void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
+static int _addBuildCommandsFromBuilder(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
+static void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
 static void _addFilesToBuildCtx(GWB_BUILD_CONTEXT *buildCtx, GWB_FILE_LIST2 *fileList);
 
 

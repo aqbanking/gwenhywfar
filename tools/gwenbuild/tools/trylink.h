@@ -10,7 +10,7 @@
 #ifndef GWBUILD_TRYLINK_H
 #define GWBUILD_TRYLINK_H
 
-#include "gwenbuild/gwenbuild.h"
+#include "gwenbuild/types/gwenbuild.h"
 
 
 

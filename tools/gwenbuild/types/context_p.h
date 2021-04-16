@@ -10,7 +10,7 @@
 #ifndef GWBUILD_CONTEXT_P_H
 #define GWBUILD_CONTEXT_P_H
 
-#include "gwenbuild/context.h"
+#include "gwenbuild/types/context.h"
 
 
 struct GWB_CONTEXT {

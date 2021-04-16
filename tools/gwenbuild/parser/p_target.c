@@ -14,7 +14,7 @@
 
 #include "gwenbuild/parser/p_target.h"
 #include "gwenbuild/parser/parser.h"
-#include "gwenbuild/builder_be.h"
+#include "gwenbuild/types/builder_be.h"
 
 #include <gwenhywfar/debug.h>
 

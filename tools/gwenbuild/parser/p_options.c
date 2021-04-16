@@ -14,7 +14,7 @@
 
 #include "gwenbuild/parser/p_options.h"
 #include "gwenbuild/parser/parser.h"
-#include "gwenbuild/option.h"
+#include "gwenbuild/types/option.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>

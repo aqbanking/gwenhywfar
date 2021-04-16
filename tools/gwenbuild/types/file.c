@@ -12,7 +12,7 @@
 #endif
 
 
-#include "gwenbuild/file_p.h"
+#include "gwenbuild/types/file_p.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/memory.h>

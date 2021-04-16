@@ -10,8 +10,8 @@
 #ifndef GWBUILD_PARSER_H
 #define GWBUILD_PARSER_H
 
-#include "gwenbuild/context.h"
-#include "gwenbuild/project.h"
+#include "gwenbuild/types/context.h"
+#include "gwenbuild/types/project.h"
 
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/db.h>

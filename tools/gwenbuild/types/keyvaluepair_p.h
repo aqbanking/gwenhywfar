@@ -7,23 +7,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_FILE_P_H
-#define GWBUILD_FILE_P_H
+#ifndef GWBUILD_KEYVALUEPAIR_P_H
+#define GWBUILD_KEYVALUEPAIR_P_H
 
-#include "gwenbuild/file.h"
-
-
-struct GWB_FILE {
-  char *folder;
-  char *name;
-  char *fileType;
-  char *installPath;
-  char *builder;
-  uint32_t id;
-  uint32_t flags;
+#include "gwenbuild/types/keyvaluepair.h"
 
 
-  GWB_BUILD_CMD_LIST2 *waitingBuildCmdList2;
+struct GWB_KEYVALUEPAIR {
+  GWEN_LIST_ELEMENT(GWB_KEYVALUEPAIR)
+  char *key;
+  char *value;
 };
 
 

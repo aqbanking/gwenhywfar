@@ -11,7 +11,7 @@
 # include <config.h>
 #endif
 
-#include "gwenbuild/target_p.h"
+#include "gwenbuild/types/target_p.h"
 
 
 #include <gwenhywfar/debug.h>

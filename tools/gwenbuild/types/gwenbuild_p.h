@@ -11,7 +11,7 @@
 #define GWBUILD_GWENBUILD_P_H
 
 
-#include "gwenbuild/gwenbuild.h"
+#include "gwenbuild/types/gwenbuild.h"
 
 
 

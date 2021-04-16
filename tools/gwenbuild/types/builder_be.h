@@ -10,7 +10,7 @@
 #ifndef GWBUILD_BUILDER_BE_H
 #define GWBUILD_BUILDER_BE_H
 
-#include "gwenbuild/builder.h"
+#include "gwenbuild/types/builder.h"
 
 
 typedef int (*GWEN_BUILDER_ISACCEPTABLEINPUT_FN)(GWB_BUILDER *builder, const GWB_FILE *file);

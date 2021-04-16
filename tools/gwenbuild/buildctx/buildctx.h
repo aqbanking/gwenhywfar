@@ -16,7 +16,7 @@
 typedef struct GWB_BUILD_CONTEXT GWB_BUILD_CONTEXT;
 
 #include "gwenbuild/buildctx/buildcmd.h"
-#include "gwenbuild/file.h"
+#include "gwenbuild/types/file.h"
 
 
 GWB_BUILD_CONTEXT *GWB_BuildCtx_new();

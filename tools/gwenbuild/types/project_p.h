@@ -11,7 +11,7 @@
 #define GWBUILD_PROJECT_P_H
 
 
-#include "gwenbuild/project.h"
+#include "gwenbuild/types/project.h"
 
 
 

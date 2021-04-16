@@ -18,9 +18,9 @@ typedef struct GWB_CONTEXT GWB_CONTEXT;
 GWEN_TREE2_FUNCTION_DEFS(GWB_CONTEXT, GWB_Context)
 
 
-#include "gwenbuild/keyvaluepair.h"
-#include "gwenbuild/file.h"
-#include "gwenbuild/target.h"
+#include "gwenbuild/types/keyvaluepair.h"
+#include "gwenbuild/types/file.h"
+#include "gwenbuild/types/target.h"
 
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/db.h>

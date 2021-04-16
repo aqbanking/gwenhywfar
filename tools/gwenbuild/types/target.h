@@ -18,11 +18,11 @@ typedef struct GWB_TARGET GWB_TARGET;
 GWEN_LIST2_FUNCTION_DEFS(GWB_TARGET, GWB_Target)
 
 
-#include "gwenbuild/context.h"
-#include "gwenbuild/file.h"
-#include "gwenbuild/builder.h"
-#include "gwenbuild/gwenbuild.h"
-#include "gwenbuild/project.h"
+#include "gwenbuild/types/context.h"
+#include "gwenbuild/types/file.h"
+#include "gwenbuild/types/builder.h"
+#include "gwenbuild/types/gwenbuild.h"
+#include "gwenbuild/types/project.h"
 #include "gwenbuild/buildctx/buildcmd.h"
 
 #include <gwenhywfar/stringlist.h>

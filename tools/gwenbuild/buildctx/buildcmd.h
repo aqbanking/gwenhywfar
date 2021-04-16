@@ -26,8 +26,8 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_BUILD_CMD, GWB_BuildCmd);
 #define GWB_BUILD_CMD_FLAGS_DEL_OUTFILES  0x0008
 
 
-#include "gwenbuild/file.h"
-#include "gwenbuild/keyvaluepair.h"
+#include "gwenbuild/types/file.h"
+#include "gwenbuild/types/keyvaluepair.h"
 #include "gwenbuild/buildctx/buildsubcmd.h"
 
 

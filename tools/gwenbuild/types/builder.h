@@ -18,9 +18,9 @@ typedef struct GWB_BUILDER GWB_BUILDER;
 GWEN_LIST2_FUNCTION_DEFS(GWB_BUILDER, GWB_Builder)
 GWEN_INHERIT_FUNCTION_DEFS(GWB_BUILDER)
 
-#include "gwenbuild/gwenbuild.h"
-#include "gwenbuild/context.h"
-#include "gwenbuild/file.h"
+#include "gwenbuild/types/gwenbuild.h"
+#include "gwenbuild/types/context.h"
+#include "gwenbuild/types/file.h"
 #include "gwenbuild/buildctx/buildctx.h"
 
 #include <inttypes.h>

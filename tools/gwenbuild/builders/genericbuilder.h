@@ -11,7 +11,7 @@
 #define GWBUILD_BUILDERS_GENERIC_H
 
 
-#include "gwenbuild/builder.h"
+#include "gwenbuild/types/builder.h"
 
 #include <gwenhywfar/xml.h>
 

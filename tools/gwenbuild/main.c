@@ -73,7 +73,7 @@ static GWB_FILE_LIST2 *_readFileList2(const char *fileName);
 static int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
 static int _writeInstallFileList(const GWB_PROJECT *project, const char *fileName);
-GWB_KEYVALUEPAIR_LIST *_readInstallFileList(const char *fileName);
+static GWB_KEYVALUEPAIR_LIST *_readInstallFileList(const char *fileName);
 
 static int _buildFilesChanged(const char *fileName);
 static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);

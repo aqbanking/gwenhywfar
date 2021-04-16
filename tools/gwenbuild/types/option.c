@@ -12,10 +12,10 @@
 #endif
 
 
-#include "gwenbuild/option_p.h"
+#include "gwenbuild/types/option_p.h"
 
-#include "gwenbuild/keyvaluepair.h"
-#include "gwenbuild/gwenbuild.h"
+#include "gwenbuild/types/keyvaluepair.h"
+#include "gwenbuild/types/gwenbuild.h"
 
 #include <gwenhywfar/misc.h>
 

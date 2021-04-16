@@ -11,7 +11,7 @@
 #define GWBUILD_BUILDER_P_H
 
 
-#include "gwenbuild/builder_be.h"
+#include "gwenbuild/types/builder_be.h"
 
 
 struct GWB_BUILDER {

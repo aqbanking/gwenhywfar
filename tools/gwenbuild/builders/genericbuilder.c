@@ -13,7 +13,7 @@
 
 
 #include "gwenbuild/builders/genericbuilder_p.h"
-#include "gwenbuild/builder_be.h"
+#include "gwenbuild/types/builder_be.h"
 #include "gwenbuild/parser/parser.h"
 
 #include <gwenhywfar/debug.h>
