@@ -26,35 +26,34 @@
 
 static void _setupDepsForCmd(GWB_BUILD_CMD *bcmd);
 
-void _writeFileList2ToXml(const GWB_FILE_LIST2 *fileList, GWEN_XMLNODE *xmlNode, const char *groupName);
-void _readFilesFromXml(GWEN_XMLNODE *xmlNode, const char *groupName, GWB_FILE_LIST2 *destFileList);
+static void _writeFileList2ToXml(const GWB_FILE_LIST2 *fileList, GWEN_XMLNODE *xmlNode, const char *groupName);
+static void _readFilesFromXml(GWEN_XMLNODE *xmlNode, const char *groupName, GWB_FILE_LIST2 *destFileList);
 
-void _writeCommandList2ToXml(const GWB_BUILD_CMD_LIST2 *commandList, GWEN_XMLNODE *xmlNode, const char *groupName);
-void _readCommandsFromXml(GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode, const char *groupName);
+static void _writeCommandList2ToXml(const GWB_BUILD_CMD_LIST2 *commandList, GWEN_XMLNODE *xmlNode, const char *groupName);
+static void _readCommandsFromXml(GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode, const char *groupName);
 
-void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *varName);
-uint32_t _readFlagsFromChar(const char *flagsAsText);
+static void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *varName);
+static uint32_t _readFlagsFromChar(const char *flagsAsText);
 
-int _setupDependencies(GWB_BUILD_CONTEXT *bctx);
+static int _setupDependencies(GWB_BUILD_CONTEXT *bctx);
 
-void _clearDeps(GWB_BUILD_CONTEXT *bctx);
-void _clearDepsInCommands(GWB_BUILD_CONTEXT *bctx);
-void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx);
+static void _clearDeps(GWB_BUILD_CONTEXT *bctx);
+static void _clearDepsInCommands(GWB_BUILD_CONTEXT *bctx);
+static void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx);
 
-void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
-void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName);
-void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
-int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
-int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles);
-int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
-void _signalJobFinished(GWB_BUILD_CMD *bcmd);
-void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
-void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
-void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList);
+static void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
+static void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName);
+static void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
+static int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
+static int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles);
+static int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
+static void _signalJobFinished(GWB_BUILD_CMD *bcmd);
+static void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
+static void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
+static void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList);
 
-int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
-int _file1IsNewerThanFile2(const char *filename1, const char *filename2);
-void _finishCurrentCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *currentCommand);
+static int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
+static void _finishCurrentCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *currentCommand);
 
 static int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd, const char *firstOutFileName);
 static int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl);
@@ -62,11 +61,11 @@ static GWEN_STRINGLIST *_getAbsoluteDeps(const char *folder, const char *fileNam
 static GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder);
 static GWEN_STRINGLIST *_readDepFile(const char *fileName);
 
-int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
-int _checkTimesInFilesOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
-time_t _getHighestModificationTime(const GWEN_STRINGLIST *slFiles);
-time_t _getLowestModificationTime(const GWEN_STRINGLIST *slFiles);
-void _unlinkFilesInStringList(const GWEN_STRINGLIST *slFiles);
+static int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
+static time_t _getHighestModificationTime(const GWEN_STRINGLIST *slFiles);
+static time_t _getLowestModificationTime(const GWEN_STRINGLIST *slFiles);
+static void _unlinkFilesInStringList(const GWEN_STRINGLIST *slFiles);
+
 
 
 
@@ -924,7 +923,7 @@ int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRIN
   time_t tiLowestOutFileTime;
 
   tiHighestInFileTime=_getHighestModificationTime(slInFiles);
-  tiLowestOutFileTime=_getHighestModificationTime(slOutFiles);
+  tiLowestOutFileTime=_getLowestModificationTime(slOutFiles);
   if (tiHighestInFileTime==0 || tiLowestOutFileTime==0) {
     DBG_INFO(NULL, "Either input or output time not available");
     return 1;
@@ -1110,35 +1109,6 @@ int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl
     DBG_DEBUG(NULL, "Empty dependency list, rebuild needed");
   }
 
-  return 0;
-}
-
-
-
-int _file1IsNewerThanFile2(const char *filename1, const char *filename2)
-{
-  time_t t1=0;
-  time_t t2=0;
-
-  if (filename1) {
-    t1=GWBUILD_GetModificationTimeOfFile(filename1);
-    if (t1==0) {
-      DBG_DEBUG(NULL, "No time for \"%s\"", filename1);
-    }
-  }
-  if (filename2) {
-    t2=GWBUILD_GetModificationTimeOfFile(filename2);
-    if (t2==0) {
-      DBG_INFO(NULL, "No time for \"%s\"", filename2);
-    }
-  }
-  if (t1==0 || t2==0) {
-    return 1;
-  }
-  if (difftime(t2, t1)<0.0) {
-    DBG_DEBUG(NULL, "File \"%s\" is newer than \"%s\"", filename1, filename2);
-    return 1;
-  }
   return 0;
 }
 
