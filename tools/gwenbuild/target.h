@@ -32,6 +32,10 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_TARGET, GWB_Target)
 GWB_TARGET *GWB_Target_new(GWB_PROJECT *project);
 void GWB_Target_free(GWB_TARGET *target);
 
+const char *GWB_Target_GetId(const GWB_TARGET *target);
+void GWB_Target_SetId(GWB_TARGET *target, const char *s);
+
+
 const char *GWB_Target_GetName(const GWB_TARGET *target);
 void GWB_Target_SetName(GWB_TARGET *target, const char *s);
 

@@ -67,7 +67,7 @@ void GWB_Project_AddFile(GWB_PROJECT *project, GWB_FILE *file);
 
 GWB_TARGET_LIST2 *GWB_Project_GetTargetList(const GWB_PROJECT *project);
 void GWB_Project_AddTarget(GWB_PROJECT *project, GWB_TARGET *target);
-GWB_TARGET *GWB_Project_GetTargetByName(const GWB_PROJECT *project, const char *name);
+GWB_TARGET *GWB_Project_GetTargetById(const GWB_PROJECT *project, const char *name);
 
 GWB_BUILDER_LIST2 *GWB_Project_GetBuilderList(const GWB_PROJECT *project);
 void GWB_Project_AddBuilder(GWB_PROJECT *project, GWB_BUILDER *builder);

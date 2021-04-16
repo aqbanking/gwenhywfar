@@ -15,6 +15,7 @@
 
 
 struct GWB_TARGET {
+  char *id;
   char *name;
   GWBUILD_TARGETTYPE targetType;
 

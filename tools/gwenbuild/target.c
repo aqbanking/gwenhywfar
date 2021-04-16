@@ -47,6 +47,7 @@ void GWB_Target_free(GWB_TARGET *target)
   if (target) {
     free(target->installPath);
     free(target->name);
+    free(target->id);
     GWB_File_List2_free(target->sourceFileList);
     GWEN_StringList_free(target->usedTargetNameList);
     GWEN_StringList_free(target->usedTargetLinkSpecList);
@@ -81,6 +82,25 @@ void GWB_Target_SetName(GWB_TARGET *target, const char *s)
     target->name=strdup(s);
   else
     target->name=NULL;
+}
+
+
+
+const char *GWB_Target_GetId(const GWB_TARGET *target)
+{
+  return target->id;
+}
+
+
+
+void GWB_Target_SetId(GWB_TARGET *target, const char *s)
+{
+  if (target->id)
+    free(target->id);
+  if (s)
+    target->id=strdup(s);
+  else
+    target->id=NULL;
 }
 
 
@@ -274,6 +294,7 @@ void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump)
     fprintf(stderr, " ");
   fprintf(stderr, "Target:\n");
 
+  GWBUILD_Debug_PrintValue(     "id....................", target->id, indent+2);
   GWBUILD_Debug_PrintValue(     "name..................", target->name, indent+2);
   GWBUILD_Debug_PrintValue(     "type..................", GWBUILD_TargetType_toString(target->targetType), indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionCurrent......", target->soVersionCurrent, indent+2);

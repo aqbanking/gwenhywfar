@@ -17,6 +17,7 @@ noinst_HEADERS=\
 builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders
 dist_builderdata_DATA=\
   app.gwb \
+  cxxapp.gwb \
   cbuilder.gwb \
   cxxbuilder.gwb \
   module.gwb \

@@ -123,6 +123,8 @@ GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
       return GWBUILD_TargetType_ConvenienceLibrary;
     else if (strcasecmp(s, "Program")==0)
       return GWBUILD_TargetType_Program;
+    else if (strcasecmp(s, "CxxProgram")==0)
+      return GWBUILD_TargetType_CxxProgram;
     else if (strcasecmp(s, "Objects")==0)
       return GWBUILD_TargetType_Objects;
     else if (strcasecmp(s, "Module")==0)
@@ -148,6 +150,7 @@ const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt)
   case GWBUILD_TargetType_InstallLibrary:     return "InstallLibrary";
   case GWBUILD_TargetType_ConvenienceLibrary: return "ConvenienceLibrary";
   case GWBUILD_TargetType_Program:            return "program";
+  case GWBUILD_TargetType_CxxProgram:         return "CxxProgram";
   case GWBUILD_TargetType_Objects:            return "objects";
   case GWBUILD_TargetType_Module:             return "module";
   }
@@ -476,7 +479,7 @@ int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target)
   context=GWB_Target_GetContext(target);
   fileList1=GWB_Context_GetSourceFileList2(context);
   if (!(fileList1 && GWB_File_List2_GetSize(fileList1)>0)) {
-    DBG_ERROR(NULL, "Empty source file list in context of target \"%s\"", GWB_Target_GetName(target));
+    DBG_ERROR(NULL, "Empty source file list in context of target \"%s\"", GWB_Target_GetId(target));
     GWB_Target_Dump(target, 2, 1);
     return GWEN_ERROR_GENERIC;
   }
@@ -524,12 +527,12 @@ int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project,
     file=GWB_File_List2Iterator_Data(it);
     while(file) {
       DBG_DEBUG(NULL, "Checking target \"%s\": file \"%s\"",
-                GWB_Target_GetName(target),
+                GWB_Target_GetId(target),
                 GWB_File_GetName(file));
       if (GWB_Builder_IsAcceptableInput(targetBuilder, file)) {
         DBG_DEBUG(NULL, "- adding file \"%s\" as input for target \"%s\"",
                   GWB_File_GetName(file),
-                  GWB_Target_GetName(target));
+                  GWB_Target_GetId(target));
         GWB_Builder_AddSourceFile(targetBuilder, file);
       }
       else {
@@ -607,7 +610,7 @@ int _addSubTargetsForTarget(GWB_PROJECT *project, GWB_TARGET *target, GWEN_STRIN
     if (s && *s) {
       GWB_TARGET *subTarget;
 
-      subTarget=GWB_Project_GetTargetByName(project, s);
+      subTarget=GWB_Project_GetTargetById(project, s);
       if (subTarget) {
         int rv;
 
@@ -639,23 +642,23 @@ int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget)
 
   targetBuilder=GWB_Target_GetBuilder(target);
   if (targetBuilder==NULL) {
-    DBG_ERROR(NULL, "No builder for target \"%s\"", GWB_Target_GetName(target));
+    DBG_ERROR(NULL, "No builder for target \"%s\"", GWB_Target_GetId(target));
     return GWEN_ERROR_GENERIC;
   }
   subTargetBuilder=GWB_Target_GetBuilder(subTarget);
   if (subTargetBuilder==NULL) {
-    DBG_ERROR(NULL, "No builder for sub-target \"%s\"", GWB_Target_GetName(subTarget));
+    DBG_ERROR(NULL, "No builder for sub-target \"%s\"", GWB_Target_GetId(subTarget));
     return GWEN_ERROR_GENERIC;
   }
 
   subTargetOutputFileList=GWB_Builder_GetOutputFileList2(subTargetBuilder);
   if (subTargetOutputFileList==NULL) {
-    DBG_ERROR(NULL, "No output file list in target \"%s\"", GWB_Target_GetName(subTarget));
+    DBG_ERROR(NULL, "No output file list in target \"%s\"", GWB_Target_GetId(subTarget));
     return GWEN_ERROR_GENERIC;
   }
   subTargetFile=GWB_File_List2_GetFront(subTargetOutputFileList);
   if (subTargetFile==NULL) {
-    DBG_ERROR(NULL, "No output file in target \"%s\"", GWB_Target_GetName(subTarget));
+    DBG_ERROR(NULL, "No output file in target \"%s\"", GWB_Target_GetId(subTarget));
     return GWEN_ERROR_GENERIC;
   }
   GWB_Builder_AddInputFile(targetBuilder, subTargetFile);
@@ -1035,6 +1038,9 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
     break;
   case GWBUILD_TargetType_Program:
     builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "app");
+    break;
+  case GWBUILD_TargetType_CxxProgram:
+    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "cxxapp");
     break;
   case GWBUILD_TargetType_Objects:
     break;

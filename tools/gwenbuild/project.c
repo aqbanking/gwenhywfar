@@ -235,7 +235,7 @@ void GWB_Project_AddTarget(GWB_PROJECT *project, GWB_TARGET *target)
 
 
 
-GWB_TARGET *GWB_Project_GetTargetByName(const GWB_PROJECT *project, const char *name)
+GWB_TARGET *GWB_Project_GetTargetById(const GWB_PROJECT *project, const char *id)
 {
   if (project->targetList) {
     GWB_TARGET_LIST2_ITERATOR *it;
@@ -248,8 +248,8 @@ GWB_TARGET *GWB_Project_GetTargetByName(const GWB_PROJECT *project, const char *
       while(target) {
         const char *s;
 
-        s=GWB_Target_GetName(target);
-        if (s && strcasecmp(s, name)==0)
+        s=GWB_Target_GetId(target);
+        if (s && strcasecmp(s, id)==0)
           break;
         target=GWB_Target_List2Iterator_Next(it);
       }
