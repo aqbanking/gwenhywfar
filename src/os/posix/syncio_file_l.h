@@ -32,6 +32,8 @@
 
 GWEN_SYNCIO *GWEN_SyncIo_File_fromFd(int fd);
 
+int GWEN_SyncIo_File_GetFd(const GWEN_SYNCIO *sio);
+
 
 
 #endif

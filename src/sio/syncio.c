@@ -637,4 +637,89 @@ int GWEN_SyncIo_Helper_WriteFile(const char *fName, const uint8_t *ptrSource, ui
 
 
 
+int GWEN_SyncIo_Helper_CopyFile(const char *srcPath, const char *destPath)
+{
+  GWEN_SYNCIO *sioRead;
+  GWEN_SYNCIO *sioWrite;
+  int rv;
+  int bytesRead=0;
+
+  sioRead=GWEN_SyncIo_File_new(srcPath, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_SetFlags(sioRead, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sioRead);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not open file [%s]", srcPath?srcPath:"<no filename>");
+    GWEN_SyncIo_free(sioRead);
+    return rv;
+  }
+
+  sioWrite=GWEN_SyncIo_File_new(destPath, GWEN_SyncIo_File_CreationMode_TruncateExisting);
+  GWEN_SyncIo_SetFlags(sioWrite, GWEN_SYNCIO_FILE_FLAGS_WRITE);
+  rv=GWEN_SyncIo_Connect(sioWrite);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not create destination file [%s]", destPath?destPath:"<no filename>");
+    GWEN_SyncIo_free(sioWrite);
+    GWEN_SyncIo_Disconnect(sioRead);
+    GWEN_SyncIo_free(sioRead);
+    return rv;
+  }
+
+  /* read file */
+  while (1) {
+    uint8_t transferBuffer[1024];
+    uint32_t l;
+    uint8_t *p;
+
+    p=transferBuffer;
+    l=sizeof(transferBuffer);
+    do {
+      rv=GWEN_SyncIo_Read(sioRead, p, l);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
+
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_Disconnect(sioWrite);
+      GWEN_SyncIo_free(sioWrite);
+      GWEN_SyncIo_Disconnect(sioRead);
+      GWEN_SyncIo_free(sioRead);
+      return rv;
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+      break;
+    }
+    bytesRead+=rv;
+
+    rv=GWEN_SyncIo_WriteForced(sioWrite, transferBuffer, rv);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_SyncIo_Disconnect(sioWrite);
+      GWEN_SyncIo_free(sioWrite);
+      GWEN_SyncIo_Disconnect(sioRead);
+      GWEN_SyncIo_free(sioRead);
+      return rv;
+    }
+  }
+
+  /* close file */
+  rv=GWEN_SyncIo_Disconnect(sioWrite);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    GWEN_SyncIo_Disconnect(sioWrite);
+    GWEN_SyncIo_free(sioWrite);
+    GWEN_SyncIo_Disconnect(sioRead);
+    GWEN_SyncIo_free(sioRead);
+    return rv;
+  }
+
+  GWEN_SyncIo_free(sioWrite);
+  GWEN_SyncIo_Disconnect(sioRead);
+  GWEN_SyncIo_free(sioRead);
+
+  return bytesRead;
+}
+
+
+
 

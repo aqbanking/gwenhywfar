@@ -64,7 +64,7 @@ GWEN_DATE *_createFromGregorianAndUseGivenString(int y, int m, int d, const char
   GWEN_DATE *gd;
 
   if (m<1 || m>12 || d<1 || d>31) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Bad date values (erroneous year=%d, month=%d, day=%d)", y, m, d);
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad date values (erroneous year=%d, month=%d, day=%d)", y, m, d);
     return NULL;
   }
 

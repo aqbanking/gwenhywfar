@@ -631,6 +631,46 @@ void GWEN_XMLNode_CopyProperties(GWEN_XMLNODE *tn,
 
 
 
+int GWEN_XMLNode_ExpandProperties(const GWEN_XMLNODE *n, GWEN_DB_NODE *dbVars)
+{
+  GWEN_XMLPROPERTY *sp;
+
+  assert(n);
+
+  sp=n->properties;
+  if (sp) {
+    GWEN_BUFFER *tmpBuf;
+
+    tmpBuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    while(sp) {
+      if (sp->value) {
+	int rv;
+
+	rv=GWEN_DB_ReplaceVars(dbVars, sp->value, tmpBuf);
+	if (rv<0) {
+	  DBG_ERROR(GWEN_LOGDOMAIN,
+		    "Error expanding value for property \"%s\": [%s] (%d)",
+		    (sp->name)?(sp->name):"<no name>",
+		    (sp->value)?(sp->value):"<no value>",
+		    rv);
+	  return rv;
+	}
+	GWEN_Memory_dealloc(sp->value);
+	sp->value=GWEN_Memory_strdup(GWEN_Buffer_GetStart(tmpBuf));
+	GWEN_Buffer_Reset(tmpBuf);
+      } /* if sp->value */
+
+      sp=sp->next;
+    } /* while */
+    GWEN_Buffer_free(tmpBuf);
+  }
+
+  return 0;
+}
+
+
+
 GWEN_XMLNODE *GWEN_XMLNode_GetFirstOfType(const GWEN_XMLNODE *n,
                                           GWEN_XMLNODE_TYPE t)
 {

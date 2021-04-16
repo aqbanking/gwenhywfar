@@ -1139,6 +1139,30 @@ int testProcess(int argc, char **argv)
 
 
 
+int testProcess2()
+{
+  GWEN_BUFFER *stdOutBuffer;
+  GWEN_BUFFER *stdErrBuffer;
+  int rv;
+
+  stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  rv=GWEN_Process_RunCommandWaitAndGather("bash", "-c set", stdOutBuffer, stdErrBuffer);
+  if (rv<0) {
+    fprintf(stderr, "Error (%d)\n", rv);
+  }
+
+  fprintf(stdout, "Result of command:\n%s\n", GWEN_Buffer_GetStart(stdOutBuffer));
+  GWEN_Buffer_free(stdErrBuffer);
+  GWEN_Buffer_free(stdOutBuffer);
+  return 0;
+}
+
+
+
 int testOptions(int argc, char **argv)
 {
   int rv;
@@ -6500,6 +6524,8 @@ int main(int argc, char **argv)
     rv=testSnprintf();
   else if (strcasecmp(argv[1], "process")==0)
     rv=testProcess(argc, argv);
+  else if (strcasecmp(argv[1], "process2")==0)
+    rv=testProcess2();
   else if (strcasecmp(argv[1], "option")==0)
     rv=testOptions(argc, argv);
   else if (strcasecmp(argv[1], "base64")==0)

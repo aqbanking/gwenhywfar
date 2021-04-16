@@ -40,6 +40,8 @@ int GWEN_Process_ModuleInit(void);
 int GWEN_Process_ModuleFini(void);
 
 
+int GWEN_Process_WaitAndRead(GWEN_PROCESS *pr, GWEN_BUFFER *stdOutBuffer, GWEN_BUFFER *stdErrBuffer);
+
 
 #endif /* GWENHYWFAR_PROCESS_L_H */
 

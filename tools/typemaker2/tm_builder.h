@@ -38,6 +38,8 @@ typedef int (*TYPEMAKER2_BUILDER_BUILD_FN)(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TY
 TYPEMAKER2_BUILDER *Typemaker2_Builder_new();
 void Typemaker2_Builder_free(TYPEMAKER2_BUILDER *tb);
 
+int Typemaker2_Builder_PrintFileNames(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+
 
 GWEN_STRINGLIST *Typemaker2_Builder_GetPublicDeclarations(const TYPEMAKER2_BUILDER *tb);
 GWEN_STRINGLIST *Typemaker2_Builder_GetLibraryDeclarations(const TYPEMAKER2_BUILDER *tb);

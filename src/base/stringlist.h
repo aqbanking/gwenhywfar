@@ -30,6 +30,8 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 
+#include <gwenhywfar/buffer.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,6 +59,7 @@ typedef struct GWEN_STRINGLISTSTRUCT GWEN_STRINGLIST;
 GWENHYWFAR_API GWEN_STRINGLIST *GWEN_StringList_new(void);
 
 GWENHYWFAR_API GWEN_STRINGLIST *GWEN_StringList_fromTabString(const char *s, int checkDup);
+GWENHYWFAR_API int GWEN_StringList_toBuffer(const GWEN_STRINGLIST *sl, const char *delimiter, GWEN_BUFFER *outBuffer);
 
 GWENHYWFAR_API void GWEN_StringList_free(GWEN_STRINGLIST *sl);
 GWENHYWFAR_API
@@ -146,6 +149,15 @@ GWENHYWFAR_API void GWEN_StringList_RemoveFirstString(GWEN_STRINGLIST *sl);
 
 
 /**
+ * Append duplicates of the entries in the source list to the destination list.
+ * The source list is not modified.
+ */
+GWENHYWFAR_API void GWEN_StringList_AppendStringList(GWEN_STRINGLIST *slDest,
+                                                     const GWEN_STRINGLIST *slSource,
+                                                     int checkDouble);
+
+
+/**
  * Checks whether the given string already exists within in the
  * string list.
  * @return !=0 if found, 0 otherwise
@@ -210,6 +222,37 @@ void GWEN_StringList_Sort(GWEN_STRINGLIST *l,
 
 GWENHYWFAR_API
 GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble);
+
+/**
+ * Create a stringlist from a given complex string.
+ *
+ * In addition to @ref GWEN_StringList_fromString() this version allows to modify the behavior of the function
+ * by adding some flags (see @ref GWEN_TEXT_FLAGS_CHECK_BACKSLASH and following).
+ * Typically used flags are:
+ * - @ref GWEN_TEXT_FLAGS_DEL_QUOTES (delete quotes around single words)
+ * - @ref GWEN_TEXT_FLAGS_CHECK_BACKSLASH (handle backslashes as escape characters)
+ *
+ * @return stringlist object (contains at least one entry) or NULL if no entries/empty string
+ * @param str string to dissect
+ * @param delimiters word delimiters
+ * @param checkDouble if !=0 only add unique strings to the resulting list
+ * @param flags (see @ref GWEN_TEXT_FLAGS_DEL_QUOTES and others)
+ */
+GWENHYWFAR_API
+GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimiters, int checkDouble, uint32_t flags);
+
+
+/**
+ * Remove first equal entries from both lists.
+ *
+ * If stringlist 1 contains "A", "B", "C", "D" and
+ *    stringlist 2 contains "A", "B", "X" then after this function the lists are changed to this:
+ *    stringlist 1 contains "C", "D"
+ *    stringlist 2 contains "X"
+ */
+GWENHYWFAR_API
+void GWEN_StringList_RemoveCommonFirstEntries(GWEN_STRINGLIST *sl1, GWEN_STRINGLIST *sl2);
+
 
 #ifdef __cplusplus
 }

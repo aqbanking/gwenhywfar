@@ -224,6 +224,9 @@ int GWEN_Path_Convert(const char *path,
                       uint32_t flags);
 
 
+GWENHYWFAR_API
+int GWEN_Path_GetPathBetween(const char *path1, const char *path2, GWEN_BUFFER *diffBuf);
+
 /*@}*/ /* defgroup */
 
 
