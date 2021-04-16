@@ -877,6 +877,7 @@ GWEN_STRINGLIST *_fileListToTopBuildDirStringList(const char *initialSourceDir, 
 
 int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles)
 {
+#if 0
   GWB_BUILD_SUBCMD *currentCommand;
 
   currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
@@ -891,7 +892,7 @@ int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles
       if (cmdFlags & GWB_BUILD_CMD_FLAGS_CHECK_DATES) {
         if (_inFilesNewerThanOutFiles(slInFiles, slOutFiles)) {
           /* need rebuild */
-          DBG_DEBUG(NULL, "Input files newer than output files, rebuild needed");
+          DBG_INFO(NULL, "Input files newer than output files, rebuild needed");
           return 1;
         }
       }
@@ -904,20 +905,61 @@ int _needRunCurrentCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slInFiles
 
         rv=_checkDependencies(bcmd, currentCommand, GWEN_StringList_FirstString(slOutFiles));
         if (rv==-1) {
-          DBG_DEBUG(NULL, "Dependencies flag NO rebuild needed (%d)", rv);
+          DBG_INFO(NULL, "Dependencies flag NO rebuild needed (%d)", rv);
           return 0;
         }
-        DBG_DEBUG(NULL, "Dependencies flag rebuild needed (%d)", rv);
+        DBG_INFO(NULL, "Dependencies flag rebuild needed (%d)", rv);
+        return 1;
+      }
+    }
+    else {
+      /* consecutive command, always rebuild, because the decision whether to rebuild
+       * is done when running the first command */
+      DBG_INFO(NULL, "Consecutive command, rebuild always needed");
+      return 1;
+    }
+  }
+
+  DBG_INFO(NULL, "Rebuild not needed");
+  return 0;
+#else
+  GWB_BUILD_SUBCMD *currentCommand;
+
+  currentCommand=GWB_BuildCmd_GetCurrentCommand(bcmd);
+  if (currentCommand) {
+    uint32_t cmdFlags;
+    uint32_t subCmdFlags;
+
+    cmdFlags=GWB_BuildCmd_GetFlags(bcmd);
+    subCmdFlags=GWB_BuildSubCmd_GetFlags(currentCommand);
+
+    if (cmdFlags & GWB_BUILD_CMD_FLAGS_CHECK_DATES) {
+      if (_inFilesNewerThanOutFiles(slInFiles, slOutFiles)) {
+        /* need rebuild */
+        DBG_INFO(NULL, "Input files newer than output files, rebuild needed");
         return 1;
       }
     }
     else
-      /* consecutive command, always rebuild, because the decision whether to rebuild
-       * is done when running the first command */
+      /* dont check dates, always rebuild */
       return 1;
+
+    if (subCmdFlags & GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS) {
+      int rv;
+
+      rv=_checkDependencies(bcmd, currentCommand, GWEN_StringList_FirstString(slOutFiles));
+      if (rv==-1) {
+        DBG_INFO(NULL, "Dependencies flag NO rebuild needed (%d)", rv);
+        return 0;
+      }
+      DBG_INFO(NULL, "Dependencies flag rebuild needed (%d)", rv);
+      return 1;
+    }
   }
 
+  DBG_INFO(NULL, "Rebuild not needed");
   return 0;
+#endif
 }
 
 
@@ -931,7 +973,7 @@ int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRIN
   tiHighestInFileTime=_getHighestModificationTime(slInFiles);
   tiLowestOutFileTime=_getHighestModificationTime(slOutFiles);
   if (tiHighestInFileTime==0 || tiLowestOutFileTime==0) {
-    DBG_DEBUG(NULL, "Either input or output time not available");
+    DBG_INFO(NULL, "Either input or output time not available");
     return 1;
   }
   if (tiHighestInFileTime>tiLowestOutFileTime)
