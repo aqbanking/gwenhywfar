@@ -7,7 +7,22 @@ INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(gwenhywfar_symlinkdir)
 
 bin_PROGRAMS=gwbuild
 gwbuild_SOURCES=\
-  main.c
+  main.c \
+  utils.c \
+  c_setup.c \
+  c_prepare.c \
+  c_build.c \
+  c_install.c \
+  c_clean.c
+  
+noinst_HEADERS=\
+  utils.h \
+  c_setup.h \
+  c_prepare.h \
+  c_build.h \
+  c_install.h \
+  c_clean.h
+
 
 gwbuild_LDADD = \
   $(top_builddir)/src/$(gwenhywfar_internal_libname) \
