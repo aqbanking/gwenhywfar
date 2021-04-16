@@ -45,6 +45,7 @@
 #define ARGS_COMMAND_BUILD          0x0004
 #define ARGS_COMMAND_REPEAT_SETUP   0x0008
 #define ARGS_COMMAND_INSTALL        0x0010
+#define ARGS_COMMAND_CLEAN          0x0020
 
 
 
@@ -52,8 +53,8 @@ static int _setup(GWEN_DB_NODE *dbArgs);
 static int _prepare(GWEN_DB_NODE *dbArgs);
 static int _build(GWEN_DB_NODE *dbArgs);
 static int _installFiles(const char *fileName, const char *destDir);
-
 static int _repeatLastSetup(const char *fileName);
+static int _deleteGeneratedFiles(const char *fileName);
 
 static int _copyFile(const char *sSrcPath, const char *sDestPath);
 
@@ -68,6 +69,7 @@ static void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, 
 
 static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
 static int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName);
+static GWB_FILE_LIST2 *_readFileList2(const char *fileName);
 static int _writeBuildFileList(const GWENBUILD *gwenbuild, const char *fileName);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
 static int _writeInstallFileList(const GWB_PROJECT *project, const char *fileName);
@@ -185,6 +187,7 @@ int main(int argc, char **argv)
   commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;
 
 
   if (commands & ARGS_COMMAND_SETUP) {
@@ -226,6 +229,15 @@ int main(int argc, char **argv)
       return rv;
     }
   }
+
+  if (commands & ARGS_COMMAND_CLEAN) {
+    rv=_deleteGeneratedFiles(".gwbuild.files");
+    if (rv!=0) {
+      fprintf(stderr, "ERROR: Error on cleaning generated files.\n");
+      return rv;
+    }
+  }
+
 
   err=GWEN_Fini();
   if (err) {
@@ -466,6 +478,49 @@ int _installFiles(const char *fileName, const char *destDir)
 
 
 
+int _deleteGeneratedFiles(const char *fname)
+{
+  GWB_FILE_LIST2 *fileList;
+
+  fileList=_readFileList2(fname);
+  if (fileList) {
+    GWB_FILE_LIST2_ITERATOR *it;
+
+    it=GWB_File_List2_First(fileList);
+    if (it) {
+      GWB_FILE *file;
+      GWEN_BUFFER *fnameBuf;
+
+      fnameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+      file=GWB_File_List2Iterator_Data(it);
+      while(file) {
+	if (GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED) {
+	  const char *s;
+
+	  s=GWB_File_GetFolder(file);
+	  if (s && *s) {
+	    GWEN_Buffer_AppendString(fnameBuf, s);
+	    GWEN_Buffer_AppendString(fnameBuf, GWEN_DIR_SEPARATOR_S);
+	  }
+	  GWEN_Buffer_AppendString(fnameBuf, GWB_File_GetName(file));
+	  fprintf(stdout, "Deleting '%s'\n", GWEN_Buffer_GetStart(fnameBuf));
+	  unlink(GWEN_Buffer_GetStart(fnameBuf));
+	  GWEN_Buffer_Reset(fnameBuf);
+	}
+
+        file=GWB_File_List2Iterator_Next(it);
+      }
+
+      GWB_File_List2Iterator_free(it);
+    }
+    GWB_File_List2_free(fileList);
+  }
+
+  return 0;
+}
+
+
+
 int _copyFile(const char *sSrcPath, const char *sDestPath)
 {
   int rv;
@@ -621,6 +676,41 @@ int _writeProjectFileList(const GWB_PROJECT *project, const char *fileName)
   }
 
   return 0;
+}
+
+
+
+GWB_FILE_LIST2 *_readFileList2(const char *fileName)
+{
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlFileList;
+  int rv;
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error reading build file list from \"%s\"", fileName);
+    GWEN_XMLNode_free(xmlRoot);
+    return NULL;
+  }
+
+  xmlFileList=GWEN_XMLNode_FindFirstTag(xmlRoot, "FileList", NULL, NULL);
+  if (xmlFileList) {
+    GWB_FILE_LIST2 *fileList;
+
+    fileList=GWB_File_List2_new();
+    GWB_File_List2_ReadXml(xmlFileList, "file", fileList);
+    if (GWB_File_List2_GetSize(fileList)==0) {
+      GWB_File_List2_free(fileList);
+      GWEN_XMLNode_free(xmlRoot);
+      return NULL;
+    }
+
+    return fileList;
+  }
+
+  GWEN_XMLNode_free(xmlRoot);
+  return NULL;
 }
 
 
@@ -1117,39 +1207,41 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
       else {
         int rv;
 
-        if (strncasecmp(s, "-O", 2)==0) {
+        if (strncmp(s, "-O", 2)==0) {
           rv=_handleStringArgument(argc, argv, &i, s+2, "-O", "option",db);
           if (rv<0)
             return rv;
         }
-        if (strncasecmp(s, "-B", 2)==0) {
+        if (strncmp(s, "-B", 2)==0) {
           rv=_handleStringArgument(argc, argv, &i, s+2, "-B", "builder",db);
           if (rv<0)
             return rv;
         }
-        if (strncasecmp(s, "-L", 2)==0) {
+        if (strncmp(s, "-L", 2)==0) {
           rv=_handleStringArgument(argc, argv, &i, s+2, "-L", "loglevel",db);
           if (rv<0)
             return rv;
         }
-        if (strncasecmp(s, "-C", 2)==0) {
+        if (strncmp(s, "-C", 2)==0) {
           rv=_handleStringArgument(argc, argv, &i, s+2, "-C", "crossCompileFor",db);
           if (rv<0)
             return rv;
         }
-        else if (strcasecmp(s, "--dump")==0)
+        else if (strcmp(s, "--dump")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dump", 1);
-        else if (strcasecmp(s, "-p")==0)
+        else if (strcmp(s, "-p")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "prepare", 1);
-        else if (strcasecmp(s, "-s")==0)
+        else if (strcmp(s, "-s")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
-        else if (strcasecmp(s, "-r")==0)
+        else if (strcmp(s, "-r")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "repeatSetup", 1);
-        else if (strcasecmp(s, "-b")==0)
+        else if (strcmp(s, "-b")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "build", 1);
-        else if (strcasecmp(s, "-i")==0)
+        else if (strcmp(s, "-i")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "install", 1);
-        else if (strncasecmp(s, "-j", 2)==0) {
+        else if (strcmp(s, "-c")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "clean", 1);
+        else if (strncmp(s, "-j", 2)==0) {
           /* jobs */
           s+=2;
           if (*s==0) {
