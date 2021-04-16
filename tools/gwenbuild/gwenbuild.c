@@ -811,7 +811,7 @@ time_t GWBUILD_GetModificationTimeOfFile(const char *filename)
 {
   struct stat st;
 
-  if (stat(filename, &st)==-1) {
+  if (lstat(filename, &st)==-1) {
     DBG_INFO(NULL, "Error on stat(%s): %s", filename, strerror(errno));
     return (time_t) 0;
   }

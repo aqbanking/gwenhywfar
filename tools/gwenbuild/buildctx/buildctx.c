@@ -1006,7 +1006,8 @@ time_t _getLowestModificationTime(const GWEN_STRINGLIST *slFiles)
             tiLowest=tiFile;
         }
         else {
-          DBG_DEBUG(NULL, "No modification time for \"%s\"", s);
+          DBG_INFO(NULL, "No modification time for \"%s\"", s);
+          return 0;
         }
       }
 
@@ -1042,7 +1043,8 @@ time_t _getHighestModificationTime(const GWEN_STRINGLIST *slFiles)
             tiHighest=tiFile;
         }
         else {
-          DBG_DEBUG(NULL, "No modification time for \"%s\"", s);
+          DBG_INFO(NULL, "No modification time for \"%s\"", s);
+          return 0;
         }
       }
 
