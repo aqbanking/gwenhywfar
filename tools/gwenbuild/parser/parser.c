@@ -348,6 +348,28 @@ GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XM
 
 
 
+GWEN_BUFFER *GWB_Parser_ReadNamedXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode, const char *elem)
+{
+
+  GWEN_XMLNODE *n;
+  
+  n=GWEN_XMLNode_FindFirstTag(xmlNode, elem, NULL, NULL);
+  if (n) {
+    GWEN_BUFFER *buf;
+
+    buf=GWB_Parser_ReadXmlDataIntoBufferAndExpand(db, n);
+    if (buf) {
+      if (GWEN_Buffer_GetUsedBytes(buf))
+        return buf;
+      GWEN_Buffer_free(buf);
+    }
+  }
+
+  return NULL;
+}
+
+
+
 int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWB_PARSER_PARSE_ELEMENT_FN fn)
 {
   GWEN_STRINGLIST *sl;

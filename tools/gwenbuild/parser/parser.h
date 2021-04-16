@@ -36,6 +36,7 @@ GWB_CONTEXT *GWB_Parser_CopyContextForTarget(const GWB_CONTEXT *sourceContext);
 GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName);
 GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
 GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
+GWEN_BUFFER *GWB_Parser_ReadNamedXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode, const char *elem);
 
 typedef int (*GWB_PARSER_PARSE_ELEMENT_FN)(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 int GWB_Parser_ParseWellKnownElements(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);

@@ -64,9 +64,16 @@ int GWB_ParseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   option=GWB_Option_new(sId);
   GWB_Option_SetOptionType(option, otype);
 
-  s=GWEN_XMLNode_GetCharValue(xmlNode, "default", NULL);
-  if (s)
-    GWB_Option_SetDefaultValue(option, s);
+  if (1) {
+    GWEN_BUFFER *buf;
+
+    buf=GWB_Parser_ReadNamedXmlDataIntoBufferAndExpand(GWB_Context_GetVars(currentContext), xmlNode, "default");
+    if (buf) {
+      if (GWEN_Buffer_GetUsedBytes(buf))
+        GWB_Option_SetDefaultValue(option, GWEN_Buffer_GetStart(buf));
+      GWEN_Buffer_free(buf);
+    }
+  }
 
   s=GWEN_XMLNode_GetProperty(xmlNode, "definePrefix", NULL);
   if (s)
