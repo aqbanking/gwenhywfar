@@ -7,25 +7,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_FILE_P_H
-#define GWBUILD_FILE_P_H
+#ifndef GWBUILD_BUILDCTX_XML_H
+#define GWBUILD_BUILDCTX_XML_H
 
-#include "gwenbuild/types/file.h"
+#include <gwenhywfar/xml.h>
 
-
-struct GWB_FILE {
-  char *folder;
-  char *name;
-  char *fileType;
-  char *installPath;
-  char *builder;
-  uint32_t id;
-  uint32_t flags;
+#include "gwenbuild/buildctx/buildctx.h"
 
 
-  GWB_BUILD_CMD_LIST2 *waitingBuildCmdList2;
-  GWB_BUILD_CMD *buildCmd;
-};
+GWB_BUILD_CONTEXT *GWB_BuildCtx_ReadFromXmlFile(const char *fileName);
+int GWB_BuildCtx_WriteToXmlFile(const GWB_BUILD_CONTEXT *buildCtx, const char *fileName);
+
 
 
 #endif

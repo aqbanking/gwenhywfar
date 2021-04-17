@@ -288,10 +288,17 @@ void GWB_Builder_AddRelativeFolderToBuffer(const GWB_CONTEXT *context, const cha
     GWEN_Buffer_AppendString(realFileFolderBuffer, initialSourceDir);
     GWEN_Buffer_AppendString(realFileFolderBuffer, GWEN_DIR_SEPARATOR_S);
   }
-  GWEN_Buffer_AppendString(realFileFolderBuffer, folder);
+  if (folder)
+    GWEN_Buffer_AppendString(realFileFolderBuffer, folder);
 
   relBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Path_GetPathBetween(buildDir, GWEN_Buffer_GetStart(realFileFolderBuffer), relBuffer);
+#if 0
+  DBG_ERROR(NULL, "Paths: [%s]->[%s]: [%s]",
+            buildDir,
+            GWEN_Buffer_GetStart(realFileFolderBuffer),
+            GWEN_Buffer_GetStart(relBuffer));
+#endif
   if (GWEN_Buffer_GetUsedBytes(relBuffer)>0)
     GWEN_Buffer_AppendString(argBuffer, GWEN_Buffer_GetStart(relBuffer));
   else

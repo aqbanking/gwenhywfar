@@ -7,6 +7,7 @@ noinst_LTLIBRARIES=libgwb_parser.la
 
 libgwb_parser_la_SOURCES=\
  parser.c \
+ p_buildfiles.c \
  p_project.c \
  p_checkfunctions.c \
  p_checkheaders.c \
@@ -20,6 +21,7 @@ libgwb_parser_la_SOURCES=\
 
 noinst_HEADERS=\
  parser.h \
+ p_buildfiles.h \
  p_checkfunctions.h \
  p_checkheaders.h \
  p_checklibs.h \

@@ -15,6 +15,8 @@
 #include "c_prepare.h"
 #include "c_setup.h"
 #include "utils.h"
+#include "gwenbuild/buildctx/buildctx_xml.h"
+#include "gwenbuild/buildctx/buildctx_run.h"
 
 #include <gwenhywfar/debug.h>
 

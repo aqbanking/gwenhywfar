@@ -22,10 +22,6 @@ typedef struct GWB_BUILD_CONTEXT GWB_BUILD_CONTEXT;
 GWB_BUILD_CONTEXT *GWB_BuildCtx_new();
 void GWB_BuildCtx_free(GWB_BUILD_CONTEXT *bctx);
 
-GWB_BUILD_CONTEXT *GWB_BuildCtx_ReadFromXmlFile(const char *fileName);
-int GWB_BuildCtx_WriteToXmlFile(const GWB_BUILD_CONTEXT *buildCtx, const char *fileName);
-
-
 const char *GWB_BuildCtx_GetInitialSourceDir(const GWB_BUILD_CONTEXT *bctx);
 void GWB_BuildCtx_SetInitialSourceDir(GWB_BUILD_CONTEXT *bctx, const char *s);
 
@@ -43,8 +39,6 @@ void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD 
 
 void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
-
-int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrepareCommands, const char *builderName);
 
 
 void GWB_BuildCtx_toXml(const GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode);

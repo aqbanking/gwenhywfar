@@ -73,6 +73,10 @@ void GWB_File_AddWaitingBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd);
 void GWB_File_ClearWaitingBuildCmds(GWB_FILE *file);
 
 
+GWB_BUILD_CMD *GWB_File_GetBuildCmd(const GWB_FILE *f);
+void GWB_File_SetBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd);
+
+
 void GWB_File_List2_FreeAll(GWB_FILE_LIST2 *fileList2);
 GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, const char *folder, const char *fname);
 GWB_FILE *GWB_File_List2_GetFileById(const GWB_FILE_LIST2 *fileList, uint32_t id);

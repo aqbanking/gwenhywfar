@@ -15,6 +15,7 @@
 #include "c_setup.h"
 #include "utils.h"
 #include "gwenbuild/parser/parser.h"
+#include "gwenbuild/buildctx/buildctx_xml.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>

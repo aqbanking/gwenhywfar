@@ -33,6 +33,7 @@ GWB_PROJECT *GWB_Project_new(GWENBUILD *gwbuild, GWB_CONTEXT *ctx)
   project->builderList=GWB_Builder_List2_new();
   project->optionList=GWB_Option_List_new();
   project->givenOptionList=GWB_KeyValuePair_List_new();
+  project->explicitBuildList=GWB_BuildCmd_List_new();
 
   return project;
 }
@@ -50,6 +51,7 @@ void GWB_Project_free(GWB_PROJECT *project)
     GWB_Builder_List2_free(project->builderList);
     GWB_KeyValuePair_List_free(project->defineList);
     free(project->versionTag);
+    GWB_BuildCmd_List_free(project->explicitBuildList);
 
     GWEN_FREE_OBJECT(project);
   }
@@ -375,6 +377,21 @@ const char *GWB_Project_GetGivenOption(const GWB_PROJECT *project, const char *n
 {
   return GWB_KeyValuePair_List_GetValue(project->givenOptionList, name);
 }
+
+
+
+GWB_BUILD_CMD_LIST *GWB_Project_GetExplicitBuildList(const GWB_PROJECT *project)
+{
+  return project->explicitBuildList;
+}
+
+
+
+void GWB_Project_AddExplicitBuild(GWB_PROJECT *project, GWB_BUILD_CMD *bcmd)
+{
+  GWB_BuildCmd_List_Add(bcmd, project->explicitBuildList);
+}
+
 
 
 

@@ -57,6 +57,7 @@ GWB_FILE *GWB_File_dup(const GWB_FILE *oldFile)
     GWB_File_SetInstallPath(fileOut, oldFile->installPath);
     GWB_File_SetBuilder(fileOut, oldFile->builder);
     GWB_File_SetFlags(fileOut, oldFile->flags);
+    fileOut->buildCmd=oldFile->buildCmd;
     return fileOut;
   }
 
@@ -241,6 +242,20 @@ void GWB_File_ClearWaitingBuildCmds(GWB_FILE *f)
 {
   if (f->waitingBuildCmdList2)
     GWB_BuildCmd_List2_Clear(f->waitingBuildCmdList2);
+}
+
+
+
+GWB_BUILD_CMD *GWB_File_GetBuildCmd(const GWB_FILE *f)
+{
+  return f->buildCmd;
+}
+
+
+
+void GWB_File_SetBuildCmd(GWB_FILE *f, GWB_BUILD_CMD *bcmd)
+{
+  f->buildCmd=bcmd;
 }
 
 

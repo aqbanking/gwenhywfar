@@ -7,25 +7,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_FILE_P_H
-#define GWBUILD_FILE_P_H
+#ifndef GWBUILD_BUILDCTX_BDEPS_H
+#define GWBUILD_BUILDCTX_BDEPS_H
 
-#include "gwenbuild/types/file.h"
+#include <gwenhywfar/xml.h>
 
-
-struct GWB_FILE {
-  char *folder;
-  char *name;
-  char *fileType;
-  char *installPath;
-  char *builder;
-  uint32_t id;
-  uint32_t flags;
+#include "gwenbuild/buildctx/buildctx.h"
 
 
-  GWB_BUILD_CMD_LIST2 *waitingBuildCmdList2;
-  GWB_BUILD_CMD *buildCmd;
-};
+int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx);
+
+GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_CreateBuildListForFile(const GWB_FILE *file);
+GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_CreateBuildListForBuilders(const GWB_BUILD_CMD_LIST2 *sourceCmdList, const char *builderName);
+
 
 
 #endif

@@ -7,25 +7,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_FILE_P_H
-#define GWBUILD_FILE_P_H
-
-#include "gwenbuild/types/file.h"
+#ifndef GWBUILD_PARSER_BUILDFILES_H
+#define GWBUILD_PARSER_BUILDFILES_H
 
 
-struct GWB_FILE {
-  char *folder;
-  char *name;
-  char *fileType;
-  char *installPath;
-  char *builder;
-  uint32_t id;
-  uint32_t flags;
+#include "gwenbuild/types/project.h"
+
+#include <gwenhywfar/xml.h>
 
 
-  GWB_BUILD_CMD_LIST2 *waitingBuildCmdList2;
-  GWB_BUILD_CMD *buildCmd;
-};
+
+int GWB_ParseBuildFiles(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+
 
 
 #endif
+

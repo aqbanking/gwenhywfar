@@ -41,6 +41,8 @@ struct GWB_PROJECT {
   int soVersionRevision;
 
   uint32_t flags;
+
+  GWB_BUILD_CMD_LIST *explicitBuildList;
 };
 
 

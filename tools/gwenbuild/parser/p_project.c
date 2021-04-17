@@ -13,6 +13,7 @@
 
 
 #include "gwenbuild/parser/p_project.h"
+#include "gwenbuild/parser/p_buildfiles.h"
 #include "gwenbuild/parser/p_checkfunctions.h"
 #include "gwenbuild/parser/p_checkheaders.h"
 #include "gwenbuild/parser/p_checklibs.h"
@@ -142,6 +143,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_ParseTarget(project, currentContext, n);
       else if (strcasecmp(name, "define")==0)
         rv=_parseDefine(project, currentContext, n);
+      else if (strcasecmp(name, "buildFiles")==0)
+        rv=GWB_ParseBuildFiles(project, currentContext, n);
       else if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else

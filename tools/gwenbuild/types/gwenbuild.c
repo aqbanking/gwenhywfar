@@ -48,6 +48,7 @@ static int _addOneSubTargetForTarget(GWB_TARGET *target, GWB_TARGET *subTarget);
 
 static int _addBuildCommandsFromBuilder(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
 static void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx);
+static void _addBuildCommands(GWB_BUILD_CONTEXT *buildCtx, const GWB_BUILD_CMD_LIST *buildCmdList);
 static void _addFilesToBuildCtx(GWB_BUILD_CONTEXT *buildCtx, GWB_FILE_LIST2 *fileList);
 
 
@@ -746,7 +747,14 @@ int _addBuildCommandsFromBuilder(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildC
 void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEXT *buildCtx)
 {
   GWB_TARGET_LIST2 *targetList;
+  GWB_BUILD_CMD_LIST *explicitBuildCmdList;
 
+  /* add explicit build commands from project */
+  explicitBuildCmdList=GWB_Project_GetExplicitBuildList(project);
+  if (explicitBuildCmdList)
+    _addBuildCommands(buildCtx, explicitBuildCmdList);
+
+  /* add explicit build commands from targets */
   targetList=GWB_Project_GetTargetList(project);
   if (targetList) {
     GWB_TARGET_LIST2_ITERATOR *it;
@@ -757,24 +765,29 @@ void _addExplicitBuildCommandsFromTargets(GWB_PROJECT *project, GWB_BUILD_CONTEX
 
       target=GWB_Target_List2Iterator_Data(it);
       while(target) {
-        GWB_BUILD_CMD_LIST *explicitBuildCmdList;
-
         explicitBuildCmdList=GWB_Target_GetExplicitBuildList(target);
-        if (explicitBuildCmdList) {
-          GWB_BUILD_CMD *cmd;
-
-          cmd=GWB_BuildCmd_List_First(explicitBuildCmdList);
-          while(cmd) {
-            _addFilesToBuildCtx(buildCtx, GWB_BuildCmd_GetInFileList2(cmd));  /* assigns ids etc */
-            _addFilesToBuildCtx(buildCtx, GWB_BuildCmd_GetOutFileList2(cmd));
-            GWB_BuildCtx_AddCommand(buildCtx, GWB_BuildCmd_dup(cmd));
-            cmd=GWB_BuildCmd_List_Next(cmd);
-          }
-        }
+        if (explicitBuildCmdList)
+          _addBuildCommands(buildCtx, explicitBuildCmdList);
         target=GWB_Target_List2Iterator_Next(it);
       }
-
       GWB_Target_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+void _addBuildCommands(GWB_BUILD_CONTEXT *buildCtx, const GWB_BUILD_CMD_LIST *buildCmdList)
+{
+  if (buildCmdList) {
+    GWB_BUILD_CMD *cmd;
+  
+    cmd=GWB_BuildCmd_List_First(buildCmdList);
+    while(cmd) {
+      _addFilesToBuildCtx(buildCtx, GWB_BuildCmd_GetInFileList2(cmd));  /* assigns ids etc */
+      _addFilesToBuildCtx(buildCtx, GWB_BuildCmd_GetOutFileList2(cmd));
+      GWB_BuildCtx_AddCommand(buildCtx, GWB_BuildCmd_dup(cmd));
+      cmd=GWB_BuildCmd_List_Next(cmd);
     }
   }
 }

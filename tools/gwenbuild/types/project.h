@@ -20,6 +20,7 @@ typedef struct GWB_PROJECT GWB_PROJECT;
 #include "gwenbuild/types/builder.h"
 #include "gwenbuild/types/target.h"
 #include "gwenbuild/types/option.h"
+#include "gwenbuild/buildctx/buildcmd.h"
 
 
 #define GWB_PROJECT_FLAGS_SHARED   0x0001
@@ -81,6 +82,9 @@ uint32_t GWB_Project_GetFlags(const GWB_PROJECT *project);
 void GWB_Project_SetFlags(GWB_PROJECT *project, uint32_t fl);
 void GWB_Project_AddFlags(GWB_PROJECT *project, uint32_t fl);
 void GWB_Project_DelFlags(GWB_PROJECT *project, uint32_t fl);
+
+GWB_BUILD_CMD_LIST *GWB_Project_GetExplicitBuildList(const GWB_PROJECT *project);
+void GWB_Project_AddExplicitBuild(GWB_PROJECT *project, GWB_BUILD_CMD *bcmd);
 
 
 void GWB_Project_Dump(const GWB_PROJECT *project, int indent, int fullDump);
