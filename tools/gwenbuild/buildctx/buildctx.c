@@ -755,6 +755,7 @@ void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName)
     GWB_BUILD_CMD *bcmd;
 
     if (builderName && *builderName) {
+      /* builder name given, don't check for auto flag */
       bcmd=GWB_BuildCmd_List2Iterator_Data(it);
       while(bcmd) {
         const char *s;
@@ -769,10 +770,13 @@ void _initiallyFillQueues(GWB_BUILD_CONTEXT *bctx, const char *builderName)
       }
     }
     else {
+      /* no builder name, only add commands with auto flag set */
       bcmd=GWB_BuildCmd_List2Iterator_Data(it);
       while(bcmd) {
-        if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
-          GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+        if (GWB_BuildCmd_GetFlags(bcmd) &GWB_BUILD_CMD_FLAGS_AUTO) {
+          if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
+            GWB_BuildCmd_List2_PushBack(bctx->waitingQueue, bcmd);
+          }
         }
         bcmd=GWB_BuildCmd_List2Iterator_Next(it);
       }

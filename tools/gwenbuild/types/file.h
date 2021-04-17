@@ -80,6 +80,9 @@ GWB_FILE *GWB_File_List2_GetFileById(const GWB_FILE_LIST2 *fileList, uint32_t id
 GWB_FILE *GWB_File_List2_GetOrCreateFile(GWB_FILE_LIST2 *fileList, const char *folder, const char *fname);
 
 
+GWB_FILE *GWB_File_List2_GetAt(const GWB_FILE_LIST2 *fileList, int index);
+
+
 void GWB_File_List2_WriteXml(const GWB_FILE_LIST2 *fileList, GWEN_XMLNODE *xmlNode, const char *groupName);
 void GWB_File_List2_ReadXml(GWEN_XMLNODE *xmlNode, const char *groupName, GWB_FILE_LIST2 *destFileList);
 

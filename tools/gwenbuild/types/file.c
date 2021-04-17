@@ -601,6 +601,33 @@ uint32_t _readFlagsFromChar(const char *flagsAsText)
 
 
 
+GWB_FILE *GWB_File_List2_GetAt(const GWB_FILE_LIST2 *fileList, int index)
+{
+  GWB_FILE_LIST2_ITERATOR *it;
+  int i=0;
+  
+  it=GWB_File_List2_First(fileList);
+  if (it) {
+    GWB_FILE *file;
+  
+    file=GWB_File_List2Iterator_Data(it);
+    while(file) {
+      if (i==index) {
+	GWB_File_List2Iterator_free(it);
+	return file;
+      }
+      i++;
+      file=GWB_File_List2Iterator_Next(it);
+    }
+
+    GWB_File_List2Iterator_free(it);
+  }
+
+  return NULL;
+}
+
+
+
 void GWB_File_List2_WriteXml(const GWB_FILE_LIST2 *fileList, GWEN_XMLNODE *xmlNode, const char *groupName)
 {
   GWB_FILE_LIST2_ITERATOR *it;

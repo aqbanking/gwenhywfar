@@ -65,7 +65,6 @@ void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XML
 void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 
 void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
-GWB_FILE *_getFileAtPosInList2(GWB_FILE_LIST2 *filesList, int index);
 void _addStringListToBuffer(GWEN_STRINGLIST *sl, GWEN_BUFFER *argsBuffer);
 
 
@@ -419,6 +418,7 @@ int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx)
   context=GWB_Builder_GetContext(builder);
 
   bcmd=GWB_BuildCmd_new();
+  GWB_BuildCmd_AddFlags(bcmd, GWB_BUILD_CMD_FLAGS_AUTO);
   GWB_BuildCmd_SetBuilderName(bcmd, xbuilder->builderName);
   GWB_BuildCmd_SetFolder(bcmd, GWB_Context_GetCurrentBuildDir(context));
 
@@ -569,7 +569,7 @@ GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_
     if (index>=0) {
       GWB_FILE *file;
 
-      file=_getFileAtPosInList2(filesList, index);
+      file=GWB_File_List2_GetAt(filesList, index);
       if (file) {
         GWEN_BUFFER *filenameBuffer;
         const char *s;
@@ -698,7 +698,7 @@ void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFE
     if (index>=0) {
       GWB_FILE *file;
 
-      file=_getFileAtPosInList2(inFilesList, index);
+      file=GWB_File_List2_GetAt(inFilesList, index);
       if (file) {
         if (useAbsPath)
           GWB_Builder_AddAbsFileNameToBuffer(context, file, argsBuffer);
@@ -735,7 +735,7 @@ void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFF
     if (index>=0) {
       GWB_FILE *file;
 
-      file=_getFileAtPosInList2(filesList, index);
+      file=GWB_File_List2_GetAt(filesList, index);
       if (file) {
         if (useField && strcasecmp(useField, "installPath")==0) {
           const char *s;
@@ -895,33 +895,6 @@ void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const ch
       GWB_File_List2Iterator_free(it);
     }
   }
-}
-
-
-
-GWB_FILE *_getFileAtPosInList2(GWB_FILE_LIST2 *filesList, int index)
-{
-  GWB_FILE_LIST2_ITERATOR *it;
-  int i=0;
-  
-  it=GWB_File_List2_First(filesList);
-  if (it) {
-    GWB_FILE *file;
-  
-    file=GWB_File_List2Iterator_Data(it);
-    while(file) {
-      if (i==index) {
-	GWB_File_List2Iterator_free(it);
-	return file;
-      }
-      i++;
-      file=GWB_File_List2Iterator_Next(it);
-    }
-
-    GWB_File_List2Iterator_free(it);
-  }
-
-  return NULL;
 }
 
 

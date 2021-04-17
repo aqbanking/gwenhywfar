@@ -24,6 +24,7 @@ GWEN_LIST2_FUNCTION_DEFS(GWB_BUILD_CMD, GWB_BuildCmd);
 
 #define GWB_BUILD_CMD_FLAGS_CHECK_DATES   0x0002
 #define GWB_BUILD_CMD_FLAGS_DEL_OUTFILES  0x0008
+#define GWB_BUILD_CMD_FLAGS_AUTO          0x0010
 
 
 #include "gwenbuild/types/file.h"
