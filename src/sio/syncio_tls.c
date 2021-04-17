@@ -504,6 +504,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
 
   /* find default trust file if none is selected */
   if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
+    int trustFileSet=0;
+
 #if GWEN_TLS_USE_SYSTEM_CERTIFICATES
     /* disable setting of default trust file as discussed on aqbanking-users.
      * The rationale is that without this file being set gnutls should behave
@@ -512,9 +514,6 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
      * distribution. On Windows the default CA store should be used (if given
      * "--with-default-trust-store-file" to "./configure" of GNUTLS).
      */
-    int trustFileSet=0;
-
-
     if (trustFileSet==0) {
       /* Adds the system's default trusted CAs in order to verify client or server certificates. */
       rv=gnutls_certificate_set_x509_system_trust(xio->credentials);
@@ -526,6 +525,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
         trustFileSet=1;
       }
     }
+#endif
 
     /* try to find OpenSSL certificates */
 # ifdef OS_WIN32
@@ -633,7 +633,6 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     if (trustFileSet==0) {
       DBG_WARN(GWEN_LOGDOMAIN, "No default bundle file found");
     }
-#endif
   }
 
   /* possibly set trust file */
