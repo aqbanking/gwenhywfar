@@ -109,21 +109,15 @@ gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--wh
 
 
 TODO:
-- BuildSubCmd: 
-  - remove
-    - mainInputFilePath
-    - mainOutputFilePath
-  
 - eventuell Builder_AddCmds und <BuildFiles> angleichen (verwenden von GWEN_DB wie bei <BuildFiles>)
   -> commandsFromXml()
 
-- INSTALL implementieren
 - DIST implementieren (tarball bauen)
-- CLEAN implementieren (einfach alle BUILT Dateien loeschen)
 - shared vs. static
-- internal commands (or flag: delete destination file before build)
-
-
+- commands
+  - cppcheck
+  - format (astyle)
+  
 
 -s           setup build environment
 -p           run preparation commands (needed e.g. if typemaker2 is used)
@@ -136,4 +130,6 @@ TODO:
 -Lname       Set loglevel (debug, info, notice, warn, error)
 -Cname       Crosscompile for given environment (e-g- 'x86_64-w64-mingw32')
 -jvalue      Use the given number of parallel process for building
+
+
 
