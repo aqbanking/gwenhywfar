@@ -426,10 +426,36 @@ int GWEN_Path_Convert(const char *path,
 
 int GWEN_Path_GetPathBetween(const char *path1, const char *path2, GWEN_BUFFER *diffBuf)
 {
-  if (!(path1 && *path1 && path2 && *path2)) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Both paths are NULL");
-    return GWEN_ERROR_INVALID;
+  if (!(path1 && *path1)) {
+    if (path2 && *path2) {
+      GWEN_Buffer_AppendString(diffBuf, path2);
+      return 0;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "Both paths are NULL.");
+      return 0;
+    }
   }
+
+  if (!(path2 && *path2)) {
+    GWEN_STRINGLIST *sl1;
+
+    sl1=GWEN_StringList_fromString2(path1, "/", 0, GWEN_TEXT_FLAGS_DEL_QUOTES | GWEN_TEXT_FLAGS_CHECK_BACKSLASH);
+    if (sl1) {
+      int cnt;
+      int i;
+
+      cnt=GWEN_StringList_Count(sl1);
+      for (i=0; i<cnt; i++) {
+	if (i>0)
+	  GWEN_Buffer_AppendString(diffBuf, "/");
+	GWEN_Buffer_AppendString(diffBuf, "..");
+      }
+      GWEN_StringList_free(sl1);
+      return 0;
+    }
+  }
+
   _getPathBetween(path1, path2, diffBuf);
   return 0;
 }
