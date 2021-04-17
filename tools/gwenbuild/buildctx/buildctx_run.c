@@ -58,15 +58,20 @@ static void _unlinkFilesInStringList(const GWEN_STRINGLIST *slFiles);
 
 int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrepareCommands, const char *builderName)
 {
+  int rv;
   int waitingJobs;
   int runningJobs;
 
   GWB_BuildCtx_SetupDependencies(bctx);
   _setupCommands(bctx, usePrepareCommands);
   _createCommandQueues(bctx);
-  GWB_BuildCtx_FillWaitingQueue(bctx, builderName);
+  rv=GWB_BuildCtx_FillWaitingQueue(bctx, builderName);
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
 
-  if (bctx->waitingQueue==NULL) {
+  if (GWB_BuildCmd_List2_GetSize(bctx->waitingQueue)==0) {
     fprintf(stdout, "Nothing to do.\n");
     return 0;
   }

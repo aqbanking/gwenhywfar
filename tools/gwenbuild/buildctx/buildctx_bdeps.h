@@ -16,9 +16,13 @@
 
 
 int GWB_BuildCtx_SetupDependencies(GWB_BUILD_CONTEXT *bctx);
+int GWB_BuildCtx_FillWaitingQueue(GWB_BUILD_CONTEXT *bctx, const char *builderName);
 
-GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_CreateBuildListForFile(const GWB_FILE *file);
-GWB_BUILD_CMD_LIST2 *GWB_BuildCtx_CreateBuildListForBuilders(const GWB_BUILD_CMD_LIST2 *sourceCmdList, const char *builderName);
+
+int GWB_BuildCtx_AddBuildCmdsForFileToList(const GWB_FILE *file, GWB_BUILD_CMD_LIST2 *targetCmdList);
+int GWB_BuildCtx_AddBuildCmdsByBuilderNameToList(const GWB_BUILD_CMD_LIST2 *sourceCmdList,
+                                                 const char *builderName,
+                                                 GWB_BUILD_CMD_LIST2 *targetCmdList);
 
 
 
