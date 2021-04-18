@@ -1,3 +1,5 @@
+SUBDIRS=posix windows
+
 INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I../../ -I$(gwenhywfar_symlinkdir)
 
 DEFS=-DBUILDERDATADIR=\"$(datadir)/gwenhywfar/gwenbuild/builders\"
@@ -24,6 +26,8 @@ dist_builderdata_DATA=\
   sharedlib.gwb \
   staticlib.gwb \
   tmplib.gwb \
-  tm2builder.gwb
+  tm2builder.gwb \
+  windowssharedlib.gwb \
+  windowsapp.gwb
 
 

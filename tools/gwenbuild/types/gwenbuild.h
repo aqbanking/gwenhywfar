@@ -48,6 +48,13 @@ GWENBUILD *GWBUILD_new(void);
 void GWBUILD_free(GWENBUILD *gwenbuild);
 
 
+const char *GWBUILD_GetTargetSystem(const GWENBUILD *gwenbuild);
+void GWBUILD_SetTargetSystem(GWENBUILD *gwenbuild, const char *s);
+
+int GWBUILD_GetTargetIsWindows(const GWENBUILD *gwenbuild);
+void GWBUILD_SetTargetIsWindows(GWENBUILD *gwenbuild, int i);
+
+
 int GWBUILD_MakeBuildersForTargets(GWB_PROJECT *project);
 GWB_BUILD_CONTEXT *GWBUILD_MakeBuildCommands(GWB_PROJECT *project);
 

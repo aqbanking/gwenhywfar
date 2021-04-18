@@ -80,6 +80,11 @@ GWB_BUILDER *GWB_GenericBuilder_Factory(GWENBUILD *gwenbuild, GWB_CONTEXT *conte
 
   nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(nameBuf, BUILDERDATADIR GWEN_DIR_SEPARATOR_S);
+  if (GWBUILD_GetTargetIsWindows(gwenbuild))
+    GWEN_Buffer_AppendString(nameBuf, "windows");
+  else
+    GWEN_Buffer_AppendString(nameBuf, "posix");
+  GWEN_Buffer_AppendString(nameBuf, GWEN_DIR_SEPARATOR_S);
   GWEN_Buffer_AppendString(nameBuf, builderName);
   GWEN_Buffer_AppendString(nameBuf, ".gwb");
 

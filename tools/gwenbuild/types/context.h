@@ -21,15 +21,18 @@ GWEN_TREE2_FUNCTION_DEFS(GWB_CONTEXT, GWB_Context)
 #include "gwenbuild/types/keyvaluepair.h"
 #include "gwenbuild/types/file.h"
 #include "gwenbuild/types/target.h"
+#include "gwenbuild/types/gwenbuild.h"
 
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/db.h>
 
 
 
-GWB_CONTEXT *GWB_Context_new();
+GWB_CONTEXT *GWB_Context_new(GWENBUILD *gwenbuild);
 GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx);
 void GWB_Context_free(GWB_CONTEXT *ctx);
+
+GWENBUILD *GWB_Context_GetGwenbuild(const GWB_CONTEXT *ctx);
 
 const char *GWB_Context_GetCurrentRelativeDir(const GWB_CONTEXT *ctx);
 void GWB_Context_SetCurrentRelativeDir(GWB_CONTEXT *ctx, const char *s);

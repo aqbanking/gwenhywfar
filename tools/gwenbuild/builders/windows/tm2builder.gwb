@@ -1,0 +1,52 @@
+<?xml?>
+
+<GwenBuilder name="Tm2Builder">
+
+  <inputFiles>
+    <acceptedInputTypes>tm2</acceptedInputTypes>
+    <acceptedInputFiles>*.t2d *.xml</acceptedInputFiles>
+  </inputFiles>
+
+  <outputFiles>
+    <file type="c">$(firstInputFileNoExt).c</file>
+    <file type="header">$(firstInputFileNoExt).h</file>
+    <file type="header">$(firstInputFileNoExt)_p.h</file>
+  </outputFiles>
+  
+  <buildCommands>
+    <cmd tool="$(GWBUILD_TOOL_TYPEMAKER2)" checkDates="TRUE" >
+      <args>
+        <fixed>$(tm2flags)</fixed>
+        <blank/>
+        <includes type="tm2" />
+        <blank/>
+        <inputFiles match="*.t2d" mode="abspath" />
+        <inputFiles match="*.xml" mode="abspath" />
+      </args>
+      <buildMessage>Generating sources from '$(firstInputFile)'</buildMessage>
+      <mainInputFile index="0" />
+      <mainOutputFile index="0" />
+    </cmd>
+  </buildCommands>
+
+  <prepareCommands>
+    <cmd tool="$(GWBUILD_TOOL_TYPEMAKER2)" checkDates="TRUE" >
+      <args>
+        <fixed>$(tm2flags)</fixed>
+        <blank/>
+        <fixed>--defs-only</fixed>
+        <blank/>
+        <includes type="tm2" />
+        <blank/>
+        <inputFiles match="*.t2d" mode="abspath" />
+        <inputFiles match="*.xml" mode="abspath" />
+      </args>
+      <buildMessage>Generating type definitions from '$(firstInputFile)'</buildMessage>
+      <mainInputFile index="0" />
+      <mainOutputFile index="0" />
+    </cmd>
+  </prepareCommands>
+  
+
+
+</GwenBuilder>

@@ -30,13 +30,14 @@ static char *_combinedString(const char *string1, const char *string2, const cha
 
 
 
-GWB_CONTEXT *GWB_Context_new()
+GWB_CONTEXT *GWB_Context_new(GWENBUILD *gwenbuild)
 {
   GWB_CONTEXT *ctx;
 
   GWEN_NEW_OBJECT(GWB_CONTEXT, ctx);
   GWEN_TREE2_INIT(GWB_CONTEXT, ctx, GWB_Context);
 
+  ctx->gwenbuild=gwenbuild;
   ctx->vars=GWEN_DB_Group_new("vars");
 
   return ctx;
@@ -51,6 +52,7 @@ GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx)
   GWEN_NEW_OBJECT(GWB_CONTEXT, ctx);
   GWEN_TREE2_INIT(GWB_CONTEXT, ctx, GWB_Context);
 
+  ctx->gwenbuild=originalCtx->gwenbuild;
   ctx->currentTarget=originalCtx->currentTarget;
 
   if (originalCtx->initialSourceDir)
@@ -107,6 +109,13 @@ void GWB_Context_free(GWB_CONTEXT *ctx)
 
     GWEN_FREE_OBJECT(ctx);
   }
+}
+
+
+
+GWENBUILD *GWB_Context_GetGwenbuild(const GWB_CONTEXT *ctx)
+{
+  return ctx->gwenbuild;
 }
 
 

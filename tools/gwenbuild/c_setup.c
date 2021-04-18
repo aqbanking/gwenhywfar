@@ -63,7 +63,7 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
 
 
   gwenbuild=GWBUILD_new();
-  firstContext=GWB_Context_new();
+  firstContext=GWB_Context_new(gwenbuild);
   rv=_prepareContextForSetup(firstContext, dbArgs);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error preparing first context.\n");
@@ -173,23 +173,30 @@ int _prepareContextForSetup(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
 
 void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
 {
+  GWENBUILD *gwenbuild;
   GWEN_DB_NODE *dbVars;
   const char *sTarget;
+  const char *sTargetSystem;
   const char *s;
 
   dbVars=GWB_Context_GetVars(context);
+
+  gwenbuild=GWB_Context_GetGwenbuild(context);
 
   sTarget=GWEN_DB_GetCharValue(dbArgs, "crossCompileFor", 0, NULL);
   if (sTarget) {
     s=GWBUILD_GetArchFromTriplet(sTarget);
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_ARCH", s);
-    s=GWBUILD_GetSystemFromTriplet(sTarget);
-    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEM", s);
+    sTargetSystem=GWBUILD_GetSystemFromTriplet(sTarget);
   }
   else {
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_ARCH", GWBUILD_GetHostArch());
-    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEM", GWBUILD_GetHostSystem());
+    sTargetSystem=GWBUILD_GetHostSystem();
   }
+
+  GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEM", sTargetSystem);
+  GWBUILD_SetTargetSystem(gwenbuild, sTargetSystem);
+  GWBUILD_SetTargetIsWindows(gwenbuild, (strcasecmp(sTargetSystem, "windows")==0)?1:0);
 }
 
 

@@ -18,6 +18,8 @@
 struct GWENBUILD {
   GWEN_STRINGLIST *buildFilenameList;
 
+  char *targetSystem;
+  int targetIsWindows;
 };
 
 

@@ -78,6 +78,34 @@ void GWBUILD_free(GWENBUILD *gwenbuild)
 
 
 
+const char *GWBUILD_GetTargetSystem(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->targetSystem;
+}
+
+
+
+void GWBUILD_SetTargetSystem(GWENBUILD *gwenbuild, const char *s)
+{
+  free(gwenbuild->targetSystem);
+  gwenbuild->targetSystem=s?strdup(s):NULL;
+}
+
+
+int GWBUILD_GetTargetIsWindows(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->targetIsWindows;
+}
+
+
+
+void GWBUILD_SetTargetIsWindows(GWENBUILD *gwenbuild, int i)
+{
+  gwenbuild->targetIsWindows=i;
+}
+
+
+
 GWEN_STRINGLIST *GWBUILD_GetBuildFilenameList(const GWENBUILD *gwenbuild)
 {
   return gwenbuild->buildFilenameList;
