@@ -29,6 +29,7 @@ int GWB_Tools_TryLink(GWB_CONTEXT *context, const char *testCode, const char *li
   GWEN_BUFFER *stdOutBuffer;
   GWEN_BUFFER *stdErrBuffer;
   const char *toolName;
+  const char *s;
   int rv;
 
   toolName=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "GWBUILD_TOOL_CC", 0, "gcc");
@@ -47,6 +48,20 @@ int GWB_Tools_TryLink(GWB_CONTEXT *context, const char *testCode, const char *li
   stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
+  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "ldflags", 0, NULL);
+  if (s) {
+    if (GWEN_Buffer_GetUsedBytes(argBuffer))
+      GWEN_Buffer_AppendString(argBuffer, " ");
+    GWEN_Buffer_AppendString(argBuffer, s);
+  }
+  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "local/ldflags", 0, NULL);
+  if (s) {
+    if (GWEN_Buffer_GetUsedBytes(argBuffer))
+      GWEN_Buffer_AppendString(argBuffer, " ");
+    GWEN_Buffer_AppendString(argBuffer, s);
+  }
+  if (GWEN_Buffer_GetUsedBytes(argBuffer))
+    GWEN_Buffer_AppendString(argBuffer, " ");
   GWEN_Buffer_AppendString(argBuffer, "-fPIC conftest.c -o conftest");
   if (libName) {
     GWEN_Buffer_AppendString(argBuffer, " -l");

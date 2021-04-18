@@ -23,7 +23,7 @@
       <args>
         <fixed>-shared -fPIC -Wl,-no-undefined</fixed>
         <blank/>
-        <fixed>$(local/ldflags)</fixed>
+        <fixed>$(ldflags) $(local/ldflags)</fixed>
         <blank/>
         <inputFiles match="*.o" />
         <blank/>

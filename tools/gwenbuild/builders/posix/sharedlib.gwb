@@ -29,7 +29,7 @@
       <args>
         <fixed>-shared -fPIC -Wl,-no-undefined -Wl,-soname,lib$(target_name).so.$(target_so_effective)</fixed>
         <blank/>
-        <fixed>$(local/ldflags)</fixed>
+        <fixed>$(ldflags) $(local/ldflags)</fixed>
         <blank/>
         <inputFiles match="*.o" />
         <blank/>

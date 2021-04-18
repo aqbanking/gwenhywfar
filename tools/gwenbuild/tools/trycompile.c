@@ -25,9 +25,11 @@
 
 int GWB_Tools_TryCompile(GWB_CONTEXT *context, const char *testCode)
 {
+  GWEN_BUFFER *argBuffer;
   GWEN_BUFFER *stdOutBuffer;
   GWEN_BUFFER *stdErrBuffer;
   const char *toolName;
+  const char *s;
   int rv;
 
   toolName=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "GWBUILD_TOOL_CC", 0, "gcc");
@@ -45,14 +47,34 @@ int GWB_Tools_TryCompile(GWB_CONTEXT *context, const char *testCode)
   stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
-  rv=GWEN_Process_RunCommandWaitAndGather(toolName, "-c -fPIC conftest.c -o conftest.o", stdOutBuffer, stdErrBuffer);
+  argBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "cflags", 0, NULL);
+  if (s) {
+    if (GWEN_Buffer_GetUsedBytes(argBuffer))
+      GWEN_Buffer_AppendString(argBuffer, " ");
+    GWEN_Buffer_AppendString(argBuffer, s);
+  }
+  s=GWEN_DB_GetCharValue(GWB_Context_GetVars(context), "local/cflags", 0, NULL);
+  if (s) {
+    if (GWEN_Buffer_GetUsedBytes(argBuffer))
+      GWEN_Buffer_AppendString(argBuffer, " ");
+    GWEN_Buffer_AppendString(argBuffer, s);
+  }
+  if (GWEN_Buffer_GetUsedBytes(argBuffer))
+    GWEN_Buffer_AppendString(argBuffer, " ");
+  GWEN_Buffer_AppendString(argBuffer, "-c -fPIC -o conftest.o conftest.c");
+
+
+  rv=GWEN_Process_RunCommandWaitAndGather(toolName, GWEN_Buffer_GetStart(argBuffer), stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running gcc (%d)", rv);
+    GWEN_Buffer_free(argBuffer);
     GWEN_Buffer_free(stdErrBuffer);
     GWEN_Buffer_free(stdOutBuffer);
     unlink("conftest.c");
     return rv;
   }
+  GWEN_Buffer_free(argBuffer);
   GWEN_Buffer_free(stdErrBuffer);
   GWEN_Buffer_free(stdOutBuffer);
 
