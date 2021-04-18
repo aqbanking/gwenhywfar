@@ -21,7 +21,9 @@
 
     <cmd tool="$(GWBUILD_TOOL_CC)" >
       <args>
-        <fixed>-shared -fPIC -nostdlib -Wl,-no-undefined</fixed>
+        <fixed>-shared -fPIC -Wl,-no-undefined</fixed>
+        <blank/>
+        <fixed>$(local/ldflags)</fixed>
         <blank/>
         <inputFiles match="*.o" />
         <blank/>

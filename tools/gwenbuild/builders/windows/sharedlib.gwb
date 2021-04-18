@@ -23,6 +23,8 @@
       <args>
         <fixed>-shared -fPIC -Wl,-no-undefined -Wl,-soname,lib$(target_name)-$(target_so_effective).dll</fixed>
         <blank/>
+        <fixed>$(local/ldflags)</fixed>
+        <blank/>
         <inputFiles match="*.o" />
         <blank/>
         <fixed>-o</fixed>

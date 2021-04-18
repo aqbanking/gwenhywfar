@@ -18,6 +18,8 @@
       <args>
         <fixed>-fPIC</fixed>
         <blank/>
+        <fixed>$(local/ldflags)</fixed>
+        <blank/>
         <inputFiles match="*.o" />
         <blank/>
         <fixed>-o</fixed>
