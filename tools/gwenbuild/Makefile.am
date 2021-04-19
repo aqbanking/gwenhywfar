@@ -13,7 +13,8 @@ gwbuild_SOURCES=\
   c_prepare.c \
   c_build.c \
   c_install.c \
-  c_clean.c
+  c_clean.c \
+  c_dist.c
   
 noinst_HEADERS=\
   utils.h \
@@ -21,7 +22,8 @@ noinst_HEADERS=\
   c_prepare.h \
   c_build.h \
   c_install.h \
-  c_clean.h
+  c_clean.h \
+  c_dist.h
 
 
 gwbuild_LDADD = \

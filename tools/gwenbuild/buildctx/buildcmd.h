@@ -85,6 +85,10 @@ void GWB_BuildCmd_toXml(const GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
 GWB_BUILD_CMD *GWB_BuildCmd_fromXml(GWEN_XMLNODE *xmlNode, GWB_FILE_LIST2 *fileList);
 
 
+void GWB_BuildCmd_List_WriteXml(const GWB_BUILD_CMD_LIST *cmdList, GWEN_XMLNODE *xmlNode, const char *groupName);
+void GWB_BuildCmd_List2_WriteXml(const GWB_BUILD_CMD_LIST2 *cmdList, GWEN_XMLNODE *xmlNode, const char *groupName);
+
+
 void GWB_BuildCmd_List2_FreeAll(GWB_BUILD_CMD_LIST2 *cmdList);
 
 

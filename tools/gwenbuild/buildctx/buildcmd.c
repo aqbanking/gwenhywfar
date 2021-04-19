@@ -504,6 +504,47 @@ void _readFileIdsFromXml(GWEN_XMLNODE *xmlNode,
 
 
 
+void GWB_BuildCmd_List2_WriteXml(const GWB_BUILD_CMD_LIST2 *cmdList, GWEN_XMLNODE *xmlNode, const char *groupName)
+{
+  GWB_BUILD_CMD_LIST2_ITERATOR *it;
+
+  it=GWB_BuildCmd_List2_First(cmdList);
+  if (it) {
+    GWB_BUILD_CMD *cmd;
+
+    cmd=GWB_BuildCmd_List2Iterator_Data(it);
+    while(cmd) {
+      GWEN_XMLNODE *entryNode;
+
+      entryNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, groupName);
+      GWB_BuildCmd_toXml(cmd, entryNode);
+      GWEN_XMLNode_AddChild(xmlNode, entryNode);
+      cmd=GWB_BuildCmd_List2Iterator_Next(it);
+    }
+    GWB_BuildCmd_List2Iterator_free(it);
+  }
+}
+
+
+
+void GWB_BuildCmd_List_WriteXml(const GWB_BUILD_CMD_LIST *cmdList, GWEN_XMLNODE *xmlNode, const char *groupName)
+{
+  GWB_BUILD_CMD *cmd;
+
+  cmd=GWB_BuildCmd_List_First(cmdList);
+  while(cmd) {
+    GWEN_XMLNODE *entryNode;
+
+    entryNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, groupName);
+    GWB_BuildCmd_toXml(cmd, entryNode);
+    GWEN_XMLNode_AddChild(xmlNode, entryNode);
+    cmd=GWB_BuildCmd_List_Next(cmd);
+  }
+}
+
+
+
+
 void GWB_BuildCmd_List2_FreeAll(GWB_BUILD_CMD_LIST2 *cmdList)
 {
   if (cmdList) {

@@ -87,6 +87,9 @@ GWB_BUILD_CMD_LIST *GWB_Project_GetExplicitBuildList(const GWB_PROJECT *project)
 void GWB_Project_AddExplicitBuild(GWB_PROJECT *project, GWB_BUILD_CMD *bcmd);
 
 
+void GWB_Project_toXml(const GWB_PROJECT *project, GWEN_XMLNODE *xmlNode);
+
+
 void GWB_Project_Dump(const GWB_PROJECT *project, int indent, int fullDump);
 
 

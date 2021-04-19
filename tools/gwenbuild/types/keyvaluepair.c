@@ -227,3 +227,29 @@ int GWB_KeyValuePair_List_WriteAllPairsToBuffer(const GWB_KEYVALUEPAIR_LIST *kvp
 
 
 
+void GWB_KeyValuePair_toXml(const GWB_KEYVALUEPAIR *kvp, GWEN_XMLNODE *xmlNode)
+{
+  if (kvp->key)
+    GWEN_XMLNode_SetCharValue(xmlNode, "key", kvp->key);
+  if (kvp->value)
+    GWEN_XMLNode_SetCharValue(xmlNode, "value", kvp->value);
+}
+
+
+
+void GWB_KeyValuePair_List_WriteXml(const GWB_KEYVALUEPAIR_LIST *kvpList, GWEN_XMLNODE *xmlNode, const char *groupName)
+{
+  GWB_KEYVALUEPAIR *kvp;
+
+  kvp=GWB_KeyValuePair_List_First(kvpList);
+  while(kvp) {
+    GWEN_XMLNODE *entryNode;
+
+    entryNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, groupName);
+    GWB_KeyValuePair_toXml(kvp, entryNode);
+    GWEN_XMLNode_AddChild(xmlNode, entryNode);
+    kvp=GWB_KeyValuePair_List_Next(kvp);
+  }
+}
+
+

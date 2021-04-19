@@ -151,6 +151,8 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "data")==0)
         rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
+      else if (strcasecmp(name, "extradist")==0)
+        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "includes")==0)

@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/list1.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/xml.h>
 
 
 typedef struct GWB_KEYVALUEPAIR GWB_KEYVALUEPAIR;
@@ -62,6 +63,10 @@ int GWB_KeyValuePair_List_WriteAllPairsToBuffer(const GWB_KEYVALUEPAIR_LIST *kvp
                                                 const char *assignmentString,
                                                 const char *delim,
                                                 GWEN_BUFFER *destBuf);
+
+void GWB_KeyValuePair_toXml(const GWB_KEYVALUEPAIR *kvp, GWEN_XMLNODE *xmlNode);
+
+void GWB_KeyValuePair_List_WriteXml(const GWB_KEYVALUEPAIR_LIST *kvpList, GWEN_XMLNODE *xmlNode, const char *groupName);
 
 
 #endif

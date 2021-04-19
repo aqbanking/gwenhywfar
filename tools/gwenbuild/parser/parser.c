@@ -765,9 +765,10 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   GWEN_Buffer_Reset(fileNameBuffer);
   GWEN_Buffer_AppendString(fileNameBuffer, fileName);
   GWEN_Buffer_AppendString(fileNameBuffer, ".in");
-  GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project),
-                                 GWB_Context_GetCurrentRelativeDir(currentContext),
-                                 GWEN_Buffer_GetStart(fileNameBuffer));
+  file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project),
+                                      GWB_Context_GetCurrentRelativeDir(currentContext),
+                                      GWEN_Buffer_GetStart(fileNameBuffer));
+  GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
 
   GWEN_Buffer_free(fileBufferOut);
   GWEN_Buffer_free(fileBufferIn);

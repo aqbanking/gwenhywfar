@@ -15,12 +15,23 @@
 #include "utils.h"
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+
 
 
 
 static GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileList, const char *initialSourceDir);
 static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
+static void _writeProjectNameAndVersionToXml(const GWB_PROJECT *project, GWEN_XMLNODE *xmlNode);
 
 
 
@@ -389,5 +400,191 @@ GWEN_STRINGLIST *_readBuildFileList(const char *fileName)
   GWEN_XMLNode_free(xmlRoot);
   return NULL;
 }
+
+
+
+int GWB_Utils_WriteProjectToFile(const GWB_PROJECT *project, const char *fileName)
+{
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlProject;
+  int rv;
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  xmlProject=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Project");
+  GWB_Project_toXml(project, xmlProject);
+  GWEN_XMLNode_AddChild(xmlRoot, xmlProject);
+
+  rv=GWEN_XMLNode_WriteFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  GWEN_XMLNode_free(xmlRoot);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error writing project to file \"%s\" (%d)", fileName, rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
+{
+  int rv;
+  struct stat st;
+
+  if (lstat(sSrcPath, &st)==-1) {
+    DBG_ERROR(NULL, "ERROR: stat(%s): %s", sSrcPath, strerror(errno));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if ((st.st_mode & S_IFMT)==S_IFLNK) {
+    char *symlinkbuf;
+    int bufSizeNeeded;
+
+    /* copy symlink */
+    if (st.st_size==0)
+      bufSizeNeeded=256;
+    else
+      bufSizeNeeded=st.st_size+1;
+    symlinkbuf=(char*) malloc(bufSizeNeeded);
+    assert(symlinkbuf);
+    rv=readlink(sSrcPath, symlinkbuf, bufSizeNeeded);
+    if (rv==-1) {
+      DBG_ERROR(NULL, "ERROR: readlink(%s): %s", sSrcPath, strerror(errno));
+      free(symlinkbuf);
+      return GWEN_ERROR_GENERIC;
+    }
+    else if (rv==bufSizeNeeded) {
+      DBG_ERROR(NULL, "Buffer too small (%d)", bufSizeNeeded);
+      free(symlinkbuf);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    rv=GWEN_Directory_GetPath(sDestPath,
+                              GWEN_DIR_FLAGS_PUBLIC_PATH | GWEN_DIR_FLAGS_PUBLIC_NAME |
+                              GWEN_PATH_FLAGS_VARIABLE|
+                              GWEN_PATH_FLAGS_CHECKROOT);
+    if (rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      free(symlinkbuf);
+      return rv;
+    }
+    unlink(sDestPath);
+    rv=symlink(symlinkbuf, sDestPath);
+    if (rv==-1) {
+      DBG_ERROR(NULL, "ERROR: symlink(%s): %s", sSrcPath, strerror(errno));
+      free(symlinkbuf);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+  else if ((st.st_mode & S_IFMT)==S_IFREG) {
+    mode_t newMode=0;
+
+    rv=GWEN_Directory_GetPath(sDestPath,
+                              GWEN_DIR_FLAGS_PUBLIC_PATH | GWEN_DIR_FLAGS_PUBLIC_NAME |
+                              GWEN_PATH_FLAGS_VARIABLE|
+                              GWEN_PATH_FLAGS_CHECKROOT);
+    if (rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      return rv;
+    }
+  
+    rv=GWEN_SyncIo_Helper_CopyFile(sSrcPath, sDestPath);
+    if (rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      return rv;
+    }
+
+    newMode=S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH;
+    if (st.st_mode & S_IXUSR)
+      newMode|=S_IXUSR|S_IXGRP|S_IXOTH;
+    rv=chmod(sDestPath, newMode);
+    if (rv<0) {
+      DBG_ERROR(NULL, "ERROR: chmod(%s): %s", sSrcPath, strerror(errno));
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(NULL, "Unhandled file type \"%s\"", sSrcPath);
+  }
+
+  return 0;
+}
+
+
+
+int GWB_Utils_WriteProjectInfoToFile(const GWB_PROJECT *project, const char *fileName)
+{
+  GWB_CONTEXT *rootContext;
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlProject;
+  const char *initialSourceDir;
+  int rv;
+
+  rootContext=GWB_Project_GetRootContext(project);
+  initialSourceDir=GWB_Context_GetInitialSourceDir(rootContext);
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  xmlProject=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ProjectInfo");
+  if (initialSourceDir && *initialSourceDir)
+    GWEN_XMLNode_SetCharValue(xmlProject, "initialSourceDir", initialSourceDir);
+  _writeProjectNameAndVersionToXml(project, xmlProject);
+  GWEN_XMLNode_AddChild(xmlRoot, xmlProject);
+
+  rv=GWEN_XMLNode_WriteFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  GWEN_XMLNode_free(xmlRoot);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error writing project to file \"%s\" (%d)", fileName, rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+void _writeProjectNameAndVersionToXml(const GWB_PROJECT *project, GWEN_XMLNODE *xmlNode)
+{
+  const char *s;
+  s=GWB_Project_GetProjectName(project);
+  if (s)
+    GWEN_XMLNode_SetCharValue(xmlNode, "projectName", s);
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionMajor", GWB_Project_GetVersionMajor(project));
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionMinor", GWB_Project_GetVersionMinor(project));
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionPatchlevel", GWB_Project_GetVersionPatchlevel(project));
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionBuild", GWB_Project_GetVersionBuild(project));
+  s=GWB_Project_GetVersionTag(project);
+  if (s)
+    GWEN_XMLNode_SetCharValue(xmlNode, "versionTag", s);
+
+}
+
+
+
+GWEN_XMLNODE *GWB_Utils_ReadProjectInfoFromFile(const char *fileName)
+{
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlProjectInfo;
+  int rv;
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  rv=GWEN_XML_ReadFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error reading project info from \"%s\"", fileName);
+    GWEN_XMLNode_free(xmlRoot);
+    return NULL;
+  }
+
+  xmlProjectInfo=GWEN_XMLNode_FindFirstTag(xmlRoot, "ProjectInfo", NULL, NULL);
+  if (xmlProjectInfo) {
+    GWEN_XMLNode_UnlinkChild(xmlRoot, xmlProjectInfo);
+    GWEN_XMLNode_free(xmlRoot);
+    return xmlProjectInfo;
+  }
+
+  GWEN_XMLNode_free(xmlRoot);
+  return NULL;
+}
+
+
 
 

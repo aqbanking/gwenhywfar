@@ -19,6 +19,7 @@
 #include "c_build.h"
 #include "c_install.h"
 #include "c_clean.h"
+#include "c_dist.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/cgui.h>
@@ -46,6 +47,7 @@
 #define ARGS_COMMAND_REPEAT_SETUP   0x0008
 #define ARGS_COMMAND_INSTALL        0x0010
 #define ARGS_COMMAND_CLEAN          0x0020
+#define ARGS_COMMAND_DIST           0x0040
 
 
 
@@ -159,6 +161,7 @@ int main(int argc, char **argv)
   commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "dist", 0, 0)?ARGS_COMMAND_DIST:0;
 
 
   if (commands & ARGS_COMMAND_SETUP) {
@@ -197,6 +200,14 @@ int main(int argc, char **argv)
     rv=GWB_InstallFiles(".gwbuild.installfiles", getenv("DESTDIR"));
     if (rv!=0) {
       fprintf(stderr, "ERROR: Error on installing.\n");
+      return rv;
+    }
+  }
+
+  if (commands & ARGS_COMMAND_DIST) {
+    rv=GWB_MkDist();
+    if (rv!=0) {
+      fprintf(stderr, "ERROR: Error on creating dist file.\n");
       return rv;
     }
   }
@@ -300,6 +311,8 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "install", 1);
         else if (strcmp(s, "-c")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "clean", 1);
+        else if (strcmp(s, "-d")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dist", 1);
         else if (strncmp(s, "-j", 2)==0) {
           /* jobs */
           s+=2;

@@ -114,6 +114,20 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
     return 3;
   }
 
+#if 0
+  rv=GWB_Utils_WriteProjectToFile(project, ".gwbuild.project");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error writing project to file.\n");
+    return 3;
+  }
+#endif
+
+  rv=GWB_Utils_WriteProjectInfoToFile(project, ".gwbuild.projectinfo");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error writing project info to file.\n");
+    return 3;
+  }
+
 
   if (doDump) {
     GWB_Project_Dump(project, 2, 1);

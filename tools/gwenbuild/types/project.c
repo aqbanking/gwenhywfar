@@ -15,6 +15,14 @@
 #include "gwenbuild/types/project_p.h"
 
 #include <gwenhywfar/memory.h>
+#include <gwenhywfar/debug.h>
+
+
+
+
+static void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *varName);
+/* static uint32_t _readFlagsFromChar(const char *flagsAsText); */
+
 
 
 
@@ -392,6 +400,119 @@ void GWB_Project_AddExplicitBuild(GWB_PROJECT *project, GWB_BUILD_CMD *bcmd)
   GWB_BuildCmd_List_Add(bcmd, project->explicitBuildList);
 }
 
+
+
+void GWB_Project_toXml(const GWB_PROJECT *project, GWEN_XMLNODE *xmlNode)
+{
+  if (project->projectName)
+    GWEN_XMLNode_SetCharValue(xmlNode, "projectName", project->projectName);
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionMajor", project->versionMajor);
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionMinor", project->versionMinor);
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionPatchlevel", project->versionPatchlevel);
+  GWEN_XMLNode_SetIntValue(xmlNode, "versionBuild", project->versionBuild);
+  if (project->versionTag)
+    GWEN_XMLNode_SetCharValue(xmlNode, "versionTag", project->versionTag);
+
+  GWEN_XMLNode_SetIntValue(xmlNode, "soVersionCurrent", project->soVersionCurrent);
+  GWEN_XMLNode_SetIntValue(xmlNode, "soVersionAge", project->soVersionAge);
+  GWEN_XMLNode_SetIntValue(xmlNode, "soVersionRevision", project->soVersionRevision);
+
+  _writeFileFlagsToXml(GWB_Project_GetFlags(project), xmlNode, "flags");
+
+  if (project->defineList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DefineList");
+    GWB_KeyValuePair_List_WriteXml(project->defineList, n, "Define");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+  if (project->givenOptionList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "GivenOptionList");
+    GWB_KeyValuePair_List_WriteXml(project->givenOptionList, n, "GivenOption");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+  if (project->explicitBuildList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ExplicitBuildCmdList");
+    GWB_BuildCmd_List_WriteXml(project->explicitBuildList, n, "BuildCmd");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+  if (project->fileList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "FileList");
+    GWB_File_List2_WriteXml(project->fileList, n, "File");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+}
+
+
+
+void _writeFileFlagsToXml(uint32_t flags, GWEN_XMLNODE *xmlNode, const char *varName)
+{
+  if (flags) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+    if (flags & GWB_PROJECT_FLAGS_SHARED) {
+      if (GWEN_Buffer_GetUsedBytes(dbuf))
+        GWEN_Buffer_AppendString(dbuf, " ");
+      GWEN_Buffer_AppendString(dbuf, "SHARED");
+    }
+
+    if (flags & GWB_PROJECT_FLAGS_CONFIG_H) {
+      if (GWEN_Buffer_GetUsedBytes(dbuf))
+        GWEN_Buffer_AppendString(dbuf, " ");
+      GWEN_Buffer_AppendString(dbuf, "CONFIG_H");
+    }
+
+    if (GWEN_Buffer_GetUsedBytes(dbuf))
+      GWEN_XMLNode_SetCharValue(xmlNode, varName, GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+  }
+}
+
+
+#if 0
+uint32_t _readFlagsFromChar(const char *flagsAsText)
+{
+  GWEN_STRINGLIST *sl;
+  uint32_t flags=0;
+
+  sl=GWEN_StringList_fromString(flagsAsText, " ", 1);
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(sl);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s) {
+        if (strcasecmp(s, "SHARED")==0)
+          flags|=GWB_PROJECT_FLAGS_SHARED;
+        else if (strcasecmp(s, "CONFIG_H")==0)
+          flags|=GWB_PROJECT_FLAGS_CONFIG_H;
+        else {
+          DBG_ERROR(NULL, "Unexpected PROJECT flag \"%s\"", s);
+        }
+      }
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(sl);
+  }
+
+  return flags;
+}
+#endif
 
 
 
