@@ -53,6 +53,7 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild,
   GWEN_XMLNODE *xmlNewFile;
   GWEN_XMLNODE *xmlProject;
   GWB_PROJECT *project;
+  GWB_FILE *file;
   int rv;
 
   GWB_Context_SetInitialSourceDir(currentContext, srcDir);
@@ -73,6 +74,11 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild,
   }
 
   project=GWB_Project_new(gwbuild, currentContext);
+  file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project),
+                                      GWB_Context_GetCurrentRelativeDir(currentContext),
+                                      GWB_PARSER_FILENAME);
+  GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
+
   if (givenOptionList)
     GWB_Project_SetGivenOptionList(project, givenOptionList);
 
@@ -161,7 +167,7 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
   DBG_DEBUG(NULL, "Reading file %s", GWEN_Buffer_GetStart(fileNameBuf));
   rv=GWEN_XML_ReadFile(xmlDocNode, GWEN_Buffer_GetStart(fileNameBuf), GWEN_XML_FLAGS_DEFAULT);
   if (rv<0) {
-    DBG_INFO(NULL, "here %d)", rv);
+    DBG_ERROR(NULL, "Error in XML file \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuf), rv);
     GWEN_Buffer_free(fileNameBuf);
     return NULL;
   }
@@ -419,6 +425,7 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
   GWB_CONTEXT *newContext;
   GWEN_XMLNODE *xmlNewFile;
   int rv;
+  GWB_FILE *file;
 
   newContext=GWB_Parser_CopyContextForSubdir(currentContext, sFolder);
 
@@ -429,6 +436,12 @@ int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *
     GWB_Context_free(newContext);
     return GWEN_ERROR_BAD_DATA;
   }
+
+  file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project),
+                                      GWB_Context_GetCurrentRelativeDir(newContext),
+                                      GWB_PARSER_FILENAME);
+  GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
+
 
   rv=fn(project, newContext, xmlNewFile);
   if (rv<0) {
