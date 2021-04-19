@@ -45,6 +45,13 @@ int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, G
 //int GWB_Parser_ParseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 int GWB_Parser_ParseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
+int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
+                                     GWB_CONTEXT *currentContext,
+                                     GWEN_XMLNODE *xmlNode,
+                                     int alwaysDist,
+                                     int isSource);
+
+
 void GWB_Parser_SetItemValue(GWEN_DB_NODE *db, const char *sId, const char *suffix, const char *value);
 
 int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_DB_NODE *db);

@@ -114,7 +114,6 @@ TODO:
 
 - DIST implementieren (tarball bauen)
 - shared vs. static
-- writeFile: Ergebnis Datei nicht als DIST, sondern dessen Quelle!
 - commands
   - cppcheck
   

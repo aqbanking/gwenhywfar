@@ -24,7 +24,6 @@
 
 static GWB_TARGET *_readTarget(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-static int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, int alwaysDist, int isSource);
 static int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseLibraries(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
@@ -146,13 +145,13 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
       if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if (strcasecmp(name, "sources")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 1);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 1);
       else if (strcasecmp(name, "headers")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "data")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "extradist")==0)
-        rv=_parseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "includes")==0)
@@ -174,82 +173,6 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
     }
 
     n=GWEN_XMLNode_GetNextTag(n);
-  }
-
-  return 0;
-}
-
-
-
-int _parseSourcesOrHeaders(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, int alwaysDist, int isSource)
-{
-  GWB_TARGET *target;
-  uint32_t flags=0;
-  int rv;
-  const char *s;
-  const char *installPath;
-  const char *fileType;
-  const char *currentFolder;
-  const char *builder;
-  GWEN_STRINGLIST *fileNameList;
-
-  target=GWB_Context_GetCurrentTarget(currentContext);
-  if (target==NULL) {
-    DBG_ERROR(NULL, "No target in current context, SNH!");
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
-  if (rv<0) {
-    DBG_INFO(NULL, "here (%d)", rv);
-    return rv;
-  }
-
-  currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
-
-  fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", NULL);
-  builder=GWEN_XMLNode_GetProperty(xmlNode, "builder", NULL);
-
-  installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
-  if (installPath && *installPath)
-    flags|=GWB_FILE_FLAGS_INSTALL;
-
-  s=GWEN_XMLNode_GetProperty(xmlNode, "generated", "FALSE");
-  if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
-    flags|=GWB_FILE_FLAGS_GENERATED;
-
-  s=GWEN_XMLNode_GetProperty(xmlNode, "dist", alwaysDist?"TRUE":"FALSE");
-  if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
-    flags|=GWB_FILE_FLAGS_DIST;
-
-  fileNameList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
-  if (fileNameList) {
-    GWEN_STRINGLISTENTRY *se;
-
-    se=GWEN_StringList_FirstEntry(fileNameList);
-    while(se) {
-      const char *sFileName;
-
-      sFileName=GWEN_StringListEntry_Data(se);
-      if (sFileName && *sFileName) {
-        GWB_FILE *file;
-
-        file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), currentFolder, sFileName);
-        GWB_File_AddFlags(file, flags);
-        if (installPath)
-          GWB_File_SetInstallPath(file, installPath);
-        if (fileType)
-          GWB_File_SetFileType(file, fileType);
-        if (builder)
-          GWB_File_SetBuilder(file, builder);
-        if (isSource)
-          GWB_Context_AddSourceFile(currentContext, file);
-        //GWB_Target_AddSourceFile(target, file);
-      }
-
-      se=GWEN_StringListEntry_Next(se);
-    }
-    GWEN_StringList_free(fileNameList);
   }
 
   return 0;
