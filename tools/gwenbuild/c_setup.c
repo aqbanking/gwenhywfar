@@ -129,6 +129,9 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
   }
 
 
+  rv=GWB_Utils_WriteContextTreeToFile(GWB_Project_GetRootContext(project),
+                                      ".gwbuild.ctxtree");
+
   if (doDump) {
     GWB_Project_Dump(project, 2, 1);
   }

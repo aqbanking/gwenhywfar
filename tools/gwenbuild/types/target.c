@@ -284,6 +284,27 @@ void GWB_Target_AddExplicitBuild(GWB_TARGET *target, GWB_BUILD_CMD *bcmd)
 
 
 
+void GWB_Target_toXml(const GWB_TARGET *target, GWEN_XMLNODE *xmlNode)
+{
+  if (target->id)
+    GWEN_XMLNode_SetCharValue(xmlNode, "id", target->id);
+  if (target->name)
+    GWEN_XMLNode_SetCharValue(xmlNode, "name", target->name);
+  GWEN_XMLNode_SetIntValue(xmlNode, "soVersionCurrent", target->soVersionCurrent);
+  GWEN_XMLNode_SetIntValue(xmlNode, "soVersionAge", target->soVersionAge);
+  GWEN_XMLNode_SetIntValue(xmlNode, "soVersionRevision", target->soVersionRevision);
+
+  if (target->sourceFileList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SourceFileList");
+    GWB_File_List2_WriteXml(target->sourceFileList, n, "File");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+}
+
+
+
 
 
 void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump)

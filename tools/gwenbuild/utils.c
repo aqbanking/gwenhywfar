@@ -426,6 +426,29 @@ int GWB_Utils_WriteProjectToFile(const GWB_PROJECT *project, const char *fileNam
 
 
 
+int GWB_Utils_WriteContextTreeToFile(const GWB_CONTEXT *ctx, const char *fileName)
+{
+  GWEN_XMLNODE *xmlRoot;
+  GWEN_XMLNODE *xmlContext;
+  int rv;
+
+  xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  xmlContext=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ContextTree");
+  GWB_Context_toXml(ctx, xmlContext, 1);
+  GWEN_XMLNode_AddChild(xmlRoot, xmlContext);
+
+  rv=GWEN_XMLNode_WriteFile(xmlRoot, fileName, GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_SIMPLE);
+  GWEN_XMLNode_free(xmlRoot);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error writing context tree to file \"%s\" (%d)", fileName, rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
 {
   int rv;

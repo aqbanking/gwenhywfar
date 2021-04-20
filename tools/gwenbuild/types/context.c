@@ -26,6 +26,7 @@ GWEN_TREE2_FUNCTIONS(GWB_CONTEXT, GWB_Context)
 
 
 static char *_combinedString(const char *string1, const char *string2, const char delim);
+static void _exportDbToXml(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
 
 
 
@@ -503,6 +504,92 @@ char *_combinedString(const char *string1, const char *string2, const char delim
     if (string1)
       return strdup(string1);
     return NULL;
+  }
+}
+
+
+
+void GWB_Context_toXml(const GWB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, int withDb)
+{
+  const GWB_CONTEXT *ctxChild;
+
+  if (ctx->initialSourceDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "initialSourceDir", ctx->initialSourceDir);
+  if (ctx->currentRelativeDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "currentRelativeDir", ctx->currentRelativeDir);
+  if (ctx->topBuildDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "topBuildDir", ctx->topBuildDir);
+  if (ctx->topSourceDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "topSourceDir", ctx->topSourceDir);
+  if (ctx->currentBuildDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "currentBuildDir", ctx->currentBuildDir);
+  if (ctx->currentSourceDir)
+    GWEN_XMLNode_SetCharValue(xmlNode, "currentSourceDir", ctx->currentSourceDir);
+  if (ctx->compilerFlags)
+    GWEN_XMLNode_SetCharValue(xmlNode, "compilerFlags", ctx->compilerFlags);
+  if (ctx->linkerFlags)
+    GWEN_XMLNode_SetCharValue(xmlNode, "linkerFlags", ctx->linkerFlags);
+
+  if (ctx->includeList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "includeList");
+    GWB_KeyValuePair_List_WriteXml(ctx->includeList, n, "Include");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+  if (ctx->defineList) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "defineList");
+    GWB_KeyValuePair_List_WriteXml(ctx->defineList, n, "Define");
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+  if (withDb && ctx->vars) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Vars");
+    _exportDbToXml(ctx->vars, n);
+    GWEN_XMLNode_AddChild(xmlNode, n);
+  }
+
+  ctxChild=GWB_Context_Tree2_GetFirstChild(ctx);
+  if (ctxChild) {
+    GWEN_XMLNODE *nTree;
+
+    nTree=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Children");
+    while(ctxChild) {
+      GWEN_XMLNODE *n;
+
+      n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Child");
+      GWB_Context_toXml(ctxChild, n, 0); /* only write db for root context */
+      GWEN_XMLNode_AddChild(nTree, n);
+      ctxChild=GWB_Context_Tree2_GetNext(ctxChild);
+    }
+    GWEN_XMLNode_AddChild(xmlNode, nTree);
+  }
+}
+
+
+
+void _exportDbToXml(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode)
+{
+  GWEN_BUFFER *dbuf;
+  int rv;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_DB_WriteToBuffer(db, dbuf, GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_ERROR(NULL, "here (%d)", rv);
+    GWEN_Buffer_free(dbuf);
+  }
+  else {
+    GWEN_XMLNODE *xmlData;
+
+    xmlData=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(dbuf));
+    GWEN_XMLNode_AddChild(xmlNode, xmlData);
+    GWEN_Buffer_free(dbuf);
   }
 }
 

@@ -25,12 +25,16 @@ GWEN_TREE2_FUNCTION_DEFS(GWB_CONTEXT, GWB_Context)
 
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/db.h>
+#include <gwenhywfar/xml.h>
 
 
 
 GWB_CONTEXT *GWB_Context_new(GWENBUILD *gwenbuild);
 GWB_CONTEXT *GWB_Context_dup(const GWB_CONTEXT *originalCtx);
 void GWB_Context_free(GWB_CONTEXT *ctx);
+
+void GWB_Context_toXml(const GWB_CONTEXT *ctx, GWEN_XMLNODE *xmlNode, int withDb);
+
 
 GWENBUILD *GWB_Context_GetGwenbuild(const GWB_CONTEXT *ctx);
 
