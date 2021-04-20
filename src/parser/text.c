@@ -2173,8 +2173,8 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
         }
       }
       else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
-        return GWEN_ERROR_BAD_DATA;
+	DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code \"%s\" (rest:\"%s\")", s, p);
+	return GWEN_ERROR_BAD_DATA;
       }
       p++;
     }
