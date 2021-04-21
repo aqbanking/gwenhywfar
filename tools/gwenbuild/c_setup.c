@@ -63,15 +63,15 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
 
 
   gwenbuild=GWBUILD_new();
+  if (GWEN_DB_GetIntValue(dbArgs, "static", 0, 0))
+    GWBUILD_AddFlags(gwenbuild, GWENBUILD_FLAGS_STATIC);
+
   firstContext=GWB_Context_new(gwenbuild);
   rv=_prepareContextForSetup(firstContext, dbArgs);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error preparing first context.\n");
     return 2;
   }
-
-  if (GWEN_DB_GetIntValue(dbArgs, "static", 0, 0))
-    GWBUILD_AddFlags(gwenbuild, GWENBUILD_FLAGS_STATIC);
 
   project=GWB_Parser_ReadBuildTree(gwenbuild, firstContext, folder, givenOptionList);
   if (project==NULL) {
@@ -213,6 +213,11 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_ARCH", GWBUILD_GetHostArch());
     sTargetSystem=GWBUILD_GetHostSystem();
   }
+
+  if (GWBUILD_GetFlags(gwenbuild) & GWENBUILD_FLAGS_STATIC)
+    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_LIBTYPE", "staticlib");
+  else
+    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_LIBTYPE", "sharedlib");
 
   GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEM", sTargetSystem);
   GWBUILD_SetTargetSystem(gwenbuild, sTargetSystem);
