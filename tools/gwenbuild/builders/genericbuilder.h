@@ -19,6 +19,8 @@
 
 GWB_BUILDER *GWB_GenericBuilder_Factory(GWENBUILD *gwenbuild, GWB_CONTEXT *context, const char *builderName);
 
+GWB_BUILDER *GWB_GenericBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWEN_XMLNODE *xmlDescr);
+
 
 
 #endif

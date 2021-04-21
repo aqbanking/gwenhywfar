@@ -28,12 +28,17 @@ typedef enum {
 
 
 
+#define GWENBUILD_FLAGS_STATIC 0x0001
+
+
+
 #include "gwenbuild/types/keyvaluepair.h"
 #include "gwenbuild/types/file.h"
 #include "gwenbuild/types/target.h"
 #include "gwenbuild/types/project.h"
 #include "gwenbuild/buildctx/buildctx.h"
 #include "gwenbuild/types/option.h"
+#include "gwenbuild/builders/gbuilderdescr.h"
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
@@ -46,6 +51,12 @@ typedef enum {
 
 GWENBUILD *GWBUILD_new(void);
 void GWBUILD_free(GWENBUILD *gwenbuild);
+
+
+uint32_t GWBUILD_GetFlags(const GWENBUILD *gwenbuild);
+void GWBUILD_SetFlags(GWENBUILD *gwenbuild, uint32_t f);
+void GWBUILD_AddFlags(GWENBUILD *gwenbuild, uint32_t f);
+void GWBUILD_DelFlags(GWENBUILD *gwenbuild, uint32_t f);
 
 
 const char *GWBUILD_GetTargetSystem(const GWENBUILD *gwenbuild);

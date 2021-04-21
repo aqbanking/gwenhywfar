@@ -7,23 +7,29 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef GWBUILD_GWENBUILD_P_H
-#define GWBUILD_GWENBUILD_P_H
+#ifndef GWBUILD_GBUILDER_DESCR_P_H
+#define GWBUILD_GBUILDER_DESCR_P_H
 
 
-#include "gwenbuild/types/gwenbuild.h"
+#include "gwenbuild/builders/gbuilderdescr.h"
+
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/stringlist.h>
 
 
 
-struct GWENBUILD {
-  GWEN_STRINGLIST *buildFilenameList;
+typedef struct GWB_GBUILDER_DESCR GWB_GBUILDER_DESCR;
+struct GWB_GBUILDER_DESCR {
+  GWEN_LIST_ELEMENT(GWB_GBUILDER_DESCR)
 
-  char *targetSystem;
-  int targetIsWindows;
+  char *builderName;
+  GWEN_XMLNODE *xmlDescr;
 
-  GWB_GBUILDER_DESCR_LIST *builderDescrList;
-  uint32_t flags;
+  GWEN_STRINGLIST *acceptedInputTypes;
+  GWEN_STRINGLIST *acceptedInputExt;
 };
+
+
 
 
 #endif

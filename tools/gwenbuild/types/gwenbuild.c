@@ -37,6 +37,8 @@
 static GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWB_FILE *file);
 static GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target);
 
+static GWB_BUILDER *_getBuilderByName(GWENBUILD *gwenbuild, GWB_CONTEXT *context, const char *builderName);
+
 static int _addOrBuildTargetSources(GWB_PROJECT *project, GWB_TARGET *target);
 static int _addSourcesOrMkBuildersAndGetTheirOutputs(GWB_PROJECT *project, 
                                                      GWB_TARGET *target,
@@ -71,9 +73,38 @@ void GWBUILD_free(GWENBUILD *gwenbuild)
 {
   if (gwenbuild) {
     GWEN_StringList_free(gwenbuild->buildFilenameList);
+    GWB_GBuilderDescr_List_free(gwenbuild->builderDescrList);
 
     GWEN_FREE_OBJECT(gwenbuild);
   }
+}
+
+
+
+uint32_t GWBUILD_GetFlags(const GWENBUILD *gwenbuild)
+{
+  return gwenbuild->flags;
+}
+
+
+
+void GWBUILD_SetFlags(GWENBUILD *gwenbuild, uint32_t f)
+{
+  gwenbuild->flags=f;
+}
+
+
+
+void GWBUILD_AddFlags(GWENBUILD *gwenbuild, uint32_t f)
+{
+  gwenbuild->flags|=f;
+}
+
+
+
+void GWBUILD_DelFlags(GWENBUILD *gwenbuild, uint32_t f)
+{
+  gwenbuild->flags&=~f;
 }
 
 
@@ -1001,6 +1032,50 @@ void GWBUILD_AddFilesFromStringList(GWB_FILE_LIST2 *mainFileList,
 
 
 
+void _readBuilderDescrList(GWENBUILD *gwenbuild)
+{
+  GWEN_BUFFER *nameBuf;
+
+  nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(nameBuf, BUILDERDATADIR GWEN_DIR_SEPARATOR_S);
+  if (GWBUILD_GetTargetIsWindows(gwenbuild))
+    GWEN_Buffer_AppendString(nameBuf, "windows");
+  else
+    GWEN_Buffer_AppendString(nameBuf, "posix");
+
+  gwenbuild->builderDescrList=GWB_GBuilderDescr_ReadAll(GWEN_Buffer_GetStart(nameBuf));
+  GWEN_Buffer_free(nameBuf);
+}
+
+
+
+GWB_BUILDER *_getBuilderByName(GWENBUILD *gwenbuild, GWB_CONTEXT *context, const char *builderName)
+{
+  GWB_GBUILDER_DESCR *descr;
+  GWEN_XMLNODE *xmlDescr;
+  GWB_BUILDER *builder;
+
+  if (gwenbuild->builderDescrList==NULL)
+    _readBuilderDescrList(gwenbuild);
+
+  descr=GWB_GBuilderDescr_List_GetByName(gwenbuild->builderDescrList, builderName);
+  if (descr==NULL) {
+    DBG_ERROR(NULL, "Builder \"%s\" not found", builderName);
+    return NULL;
+  }
+
+  xmlDescr=GWEN_XMLNode_dup(GWB_GBuilderDescr_GetXmlDescr(descr));
+  builder=GWB_GenericBuilder_new(gwenbuild, context, xmlDescr);
+  if (builder==NULL) {
+    DBG_ERROR(NULL, "Error instantiating builder \"%s\"", builderName);
+    return NULL;
+  }
+
+  return builder;
+}
+
+
+
 /*
  * --------------------------------------------------------------------------------------------
  * Add new targets or known source types below.
@@ -1044,7 +1119,7 @@ GWB_BUILDER *_genBuilderForSourceFile(GWENBUILD *gwenbuild, GWB_CONTEXT *context
   }
 
   DBG_INFO(NULL, "Selected builder type is for file \%s\" is \"%s\"", name, builderName);
-  builder=GWB_GenericBuilder_Factory(gwenbuild, context, builderName);
+  builder=_getBuilderByName(gwenbuild, context, builderName);
   if (builder==NULL) {
     DBG_ERROR(NULL, "Could not create builder for type \"%s\"", ext);
     return NULL;
@@ -1069,24 +1144,25 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
   case GWBUILD_TargetType_None:
     break;
   case GWBUILD_TargetType_InstallLibrary:
-    /* TODO: take project's "shared" attribute into account */
-    //builder=GWB_SharedLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
-    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "sharedlib");
+    if (GWBUILD_GetFlags(gwenbuild) & GWENBUILD_FLAGS_STATIC)
+      builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "staticlib");
+    else
+      builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "sharedlib");
     break;
   case GWBUILD_TargetType_ConvenienceLibrary:
     //builder=GWEN_TmpLibBuilder_new(gwenbuild, GWB_Target_GetContext(target));
-    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "tmplib");
+    builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "tmplib");
     break;
   case GWBUILD_TargetType_Program:
-    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "app");
+    builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "app");
     break;
   case GWBUILD_TargetType_CxxProgram:
-    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "cxxapp");
+    builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "cxxapp");
     break;
   case GWBUILD_TargetType_Objects:
     break;
   case GWBUILD_TargetType_Module:
-    builder=GWB_GenericBuilder_Factory(gwenbuild, GWB_Target_GetContext(target), "module");
+    builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "module");
     break;
   }
   if (builder==NULL) {

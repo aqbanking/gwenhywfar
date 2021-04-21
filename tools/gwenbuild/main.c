@@ -163,7 +163,6 @@ int main(int argc, char **argv)
   commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;
   commands|=GWEN_DB_GetIntValue(dbArgs, "dist", 0, 0)?ARGS_COMMAND_DIST:0;
 
-
   if (commands & ARGS_COMMAND_SETUP) {
     rv=GWB_Setup(dbArgs);
     if (rv!=0) {
@@ -295,6 +294,8 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
         }
         else if (strcmp(s, "--dump")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "dump", 1);
+        else if (strcmp(s, "--static")==0)
+          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "static", 1);
 	else if (strcmp(s, "--help")==0) {
 	  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "help", 1);
 	  help=1;
@@ -408,7 +409,8 @@ void _printHelpScreen()
 	  "             'tm2builder')\n"
 	  "-Lname       Set loglevel (debug, info, notice, warn, error)\n"
 	  "-Cname       Crosscompile for given environment (e-g- 'x86_64-w64-mingw32')\n"
-	  "-jvalue      Use the given number of parallel process for building\n"
+          "-jvalue      Use the given number of parallel process for building\n"
+          "--static     Generate static libs for InstallLibrary targets\n"
 	 );
 }
 

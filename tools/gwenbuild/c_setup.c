@@ -70,6 +70,9 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
     return 2;
   }
 
+  if (GWEN_DB_GetIntValue(dbArgs, "static", 0, 0))
+    GWBUILD_AddFlags(gwenbuild, GWENBUILD_FLAGS_STATIC);
+
   project=GWB_Parser_ReadBuildTree(gwenbuild, firstContext, folder, givenOptionList);
   if (project==NULL) {
     fprintf(stderr, "ERROR: Error reading build files.\n");

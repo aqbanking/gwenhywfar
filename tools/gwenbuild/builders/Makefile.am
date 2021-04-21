@@ -8,12 +8,15 @@ DEFS=-DBUILDERDATADIR=\"$(datadir)/gwenhywfar/gwenbuild/builders\"
 noinst_LTLIBRARIES=libgwb_builders.la
 
 libgwb_builders_la_SOURCES=\
- genericbuilder.c
+ genericbuilder.c \
+ gbuilderdescr.c
 
 
 noinst_HEADERS=\
  genericbuilder.h \
- genericbuilder_p.h
+ genericbuilder_p.h \
+ gbuilderdescr.h \
+ gbuilderdescr_p.h
 
 
 builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders

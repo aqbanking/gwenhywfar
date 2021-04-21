@@ -1,5 +1,7 @@
 INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I../../ -I$(gwenhywfar_symlinkdir)
 
+DEFS=-DBUILDERDATADIR=\"$(datadir)/gwenhywfar/gwenbuild/builders\"
+
 
 
 noinst_LTLIBRARIES=libgwb_types.la

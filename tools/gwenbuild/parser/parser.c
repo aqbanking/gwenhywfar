@@ -335,12 +335,17 @@ GWEN_BUFFER *GWB_Parser_ReadXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XM
       GWEN_BUFFER *buf;
 
       buf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=GWEN_DB_ReplaceVars(db, s, buf);
-      if(rv<0) {
-        DBG_INFO(NULL, "here (%d)", rv);
-        GWEN_Buffer_free(buf);
-        return NULL;
+      if (db) {
+	rv=GWEN_DB_ReplaceVars(db, s, buf);
+	if(rv<0) {
+	  DBG_INFO(NULL, "here (%d)", rv);
+	  GWEN_Buffer_free(buf);
+	  return NULL;
+	}
       }
+      else
+	GWEN_Buffer_AppendString(buf, s);
+
       if (GWEN_Buffer_GetUsedBytes(buf)==0) {
         GWEN_Buffer_free(buf);
         return NULL;
