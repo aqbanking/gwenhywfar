@@ -8,7 +8,7 @@
   </inputFiles>
 
   <outputFiles>
-    <file type="staticlib">
+    <file type="tmplib">
       lib$(target_name).a
     </file>
   </outputFiles>
@@ -17,25 +17,30 @@
     -l$(target_name)
   </targetLinkSpecs>
   
-  <buildCommands>
-    <cmd tool="$(ar)">
+  <buildCommands deleteOutFileFirst="TRUE" checkDates="TRUE" >
+    <cmd tool="$(GWBUILD_TOOL_AR)" >
       <args>
-        <fixed>rc</fixed>
+        <fixed>Trc</fixed>
         <blank/>
         <outputFiles index="0" />
         <blank/>
         <inputFiles match="*.o" />
+        <inputFiles match="*.a" />
       </args>
+      <mainOutputFile index="0" />
+      <buildMessage>Linking 'lib$(target_name).a'</buildMessage>
     </cmd>
 
-    <cmd tool="$(ranlib)">
+    <cmd tool="$(GWBUILD_TOOL_RANLIB)">
       <args>
         <outputFiles index="0" />
       </args>
+      <mainOutputFile index="0" />
+      <buildMessage>Indexing 'lib$(target_name).a'</buildMessage>
     </cmd>
 
   </buildCommands>
-  
-
 
 </GwenBuilder>
+
+
