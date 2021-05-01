@@ -17,7 +17,7 @@
     -l$(target_name)
   </targetLinkSpecs>
   
-  <buildCommands deleteOutFileFirst="TRUE" checkDates="TRUE" >
+  <buildCommands deleteOutFileFirst="TRUE" checkDates="FALSE" >
     <cmd tool="$(GWBUILD_TOOL_AR)" >
       <args>
         <fixed>Trc</fixed>
@@ -29,6 +29,15 @@
       </args>
       <mainOutputFile index="0" />
       <buildMessage>Linking 'lib$(target_name).a'</buildMessage>
+    </cmd>
+
+    <cmd tool="$(topbuilddir)/staticlibhelper.sh" >
+      <args>
+        <fixed>$(GWBUILD_TOOL_AR)</fixed>
+        <blank/>
+        <outputFiles index="0" />
+      </args>
+      <buildMessage>Finally linking 'lib$(target_name).a'</buildMessage>
     </cmd>
 
     <cmd tool="$(GWBUILD_TOOL_RANLIB)">

@@ -21,6 +21,10 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/text.h>
 
+#include <sys/stat.h>
+#include <errno.h>
+#include <unistd.h>
+
 
 
 static int _prepareContextForSetup(GWB_CONTEXT *firstContext, GWEN_DB_NODE *dbArgs);
@@ -32,6 +36,7 @@ static int _getToolPath(GWEN_DB_NODE *dbVars, const char *sTarget, const GWEN_ST
 static void _copySomeEnvironmentVariablesToDb(GWEN_DB_NODE *db);
 static void _copyEnvironmentVariableToDb(GWEN_DB_NODE *db, const char *envName, const char *dbVarName);
 static GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db);
+static int _writeStaticLibHelper(const char *fileName);
 
 
 
@@ -134,6 +139,13 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
 
   rv=GWB_Utils_WriteContextTreeToFile(GWB_Project_GetRootContext(project),
                                       ".gwbuild.ctxtree");
+
+  rv=_writeStaticLibHelper("staticlibhelper.sh");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error writing staticlibhelper.\n");
+    return 3;
+  }
+
 
   if (doDump) {
     GWB_Project_Dump(project, 2, 1);
@@ -391,3 +403,35 @@ GWB_KEYVALUEPAIR_LIST *_readOptionsFromDb(GWEN_DB_NODE *db)
 
   return kvpList;
 }
+
+
+
+int _writeStaticLibHelper(const char *fileName)
+{
+  int rv;
+  static char *staticLibHelperContent=
+    "#!/bin/sh\n"
+    "\n"
+    "TOOL=$1\n"
+    "LIB=$2\n"
+    "\n"
+    "$TOOL -t $LIB | xargs ar rvs $LIB.new && mv -v $LIB.new $LIB";
+
+  unlink(fileName);
+  rv=GWEN_SyncIo_Helper_WriteFile(fileName, (const uint8_t*) staticLibHelperContent, strlen(staticLibHelperContent));
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error writing static lib helper to \"%s\" (%d)", fileName, rv);
+    return rv;
+  }
+  if (chmod(fileName, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP)==-1) {
+    DBG_ERROR(NULL, "Error on chmod(%s): %s", fileName, strerror(errno));
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
+
+
+
+
+
