@@ -102,10 +102,12 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
 int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   int rv;
+  const char *s;
   const char *sId;
   const char *sName;
   const char *sMinVersion;
   const char *sMaxVersion;
+  int required;
 
   rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
   if (rv<0) {
@@ -124,6 +126,9 @@ int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     DBG_ERROR(NULL, "Dependency has no name");
     return GWEN_ERROR_GENERIC;
   }
+
+  s=GWEN_XMLNode_GetProperty(xmlNode, "required", "FALSE");
+  required=(strcasecmp(s, "TRUE")==0)?1:0;
 
   sMinVersion=GWEN_XMLNode_GetProperty(xmlNode, "minversion", NULL);
   sMaxVersion=GWEN_XMLNode_GetProperty(xmlNode, "maxversion", NULL);
@@ -156,7 +161,13 @@ int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
       }
     }
   }
-  else if (rv!=GWEN_ERROR_NOT_FOUND) {
+  else if (rv==GWEN_ERROR_NOT_FOUND) {
+    if (required) {
+      DBG_ERROR(NULL, "Dependency \"%s\" not found but required", sName);
+      return rv;
+    }
+  }
+  else {
     DBG_INFO(NULL, "here (%d)", rv);
     return rv;
   }
