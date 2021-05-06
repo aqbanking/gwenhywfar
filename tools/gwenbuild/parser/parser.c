@@ -307,7 +307,7 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XML
 
     sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", 1);
     if (sl==NULL) {
-      DBG_ERROR(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
+      DBG_INFO(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
       return NULL;
     }
