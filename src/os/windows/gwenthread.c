@@ -172,7 +172,7 @@ int GWEN_Thread_Join(GWEN_THREAD *thr)
   }
 
   CloseHandle(thr->threadHandle);
-  thr->threadHandle==NULL;
+  thr->threadHandle = NULL;
 
   return 0;
 }
