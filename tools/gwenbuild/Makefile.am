@@ -1,7 +1,7 @@
 SUBDIRS=types parser tools buildctx builders templates
 
 
-INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(gwenhywfar_symlinkdir)
+INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(top_srcdir)/tools -I$(gwenhywfar_symlinkdir)
 
 
 

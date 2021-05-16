@@ -1,6 +1,6 @@
 SUBDIRS=posix windows
 
-INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I../../ -I$(gwenhywfar_symlinkdir)
+INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I../../ -I$(top_srcdir)/tools -I$(gwenhywfar_symlinkdir)
 
 DEFS=-DBUILDERDATADIR=\"$(datadir)/gwenhywfar/gwenbuild/builders\"
 
