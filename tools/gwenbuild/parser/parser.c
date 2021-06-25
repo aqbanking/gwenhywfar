@@ -27,6 +27,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <sys/types.h> /* for stat, chmod */
+#include <sys/stat.h>
+#include <unistd.h>
+
+
 
 
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
@@ -41,6 +46,9 @@ static int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
 static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
 static int _readVersion(const char *s);
 static int _readIntUntilPoint(const char **s);
+
+static int _getFilePermissions(const char *fname);
+static int _setFilePermissions(const char *fname, int perms);
 
 
 
@@ -708,6 +716,7 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   GWEN_BUFFER *fileBufferIn;
   GWEN_BUFFER *fileBufferOut;
   GWB_FILE *file;
+  int sourceFilePerms;
   int rv;
 
   fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
@@ -725,6 +734,14 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   }
   GWEN_Buffer_AppendString(fileNameBuffer, fileName);
   GWEN_Buffer_AppendString(fileNameBuffer, ".in");
+
+  rv=_getFilePermissions(GWEN_Buffer_GetStart(fileNameBuffer));
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not read permissions for \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
+    GWEN_Buffer_free(fileNameBuffer);
+    return rv;
+  }
+  sourceFilePerms=rv;
 
   fileBufferIn=GWEN_Buffer_new(0, 256, 0, 1);
 
@@ -753,7 +770,16 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
                                   (const uint8_t*)GWEN_Buffer_GetStart(fileBufferOut),
                                   GWEN_Buffer_GetUsedBytes(fileBufferOut));
   if (rv<0) {
-    DBG_ERROR(NULL, "Could not write \"%sh\" (%d)", fileName, rv);
+    DBG_ERROR(NULL, "Could not write \"%s\" (%d)", fileName, rv);
+    GWEN_Buffer_free(fileBufferOut);
+    GWEN_Buffer_free(fileBufferIn);
+    GWEN_Buffer_free(fileNameBuffer);
+    return rv;
+  }
+
+  rv=_setFilePermissions(fileName, sourceFilePerms);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not set perms for \"%s\" (%d)", fileName, rv);
     GWEN_Buffer_free(fileBufferOut);
     GWEN_Buffer_free(fileBufferIn);
     GWEN_Buffer_free(fileNameBuffer);
@@ -778,6 +804,32 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   GWEN_Buffer_free(fileBufferOut);
   GWEN_Buffer_free(fileBufferIn);
   GWEN_Buffer_free(fileNameBuffer);
+
+  return 0;
+}
+
+
+
+int _getFilePermissions(const char *fname)
+{
+  struct stat st;
+
+  if (lstat(fname, &st) == -1) {
+    DBG_ERROR(NULL, "Error on stat(\"%s\"): %d (%s)", fname, errno, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  return (int)((st.st_mode & ~S_IFMT));
+}
+
+
+
+int _setFilePermissions(const char *fname, int perms)
+{
+  if (chmod(fname, perms) == -1) {
+    DBG_ERROR(NULL, "Error on chmod(\"%s\"): %d (%s)", fname, errno, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
 
   return 0;
 }
