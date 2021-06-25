@@ -404,6 +404,7 @@ void _printHelpScreen()
 	  "-i           install files\n"
 	  "-c           cleanup; delete generated files\n"
 	  "-r           repeat setup command using the same arguments given to last setup\n"
+	  "-d           make distribution folder (you need to run tar yourself for now)\n"
 	  "-Oname=value specify options (can occur multiple times)\n"
 	  "-Bname       Only run commands for the given build (mostly used with\n"
 	  "             'tm2builder')\n"
