@@ -1,4 +1,7 @@
 
+typemaker2:
+ - add a field annotoations (e.g. "personal data")
+
 logger:
  - finer granularity for loglevels
    - introduce subdomains
