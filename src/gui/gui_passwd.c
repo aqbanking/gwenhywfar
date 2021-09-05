@@ -234,16 +234,25 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
     GWEN_Gui__HashPair(token, pin, hbuf);
     if (status==GWEN_Gui_PasswordStatus_Bad) {
       GWEN_StringList_AppendString(gui->badPasswords,
-                                   GWEN_Buffer_GetStart(hbuf),
-                                   0, 1);
+				   GWEN_Buffer_GetStart(hbuf),
+				   0, 1);
       /* remove from permanent passwd storage */
       if (gui->passwdStore) {
-        int rv;
+	int rv;
 
-        rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, NULL);
-        if (rv<0) {
-          DBG_WARN(GWEN_LOGDOMAIN, "Could not remove password from storage (%d)", rv);
-        }
+	rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, NULL);
+	if (rv<0) {
+	  DBG_WARN(GWEN_LOGDOMAIN, "Could not remove password from storage (%d)", rv);
+	}
+      }
+
+      if (gui->dbPasswords) {
+	GWEN_BUFFER *buf;
+
+	buf=GWEN_Buffer_new(0, 256, 0, 1);
+	GWEN_Text_EscapeToBufferTolerant(token, buf);
+
+	GWEN_DB_DeleteVar(gui->dbPasswords, GWEN_Buffer_GetStart(buf));
       }
     }
     else if (status==GWEN_Gui_PasswordStatus_Ok ||
