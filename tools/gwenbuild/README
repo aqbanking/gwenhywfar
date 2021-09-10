@@ -1,0 +1,134 @@
+
+GwenBuild
+=========
+
+GwenBuild is yet another build system.
+
+"autotools" (automake, autoconf) are really cool and they work in almost every case as expected.
+However, they are extremely slow which is a problem with larger projects containing many source files
+and convenience libraries. Also, they are hard to debug if you encounter unusual problems, e.g. in AqBanking
+we have the problem that sometimes not all sources/convenience libraries are correctly rebuilt after source code
+changes and up to now I have no idea why that is.
+
+A nice solution would be to switch to "cmake", especially when using their build target "ninja" which is
+astonishingly fast. "cmake" is quite easy to setup for simple projects, however, it is not that easy to change larger projects 
+to use it. Also, there is quite a steep learning curve.
+
+"meson" is another good alternative since it also uses "ninja" and is therefore also extremely fast. But I wasn't able to
+adapt my projects to use "meson" because some features I needed for e.g. AqFinance or AqBanking required a version of "meson" newer 
+than what is provided by the distribution I'm currently working with.
+
+Out of curiosity "gwenbuild" was started. I wanted to see how fast a build system can be and how hard it would be to write one.
+Gwenbuild is a tool inside the library gwenhywfar, which is a base library for all my projects. Therefore it is always available in 
+the required version for depending projects. Gwenhywfar itself will not be ported to use this build system to avoid the 
+hen-and-egg-problem.
+
+
+The following major goals were identified before development started:
+- needs to be much faster than autotools/make
+- needs to provide library, header and function search functions
+- needs to be able to generate a "config.h" file
+- needs to be able to rewrite files by replacing placeholders in source files (like "sed" does in ./configure)
+- needs to be simple to setup
+- needs to have support for typemaker2 source files
+- needs to allow out-of-source build
+- should be easy to extend
+- should handle dependency trees
+
+
+
+QuickStart for Users
+--------------------
+
+- create a new folder in which to build, there:
+- "gwbuild PATH_TO_SOURCE_FOLDER"
+- "gwbuild -p"
+- "gwbuild -B tm2builder" (sometimes needed explicitly)
+- "gwbuild -jMAX_NUMBER_OF_PARALLEL_JOBS"
+
+After changing source files only the last step needs to be repeated.
+
+
+
+QuickStart for Development
+--------------------------
+
+- builder (modules which generate commands to compile or link source files) are defined in XML files in "builders/" (see *.gwb files).
+- new builders should be added in file "gwenbuild.c" in functions "_genBuilderForSourceFile()" and "_genBuilderForTarget()" at
+  the bottom of that file.
+
+
+
+Current Status
+--------------
+
+gwenbuild is now able to compile C and C++ files, link shared libraries and temporary convenience libraries and generate source files
+from typemaker2 type description files. It also handles dependencies and custom build commands (like for XML merge) can now be defined
+which can also use gwenbuild's dependency handling.
+
+It can build using multiple processes in parallel. Compiling and linking AqBanking using 14 processes in parallel takes about 9 secs on 
+my machine now.
+
+
+
+How it Works Internally
+------------------------
+
+The first step is to setup the build environment. The user changes into an empty folder outside the source tree
+(or in a folder inside it like "build") and runs "gwbuild SRCFOLDER". In this run gwenbuild reads the 0BUILD files in the
+top source folder and all other 0BUILD files referred to inside the 0BUILD file(s) and collects all the info about targets and object
+files etc.
+From this run a "BuildContext" is generated. This structure contains a list of commands needed to compile and link the files of the
+project. This structure has no further knowledge of the generated project other than which files to compile/link and how the files
+of the project depend on each other.
+This build context is then used in the subsequent steps of the gwenbuild process like in "gwbuild -p" (prepare) and
+"gwbuild -b" (build).
+The last step usually is to install the generated files using "gwbuild -i". This step only reads a file containing the list
+of files to install and copies the files from the given list to their specified destinations. This step also has no knowledge
+of the project to build, it simply works on the install file list.
+
+
+
+Some notes to myself
+====================
+
+https://docencia.ac.upc.edu/FIB/USO/Bibliografia/unix-c-libraries.html
+
+
+Build dependecies:
+   cc -E -I INCLUDE_FOLDER -M -MF DEPOUTFILE SRCFILE
+
+or 
+   $(CC) $(CFLAGS) -MM *.c > Makefile.deps
+   
+
+# shared lib:
+gcc -shared -nostdlib -o libaqdiagram.so aqdiagram.o -lgwenhywfar -lgmp -Wl,--whole-archive draw/libaqdg_draw.a
+
+
+
+
+TODO:
+- eventuell Builder_AddCmds und <BuildFiles> angleichen (verwenden von GWEN_DB wie bei <BuildFiles>)
+  -> commandsFromXml()
+
+- DIST implementieren (tarball bauen)
+- shared vs. static
+- commands
+  - cppcheck
+  
+
+-s           setup build environment
+-p           run preparation commands (needed e.g. if typemaker2 is used)
+-b           build targets
+-i           install files
+-c           cleanup; delete generated files
+-r           repeat setup command using the same arguments given to last setup
+-Oname=value specify options (can occur multiple times)
+-Bname       Only run commands for the given build (mostly used with 'tm2builder')
+-Lname       Set loglevel (debug, info, notice, warn, error)
+-Cname       Crosscompile for given environment (e-g- 'x86_64-w64-mingw32')
+-jvalue      Use the given number of parallel process for building
+
+
+

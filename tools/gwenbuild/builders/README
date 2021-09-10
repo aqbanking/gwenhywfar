@@ -1,0 +1,16 @@
+
+
+target_so_version_effective
+target_so_version_age
+target_so_version_revision
+
+target_name
+
+cflags
+ldflags
+cc
+ar
+ranlib
+ld
+
+

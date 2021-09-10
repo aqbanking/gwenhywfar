@@ -1,4 +1,4 @@
-SUBDIRS=xmlmerge typemaker typemaker2 gcttool gsa
+SUBDIRS=xmlmerge typemaker typemaker2 gcttool gsa gwenbuild
 
 sources:
 	for d in $(SUBDIRS); do \

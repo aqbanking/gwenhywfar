@@ -44,6 +44,8 @@ struct GWEN_PROCESS {
   GWEN_SYNCIO *stdIn;
   GWEN_SYNCIO *stdOut;
   GWEN_SYNCIO *stdErr;
+
+  char *folder;
 };
 
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, DWORD status);

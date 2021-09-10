@@ -211,6 +211,19 @@ int GWEN_SyncIo_Helper_WriteFile(const char *fName, const uint8_t *ptrSource, ui
 
 
 
+/**
+ * Copy source file to destination file.
+ * Destination file is overwritten if it exists.
+ *
+ * @return number of bytes actually copied (or error code if negative value)
+ * @param srcPath path and name of the file to read
+ * @param destPath path and name of the file to write
+ */
+GWENHYWFAR_API
+int GWEN_SyncIo_Helper_CopyFile(const char *srcPath, const char *destPath);
+
+
+
 
 /** @name Declarations for Virtual Functions
  *

@@ -37,7 +37,9 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -45,9 +47,22 @@
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
+#include <fcntl.h>
+
 
 
 static GWEN_PROCESS *GWEN_Process_ProcessList=0;
+
+
+
+static void _closePipesOnError(GWEN_PROCESS *pr);
+static void _setupRedirectionsInParent(GWEN_PROCESS *pr);
+static void _setupRedirectionsInChild(GWEN_PROCESS *pr);
+static int _setupArgsAndExec(const char *prg, const char *args);
+
+static int _readAndAddToBuffer(int fd, GWEN_BUFFER *buf);
+int _waitForActivity(int fdStdOut, int fdStdErr);
+
 
 
 int GWEN_Process_ModuleInit(void)
@@ -156,6 +171,8 @@ void GWEN_Process_free(GWEN_PROCESS *pr)
     if (--(pr->usage)==0) {
       /* unlink from list */
       GWEN_LIST_DEL(GWEN_PROCESS, pr, &GWEN_Process_ProcessList);
+
+      free(pr->folder);
       GWEN_SyncIo_free(pr->stdIn);
       GWEN_SyncIo_free(pr->stdOut);
       GWEN_SyncIo_free(pr->stdErr);
@@ -171,10 +188,6 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
                                       const char *args)
 {
   pid_t pid;
-  char *argv[32];
-  int argc;
-  const char *p, *p2;
-  GWEN_BUFFER *wbuf;
 
   assert(pr);
 
@@ -190,21 +203,7 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
     /* error in fork */
     pr->state=GWEN_ProcessStateNotStarted;
     pr->pid=-1;
-
-    /* close all pipes */
-    if (pr->filesStdin[0]!=-1) {
-      close(pr->filesStdin[0]);
-      close(pr->filesStdin[1]);
-    }
-    if (pr->filesStdout[0]!=-1) {
-      close(pr->filesStdout[0]);
-      close(pr->filesStdout[1]);
-    }
-    if (pr->filesStderr[0]!=-1) {
-      close(pr->filesStderr[0]);
-      close(pr->filesStderr[1]);
-    }
-
+    _closePipesOnError(pr);
     return GWEN_ProcessStateNotStarted;
   }
   else if (pid!=0) {
@@ -212,29 +211,104 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
     DBG_INFO(GWEN_LOGDOMAIN, "Process started with id %d", (int)pid);
     pr->state=GWEN_ProcessStateRunning;
     pr->pid=pid;
-
-    /* setup redirections */
-    if (pr->filesStdin[0]!=-1) {
-      close(pr->filesStdin[1]);
-      pr->stdIn=GWEN_SyncIo_File_fromFd(pr->filesStdin[0]);
-    }
-    if (pr->filesStdout[0]!=-1) {
-      close(pr->filesStdout[1]);
-      pr->stdOut=GWEN_SyncIo_File_fromFd(pr->filesStdout[0]);
-    }
-    if (pr->filesStderr[0]!=-1) {
-      close(pr->filesStderr[1]);
-      pr->stdErr=GWEN_SyncIo_File_fromFd(pr->filesStdout[0]);
-    }
-
+    _setupRedirectionsInParent(pr);
     return GWEN_ProcessStateRunning;
   }
-  /* child, build arguments */
-  argc=0;
 
+  /* child */
   DBG_DEBUG(GWEN_LOGDOMAIN, "I'm the child process");
+  if (pr->folder) {
+    if (chdir(pr->folder)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Aborting due to error on chdir(%s): %s", pr->folder, strerror(errno));
+      exit(2);
+    }
+  }
+  _setupRedirectionsInChild(pr);
 
-  /* setup redirections */
+  _setupArgsAndExec(prg, args);
+
+  /* keep compiler happy (code doesn't get here because of execvp) */
+  return 0;
+}
+
+
+
+int _setupArgsAndExec(const char *prg, const char *args)
+{
+  GWEN_STRINGLIST *argumentList;
+  GWEN_STRINGLISTENTRY *se;
+  int argc=0;
+  char **argv;
+  int i;
+
+  argumentList=GWEN_StringList_fromString2(args, " ", 0,
+                                           GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+                                           GWEN_TEXT_FLAGS_DEL_QUOTES |
+                                           GWEN_TEXT_FLAGS_CHECK_BACKSLASH);
+  if (argumentList==NULL)
+    argumentList=GWEN_StringList_new();
+  /* argv[0]=prg name */
+  GWEN_StringList_InsertString(argumentList, prg, 0, 0);
+  argc=GWEN_StringList_Count(argumentList);
+
+  argv=(char**) malloc((argc+1)*sizeof(char*));
+  i=0;
+  se=GWEN_StringList_FirstEntry(argumentList);
+  while(se && i<argc) {
+    argv[i]=(char*) GWEN_StringListEntry_Data(se);
+    i++;
+    se=GWEN_StringListEntry_Next(se);
+  }
+  argv[i]=0;
+
+  /* parameters ready, exec */
+  execvp(prg, argv);
+  /* if we reach this point an error occurred */
+  DBG_ERROR(GWEN_LOGDOMAIN, "Could not start program \"%s\": %s",
+            prg, strerror(errno));
+  exit(EXIT_FAILURE);
+
+}
+
+
+void _closePipesOnError(GWEN_PROCESS *pr)
+{
+  /* close all pipes */
+  if (pr->filesStdin[0]!=-1) {
+    close(pr->filesStdin[0]);
+    close(pr->filesStdin[1]);
+  }
+  if (pr->filesStdout[0]!=-1) {
+    close(pr->filesStdout[0]);
+    close(pr->filesStdout[1]);
+  }
+  if (pr->filesStderr[0]!=-1) {
+    close(pr->filesStderr[0]);
+    close(pr->filesStderr[1]);
+  }
+}
+
+
+
+void _setupRedirectionsInParent(GWEN_PROCESS *pr)
+{
+  if (pr->filesStdin[0]!=-1) {
+    close(pr->filesStdin[1]);
+    pr->stdIn=GWEN_SyncIo_File_fromFd(pr->filesStdin[0]);
+  }
+  if (pr->filesStdout[0]!=-1) {
+    close(pr->filesStdout[1]);
+    pr->stdOut=GWEN_SyncIo_File_fromFd(pr->filesStdout[0]);
+  }
+  if (pr->filesStderr[0]!=-1) {
+    close(pr->filesStderr[1]);
+    pr->stdErr=GWEN_SyncIo_File_fromFd(pr->filesStdout[0]);
+  }
+}
+
+
+void _setupRedirectionsInChild(GWEN_PROCESS *pr)
+{
   if (pr->filesStdin[0]!=-1) {
     close(pr->filesStdin[0]);
     close(0);
@@ -256,39 +330,6 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
       DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection");
     }
   }
-
-  argv[0]=strdup(prg);
-  argc++;
-  p=args;
-  wbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  while (argc<32 && *p) {
-    while (*p && isspace((int)*p))
-      p++;
-    if (!(*p))
-      break;
-    if (GWEN_Text_GetWordToBuffer(p, " ",
-                                  wbuf,
-                                  GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
-                                  GWEN_TEXT_FLAGS_DEL_QUOTES |
-                                  GWEN_TEXT_FLAGS_CHECK_BACKSLASH,
-                                  &p))
-      break;
-
-    p2=GWEN_Buffer_GetStart(wbuf);
-
-    argv[argc]=strdup(p2);
-    GWEN_Buffer_Reset(wbuf);
-    argc++;
-  } /* while */
-  GWEN_Buffer_free(wbuf);
-  argv[argc]=0;
-
-  /* parameters ready, exec */
-  execvp(prg, argv);
-  /* if we reach this point an error occurred */
-  DBG_ERROR(GWEN_LOGDOMAIN, "Could not start program \"%s\": %s",
-            prg, strerror(errno));
-  exit(EXIT_FAILURE);
 }
 
 
@@ -430,6 +471,21 @@ int GWEN_Process_Terminate(GWEN_PROCESS *pr)
 
 
 
+const char *GWEN_Process_GetFolder(const GWEN_PROCESS *pr)
+{
+  return pr->folder;
+}
+
+
+
+void GWEN_Process_SetFolder(GWEN_PROCESS *pr, const char *s)
+{
+  free(pr->folder);
+  pr->folder=s?strdup(s):NULL;
+}
+
+
+
 uint32_t GWEN_Process_GetFlags(const GWEN_PROCESS *pr)
 {
   assert(pr);
@@ -535,24 +591,150 @@ int GWEN_Process_Redirect(GWEN_PROCESS *pr)
 
 
 
+int GWEN_Process_WaitAndRead(GWEN_PROCESS *pr, GWEN_BUFFER *stdOutBuffer, GWEN_BUFFER *stdErrBuffer)
+{
+  GWEN_SYNCIO *sioStdOut;
+  GWEN_SYNCIO *sioStdErr;
+  int fdStdOut=-1;
+  int fdStdErr=-1;
+  int rv;
+
+  sioStdOut=GWEN_Process_GetStdout(pr);
+  if (sioStdOut)
+    fdStdOut=GWEN_SyncIo_File_GetFd(sioStdOut);
+  sioStdErr=GWEN_Process_GetStderr(pr);
+  if (sioStdErr)
+    fdStdErr=GWEN_SyncIo_File_GetFd(sioStdErr);
+
+  if (fdStdOut!=-1) {
+    int flags;
+
+    flags=fcntl(fdStdOut, F_GETFL, 0);
+    fcntl(fdStdOut, F_SETFL, flags | O_NONBLOCK);
+  }
+  if (fdStdErr!=-1) {
+    int flags;
+
+    flags=fcntl(fdStdErr, F_GETFL, 0);
+    fcntl(fdStdErr, F_SETFL, flags | O_NONBLOCK);
+  }
+
+  for (;;) {
+    GWEN_PROCESS_STATE state;
+
+    if (fdStdOut!=-1) {
+      rv=_readAndAddToBuffer(fdStdOut, stdOutBuffer);
+      if (rv<0) {
+        if (rv==GWEN_ERROR_EOF) {
+          DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+          fdStdOut=-1;
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Process_CheckState(pr); /* avoid zombies */
+          return rv;
+        }
+      }
+    }
+
+    if (fdStdErr!=-1) {
+      rv=_readAndAddToBuffer(fdStdErr, stdErrBuffer);
+      if (rv<0) {
+        if (rv==GWEN_ERROR_EOF) {
+          DBG_INFO(GWEN_LOGDOMAIN, "EOF met");
+          fdStdErr=-1;
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Process_CheckState(pr); /* avoid zombies */
+          return rv;
+        }
+      }
+    }
+
+    if (fdStdOut!=-1 || fdStdErr!=-1) {
+    }
+
+
+    if (fdStdOut==-1 && fdStdErr==-1) {
+      state=GWEN_Process_Wait(pr);
+      if (state!=GWEN_ProcessStateRunning)
+	break;
+    }
+    else {
+      state=GWEN_Process_CheckState(pr);
+      if (state!=GWEN_ProcessStateRunning)
+	break;
+      _waitForActivity(fdStdOut, fdStdErr);
+    }
+  }
+
+  return 0;
+}
 
 
 
+int _readAndAddToBuffer(int fd, GWEN_BUFFER *buf)
+{
+  for (;;) {
+    uint8_t localBuffer[1024];
+    size_t rv;
+
+    rv=read(fd, localBuffer, sizeof(localBuffer));
+    if (rv==-1) {
+      if (errno==EAGAIN || errno==EWOULDBLOCK || errno==EINTR)
+        return 0;
+
+      if (errno!=EINTR) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on read(): %s", strerror(errno));
+        return GWEN_ERROR_GENERIC;
+      }
+      /* otherwise just try again */
+    }
+    else if (rv==0) {
+      return GWEN_ERROR_EOF;
+    }
+    else {
+      GWEN_Buffer_AppendBytes(buf, (const char*) localBuffer, rv);
+    }
+  }
+  return 0;
+}
 
 
 
+int _waitForActivity(int fdStdOut, int fdStdErr)
+{
+  fd_set rfds;
+  struct timeval tv;
+  int retval;
 
+  //do {
+    FD_ZERO(&rfds);
 
+    if (fdStdOut!=-1)
+      FD_SET(fdStdOut, &rfds);
+    if (fdStdErr!=-1)
+      FD_SET(fdStdErr, &rfds);
 
+    tv.tv_sec=5;
+    tv.tv_usec=0;
 
+    retval=select(((fdStdOut>fdStdErr)?fdStdOut:fdStdErr)+1,
+                  &rfds, NULL, NULL, &tv);
+  //} while(retval==-1 && errno==EINTR);
 
+  if (retval==-1) {
+    if (retval!=EINTR) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on select(): %s", strerror(errno));
+      return GWEN_ERROR_GENERIC;
+    }
 
-
-
-
-
-
-
+  }
+  else if (retval)
+    return 1;
+  return 0;
+}
 
 
 

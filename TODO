@@ -1,13 +1,21 @@
 
-idList64:
- - add GWEN_IdList64_dup()
+typemaker2:
+ - add a field annotoations (e.g. "personal data")
 
-
-modtest:
- - create a new module test
-   - use logger hook
-   - allow submodule tests
-
+logger:
+ - finer granularity for loglevels
+   - introduce subdomains
+     - gwenhywfar/syncio
+     - gwenhywfar/http
+     - gwenhywfar/gui
+     - etc
+   - GWEN_Logger_CreateSubDomains(maindomain, "syncio,http,gui,db,xml,crypt", logLevel)
+   - GWEN_Logger_SetupSubDomains(maindomain, "syncio=notice,http=debug,gui=info", defaultLogLevel)
+   - in source files, e.g. syncio_http:
+     #ifdef   GWEN_LOGDOMAIN
+     # undef  GWEN_LOGDOMAIN
+     # define GWEN_LOGDOMAIN "gwenhywfar/http"
+     #endif
 
 sio:
  - ssl_cert_descr -> typemaker2
@@ -64,43 +72,5 @@ while ((dent = readdir(d)) != NULL) {
        GNUTLS_X509_FMT_PEM);
 }
 closedir(d);
-
-
-
-0  10
-1  19
-2  35
-3  67
-4  91
-5 115
-6 247
-
-insert 39
-total 7
-
-1. 0???: pos 0:10, smaller, set to 1, okay? no, keep at 0
-2. 00??: pos 0:10, smaller, set to 1, okay? yes, set to 1
-3. 010?: pos 4: 81, bigger, set to 0
-4. 0100: pos 4: 81, bigger, set to 0
--> 4: insert before position 4
-
-
-# approach: determine the highest entry smaller than the new value
-1. 1???: pos 8: overflow, set to 0
-2. 01??: pos 4: 91, bigger, set to 0
-3. 001?: pos 2: 35, smaller, keep at 1
-4. 0011: pos 3: 67, bigger, set to 0
--> 0010: 2 (+1 is the position)
-
-
-insert 75
-
-1. 1???: pos 8, overflow ->0
-2. 01??: pos 4: 91, bigger ->0
-3. 001?: pos 2: 35, smaller ->1
-4. 0011: pos 3: 67, smaller ->1
--> 0011: 3 (+1 is the position)
-
-
 
 

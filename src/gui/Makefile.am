@@ -54,7 +54,7 @@ dlgdata_DATA=\
   dlg_showbox.dlg
 
 
-EXTRA_DIST=$(dlgdata_DATA) \
+EXTRA_SOURCES=\
   gui_cert.c \
   gui_dialogs.c \
   gui_passwd.c \
@@ -62,10 +62,11 @@ EXTRA_DIST=$(dlgdata_DATA) \
   gui_utils.c \
   gui_virtual.c
 
+EXTRA_DIST=$(dlgdata_DATA) $(EXTRA_SOURCES)
 
 
 sources:
-	for f in $(libgui_la_SOURCES); do \
+	for f in $(libgui_la_SOURCES) $(EXTRA_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(dlgdata_DATA); do \

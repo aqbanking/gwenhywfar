@@ -1,0 +1,41 @@
+<?xml?>
+
+<GwenBuilder name="App">
+
+  <inputFiles>
+    <acceptedInputTypes>object</acceptedInputTypes>
+    <acceptedInputFiles>*.o</acceptedInputFiles>
+  </inputFiles>
+
+  <outputFiles>
+    <file type="App" install="target" >
+      $(target_name)$(exeext)
+    </file>
+  </outputFiles>
+  
+  <buildCommands>
+    <cmd tool="$(GWBUILD_TOOL_CC)" deleteOutFileFirst="FALSE" >
+      <args>
+        <fixed>-fPIC</fixed>
+        <blank/>
+        <fixed>$(local/ldflags)</fixed>
+        <blank/>
+        <inputFiles match="*.o" />
+        <blank/>
+        <fixed>-o</fixed>
+        <blank/>
+        <outputFiles index="0" />
+        <blank/>
+        <subTargetLibs/>
+        <blank/>
+        <libraries/>
+      </args>
+      <mainOutputFile index="0" />
+      <buildMessage>Linking '$(target_name)$(exeext)'</buildMessage>
+    </cmd>
+
+  </buildCommands>
+  
+
+
+</GwenBuilder>

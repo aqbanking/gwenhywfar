@@ -1,0 +1,130 @@
+<?xml?>
+
+
+<gwbuild requiredVersion="5.6.0" >
+
+  <project name="@PROJECTUPPER@"
+           vmajor="0" vminor="9" vpatchlevel="134" vbuild="0" vtag="beta"
+           so_current="0" so_age="0" so_revision="0"
+           write_config_h="TRUE"
+           >
+
+    <setVar name="package">$(project_name)</setVar>
+    <define name="PACKAGE" value="$(package)"  quoted="TRUE" />
+
+    <!-- version -->
+    <setVar name="@PROJECTUPPER@_VERSION_STRING">$(project_vmajor).$(project_vminor).$(project_vpatchlevel)</setVar>
+    <setVar name="@PROJECTUPPER@_VERSION_FULL_STRING">
+      $(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)$(project_vtag)
+    </setVar>
+    <define name="@PROJECTUPPER@_VERSION_MAJOR"        value="$(project_vmajor)" />
+    <define name="@PROJECTUPPER@_VERSION_MINOR"        value="$(project_vminor)" />
+    <define name="@PROJECTUPPER@_VERSION_PATCHLEVEL"   value="$(project_vpatchlevel)" />
+    <define name="@PROJECTUPPER@_VERSION_BUILD"        value="$(project_vbuild)" />
+    <define name="@PROJECTUPPER@_VERSION_TAG"          value="$(project_vtag)" />
+    <define name="@PROJECTUPPER@_VERSION_STRING"       value="$(@PROJECTUPPER@_VERSION_STRING)" quoted="TRUE" />
+    <define name="@PROJECTUPPER@_VERSION_FULL_STRING"  value="$(@PROJECTUPPER@_VERSION_FULL_STRING)" quoted="TRUE" />
+
+
+
+    <!-- prefix handling -->
+    <option id="prefix" type="string">
+      <default>/usr/local</default>
+    </option>
+    <setVar name="prefix">$(option_prefix)</setVar>
+    <setVar name="sysconfdir">$(option_prefix)/etc</setVar>
+    <setVar name="bindir">$(option_prefix)/bin</setVar>
+    <setVar name="libdir">$(option_prefix)/lib</setVar>
+    <setVar name="includedir">$(option_prefix)/include</setVar>
+    <setVar name="datadir">$(option_prefix)/share</setVar>
+    <setVar name="localedir">$(option_prefix)/share/locale</setVar>
+
+    <setVar name="pkglibdir">$(libdir)/$(package)</setVar>
+    <setVar name="pkgincludedir">$(includedir)/$(package)</setVar>
+    <setVar name="pkgdatadir">$(datadir)/$(package)</setVar>
+
+
+
+    <!-- options -->
+    <option id="enable_testcode" type="string">
+      <default>TRUE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+    <ifVarMatches name="option_enable_testcode" value="TRUE" >
+      <define name="AQFINANCE_ENABLE_TESTCODE" value="1" />
+    </ifVarMatches>
+
+
+
+    <!-- target system specifica -->
+    <define name="OS_TYPE"                value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
+    <define name="OS_SHORTNAME"           value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
+    <ifVarMatches name="GWBUILD_SYSTEM"   value="windows" > <!-- long version of IF statement with THEN and ELSE -->
+      <then>
+        <define name="OS_WIN32" value="1" />
+
+        <!-- do something windows specific here -->
+
+      </then>
+      <else>
+        <define       name="OS_POSIX" value="1" />
+
+        <!-- do something not-windows specific here -->
+
+      </else>
+    </ifVarMatches>
+
+
+
+    <!-- dependencies (checked using  pkg-config) -->
+    <dependencies>
+      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.5.1.1" required="TRUE" />
+    </dependencies>
+
+
+
+    <!-- these checks are used for libraries for which there is no pkg-config support -->
+    <checklibs>
+      <lib id="gmp" name="gmp" function="__gmpz_init" />
+    </checklibs>
+
+
+
+    <!-- symbol visibility -->
+    <checkCompiler>
+      <arg name="has_symbol_visibility">-fvisibility=hidden</arg>
+    </checkCompiler>
+    
+    <ifVarMatches name="has_symbol_visibility" value="TRUE" >
+      <setVar name="visibility_cflags">-fvisibility=hidden</setVar>
+      <define name="GCC_WITH_VISIBILITY_ATTRIBUTE" />
+    </ifVarMatches>
+
+
+
+    <checkheaders>
+      locale.h libintl.h iconv.h
+    </checkheaders>
+  
+
+  
+    <checkfunctions type="c" >
+      setlocale
+      memmove 
+      memset 
+      strcasecmp 
+      strdup 
+      strerror 
+      snprintf
+    </checkfunctions>
+
+
+
+    <subdirs>
+      src
+    </subdirs>
+
+  </project>
+  
+</gwbuild>
+

@@ -32,10 +32,14 @@
 
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
+
 #include "stringlist_p.h"
 #include "debug.h"
+
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include <string.h>
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
@@ -793,4 +797,114 @@ GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimit
 }
 
 
+
+GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimiters, int checkDouble, uint32_t flags)
+{
+  if (str && *str) {
+    GWEN_STRINGLIST *sl;
+    const char *s;
+    GWEN_BUFFER *wbuf;
+
+    sl=GWEN_StringList_new();
+    s=(const char *)str;
+
+    wbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    while (*s) {
+      char *copyOfWord;
+
+      while (*s && isspace((int)*s))
+        s++;
+      if (!(*s))
+        break;
+
+      if (GWEN_Text_GetWordToBuffer(s, delimiters, wbuf, flags, &s))
+        break;
+
+      copyOfWord=strdup(GWEN_Buffer_GetStart(wbuf));
+      GWEN_StringList_AppendString(sl, copyOfWord, 1, checkDouble);
+      GWEN_Buffer_Reset(wbuf);
+      if (*s)
+        s++;
+    } /* while */
+    GWEN_Buffer_free(wbuf);
+
+    if (GWEN_StringList_Count(sl)==0) {
+      GWEN_StringList_free(sl);
+      return NULL;
+    }
+    return sl;
+  }
+
+  return NULL;
+}
+
+
+
+int GWEN_StringList_toBuffer(const GWEN_STRINGLIST *sl, const char *delimiter, GWEN_BUFFER *outBuffer)
+{
+  int entriesAdded=0;
+
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=sl->first;
+    while (se) {
+      if (se->data && *(se->data)) {
+        if (entriesAdded && delimiter && *delimiter)
+          GWEN_Buffer_AppendString(outBuffer, delimiter);
+        GWEN_Buffer_AppendString(outBuffer, se->data);
+        entriesAdded++;
+      }
+      se=se->next;
+    } /* while */
+  }
+  return entriesAdded;
+}
+
+
+
+void GWEN_StringList_RemoveCommonFirstEntries(GWEN_STRINGLIST *sl1, GWEN_STRINGLIST *sl2)
+{
+  GWEN_STRINGLISTENTRY *se1;
+  GWEN_STRINGLISTENTRY *se2;
+
+  se1=GWEN_StringList_FirstEntry(sl1);
+  se2=GWEN_StringList_FirstEntry(sl2);
+
+  while(se1 && se2) {
+    GWEN_STRINGLISTENTRY *se1Next;
+    GWEN_STRINGLISTENTRY *se2Next;
+    const char *s1;
+    const char *s2;
+
+    se1Next=GWEN_StringListEntry_Next(se1);
+    se2Next=GWEN_StringListEntry_Next(se2);
+
+    s1=GWEN_StringListEntry_Data(se1);
+    s2=GWEN_StringListEntry_Data(se2);
+    if (!(s1 && *s1 && s2 && *s2 && strcasecmp(s1, s2)==0))
+      break;
+    GWEN_StringList_RemoveEntry(sl1, se1);
+    GWEN_StringList_RemoveEntry(sl2, se2);
+
+    se1=se1Next;
+    se2=se2Next;
+  }
+}
+
+
+
+void GWEN_StringList_AppendStringList(GWEN_STRINGLIST *slDest, const GWEN_STRINGLIST *slSource, int checkDouble)
+{
+  if (slSource) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=slSource->first;
+    while (se) {
+      if (se->data && *(se->data))
+        GWEN_StringList_AppendString(slDest, se->data, 0, checkDouble);
+      se=se->next;
+    } /* while */
+  }
+}
 

@@ -537,6 +537,23 @@ GWENHYWFAR_API
 void GWEN_Buffer_OverwriteContent(GWEN_BUFFER *bf, int c);
 
 
+/**
+ * Look for the openingString and the closingString in the buffer, if they exist
+ * remove all outside those strings, in some cases including the opening/closing string.
+ *
+ * @return 0 if okay, error code otherwise
+ * @param bf buffer to operate on
+ * @param openingString string which starts the area you are interested in
+ * @param closingString string which ends the area you are interested in
+ * @param onlyBetween if !=0 the opening/closing string are also removed from the buffer
+ */
+GWENHYWFAR_API
+int GWEN_Buffer_KeepTextBetweenStrings(GWEN_BUFFER *bf,
+                                       const char *openingString,
+                                       const char *closingString,
+                                       int onlyBetween);
+
+
 /** Print the current content of buffer @c bf into the file @c f. */
 GWENHYWFAR_API
 void GWEN_Buffer_Dump(GWEN_BUFFER *bf, unsigned int insert);

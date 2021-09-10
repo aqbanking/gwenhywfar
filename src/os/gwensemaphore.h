@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Jul 29 2008
-    copyright   : (C) 2008 by Martin Preuss
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
 
@@ -27,15 +27,26 @@
 #ifndef GWEN_SEMAPHORE_H
 #define GWEN_SEMAPHORE_H
 
+#include <gwenhywfar/gwenhywfarapi.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct GWEN_SEMAPHORE GWEN_SEMAPHORE;
 
 
-GWEN_SEMAPHORE *GWEN_Semaphore_new(void);
-void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm);
+GWENHYWFAR_API GWEN_SEMAPHORE *GWEN_Semaphore_new(int initialCount);
+GWENHYWFAR_API void GWEN_Semaphore_free(GWEN_SEMAPHORE *sm);
 
-void GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm);
-void GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm);
+GWENHYWFAR_API int GWEN_Semaphore_Wait(GWEN_SEMAPHORE *sm);
+GWENHYWFAR_API int GWEN_Semaphore_Post(GWEN_SEMAPHORE *sm);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

@@ -41,6 +41,7 @@ struct GWEN_THREAD {
   HANDLE threadHandle;
   DWORD threadId;
   GWEN_THREAD_RUN_FN runFn;
+  uint32_t flags;
 };
 
 

@@ -76,6 +76,38 @@ void GWEN_Thread_free(GWEN_THREAD *thr)
 
 
 
+uint32_t GWEN_Thread_GetFlags(const GWEN_THREAD *thr)
+{
+  assert(thr);
+  return thr->flags;
+}
+
+
+
+void GWEN_Thread_SetFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags=flags;
+}
+
+
+
+void GWEN_Thread_AddFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags|=flags;
+}
+
+
+
+void GWEN_Thread_SubFlags(GWEN_THREAD *thr, uint32_t flags)
+{
+  assert(thr);
+  thr->flags&=~flags;
+}
+
+
+
 int GWEN_Thread_Start(GWEN_THREAD *thr)
 {
   int rv;
@@ -85,10 +117,38 @@ int GWEN_Thread_Start(GWEN_THREAD *thr)
     return GWEN_ERROR_NOT_IMPLEMENTED;
   }
 
-  rv=pthread_create(&(thr->threadId), NULL, _threadRun_cb, thr);
-  if (rv!=0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on pthread_create: %d (%s)", rv, strerror(rv));
-    return GWEN_ERROR_GENERIC;
+  if (thr->flags) {
+    pthread_attr_t attr;
+
+    rv=pthread_attr_init(&attr);
+    if (rv!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on pthread_attr_init: %d (%s)", rv, strerror(rv));
+      return GWEN_ERROR_GENERIC;
+    }
+
+    if (thr->flags & GWEN_THREAD_FLAGS_DETACHED) {
+      rv=pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+      if (rv!=0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Error on pthread_attr_setdetachstate: %d (%s)", rv, strerror(rv));
+	pthread_attr_destroy(&attr);
+	return GWEN_ERROR_GENERIC;
+      }
+    }
+
+    rv=pthread_create(&(thr->threadId), &attr, _threadRun_cb, thr);
+    if (rv!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on pthread_create: %d (%s)", rv, strerror(rv));
+      pthread_attr_destroy(&attr);
+      return GWEN_ERROR_GENERIC;
+    }
+    pthread_attr_destroy(&attr);
+  }
+  else {
+    rv=pthread_create(&(thr->threadId), NULL, _threadRun_cb, thr);
+    if (rv!=0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on pthread_create: %d (%s)", rv, strerror(rv));
+      return GWEN_ERROR_GENERIC;
+    }
   }
 
   return 0;

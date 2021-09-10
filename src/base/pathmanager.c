@@ -572,7 +572,7 @@ int GWEN_PathManager_FindFile(const char *destLib,
             GWEN_Buffer_AppendString(tbuf, s);
             GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S);
             GWEN_Buffer_AppendString(tbuf, fileName);
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Trying \"%s\"",
+            DBG_INFO(GWEN_LOGDOMAIN, "Trying \"%s\"",
                       GWEN_Buffer_GetStart(tbuf));
             f=fopen(GWEN_Buffer_GetStart(tbuf), "r");
             if (f) {

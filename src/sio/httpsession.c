@@ -37,6 +37,11 @@ GWEN_INHERIT_FUNCTIONS(GWEN_HTTP_SESSION)
 
 
 
+static void _setHostHeaderFromUrl(const char *sUrl, GWEN_DB_NODE *dbHeader);
+
+
+
+
 GWEN_HTTP_SESSION *GWEN_HttpSession_new(const char *url, const char *defaultProto, int defaultPort)
 {
   GWEN_HTTP_SESSION *sess;
@@ -351,6 +356,8 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
 
   /* prepare HTTP out header */
   db=GWEN_SyncIo_Http_GetDbHeaderOut(sess->syncIo);
+  _setHostHeaderFromUrl(sess->url, db);
+
   if (sess->flags & GWEN_HTTP_SESSION_FLAGS_NO_CACHE) {
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "Pragma", "no-cache");
@@ -368,6 +375,25 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-length", 0);
 
   return 0;
+}
+
+
+
+void _setHostHeaderFromUrl(const char *sUrl, GWEN_DB_NODE *dbHeader)
+{
+  if (sUrl && *sUrl) {
+    GWEN_URL *url;
+
+    url=GWEN_Url_fromString(sUrl);
+    if (url) {
+      const char *s;
+
+      s=GWEN_Url_GetServer(url);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbHeader, GWEN_DB_FLAGS_OVERWRITE_VARS, "Host", s);
+      GWEN_Url_free(url);
+    }
+  }
 }
 
 

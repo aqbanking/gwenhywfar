@@ -16,6 +16,8 @@ dist_typedata_DATA=\
   list1_base.tm2 \
   list2_base.tm2 \
   struct_base.tm2 \
+  uint16_t.tm2 \
+  uint16_t_array.tm2 \
   uint32_t.tm2 \
   uint32_t_array.tm2 \
   uint64_t.tm2 \

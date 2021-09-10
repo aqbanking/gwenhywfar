@@ -1,0 +1,41 @@
+<?xml?>
+
+<GwenBuilder name="StaticLib">
+
+  <inputFiles>
+    <acceptedInputTypes>object</acceptedInputTypes>
+    <acceptedInputFiles>*.o</acceptedInputFiles>
+  </inputFiles>
+
+  <outputFiles>
+    <file type="staticlib">
+      lib$(target_name).a
+    </file>
+  </outputFiles>
+  
+  <targetLinkSpecs>
+    -l$(target_name)
+  </targetLinkSpecs>
+  
+  <buildCommands>
+    <cmd tool="$(ar)">
+      <args>
+        <fixed>rc</fixed>
+        <blank/>
+        <outputFiles index="0" />
+        <blank/>
+        <inputFiles match="*.o" />
+      </args>
+    </cmd>
+
+    <cmd tool="$(ranlib)">
+      <args>
+        <outputFiles index="0" />
+      </args>
+    </cmd>
+
+  </buildCommands>
+  
+
+
+</GwenBuilder>

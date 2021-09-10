@@ -737,6 +737,7 @@ int testXML3(int argc, char **argv)
                         GWEN_XML_FLAGS_HANDLE_NAMESPACES |
                         GWEN_XML_FLAGS_DEFAULT)) {
     fprintf(stderr, "Error reading XML file.\n");
+    GWEN_XMLNode_Dump(n, 2);
     return 1;
   }
 
@@ -1134,6 +1135,30 @@ int testProcess(int argc, char **argv)
     fprintf(stderr, "Client exiting\n");
     return 0;
   }
+}
+
+
+
+int testProcess2()
+{
+  GWEN_BUFFER *stdOutBuffer;
+  GWEN_BUFFER *stdErrBuffer;
+  int rv;
+
+  stdOutBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  stdErrBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  rv=GWEN_Process_RunCommandWaitAndGather("bash", "-c set", stdOutBuffer, stdErrBuffer);
+  if (rv<0) {
+    fprintf(stderr, "Error (%d)\n", rv);
+  }
+
+  fprintf(stdout, "Result of command:\n%s\n", GWEN_Buffer_GetStart(stdOutBuffer));
+  GWEN_Buffer_free(stdErrBuffer);
+  GWEN_Buffer_free(stdOutBuffer);
+  return 0;
 }
 
 
@@ -6392,6 +6417,46 @@ int testThreads2()
 
 
 
+int testSetBinDataDb(int argc, char **argv)
+{
+  GWEN_DB_NODE *db;
+  GWEN_BUFFER *fileBuf;
+  int rv;
+
+  if (argc<4) {
+    fprintf(stderr, "%s setBinDataDb src dest\n", argv[0]);
+    return 1;
+  }
+
+  fprintf(stderr, "Reading source file\n");
+  fileBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SyncIo_Helper_ReadFile(argv[2], fileBuf);
+  if (rv<0) {
+    fprintf(stderr, "Error reading file (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Creating DB\n");
+  db=GWEN_DB_Group_new("Config");
+  GWEN_DB_SetBinValue(db, GWEN_DB_FLAGS_DEFAULT, "var",
+		      GWEN_Buffer_GetStart(fileBuf),
+		      GWEN_Buffer_GetUsedBytes(fileBuf));
+
+  if (GWEN_DB_WriteFile(db, argv[3],
+                        GWEN_DB_FLAGS_DEFAULT
+                        &~GWEN_DB_FLAGS_ESCAPE_CHARVALUES)) {
+    fprintf(stderr, "Error writing file.\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Releasing DB\n");
+  GWEN_DB_Group_free(db);
+  GWEN_Buffer_free(fileBuf);
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -6459,6 +6524,8 @@ int main(int argc, char **argv)
     rv=testSnprintf();
   else if (strcasecmp(argv[1], "process")==0)
     rv=testProcess(argc, argv);
+  else if (strcasecmp(argv[1], "process2")==0)
+    rv=testProcess2();
   else if (strcasecmp(argv[1], "option")==0)
     rv=testOptions(argc, argv);
   else if (strcasecmp(argv[1], "base64")==0)
@@ -6642,6 +6709,11 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "threads2")==0) {
     rv=testThreads2();
   }
+  else if (strcasecmp(argv[1], "setBinDataDb")==0) {
+    rv=testSetBinDataDb(argc, argv);
+  }
+
+
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
