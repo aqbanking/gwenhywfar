@@ -991,41 +991,29 @@ int GWEN_Crypt_Token_SetPinStatus(GWEN_CRYPT_TOKEN *ct,
 
 
 
-uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_CRYPT_TOKEN *ct,
+uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_UNUSED GWEN_CRYPT_TOKEN *ct,
                                         GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
                                         uint32_t gid)
 {
-  char buffer[512];
-
-  assert(ct);
-  assert(ct->refCount);
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-
-  snprintf(buffer, sizeof(buffer)-1, "%s",
-           I18N("Please enter your PIN into the card reader."
-                "<html>"
-                "Please enter your PIN into the card reader."
-                "</html>"));
-  return GWEN_Gui_ShowBox(GWEN_GUI_SHOWBOX_FLAGS_BEEP,
-                          I18N("Secure PIN Input"),
-                          buffer, gid);
+  return GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning,
+			      I18N("Waiting for pin entry on card reader..."
+				   "<html>"
+				   "Waiting for pin entry on card reader..."
+				   "</html>"));
 }
 
 
 
-int GWEN_Crypt_Token_EndEnterPin(GWEN_CRYPT_TOKEN *ct,
+int GWEN_Crypt_Token_EndEnterPin(GWEN_UNUSED GWEN_CRYPT_TOKEN *ct,
                                  GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
                                  GWEN_UNUSED int ok,
-                                 uint32_t id)
+                                 uint32_t gid)
 {
-  assert(ct);
-  assert(ct->refCount);
-
-  GWEN_Gui_HideBox(id);
-
-  return 0;
+  return GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning,
+			      I18N("Pin entry on card reader finished."
+				   "<html>"
+				   "Pin entry on card reader finished."
+				   "</html>"));
 }
 
 
