@@ -74,8 +74,9 @@ int check1()
 
 
 
-int test_gui(int test_with_interaction)
+int test_gui(GWEN_UNUSED int test_with_interaction)
 {
+#if 0
   char buffer[50];
   int rv;
   GWEN_GUI *gui = GWEN_Gui_CGui_new();
@@ -113,6 +114,7 @@ int test_gui(int test_with_interaction)
   }
 
   GWEN_Gui_free(gui);
+#endif
   return 0;
 }
 
