@@ -54,7 +54,7 @@ GWENHYWFAR_API int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes,
  * @deprecated Please use @ref GWEN_Crypt_KeyRsa_GeneratePair instead since
  *  nbits should be a multiple of 8 anyway according to Libgcrypt.
  */
-GWENHYWFAR_API DEPRECATED
+GWENHYWFAR_API GWEN_DEPRECATED
 int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
                                     GWEN_CRYPT_KEY **pPubKey,
                                     GWEN_CRYPT_KEY **pSecretKey);

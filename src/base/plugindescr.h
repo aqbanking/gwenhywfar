@@ -150,7 +150,7 @@ void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
  * @param s name of the format (e.g. <i>html</i>)
  * @param buf buffer to append the description to
  */
-GWENHYWFAR_API DEPRECATED
+GWENHYWFAR_API GWEN_DEPRECATED
 int
 GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
                                             const char *s,
