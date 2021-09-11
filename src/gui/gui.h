@@ -581,13 +581,16 @@ int GWEN_Gui_InputBox(uint32_t flags,
  * <p>
  * This function MUST return immediately (non-blocking).
  * </p>
+ * <p>
+ * This function is deprecated (please use GWEN_Gui_ProgressLog() or others).
+ * </p>
  * @return returns an id to be presented to @ref GWEN_Gui_HideBox.
  * @param flags flags, see @ref GWEN_GUI_SHOWBOX_FLAGS_BEEP ff
  * @param title title of the box
  * @param text Text of the box: UTF-8, with both a normal text and a HTML variant of the text in the same string. See text restrictions note above.
  * @param guiid id as returned by @ref GWEN_Gui_ProgressStart or @ref GWEN_Gui_ShowBox)
  */
-GWENHYWFAR_API
+GWENHYWFAR_API GWEN_DEPRECATED
 uint32_t GWEN_Gui_ShowBox(uint32_t flags,
                           const char *title,
                           const char *text,
@@ -598,10 +601,13 @@ uint32_t GWEN_Gui_ShowBox(uint32_t flags,
  * <p>
  * This function MUST return immediately (non-blocking).
  * </p>
+ * <p>
+ * This function is deprecated.
+ * </p>
  * @param id id returned by @ref GWEN_Gui_ShowBox. If @b 0 then the last
  * message shown is referred to.
  */
-GWENHYWFAR_API
+GWENHYWFAR_API GWEN_DEPRECATED
 void GWEN_Gui_HideBox(uint32_t id);
 
 
