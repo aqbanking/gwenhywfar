@@ -995,11 +995,12 @@ uint32_t GWEN_Crypt_Token_BeginEnterPin(GWEN_UNUSED GWEN_CRYPT_TOKEN *ct,
                                         GWEN_UNUSED GWEN_CRYPT_PINTYPE pt,
                                         uint32_t gid)
 {
-  return GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning,
-			      I18N("Waiting for pin entry on card reader..."
-				   "<html>"
-				   "Waiting for pin entry on card reader..."
-				   "</html>"));
+  int rv;
+
+  rv=GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning, I18N("Waiting for pin entry on card reader..."));
+  if (rv<0)
+    return 0;
+  return 0xffffffff;
 }
 
 
@@ -1009,11 +1010,7 @@ int GWEN_Crypt_Token_EndEnterPin(GWEN_UNUSED GWEN_CRYPT_TOKEN *ct,
                                  GWEN_UNUSED int ok,
                                  uint32_t gid)
 {
-  return GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning,
-			      I18N("Pin entry on card reader finished."
-				   "<html>"
-				   "Pin entry on card reader finished."
-				   "</html>"));
+  return GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Warning, I18N("Pin entry on card reader finished."));
 }
 
 
