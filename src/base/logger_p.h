@@ -99,7 +99,7 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger);
  * GWEN_Logger_Open on that logger prior to calling this function.
  */
 GWENHYWFAR_API
-void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) DEPRECATED ;
+void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) GWEN_DEPRECATED ;
 #endif // ifndef NO_DEPRECATED_SYMBOLS
 
 
