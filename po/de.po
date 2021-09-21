@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2021-02-16 20:55+0100\n"
+"POT-Creation-Date: 2021-09-21 14:47+0200\n"
 "PO-Revision-Date: 2021-02-16 21:00+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
@@ -220,60 +220,60 @@ msgstr "TLS: SSL Ciphers Prioritätenliste: %s"
 msgid "Using GnuTLS default ciphers."
 msgstr "Verwende GnuTLS Default Ciphers."
 
-#: src/sio/syncio_tls.c:816 src/sio/syncio_tls.c:1084
+#: src/sio/syncio_tls.c:815 src/sio/syncio_tls.c:1083
 msgid "Signer not found"
 msgstr "Unterzeichner des Zertifikats wurde nicht gefunden"
 
-#: src/sio/syncio_tls.c:823 src/sio/syncio_tls.c:1090
+#: src/sio/syncio_tls.c:822 src/sio/syncio_tls.c:1089
 msgid "Certificate is not trusted"
 msgstr "Dem Zertifikat wird nicht vertraut"
 
-#: src/sio/syncio_tls.c:830 src/sio/syncio_tls.c:1096
+#: src/sio/syncio_tls.c:829 src/sio/syncio_tls.c:1095
 msgid "Certificate has been revoked"
 msgstr "Das Zertifikat wurde zurückgerufen (revoked)"
 
-#: src/sio/syncio_tls.c:974
+#: src/sio/syncio_tls.c:973
 msgid "Certificate was not issued for this host"
 msgstr "Zertifikat ist nicht für diesen Host erstellt worden"
 
-#: src/sio/syncio_tls.c:985
+#: src/sio/syncio_tls.c:984
 msgid "No hostname to verify the sender!"
 msgstr "Kein Hostname vorhanden, mit dem der Absender verifiziert werden kann!"
 
-#: src/sio/syncio_tls.c:1102
+#: src/sio/syncio_tls.c:1101
 msgid "Certificate has expired"
 msgstr "Zertifikat ist nicht mehr gültig"
 
-#: src/sio/syncio_tls.c:1108
+#: src/sio/syncio_tls.c:1107
 msgid "Certificate is not active yet"
 msgstr "Zertifikat ist noch nicht gültig"
 
-#: src/sio/syncio_tls.c:1114
+#: src/sio/syncio_tls.c:1113
 msgid "Certificate owner does not match hostname"
 msgstr "Zertifikat-Besitzer passt nicht zum Hostnamen"
 
-#: src/sio/syncio_tls.c:1120
+#: src/sio/syncio_tls.c:1119
 msgid "Certificate contains invalid information"
 msgstr "Zertifikat enthält ungültige Informationen"
 
-#: src/sio/syncio_tls.c:1126
+#: src/sio/syncio_tls.c:1125
 msgid "A system error occurred while checking the certificate"
 msgstr "Es gab einen Fehler im Betriebssystem beim Prüfen des Zertifikates"
 
-#: src/sio/syncio_tls.c:1132
+#: src/sio/syncio_tls.c:1131
 msgid "The certificate is valid"
 msgstr "Zertifikat ist gültig"
 
-#: src/sio/syncio_tls.c:1282
+#: src/sio/syncio_tls.c:1281
 #, c-format
 msgid "TLS: SSL-Ciphers negotiated: %s"
 msgstr "TLS: SSL-Ciphers ausgehandelt: %s"
 
-#: src/sio/syncio_tls.c:1293
+#: src/sio/syncio_tls.c:1292
 msgid "TLS: Warning - The server has chosen unsafe SSL-Ciphers!"
 msgstr "TLS: Achtung - der Server hat unsichere SSL-Ciphers gewählt."
 
-#: src/sio/syncio_tls.c:1356
+#: src/sio/syncio_tls.c:1355
 msgid ""
 "A TLS handshake error occurred. If you are using AqBanking you should "
 "consider enabling the option \"force SSLv3\" in the user settings dialog."
@@ -282,22 +282,22 @@ msgstr ""
 "benutzen, sollten Sie einmal die Option \"SSLv3 erzwingen\" in den "
 "Einstellungen ausprobieren."
 
-#: src/sio/syncio_tls.c:1365
+#: src/sio/syncio_tls.c:1364
 #, c-format
 msgid "TLS Handshake Error: %d (%s)"
 msgstr "TLS-Handshake-Fehler: %d (%s)"
 
-#: src/sio/syncio_tls.c:1446
+#: src/sio/syncio_tls.c:1445
 #, c-format
 msgid "Error on gnutls_bye: %d (%s)"
 msgstr "Fehler beim Schritt \"gnutls_bye\": %d (%s)"
 
-#: src/sio/syncio_tls.c:1495
+#: src/sio/syncio_tls.c:1494
 #, c-format
 msgid "Error on gnutls_record_recv: %d (%s)"
 msgstr "Fehler beim Schritt \"gnutls_record_recv\": %d (%s)"
 
-#: src/sio/syncio_tls.c:1563
+#: src/sio/syncio_tls.c:1562
 #, c-format
 msgid "Error on gnutls_record_send: %d (%s)"
 msgstr "Fehler beim Schritt \"gnutls_record_send\": %d (%s)"
@@ -332,83 +332,83 @@ msgstr "Kein HTTP Status-Code empfangen"
 msgid "- no details -)"
 msgstr "- Keine Angaben -"
 
-#: src/sio/httpsession.c:403 src/sio/httpsession.c:860
+#: src/sio/httpsession.c:429 src/sio/httpsession.c:886
 msgid "Connecting to server..."
 msgstr "Mit Server verbinden..."
 
-#: src/sio/httpsession.c:413 src/sio/httpsession.c:869
+#: src/sio/httpsession.c:439 src/sio/httpsession.c:895
 msgid "Could not connect to server"
 msgstr "Es konnte keine Verbindung zum Server aufgebaut werden."
 
-#: src/sio/httpsession.c:422 src/sio/httpsession.c:876
+#: src/sio/httpsession.c:448 src/sio/httpsession.c:902
 msgid "Connected."
 msgstr "Verbunden."
 
-#: src/sio/httpsession.c:451
+#: src/sio/httpsession.c:477
 msgid "Sending message..."
 msgstr "Nachricht senden..."
 
-#: src/sio/httpsession.c:459 src/sio/httpsession.c:518
+#: src/sio/httpsession.c:485 src/sio/httpsession.c:544
 #, c-format
 msgid "Could not send message (%d)"
 msgstr "Konnte Nachricht nicht senden (%d)"
 
-#: src/sio/httpsession.c:468 src/sio/httpsession.c:524
+#: src/sio/httpsession.c:494 src/sio/httpsession.c:550
 msgid "Message sent."
 msgstr "Nachricht gesendet."
 
-#: src/sio/httpsession.c:512
+#: src/sio/httpsession.c:538
 msgid "Sending response..."
 msgstr "Antwort senden..."
 
-#: src/sio/httpsession.c:529 src/sio/httpsession.c:649
-#: src/sio/httpsession.c:840
+#: src/sio/httpsession.c:555 src/sio/httpsession.c:675
+#: src/sio/httpsession.c:866
 msgid "Disconnecting from server..."
 msgstr "Beenden der Verbindung zum Server..."
 
-#: src/sio/httpsession.c:533 src/sio/httpsession.c:653
-#: src/sio/httpsession.c:844 src/sio/httpsession.c:881
+#: src/sio/httpsession.c:559 src/sio/httpsession.c:679
+#: src/sio/httpsession.c:870 src/sio/httpsession.c:907
 msgid "Disconnected."
 msgstr "Verbindung beendet."
 
-#: src/sio/httpsession.c:594 src/sio/httpsession.c:748
+#: src/sio/httpsession.c:620 src/sio/httpsession.c:774
 #, c-format
 msgid "HTTP: Moved permanently to %s"
 msgstr "HTTP: Permanent verschoben nach %s"
 
-#: src/sio/httpsession.c:597 src/sio/httpsession.c:751
+#: src/sio/httpsession.c:623 src/sio/httpsession.c:777
 #, c-format
 msgid "HTTP: Use proxy at %s"
 msgstr "HTTP: Proxy verwenden auf %s"
 
-#: src/sio/httpsession.c:600 src/sio/httpsession.c:754
+#: src/sio/httpsession.c:626 src/sio/httpsession.c:780
 #, c-format
 msgid "HTTP: Moved temporarily to %s"
 msgstr "HTTP: Zeitweise verschoben nach %s"
 
-#: src/sio/httpsession.c:603 src/sio/httpsession.c:757
+#: src/sio/httpsession.c:629 src/sio/httpsession.c:783
 #, c-format
 msgid "HTTP: Moved to %s"
 msgstr "HTTP: Verschoben nach %s"
 
-#: src/sio/httpsession.c:626 src/sio/httpsession.c:795
+#: src/sio/httpsession.c:652 src/sio/httpsession.c:821
 msgid "Receiving response..."
 msgstr "Antwort wird empfangen..."
 
-#: src/sio/httpsession.c:638 src/sio/httpsession.c:684
-#: src/sio/httpsession.c:827
+#: src/sio/httpsession.c:664 src/sio/httpsession.c:710
+#: src/sio/httpsession.c:853
 msgid "Received continuation response."
 msgstr "Antwort mit Fortsetzung empfangen."
 
-#: src/sio/httpsession.c:644 src/sio/httpsession.c:835
+#: src/sio/httpsession.c:670 src/sio/httpsession.c:861
 msgid "Response received."
 msgstr "Antwort empfangen."
 
-#: src/sio/httpsession.c:675
+#: src/sio/httpsession.c:701
 msgid "Receiving command..."
 msgstr "Kommando wird empfangen..."
 
-#: src/sio/httpsession.c:688
+#: src/sio/httpsession.c:714
 msgid "Command received."
 msgstr "Kommando empfangen."
 
@@ -441,7 +441,8 @@ msgid "Saturday"
 msgstr "Samstag"
 
 #: src/os/posix/fslock.c:258
-msgid "Accquiring lock"
+#, fuzzy
+msgid "Acquiring lock"
 msgstr "Starte exklusiven Zugriff"
 
 #: src/os/posix/fslock.c:345

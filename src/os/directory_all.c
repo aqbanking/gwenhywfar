@@ -153,7 +153,7 @@ void *GWEN_Directory_HandlePathElement(const char *entry,
     }
     else {
       if (!S_ISDIR(st.st_mode)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "%s not a direcory", p);
+        DBG_INFO(GWEN_LOGDOMAIN, "%s not a directory", p);
         GWEN_Buffer_free(ebuf);
         return 0;
       }

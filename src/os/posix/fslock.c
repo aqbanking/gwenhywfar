@@ -255,7 +255,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid)
                                     GWEN_GUI_PROGRESS_ALLOW_EMBED |
                                     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
                                     GWEN_GUI_PROGRESS_SHOW_ABORT,
-                                    I18N("Accquiring lock"),
+                                    I18N("Acquiring lock"),
                                     NULL,
                                     (timeout==GWEN_TIMEOUT_FOREVER)
                                     ?0:timeout, gid);
