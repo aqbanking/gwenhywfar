@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2021-09-21 14:47+0200\n"
+"POT-Creation-Date: 2021-09-21 14:57+0200\n"
 "PO-Revision-Date: 2021-02-16 21:00+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
@@ -441,7 +441,6 @@ msgid "Saturday"
 msgstr "Samstag"
 
 #: src/os/posix/fslock.c:258
-#, fuzzy
 msgid "Acquiring lock"
 msgstr "Starte exklusiven Zugriff"
 
@@ -496,12 +495,12 @@ msgstr "Warten"
 msgid "Remove Lock"
 msgstr "Lock entfernen"
 
-#: src/os/posix/fslock.c:378 src/crypttoken/ct.c:1067 src/crypttoken/ct.c:1139
+#: src/os/posix/fslock.c:378 src/crypttoken/ct.c:1052 src/crypttoken/ct.c:1124
 #: src/gui/cgui.c:303
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/os/posix/fslock.c:384 src/crypttoken/ct.c:1071 src/crypttoken/ct.c:1143
+#: src/os/posix/fslock.c:384 src/crypttoken/ct.c:1056 src/crypttoken/ct.c:1128
 msgid "Aborted by user."
 msgstr "Vom Benutzer abgebrochen."
 
@@ -580,19 +579,15 @@ msgstr ""
 msgid "Enter Password"
 msgstr "Passworteingabe"
 
-#: src/crypttoken/ct.c:1007
-msgid ""
-"Please enter your PIN into the card reader.<html>Please enter your PIN into "
-"the card reader.</html>"
-msgstr ""
-"Bitte geben Sie Ihre PIN am Kartenleser ein. <html>Bitte geben Sie Ihre PIN "
-"am Kartenleser ein.</html>"
+#: src/crypttoken/ct.c:1000
+msgid "Waiting for pin entry on card reader..."
+msgstr "Warte auf PIN-Eingabe am Kartenleser..."
 
-#: src/crypttoken/ct.c:1012
-msgid "Secure PIN Input"
-msgstr "Sichere PIN-Eingabe"
+#: src/crypttoken/ct.c:1013
+msgid "Pin entry on card reader finished."
+msgstr "PIN-Eingabe am Kartenleser beendet."
 
-#: src/crypttoken/ct.c:1051
+#: src/crypttoken/ct.c:1036
 #, c-format
 msgid ""
 "Please insert the security disc\n"
@@ -602,7 +597,7 @@ msgstr ""
 "für %s ins Laufwerk. <html>Bitte legen Sie die Schlüsseldiskette\n"
 "für <i>%s</i> ins Laufwerk.</html>"
 
-#: src/crypttoken/ct.c:1057
+#: src/crypttoken/ct.c:1042
 #, c-format
 msgid ""
 "Please insert the chip card\n"
@@ -612,27 +607,27 @@ msgstr ""
 "für %s in den Kartenleser. <html>Bitte legen Sie die Chipkarte\n"
 "für <i>%s</i> in den Kartenleser.</html>"
 
-#: src/crypttoken/ct.c:1065 src/crypttoken/ct.c:1137
+#: src/crypttoken/ct.c:1050 src/crypttoken/ct.c:1122
 msgid "Insert Medium"
 msgstr "Sicherheitsmedium einlegen"
 
-#: src/crypttoken/ct.c:1067 src/crypttoken/ct.c:1139
+#: src/crypttoken/ct.c:1052 src/crypttoken/ct.c:1124
 msgid "OK"
 msgstr "Ok"
 
-#: src/crypttoken/ct.c:1078 src/crypttoken/ct.c:1150
+#: src/crypttoken/ct.c:1063 src/crypttoken/ct.c:1135
 msgid "Error"
 msgstr "Fehler"
 
-#: src/crypttoken/ct.c:1079 src/crypttoken/ct.c:1151
+#: src/crypttoken/ct.c:1064 src/crypttoken/ct.c:1136
 msgid "An internal error occurred."
 msgstr "Es ist ein interner Fehler aufgetreten."
 
-#: src/crypttoken/ct.c:1080 src/crypttoken/ct.c:1152 src/gui/gui.c:393
+#: src/crypttoken/ct.c:1065 src/crypttoken/ct.c:1137 src/gui/gui.c:393
 msgid "Dismiss"
 msgstr "Schließen"
 
-#: src/crypttoken/ct.c:1107
+#: src/crypttoken/ct.c:1092
 #, c-format
 msgid ""
 "Please insert the correct security disc\n"
@@ -641,7 +636,7 @@ msgstr ""
 "Bitte legen Sie die korrekte Sicherheitsdiskette für %s ein. <html>Bitte "
 "legen Sie die korrekte Sicherheitsdiskette für <i>%s</i> ein.</html>"
 
-#: src/crypttoken/ct.c:1114
+#: src/crypttoken/ct.c:1099
 #, c-format
 msgid ""
 "The wrong chipcard has been inserted.\n"
@@ -658,7 +653,7 @@ msgstr ""
 "<html><p>Eine falsche Chipkarte wurde eingelegt.</p> <p>Bitte legen Sie die "
 "Chipkarte mit der Nummer<b>%s</b> in den Kartenleser ein.</p></html>"
 
-#: src/crypttoken/ct.c:1128
+#: src/crypttoken/ct.c:1113
 #, c-format
 msgid ""
 "Please insert the correct chipcard\n"
@@ -711,11 +706,11 @@ msgstr "Schlüssel erzeugt"
 msgid "Key generated and set"
 msgstr "Schlüssel erzeugt und gesetzt"
 
-#: src/crypttoken/ctplugin.c:314
+#: src/crypttoken/ctplugin.c:318
 msgid "No plugin found for this device type"
 msgstr "Kein Modul für den Gerätetypen gefunden"
 
-#: src/crypttoken/ctplugin.c:317
+#: src/crypttoken/ctplugin.c:321
 msgid ""
 "If you're using a Debian/Ubuntu based system please consider to install "
 "package "
@@ -723,50 +718,50 @@ msgstr ""
 "Falls Sie ein Debian-/Ubuntu-basiertes System verwenden sollten Sie das "
 "folgende Paket installieren: "
 
-#: src/crypttoken/ctplugin.c:339
+#: src/crypttoken/ctplugin.c:343
 msgid "Determining plugin module..."
 msgstr "Plugin wird ermittelt..."
 
-#: src/crypttoken/ctplugin.c:356
+#: src/crypttoken/ctplugin.c:360
 #, c-format
 msgid "Loading plugin \"%s\""
 msgstr "Plugin \"%s\" laden"
 
-#: src/crypttoken/ctplugin.c:372
+#: src/crypttoken/ctplugin.c:379
+#, c-format
+msgid "Could not load plugin \"%s\""
+msgstr "Fehler beim Laden des Plugins \"%s\""
+
+#: src/crypttoken/ctplugin.c:418
 #, c-format
 msgid "Checking plugin \"%s\""
 msgstr "Plugin \"%s\" prüfen"
 
-#: src/crypttoken/ctplugin.c:389
+#: src/crypttoken/ctplugin.c:432
 #, c-format
 msgid "Plugin \"%s\" supports this token"
 msgstr "Plugin \"%s\" unterstützt dieses Token"
 
-#: src/crypttoken/ctplugin.c:415
+#: src/crypttoken/ctplugin.c:449
 #, c-format
 msgid "Plugin \"%s\": Function not implemented"
 msgstr "Plugin \"%s\": Funktion nicht implementiert"
 
-#: src/crypttoken/ctplugin.c:425
+#: src/crypttoken/ctplugin.c:456
 #, c-format
 msgid "Plugin \"%s\" does not support this token"
 msgstr "Plugin \"%s\" unterstützt dieses Token nicht"
 
-#: src/crypttoken/ctplugin.c:435
+#: src/crypttoken/ctplugin.c:463
 #, c-format
 msgid "Plugin \"%s\" supports this token, but the name did not match"
 msgstr ""
 "Plugin \"%s\" unterstützt dieses Token, aber der Name stimmt nicht überein"
 
-#: src/crypttoken/ctplugin.c:446
+#: src/crypttoken/ctplugin.c:470
 #, c-format
 msgid "Plugin \"%s\": Unexpected error (%d)"
 msgstr "Plugin \"%s\": Unerwarteter Fehler (%d)"
-
-#: src/crypttoken/ctplugin.c:457
-#, c-format
-msgid "Could not load plugin \"%s\""
-msgstr "Fehler beim Laden des Plugins \"%s\""
 
 #: src/gui/cgui.c:298
 msgid "Empty Input"
