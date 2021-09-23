@@ -434,6 +434,8 @@ case "$OS_TYPE" in
             all_libraries="${all_libraries} -framework CoreFoundation"
           fi
         fi
+        
+        gwenbuild_tool="gwenbuild"
     	;;
     windows)
         gwenhywfar_sys_is_windows=1
@@ -442,6 +444,7 @@ case "$OS_TYPE" in
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
 	all_libraries="${all_libraries} -lwsock32"
+        gwenbuild_tool=""
     	;;
     *)
     	AC_MSG_ERROR(**** Unknown operating system type)
@@ -450,6 +453,7 @@ esac
 
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 AC_SUBST(gwenhywfar_sys_is_windows)
+AC_SUBST(gwenbuild_tool)
 
 
 dnl # Check for x86_64 architecture; potentially set lib-directory suffix
