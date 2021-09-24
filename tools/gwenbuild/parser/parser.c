@@ -62,11 +62,18 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild,
   GWEN_XMLNODE *xmlProject;
   GWB_PROJECT *project;
   GWB_FILE *file;
+  GWEN_DB_NODE *db;
   int rv;
 
   GWB_Context_SetInitialSourceDir(currentContext, srcDir);
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
   GWB_Context_SetCurrentSourceDir(currentContext, srcDir);
+
+  db=GWB_Context_GetVars(currentContext);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topbuilddir", ".");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topsrcdir", srcDir);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", ".");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "srcdir", srcDir);
 
   xmlNewFile=GWB_Parser_ReadBuildFile(gwbuild, currentContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
