@@ -372,7 +372,7 @@ GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status)
   } /* if exited normally */
   else if (WIFSIGNALED(status)) {
     /* uncaught signal */
-    DBG_ERROR(GWEN_LOGDOMAIN, "Process %d terminated by signal %d",
+    DBG_INFO(GWEN_LOGDOMAIN, "Process %d terminated by signal %d",
               (int)pr->pid, WTERMSIG(status));
     pr->state=GWEN_ProcessStateAborted;
     pr->pid=-1;
