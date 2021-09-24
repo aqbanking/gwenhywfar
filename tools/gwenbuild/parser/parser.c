@@ -865,7 +865,7 @@ int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_
           free(rawName);
         }
         else {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Not interpreting at sign as start of variable name, adding to output.");
+          DBG_INFO(GWEN_LOGDOMAIN, "Not interpreting at sign as start of variable name, adding to output.");
           p=pStart;
           GWEN_Buffer_AppendByte(dbuf, '@');
           GWEN_Buffer_AppendByte(dbuf, *p);
