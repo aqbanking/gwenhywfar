@@ -16,6 +16,7 @@
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/buffer.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -24,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-
+#include <ctype.h>
 
 
 
@@ -32,6 +33,7 @@ static GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileLis
 static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
 static void _writeProjectNameAndVersionToXml(const GWB_PROJECT *project, GWEN_XMLNODE *xmlNode);
+static int _readIntUntilPointOrHyphen(const char **ptrToStringPtr);
 
 
 
@@ -608,6 +610,181 @@ GWEN_XMLNODE *GWB_Utils_ReadProjectInfoFromFile(const char *fileName)
   return NULL;
 }
 
+
+
+
+int GWB_Utils_VersionStringToDb(GWEN_DB_NODE *db, const char *prefix, const char *s)
+{
+  const char *p;
+  GWEN_BUFFER *varNameBuffer;
+  uint32_t posInVarNameBuffer;
+  int rv;
+
+  varNameBuffer=GWEN_Buffer_new(0, 64, 0, 1);
+  if (prefix && *prefix)
+    GWEN_Buffer_AppendString(varNameBuffer, prefix);
+  posInVarNameBuffer=GWEN_Buffer_GetPos(varNameBuffer);
+
+  p=s;
+  while(*p && *p<33)
+    s++;
+  if (isdigit(*p)) {
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      GWEN_Buffer_free(varNameBuffer);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_AppendString(varNameBuffer, "vmajor");
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
+    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
+  }
+  if (*p=='.') {
+    p++;
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      GWEN_Buffer_free(varNameBuffer);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_AppendString(varNameBuffer, "vminor");
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
+    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
+  }
+  if (*p=='.') {
+    p++;
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      GWEN_Buffer_free(varNameBuffer);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_AppendString(varNameBuffer, "vpatchlevel");
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
+    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
+  }
+  if (*p=='.') {
+    p++;
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      GWEN_Buffer_free(varNameBuffer);
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_AppendString(varNameBuffer, "vbuild");
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
+    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
+  }
+  if (*p=='-') {
+    p++;
+    GWEN_Buffer_AppendString(varNameBuffer, "vtag");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), p);
+    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
+  }
+  GWEN_Buffer_free(varNameBuffer);
+
+  return 0;
+}
+
+
+
+int GWB_Utils_VersionStringToInt(const char *s)
+{
+  const char *p;
+  unsigned int vmajor=0;
+  unsigned int vminor=0;
+  unsigned int vpatchlevel=0;
+  unsigned int vbuild=0;
+  int rv;
+
+  p=s;
+  while(*p && *p<33)
+    s++;
+  if (isdigit(*p)) {
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      return GWEN_ERROR_GENERIC;
+    }
+    vmajor=rv & 0xff;
+  }
+  if (*p=='.') {
+    p++;
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      return GWEN_ERROR_GENERIC;
+    }
+    vminor=rv & 0xff;
+  }
+  if (*p=='.') {
+    p++;
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      return GWEN_ERROR_GENERIC;
+    }
+    vpatchlevel=rv & 0xff;
+  }
+  if (*p=='.') {
+    p++;
+    rv=_readIntUntilPointOrHyphen(&p);
+    if (rv<0) {
+      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
+      return GWEN_ERROR_GENERIC;
+    }
+    vbuild=rv & 0xff;
+  }
+
+  return (int) ((vmajor<<24)+(vminor<<16)+(vpatchlevel<<8)+vbuild);
+}
+
+
+
+int _readIntUntilPointOrHyphen(const char **s)
+{
+  int i=0;
+  const char *p;
+
+  p=*s;
+  while(*p && *p!='.' && *p!='-') {
+    int c;
+
+    c=(*p)-'0';
+    if (c<0 || c>9) {
+      DBG_ERROR(NULL, "Invalid version string \"%s\"", *s);
+      return GWEN_ERROR_GENERIC;
+    }
+    i=(i*10)+c;
+    p++;
+  }
+  *s=p;
+
+  return i;
+}
+
+
+
+void GWB_Utils_VersionToDbVar(GWEN_DB_NODE *db, const char *dbVarName,
+                              int vmajor, int vminor, int vpatchlevel, int vbuild,
+                              const char *vtag) {
+  GWEN_BUFFER *dbuf;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (vbuild>0)
+    GWEN_Buffer_AppendArgs(dbuf, "%d.%d.%d.%d", vmajor, vminor, vpatchlevel, vbuild);
+  else
+    GWEN_Buffer_AppendArgs(dbuf, "%d.%d.%d", vmajor, vminor, vpatchlevel);
+
+  if (vtag && *vtag) {
+    GWEN_Buffer_AppendString(dbuf, "-");
+    GWEN_Buffer_AppendArgs(dbuf, "%s", vtag);
+  }
+
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, dbVarName, GWEN_Buffer_GetStart(dbuf));
+  GWEN_Buffer_free(dbuf);
+}
 
 
 
