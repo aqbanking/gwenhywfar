@@ -26,6 +26,7 @@
 #include <ctype.h>
 
 
+#define GWB_BUILDCTX_PROCESS_WAIT_TIMEOUT 10.0
 
 
 static void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
@@ -35,6 +36,7 @@ static int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles)
 static int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
 static void _signalJobFinished(GWB_BUILD_CMD *bcmd);
 static void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
+static int _waitForRunningJobs(GWB_BUILD_CONTEXT *bctx);
 static void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
 static void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList);
 
@@ -84,12 +86,14 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
 
     startedCommands=_checkWaitingQueue(bctx, maxConcurrentJobs-runningJobs);
     if (startedCommands<0) {
+      _waitForRunningJobs(bctx);
       _abortAllCommands(bctx);
       return GWEN_ERROR_GENERIC;
     }
 
     changedCommands=_checkRunningQueue(bctx);
     if (changedCommands<0) { /* error */
+      _waitForRunningJobs(bctx);
       _abortAllCommands(bctx);
       return GWEN_ERROR_GENERIC;
     }
@@ -97,6 +101,7 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
     if (startedCommands==0 && changedCommands==0) {
       if (runningJobs==0) {
         DBG_ERROR(NULL, "ERROR: No running jobs and none could be started, maybe circular dependencies?");
+	_waitForRunningJobs(bctx);
         _abortAllCommands(bctx);
         return GWEN_ERROR_GENERIC;
       }
@@ -111,6 +116,45 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
   GWB_BuildCmd_List2_free(bctx->waitingQueue);
   GWB_BuildCmd_List2_free(bctx->runningQueue);
   GWB_BuildCmd_List2_free(bctx->finishedQueue);
+
+  return 0;
+}
+
+
+
+int _waitForRunningJobs(GWB_BUILD_CONTEXT *bctx)
+{
+  int numRunningJobs;
+  time_t startTime;
+
+  startTime=time(0);
+  numRunningJobs=GWB_BuildCmd_List2_GetSize(bctx->runningQueue);
+  if (numRunningJobs)
+    fprintf(stderr, "NOTICE: Waiting for %d jobs.\n", numRunningJobs);
+  while(numRunningJobs) {
+    int numChangedCommands;
+    time_t currentTime;
+
+    numChangedCommands=_checkRunningQueue(bctx);
+    if (numChangedCommands<0) { /* error */
+      DBG_INFO(NULL, "Some jobs had errors");
+    }
+    numRunningJobs=GWB_BuildCmd_List2_GetSize(bctx->runningQueue);
+
+    if (numRunningJobs>0) {
+      double delta;
+
+      currentTime=time(0);
+      delta=difftime(currentTime, startTime);
+      if (delta>=GWB_BUILDCTX_PROCESS_WAIT_TIMEOUT) {
+	DBG_ERROR(NULL, "%d jobs still running after %f.1 seconds, aborting", numRunningJobs, delta);
+	return GWEN_ERROR_TIMEOUT;
+      }
+      DBG_DEBUG(NULL, "Jobs still running, sleeping...");
+      sleep(1);
+    }
+
+  } /* while */
 
   return 0;
 }
@@ -594,7 +638,7 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
 
         result=GWEN_Process_GetResult(process);
         if (result && !(GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT)) {
-          DBG_ERROR(NULL, "Command exited with result %d", result);
+          DBG_INFO(NULL, "Command exited with result %d", result);
           GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
           errors++;
         }
