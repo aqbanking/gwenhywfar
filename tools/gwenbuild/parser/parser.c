@@ -889,17 +889,17 @@ int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_
       p++;
       if (*p=='@')
         GWEN_Buffer_AppendByte(dbuf, '@');
+      else if (!isalpha(*p)) {
+        GWEN_Buffer_AppendByte(dbuf, '@');
+        GWEN_Buffer_AppendByte(dbuf, *p);
+      }
       else {
         const char *pStart;
 
         pStart=p;
-        while (*p && *p!='@')
+        while (*p && *p!='@' && (isalnum(*p) || *p=='_'))
           p++;
-        if (*p!='@') {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
-          return GWEN_ERROR_BAD_DATA;
-        }
-        else {
+        if (*p=='@') {
           int len;
           char *rawName;
           const char *value;
@@ -922,6 +922,12 @@ int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_
             DBG_WARN(NULL, "Warning: Empty value for DB var \"%s\"", rawName);
           }
           free(rawName);
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Not interpreting at sign as start of variable name, adding to output.");
+          p=pStart;
+          GWEN_Buffer_AppendByte(dbuf, '@');
+          GWEN_Buffer_AppendByte(dbuf, *p);
         }
       }
       p++;
