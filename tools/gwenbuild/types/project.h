@@ -53,6 +53,7 @@ int GWB_Project_GetSoVersionRevision(const GWB_PROJECT *project);
 
 GWB_KEYVALUEPAIR_LIST *GWB_Project_GetDefineList(const GWB_PROJECT *project);
 void GWB_Project_SetDefine(GWB_PROJECT *project, const char *name, const char *value);
+void GWB_Project_SetDefineQuoted(GWB_PROJECT *project, const char *name, const char *value);
 void GWB_Project_ClearDefineList(GWB_PROJECT *project);
 
 

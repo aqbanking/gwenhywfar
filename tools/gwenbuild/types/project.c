@@ -313,6 +313,21 @@ void GWB_Project_SetDefine(GWB_PROJECT *project, const char *name, const char *v
 
 
 
+void GWB_Project_SetDefineQuoted(GWB_PROJECT *project, const char *name, const char *value)
+{
+  GWEN_BUFFER *dbuf;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(dbuf, "\"");
+  if (value && *value)
+    GWEN_Buffer_AppendString(dbuf, value);
+  GWEN_Buffer_AppendString(dbuf, "\"");
+  GWB_Project_SetDefine(project, name, GWEN_Buffer_GetStart(dbuf));
+  GWEN_Buffer_free(dbuf);
+}
+
+
+
 void GWB_Project_ClearDefineList(GWB_PROJECT *project)
 {
 if (project->defineList==NULL)

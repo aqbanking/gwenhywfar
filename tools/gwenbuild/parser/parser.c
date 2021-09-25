@@ -14,6 +14,7 @@
 
 #include "gwenbuild/parser/parser.h"
 #include "gwenbuild/parser/p_project.h"
+#include "gwenbuild/utils.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/syncio.h>
@@ -44,8 +45,6 @@ static int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 static int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
-static int _readVersion(const char *s);
-static int _readIntUntilPoint(const char **s);
 
 static int _getFilePermissions(const char *fname);
 static int _setFilePermissions(const char *fname, int perms);
@@ -62,11 +61,18 @@ GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild,
   GWEN_XMLNODE *xmlProject;
   GWB_PROJECT *project;
   GWB_FILE *file;
+  GWEN_DB_NODE *db;
   int rv;
 
   GWB_Context_SetInitialSourceDir(currentContext, srcDir);
   GWB_Context_SetTopSourceDir(currentContext, srcDir);
   GWB_Context_SetCurrentSourceDir(currentContext, srcDir);
+
+  db=GWB_Context_GetVars(currentContext);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topbuilddir", ".");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "topsrcdir", srcDir);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "builddir", ".");
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "srcdir", srcDir);
 
   xmlNewFile=GWB_Parser_ReadBuildFile(gwbuild, currentContext, GWB_PARSER_FILENAME);
   if (xmlNewFile==NULL) {
@@ -192,11 +198,12 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
     int vRequired;
     int vCurrent;
 
-    vCurrent=(int) ((GWENHYWFAR_VERSION_MAJOR<<16)+
-		    (GWENHYWFAR_VERSION_MINOR<<8)+
-		    (GWENHYWFAR_VERSION_PATCHLEVEL));
+    vCurrent=(int) ((GWENHYWFAR_VERSION_MAJOR<<24)+
+		    (GWENHYWFAR_VERSION_MINOR<<16)+
+                    (GWENHYWFAR_VERSION_PATCHLEVEL<<8)+
+                    (GWENHYWFAR_VERSION_BUILD));
 
-    vRequired=_readVersion(s);
+    vRequired=GWB_Utils_VersionStringToInt(s);
     if (vRequired<0) {
       DBG_ERROR(NULL, "Invalid required version \"%s\"", s);
       GWEN_XMLNode_free(xmlDocNode);
@@ -237,72 +244,6 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
   return xmlGwbuildNode;
 }
 
-
-
-int _readVersion(const char *s)
-{
-  const char *p;
-  unsigned int vmajor=0;
-  unsigned int vminor=0;
-  unsigned int vpatchlevel=0;
-  int rv;
-
-  p=s;
-  while(*p && *p<33)
-    s++;
-  if (isdigit(*p)) {
-    rv=_readIntUntilPoint(&p);
-    if (rv<0) {
-      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      return GWEN_ERROR_GENERIC;
-    }
-    vmajor=rv;
-  }
-  if (*p=='.') {
-    p++;
-    rv=_readIntUntilPoint(&p);
-    if (rv<0) {
-      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      return GWEN_ERROR_GENERIC;
-    }
-    vminor=rv;
-  }
-  if (*p=='.') {
-    p++;
-    rv=_readIntUntilPoint(&p);
-    if (rv<0) {
-      DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      return GWEN_ERROR_GENERIC;
-    }
-    vpatchlevel=rv;
-  }
-
-  return (int) ((vmajor<<16)+(vminor<<8)+(vpatchlevel));
-}
-
-
-
-int _readIntUntilPoint(const char **s)
-{
-  int i=0;
-  const char *p;
-
-  p=*s;
-  while(*p && *p!='.') {
-    int c;
-
-    c=(*p)-'0';
-    if (c<0 || c>9) {
-      DBG_ERROR(NULL, "Invalid version string \"%s\"", *s);
-      return GWEN_ERROR_GENERIC;
-    }
-    i=(i*10)+c;
-    p++;
-  }
-  *s=p;
-
-  return i;
-}
 
 
 GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode)
@@ -889,17 +830,17 @@ int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_
       p++;
       if (*p=='@')
         GWEN_Buffer_AppendByte(dbuf, '@');
+      else if (!isalpha(*p)) {
+        GWEN_Buffer_AppendByte(dbuf, '@');
+        GWEN_Buffer_AppendByte(dbuf, *p);
+      }
       else {
         const char *pStart;
 
         pStart=p;
-        while (*p && *p!='@')
+        while (*p && *p!='@' && (isalnum(*p) || *p=='_'))
           p++;
-        if (*p!='@') {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
-          return GWEN_ERROR_BAD_DATA;
-        }
-        else {
+        if (*p=='@') {
           int len;
           char *rawName;
           const char *value;
@@ -922,6 +863,12 @@ int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_
             DBG_WARN(NULL, "Warning: Empty value for DB var \"%s\"", rawName);
           }
           free(rawName);
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "Not interpreting at sign as start of variable name, adding to output.");
+          p=pStart;
+          GWEN_Buffer_AppendByte(dbuf, '@');
+          GWEN_Buffer_AppendByte(dbuf, *p);
         }
       }
       p++;

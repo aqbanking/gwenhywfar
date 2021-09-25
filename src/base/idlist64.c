@@ -413,7 +413,7 @@ int64_t GWEN_IdList64_AddId(GWEN_IDLIST64 *idl, uint64_t entry)
         DBG_VERBOUS(GWEN_LOGDOMAIN, "Finding free empty the fast way");
         entryPos=GWEN_IdTable64_GetHighestEntry(pTableCurrent)+1;
         if (ptr[entryPos]!=0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Entry[highest+1] should be 0 but isnt, SNH!");
+          DBG_ERROR(GWEN_LOGDOMAIN, "Entry[highest+1] should be 0 but isn't, SNH!");
           return GWEN_ERROR_INTERNAL;
         }
       }

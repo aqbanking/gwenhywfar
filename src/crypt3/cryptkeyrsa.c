@@ -73,7 +73,7 @@ static int GWEN_Crypt_KeyRsa__getNamedElement(gcry_sexp_t pkey, const char *name
 
   mpi=gcry_sexp_nth_mpi(list, 1, GCRYMPI_FMT_USG);
   if (!mpi) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Eror getting value for element \"%s\"", name);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error getting value for element \"%s\"", name);
     gcry_sexp_release(list);
     return GWEN_ERROR_GENERIC;
   }

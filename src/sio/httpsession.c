@@ -589,20 +589,20 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
         DBG_INFO(GWEN_LOGDOMAIN, "Detailed Error Log For Packet:");
 
         if (dbHeaderIn) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Recevied this HTTP header:");
+          DBG_INFO(GWEN_LOGDOMAIN, "Received this HTTP header:");
           GWEN_DB_Dump(dbHeaderIn, 2);
         }
         else {
-          DBG_INFO(GWEN_LOGDOMAIN, "-- No HTTP header recevied --");
+          DBG_INFO(GWEN_LOGDOMAIN, "-- No HTTP header received --");
         }
 
         if (GWEN_Buffer_GetUsedBytes(buf)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Recevied this body:");
+          DBG_INFO(GWEN_LOGDOMAIN, "Received this body:");
           GWEN_Text_LogString(GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf),
                               GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
         }
         else {
-          DBG_INFO(GWEN_LOGDOMAIN, "-- No body recevied --");
+          DBG_INFO(GWEN_LOGDOMAIN, "-- No body received --");
         }
 
       }
