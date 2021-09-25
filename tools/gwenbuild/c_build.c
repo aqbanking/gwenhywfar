@@ -47,7 +47,16 @@ int GWB_Build(GWEN_DB_NODE *dbArgs)
     return 2;
   }
 
-  /* build */
+  /* first build typemaker2 files */
+  if (!(builderName && *builderName)) {
+    rv=GWB_BuildCtx_Run(buildCtx, numThreads, 0, "tm2builder");
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Error building typermaker2 files.\n");
+      return 3;
+    }
+  }
+
+  /* build the rest */
   rv=GWB_BuildCtx_Run(buildCtx, numThreads, 0, builderName);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error building builds.\n");
@@ -56,6 +65,5 @@ int GWB_Build(GWEN_DB_NODE *dbArgs)
 
   return 0;
 }
-
 
 
