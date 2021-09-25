@@ -210,6 +210,7 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
   const char *sTarget;
   const char *sTargetSystem;
   const char *s;
+  int systemIsWindows=0;
 
   dbVars=GWB_Context_GetVars(context);
 
@@ -225,6 +226,7 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_ARCH", GWBUILD_GetHostArch());
     sTargetSystem=GWBUILD_GetHostSystem();
   }
+  systemIsWindows=(strcasecmp(sTargetSystem, "windows")==0)?1:0;
 
   if (GWBUILD_GetFlags(gwenbuild) & GWENBUILD_FLAGS_STATIC)
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_LIBTYPE", "staticlib");
@@ -233,7 +235,8 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
 
   GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEM", sTargetSystem);
   GWBUILD_SetTargetSystem(gwenbuild, sTargetSystem);
-  GWBUILD_SetTargetIsWindows(gwenbuild, (strcasecmp(sTargetSystem, "windows")==0)?1:0);
+  GWBUILD_SetTargetIsWindows(gwenbuild, systemIsWindows);
+  GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEMTYPE", systemIsWindows?"windows":"posix");
 }
 
 
