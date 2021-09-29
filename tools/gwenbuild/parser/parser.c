@@ -35,6 +35,9 @@
 
 
 
+static GWEN_BUFFER *_getSourcePathForFileName(const GWB_CONTEXT *currentContext, const char *fileName);
+static void _addBuildFileNameToGwBuild(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName);
+static int _getAndCheckRequiredGwenVersion(GWEN_XMLNODE *xmlGwbuildNode);
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
 static int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseIfVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
@@ -163,18 +166,11 @@ GWB_CONTEXT *GWB_Parser_CopyContextForTarget(const GWB_CONTEXT *sourceContext)
 GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName)
 {
   GWEN_BUFFER *fileNameBuf;
-  const char *s;
   int rv;
   GWEN_XMLNODE *xmlDocNode;
   GWEN_XMLNODE *xmlGwbuildNode;
 
-  fileNameBuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=GWB_Context_GetCurrentSourceDir(currentContext);
-  if (s && *s) {
-    GWEN_Buffer_AppendString(fileNameBuf, s);
-    GWEN_Buffer_AppendString(fileNameBuf, GWEN_DIR_SEPARATOR_S);
-  }
-  GWEN_Buffer_AppendString(fileNameBuf, fileName);
+  fileNameBuf=_getSourcePathForFileName(currentContext, fileName);
 
   xmlDocNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
@@ -193,6 +189,69 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
     GWEN_Buffer_free(fileNameBuf);
     return NULL;
   }
+
+  rv=_getAndCheckRequiredGwenVersion(xmlGwbuildNode);
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    GWEN_XMLNode_free(xmlDocNode);
+    GWEN_Buffer_free(fileNameBuf);
+    return NULL;
+  }
+
+  _addBuildFileNameToGwBuild(gwbuild, currentContext, fileName);
+
+  GWEN_XMLNode_UnlinkChild(xmlDocNode, xmlGwbuildNode);
+  GWEN_XMLNode_free(xmlDocNode);
+  GWEN_Buffer_free(fileNameBuf);
+
+  return xmlGwbuildNode;
+}
+
+
+
+GWEN_BUFFER *_getSourcePathForFileName(const GWB_CONTEXT *currentContext, const char *fileName)
+{
+  GWEN_BUFFER *fileNameBuf;
+  const char *s;
+
+  fileNameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=GWB_Context_GetCurrentSourceDir(currentContext);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(fileNameBuf, s);
+    GWEN_Buffer_AppendString(fileNameBuf, GWEN_DIR_SEPARATOR_S);
+  }
+  GWEN_Buffer_AppendString(fileNameBuf, fileName);
+  return fileNameBuf;
+}
+
+
+
+void _addBuildFileNameToGwBuild(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName)
+{
+  GWEN_BUFFER *buildFilenameBuffer;
+  const char *buildDir;
+  const char *initialSourceDir;
+
+  initialSourceDir=GWB_Context_GetInitialSourceDir(currentContext);
+  buildDir=GWB_Context_GetCurrentBuildDir(currentContext);
+  buildFilenameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(buildFilenameBuffer, initialSourceDir);
+  if (buildDir) {
+    GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
+    GWEN_Buffer_AppendString(buildFilenameBuffer, buildDir);
+  }
+  GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(buildFilenameBuffer, fileName);
+  GWBUILD_AddBuildFilename(gwbuild, GWEN_Buffer_GetStart(buildFilenameBuffer));
+  GWEN_Buffer_free(buildFilenameBuffer);
+}
+
+
+
+int _getAndCheckRequiredGwenVersion(GWEN_XMLNODE *xmlGwbuildNode)
+{
+  const char *s;
+
   s=GWEN_XMLNode_GetProperty(xmlGwbuildNode, "requiredVersion", NULL);
   if (s && *s) {
     int vRequired;
@@ -206,42 +265,15 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
     vRequired=GWB_Utils_VersionStringToInt(s);
     if (vRequired<0) {
       DBG_ERROR(NULL, "Invalid required version \"%s\"", s);
-      GWEN_XMLNode_free(xmlDocNode);
-      GWEN_Buffer_free(fileNameBuf);
-      return NULL;
+      return GWEN_ERROR_GENERIC;
     }
     if (vCurrent<vRequired) {
       DBG_ERROR(NULL, "Minimum GWENBUILD version required is %x", vRequired);
-      GWEN_XMLNode_free(xmlDocNode);
-      GWEN_Buffer_free(fileNameBuf);
-      return NULL;
+      return GWEN_ERROR_GENERIC;
     }
   }
 
-  if (1) {
-    GWEN_BUFFER *buildFilenameBuffer;
-    const char *buildDir;
-    const char *initialSourceDir;
-
-    initialSourceDir=GWB_Context_GetInitialSourceDir(currentContext);
-    buildDir=GWB_Context_GetCurrentBuildDir(currentContext);
-    buildFilenameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(buildFilenameBuffer, initialSourceDir);
-    if (buildDir) {
-      GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
-      GWEN_Buffer_AppendString(buildFilenameBuffer, buildDir);
-    }
-    GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
-    GWEN_Buffer_AppendString(buildFilenameBuffer, fileName);
-    GWBUILD_AddBuildFilename(gwbuild, GWEN_Buffer_GetStart(buildFilenameBuffer));
-    GWEN_Buffer_free(buildFilenameBuffer);
-  }
-
-  GWEN_XMLNode_UnlinkChild(xmlDocNode, xmlGwbuildNode);
-  GWEN_XMLNode_free(xmlDocNode);
-  GWEN_Buffer_free(fileNameBuf);
-
-  return xmlGwbuildNode;
+  return 0;
 }
 
 
