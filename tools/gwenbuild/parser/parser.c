@@ -563,7 +563,7 @@ int _parseIfNotVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
 
   sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(sName && *sName)) {
-    DBG_ERROR(NULL, "No name for <ifVarMatches>");
+    DBG_ERROR(NULL, "No name for <ifNotVarMatches>");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -575,7 +575,7 @@ int _parseIfNotVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
 
   sValueInDb=GWEN_DB_GetCharValue(db, sName, 0, NULL);
   if (!(sValueInDb && *sValueInDb)) {
-    DBG_ERROR(NULL, "No value for \"%s\" in db for <ifVarMatches>", sName);
+    DBG_ERROR(NULL, "No value for \"%s\" in db for <ifNotVarMatches>", sName);
     return GWEN_ERROR_GENERIC;
   }
 
