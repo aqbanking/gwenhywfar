@@ -61,14 +61,18 @@ static void _printHelpScreen();
 
 #ifdef HAVE_SIGNAL_H
 
+# ifdef _POSIX_C_SOURCE
 struct sigaction sigActionChild;
+# endif
 
 
 void _signalHandler(int s) {
   switch(s) {
+#ifdef _POSIX_C_SOURCE
   case SIGCHLD:
     //fprintf(stderr, "Child exited %d\n", s);
     break;
+#endif
   default:
     fprintf(stderr, "Received unhandled signal %d\n", s);
     break;
@@ -78,6 +82,7 @@ void _signalHandler(int s) {
 
 
 
+#if _POSIX_C_SOURCE
 int _setSingleSignalHandler(struct sigaction *sa, int sig)
 {
   sa->sa_handler=_signalHandler;
@@ -89,10 +94,12 @@ int _setSingleSignalHandler(struct sigaction *sa, int sig)
   }
   return 0;
 }
+#endif
 
 
 
 int _setSignalHandlers() {
+#ifdef _POSIX_C_SOURCE
   int rv;
 
   rv=_setSingleSignalHandler(&sigActionChild, SIGCHLD);
@@ -100,6 +107,7 @@ int _setSignalHandlers() {
     DBG_INFO(NULL, "here (%d)", rv);
     return rv;
   }
+#endif
 
   return 0;
 }
@@ -118,7 +126,7 @@ int main(int argc, char **argv)
   const char *s;
   GWEN_GUI *gui;
 
-#ifdef HAVE_SIGNAL_H
+#if defined(HAVE_SIGNAL_H) && defined(_POSIX_C_SOURCE)
   signal(SIGCHLD, _signalHandler);
   //_setSignalHandlers();
 #endif
