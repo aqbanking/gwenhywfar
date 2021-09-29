@@ -269,7 +269,7 @@ void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder)
         if (ptrToPoint) {
           char *copyOfName;
 
-          copyOfName=strndup(s, (ptrToPoint-s));
+          copyOfName=GWEN_Text_strndup(s, (ptrToPoint-s));
           GWEN_DB_SetCharValue(xbuilder->dbVars, GWEN_DB_FLAGS_DEFAULT, "firstInputFileNoExt", copyOfName);
           free(copyOfName);
         }
