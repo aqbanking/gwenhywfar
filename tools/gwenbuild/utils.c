@@ -466,6 +466,7 @@ int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
     return GWEN_ERROR_GENERIC;
   }
 
+#if ((_BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L) && !defined(__MINGW32__)) || defined(OS_DARWIN)
   if ((st.st_mode & S_IFMT)==S_IFLNK) {
     char *symlinkbuf;
     int bufSizeNeeded;
@@ -506,7 +507,9 @@ int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
       return GWEN_ERROR_GENERIC;
     }
   }
-  else if ((st.st_mode & S_IFMT)==S_IFREG) {
+  else
+#endif
+  if ((st.st_mode & S_IFMT)==S_IFREG) {
     mode_t newMode=0;
 
     rv=GWEN_Directory_GetPath(sDestPath,
