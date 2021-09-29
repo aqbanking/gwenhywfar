@@ -47,6 +47,8 @@ static int _parseIfNotVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentCont
 static int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 static int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _readModifyWriteFile(GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbContextVars, const char *sSourceFile, const char *sDestFile);
+
 static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
 
 static int _getFilePermissions(const char *fname);
@@ -684,12 +686,8 @@ int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   const char *fileName;
-  const char *currentSrcDir;
   GWEN_BUFFER *fileNameBuffer;
-  GWEN_BUFFER *fileBufferIn;
-  GWEN_BUFFER *fileBufferOut;
   GWB_FILE *file;
-  int sourceFilePerms;
   int rv;
 
   fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
@@ -698,63 +696,12 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
     return GWEN_ERROR_GENERIC;
   }
 
-  currentSrcDir=GWB_Context_GetCurrentSourceDir(currentContext);
-
-  fileNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  if (currentSrcDir && *currentSrcDir) {
-    GWEN_Buffer_AppendString(fileNameBuffer, currentSrcDir);
-    GWEN_Buffer_AppendString(fileNameBuffer, GWEN_DIR_SEPARATOR_S);
-  }
-  GWEN_Buffer_AppendString(fileNameBuffer, fileName);
+  fileNameBuffer=_getSourcePathForFileName(currentContext, fileName);
   GWEN_Buffer_AppendString(fileNameBuffer, ".in");
 
-  rv=_getFilePermissions(GWEN_Buffer_GetStart(fileNameBuffer));
+  rv=_readModifyWriteFile(xmlNode, GWB_Context_GetVars(currentContext), GWEN_Buffer_GetStart(fileNameBuffer), fileName);
   if (rv<0) {
-    DBG_ERROR(NULL, "Could not read permissions for \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-  sourceFilePerms=rv;
-
-  fileBufferIn=GWEN_Buffer_new(0, 256, 0, 1);
-
-  rv=GWEN_SyncIo_Helper_ReadFile(GWEN_Buffer_GetStart(fileNameBuffer), fileBufferIn);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Could not read \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
-    GWEN_Buffer_free(fileBufferIn);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-
-  fileBufferOut=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWB_Parser_ReplaceVarsBetweenAtSigns(GWEN_Buffer_GetStart(fileBufferIn),
-                                          fileBufferOut,
-                                          GWB_Context_GetVars(currentContext));
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error translating content of file \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
-    GWEN_Buffer_free(fileBufferOut);
-    GWEN_Buffer_free(fileBufferIn);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-
-  unlink(fileName);
-  rv=GWEN_SyncIo_Helper_WriteFile(fileName,
-                                  (const uint8_t*)GWEN_Buffer_GetStart(fileBufferOut),
-                                  GWEN_Buffer_GetUsedBytes(fileBufferOut));
-  if (rv<0) {
-    DBG_ERROR(NULL, "Could not write \"%s\" (%d)", fileName, rv);
-    GWEN_Buffer_free(fileBufferOut);
-    GWEN_Buffer_free(fileBufferIn);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-
-  rv=_setFilePermissions(fileName, sourceFilePerms);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Could not set perms for \"%s\" (%d)", fileName, rv);
-    GWEN_Buffer_free(fileBufferOut);
-    GWEN_Buffer_free(fileBufferIn);
+    DBG_INFO(NULL, "here (%d)", rv);
     GWEN_Buffer_free(fileNameBuffer);
     return rv;
   }
@@ -774,9 +721,66 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
                                       GWEN_Buffer_GetStart(fileNameBuffer));
   GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
 
-  GWEN_Buffer_free(fileBufferOut);
-  GWEN_Buffer_free(fileBufferIn);
   GWEN_Buffer_free(fileNameBuffer);
+  return 0;
+}
+
+
+
+int _readModifyWriteFile(GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbContextVars, const char *sSourceFile, const char *sDestFile)
+{
+  const char *fileName;
+  GWEN_BUFFER *fileBufferIn;
+  GWEN_BUFFER *fileBufferOut;
+  int sourceFilePerms;
+  int rv;
+
+  fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(fileName && *fileName)) {
+    DBG_ERROR(NULL, "No name for <writeFile>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  rv=_getFilePermissions(sSourceFile);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not read permissions for \"%s\" (%d)", sSourceFile, rv);
+    return rv;
+  }
+  sourceFilePerms=rv;
+
+  fileBufferIn=GWEN_Buffer_new(0, 256, 0, 1);
+
+  rv=GWEN_SyncIo_Helper_ReadFile(sSourceFile, fileBufferIn);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not read \"%s\" (%d)", sSourceFile, rv);
+    GWEN_Buffer_free(fileBufferIn);
+    return rv;
+  }
+
+  fileBufferOut=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWB_Parser_ReplaceVarsBetweenAtSigns(GWEN_Buffer_GetStart(fileBufferIn), fileBufferOut, dbContextVars);
+  GWEN_Buffer_free(fileBufferIn);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error translating content of file \"%s\" (%d)", sSourceFile, rv);
+    GWEN_Buffer_free(fileBufferOut);
+    return rv;
+  }
+
+  unlink(sDestFile);
+  rv=GWEN_SyncIo_Helper_WriteFile(sDestFile,
+				  (const uint8_t*)GWEN_Buffer_GetStart(fileBufferOut),
+				  GWEN_Buffer_GetUsedBytes(fileBufferOut));
+  GWEN_Buffer_free(fileBufferOut);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not write \"%s\" (%d)", sDestFile, rv);
+    return rv;
+  }
+
+  rv=_setFilePermissions(sDestFile, sourceFilePerms);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not set perms for \"%s\" (%d)", sDestFile, rv);
+    return rv;
+  }
 
   return 0;
 }
