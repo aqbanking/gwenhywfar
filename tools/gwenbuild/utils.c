@@ -456,7 +456,12 @@ int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
   int rv;
   struct stat st;
 
-  if (lstat(sSrcPath, &st)==-1) {
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+  rv=lstat(sSrcPath, &st);
+#else
+  rv=stat(sSrcPath, &st);
+#endif
+  if (rv == -1) {
     DBG_ERROR(NULL, "ERROR: stat(%s): %s", sSrcPath, strerror(errno));
     return GWEN_ERROR_GENERIC;
   }

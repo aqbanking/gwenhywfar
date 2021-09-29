@@ -882,8 +882,14 @@ void _addFilesToBuildCtx(GWB_BUILD_CONTEXT *buildCtx, GWB_FILE_LIST2 *fileList)
 time_t GWBUILD_GetModificationTimeOfFile(const char *filename)
 {
   struct stat st;
+  int rv;
 
-  if (lstat(filename, &st)==-1) {
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+  rv=lstat(filename, &st);
+#else
+  rv=stat(filename, &st);
+#endif
+  if (rv == -1) {
     DBG_INFO(NULL, "Error on stat(%s): %s", filename, strerror(errno));
     return (time_t) 0;
   }

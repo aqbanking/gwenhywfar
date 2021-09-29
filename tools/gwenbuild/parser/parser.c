@@ -754,8 +754,14 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
 int _getFilePermissions(const char *fname)
 {
   struct stat st;
+  int rv;
 
-  if (lstat(fname, &st) == -1) {
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+  rv=lstat(fname, &st);
+#else
+  rv=stat(fname, &st);
+#endif
+  if (rv == -1) {
     DBG_ERROR(NULL, "Error on stat(\"%s\"): %d (%s)", fname, errno, strerror(errno));
     return GWEN_ERROR_IO;
   }
