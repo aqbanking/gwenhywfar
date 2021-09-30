@@ -31,8 +31,6 @@ static GWEN_STRINGLIST *_readDepFile(const char *fileName);
 static GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder);
 static void _overwriteEscapedLineFeedsWithSpace(GWEN_BUFFER *buffer);
 
-void _dumpStringList(const GWEN_STRINGLIST *sl);
-
 
 
 GWEN_STRINGLIST *GWB_BuildCtx_ReadAndTranslateDepfile(const char *folder, const char *fileName)
@@ -192,19 +190,4 @@ GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder
 }
 
 
-
-void _dumpStringList(const GWEN_STRINGLIST *sl)
-{
-  GWEN_STRINGLISTENTRY *se;
-
-  se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
-    const char *s;
-
-    s=GWEN_StringListEntry_Data(se);
-    if (s)
-      fprintf(stderr, "- [%s]\n", s);
-    se=GWEN_StringListEntry_Next(se);
-  }
-}
 
