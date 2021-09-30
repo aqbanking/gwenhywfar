@@ -43,29 +43,29 @@ static int _isAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file);
 static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 
-void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
-void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
-void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
+static void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
+static void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
+static void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
 
 static void _readDepFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
-GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
-void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
+static GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
+static void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 
-GWEN_BUFFER *_readArgs(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
-void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArgs, GWEN_BUFFER *argsBuffer);
-void _readArgsFixed(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsLibraries(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
-void _readArgsIncludes(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
-void _readArgsUsedSubTargets(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
-void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static GWEN_BUFFER *_readArgs(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
+static void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArgs, GWEN_BUFFER *argsBuffer);
+static void _readArgsFixed(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsLibraries(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static void _readArgsIncludes(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static void _readArgsUsedSubTargets(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 
-void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
-void _addStringListToBuffer(GWEN_STRINGLIST *sl, GWEN_BUFFER *argsBuffer);
+static void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
+static void _addStringListToBuffer(GWEN_STRINGLIST *sl, GWEN_BUFFER *argsBuffer);
 
 
 
