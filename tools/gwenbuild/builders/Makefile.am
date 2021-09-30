@@ -18,19 +18,3 @@ noinst_HEADERS=\
  gbuilderdescr.h \
  gbuilderdescr_p.h
 
-
-builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders
-dist_builderdata_DATA=\
-  app.gwb \
-  cxxapp.gwb \
-  cbuilder.gwb \
-  cxxbuilder.gwb \
-  module.gwb \
-  sharedlib.gwb \
-  staticlib.gwb \
-  tmplib.gwb \
-  tm2builder.gwb \
-  windowssharedlib.gwb \
-  windowsapp.gwb
-
-
