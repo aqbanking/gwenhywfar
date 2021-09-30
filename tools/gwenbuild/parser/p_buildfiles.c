@@ -22,6 +22,11 @@
 
 
 
+static GWB_BUILD_CMD *_parseBuildCmd(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static GWB_BUILD_SUBCMD *_parseSubCmd(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext,
+                                      GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbForCmd);
+static GWEN_DB_NODE *_prepareCmdDb(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext);
+static void _parseAndSetBuildMessage(GWB_BUILD_SUBCMD *buildSubCmd, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbForCmd);
 static int _parseBuildInputFiles(GWB_BUILD_CMD *bcmd, GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseBuildOutputFiles(GWB_BUILD_CMD *bcmd, GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static GWB_BUILD_SUBCMD *_parseBuildCommand(GWB_BUILD_CMD *bcmd,
@@ -57,14 +62,53 @@ static void _addFilePathsToDb(GWB_CONTEXT *currentContext,
 int GWB_ParseBuildFiles(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   GWB_TARGET *target;
-  GWEN_XMLNODE *n;
   GWB_BUILD_CMD *bcmd;
-  GWB_BUILD_SUBCMD *buildSubCmd=NULL;
+  GWB_BUILD_SUBCMD *buildSubCmd;
   GWEN_DB_NODE *dbForCmd;
-  int rv;
-  const char *s;
 
   target=GWB_Context_GetCurrentTarget(currentContext);
+
+  bcmd=_parseBuildCmd(project, currentContext, xmlNode);
+  if (bcmd==NULL) {
+    DBG_INFO(NULL, "here");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  dbForCmd=_prepareCmdDb(bcmd, currentContext);
+  if (dbForCmd==NULL) {
+    DBG_INFO(NULL, "here");
+    GWB_BuildCmd_free(bcmd);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  buildSubCmd=_parseSubCmd(bcmd, currentContext, xmlNode, dbForCmd);
+  if (buildSubCmd==NULL) {
+    DBG_INFO(NULL, "here");
+    GWEN_DB_Group_free(dbForCmd);
+    GWB_BuildCmd_free(bcmd);
+    return GWEN_ERROR_GENERIC;
+  }
+  _parseAndSetBuildMessage(buildSubCmd, xmlNode, dbForCmd);
+
+  GWB_BuildCmd_AddBuildCommand(bcmd, buildSubCmd);
+
+  if (target)
+    GWB_Target_AddExplicitBuild(target, bcmd);
+  else
+    GWB_Project_AddExplicitBuild(project, bcmd);
+  GWEN_DB_Group_free(dbForCmd);
+
+  return 0;
+}
+
+
+
+GWB_BUILD_CMD *_parseBuildCmd(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  GWEN_XMLNODE *n;
+  GWB_BUILD_CMD *bcmd;
+  int rv;
+  const char *s;
 
   bcmd=GWB_BuildCmd_new();
   GWB_BuildCmd_SetFolder(bcmd, GWB_Context_GetCurrentRelativeDir(currentContext));
@@ -83,7 +127,7 @@ int GWB_ParseBuildFiles(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_
     if (rv<0) {
       DBG_INFO(NULL, "here (%d)", rv);
       GWB_BuildCmd_free(bcmd);
-      return rv;
+      return NULL;
     }
   }
 
@@ -93,31 +137,56 @@ int GWB_ParseBuildFiles(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_
     if (rv<0) {
       DBG_INFO(NULL, "here (%d)", rv);
       GWB_BuildCmd_free(bcmd);
-      return rv;
+      return NULL;
     }
   }
+
+  return bcmd;
+}
+
+
+
+GWEN_DB_NODE *_prepareCmdDb(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext)
+{
+  GWEN_DB_NODE *dbForCmd;
 
   dbForCmd=GWEN_DB_Group_new("dbForCmd");
   _addFilePathsToDb(currentContext, GWB_BuildCmd_GetInFileList2(bcmd), dbForCmd, "INPUT");
   _addFilePathsToDb(currentContext, GWB_BuildCmd_GetOutFileList2(bcmd), dbForCmd, "OUTPUT");
+  return dbForCmd;
+}
+
+
+
+GWB_BUILD_SUBCMD *_parseSubCmd(GWB_BUILD_CMD *bcmd, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbForCmd)
+{
+  GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "cmd", NULL, NULL);
   if (n) {
+    GWB_BUILD_SUBCMD *buildSubCmd;
+    const char *s;
+
     buildSubCmd=_parseBuildCommand(bcmd, currentContext, n, dbForCmd);
     if (buildSubCmd==NULL) {
       DBG_ERROR(NULL, "here");
-      GWEN_DB_Group_free(dbForCmd);
-      GWB_BuildCmd_free(bcmd);
-      return GWEN_ERROR_GENERIC;
+      return NULL;
     }
 
     s=GWEN_XMLNode_GetProperty(n, "deleteOutFileFirst", "FALSE");
     if (s && strcasecmp(s, "TRUE")==0)
       GWB_BuildCmd_AddFlags(bcmd, GWB_BUILD_CMD_FLAGS_DEL_OUTFILES);
-    GWB_BuildCmd_AddBuildCommand(bcmd, buildSubCmd);
+    return buildSubCmd;
   }
+  return 0;
+}
 
-  /* pepare build message */
+
+
+void _parseAndSetBuildMessage(GWB_BUILD_SUBCMD *buildSubCmd, GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbForCmd)
+{
+  GWEN_XMLNODE *n;
+
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "buildMessage", NULL, NULL);
   if (n) {
     GWEN_BUFFER *dbuf;
@@ -128,14 +197,6 @@ int GWB_ParseBuildFiles(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_
       GWEN_Buffer_free(dbuf);
     }
   }
-
-  if (target)
-    GWB_Target_AddExplicitBuild(target, bcmd);
-  else
-    GWB_Project_AddExplicitBuild(project, bcmd);
-  GWEN_DB_Group_free(dbForCmd);
-
-  return 0;
 }
 
 
