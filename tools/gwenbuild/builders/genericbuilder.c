@@ -27,15 +27,13 @@
 GWEN_INHERIT(GWB_BUILDER, GWB_BUILDER_GENERIC);
 
 
-GWB_BUILDER *GWB_GenericBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWEN_XMLNODE *xmlDescr);
-
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
-void _readMainSettingsFromXml(GWB_BUILDER *builder);
-void _setupVariables(GWB_BUILDER *builder);
-void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder);
-void _setupOutFiles(GWB_BUILDER *builder);
-void _setupTargetLinkSpec(GWB_BUILDER *builder);
+static void _readMainSettingsFromXml(GWB_BUILDER *builder);
+static void _setupVariables(GWB_BUILDER *builder);
+static void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder);
+static void _setupOutFiles(GWB_BUILDER *builder);
+static void _setupTargetLinkSpec(GWB_BUILDER *builder);
 
 static GWB_FILE *_parseOutFile(GWB_BUILDER *builder,
                                GWB_PROJECT *project,
@@ -43,7 +41,7 @@ static GWB_FILE *_parseOutFile(GWB_BUILDER *builder,
                                GWEN_XMLNODE *nFile,
                                const char *folder);
 
-GWEN_BUFFER *_readXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
+static GWEN_BUFFER *_readXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
 
 static int _isAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file);
 static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
