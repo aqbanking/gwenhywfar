@@ -966,8 +966,11 @@ int GWB_Parser_ParseWellKnownElements(GWB_PROJECT *project, GWB_CONTEXT *current
 int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
                                      GWB_CONTEXT *currentContext,
                                      GWEN_XMLNODE *xmlNode,
-                                     int alwaysDist,
-                                     int isSource)
+                                     /*int alwaysDist,
+                                     int isSource,*/
+                                     uint32_t fileFlags,
+                                     const char *defaultTypeName,
+                                     const char *defaultBuilder)
 {
   uint32_t flags=0;
   int rv;
@@ -986,8 +989,8 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
 
   currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
 
-  fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", NULL);
-  builder=GWEN_XMLNode_GetProperty(xmlNode, "builder", NULL);
+  fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", defaultTypeName);
+  builder=GWEN_XMLNode_GetProperty(xmlNode, "builder", defaultBuilder);
 
   installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
   if (installPath && *installPath)
@@ -997,7 +1000,7 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
   if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
     flags|=GWB_FILE_FLAGS_GENERATED;
 
-  s=GWEN_XMLNode_GetProperty(xmlNode, "dist", alwaysDist?"TRUE":"FALSE");
+  s=GWEN_XMLNode_GetProperty(xmlNode, "dist", (fileFlags & GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST)?"TRUE":"FALSE");
   if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
     flags|=GWB_FILE_FLAGS_DIST;
 
@@ -1021,7 +1024,7 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
           GWB_File_SetFileType(file, fileType);
         if (builder)
           GWB_File_SetBuilder(file, builder);
-        if (isSource)
+        if (fileFlags & GWB_PARSER_SRCFILEFLAGS_ISSOURCE)
           GWB_Context_AddSourceFile(currentContext, file);
       }
 
@@ -1031,6 +1034,46 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
   }
 
   return 0;
+}
+
+
+
+GWB_TARGET *GWB_Parser_AddTargetForSourceFile(GWB_PROJECT *project,
+                                              GWB_CONTEXT *currentContext,
+                                              GWBUILD_TARGETTYPE targetType,
+                                              const char *fileName,
+                                              const char *fileType,
+                                              const char *builderName,
+                                              const char *installPath)
+{
+  GWB_TARGET *target;
+  GWB_CONTEXT *newContext;
+  GWB_FILE *file;
+  const char *currentFolder;
+
+  currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
+
+  target=GWB_Target_new(project);
+  GWB_Target_SetName(target, fileName);
+  GWB_Target_SetId(target, fileName);
+  GWB_Target_SetTargetType(target, targetType);
+
+  newContext=GWB_Parser_CopyContextForTarget(currentContext);
+  GWB_Context_SetCurrentTarget(newContext, target);
+  GWB_Target_SetContext(target, newContext);
+
+  GWB_Project_AddTarget(project, target);
+  GWB_Context_Tree2_AddChild(currentContext, newContext);
+
+  file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), currentFolder, fileName);
+  GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
+  GWB_File_SetFileType(file, fileType);
+  GWB_File_SetBuilder(file, builderName);
+  if (installPath && *installPath)
+    GWB_Target_SetInstallPath(target, installPath);
+  GWB_Context_AddSourceFile(newContext, file);
+
+  return target;
 }
 
 

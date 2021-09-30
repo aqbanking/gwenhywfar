@@ -46,6 +46,7 @@ void GWB_Target_free(GWB_TARGET *target)
 {
   if (target) {
     free(target->installPath);
+    free(target->installName);
     free(target->name);
     free(target->id);
     GWB_File_List2_free(target->sourceFileList);
@@ -82,6 +83,25 @@ void GWB_Target_SetName(GWB_TARGET *target, const char *s)
     target->name=strdup(s);
   else
     target->name=NULL;
+}
+
+
+
+const char *GWB_Target_GetInstallName(const GWB_TARGET *target)
+{
+  return target->installName;
+}
+
+
+
+void GWB_Target_SetInstallName(GWB_TARGET *target, const char *s)
+{
+  if (target->installName)
+    free(target->installName);
+  if (s)
+    target->installName=strdup(s);
+  else
+    target->installName=NULL;
 }
 
 
@@ -290,6 +310,8 @@ void GWB_Target_toXml(const GWB_TARGET *target, GWEN_XMLNODE *xmlNode)
     GWEN_XMLNode_SetCharValue(xmlNode, "id", target->id);
   if (target->name)
     GWEN_XMLNode_SetCharValue(xmlNode, "name", target->name);
+  if (target->installName)
+    GWEN_XMLNode_SetCharValue(xmlNode, "installName", target->installName);
   GWEN_XMLNode_SetIntValue(xmlNode, "soVersionCurrent", target->soVersionCurrent);
   GWEN_XMLNode_SetIntValue(xmlNode, "soVersionAge", target->soVersionAge);
   GWEN_XMLNode_SetIntValue(xmlNode, "soVersionRevision", target->soVersionRevision);
@@ -317,6 +339,7 @@ void GWB_Target_Dump(const GWB_TARGET *target, int indent, int fullDump)
 
   GWBUILD_Debug_PrintValue(     "id....................", target->id, indent+2);
   GWBUILD_Debug_PrintValue(     "name..................", target->name, indent+2);
+  GWBUILD_Debug_PrintValue(     "installName...........", target->installName, indent+2);
   GWBUILD_Debug_PrintValue(     "type..................", GWBUILD_TargetType_toString(target->targetType), indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionCurrent......", target->soVersionCurrent, indent+2);
   GWBUILD_Debug_PrintIntValue(  "soVersionAge..........", target->soVersionAge, indent+2);

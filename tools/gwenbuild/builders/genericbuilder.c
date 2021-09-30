@@ -295,6 +295,7 @@ void _setupOutFiles(GWB_BUILDER *builder)
   GWB_TARGET *target;
   GWB_PROJECT *project;
   const char *folder;
+  const char *installName;
   GWEN_XMLNODE *nOutputFiles;
 
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
@@ -304,6 +305,7 @@ void _setupOutFiles(GWB_BUILDER *builder)
   project=GWB_Target_GetProject(target);
 
   folder=GWB_Context_GetCurrentBuildDir(context);
+  installName=GWB_Target_GetInstallName(target);
 
   nOutputFiles=GWEN_XMLNode_FindFirstTag(xbuilder->xmlDescr, "outputFiles", NULL, NULL);
   if (nOutputFiles) {
@@ -314,8 +316,11 @@ void _setupOutFiles(GWB_BUILDER *builder)
       GWB_FILE *fileOut;
 
       fileOut=_parseOutFile(builder, project, target, nFile, folder);
-      if (fileOut)
+      if (fileOut) {
+        if (installName && *installName)
+          GWB_File_SetInstallName(fileOut, installName);
         GWB_Builder_AddOutputFile(builder, fileOut);
+      }
 
       nFile=GWEN_XMLNode_FindNextTag(nFile, "file", NULL, NULL);
     } /* while nFile */

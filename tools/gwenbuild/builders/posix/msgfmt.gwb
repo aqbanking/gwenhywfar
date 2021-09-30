@@ -1,0 +1,31 @@
+<?xml?>
+
+<GwenBuilder name="MsgFmt" maxinputfiles="1">
+
+  <inputFiles>
+    <acceptedInputTypes>po</acceptedInputTypes>
+    <acceptedInputFiles>*.po</acceptedInputFiles>
+  </inputFiles>
+
+  <outputFiles>
+    <file type="mo" install="target" >$(firstInputFileNoExt).mo</file>
+  </outputFiles>
+  
+  <buildCommands>
+    <cmd tool="$(GWBUILD_TOOL_MSGFMT)" checkDates="TRUE">
+      <args>
+        <fixed>-c</fixed>
+        <blank/>
+        <inputFiles match="*.po" mode="abspath" />
+        <blank/>
+        <fixed>-o</fixed>
+        <blank/>
+        <outputFiles index="0" />
+      </args>
+      <buildMessage>Generating language catalog '$(firstInputFileNoExt).mo'</buildMessage>
+      <mainInputFile index="0" />
+      <mainOutputFile index="0" />
+    </cmd>
+  </buildCommands>
+
+</GwenBuilder>

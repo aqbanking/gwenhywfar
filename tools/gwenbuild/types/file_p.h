@@ -18,6 +18,7 @@ struct GWB_FILE {
   char *name;
   char *fileType;
   char *installPath;
+  char *installName;
   char *builder;
   uint32_t id;
   uint32_t flags;

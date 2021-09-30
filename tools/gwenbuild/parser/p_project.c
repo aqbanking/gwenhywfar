@@ -36,6 +36,8 @@ static int _parseVersions(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _writeConfigH(const GWB_PROJECT *project);
 static int _parseDefine(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseI18n(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static void _addTargetForLanguage(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sLanguage, const char *installPath);
 static int _setProjectVersionFromString(GWB_PROJECT *project, GWEN_DB_NODE *dbContextVars, const char *sVersionString);
 static void _setProjectVersionFromProjectAttributes(GWB_PROJECT *project, GWEN_DB_NODE *dbContextVars, GWEN_XMLNODE *xmlNode);
 static void _writeProjectVersionToContextDbVars(GWB_PROJECT *project, GWEN_DB_NODE *dbContextVars);
@@ -246,12 +248,16 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
         rv=GWB_ParseTarget(project, currentContext, n);
       else if (strcasecmp(name, "define")==0)
         rv=_parseDefine(project, currentContext, n);
+      else if (strcasecmp(name, "i18n")==0)
+        rv=_parseI18n(project, currentContext, n);
       else if (strcasecmp(name, "buildFiles")==0)
         rv=GWB_ParseBuildFiles(project, currentContext, n);
       else if (strcasecmp(name, "extradist")==0)
-        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST, NULL, NULL);
       else if (strcasecmp(name, "data")==0)
-        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST, NULL, NULL);
+      else if (strcasecmp(name, "i18n")==0)
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST, "po", "msgfmt");
       else if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else
@@ -329,6 +335,86 @@ int _parseDefine(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE
 
   return 0;
 }
+
+
+
+int _parseI18n(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
+{
+  if (GWEN_DB_GetCharValue(GWB_Context_GetVars(currentContext), "GWBUILD_TOOL_MSGFMT", 0, NULL)) {
+    GWEN_STRINGLIST *sl;
+    const char *installPath;
+
+    installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
+
+    sl=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+    if (sl) {
+      GWEN_STRINGLISTENTRY *se;
+
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        const char *s;
+
+        s=GWEN_StringListEntry_Data(se);
+        if (s && *s) {
+          fprintf(stderr, "Adding language catalog \"%s\"\n", s);
+          _addTargetForLanguage(project, currentContext, s, installPath);
+        }
+        se=GWEN_StringListEntry_Next(se);
+      }
+    }
+  }
+  else {
+    DBG_WARN(NULL, "Tool msgfmt missing, not creating language catalogs");
+  }
+
+  return 0;
+}
+
+
+
+void _addTargetForLanguage(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sLanguage, const char *installPath)
+{
+  GWEN_BUFFER *fileNameBuffer;
+  GWEN_BUFFER *installPathBuffer=NULL;
+  GWB_TARGET *target;
+
+  fileNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(fileNameBuffer, sLanguage);
+  GWEN_Buffer_AppendString(fileNameBuffer, ".po");
+
+  if (!(installPath && *installPath))
+    installPath=GWEN_DB_GetCharValue(GWB_Context_GetVars(currentContext), "localedir", 0, NULL);
+
+  if (installPath && *installPath) {
+    installPathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(installPathBuffer, installPath);
+    GWEN_Buffer_AppendString(installPathBuffer, GWEN_DIR_SEPARATOR_S);
+    GWEN_Buffer_AppendString(installPathBuffer, sLanguage);
+    GWEN_Buffer_AppendString(installPathBuffer, GWEN_DIR_SEPARATOR_S "LC_MESSAGES");
+  }
+
+  target=GWB_Parser_AddTargetForSourceFile(project,
+                                           currentContext,
+                                           GWBUILD_TargetType_I18nCatalog,
+                                           GWEN_Buffer_GetStart(fileNameBuffer),
+                                           "po",
+                                           "msgfmt",
+                                           installPathBuffer?GWEN_Buffer_GetStart(installPathBuffer):NULL);
+
+  GWEN_Buffer_Reset(fileNameBuffer);
+  GWEN_Buffer_AppendString(fileNameBuffer, GWB_Project_GetProjectName(project));
+  GWEN_Buffer_AppendString(fileNameBuffer, ".mo");
+  GWB_Target_SetInstallName(target, GWEN_Buffer_GetStart(fileNameBuffer));
+
+  GWEN_Buffer_free(installPathBuffer);
+  GWEN_Buffer_free(fileNameBuffer);
+}
+
+
+
+
+
+
 
 
 

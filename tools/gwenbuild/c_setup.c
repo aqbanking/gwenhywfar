@@ -300,7 +300,19 @@ int _getAllToolPaths(GWEN_DB_NODE *dbVars, const char *sCompileTarget, const GWE
   if (rv<0)
     return rv;
 
+  /* optional tools */
+  rv=_getToolPath(dbVars, sCompileTarget, sl, "msgfmt", "MSGFMT", "GWBUILD_TOOL_MSGFMT");
+  if (rv<0) {
+    DBG_WARN(NULL, "Tool msgfmt not found, limited i18n support.");
+    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgfmt_EXISTS", "FALSE");
+  }
+  else
+    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgfmt_EXISTS", "TRUE");
 
+  /* add more tools here */
+
+
+  /* done */
   return 0;
 }
 

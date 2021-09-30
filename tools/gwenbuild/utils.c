@@ -271,9 +271,14 @@ GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileList, cons
 
           s=GWB_File_GetInstallPath(file);
           if (s && *s) {
+            const char *destFileName;
+
+            destFileName=GWB_File_GetInstallName(file);
+            if (!(destFileName && *destFileName))
+              destFileName=GWB_File_GetName(file);
             GWEN_Buffer_AppendString(keyBuf, s);
             GWEN_Buffer_AppendString(keyBuf, GWEN_DIR_SEPARATOR_S);
-            GWEN_Buffer_AppendString(keyBuf, GWB_File_GetName(file));
+            GWEN_Buffer_AppendString(keyBuf, destFileName);
 
             GWB_File_WriteFileNameToTopBuildDirString(file, initialSourceDir, valueBuf);
             kvp=GWB_KeyValuePair_new(GWEN_Buffer_GetStart(keyBuf),  GWEN_Buffer_GetStart(valueBuf));

@@ -145,13 +145,15 @@ int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XML
       if (strcasecmp(name, "subdirs")==0)
         rv=GWB_Parser_ParseSubdirs(project, currentContext, n, _parseChildNodes);
       else if (strcasecmp(name, "sources")==0)
-        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 1);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n,
+                                            GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST | GWB_PARSER_SRCFILEFLAGS_ISSOURCE,
+                                            NULL, NULL);
       else if (strcasecmp(name, "headers")==0)
-        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST, NULL, NULL);
       else if (strcasecmp(name, "data")==0)
-        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST, NULL, NULL);
       else if (strcasecmp(name, "extradist")==0)
-        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, 1, 0);
+        rv=GWB_Parser_ParseSourcesOrHeaders(project, currentContext, n, GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST, NULL, NULL);
       else if (strcasecmp(name, "useTargets")==0)
         rv=_parseUsedTargets(currentContext, n);
       else if (strcasecmp(name, "includes")==0)
