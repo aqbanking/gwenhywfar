@@ -37,6 +37,12 @@ void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder);
 void _setupOutFiles(GWB_BUILDER *builder);
 void _setupTargetLinkSpec(GWB_BUILDER *builder);
 
+static GWB_FILE *_parseOutFile(GWB_BUILDER *builder,
+                               GWB_PROJECT *project,
+                               GWB_TARGET *target,
+                               GWEN_XMLNODE *nFile,
+                               const char *folder);
+
 GWEN_BUFFER *_readXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
 
 static int _isAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file);
@@ -306,36 +312,56 @@ void _setupOutFiles(GWB_BUILDER *builder)
 
     nFile=GWEN_XMLNode_FindFirstTag(nOutputFiles, "file", NULL, NULL);
     while (nFile) {
-      const char *sFileType;
-      const char *sInstall;
-      GWEN_BUFFER *nbuf;
+      GWB_FILE *fileOut;
 
-      sFileType=GWEN_XMLNode_GetProperty(nFile, "type", NULL);
-      sInstall=GWEN_XMLNode_GetProperty(nFile, "install", NULL);
-      nbuf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, nFile);
-      if (nbuf) {
-	GWB_FILE *fileOut;
-        const char *sTargetInstallPath=NULL;
-
-        fileOut=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), folder, GWEN_Buffer_GetStart(nbuf));
-        GWEN_Buffer_free(nbuf);
-
-        if (sFileType)
-          GWB_File_SetFileType(fileOut, sFileType);
-        if (sInstall && strcasecmp(sInstall, "target")==0)
-          sTargetInstallPath=GWB_Target_GetInstallPath(target);
-        GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
-
-        if (sTargetInstallPath && *sTargetInstallPath) {
-          GWB_File_SetInstallPath(fileOut, sTargetInstallPath);
-          GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_INSTALL);
-        }
-	GWB_Builder_AddOutputFile(builder, fileOut);
-      } /* if nbuf */
+      fileOut=_parseOutFile(builder, project, target, nFile, folder);
+      if (fileOut)
+        GWB_Builder_AddOutputFile(builder, fileOut);
 
       nFile=GWEN_XMLNode_FindNextTag(nFile, "file", NULL, NULL);
     } /* while nFile */
   } /* if nOutputFiles */
+}
+
+
+
+GWB_FILE *_parseOutFile(GWB_BUILDER *builder,
+                        GWB_PROJECT *project,
+                        GWB_TARGET *target,
+                        GWEN_XMLNODE *nFile,
+                        const char *folder)
+{
+  GWB_BUILDER_GENERIC *xbuilder;
+  const char *sFileType;
+  const char *sInstall;
+  GWEN_BUFFER *nbuf;
+
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
+
+  sFileType=GWEN_XMLNode_GetProperty(nFile, "type", NULL);
+  sInstall=GWEN_XMLNode_GetProperty(nFile, "install", NULL);
+  nbuf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, nFile);
+  if (nbuf) {
+    GWB_FILE *fileOut;
+    const char *sTargetInstallPath=NULL;
+
+    fileOut=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), folder, GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+
+    if (sFileType)
+      GWB_File_SetFileType(fileOut, sFileType);
+    if (sInstall && strcasecmp(sInstall, "target")==0)
+      sTargetInstallPath=GWB_Target_GetInstallPath(target);
+    GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
+
+    if (sTargetInstallPath && *sTargetInstallPath) {
+      GWB_File_SetInstallPath(fileOut, sTargetInstallPath);
+      GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_INSTALL);
+    }
+    return fileOut;
+  } /* if nbuf */
+
+  return NULL;
 }
 
 
