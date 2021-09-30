@@ -23,7 +23,8 @@ noinst_HEADERS=\
   c_build.h \
   c_install.h \
   c_clean.h \
-  c_dist.h
+  c_dist.h \
+  filenames.h
 
 
 gwbuild_LDADD = \

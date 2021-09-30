@@ -17,6 +17,7 @@
 #include "utils.h"
 #include "gwenbuild/buildctx/buildctx_xml.h"
 #include "gwenbuild/buildctx/buildctx_run.h"
+#include "gwenbuild/filenames.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -28,16 +29,16 @@ int GWB_Prepare(GWEN_UNUSED GWEN_DB_NODE *dbArgs)
   GWB_BUILD_CONTEXT *buildCtx;
   int rv;
 
-  if (GWB_Utils_BuildFilesChanged(".gwbuild.buildfiles")) {
+  if (GWB_Utils_BuildFilesChanged(GWBUILD_FILE_BUILDFILES)) {
     fprintf(stdout, "Build files changed, repeating last setup command.\n");
-    rv=GWB_RepeatLastSetup(".gwbuild.args");
+    rv=GWB_RepeatLastSetup(GWBUILD_FILE_ARGS);
     if (rv<0) {
       DBG_INFO(NULL, "here");
       return rv;
     }
   }
 
-  buildCtx=GWB_BuildCtx_ReadFromXmlFile(".gwbuild.ctx");
+  buildCtx=GWB_BuildCtx_ReadFromXmlFile(GWBUILD_FILE_CTX);
   if (buildCtx==NULL) {
     fprintf(stderr, "ERROR: Error reading build context from file.\n");
     return 1;

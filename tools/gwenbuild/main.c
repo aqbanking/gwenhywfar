@@ -13,6 +13,7 @@
 
 
 #include "gwenbuild/parser/parser.h"
+#include "gwenbuild/filenames.h"
 #include "utils.h"
 #include "c_setup.h"
 #include "c_prepare.h"
@@ -163,13 +164,13 @@ int main(int argc, char **argv)
       GWEN_Logger_SetLevel(NULL, level);
   }
 
-  commands|=GWEN_DB_GetIntValue(dbArgs, "setup", 0, 0)?ARGS_COMMAND_SETUP:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "repeatSetup", 0, 0)?ARGS_COMMAND_REPEAT_SETUP:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "dist", 0, 0)?ARGS_COMMAND_DIST:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "setup", 0, 0)?ARGS_COMMAND_SETUP:0;               /* -s */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "repeatSetup", 0, 0)?ARGS_COMMAND_REPEAT_SETUP:0;  /* -r */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;           /* -p */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;               /* -b or no opts */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;           /* -i */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;               /* -c */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "dist", 0, 0)?ARGS_COMMAND_DIST:0;                 /* -d */
 
   if (commands & ARGS_COMMAND_SETUP) {
     rv=GWB_Setup(dbArgs);
@@ -180,7 +181,7 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_REPEAT_SETUP) {
-    rv=GWB_RepeatLastSetup(".gwbuild.args");
+    rv=GWB_RepeatLastSetup(GWBUILD_FILE_ARGS);
     if (rv<0) {
       fprintf(stderr, "ERROR: Error on repeating setup.\n");
       return rv;
@@ -204,7 +205,7 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_INSTALL) {
-    rv=GWB_InstallFiles(".gwbuild.installfiles", getenv("DESTDIR"));
+    rv=GWB_InstallFiles(GWBUILD_FILE_INSTALLFILES, getenv("DESTDIR"));
     if (rv!=0) {
       fprintf(stderr, "ERROR: Error on installing.\n");
       return rv;
@@ -220,7 +221,7 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_CLEAN) {
-    rv=GWB_Clean(".gwbuild.files");
+    rv=GWB_Clean(GWBUILD_FILE_FILES);
     if (rv!=0) {
       fprintf(stderr, "ERROR: Error on cleaning generated files.\n");
       return rv;
@@ -370,9 +371,9 @@ void _printHelpScreen()
 	  "from there).\n"
 	  "You might want to use a folder like 'build' inside the source tree of\n"
 	  "your project.\n"
-	  "3. run\n"
-	  "      gwbuild PATH_TO_SOURCE_TREE\n"
-	  "e.g.  gwbuild ..\n"
+	  "C. run\n"
+	  "      gwbuild -s PATH_TO_SOURCE_TREE\n"
+	  "e.g.  gwbuild -s ..\n"
 	  "\n"
 	  "2. Prepare Buidling\n"
 	  "-------------------\n"
@@ -383,15 +384,12 @@ void _printHelpScreen()
 	  "when referencing\n"
 	  "typemaker2 generated types inside another typemaker2 generated type.\n"
 	  "\n"
-	  "3. Build Typemaker2 Files\n"
-	  "-------------------------\n"
-	  "     gwbuild -Btm2builder\n"
-	  "This also is only needed if typemaker2 files are used in your project.\n"
-	  "\n"
-	  "4. Build All Other Targets\n"
+	  "3. Build All Targets\n"
 	  "--------------------------\n"
 	  "     gwbuild\n"
-	  "This uses a single process to compile and link the project files.\n"
+          "This command builds typemaker2 source files first (if needed) and then all\n"
+          "other targets.\n"
+          "A single process is used to compile and link the project files.\n"
 	  "If you have multiple processor cores/threads you can build multiple files in\n"
 	  "parallel:\n"
 	  "     gwbuild -j14\n"
@@ -406,7 +404,8 @@ void _printHelpScreen()
 	  "\n"
 	  "Option List\n"
 	  "-----------\n"
-	  "-s           setup build environment\n"
+          "-s           setup build environment (add source folder path to command line\n"
+          "             when using this switch)\n"
 	  "-p           run preparation commands (needed e.g. if typemaker2 is used)\n"
 	  "-b           build targets\n"
 	  "-i           install files\n"
