@@ -10,6 +10,7 @@ libgwb_build_la_SOURCES=\
  buildsubcmd.c \
  buildctx.c \
  buildctx_bdeps.c \
+ buildctx_depfile.c \
  buildctx_run.c \
  buildctx_xml.c
 
@@ -22,6 +23,7 @@ noinst_HEADERS=\
  buildctx.h \
  buildctx_p.h \
  buildctx_bdeps.h \
+ buildctx_depfile.h \
  buildctx_run.h \
  buildctx_xml.h
  
