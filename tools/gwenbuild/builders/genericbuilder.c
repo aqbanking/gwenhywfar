@@ -50,6 +50,7 @@ static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 static void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 static void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
 static void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
+static GWB_BUILD_SUBCMD *_readSubCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *n);
 
 static void _readDepFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 static GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
@@ -500,47 +501,60 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
 
     n=GWEN_XMLNode_FindFirstTag(n, "cmd", NULL, NULL);
     while(n) {
-      const char *sToolName;
-      GWEN_BUFFER *argsBuffer;
-      GWEN_BUFFER *toolNameBuffer;
       GWB_BUILD_SUBCMD *cmd;
 
-      toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-      sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
-      if (sToolName) {
-        GWEN_DB_ReplaceVars(xbuilder->dbVars, sToolName, toolNameBuffer);
-        sToolName=GWEN_Buffer_GetStart(toolNameBuffer);
-      }
-
-      cmd=GWB_BuildSubCmd_new();
-      GWB_BuildSubCmd_SetCommand(cmd, sToolName);
-
-      s=GWEN_XMLNode_GetProperty(n, "ignoreResult", "FALSE");
-      if (s && strcasecmp(s, "TRUE")==0)
-        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
-
-      s=GWEN_XMLNode_GetProperty(n, "checkDepends", "FALSE");
-      if (s && strcasecmp(s, "TRUE")==0)
-        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
-
-      argsBuffer=_readArgs(builder, bcmd, n);
-      if (argsBuffer) {
-        GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));
-        GWEN_Buffer_free(argsBuffer);
-      }
-
-      _readDepFile(builder, cmd, n);
-      _readBuildMessage(builder, cmd, n);
-
-
-      /* done */
-      GWB_BuildSubCmd_List_Add(cmd, cmdList);
-
-      GWEN_Buffer_free(toolNameBuffer);
+      cmd=_readSubCmd(builder, bcmd, n);
+      if (cmd)
+        GWB_BuildSubCmd_List_Add(cmd, cmdList);
 
       n=GWEN_XMLNode_FindNextTag(n, "cmd", NULL, NULL);
     }
   }
+}
+
+
+
+GWB_BUILD_SUBCMD *_readSubCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *n)
+{
+  GWB_BUILDER_GENERIC *xbuilder;
+  const char *sToolName;
+  GWEN_BUFFER *argsBuffer;
+  GWEN_BUFFER *toolNameBuffer;
+  GWB_BUILD_SUBCMD *cmd;
+  const char *s;
+
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
+
+  toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
+  if (sToolName) {
+    GWEN_DB_ReplaceVars(xbuilder->dbVars, sToolName, toolNameBuffer);
+    sToolName=GWEN_Buffer_GetStart(toolNameBuffer);
+  }
+  
+  cmd=GWB_BuildSubCmd_new();
+  GWB_BuildSubCmd_SetCommand(cmd, sToolName);
+  
+  s=GWEN_XMLNode_GetProperty(n, "ignoreResult", "FALSE");
+  if (s && strcasecmp(s, "TRUE")==0)
+    GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
+  
+  s=GWEN_XMLNode_GetProperty(n, "checkDepends", "FALSE");
+  if (s && strcasecmp(s, "TRUE")==0)
+    GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
+  
+  argsBuffer=_readArgs(builder, bcmd, n);
+  if (argsBuffer) {
+    GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));
+    GWEN_Buffer_free(argsBuffer);
+  }
+  
+  _readDepFile(builder, cmd, n);
+  _readBuildMessage(builder, cmd, n);
+
+  GWEN_Buffer_free(toolNameBuffer);
+
+  return cmd;
 }
 
 
