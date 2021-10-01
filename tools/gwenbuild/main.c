@@ -273,10 +273,13 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
     s=argv[i];
     if (s) {
       if (*s!='-') {
-        /* no option, probably path to source folder */
-        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "folder", s);
-        /* folder only needed in setup mode, assume that */
-        GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+#if 0
+        /* no option, probably gwbuild target */
+	GWEN_DB_SetCharValue(db, 0, "target", s);
+#else
+	fprintf(stderr, "Specifying build target not yet supported.\n");
+	return GWEN_ERROR_GENERIC;
+#endif
       }
       else {
         int rv;
@@ -311,8 +314,12 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
 	}
         else if (strcmp(s, "-p")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "prepare", 1);
-        else if (strcmp(s, "-s")==0)
-          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+        else if (strcmp(s, "-s")==0) {
+	  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+	  rv=_handleStringArgument(argc, argv, &i, s+2, "-s", "folder", db);
+	  if (rv<0)
+	    return rv;
+	}
         else if (strcmp(s, "-r")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "repeatSetup", 1);
         else if (strcmp(s, "-b")==0)
@@ -404,8 +411,7 @@ void _printHelpScreen()
 	  "\n"
 	  "Option List\n"
 	  "-----------\n"
-          "-s           setup build environment (add source folder path to command line\n"
-          "             when using this switch)\n"
+	  "-s FOLDER    setup build environment (arg: source folder path)\n"
 	  "-p           run preparation commands (needed e.g. if typemaker2 is used)\n"
 	  "-b           build targets\n"
 	  "-i           install files\n"
