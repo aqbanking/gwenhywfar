@@ -40,6 +40,15 @@ static int _readFileList(GWEN_XMLNODE *xmlNode,
                          GWB_FILE_LIST2 *projectFileList,
                          GWB_FILE_LIST2 *targetFileList,
                          uint32_t flagsToAdd);
+static int _readFilesFromDataNode(GWEN_XMLNODE *xmlNode,
+                                  GWEN_DB_NODE *dbVars,
+                                  const char *sCurrentRelativeDir,
+                                  GWB_FILE_LIST2 *projectFileList,
+                                  GWB_FILE_LIST2 *targetFileList,
+                                  uint32_t flagsToAdd);
+static int _readFileListFromTagNode(GWEN_XMLNODE *xmlNode,
+                                    const GWB_FILE_LIST2 *projectFileList,
+                                    GWB_FILE_LIST2 *targetFileList);
 static void _addFilePathsToDb(GWB_CONTEXT *currentContext,
                               const GWB_FILE_LIST2 *fileList,
                               GWEN_DB_NODE *db,
@@ -279,20 +288,132 @@ int _readFileList(GWEN_XMLNODE *xmlNode,
                   GWB_FILE_LIST2 *targetFileList,
                   uint32_t flagsToAdd)
 {
-  GWEN_STRINGLIST *sl;
+  GWEN_XMLNODE *n;
 
-  sl=GWB_Parser_ReadXmlDataIntoStringList(dbVars, xmlNode);
-  if (sl) {
-    GWBUILD_AddFilesFromStringList(projectFileList,
-                                   sCurrentRelativeDir,
-                                   sl,
-                                   targetFileList,
-                                   flagsToAdd,
-                                   0);
-    GWEN_StringList_free(sl);
+  n=GWEN_XMLNode_GetChild(xmlNode);
+  while(n) {
+    GWEN_XMLNODE_TYPE tt;
+    int rv;
+
+    tt=GWEN_XMLNode_GetType(n);
+    if (tt==GWEN_XMLNodeTypeTag)
+      rv=_readFileListFromTagNode(n, projectFileList, targetFileList);
+    else if (tt==GWEN_XMLNodeTypeData)
+      rv=_readFilesFromDataNode(n,
+                                dbVars,
+                                sCurrentRelativeDir,
+                                projectFileList,
+                                targetFileList,
+                                flagsToAdd);
+    else
+      rv=0;
+    if (rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      return rv;
+    }
+
+    n=GWEN_XMLNode_Next(n);
   }
 
   return 0;
+}
+
+
+
+int _readFilesFromDataNode(GWEN_XMLNODE *xmlNode,
+                           GWEN_DB_NODE *dbVars,
+                           const char *sCurrentRelativeDir,
+                           GWB_FILE_LIST2 *projectFileList,
+                           GWB_FILE_LIST2 *targetFileList,
+                           uint32_t flagsToAdd)
+{
+  const char *s;
+
+  s=GWEN_XMLNode_GetData(xmlNode);
+  if (s && *s) {
+    int rv;
+    GWEN_BUFFER *buf;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_DB_ReplaceVars(dbVars, s, buf);
+    if(rv<0) {
+      DBG_INFO(NULL, "here (%d)", rv);
+      GWEN_Buffer_free(buf);
+      return rv;
+    }
+    if (GWEN_Buffer_GetUsedBytes(buf)) {
+      GWEN_STRINGLIST *sl;
+
+      sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", 1);
+      if (sl==NULL) {
+        DBG_ERROR(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
+        GWEN_Buffer_free(buf);
+        return GWEN_ERROR_GENERIC;
+      }
+      GWBUILD_AddFilesFromStringList(projectFileList,
+                                     sCurrentRelativeDir,
+                                     sl,
+                                     targetFileList,
+                                     flagsToAdd,
+                                     0);
+      GWEN_StringList_free(sl);
+    }
+    GWEN_Buffer_free(buf);
+  }
+  return 0;
+}
+
+
+
+int _readFileListFromTagNode(GWEN_XMLNODE *xmlNode,
+                             const GWB_FILE_LIST2 *projectFileList,
+                             GWB_FILE_LIST2 *targetFileList)
+{
+  const char *tagName;
+
+  tagName=GWEN_XMLNode_GetData(xmlNode);
+  if (tagName && *tagName && strcasecmp(tagName, "files")==0) {
+    int index;
+    const char *pattern;
+
+    pattern=GWEN_XMLNode_GetProperty(xmlNode, "match", NULL);
+    index=GWEN_XMLNode_GetIntProperty(xmlNode, "index", -1);
+
+    if (index>=0) {
+      GWB_FILE *file;
+
+      file=GWB_File_List2_GetAt(projectFileList, index);
+      if (file)
+        GWB_File_List2_PushBack(targetFileList, file);
+    }
+    else {
+      GWB_FILE_LIST2_ITERATOR *it;
+
+      it=GWB_File_List2_First(projectFileList);
+      if (it) {
+        GWB_FILE *file;
+
+        file=GWB_File_List2Iterator_Data(it);
+        while(file) {
+          const char *fname;
+
+          fname=GWB_File_GetName(file);
+          if (fname) {
+            if (pattern==NULL || -1!=GWEN_Text_ComparePattern(fname, pattern, 0))
+              GWB_File_List2_PushBack(targetFileList, file);
+          }
+          file=GWB_File_List2Iterator_Next(it);
+        }
+
+        GWB_File_List2Iterator_free(it);
+      }
+    }
+    return 0;
+  }
+  else {
+    DBG_ERROR(NULL, "Unknown tag name \"%s\"", tagName);
+    return GWEN_ERROR_GENERIC;
+  }
 }
 
 
