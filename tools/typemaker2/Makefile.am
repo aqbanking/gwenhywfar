@@ -1,6 +1,9 @@
-SUBDIRS=types
+SUBDIRS=c types
 
-AM_CPPFLAGS=@all_includes@ -I$(gwenhywfar_symlinkdir)
+AM_CPPFLAGS=@all_includes@ -I$(gwenhywfar_symlinkdir) \
+  -I$(srcdir)/c \
+  -I$(builddir)/c
+  
 
 
 typefiles=\
@@ -29,8 +32,7 @@ noinst_HEADERS=\
   tm_slot_p.h tm_slot.h \
   tm_group_p.h tm_group.h \
   tm_util.h \
-  typemaker2.h \
-  tm_builder_c.h
+  typemaker2.h
 
 typemaker2_SOURCES=\
   tm_type.c \
@@ -39,7 +41,6 @@ typemaker2_SOURCES=\
   tm_util.c \
   tm_typemanager.c \
   tm_builder.c \
-  tm_builder_c.c \
   tm_item.c \
   tm_enum.c \
   tm_define.c \
@@ -55,7 +56,8 @@ typemaker2_SOURCES=\
   
 #  tm_enum.c
 
-typemaker2_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+typemaker2_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname) \
+  c/libtm2_c.la
 
 
 if IS_WINDOWS
