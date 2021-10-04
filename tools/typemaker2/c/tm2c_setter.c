@@ -296,7 +296,7 @@ int _addDupNewValueCode(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_
   if (Typemaker2_Type_GetType(mty)==TypeMaker2_Type_Pointer) {
     GWEN_Buffer_AppendString(tbuf, "  }\n");
     GWEN_Buffer_AppendString(tbuf, "  else {\n");
-    GWEN_Buffer_AppendArgs(tbuf, "p_struct->%s=NULL;\n", Typemaker2_Member_GetName(tm));
+    GWEN_Buffer_AppendArgs(tbuf,   "    p_struct->%s=NULL;\n", Typemaker2_Member_GetName(tm));
     GWEN_Buffer_AppendString(tbuf, "  }\n");
   }
   else {
