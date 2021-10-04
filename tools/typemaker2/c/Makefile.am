@@ -7,20 +7,37 @@ noinst_LTLIBRARIES=libtm2_c.la
 
 libtm2_c_la_SOURCES=\
  tm_builder_c.c \
+ tm2c_misc.c \
  tm2c_constructor.c \
  tm2c_destructor.c \
  tm2c_typedef.c \
  tm2c_struct.c \
- tm2c_getter.c
+ tm2c_getter.c \
+ tm2c_setter.c \
+ tm2c_readdb.c \
+ tm2c_writedb.c \
+ tm2c_readxml.c \
+ tm2c_writexml.c \
+ tm2c_readobject.c \
+ tm2c_writeobject.c
+ 
 
 
 noinst_HEADERS=\
  tm_builder_c.h \
+ tm2c_misc.h \
  tm2c_constructor.h \
  tm2c_destructor.h \
  tm2c_typedef.h \
  tm2c_struct.h \
- tm2c_getter.h
+ tm2c_getter.h \
+ tm2c_setter.h \
+ tm2c_readdb.h \
+ tm2c_writedb.h \
+ tm2c_readxml.h \
+ tm2c_writexml.h \
+ tm2c_readobject.h \
+ tm2c_writeobject.h
 
 
 
