@@ -10,6 +10,7 @@ libtm2_c_la_SOURCES=\
  tm2c_misc.c \
  tm2c_constructor.c \
  tm2c_destructor.c \
+ tm2c_dup.c \
  tm2c_typedef.c \
  tm2c_struct.c \
  tm2c_getter.c \
@@ -28,6 +29,7 @@ noinst_HEADERS=\
  tm2c_misc.h \
  tm2c_constructor.h \
  tm2c_destructor.h \
+ tm2c_dup.h \
  tm2c_typedef.h \
  tm2c_struct.h \
  tm2c_getter.h \
