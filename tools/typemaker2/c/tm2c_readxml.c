@@ -163,8 +163,6 @@ int _addReadMemberCode(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_M
     GWEN_Buffer_AppendString(tbuf, "\n");
   }
 
-  GWEN_Buffer_AppendString(tbuf, "  }\n");
-
   return 0;
 }
 

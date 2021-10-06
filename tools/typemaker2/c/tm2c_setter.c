@@ -149,9 +149,9 @@ void _addSetterFnDeclaration(TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm, GWEN_BU
   GWEN_Buffer_AppendArgs(tbuf,
 			 "void %s_Set%c%s(%s *p_struct, ",
 			 Typemaker2_Type_GetPrefix(ty),
-			 Typemaker2_Member_GetName(tm),
-			 toupper(*s),
-			 s+1);
+                         toupper(*s),
+                         s+1,
+                         Typemaker2_Type_GetIdentifier(ty));
 
   if (Typemaker2_Member_GetFlags(tm) & TYPEMAKER2_FLAGS_ENUM) {
     TYPEMAKER2_ENUM *te;
@@ -369,9 +369,9 @@ int _addFlagFnsPrototype(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2
   GWEN_Buffer_AppendArgs(tbuf,
 			 "void %s_Add%c%s(%s *p_struct, %s p_src);\n",
 			 Typemaker2_Type_GetPrefix(ty),
-			 Typemaker2_Member_GetName(tm),
 			 toupper(*s),
 			 s+1,
+                         Typemaker2_Type_GetIdentifier(ty),
 			 Typemaker2_Type_GetIdentifier(mty));
 
   GWEN_Buffer_AppendArgs(tbuf,
@@ -385,9 +385,9 @@ int _addFlagFnsPrototype(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2
   GWEN_Buffer_AppendArgs(tbuf,
 			 "void %s_Sub%c%s(%s *p_struct, %s p_src);\n",
 			 Typemaker2_Type_GetPrefix(ty),
-			 Typemaker2_Member_GetName(tm),
 			 toupper(*s),
-			 s+1,
+                         s+1,
+                         Typemaker2_Type_GetIdentifier(ty),
 			 Typemaker2_Type_GetIdentifier(mty));
 
   switch (Typemaker2_Member_GetAccess(tm)) {
@@ -434,9 +434,9 @@ void _addFlagFnsImplementation(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPE
 			 "  p_struct->%s|=p_src;\n"
 			 "}\n",
 			 Typemaker2_Type_GetPrefix(ty),
-			 s,
 			 toupper(*s),
 			 s+1,
+                         Typemaker2_Type_GetIdentifier(ty),
 			 Typemaker2_Type_GetIdentifier(mty),
 			 s);
   GWEN_Buffer_AppendString(tbuf, "\n\n");
@@ -447,9 +447,9 @@ void _addFlagFnsImplementation(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPE
 			 "  p_struct->%s&=~p_src;\n"
 			 "}\n",
 			 Typemaker2_Type_GetPrefix(ty),
-			 s,
 			 toupper(*s),
 			 s+1,
+                         Typemaker2_Type_GetIdentifier(ty),
 			 Typemaker2_Type_GetIdentifier(mty),
 			 s);
   GWEN_Buffer_AppendString(tbuf, "\n\n");

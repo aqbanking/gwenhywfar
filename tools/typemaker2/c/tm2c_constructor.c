@@ -108,11 +108,7 @@ int _buildImplementation(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
   GWEN_Buffer_AppendString(tbuf, "_new(void)");
   GWEN_Buffer_AppendString(tbuf, " {\n");
 
-  GWEN_Buffer_AppendString(tbuf, "  ");
-  s=Typemaker2_Type_GetIdentifier(ty);
-  GWEN_Buffer_AppendString(tbuf, s);
-  GWEN_Buffer_AppendString(tbuf, " *p_struct;\n");
-  GWEN_Buffer_AppendString(tbuf, "\n");
+  GWEN_Buffer_AppendArgs(tbuf, "  %s *p_struct;\n\n", Typemaker2_Type_GetIdentifier(ty));
 
   _addTypeInits(ty, flags, tbuf);
   _addSignalInits(ty, flags, tbuf);
