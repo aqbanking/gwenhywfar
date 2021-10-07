@@ -168,4 +168,68 @@ int _addReadMemberCode(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_M
 
 
 
+int TM2C_BuildFromDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+{
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  /* uint32_t flags; */
+  TYPEMAKER2_TYPEMANAGER *tym;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* flags=Typemaker2_Type_GetFlags(ty); */
+
+  /* prototype */
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_fromDb(GWEN_DB_NODE *p_db);\n");
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+  /* implementation */
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_fromDb(GWEN_DB_NODE *p_db) {\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_struct;\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  p_struct=");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  if (Typemaker2_Type_GetUsePrivateConstructor(ty)) {
+    GWEN_Buffer_AppendByte(tbuf, '_');
+  }
+  GWEN_Buffer_AppendString(tbuf, "_new();\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_ReadDb(p_struct, p_db);\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  return p_struct;\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
+
+
+
 

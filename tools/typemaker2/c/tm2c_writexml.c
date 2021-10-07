@@ -148,6 +148,54 @@ int _addWriteMemberCode(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_
 
 
 
+int TM2C_BuildToXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
+{
+  GWEN_BUFFER *tbuf;
+  const char *s;
+  /* uint32_t flags; */
+  TYPEMAKER2_TYPEMANAGER *tym;
+
+  tym=Typemaker2_Builder_GetTypeManager(tb);
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* flags=Typemaker2_Type_GetFlags(ty); */
+
+  /* prototype */
+  s=Typemaker2_TypeManager_GetApiDeclaration(tym);
+  if (s) {
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Buffer_AppendString(tbuf, " ");
+  }
+  GWEN_Buffer_AppendString(tbuf, "void ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_toXml(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, GWEN_XMLNODE *p_db);\n");
+  Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_Reset(tbuf);
+
+  /* implementation */
+  GWEN_Buffer_AppendString(tbuf, "void ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_toXml(const ");
+  s=Typemaker2_Type_GetIdentifier(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, " *p_struct, GWEN_XMLNODE *p_db) {\n");
+
+  GWEN_Buffer_AppendString(tbuf, "  ");
+  s=Typemaker2_Type_GetPrefix(ty);
+  GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "_WriteXml(p_struct, p_db);\n");
+  GWEN_Buffer_AppendString(tbuf, "}\n");
+
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+
+  return 0;
+}
 
 
 

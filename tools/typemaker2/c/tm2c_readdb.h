@@ -16,6 +16,7 @@
 
 
 int TM2C_BuildReadDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_BuildFromDb(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
 

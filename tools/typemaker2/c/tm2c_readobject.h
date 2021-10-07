@@ -16,6 +16,7 @@
 
 
 int TM2C_BuildReadObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_BuildFromObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
 

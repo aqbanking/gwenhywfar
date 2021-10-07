@@ -16,6 +16,7 @@
 
 
 int TM2C_BuildReadXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_BuildFromXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
 

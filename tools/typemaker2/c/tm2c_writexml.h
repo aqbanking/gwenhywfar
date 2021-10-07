@@ -16,6 +16,7 @@
 
 
 int TM2C_BuildWriteXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_BuildToXml(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
 
 
 

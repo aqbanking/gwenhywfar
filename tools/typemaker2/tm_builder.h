@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Thu Jul 02 2009
-    copyright   : (C) 2009 by Martin Preuss
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -55,6 +55,7 @@ void Typemaker2_Builder_AddPublicDeclaration(TYPEMAKER2_BUILDER *tb, const char 
 void Typemaker2_Builder_AddLibraryDeclaration(TYPEMAKER2_BUILDER *tb, const char *s);
 void Typemaker2_Builder_AddProtectedDeclaration(TYPEMAKER2_BUILDER *tb, const char *s);
 void Typemaker2_Builder_AddPrivateDeclaration(TYPEMAKER2_BUILDER *tb, const char *s);
+void Typemaker2_Builder_AddDeclaration(TYPEMAKER2_BUILDER *tb, int access, const char *s);
 void Typemaker2_Builder_AddCode(TYPEMAKER2_BUILDER *tb, const char *s);
 
 const char *Typemaker2_Builder_GetFileNamePublic(const TYPEMAKER2_BUILDER *tb);

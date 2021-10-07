@@ -7,16 +7,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef TM2C_WRITEOBJECT_H
-#define TM2C_WRITEOBJECT_H
+#ifndef TM2C_SLOT_H
+#define TM2C_SLOT_H
 
 
 #include "tm_builder.h"
 
 
 
-int TM2C_BuildWriteObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
-int TM2C_BuildToObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_BuildSlotFunctions(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_AddVirtualFnsFromSlots(TYPEMAKER2_TYPE *ty);
+void TM2C_DelVirtualFnsFromSlots(TYPEMAKER2_TYPE *ty);
 
 
 

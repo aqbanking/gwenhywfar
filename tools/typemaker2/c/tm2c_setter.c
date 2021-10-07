@@ -62,7 +62,7 @@ int TM2C_BuildSetter(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 	    DBG_INFO(NULL, "here (%d)", rv);
 	    return rv;
 	  }
-	}
+        }
 
 	rv=_addSetterImplementation(tb, ty, tm);
 	if (rv<0) {
@@ -206,7 +206,7 @@ int _addSetterImplementation(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMA
   } /* if own */
   
 
-  if (Typemaker2_Member_GetSetFlags(tm) & TYPEMAKER2_FLAGS_DUP) {
+  if (Typemaker2_Member_GetSetFlags(tm) & (TYPEMAKER2_FLAGS_DUP | TYPEMAKER2_FLAGS_CONST)) {
     rv=_addDupNewValueCode(tb, ty, tm, tbuf);
     if (rv<0) {
       DBG_INFO(NULL, "here (%d)", rv);
@@ -224,6 +224,8 @@ int _addSetterImplementation(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMA
   }
 
   GWEN_Buffer_AppendString(tbuf, "}\n");
+  Typemaker2_Builder_AddCode(tb, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
 
   return 0;
 }

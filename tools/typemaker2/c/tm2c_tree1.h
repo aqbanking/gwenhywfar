@@ -7,16 +7,15 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef TM2C_WRITEOBJECT_H
-#define TM2C_WRITEOBJECT_H
+#ifndef TM2C_TREE1_H
+#define TM2C_TREE1_H
 
 
 #include "tm_builder.h"
 
 
 
-int TM2C_BuildWriteObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
-int TM2C_BuildToObject(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty);
+int TM2C_BuildTreeGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_MEMBER *tm);
 
 
 
