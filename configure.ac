@@ -1401,6 +1401,7 @@ AC_CONFIG_FILES([Doxyfile
                  tools/xmlmerge/Makefile
                  tools/typemaker/Makefile
                  tools/typemaker2/Makefile
+                 tools/typemaker2/c/Makefile
                  tools/typemaker2/types/Makefile
                  tools/typemaker2/types/c/Makefile
                  tools/gcttool/Makefile
