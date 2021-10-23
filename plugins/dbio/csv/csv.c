@@ -557,11 +557,13 @@ void _stringListToDb(GWEN_STRINGLIST *sl, GWEN_DB_NODE *colgr, GWEN_DB_NODE *dbD
   while (se) {
     char nbuff[16];
     const char *vcol;
+    const char *sColumn;
 
-    DBG_DEBUG(0, "Handling column %d", col);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Handling column %d", col);
     nbuff[0]=0;
     snprintf(nbuff, sizeof(nbuff)-1, "%i", col);
     nbuff[sizeof(nbuff)-1]=0;
+    sColumn=GWEN_StringListEntry_Data(se);
 
     vcol=GWEN_DB_GetCharValue(colgr, nbuff, 0, 0);
     if (vcol) {
@@ -577,7 +579,7 @@ void _stringListToDb(GWEN_STRINGLIST *sl, GWEN_DB_NODE *colgr, GWEN_DB_NODE *dbD
       }
       else
         vname=0;
-      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_DEFAULT, vcol, GWEN_StringListEntry_Data(se));
+      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_DEFAULT, vcol, sColumn);
       GWEN_Buffer_free(vname);
     }
     else {
@@ -589,13 +591,13 @@ void _stringListToDb(GWEN_STRINGLIST *sl, GWEN_DB_NODE *colgr, GWEN_DB_NODE *dbD
 	const char *delimiter;
 
 	delimiter=GWEN_DB_GetCharValue(dbSubFields, "delimiter", 0, "/");
-	slSubFields=GWEN_StringList_fromString2(GWEN_StringListEntry_Data(se),
+        slSubFields=GWEN_StringList_fromString2(sColumn,
 						delimiter, 0,
 						GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
 						GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
 						GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
 						GWEN_TEXT_FLAGS_DEL_QUOTES);
-	if (slSubFields) {
+        if (slSubFields) {
 	  _stringListToDb(slSubFields, dbSubFields, dbData); /* recursion */
 	  GWEN_StringList_free(slSubFields);
 	}
