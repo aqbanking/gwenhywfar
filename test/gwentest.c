@@ -104,7 +104,7 @@
 #endif
 
 
-
+extern char **environ;
 
 //#define TEST_GPARSER
 
@@ -6456,6 +6456,18 @@ int testSetBinDataDb(int argc, char **argv)
 }
 
 
+int testEnviron(void)
+{
+  char **s = environ;
+
+  printf("Environment:\n");
+  for (; *s; s++) {
+    printf("%s\n", *s);
+  }
+  return 0;
+}
+
+
 
 int main(int argc, char **argv)
 {
@@ -6712,8 +6724,9 @@ int main(int argc, char **argv)
   else if (strcasecmp(argv[1], "setBinDataDb")==0) {
     rv=testSetBinDataDb(argc, argv);
   }
-
-
+  else if (strcasecmp(argv[1], "env")==0) {
+    rv=testEnviron();
+  }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
     GWEN_Fini();
