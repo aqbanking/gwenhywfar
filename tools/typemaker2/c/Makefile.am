@@ -44,7 +44,7 @@ noinst_HEADERS=\
  tm2c_copy.h \
  tm2c_typedef.h \
  tm2c_struct.h \
- tm2c_macros.c \
+ tm2c_macros.h \
  tm2c_getter.h \
  tm2c_setter.h \
  tm2c_readdb.h \
