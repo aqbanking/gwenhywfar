@@ -61,9 +61,10 @@ void _addPrototype(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
   if (s)
     GWEN_Buffer_AppendArgs(tbuf, "%s ", s);
   GWEN_Buffer_AppendArgs(tbuf,
-                         "%s *%s_copy(const %s *p_src);\n",
+                         "%s *%s_copy(%s *p_struct, const %s *p_src);\n",
                          Typemaker2_Type_GetIdentifier(ty),
                          Typemaker2_Type_GetPrefix(ty),
+                         Typemaker2_Type_GetIdentifier(ty),
                          Typemaker2_Type_GetIdentifier(ty));
   Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
@@ -80,19 +81,14 @@ int _addImplementation(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendArgs(tbuf,
-                         "%s *%s_copy(const %s *p_src) {\n",
+                         "%s *%s_copy(%s *p_struct, const %s *p_src) {\n",
                          Typemaker2_Type_GetIdentifier(ty),
                          Typemaker2_Type_GetPrefix(ty),
+                         Typemaker2_Type_GetIdentifier(ty),
                          Typemaker2_Type_GetIdentifier(ty));
 
-  GWEN_Buffer_AppendArgs(tbuf, "  %s *p_struct;\n\n", Typemaker2_Type_GetIdentifier(ty));
-
+  GWEN_Buffer_AppendString(tbuf, "  assert(p_struct);\n");
   GWEN_Buffer_AppendString(tbuf, "  assert(p_src);\n");
-  if (Typemaker2_Type_GetUsePrivateConstructor(ty))
-    GWEN_Buffer_AppendArgs(tbuf, "  p_struct=%s__new();\n", Typemaker2_Type_GetPrefix(ty));
-  else
-    GWEN_Buffer_AppendArgs(tbuf, "  p_struct=%s_new();\n", Typemaker2_Type_GetPrefix(ty));
-
 
   tml=Typemaker2_Type_GetMembers(ty);
   if (tml) {
