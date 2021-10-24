@@ -301,6 +301,7 @@ int _addDupNewValueCode(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_
     GWEN_Buffer_AppendArgs(tbuf,   "    p_struct->%s=NULL;\n", Typemaker2_Member_GetName(tm));
     GWEN_Buffer_AppendString(tbuf, "  }\n");
   }
+#if 0
   else {
     rv=_addAssignNewValueCode(tb, ty, tm, tbuf);
     if (rv<0) {
@@ -308,6 +309,7 @@ int _addDupNewValueCode(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, TYPEMAKER2_
       return rv;
     }
   }
+#endif
   GWEN_Buffer_AppendString(tbuf, "\n");
 
   return 0;
