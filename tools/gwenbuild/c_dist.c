@@ -14,6 +14,7 @@
 
 #include "c_dist.h"
 #include "utils.h"
+#include "gwenbuild/filenames.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
@@ -47,13 +48,13 @@ int GWB_MkDist()
   const char *versionTag;
   int rv;
 
-  projectFileList=GWB_Utils_ReadFileList2(".gwbuild.files");
+  projectFileList=GWB_Utils_ReadFileList2(GWBUILD_FILE_FILES);
   if (projectFileList==NULL) {
     DBG_ERROR(NULL, "No file list read.");
     return GWEN_ERROR_GENERIC;
   }
 
-  xmlProjectInfo=GWB_Utils_ReadProjectInfoFromFile(".gwbuild.projectinfo");
+  xmlProjectInfo=GWB_Utils_ReadProjectInfoFromFile(GWBUILD_FILE_PROJECTINFO);
   if (xmlProjectInfo==NULL) {
     DBG_ERROR(NULL, "Error reading project info.");
     GWB_File_List2_free(projectFileList);

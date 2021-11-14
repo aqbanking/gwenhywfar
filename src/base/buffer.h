@@ -279,7 +279,7 @@ int GWEN_Buffer_AppendBytes(GWEN_BUFFER *bf,
  * @param bf buffer to append data to
  * @param fmt format string like that for sprintf().
  */
-GWENHYWFAR_API
+GWENHYWFAR_API GWEN_FORMAT(printf, 2, 3)
 int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...);
 
 

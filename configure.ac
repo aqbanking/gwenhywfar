@@ -29,7 +29,7 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=5
 GWENHYWFAR_VERSION_MINOR=7
-GWENHYWFAR_VERSION_PATCHLEVEL=3
+GWENHYWFAR_VERSION_PATCHLEVEL=4
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="stable"
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 GWENHYWFAR_SO_CURRENT="86"
 GWENHYWFAR_SO_AGE="7"
-GWENHYWFAR_SO_REVISION="3"
+GWENHYWFAR_SO_REVISION="4"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -1401,6 +1401,7 @@ AC_CONFIG_FILES([Doxyfile
                  tools/xmlmerge/Makefile
                  tools/typemaker/Makefile
                  tools/typemaker2/Makefile
+                 tools/typemaker2/c/Makefile
                  tools/typemaker2/types/Makefile
                  tools/typemaker2/types/c/Makefile
                  tools/gcttool/Makefile

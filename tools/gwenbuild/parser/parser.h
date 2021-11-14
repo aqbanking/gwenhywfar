@@ -22,6 +22,12 @@
 
 
 
+#define GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST 0x00000001
+#define GWB_PARSER_SRCFILEFLAGS_ISSOURCE   0x00000002
+
+
+
+
 GWB_PROJECT *GWB_Parser_ReadBuildTree(GWENBUILD *gwbuild,
                                       GWB_CONTEXT *currentContext,
                                       const char *srcDir,
@@ -48,13 +54,24 @@ int GWB_Parser_ParseWriteFile(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode
 int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
                                      GWB_CONTEXT *currentContext,
                                      GWEN_XMLNODE *xmlNode,
-                                     int alwaysDist,
-                                     int isSource);
+                                     /*int alwaysDist,
+                                      int isSource*/
+                                     uint32_t fileFlags,
+                                     const char *defaultTypeName,
+                                     const char *defaultBuilder);
 
 
 void GWB_Parser_SetItemValue(GWEN_DB_NODE *db, const char *sId, const char *suffix, const char *value);
 
 int GWB_Parser_ReplaceVarsBetweenAtSigns(const char *s, GWEN_BUFFER *dbuf, GWEN_DB_NODE *db);
+
+GWB_TARGET *GWB_Parser_AddTargetForSourceFile(GWB_PROJECT *project,
+                                              GWB_CONTEXT *currentContext,
+                                              GWBUILD_TARGETTYPE targetType,
+                                              const char *fileName,
+                                              const char *fileType,
+                                              const char *builderName,
+                                              const char *installPath);
 
 #endif
 

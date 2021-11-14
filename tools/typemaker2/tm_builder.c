@@ -146,6 +146,29 @@ void Typemaker2_Builder_SetTypeManager(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPEMA
 
 
 
+void Typemaker2_Builder_AddDeclaration(TYPEMAKER2_BUILDER *tb, int access, const char *s)
+{
+  switch (access) {
+  case TypeMaker2_Access_Public:
+    Typemaker2_Builder_AddPublicDeclaration(tb, s);
+    break;
+  case TypeMaker2_Access_Library:
+    Typemaker2_Builder_AddLibraryDeclaration(tb, s);
+    break;
+  case TypeMaker2_Access_Protected:
+    Typemaker2_Builder_AddProtectedDeclaration(tb, s);
+    break;
+  case TypeMaker2_Access_Private:
+    Typemaker2_Builder_AddPrivateDeclaration(tb, s);
+    break;
+  default:
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid access type");
+    break;
+  }
+}
+
+
+
 void Typemaker2_Builder_AddPublicDeclaration(TYPEMAKER2_BUILDER *tb, const char *s)
 {
   assert(tb);

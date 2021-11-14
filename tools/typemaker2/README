@@ -92,3 +92,302 @@
   
 </tm2>
 
+
+
+
+
+
+
+<typedef id="int">
+  <identifier>int</identifier>
+  <aqdb_type>AQDB_DataType_Int</aqdb_type>
+  
+  <struct>
+    int $(memberName);
+  </struct>
+
+  <codedefs>
+
+    <codedef id="dup">
+      <code>
+        $(dest)=$(src)
+      </code>
+    </codedef>
+
+    <codedef id="copy">
+      <code>
+        $(dest)=$(src)
+      </code>
+    </codedef>
+
+    <codedef id="construct">
+      <code>
+        $(dest)=0;
+      </code>
+    </codedef>
+
+    <codedef id="destruct">
+      <code>
+      </code>
+    </codedef>
+
+  <codedefs>
+
+  
+  <structFunctions>
+    <getter>
+      <proto>
+        $(api) int $(typePrefix)_Get$(memberNameToUpper)(const $(typeId) *p_struct);
+      </proto>
+      
+      <impl>
+        int $(typePrefix)_Get$(memberNameToUpper)(const $(typeId) *p_struct) {
+          return p_struct->$(memberName);
+        }
+      </impl>
+    </getter>
+  
+  
+    <getter>
+      <proto>
+        $(api) void $(typePrefix)_Set$(memberNameToUpper)($(typeId) *p_struct, int p_src);
+      </proto>
+      
+      <impl>
+        void $(typePrefix)_Set$(memberNameToUpper)($(typeId) *p_struct, int p_src) {
+          p_struct->$(memberName);
+        }
+      </impl>
+    </getter>
+    
+  </structFunctions>
+  
+  <defaults>
+    <!-- defaults flags etc for member declarations of this type -->
+    <default>0</default>
+    <preset>0</preset>
+  </defaults>
+  
+  
+</type>
+
+
+
+
+<typedef id="char_ptr">
+  <identifier>int</identifier>
+  <aqdb_type>AQDB_DataType_String</aqdb_type>
+  
+  <codedefs>
+
+    <codedef id="dup">
+      <code>
+        if ($(src))
+          $(dest)=strdup($(src));
+        else
+          $(dest)=NULL;
+      </code>
+    </codedef>
+
+    <codedef id="copy">
+      <code>
+        if ($(src))
+          $(dest)=strdup($(src));
+        else
+          $(dest)=NULL;
+      </code>
+    </codedef>
+
+    <codedef id="construct">
+      <code>
+        $(dest)=NULL;
+      </code>
+    </codedef>
+
+    <codedef id="destruct">
+      <code>
+        if ($(src))
+          free($(src))
+      </code>
+    </codedef>
+
+    <codedef id="null">
+      <code>
+        $(src)=NULL;
+      </code>
+    </codedef>
+
+  <codedefs>
+
+
+
+<!-- 
+  Hiermit einfacher, komplexe Datenstrukturen zu verwalten, z.B. solche, die aus mehreren variablen bestehen.
+-->
+  <structCode>
+
+    <placement>
+      char *$(memberName);
+    </placement>
+
+    <codedef id="init">
+      <impl>
+        p_struct->$(memberName)=$(preset);
+      </impl>
+    </codedef>
+
+
+    <codedef id="fini">
+      <impl>
+        <ifFlagsHasAllOf type="member" value="own">
+            if (p_struct->$(memberName))
+              free(p_struct->$(memberName));
+        </ifFlagsHasAllOf>
+        p_struct->$(memberName)=NULL;
+      </impl>
+    </codedef>
+
+
+    <codedef id="get">
+      <proto>
+        $(api) const char *$(typePrefix)_Get$(memberNameToUpper)(const $(typeId) *p_struct);
+      </proto>
+      
+      <impl>
+        const char *$(typePrefix)_Get$(memberNameToUpper)(const $(typeId) *p_struct) {
+          return p_struct->$(memberName);
+        }
+      </impl>
+    </codedef>
+  
+  
+    <codedef id="set">
+      <proto>
+        <ifFlagsHasAnyOf type="set" value="const,dup">
+          <then>
+            $(api) void $(typePrefix)_Set$(memberNameToUpper)($(typeId) *p_struct, const char *p_src);
+          </then>
+          <else>
+            $(api) void $(typePrefix)_Set$(memberNameToUpper)($(typeId) *p_struct, char *p_src);
+          </else>
+        </ifFlagsHasAnyOf>
+      </proto>
+      
+      <impl>
+        <ifFlagsHasAnyOf type="set" value="const,dup">
+          <then>
+            void $(typePrefix)_Set$(memberNameToUpper)($(typeId) *p_struct, const char *p_src)
+          </then>
+          <else>
+            void $(typePrefix)_Set$(memberNameToUpper)($(typeId) *p_struct, char *p_src)
+          </else>
+        </ifFlagsHasAnyOf>
+            {
+        <ifFlagsHasAllOf type="member" value="own">
+            if (p_struct->$(memberName))
+              free(p_struct->$(memberName));
+        </ifFlagsHasAllOf>
+
+        <ifFlagsHasAnyOf type="set" value="const,dup" >
+          <then>
+            if (p_src) 
+              p_struct->$(memberName)=strdup(p_src);
+            else
+              p_struct->$(memberName)=NULL;
+          </then>
+          <else>
+            p_struct->$(memberName)=p_src;
+          </else>
+        </ifFlagsHasAnyOf>
+            }
+      </impl>
+    </codedef>
+    
+    
+    <codedef id="toDb">
+      <impl>
+        if ($(struct_data)->$(memberName)) {
+          int rv;
+          
+          rv=GWEN_DB_SetCharValue($(db), 
+                                  GWEN_DB_FLAGS_OVERWRITE_VARS, 
+                                  "$(memberName)", 
+                                  $(src));
+          if (rv&lt;0) {
+            DBG_INFO($(logdomain), "here (%d)", rv);
+            return rv;
+          }
+        }
+        else
+          GWEN_DB_DeleteVar($(db), "$(name)");
+      </impl>
+    </codedef>
+
+    <codedef id="fromb">
+      <impl>
+        {
+          const char *s;
+          
+          <ifFlagsHasAllOf type="member" value="own">
+              if (p_struct->$(memberName))
+                free(p_struct->$(memberName));
+          </ifFlagsHasAllOf>
+          s=GWEN_DB_GetCharValue($(db), "$(memberName)", 0, $(default));
+          if (s)
+            $(dst)=strdup(s);
+          else
+            $(dst)=NULL;
+        }
+      </impl>
+    </codedef>
+    
+  </structFunctions>
+  
+  <defaults>
+    <!-- defaults flags etc for member declarations of this type -->
+    <default>0</default>
+    <preset>0</preset>
+  </defaults>
+  
+  
+</type>
+
+
+
+
+
+
+<toDb>
+  <proto>
+    $(api) int $(typePrefix)_toDb(const $(typeId) *p_struct, GWEN_DB_NODE *p_db);
+  </proto>
+
+  <impl>
+    int $(typePrefix)_toDb(const $(typeId) *p_struct, GWEN_DB_NODE *p_db) {
+    <ForEveryMember>
+      <IfNotHasMemberFlag value="volatile">
+        <ifTypeEquals value="pointer">
+          if (p_struct->$(memberName)) {
+        </ifTypeEquals>
+            int p_rv;
+
+            <InvokeMemberFn id="toDb" src="p_struct->$(memberName)" dest="p_rv" db="p_db"/>
+            if (p_rv&lt;0) {
+              DBG_ERROR($(logdomain), "here (%d)", p_rv);
+              return p_rv;
+            }
+        <ifTypeEquals value="pointer">
+          }
+        </ifTypeEquals>
+        </ifTypeEquals>
+      </IfNotHasMemberFlag>
+    </ForEveryMember>
+      return 0;
+    }
+  </impl>
+  
+</toDb>
+
+
+
+

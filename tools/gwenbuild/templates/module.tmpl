@@ -1,0 +1,87 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="Module" name="ddvcard" install="$(gwenhywfar_plugindir)/ct">
+
+    <includes type="c" >
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src
+      -I$(topbuilddir)/src
+      -I$(topsrcdir)
+      -I$(topbuilddir)
+      -I$(builddir)
+    </includes>
+
+    <includes type="tm2" >
+      --include=$(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c
+      --include=$(builddir)
+    </includes>
+
+  
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+    <setVar name="tm2flags" >
+      --api=CHIPCARD_API
+    </setVar>
+
+  
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+    </headers>
+
+
+    <headers dist="true" >
+      $(local/built_headers_priv)
+
+      ddvcard_p.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      ddvcard.c
+    </sources>
+
+
+    <data dist="true" install="$(gwenhywfar_plugindir)/ct">
+      ddvcard.xml
+    </data>
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+      chipcard
+    </useTargets>
+
+    <libraries>
+      $(gwenhywfar_libs)
+    </libraries>
+
+
+    <subdirs>
+    </subdirs>
+
+    <writeFile name="ddvcard.xml" />
+
+
+  </target>
+  
+</gwbuild>

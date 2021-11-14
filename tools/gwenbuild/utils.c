@@ -34,6 +34,7 @@ static int _filesChanged(const char *fileName, GWEN_STRINGLIST *slFileNameList);
 static GWEN_STRINGLIST *_readBuildFileList(const char *fileName);
 static void _writeProjectNameAndVersionToXml(const GWB_PROJECT *project, GWEN_XMLNODE *xmlNode);
 static int _readIntUntilPointOrHyphen(const char **ptrToStringPtr);
+static int _readAndStoreNextVersionPart(const char **s, GWEN_DB_NODE *db, const char *varNamePrefix, const char *varName);
 
 
 
@@ -270,9 +271,14 @@ GWB_KEYVALUEPAIR_LIST *_generateInstallList(const GWB_FILE_LIST2 *fileList, cons
 
           s=GWB_File_GetInstallPath(file);
           if (s && *s) {
+            const char *destFileName;
+
+            destFileName=GWB_File_GetInstallName(file);
+            if (!(destFileName && *destFileName))
+              destFileName=GWB_File_GetName(file);
             GWEN_Buffer_AppendString(keyBuf, s);
             GWEN_Buffer_AppendString(keyBuf, GWEN_DIR_SEPARATOR_S);
-            GWEN_Buffer_AppendString(keyBuf, GWB_File_GetName(file));
+            GWEN_Buffer_AppendString(keyBuf, destFileName);
 
             GWB_File_WriteFileNameToTopBuildDirString(file, initialSourceDir, valueBuf);
             kvp=GWB_KeyValuePair_new(GWEN_Buffer_GetStart(keyBuf),  GWEN_Buffer_GetStart(valueBuf));
@@ -456,11 +462,17 @@ int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
   int rv;
   struct stat st;
 
-  if (lstat(sSrcPath, &st)==-1) {
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+  rv=lstat(sSrcPath, &st);
+#else
+  rv=stat(sSrcPath, &st);
+#endif
+  if (rv == -1) {
     DBG_ERROR(NULL, "ERROR: stat(%s): %s", sSrcPath, strerror(errno));
     return GWEN_ERROR_GENERIC;
   }
 
+#if ((_BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L) && !defined(__MINGW32__)) || defined(OS_DARWIN)
   if ((st.st_mode & S_IFMT)==S_IFLNK) {
     char *symlinkbuf;
     int bufSizeNeeded;
@@ -501,7 +513,9 @@ int GWB_Utils_CopyFile(const char *sSrcPath, const char *sDestPath)
       return GWEN_ERROR_GENERIC;
     }
   }
-  else if ((st.st_mode & S_IFMT)==S_IFREG) {
+  else
+#endif
+  if ((st.st_mode & S_IFMT)==S_IFREG) {
     mode_t newMode=0;
 
     rv=GWEN_Directory_GetPath(sDestPath,
@@ -616,73 +630,85 @@ GWEN_XMLNODE *GWB_Utils_ReadProjectInfoFromFile(const char *fileName)
 int GWB_Utils_VersionStringToDb(GWEN_DB_NODE *db, const char *prefix, const char *s)
 {
   const char *p;
-  GWEN_BUFFER *varNameBuffer;
-  uint32_t posInVarNameBuffer;
   int rv;
-
-  varNameBuffer=GWEN_Buffer_new(0, 64, 0, 1);
-  if (prefix && *prefix)
-    GWEN_Buffer_AppendString(varNameBuffer, prefix);
-  posInVarNameBuffer=GWEN_Buffer_GetPos(varNameBuffer);
 
   p=s;
   while(*p && *p<33)
     s++;
   if (isdigit(*p)) {
-    rv=_readIntUntilPointOrHyphen(&p);
+    rv=_readAndStoreNextVersionPart(&p, db, prefix, "vmajor");
     if (rv<0) {
       DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      GWEN_Buffer_free(varNameBuffer);
-      return GWEN_ERROR_GENERIC;
+      return rv;
     }
-    GWEN_Buffer_AppendString(varNameBuffer, "vmajor");
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
-    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
   }
   if (*p=='.') {
-    p++;
-    rv=_readIntUntilPointOrHyphen(&p);
+    rv=_readAndStoreNextVersionPart(&p, db, prefix, "vminor");
     if (rv<0) {
       DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      GWEN_Buffer_free(varNameBuffer);
-      return GWEN_ERROR_GENERIC;
+      return rv;
     }
-    GWEN_Buffer_AppendString(varNameBuffer, "vminor");
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
-    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
   }
   if (*p=='.') {
-    p++;
-    rv=_readIntUntilPointOrHyphen(&p);
+    rv=_readAndStoreNextVersionPart(&p, db, prefix, "vpatchlevel");
     if (rv<0) {
       DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      GWEN_Buffer_free(varNameBuffer);
-      return GWEN_ERROR_GENERIC;
+      return rv;
     }
-    GWEN_Buffer_AppendString(varNameBuffer, "vpatchlevel");
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
-    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
   }
   if (*p=='.') {
-    p++;
-    rv=_readIntUntilPointOrHyphen(&p);
+    rv=_readAndStoreNextVersionPart(&p, db, prefix, "vbuild");
     if (rv<0) {
       DBG_ERROR(NULL, "Invalid version spec \"%s\"", s);
-      GWEN_Buffer_free(varNameBuffer);
-      return GWEN_ERROR_GENERIC;
+      return rv;
     }
-    GWEN_Buffer_AppendString(varNameBuffer, "vbuild");
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), rv);
-    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
   }
   if (*p=='-') {
     p++;
-    GWEN_Buffer_AppendString(varNameBuffer, "vtag");
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(varNameBuffer), p);
-    GWEN_Buffer_Crop(varNameBuffer, 0, posInVarNameBuffer);
-  }
-  GWEN_Buffer_free(varNameBuffer);
+    if (prefix && *prefix) {
+      GWEN_BUFFER *buf;
 
+      buf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(buf, prefix);
+      GWEN_Buffer_AppendString(buf, "vtag");
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(buf), p);
+      GWEN_Buffer_free(buf);
+    }
+    else
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "vtag", p);
+  }
+
+  return 0;
+}
+
+
+
+int _readAndStoreNextVersionPart(const char **s, GWEN_DB_NODE *db, const char *varNamePrefix, const char *varName)
+{
+  const char *p;
+  int rv;
+
+  p=*s;
+  if (*p=='.')
+    p++;
+  rv=_readIntUntilPointOrHyphen(&p);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Invalid version spec \"%s\"", *s);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (varNamePrefix && *varNamePrefix) {
+    GWEN_BUFFER *buf;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, varNamePrefix);
+    GWEN_Buffer_AppendString(buf, varName);
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(buf), rv);
+    GWEN_Buffer_free(buf);
+  }
+  else
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, varName, rv);
+  *s=p;
   return 0;
 }
 

@@ -189,6 +189,8 @@ GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
       return GWBUILD_TargetType_Objects;
     else if (strcasecmp(s, "Module")==0)
       return GWBUILD_TargetType_Module;
+    else if (strcasecmp(s, "I18nCatalog")==0)
+      return GWBUILD_TargetType_I18nCatalog;
     else {
       DBG_ERROR(NULL, "Invalid target type \"%s\"", s);
     }
@@ -213,6 +215,7 @@ const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt)
   case GWBUILD_TargetType_CxxProgram:         return "CxxProgram";
   case GWBUILD_TargetType_Objects:            return "objects";
   case GWBUILD_TargetType_Module:             return "module";
+  case GWBUILD_TargetType_I18nCatalog:        return "I18nCatalog";
   }
 
   return "invalid";
@@ -882,8 +885,14 @@ void _addFilesToBuildCtx(GWB_BUILD_CONTEXT *buildCtx, GWB_FILE_LIST2 *fileList)
 time_t GWBUILD_GetModificationTimeOfFile(const char *filename)
 {
   struct stat st;
+  int rv;
 
-  if (lstat(filename, &st)==-1) {
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+  rv=lstat(filename, &st);
+#else
+  rv=stat(filename, &st);
+#endif
+  if (rv == -1) {
     DBG_INFO(NULL, "Error on stat(%s): %s", filename, strerror(errno));
     return (time_t) 0;
   }
@@ -1163,6 +1172,9 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
     break;
   case GWBUILD_TargetType_Module:
     builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "module");
+    break;
+  case GWBUILD_TargetType_I18nCatalog:
+    builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "msgfmt");
     break;
   }
   if (builder==NULL) {

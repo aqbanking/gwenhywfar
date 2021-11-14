@@ -40,6 +40,10 @@ const char *GWB_Target_GetName(const GWB_TARGET *target);
 void GWB_Target_SetName(GWB_TARGET *target, const char *s);
 
 
+const char *GWB_Target_GetInstallName(const GWB_TARGET *target);
+void GWB_Target_SetInstallName(GWB_TARGET *target, const char *s);
+
+
 GWBUILD_TARGETTYPE GWB_Target_GetTargetType(const GWB_TARGET *target);
 void GWB_Target_SetTargetType(GWB_TARGET *target, GWBUILD_TARGETTYPE t);
 

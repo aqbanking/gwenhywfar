@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "gwenbuild/parser/parser.h"
 #include "gwenbuild/buildctx/buildctx_xml.h"
+#include "gwenbuild/filenames.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>
@@ -96,49 +97,48 @@ int GWB_Setup(GWEN_DB_NODE *dbArgs)
     return 2;
   }
 
-  rv=GWB_BuildCtx_WriteToXmlFile(buildCtx, ".gwbuild.ctx");
+  rv=GWB_BuildCtx_WriteToXmlFile(buildCtx, GWBUILD_FILE_CTX);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing build context file.\n");
     return 3;
   }
 
-  rv=GWB_Utils_WriteProjectFileList(project, ".gwbuild.files");
+  rv=GWB_Utils_WriteProjectFileList(project, GWBUILD_FILE_FILES);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing file list file.\n");
     return 3;
   }
 
-  GWB_Utils_WriteBuildFileList(gwenbuild, ".gwbuild.buildfiles");
+  GWB_Utils_WriteBuildFileList(gwenbuild, GWBUILD_FILE_BUILDFILES);
 
-  rv=GWEN_DB_WriteFile(dbArgs, ".gwbuild.args", GWEN_DB_FLAGS_DEFAULT);
+  rv=GWEN_DB_WriteFile(dbArgs, GWBUILD_FILE_ARGS, GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing file list file.\n");
     return 3;
   }
 
-  rv=GWB_Utils_WriteInstallFileList(project, ".gwbuild.installfiles");
+  rv=GWB_Utils_WriteInstallFileList(project, GWBUILD_FILE_INSTALLFILES);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing install file list.\n");
     return 3;
   }
 
 #if 0
-  rv=GWB_Utils_WriteProjectToFile(project, ".gwbuild.project");
+  rv=GWB_Utils_WriteProjectToFile(project, GWBUILD_FILE_PROJECT);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing project to file.\n");
     return 3;
   }
 #endif
 
-  rv=GWB_Utils_WriteProjectInfoToFile(project, ".gwbuild.projectinfo");
+  rv=GWB_Utils_WriteProjectInfoToFile(project, GWBUILD_FILE_PROJECTINFO);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error writing project info to file.\n");
     return 3;
   }
 
 
-  rv=GWB_Utils_WriteContextTreeToFile(GWB_Project_GetRootContext(project),
-                                      ".gwbuild.ctxtree");
+  rv=GWB_Utils_WriteContextTreeToFile(GWB_Project_GetRootContext(project), GWBUILD_FILE_CTXTREE);
 
   rv=_writeStaticLibHelper("staticlibhelper.sh");
   if (rv<0) {
@@ -210,6 +210,7 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
   const char *sTarget;
   const char *sTargetSystem;
   const char *s;
+  int systemIsWindows=0;
 
   dbVars=GWB_Context_GetVars(context);
 
@@ -225,6 +226,7 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_ARCH", GWBUILD_GetHostArch());
     sTargetSystem=GWBUILD_GetHostSystem();
   }
+  systemIsWindows=(strcasecmp(sTargetSystem, "windows")==0)?1:0;
 
   if (GWBUILD_GetFlags(gwenbuild) & GWENBUILD_FLAGS_STATIC)
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_LIBTYPE", "staticlib");
@@ -233,7 +235,8 @@ void _determineTarget(GWB_CONTEXT *context, GWEN_DB_NODE *dbArgs)
 
   GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEM", sTargetSystem);
   GWBUILD_SetTargetSystem(gwenbuild, sTargetSystem);
-  GWBUILD_SetTargetIsWindows(gwenbuild, (strcasecmp(sTargetSystem, "windows")==0)?1:0);
+  GWBUILD_SetTargetIsWindows(gwenbuild, systemIsWindows);
+  GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "GWBUILD_SYSTEMTYPE", systemIsWindows?"windows":"posix");
 }
 
 
@@ -297,7 +300,19 @@ int _getAllToolPaths(GWEN_DB_NODE *dbVars, const char *sCompileTarget, const GWE
   if (rv<0)
     return rv;
 
+  /* optional tools */
+  rv=_getToolPath(dbVars, sCompileTarget, sl, "msgfmt", "MSGFMT", "GWBUILD_TOOL_MSGFMT");
+  if (rv<0) {
+    DBG_WARN(NULL, "Tool msgfmt not found, limited i18n support.");
+    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgfmt_EXISTS", "FALSE");
+  }
+  else
+    GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgfmt_EXISTS", "TRUE");
 
+  /* add more tools here */
+
+
+  /* done */
   return 0;
 }
 

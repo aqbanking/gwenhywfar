@@ -6,6 +6,7 @@ dist_builderdata_DATA=\
   cbuilder.gwb \
   cxxbuilder.gwb \
   module.gwb \
+  msgfmt.gwb \
   sharedlib.gwb \
   staticlib.gwb \
   tmplib.gwb \

@@ -13,6 +13,7 @@
 
 
 #include "gwenbuild/parser/parser.h"
+#include "gwenbuild/filenames.h"
 #include "utils.h"
 #include "c_setup.h"
 #include "c_prepare.h"
@@ -61,14 +62,18 @@ static void _printHelpScreen();
 
 #ifdef HAVE_SIGNAL_H
 
+# ifdef _POSIX_C_SOURCE
 struct sigaction sigActionChild;
+# endif
 
 
 void _signalHandler(int s) {
   switch(s) {
+#ifdef _POSIX_C_SOURCE
   case SIGCHLD:
     //fprintf(stderr, "Child exited %d\n", s);
     break;
+#endif
   default:
     fprintf(stderr, "Received unhandled signal %d\n", s);
     break;
@@ -78,6 +83,7 @@ void _signalHandler(int s) {
 
 
 
+#if _POSIX_C_SOURCE
 int _setSingleSignalHandler(struct sigaction *sa, int sig)
 {
   sa->sa_handler=_signalHandler;
@@ -89,10 +95,12 @@ int _setSingleSignalHandler(struct sigaction *sa, int sig)
   }
   return 0;
 }
+#endif
 
 
 
 int _setSignalHandlers() {
+#ifdef _POSIX_C_SOURCE
   int rv;
 
   rv=_setSingleSignalHandler(&sigActionChild, SIGCHLD);
@@ -100,6 +108,7 @@ int _setSignalHandlers() {
     DBG_INFO(NULL, "here (%d)", rv);
     return rv;
   }
+#endif
 
   return 0;
 }
@@ -118,7 +127,7 @@ int main(int argc, char **argv)
   const char *s;
   GWEN_GUI *gui;
 
-#ifdef HAVE_SIGNAL_H
+#if defined(HAVE_SIGNAL_H) && defined(_POSIX_C_SOURCE)
   signal(SIGCHLD, _signalHandler);
   //_setSignalHandlers();
 #endif
@@ -155,13 +164,13 @@ int main(int argc, char **argv)
       GWEN_Logger_SetLevel(NULL, level);
   }
 
-  commands|=GWEN_DB_GetIntValue(dbArgs, "setup", 0, 0)?ARGS_COMMAND_SETUP:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "repeatSetup", 0, 0)?ARGS_COMMAND_REPEAT_SETUP:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;
-  commands|=GWEN_DB_GetIntValue(dbArgs, "dist", 0, 0)?ARGS_COMMAND_DIST:0;
+  commands|=GWEN_DB_GetIntValue(dbArgs, "setup", 0, 0)?ARGS_COMMAND_SETUP:0;               /* -s */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "repeatSetup", 0, 0)?ARGS_COMMAND_REPEAT_SETUP:0;  /* -r */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "prepare", 0, 0)?ARGS_COMMAND_PREPARE:0;           /* -p */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "build", 0, 0)?ARGS_COMMAND_BUILD:0;               /* -b or no opts */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "install", 0, 0)?ARGS_COMMAND_INSTALL:0;           /* -i */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "clean", 0, 0)?ARGS_COMMAND_CLEAN:0;               /* -c */
+  commands|=GWEN_DB_GetIntValue(dbArgs, "dist", 0, 0)?ARGS_COMMAND_DIST:0;                 /* -d */
 
   if (commands & ARGS_COMMAND_SETUP) {
     rv=GWB_Setup(dbArgs);
@@ -172,7 +181,7 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_REPEAT_SETUP) {
-    rv=GWB_RepeatLastSetup(".gwbuild.args");
+    rv=GWB_RepeatLastSetup(GWBUILD_FILE_ARGS);
     if (rv<0) {
       fprintf(stderr, "ERROR: Error on repeating setup.\n");
       return rv;
@@ -196,7 +205,7 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_INSTALL) {
-    rv=GWB_InstallFiles(".gwbuild.installfiles", getenv("DESTDIR"));
+    rv=GWB_InstallFiles(GWBUILD_FILE_INSTALLFILES, getenv("DESTDIR"));
     if (rv!=0) {
       fprintf(stderr, "ERROR: Error on installing.\n");
       return rv;
@@ -212,7 +221,7 @@ int main(int argc, char **argv)
   }
 
   if (commands & ARGS_COMMAND_CLEAN) {
-    rv=GWB_Clean(".gwbuild.files");
+    rv=GWB_Clean(GWBUILD_FILE_FILES);
     if (rv!=0) {
       fprintf(stderr, "ERROR: Error on cleaning generated files.\n");
       return rv;
@@ -264,10 +273,13 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
     s=argv[i];
     if (s) {
       if (*s!='-') {
-        /* no option, probably path to source folder */
-        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "folder", s);
-        /* folder only needed in setup mode, assume that */
-        GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+#if 0
+        /* no option, probably gwbuild target */
+	GWEN_DB_SetCharValue(db, 0, "target", s);
+#else
+	fprintf(stderr, "Specifying build target not yet supported.\n");
+	return GWEN_ERROR_GENERIC;
+#endif
       }
       else {
         int rv;
@@ -302,8 +314,12 @@ int _readArgsIntoDb(int argc, char **argv, GWEN_DB_NODE *db)
 	}
         else if (strcmp(s, "-p")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "prepare", 1);
-        else if (strcmp(s, "-s")==0)
-          GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+        else if (strcmp(s, "-s")==0) {
+	  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "setup", 1);
+	  rv=_handleStringArgument(argc, argv, &i, s+2, "-s", "folder", db);
+	  if (rv<0)
+	    return rv;
+	}
         else if (strcmp(s, "-r")==0)
           GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "repeatSetup", 1);
         else if (strcmp(s, "-b")==0)
@@ -362,9 +378,9 @@ void _printHelpScreen()
 	  "from there).\n"
 	  "You might want to use a folder like 'build' inside the source tree of\n"
 	  "your project.\n"
-	  "3. run\n"
-	  "      gwbuild PATH_TO_SOURCE_TREE\n"
-	  "e.g.  gwbuild ..\n"
+	  "C. run\n"
+	  "      gwbuild -s PATH_TO_SOURCE_TREE\n"
+	  "e.g.  gwbuild -s ..\n"
 	  "\n"
 	  "2. Prepare Buidling\n"
 	  "-------------------\n"
@@ -375,15 +391,12 @@ void _printHelpScreen()
 	  "when referencing\n"
 	  "typemaker2 generated types inside another typemaker2 generated type.\n"
 	  "\n"
-	  "3. Build Typemaker2 Files\n"
-	  "-------------------------\n"
-	  "     gwbuild -Btm2builder\n"
-	  "This also is only needed if typemaker2 files are used in your project.\n"
-	  "\n"
-	  "4. Build All Other Targets\n"
+	  "3. Build All Targets\n"
 	  "--------------------------\n"
 	  "     gwbuild\n"
-	  "This uses a single process to compile and link the project files.\n"
+          "This command builds typemaker2 source files first (if needed) and then all\n"
+          "other targets.\n"
+          "A single process is used to compile and link the project files.\n"
 	  "If you have multiple processor cores/threads you can build multiple files in\n"
 	  "parallel:\n"
 	  "     gwbuild -j14\n"
@@ -398,7 +411,7 @@ void _printHelpScreen()
 	  "\n"
 	  "Option List\n"
 	  "-----------\n"
-	  "-s           setup build environment\n"
+	  "-s FOLDER    setup build environment (arg: source folder path)\n"
 	  "-p           run preparation commands (needed e.g. if typemaker2 is used)\n"
 	  "-b           build targets\n"
 	  "-i           install files\n"

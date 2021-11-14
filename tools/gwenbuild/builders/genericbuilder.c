@@ -27,45 +27,50 @@
 GWEN_INHERIT(GWB_BUILDER, GWB_BUILDER_GENERIC);
 
 
-GWB_BUILDER *GWB_GenericBuilder_new(GWENBUILD *gwenbuild, GWB_CONTEXT *context, GWEN_XMLNODE *xmlDescr);
-
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
-void _readMainSettingsFromXml(GWB_BUILDER *builder);
-void _setupVariables(GWB_BUILDER *builder);
-void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder);
-void _setupOutFiles(GWB_BUILDER *builder);
-void _setupTargetLinkSpec(GWB_BUILDER *builder);
+static void _readMainSettingsFromXml(GWB_BUILDER *builder);
+static void _setupVariables(GWB_BUILDER *builder);
+static void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder);
+static void _setupOutFiles(GWB_BUILDER *builder);
+static void _setupTargetLinkSpec(GWB_BUILDER *builder);
 
-GWEN_BUFFER *_readXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
+static GWB_FILE *_parseOutFile(GWB_BUILDER *builder,
+                               GWB_PROJECT *project,
+                               GWB_TARGET *target,
+                               GWEN_XMLNODE *nFile,
+                               const char *folder);
+
+static GWEN_BUFFER *_readXmlDataIntoBufferAndExpand(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode);
 
 static int _isAcceptableInput(GWB_BUILDER *builder, const GWB_FILE *file);
 static void _addSourceFile(GWB_BUILDER *builder, GWB_FILE *f);
 static int _addBuildCmd(GWB_BUILDER *builder, GWB_BUILD_CONTEXT *bctx);
 
-void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
-void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
-void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
+static void _addBuildCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
+static void _addPrepareCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd);
+static void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupName, GWB_BUILD_SUBCMD_LIST *cmdList);
+static GWB_BUILD_SUBCMD *_readSubCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *n);
 
 static void _readDepFile(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
-GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
-void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
+static GWEN_BUFFER *_readMainFilename(GWB_CONTEXT *context, GWEN_XMLNODE *xmlFile, GWB_FILE_LIST2 *filesList);
+static void _readBuildMessage(GWB_BUILDER *builder, GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 
-GWEN_BUFFER *_readArgs(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
-void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArgs, GWEN_BUFFER *argsBuffer);
-void _readArgsFixed(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsLibraries(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
-void _readArgsIncludes(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
-void _readArgsUsedSubTargets(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
-void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
-void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static GWEN_BUFFER *_readArgs(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode);
+static void _readArgsLoop(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *nArgs, GWEN_BUFFER *argsBuffer);
+static void _readArgsFixed(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsInputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsOutputFiles(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsLibraries(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static void _readArgsIncludes(GWB_BUILDER *builder, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsDefines(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static void _readArgsUsedSubTargets(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
+static void _readArgsIfHasUsedSubTargets(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsIfHasLibraries(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *xmlNode, GWEN_BUFFER *argsBuffer);
+static void _readArgsHaveConfigH(GWB_BUILDER *builder, GWEN_BUFFER *argsBuffer);
 
-void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
-void _addStringListToBuffer(GWEN_STRINGLIST *sl, GWEN_BUFFER *argsBuffer);
+static void _addMatchingFiles(GWB_BUILDER *builder, GWB_FILE_LIST2 *filesList, const char *pattern, int addAbs, GWEN_BUFFER *argsBuffer);
+static void _addStringListToBuffer(GWEN_STRINGLIST *sl, GWEN_BUFFER *argsBuffer);
 
 
 
@@ -269,7 +274,7 @@ void _setupAfterAddingFirstInputFile(GWB_BUILDER *builder)
         if (ptrToPoint) {
           char *copyOfName;
 
-          copyOfName=strndup(s, (ptrToPoint-s));
+          copyOfName=GWEN_Text_strndup(s, (ptrToPoint-s));
           GWEN_DB_SetCharValue(xbuilder->dbVars, GWEN_DB_FLAGS_DEFAULT, "firstInputFileNoExt", copyOfName);
           free(copyOfName);
         }
@@ -290,6 +295,7 @@ void _setupOutFiles(GWB_BUILDER *builder)
   GWB_TARGET *target;
   GWB_PROJECT *project;
   const char *folder;
+  const char *installName;
   GWEN_XMLNODE *nOutputFiles;
 
   xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
@@ -299,6 +305,7 @@ void _setupOutFiles(GWB_BUILDER *builder)
   project=GWB_Target_GetProject(target);
 
   folder=GWB_Context_GetCurrentBuildDir(context);
+  installName=GWB_Target_GetInstallName(target);
 
   nOutputFiles=GWEN_XMLNode_FindFirstTag(xbuilder->xmlDescr, "outputFiles", NULL, NULL);
   if (nOutputFiles) {
@@ -306,36 +313,59 @@ void _setupOutFiles(GWB_BUILDER *builder)
 
     nFile=GWEN_XMLNode_FindFirstTag(nOutputFiles, "file", NULL, NULL);
     while (nFile) {
-      const char *sFileType;
-      const char *sInstall;
-      GWEN_BUFFER *nbuf;
+      GWB_FILE *fileOut;
 
-      sFileType=GWEN_XMLNode_GetProperty(nFile, "type", NULL);
-      sInstall=GWEN_XMLNode_GetProperty(nFile, "install", NULL);
-      nbuf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, nFile);
-      if (nbuf) {
-	GWB_FILE *fileOut;
-        const char *sTargetInstallPath=NULL;
-
-        fileOut=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), folder, GWEN_Buffer_GetStart(nbuf));
-        GWEN_Buffer_free(nbuf);
-
-        if (sFileType)
-          GWB_File_SetFileType(fileOut, sFileType);
-        if (sInstall && strcasecmp(sInstall, "target")==0)
-          sTargetInstallPath=GWB_Target_GetInstallPath(target);
-        GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
-
-        if (sTargetInstallPath && *sTargetInstallPath) {
-          GWB_File_SetInstallPath(fileOut, sTargetInstallPath);
-          GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_INSTALL);
-        }
-	GWB_Builder_AddOutputFile(builder, fileOut);
-      } /* if nbuf */
+      fileOut=_parseOutFile(builder, project, target, nFile, folder);
+      if (fileOut) {
+        if (installName && *installName)
+          GWB_File_SetInstallName(fileOut, installName);
+        GWB_Builder_AddOutputFile(builder, fileOut);
+      }
 
       nFile=GWEN_XMLNode_FindNextTag(nFile, "file", NULL, NULL);
     } /* while nFile */
   } /* if nOutputFiles */
+}
+
+
+
+GWB_FILE *_parseOutFile(GWB_BUILDER *builder,
+                        GWB_PROJECT *project,
+                        GWB_TARGET *target,
+                        GWEN_XMLNODE *nFile,
+                        const char *folder)
+{
+  GWB_BUILDER_GENERIC *xbuilder;
+  const char *sFileType;
+  const char *sInstall;
+  GWEN_BUFFER *nbuf;
+
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
+
+  sFileType=GWEN_XMLNode_GetProperty(nFile, "type", NULL);
+  sInstall=GWEN_XMLNode_GetProperty(nFile, "install", NULL);
+  nbuf=_readXmlDataIntoBufferAndExpand(xbuilder->dbVars, nFile);
+  if (nbuf) {
+    GWB_FILE *fileOut;
+    const char *sTargetInstallPath=NULL;
+
+    fileOut=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), folder, GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+
+    if (sFileType)
+      GWB_File_SetFileType(fileOut, sFileType);
+    if (sInstall && strcasecmp(sInstall, "target")==0)
+      sTargetInstallPath=GWB_Target_GetInstallPath(target);
+    GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_GENERATED);
+
+    if (sTargetInstallPath && *sTargetInstallPath) {
+      GWB_File_SetInstallPath(fileOut, sTargetInstallPath);
+      GWB_File_AddFlags(fileOut, GWB_FILE_FLAGS_INSTALL);
+    }
+    return fileOut;
+  } /* if nbuf */
+
+  return NULL;
 }
 
 
@@ -476,47 +506,60 @@ void _addCommands(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, const char *groupNa
 
     n=GWEN_XMLNode_FindFirstTag(n, "cmd", NULL, NULL);
     while(n) {
-      const char *sToolName;
-      GWEN_BUFFER *argsBuffer;
-      GWEN_BUFFER *toolNameBuffer;
       GWB_BUILD_SUBCMD *cmd;
 
-      toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-      sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
-      if (sToolName) {
-        GWEN_DB_ReplaceVars(xbuilder->dbVars, sToolName, toolNameBuffer);
-        sToolName=GWEN_Buffer_GetStart(toolNameBuffer);
-      }
-
-      cmd=GWB_BuildSubCmd_new();
-      GWB_BuildSubCmd_SetCommand(cmd, sToolName);
-
-      s=GWEN_XMLNode_GetProperty(n, "ignoreResult", "FALSE");
-      if (s && strcasecmp(s, "TRUE")==0)
-        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
-
-      s=GWEN_XMLNode_GetProperty(n, "checkDepends", "FALSE");
-      if (s && strcasecmp(s, "TRUE")==0)
-        GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
-
-      argsBuffer=_readArgs(builder, bcmd, n);
-      if (argsBuffer) {
-        GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));
-        GWEN_Buffer_free(argsBuffer);
-      }
-
-      _readDepFile(builder, cmd, n);
-      _readBuildMessage(builder, cmd, n);
-
-
-      /* done */
-      GWB_BuildSubCmd_List_Add(cmd, cmdList);
-
-      GWEN_Buffer_free(toolNameBuffer);
+      cmd=_readSubCmd(builder, bcmd, n);
+      if (cmd)
+        GWB_BuildSubCmd_List_Add(cmd, cmdList);
 
       n=GWEN_XMLNode_FindNextTag(n, "cmd", NULL, NULL);
     }
   }
+}
+
+
+
+GWB_BUILD_SUBCMD *_readSubCmd(GWB_BUILDER *builder, GWB_BUILD_CMD *bcmd, GWEN_XMLNODE *n)
+{
+  GWB_BUILDER_GENERIC *xbuilder;
+  const char *sToolName;
+  GWEN_BUFFER *argsBuffer;
+  GWEN_BUFFER *toolNameBuffer;
+  GWB_BUILD_SUBCMD *cmd;
+  const char *s;
+
+  xbuilder=GWEN_INHERIT_GETDATA(GWB_BUILDER, GWB_BUILDER_GENERIC, builder);
+
+  toolNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  sToolName=GWEN_XMLNode_GetProperty(n, "tool", NULL);
+  if (sToolName) {
+    GWEN_DB_ReplaceVars(xbuilder->dbVars, sToolName, toolNameBuffer);
+    sToolName=GWEN_Buffer_GetStart(toolNameBuffer);
+  }
+  
+  cmd=GWB_BuildSubCmd_new();
+  GWB_BuildSubCmd_SetCommand(cmd, sToolName);
+  
+  s=GWEN_XMLNode_GetProperty(n, "ignoreResult", "FALSE");
+  if (s && strcasecmp(s, "TRUE")==0)
+    GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT);
+  
+  s=GWEN_XMLNode_GetProperty(n, "checkDepends", "FALSE");
+  if (s && strcasecmp(s, "TRUE")==0)
+    GWB_BuildSubCmd_AddFlags(cmd, GWB_BUILD_SUBCMD_FLAGS_CHECK_DEPENDS);
+  
+  argsBuffer=_readArgs(builder, bcmd, n);
+  if (argsBuffer) {
+    GWB_BuildSubCmd_SetArguments(cmd, GWEN_Buffer_GetStart(argsBuffer));
+    GWEN_Buffer_free(argsBuffer);
+  }
+  
+  _readDepFile(builder, cmd, n);
+  _readBuildMessage(builder, cmd, n);
+
+  GWEN_Buffer_free(toolNameBuffer);
+
+  return cmd;
 }
 
 

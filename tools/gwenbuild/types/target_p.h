@@ -17,6 +17,7 @@
 struct GWB_TARGET {
   char *id;
   char *name;
+  char *installName;
   GWBUILD_TARGETTYPE targetType;
 
   int soVersionCurrent;

@@ -14,6 +14,7 @@
 
 #include "c_install.h"
 #include "utils.h"
+#include "gwenbuild/filenames.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/directory.h>

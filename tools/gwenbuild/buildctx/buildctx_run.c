@@ -15,8 +15,9 @@
 
 
 #include "gwenbuild/buildctx/buildctx_p.h"
-#include "gwenbuild/buildctx/buildctx_bdeps.h"
 #include "gwenbuild/buildctx/buildctx_run.h"
+#include "gwenbuild/buildctx/buildctx_bdeps.h"
+#include "gwenbuild/buildctx/buildctx_depfile.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
@@ -45,9 +46,6 @@ static void _finishCurrentCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, 
 
 static int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd, const char *firstOutFileName);
 static int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl);
-static GWEN_STRINGLIST *_getAbsoluteDeps(const char *folder, const char *fileName);
-static GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder);
-static GWEN_STRINGLIST *_readDepFile(const char *fileName);
 
 static int _inFilesNewerThanOutFiles(const GWEN_STRINGLIST *slInFiles, const GWEN_STRINGLIST *slOutFiles);
 static time_t _getHighestModificationTime(const GWEN_STRINGLIST *slFiles);
@@ -114,8 +112,11 @@ int GWB_BuildCtx_Run(GWB_BUILD_CONTEXT *bctx, int maxConcurrentJobs, int usePrep
   } /* while */
 
   GWB_BuildCmd_List2_free(bctx->waitingQueue);
+  bctx->waitingQueue=NULL;
   GWB_BuildCmd_List2_free(bctx->runningQueue);
+  bctx->runningQueue=NULL;
   GWB_BuildCmd_List2_free(bctx->finishedQueue);
+  bctx->finishedQueue=NULL;
 
   return 0;
 }
@@ -165,12 +166,15 @@ void _abortAllCommands(GWB_BUILD_CONTEXT *bctx)
 {
   _abortCommandsInQueue(bctx->waitingQueue);
   GWB_BuildCmd_List2_free(bctx->waitingQueue);
+  bctx->waitingQueue=NULL;
 
   _abortCommandsInQueue(bctx->runningQueue);
   GWB_BuildCmd_List2_free(bctx->runningQueue);
+  bctx->runningQueue=NULL;
 
   _abortCommandsInQueue(bctx->finishedQueue);
   GWB_BuildCmd_List2_free(bctx->finishedQueue);
+  bctx->finishedQueue=NULL;
 }
 
 
@@ -481,7 +485,7 @@ int _checkDependencies(GWB_BUILD_CMD *bcmd, GWB_BUILD_SUBCMD *subCmd, const char
     GWEN_STRINGLIST *sl;
 
     DBG_DEBUG(NULL, "Checking depend file \"%s\"", depFileName);
-    sl=_getAbsoluteDeps(GWB_BuildCmd_GetFolder(bcmd), depFileName);
+    sl=GWB_BuildCtx_ReadAndTranslateDepfile(GWB_BuildCmd_GetFolder(bcmd), depFileName);
     if (sl) {
       int rv;
 
@@ -729,133 +733,4 @@ void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommand
 }
 
 
-
-GWEN_STRINGLIST *_getAbsoluteDeps(const char *folder, const char *fileName)
-{
-  GWEN_STRINGLIST *slInput;
-
-  slInput=_readDepFile(fileName);
-  if (slInput) {
-    GWEN_STRINGLIST *slOutput;
-
-    slOutput=_makeAbsolutePaths(slInput, folder);
-    if (slOutput) {
-      GWEN_StringList_free(slInput);
-      return slOutput;
-    }
-    GWEN_StringList_free(slInput);
-  }
-
-  return NULL;
-}
-
-
-
-GWEN_STRINGLIST *_readDepFile(const char *fileName)
-{
-  GWEN_BUFFER *fileBuffer;
-  int rv;
-  char *s;
-
-  fileBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_SyncIo_Helper_ReadFile(fileName, fileBuffer);
-  if (rv<0) {
-    DBG_ERROR(NULL, "here (%d)", rv);
-    GWEN_Buffer_free(fileBuffer);
-    return NULL;
-  }
-
-  s=strchr(GWEN_Buffer_GetStart(fileBuffer), ':');
-  if (s) {
-    GWEN_STRINGLIST *slDependencies;
-
-    slDependencies=GWEN_StringList_fromString2(s+1, " ",
-					       1,
-					       GWEN_TEXT_FLAGS_DEL_QUOTES |
-					       GWEN_TEXT_FLAGS_CHECK_BACKSLASH |
-					       GWEN_TEXT_FLAGS_DEL_MULTIPLE_BLANKS|
-					       GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS|
-					       GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS);
-    if (slDependencies) {
-      GWEN_Buffer_free(fileBuffer);
-      return slDependencies;
-    }
-  }
-  GWEN_Buffer_free(fileBuffer);
-  return NULL;
-}
-
-
-
-GWEN_STRINGLIST *_makeAbsolutePaths(GWEN_STRINGLIST *slInput, const char *folder)
-{
-  GWEN_STRINGLISTENTRY *se;
-
-  se=GWEN_StringList_FirstEntry(slInput);
-  if (se) {
-    GWEN_STRINGLIST *slOutput;
-
-    slOutput=GWEN_StringList_new();
-    while(se) {
-      const char *s;
-
-      s=GWEN_StringListEntry_Data(se);
-      if (s) {
-	while(*s && *s<33)
-	  s++;
-	if (*s) {
-	  if (*s=='/') {
-	    GWEN_BUFFER *buf;
-
-	    buf=GWEN_Buffer_new(0, 256, 0, 1);
-	    while(*s && *s>31)
-	      GWEN_Buffer_AppendByte(buf, *(s++));
-	    GWEN_StringList_AppendString(slOutput, GWEN_Buffer_GetStart(buf), 0, 1);
-	    GWEN_Buffer_free(buf);
-	  }
-	  else {
-	    const char *extPtr;
-
-	    extPtr=strrchr(s, '/');
-	    if (extPtr) {
-	      GWEN_BUFFER *buf;
-	      GWEN_BUFFER *absBuf;
-	      const char *sTmp;
-
-	      buf=GWEN_Buffer_new(0, 256, 0, 1);
-	      if (folder) {
-		GWEN_Buffer_AppendString(buf, folder);
-		GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
-	      }
-	      GWEN_Buffer_AppendBytes(buf, s, extPtr-s); /* exclude '/' */
-	      absBuf=GWEN_Buffer_new(0, 256, 0, 1);
-	      GWEN_Directory_GetAbsoluteFolderPath(GWEN_Buffer_GetStart(buf), absBuf);
-	      if (GWEN_Buffer_GetUsedBytes(absBuf))
-		GWEN_Buffer_AppendString(absBuf, GWEN_DIR_SEPARATOR_S);
-
-	      extPtr++;
-	      sTmp=extPtr;
-	      while(*sTmp && !isspace(*sTmp))
-		sTmp++;
-	      GWEN_Buffer_AppendBytes(absBuf, extPtr, sTmp-extPtr);
-	      GWEN_StringList_AppendString(slOutput, GWEN_Buffer_GetStart(absBuf), 0, 1);
-	      GWEN_Buffer_free(absBuf);
-	      GWEN_Buffer_free(buf);
-	    }
-	  }
-	}
-      }
-
-      se=GWEN_StringListEntry_Next(se);
-    }
-    if (GWEN_StringList_Count(slOutput)==0) {
-      GWEN_StringList_free(slOutput);
-      return NULL;
-    }
-
-    return slOutput;
-  }
-
-  return NULL;
-}
 

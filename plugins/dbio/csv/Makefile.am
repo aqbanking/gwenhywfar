@@ -12,7 +12,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
 
 dbioplugindir = $(gwenhywfar_plugindir)/dbio
 
-noinst_HEADERS=csv_p.h
+# noinst_HEADERS=
 
 dbioplugin_LTLIBRARIES=csv.la
 dbioplugin_DATA=csv.xml

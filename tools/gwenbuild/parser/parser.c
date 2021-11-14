@@ -35,6 +35,9 @@
 
 
 
+static GWEN_BUFFER *_getSourcePathForFileName(const GWB_CONTEXT *currentContext, const char *fileName);
+static void _addBuildFileNameToGwBuild(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName);
+static int _getAndCheckRequiredGwenVersion(GWEN_XMLNODE *xmlGwbuildNode);
 static int _parseSubdir(GWB_PROJECT *project, GWB_CONTEXT *currentContext, const char *sFolder, GWB_PARSER_PARSE_ELEMENT_FN fn);
 static int _parseSetVar(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 static int _parseIfVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *n, GWB_PARSER_PARSE_ELEMENT_FN fn);
@@ -44,6 +47,8 @@ static int _parseIfNotVarHasValue(GWB_PROJECT *project, GWB_CONTEXT *currentCont
 static int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 static int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _readModifyWriteFile(GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbContextVars, const char *sSourceFile, const char *sDestFile);
+
 static void _appendVarValue(GWEN_DB_NODE *db, const char *name, const char *newValue);
 
 static int _getFilePermissions(const char *fname);
@@ -163,18 +168,11 @@ GWB_CONTEXT *GWB_Parser_CopyContextForTarget(const GWB_CONTEXT *sourceContext)
 GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName)
 {
   GWEN_BUFFER *fileNameBuf;
-  const char *s;
   int rv;
   GWEN_XMLNODE *xmlDocNode;
   GWEN_XMLNODE *xmlGwbuildNode;
 
-  fileNameBuf=GWEN_Buffer_new(0, 256, 0, 1);
-  s=GWB_Context_GetCurrentSourceDir(currentContext);
-  if (s && *s) {
-    GWEN_Buffer_AppendString(fileNameBuf, s);
-    GWEN_Buffer_AppendString(fileNameBuf, GWEN_DIR_SEPARATOR_S);
-  }
-  GWEN_Buffer_AppendString(fileNameBuf, fileName);
+  fileNameBuf=_getSourcePathForFileName(currentContext, fileName);
 
   xmlDocNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
@@ -193,6 +191,69 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
     GWEN_Buffer_free(fileNameBuf);
     return NULL;
   }
+
+  rv=_getAndCheckRequiredGwenVersion(xmlGwbuildNode);
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    GWEN_XMLNode_free(xmlDocNode);
+    GWEN_Buffer_free(fileNameBuf);
+    return NULL;
+  }
+
+  _addBuildFileNameToGwBuild(gwbuild, currentContext, fileName);
+
+  GWEN_XMLNode_UnlinkChild(xmlDocNode, xmlGwbuildNode);
+  GWEN_XMLNode_free(xmlDocNode);
+  GWEN_Buffer_free(fileNameBuf);
+
+  return xmlGwbuildNode;
+}
+
+
+
+GWEN_BUFFER *_getSourcePathForFileName(const GWB_CONTEXT *currentContext, const char *fileName)
+{
+  GWEN_BUFFER *fileNameBuf;
+  const char *s;
+
+  fileNameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=GWB_Context_GetCurrentSourceDir(currentContext);
+  if (s && *s) {
+    GWEN_Buffer_AppendString(fileNameBuf, s);
+    GWEN_Buffer_AppendString(fileNameBuf, GWEN_DIR_SEPARATOR_S);
+  }
+  GWEN_Buffer_AppendString(fileNameBuf, fileName);
+  return fileNameBuf;
+}
+
+
+
+void _addBuildFileNameToGwBuild(GWENBUILD *gwbuild, const GWB_CONTEXT *currentContext, const char *fileName)
+{
+  GWEN_BUFFER *buildFilenameBuffer;
+  const char *buildDir;
+  const char *initialSourceDir;
+
+  initialSourceDir=GWB_Context_GetInitialSourceDir(currentContext);
+  buildDir=GWB_Context_GetCurrentBuildDir(currentContext);
+  buildFilenameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(buildFilenameBuffer, initialSourceDir);
+  if (buildDir) {
+    GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
+    GWEN_Buffer_AppendString(buildFilenameBuffer, buildDir);
+  }
+  GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(buildFilenameBuffer, fileName);
+  GWBUILD_AddBuildFilename(gwbuild, GWEN_Buffer_GetStart(buildFilenameBuffer));
+  GWEN_Buffer_free(buildFilenameBuffer);
+}
+
+
+
+int _getAndCheckRequiredGwenVersion(GWEN_XMLNODE *xmlGwbuildNode)
+{
+  const char *s;
+
   s=GWEN_XMLNode_GetProperty(xmlGwbuildNode, "requiredVersion", NULL);
   if (s && *s) {
     int vRequired;
@@ -206,42 +267,15 @@ GWEN_XMLNODE *GWB_Parser_ReadBuildFile(GWENBUILD *gwbuild, const GWB_CONTEXT *cu
     vRequired=GWB_Utils_VersionStringToInt(s);
     if (vRequired<0) {
       DBG_ERROR(NULL, "Invalid required version \"%s\"", s);
-      GWEN_XMLNode_free(xmlDocNode);
-      GWEN_Buffer_free(fileNameBuf);
-      return NULL;
+      return GWEN_ERROR_GENERIC;
     }
     if (vCurrent<vRequired) {
       DBG_ERROR(NULL, "Minimum GWENBUILD version required is %x", vRequired);
-      GWEN_XMLNode_free(xmlDocNode);
-      GWEN_Buffer_free(fileNameBuf);
-      return NULL;
+      return GWEN_ERROR_GENERIC;
     }
   }
 
-  if (1) {
-    GWEN_BUFFER *buildFilenameBuffer;
-    const char *buildDir;
-    const char *initialSourceDir;
-
-    initialSourceDir=GWB_Context_GetInitialSourceDir(currentContext);
-    buildDir=GWB_Context_GetCurrentBuildDir(currentContext);
-    buildFilenameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(buildFilenameBuffer, initialSourceDir);
-    if (buildDir) {
-      GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
-      GWEN_Buffer_AppendString(buildFilenameBuffer, buildDir);
-    }
-    GWEN_Buffer_AppendString(buildFilenameBuffer, GWEN_DIR_SEPARATOR_S);
-    GWEN_Buffer_AppendString(buildFilenameBuffer, fileName);
-    GWBUILD_AddBuildFilename(gwbuild, GWEN_Buffer_GetStart(buildFilenameBuffer));
-    GWEN_Buffer_free(buildFilenameBuffer);
-  }
-
-  GWEN_XMLNode_UnlinkChild(xmlDocNode, xmlGwbuildNode);
-  GWEN_XMLNode_free(xmlDocNode);
-  GWEN_Buffer_free(fileNameBuf);
-
-  return xmlGwbuildNode;
+  return 0;
 }
 
 
@@ -529,7 +563,7 @@ int _parseIfNotVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
 
   sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(sName && *sName)) {
-    DBG_ERROR(NULL, "No name for <ifVarMatches>");
+    DBG_ERROR(NULL, "No name for <ifNotVarMatches>");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -541,7 +575,7 @@ int _parseIfNotVarMatches(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWE
 
   sValueInDb=GWEN_DB_GetCharValue(db, sName, 0, NULL);
   if (!(sValueInDb && *sValueInDb)) {
-    DBG_ERROR(NULL, "No value for \"%s\" in db for <ifVarMatches>", sName);
+    DBG_ERROR(NULL, "No value for \"%s\" in db for <ifNotVarMatches>", sName);
     return GWEN_ERROR_GENERIC;
   }
 
@@ -652,12 +686,8 @@ int _varHasValue(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 {
   const char *fileName;
-  const char *currentSrcDir;
   GWEN_BUFFER *fileNameBuffer;
-  GWEN_BUFFER *fileBufferIn;
-  GWEN_BUFFER *fileBufferOut;
   GWB_FILE *file;
-  int sourceFilePerms;
   int rv;
 
   fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
@@ -666,63 +696,12 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
     return GWEN_ERROR_GENERIC;
   }
 
-  currentSrcDir=GWB_Context_GetCurrentSourceDir(currentContext);
-
-  fileNameBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  if (currentSrcDir && *currentSrcDir) {
-    GWEN_Buffer_AppendString(fileNameBuffer, currentSrcDir);
-    GWEN_Buffer_AppendString(fileNameBuffer, GWEN_DIR_SEPARATOR_S);
-  }
-  GWEN_Buffer_AppendString(fileNameBuffer, fileName);
+  fileNameBuffer=_getSourcePathForFileName(currentContext, fileName);
   GWEN_Buffer_AppendString(fileNameBuffer, ".in");
 
-  rv=_getFilePermissions(GWEN_Buffer_GetStart(fileNameBuffer));
+  rv=_readModifyWriteFile(xmlNode, GWB_Context_GetVars(currentContext), GWEN_Buffer_GetStart(fileNameBuffer), fileName);
   if (rv<0) {
-    DBG_ERROR(NULL, "Could not read permissions for \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-  sourceFilePerms=rv;
-
-  fileBufferIn=GWEN_Buffer_new(0, 256, 0, 1);
-
-  rv=GWEN_SyncIo_Helper_ReadFile(GWEN_Buffer_GetStart(fileNameBuffer), fileBufferIn);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Could not read \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
-    GWEN_Buffer_free(fileBufferIn);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-
-  fileBufferOut=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWB_Parser_ReplaceVarsBetweenAtSigns(GWEN_Buffer_GetStart(fileBufferIn),
-                                          fileBufferOut,
-                                          GWB_Context_GetVars(currentContext));
-  if (rv<0) {
-    DBG_ERROR(NULL, "Error translating content of file \"%s\" (%d)", GWEN_Buffer_GetStart(fileNameBuffer), rv);
-    GWEN_Buffer_free(fileBufferOut);
-    GWEN_Buffer_free(fileBufferIn);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-
-  unlink(fileName);
-  rv=GWEN_SyncIo_Helper_WriteFile(fileName,
-                                  (const uint8_t*)GWEN_Buffer_GetStart(fileBufferOut),
-                                  GWEN_Buffer_GetUsedBytes(fileBufferOut));
-  if (rv<0) {
-    DBG_ERROR(NULL, "Could not write \"%s\" (%d)", fileName, rv);
-    GWEN_Buffer_free(fileBufferOut);
-    GWEN_Buffer_free(fileBufferIn);
-    GWEN_Buffer_free(fileNameBuffer);
-    return rv;
-  }
-
-  rv=_setFilePermissions(fileName, sourceFilePerms);
-  if (rv<0) {
-    DBG_ERROR(NULL, "Could not set perms for \"%s\" (%d)", fileName, rv);
-    GWEN_Buffer_free(fileBufferOut);
-    GWEN_Buffer_free(fileBufferIn);
+    DBG_INFO(NULL, "here (%d)", rv);
     GWEN_Buffer_free(fileNameBuffer);
     return rv;
   }
@@ -742,9 +721,66 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
                                       GWEN_Buffer_GetStart(fileNameBuffer));
   GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
 
-  GWEN_Buffer_free(fileBufferOut);
-  GWEN_Buffer_free(fileBufferIn);
   GWEN_Buffer_free(fileNameBuffer);
+  return 0;
+}
+
+
+
+int _readModifyWriteFile(GWEN_XMLNODE *xmlNode, GWEN_DB_NODE *dbContextVars, const char *sSourceFile, const char *sDestFile)
+{
+  const char *fileName;
+  GWEN_BUFFER *fileBufferIn;
+  GWEN_BUFFER *fileBufferOut;
+  int sourceFilePerms;
+  int rv;
+
+  fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
+  if (!(fileName && *fileName)) {
+    DBG_ERROR(NULL, "No name for <writeFile>");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  rv=_getFilePermissions(sSourceFile);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not read permissions for \"%s\" (%d)", sSourceFile, rv);
+    return rv;
+  }
+  sourceFilePerms=rv;
+
+  fileBufferIn=GWEN_Buffer_new(0, 256, 0, 1);
+
+  rv=GWEN_SyncIo_Helper_ReadFile(sSourceFile, fileBufferIn);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not read \"%s\" (%d)", sSourceFile, rv);
+    GWEN_Buffer_free(fileBufferIn);
+    return rv;
+  }
+
+  fileBufferOut=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWB_Parser_ReplaceVarsBetweenAtSigns(GWEN_Buffer_GetStart(fileBufferIn), fileBufferOut, dbContextVars);
+  GWEN_Buffer_free(fileBufferIn);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Error translating content of file \"%s\" (%d)", sSourceFile, rv);
+    GWEN_Buffer_free(fileBufferOut);
+    return rv;
+  }
+
+  unlink(sDestFile);
+  rv=GWEN_SyncIo_Helper_WriteFile(sDestFile,
+				  (const uint8_t*)GWEN_Buffer_GetStart(fileBufferOut),
+				  GWEN_Buffer_GetUsedBytes(fileBufferOut));
+  GWEN_Buffer_free(fileBufferOut);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not write \"%s\" (%d)", sDestFile, rv);
+    return rv;
+  }
+
+  rv=_setFilePermissions(sDestFile, sourceFilePerms);
+  if (rv<0) {
+    DBG_ERROR(NULL, "Could not set perms for \"%s\" (%d)", sDestFile, rv);
+    return rv;
+  }
 
   return 0;
 }
@@ -754,8 +790,14 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
 int _getFilePermissions(const char *fname)
 {
   struct stat st;
+  int rv;
 
-  if (lstat(fname, &st) == -1) {
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+  rv=lstat(fname, &st);
+#else
+  rv=stat(fname, &st);
+#endif
+  if (rv == -1) {
     DBG_ERROR(NULL, "Error on stat(\"%s\"): %d (%s)", fname, errno, strerror(errno));
     return GWEN_ERROR_IO;
   }
@@ -924,8 +966,11 @@ int GWB_Parser_ParseWellKnownElements(GWB_PROJECT *project, GWB_CONTEXT *current
 int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
                                      GWB_CONTEXT *currentContext,
                                      GWEN_XMLNODE *xmlNode,
-                                     int alwaysDist,
-                                     int isSource)
+                                     /*int alwaysDist,
+                                     int isSource,*/
+                                     uint32_t fileFlags,
+                                     const char *defaultTypeName,
+                                     const char *defaultBuilder)
 {
   uint32_t flags=0;
   int rv;
@@ -944,8 +989,8 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
 
   currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
 
-  fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", NULL);
-  builder=GWEN_XMLNode_GetProperty(xmlNode, "builder", NULL);
+  fileType=GWEN_XMLNode_GetProperty(xmlNode, "type", defaultTypeName);
+  builder=GWEN_XMLNode_GetProperty(xmlNode, "builder", defaultBuilder);
 
   installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
   if (installPath && *installPath)
@@ -955,7 +1000,7 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
   if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
     flags|=GWB_FILE_FLAGS_GENERATED;
 
-  s=GWEN_XMLNode_GetProperty(xmlNode, "dist", alwaysDist?"TRUE":"FALSE");
+  s=GWEN_XMLNode_GetProperty(xmlNode, "dist", (fileFlags & GWB_PARSER_SRCFILEFLAGS_ALWAYSDIST)?"TRUE":"FALSE");
   if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
     flags|=GWB_FILE_FLAGS_DIST;
 
@@ -979,7 +1024,7 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
           GWB_File_SetFileType(file, fileType);
         if (builder)
           GWB_File_SetBuilder(file, builder);
-        if (isSource)
+        if (fileFlags & GWB_PARSER_SRCFILEFLAGS_ISSOURCE)
           GWB_Context_AddSourceFile(currentContext, file);
       }
 
@@ -989,6 +1034,46 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
   }
 
   return 0;
+}
+
+
+
+GWB_TARGET *GWB_Parser_AddTargetForSourceFile(GWB_PROJECT *project,
+                                              GWB_CONTEXT *currentContext,
+                                              GWBUILD_TARGETTYPE targetType,
+                                              const char *fileName,
+                                              const char *fileType,
+                                              const char *builderName,
+                                              const char *installPath)
+{
+  GWB_TARGET *target;
+  GWB_CONTEXT *newContext;
+  GWB_FILE *file;
+  const char *currentFolder;
+
+  currentFolder=GWB_Context_GetCurrentRelativeDir(currentContext);
+
+  target=GWB_Target_new(project);
+  GWB_Target_SetName(target, fileName);
+  GWB_Target_SetId(target, fileName);
+  GWB_Target_SetTargetType(target, targetType);
+
+  newContext=GWB_Parser_CopyContextForTarget(currentContext);
+  GWB_Context_SetCurrentTarget(newContext, target);
+  GWB_Target_SetContext(target, newContext);
+
+  GWB_Project_AddTarget(project, target);
+  GWB_Context_Tree2_AddChild(currentContext, newContext);
+
+  file=GWB_File_List2_GetOrCreateFile(GWB_Project_GetFileList(project), currentFolder, fileName);
+  GWB_File_AddFlags(file, GWB_FILE_FLAGS_DIST);
+  GWB_File_SetFileType(file, fileType);
+  GWB_File_SetBuilder(file, builderName);
+  if (installPath && *installPath)
+    GWB_Target_SetInstallPath(target, installPath);
+  GWB_Context_AddSourceFile(newContext, file);
+
+  return target;
 }
 
 

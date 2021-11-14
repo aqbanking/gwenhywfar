@@ -57,6 +57,7 @@ GWB_FILE *GWB_File_dup(const GWB_FILE *oldFile)
     GWB_File_SetInstallPath(fileOut, oldFile->installPath);
     GWB_File_SetBuilder(fileOut, oldFile->builder);
     GWB_File_SetFlags(fileOut, oldFile->flags);
+    GWB_File_SetInstallName(fileOut, oldFile->installName);
     fileOut->buildCmd=oldFile->buildCmd;
     return fileOut;
   }
@@ -70,6 +71,7 @@ void GWB_File_free(GWB_FILE *f)
 {
   if (f) {
     GWB_BuildCmd_List2_free(f->waitingBuildCmdList2);
+    free(f->installName);
     free(f->builder);
     free(f->folder);
     free(f->name);
@@ -156,6 +158,25 @@ void GWB_File_SetName(GWB_FILE *f, const char *s)
     f->name=strdup(s);
   else
     f->name=NULL;
+}
+
+
+
+const char *GWB_File_GetInstallName(const GWB_FILE *f)
+{
+  return f->installName;
+}
+
+
+
+void GWB_File_SetInstallName(GWB_FILE *f, const char *s)
+{
+  if (f->installName)
+    free(f->installName);
+  if (s && *s)
+    f->installName=strdup(s);
+  else
+    f->installName=NULL;
 }
 
 
@@ -511,6 +532,8 @@ void GWB_File_toXml(const GWB_FILE *file, GWEN_XMLNODE *xmlNode)
     GWEN_XMLNode_SetCharValue(xmlNode, "folder", file->folder);
   if (file->name)
     GWEN_XMLNode_SetCharValue(xmlNode, "name", file->name);
+  if (file->installName)
+    GWEN_XMLNode_SetCharValue(xmlNode, "installName", file->installName);
   if (file->fileType)
     GWEN_XMLNode_SetCharValue(xmlNode, "type", file->fileType);
   if (file->installPath)
@@ -542,6 +565,7 @@ GWB_FILE *GWB_File_fromXml(GWEN_XMLNODE *xmlNode)
   GWB_File_SetFileType(file, GWEN_XMLNode_GetCharValue(xmlNode, "type", NULL));
   GWB_File_SetInstallPath(file, GWEN_XMLNode_GetCharValue(xmlNode, "installPath", NULL));
   GWB_File_SetBuilder(file, GWEN_XMLNode_GetCharValue(xmlNode, "builder", NULL));
+  GWB_File_SetInstallName(file, GWEN_XMLNode_GetCharValue(xmlNode, "installName", NULL));
 
   return file;
 }
