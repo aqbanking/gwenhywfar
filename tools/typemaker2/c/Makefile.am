@@ -1,5 +1,5 @@
 
-INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I../../ -I$(top_srcdir)/tools -I$(gwenhywfar_symlinkdir)
+INCLUDES=@all_includes@ -I$(top_builddir) -I../ -I$(srcdir)/../ -I../../ -I$(srcdir)/../../ -I$(top_srcdir)/tools -I$(gwenhywfar_symlinkdir)
 
 
 noinst_LTLIBRARIES=libtm2_c.la
