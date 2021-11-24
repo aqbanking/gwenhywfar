@@ -56,8 +56,7 @@ typemaker2_SOURCES=\
   
 #  tm_enum.c
 
-typemaker2_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname) \
-  c/libtm2_c.la
+typemaker2_LDADD=c/libtm2_c.la $(top_builddir)/src/$(gwenhywfar_internal_libname)
 
 
 if IS_WINDOWS
