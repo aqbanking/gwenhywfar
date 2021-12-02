@@ -1969,6 +1969,14 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     opts|=JUSTIFY_CENTER_X;
   if (flags & GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY)
     opts|=JUSTIFY_CENTER_Y;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_SUNKEN)
+    opts|=FRAME_SUNKEN;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_RAISED)
+    opts|=FRAME_RAISED;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_THICK)
+    opts|=FRAME_THICK;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_GROOVE)
+    opts|=FRAME_GROOVE;
 
   /* create THIS widget */
   switch(GWEN_Widget_GetType(w)) {
