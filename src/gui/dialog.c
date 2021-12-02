@@ -321,10 +321,48 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
                            GWEN_DIALOG_EVENTTYPE t,
                            const char *sender)
 {
+  GWEN_Dialog_EmitSignal2(dlg, t, sender, -1, NULL);
+}
+
+
+
+int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
+                                GWEN_DIALOG_EVENTTYPE t,
+                                const char *sender)
+{
+  return GWEN_Dialog_EmitSignalToAll2(dlg, t, sender, -1, NULL);
+}
+
+
+
+GWEN_DIALOG_SIGNALHANDLER2 GWEN_Dialog_SetSignalHandler2(GWEN_DIALOG *dlg,
+							GWEN_DIALOG_SIGNALHANDLER2 fn)
+{
+  GWEN_DIALOG_SIGNALHANDLER2 oh;
+
   assert(dlg);
   assert(dlg->refCount);
 
-  if (dlg->signalHandler)
+  oh=dlg->signalHandler2;
+  dlg->signalHandler2=fn;
+
+  return oh;
+}
+
+
+
+int GWEN_Dialog_EmitSignal2(GWEN_DIALOG *dlg,
+                            GWEN_DIALOG_EVENTTYPE t,
+			    const char *sender,
+			    int intArg,
+			    const char *stringArg)
+{
+  assert(dlg);
+  assert(dlg->refCount);
+
+  if (dlg->signalHandler2)
+    return (dlg->signalHandler2)(dlg, t, sender, intArg, stringArg);
+  else if (dlg->signalHandler)
     return (dlg->signalHandler)(dlg, t, sender);
   else {
     DBG_WARN(GWEN_LOGDOMAIN, "No signal handler in dialog [%s]",
@@ -335,9 +373,11 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
 
 
 
-int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
-                                GWEN_DIALOG_EVENTTYPE t,
-                                const char *sender)
+int GWEN_Dialog_EmitSignalToAll2(GWEN_DIALOG *dlg,
+                                 GWEN_DIALOG_EVENTTYPE t,
+				 const char *sender,
+				 int intArg,
+				 const char *stringArg)
 {
   int rv;
   GWEN_DIALOG *subdlg;
@@ -347,17 +387,23 @@ int GWEN_Dialog_EmitSignalToAll(GWEN_DIALOG *dlg,
 
   subdlg=GWEN_Dialog_List_First(dlg->subDialogs);
   while (subdlg) {
-    rv=GWEN_Dialog_EmitSignalToAll(subdlg, t, sender);
+    rv=GWEN_Dialog_EmitSignalToAll2(subdlg, t, sender, intArg, stringArg);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
         rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
     subdlg=GWEN_Dialog_List_Next(subdlg);
   }
 
-  if (dlg->signalHandler) {
-    rv=(dlg->signalHandler)(dlg, t, sender);
+  if (dlg->signalHandler2) {
+    rv=(dlg->signalHandler2)(dlg, t, sender, intArg, stringArg);
     if (rv!=GWEN_DialogEvent_ResultHandled &&
         rv!=GWEN_DialogEvent_ResultNotHandled)
+      return rv;
+  }
+  else if (dlg->signalHandler) {
+    rv=(dlg->signalHandler)(dlg, t, sender);
+    if (rv!=GWEN_DialogEvent_ResultHandled &&
+	rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
   }
 

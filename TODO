@@ -1,4 +1,8 @@
 
+GUI dialogs:
+- implement "keyPressed" and "keyReleased" events in GTK3 and QT5 frontends
+
+
 typemaker2:
  - add a field annotoations (e.g. "personal data")
 
