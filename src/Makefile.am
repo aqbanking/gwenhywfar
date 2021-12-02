@@ -10,8 +10,8 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
 
 AM_CFLAGS=$(visibility_cflags) @WERROR@
 
-SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar xmlcmd test_framework
-DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar xmlcmd test_framework
+SUBDIRS = base sio os parser crypt3 crypttoken gui cryptmsg html sar xmlcmd ipc test_framework
+DIST_SUBDIRS=base sio os parser crypt3 crypttoken gui cryptmsg html sar xmlcmd ipc test_framework
 
 DEFS += \
   -DBUILDING_GWENHYWFAR \
@@ -64,6 +64,7 @@ libgwenhywfar_la_LIBADD=\
   gui/libgui.la \
   sar/libsar.la \
   xmlcmd/libxmlcmd.la \
+  ipc/libgwenipc.la \
   test_framework/libtestframework.la $(i18n_libs) $(PTHREAD_CFLAGS) $(PTHREAD_LIBS) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(LIBXML_LIBS) $(all_libraries)
 
 libgwenhywfar_la_CFLAGS=$(PTHREAD_CFLAGS)
