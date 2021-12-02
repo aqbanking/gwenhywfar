@@ -321,7 +321,7 @@ int GWEN_Dialog_EmitSignal(GWEN_DIALOG *dlg,
                            GWEN_DIALOG_EVENTTYPE t,
                            const char *sender)
 {
-  GWEN_Dialog_EmitSignal2(dlg, t, sender, -1, NULL);
+  return GWEN_Dialog_EmitSignal2(dlg, t, sender, -1, NULL);
 }
 
 
