@@ -280,6 +280,8 @@ typedef enum {
   GWEN_DialogProperty_Visibility,
   GWEN_DialogProperty_ToolTip,
 
+  GWEN_DialogProperty_WindowId,
+
   GWEN_DialogProperty_Unknown=-1
 } GWEN_DIALOG_PROPERTY;
 

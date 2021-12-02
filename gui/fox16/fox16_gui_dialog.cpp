@@ -531,6 +531,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_SortDirection:
     case GWEN_DialogProperty_Sort:
     case GWEN_DialogProperty_ToolTip:
+    case GWEN_DialogProperty_WindowId:
     case GWEN_DialogProperty_None:
     case GWEN_DialogProperty_Unknown:
       ;
@@ -814,6 +815,9 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
     case GWEN_DialogProperty_Focus:
       return (f->hasFocus())?1:0;
+
+    case GWEN_DialogProperty_WindowId:
+      return f->id();
 
     case GWEN_DialogProperty_Title:
     case GWEN_DialogProperty_Value:
@@ -1190,6 +1194,7 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Sort:
   case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_ToolTip:
+  case GWEN_DialogProperty_WindowId:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1564,6 +1569,7 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Sort:
   case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_ToolTip:
+  case GWEN_DialogProperty_WindowId:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
