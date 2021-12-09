@@ -51,9 +51,9 @@ FOX16_HtmlLabel::FOX16_HtmlLabel(FXComposite* p, const FXString& text,
   ,m_mediaPaths(NULL)
   ,m_icon(NULL) {
   m_mediaPaths=GWEN_StringList_new();
+  m_textColor=getApp()->getForeColor();
   setText(text);
   flags|=FLAG_ENABLED|FLAG_DIRTY|FLAG_RECALC;
-
 }
 
 
@@ -85,6 +85,18 @@ void FOX16_HtmlLabel::setText(const FXString& text) {
   layout();
   recalc();
   update();
+}
+
+
+
+FXColor FOX16_HtmlLabel::getTextColor() const {
+  return m_textColor;
+}
+
+
+
+void FOX16_HtmlLabel::setTextColor(FXColor clr) {
+  m_textColor=clr;
 }
 
 
@@ -232,9 +244,11 @@ long FOX16_HtmlLabel::onPaint(FXObject*, FXSelector, void *ptr) {
       th=m_htmlCtx->getHeight();
       if (ih>th)
         ty+=(ih-th)/2;
+      dc.setForeground(m_textColor);
       m_htmlCtx->paint(&dc, border+ICON_SPACE+m_icon->getWidth(), ty);
     }
     else {
+      dc.setForeground(m_textColor);
       m_htmlCtx->paint(&dc, border, border);
     }
   }

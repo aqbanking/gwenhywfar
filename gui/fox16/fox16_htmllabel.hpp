@@ -59,6 +59,10 @@ public:
   /// Return default height
   virtual FXint getDefaultHeight();
 
+  FXColor getTextColor() const;
+  void setTextColor(FXColor clr);
+
+
   void create();
 
   void setMinimumWidth(int i) { m_minWidth=i;};
@@ -81,6 +85,8 @@ protected:
   GWEN_STRINGLIST *m_mediaPaths;
 
   FXIcon *m_icon;
+
+  FXColor m_textColor;
 
   FOX16_HtmlLabel();
   void updateHtml();
