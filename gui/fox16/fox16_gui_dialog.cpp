@@ -54,7 +54,6 @@ FXIMPLEMENT(FOX16_GuiDialog, FXObject, FOX16_GuiDialogMap, ARRAYNUMBER(FOX16_Gui
 FOX16_GuiDialog::FOX16_GuiDialog()
   :FXObject()
   ,CppDialog()
-  ,_gui(NULL)
   ,_widgetCount(0)
   ,_mainWidget(NULL)
   ,m_iconSource(NULL)
@@ -63,10 +62,9 @@ FOX16_GuiDialog::FOX16_GuiDialog()
 
 
 
-FOX16_GuiDialog::FOX16_GuiDialog(FOX16_Gui *gui, GWEN_DIALOG *dlg)
+FOX16_GuiDialog::FOX16_GuiDialog(GWEN_DIALOG *dlg)
   :FXObject()
   ,CppDialog(dlg)
-  ,_gui(gui)
   ,_widgetCount(0)
   ,_mainWidget(NULL)
   ,m_iconSource(NULL)

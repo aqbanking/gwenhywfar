@@ -67,7 +67,7 @@ public:
     ID_LAST
   };
 
-  FOX16_GuiDialog(FOX16_Gui *gui, GWEN_DIALOG *dlg);
+  FOX16_GuiDialog(GWEN_DIALOG *dlg);
   virtual ~FOX16_GuiDialog();
 
   static FOX16_GuiDialog *getDialog(GWEN_DIALOG *dlg);
@@ -91,7 +91,6 @@ public:
   FXDialogBox *getMainWindow() { return _mainWidget;};
 
 protected:
-  FOX16_Gui *_gui;
   int _widgetCount;
   FXDialogBox *_mainWidget;
   FXIconSource *m_iconSource;
@@ -102,8 +101,6 @@ protected:
   FOX16_GuiDialog();
 
   FXWindow *setupTree(FXWindow *parentWindow, GWEN_WIDGET *w);
-
-  void guiUpdate();
 
   virtual int setIntProperty(GWEN_WIDGET *w,
                              GWEN_DIALOG_PROPERTY prop,
