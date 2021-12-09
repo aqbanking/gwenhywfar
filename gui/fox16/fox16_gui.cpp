@@ -13,10 +13,17 @@
 
 
 #include "fox16_gui.hpp"
-#include "fox16_gui_dialog.hpp"
+#include "fox16_dialog.hpp"
 #include "fox16_gui_updater_l.hpp"
 
 #include <gwenhywfar/debug.h>
+
+
+GWEN_INHERIT(HTML_FONT, FXFont)
+
+
+static GWENHYWFAR_CB void _freeFontData(void *bp, void *p);
+
 
 
 
@@ -353,7 +360,7 @@ FXString FOX16_Gui::getHtmlText(const char *text) {
 
 
 int FOX16_Gui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
-  FOX16_GuiDialog foxDlg(dlg);
+  FOX16_Dialog foxDlg(dlg);
   FXWindow *owner;
 
   /* get main window of parent dialog (if any) */
@@ -370,13 +377,13 @@ int FOX16_Gui::execDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 int FOX16_Gui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
-  FOX16_GuiDialog *foxDlg;
+  FOX16_Dialog *foxDlg;
   FXWindow *owner;
 
   /* get main window of parent dialog (if any) */
   owner=m_app->getActiveWindow();
 
-  foxDlg=new FOX16_GuiDialog(dlg);
+  foxDlg=new FOX16_Dialog(dlg);
 
   /* setup widget tree for the dialog */
   if (!(foxDlg->setup(owner))) {
@@ -393,9 +400,9 @@ int FOX16_Gui::openDialog(GWEN_DIALOG *dlg, uint32_t guiid) {
 
 
 int FOX16_Gui::closeDialog(GWEN_DIALOG *dlg) {
-  FOX16_GuiDialog *foxDlg;
+  FOX16_Dialog *foxDlg;
 
-  foxDlg=FOX16_GuiDialog::getDialog(dlg);
+  foxDlg=FOX16_Dialog::getDialog(dlg);
   assert(foxDlg);
 
   foxDlg->closeDialog();
@@ -408,9 +415,9 @@ int FOX16_Gui::closeDialog(GWEN_DIALOG *dlg) {
 
 
 int FOX16_Gui::runDialog(GWEN_DIALOG *dlg, int untilEnd) {
-  FOX16_GuiDialog *foxDlg;
+  FOX16_Dialog *foxDlg;
 
-  foxDlg=FOX16_GuiDialog::getDialog(dlg);
+  foxDlg=FOX16_Dialog::getDialog(dlg);
   assert(foxDlg);
 
   if (untilEnd)
@@ -555,6 +562,67 @@ HTML_FONT *FOX16_Gui::getFont(const char *fontName,
     HtmlFont_List_Add(fnt, m_fontList);
     return fnt;
   }
+}
+
+
+
+FXFont *FOX16_Gui::getFoxFont(HTML_FONT *fnt) {
+  FXFont *xfnt;
+
+  if (GWEN_INHERIT_ISOFTYPE(HTML_FONT, FXFont, fnt)) {
+    xfnt=GWEN_INHERIT_GETDATA(HTML_FONT, FXFont, fnt);
+    return xfnt;
+  }
+  else {
+    FXFont *appFont;
+    FXuint size;
+    FXuint weight;
+    FXuint slant;
+    FXuint encoding;
+    FXString face;
+    uint32_t flags;
+
+    appFont=m_app->getNormalFont();
+
+    if (HtmlFont_GetFontName(fnt))
+      face=HtmlFont_GetFontName(fnt);
+    else
+      face=appFont->getName();
+    size=HtmlFont_GetFontSize(fnt);
+    weight=FXFont::Normal;
+    slant=appFont->getSlant();
+    encoding=appFont->getEncoding();
+
+    flags=HtmlFont_GetFontFlags(fnt);
+    if (flags & HTML_FONT_FLAGS_STRONG)
+      weight=FXFont::Bold;
+    if (flags & HTML_FONT_FLAGS_ITALIC)
+      slant=FXFont::Italic;
+
+    DBG_DEBUG(GWEN_LOGDOMAIN,
+              "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
+              face.text(), size, weight, slant, encoding);
+
+    xfnt=new FXFont(FXApp::instance(), face, size, weight, slant, encoding);
+    if (xfnt==NULL) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not create font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
+                face.text(), size, weight, slant, encoding);
+      return NULL;
+    }
+    xfnt->create();
+    GWEN_INHERIT_SETDATA(HTML_FONT, FXFont, fnt, xfnt, _freeFontData);
+    return xfnt;
+  }
+}
+
+
+
+void _freeFontData(void *bp, void *p) {
+  FXFont *xfnt;
+
+  xfnt=(FXFont*) p;
+  delete xfnt;
 }
 
 

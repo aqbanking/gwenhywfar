@@ -7,8 +7,8 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef FOX16_GUI_DIALOG_HPP
-#define FOX16_GUI_DIALOG_HPP
+#ifndef FOX16_DIALOG_HPP
+#define FOX16_DIALOG_HPP
 
 #include <gwen-gui-cpp/cppdialog.hpp>
 
@@ -22,8 +22,8 @@
 
 
 
-class FOX16_GuiDialog: public FXObject, public CppDialog {
-  FXDECLARE(FOX16_GuiDialog)
+class FOX16_Dialog: public FXObject, public CppDialog {
+  FXDECLARE(FOX16_Dialog)
 
 protected:
   class RadioButtonGroup {
@@ -66,10 +66,10 @@ public:
     ID_LAST
   };
 
-  FOX16_GuiDialog(GWEN_DIALOG *dlg);
-  virtual ~FOX16_GuiDialog();
+  FOX16_Dialog(GWEN_DIALOG *dlg);
+  virtual ~FOX16_Dialog();
 
-  static FOX16_GuiDialog *getDialog(GWEN_DIALOG *dlg);
+  static FOX16_Dialog *getDialog(GWEN_DIALOG *dlg);
 
   long onSelCommand(FXObject *sender, FXSelector sel, void *ptr);
   long onSelChanged(FXObject *sender, FXSelector sel, void *ptr);
@@ -79,6 +79,7 @@ public:
   FXIcon *getIcon(const char *fileName);
 
   bool setup(FXWindow *parentWindow);
+  bool setupChildrenIntoWindow(FXWindow *parentWindow);
 
   int execute();
   int cont();
@@ -88,7 +89,6 @@ public:
 
 
   FXWindow *getMainWindow() { return m_mainWidget;};
-  FXWindow *setupTree(FXWindow *parentWindow, GWEN_WIDGET *w);
 
 protected:
   int _widgetCount;
@@ -98,10 +98,12 @@ protected:
   std::list<RadioButtonGroup*> m_radioGroups;
   bool m_sizeChanged;
 
-  FOX16_GuiDialog();
+  FOX16_Dialog();
 
 
   FXDialogBox *getDialogBox() const;
+  FXWindow *setupTree(FXWindow *parentWindow, GWEN_WIDGET *w);
+  bool setupWidget(FXWindow *parentWindow, GWEN_WIDGET *w);
 
   virtual int setIntProperty(GWEN_WIDGET *w,
                              GWEN_DIALOG_PROPERTY prop,

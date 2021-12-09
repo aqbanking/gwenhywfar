@@ -86,6 +86,8 @@ public:
                      int fontSize,
                      uint32_t fontFlags);
 
+  FXFont *getFoxFont(HTML_FONT *fnt);
+
 protected:
   uint32_t getNextId();
   uint32_t getIdOfLastScope();

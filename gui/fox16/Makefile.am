@@ -20,7 +20,7 @@ libgwengui_fox16_la_LDFLAGS=-no-undefined -version-info \
 
 libgwengui_fox16_la_SOURCES=\
   fox16_gui.cpp \
-  fox16_gui_dialog.cpp \
+  fox16_dialog.cpp \
   fox16_gui_sortinglist.cpp \
   fox16_gui_updater.cpp \
   fox16_htmlctx.cpp \
@@ -31,7 +31,7 @@ libgwengui_fox16_la_SOURCES=\
 iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-fox16
 iheader_HEADERS=\
  fox16_gui.hpp \
- fox16_gui_dialog.hpp \
+ fox16_dialog.hpp \
  fox16_htmlctx.hpp \
  fox16_htmllabel.hpp \
  fox16_htmltext.hpp \

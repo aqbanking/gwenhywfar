@@ -30,7 +30,6 @@
 
 
 GWEN_INHERIT(GWEN_XML_CONTEXT, FOX16_HtmlCtx)
-GWEN_INHERIT(HTML_FONT, FXFont)
 GWEN_INHERIT(HTML_IMAGE, FXImage)
 
 
@@ -176,51 +175,14 @@ FOX16_HtmlCtx::~FOX16_HtmlCtx() {
 
 
 FXFont *FOX16_HtmlCtx::_getFoxFont(HTML_FONT *fnt) {
+  FOX16_Gui *gui;
   FXFont *xfnt;
 
-  if (GWEN_INHERIT_ISOFTYPE(HTML_FONT, FXFont, fnt)) {
-    xfnt=GWEN_INHERIT_GETDATA(HTML_FONT, FXFont, fnt);
-    return xfnt;
-  }
-  else {
-    FXuint size;
-    FXuint weight;
-    FXuint slant;
-    FXuint encoding;
-    FXString face;
-    uint32_t flags;
+  gui=FOX16_Gui::getFgGui();
+  assert(gui);
 
-    if (HtmlFont_GetFontName(fnt))
-      face=HtmlFont_GetFontName(fnt);
-    else
-      face=_font->getName();
-    size=HtmlFont_GetFontSize(fnt);
-    weight=FXFont::Normal;
-    slant=_font->getSlant();
-    encoding=_font->getEncoding();
-
-    flags=HtmlFont_GetFontFlags(fnt);
-    if (flags & HTML_FONT_FLAGS_STRONG)
-      weight=FXFont::Bold;
-    if (flags & HTML_FONT_FLAGS_ITALIC)
-      slant=FXFont::Italic;
-
-    DBG_DEBUG(GWEN_LOGDOMAIN,
-              "Creating font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
-              face.text(), size, weight, slant, encoding);
-
-    xfnt=new FXFont(FXApp::instance(), face, size, weight, slant, encoding);
-    if (xfnt==NULL) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Could not create font [%s], size=%d, weight=%d, slant=%d, encoding=%d",
-                face.text(), size, weight, slant, encoding);
-      return NULL;
-    }
-    xfnt->create();
-    GWEN_INHERIT_SETDATA(HTML_FONT, FXFont, fnt, xfnt,
-                         FOX16_HtmlCtxLinker::freeFontData);
-    return xfnt;
-  }
+  xfnt=gui->getFoxFont(fnt);
+  return xfnt;
 }
 
 

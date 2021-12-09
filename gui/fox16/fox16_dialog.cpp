@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Jan 22 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -11,7 +11,7 @@
 # include <config.h>
 #endif
 
-#include "fox16_gui_dialog.hpp"
+#include "fox16_dialog.hpp"
 #include "fox16_gui_sortinglist_l.hpp"
 #include "fox16_htmllabel.hpp"
 #include "fox16_htmltext.hpp"
@@ -39,19 +39,19 @@
 
 
 
-FXDEFMAP(FOX16_GuiDialog) FOX16_GuiDialogMap[]= {
-  FXMAPFUNCS(SEL_COMMAND, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelCommand),
-  FXMAPFUNCS(SEL_CHANGED, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelChanged),
-  FXMAPFUNCS(SEL_KEYPRESS, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelKeyPress),
-  FXMAPFUNCS(SEL_KEYRELEASE, FOX16_GuiDialog::ID_WIDGET_FIRST, FOX16_GuiDialog::ID_WIDGET_LAST, FOX16_GuiDialog::onSelKeyRelease)
+FXDEFMAP(FOX16_Dialog) FOX16_DialogMap[]= {
+  FXMAPFUNCS(SEL_COMMAND, FOX16_Dialog::ID_WIDGET_FIRST, FOX16_Dialog::ID_WIDGET_LAST, FOX16_Dialog::onSelCommand),
+  FXMAPFUNCS(SEL_CHANGED, FOX16_Dialog::ID_WIDGET_FIRST, FOX16_Dialog::ID_WIDGET_LAST, FOX16_Dialog::onSelChanged),
+  FXMAPFUNCS(SEL_KEYPRESS, FOX16_Dialog::ID_WIDGET_FIRST, FOX16_Dialog::ID_WIDGET_LAST, FOX16_Dialog::onSelKeyPress),
+  FXMAPFUNCS(SEL_KEYRELEASE, FOX16_Dialog::ID_WIDGET_FIRST, FOX16_Dialog::ID_WIDGET_LAST, FOX16_Dialog::onSelKeyRelease)
 };
 
 
-FXIMPLEMENT(FOX16_GuiDialog, FXObject, FOX16_GuiDialogMap, ARRAYNUMBER(FOX16_GuiDialogMap))
+FXIMPLEMENT(FOX16_Dialog, FXObject, FOX16_DialogMap, ARRAYNUMBER(FOX16_DialogMap))
 
 
 
-FOX16_GuiDialog::FOX16_GuiDialog()
+FOX16_Dialog::FOX16_Dialog()
   :FXObject()
   ,CppDialog()
   ,_widgetCount(0)
@@ -62,7 +62,7 @@ FOX16_GuiDialog::FOX16_GuiDialog()
 
 
 
-FOX16_GuiDialog::FOX16_GuiDialog(GWEN_DIALOG *dlg)
+FOX16_Dialog::FOX16_Dialog(GWEN_DIALOG *dlg)
   :FXObject()
   ,CppDialog(dlg)
   ,_widgetCount(0)
@@ -73,7 +73,7 @@ FOX16_GuiDialog::FOX16_GuiDialog(GWEN_DIALOG *dlg)
 
 
 
-FOX16_GuiDialog::~FOX16_GuiDialog() {
+FOX16_Dialog::~FOX16_Dialog() {
   if (m_mainWidget)
     delete m_mainWidget;
   if (!m_iconList.empty()) {
@@ -96,18 +96,18 @@ FOX16_GuiDialog::~FOX16_GuiDialog() {
 
 
 
-FOX16_GuiDialog *FOX16_GuiDialog::getDialog(GWEN_DIALOG *dlg) {
+FOX16_Dialog *FOX16_Dialog::getDialog(GWEN_DIALOG *dlg) {
   CppDialog *cppDlg;
 
   cppDlg=CppDialog::getDialog(dlg);
   if (cppDlg)
-    return dynamic_cast<FOX16_GuiDialog*>(cppDlg);
+    return dynamic_cast<FOX16_Dialog*>(cppDlg);
   return NULL;
 }
 
 
 
-FXDialogBox *FOX16_GuiDialog::getDialogBox() const {
+FXDialogBox *FOX16_Dialog::getDialogBox() const {
   if (m_mainWidget)
     return dynamic_cast<FXDialogBox*>(m_mainWidget);
   return NULL;
@@ -115,7 +115,7 @@ FXDialogBox *FOX16_GuiDialog::getDialogBox() const {
 
 
 
-FXIcon *FOX16_GuiDialog::getIcon(const char *fileName) {
+FXIcon *FOX16_Dialog::getIcon(const char *fileName) {
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_Dialog_GetMediaPaths(_dialog);
@@ -154,7 +154,7 @@ FXIcon *FOX16_GuiDialog::getIcon(const char *fileName) {
 
 
 
-int FOX16_GuiDialog::execute() {
+int FOX16_Dialog::execute() {
   FXDialogBox *dialogBox;
   int rv;
 
@@ -175,7 +175,7 @@ int FOX16_GuiDialog::execute() {
 }
 
 
-int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
+int FOX16_Dialog::setIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int value,
@@ -551,7 +551,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
 
 
 
-int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
+int FOX16_Dialog::getIntProperty(GWEN_WIDGET *w,
                                     GWEN_DIALOG_PROPERTY prop,
                                     int index,
                                     int defaultValue) {
@@ -853,7 +853,7 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
 
 
-int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
+int FOX16_Dialog::setCharProperty(GWEN_WIDGET *w,
                                      GWEN_DIALOG_PROPERTY prop,
                                      int index,
                                      const char *value,
@@ -1213,7 +1213,7 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
 
 
 
-const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
+const char *FOX16_Dialog::getCharProperty(GWEN_WIDGET *w,
     GWEN_DIALOG_PROPERTY prop,
     int index,
     const char *defaultValue) {
@@ -1591,7 +1591,7 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
 
 
 
-long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) {
+long FOX16_Dialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) {
   GWEN_WIDGET *w;
   const char *wname;
   int rv=GWEN_DialogEvent_ResultNotHandled;
@@ -1687,7 +1687,7 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
 
 
 
-long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) {
+long FOX16_Dialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) {
   GWEN_WIDGET *w;
   int rv=GWEN_DialogEvent_ResultNotHandled;
   FXDialogBox *dialogBox;
@@ -1753,7 +1753,7 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
 
 
 
-long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr) {
+long FOX16_Dialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr) {
   GWEN_WIDGET *w;
   FXEvent* event=(FXEvent*)ptr;
   int rv;
@@ -1801,7 +1801,6 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeTextBrowser:
     rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyPressed, "", event->code, NULL);
     if (rv==GWEN_DialogEvent_ResultHandled) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Key handled");
       return 1;
     }
   }
@@ -1811,7 +1810,7 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 
 
 
-long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *ptr) {
+long FOX16_Dialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *ptr) {
   GWEN_WIDGET *w;
   FXEvent* event=(FXEvent*)ptr;
   int rv;
@@ -1865,7 +1864,7 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
 
 
 
-bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
+bool FOX16_Dialog::setup(FXWindow *parentWindow) {
   FXWindow *xw;
   GWEN_WIDGET_TREE *wtree;
   GWEN_WIDGET *w;
@@ -1910,8 +1909,58 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
 
 
 
+bool FOX16_Dialog::setupChildrenIntoWindow(FXWindow *parentWindow) {
+  GWEN_WIDGET_TREE *wtree;
+  GWEN_WIDGET *w;
 
-FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
+  wtree=GWEN_Dialog_GetWidgets(_dialog);
+  if (wtree==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No widget tree in dialog");
+    return false;
+  }
+  w=GWEN_Widget_Tree_GetFirst(wtree);
+  if (w==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No widgets in dialog");
+    return false;
+  }
+
+  while(w) {
+    if (NULL==setupTree(parentWindow, w))
+      return NULL;
+    w=GWEN_Widget_Tree_GetNext(w);
+  }
+
+  return true;
+}
+
+
+
+
+FXWindow *FOX16_Dialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
+  if (setupWidget(parentWindow, w)) {
+    FXWindow *wChild;
+    FXWindow *wContent;
+
+    wChild=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+    wContent=(FXWindow*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_CONTENT);
+
+    /* handle children */
+    w=GWEN_Widget_Tree_GetFirstChild(w);
+    while(w) {
+      if (NULL==setupTree(wContent, w))
+	return NULL;
+      w=GWEN_Widget_Tree_GetNext(w);
+    }
+
+    return wChild;
+  }
+
+  return NULL;
+}
+
+
+
+bool FOX16_Dialog::setupWidget(FXWindow *parentWindow, GWEN_WIDGET *w) {
   const char *s;
   const char *name;
   FXuint opts=0;
@@ -1949,7 +1998,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     default:
       DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] (type %d) is not a composite",
                 name?name:"(unnamed)", GWEN_Widget_GetType(w));
-      return NULL;
+      return false;
     }
   }
 
@@ -2008,7 +2057,21 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
       opts|=FOX16_HtmlLabel::FLAGS_NO_WORDWRAP;
     label=new FOX16_HtmlLabel(parentComposite,
                               htmlText,
-                              opts);
+			      opts);
+
+    s=GWEN_Widget_GetForeColor(w);
+    if (s && *s) {
+      FXColor col=fxcolorfromname(s);
+      label->setTextColor(col);
+    }
+
+    s=GWEN_Widget_GetShadowColor(w);
+    if (s && *s) {
+      FXColor col=fxcolorfromname(s);
+      label->setShadowColor(col);
+    }
+
+
     s=GWEN_Widget_GetIconFileName(w);
     if (s && *s) {
       FXIcon *ic;
@@ -2170,7 +2233,7 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     if (cols & rows) {
       DBG_ERROR(GWEN_LOGDOMAIN, "State columns *or* rows, not both in widget [%s]",
                 name?name:"(unnamed)");
-      return NULL;
+      return false;
     }
     if (cols)
       wChild=new FXMatrix(parentComposite, cols,
@@ -2210,13 +2273,13 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   case GWEN_Widget_TypeTabPage:
     if (parentWidget==NULL) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] has no parent", name?name:"(unnamed)");
-      return NULL;
+      return false;
     }
     else {
       FXTabBook *tbook=dynamic_cast<FXTabBook*>(parentWindow);
       if (tbook==NULL) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Parent of widget [%s] needs to be of type TabBook", name?name:"(unnamed)");
-        return NULL;
+	return false;
       }
 
       new THEMETABITEM(tbook, text, NULL, opts | TAB_TOP_NORMAL);
@@ -2263,14 +2326,20 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 
   case GWEN_Widget_TypeUnknown:
     DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] is of type \'unknown\'", name?name:"(unnamed)");
-    return NULL;
+    return false;
   case GWEN_Widget_TypeNone:
     DBG_ERROR(GWEN_LOGDOMAIN, "Widget [%s] is of type \'none\'", name?name:"(unnamed)");
-    return NULL;
+    return false;
   }
 
   assert(wChild);
   _widgetCount++;
+
+  s=GWEN_Widget_GetBackColor(w);
+  if (s && *s) {
+    FXColor col=fxcolorfromname(s);
+    wChild->setBackColor(col);
+  }
 
   if (wContent==NULL)
     wContent=wChild;
@@ -2278,20 +2347,12 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
   GWEN_Widget_SetImplData(w, FOX16_DIALOG_WIDGET_REAL, (void*) wChild);
   GWEN_Widget_SetImplData(w, FOX16_DIALOG_WIDGET_CONTENT, (void*) wContent);
 
-  /* handle children */
-  w=GWEN_Widget_Tree_GetFirstChild(w);
-  while(w) {
-    if (NULL==setupTree(wContent, w))
-      return NULL;
-    w=GWEN_Widget_Tree_GetNext(w);
-  }
-
-  return wChild;
+  return true;
 }
 
 
 
-int FOX16_GuiDialog::cont() {
+int FOX16_Dialog::cont() {
   FXDialogBox *dialogBox;
 
   dialogBox=getDialogBox();
@@ -2302,7 +2363,7 @@ int FOX16_GuiDialog::cont() {
 
 
 
-int FOX16_GuiDialog::openDialog() {
+int FOX16_Dialog::openDialog() {
   FXDialogBox *dialogBox;
 
   dialogBox=getDialogBox();
@@ -2316,7 +2377,7 @@ int FOX16_GuiDialog::openDialog() {
 
 
 
-int FOX16_GuiDialog::closeDialog() {
+int FOX16_Dialog::closeDialog() {
   FXDialogBox *dialogBox;
 
   dialogBox=getDialogBox();
