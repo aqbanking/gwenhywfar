@@ -1699,6 +1699,7 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
     return GWEN_ERROR_GENERIC;
   case GWEN_Widget_TypeSpinBox:
   case GWEN_Widget_TypeLineEdit:
+  case GWEN_Widget_TypeListBox:
     rv=GWEN_Dialog_EmitSignal(GWEN_Widget_GetDialog(w),
                               GWEN_DialogEvent_TypeValueChanged,
                               GWEN_Widget_GetName(w));
@@ -1716,7 +1717,6 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeHLayout:
   case GWEN_Widget_TypeVLayout:
   case GWEN_Widget_TypeGridLayout:
-  case GWEN_Widget_TypeListBox:
   case GWEN_Widget_TypeDialog:
   case GWEN_Widget_TypeTabBook:
   case GWEN_Widget_TypeTabPage:
