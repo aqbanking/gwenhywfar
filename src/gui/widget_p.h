@@ -64,6 +64,15 @@ struct GWEN_WIDGET {
   GWEN_WIDGET_ADDCHILDGUIWIDGET_FN addChildGuiWidgetFn;
 
   uint32_t refCount;
+
+  char *foreColor;
+  char *backColor;
+  char *shadowColor;
+  char *hiliteColor;
+  char *borderColor;
+
+  char *font;
+
 };
 
 

@@ -256,6 +256,52 @@ void GWEN_Widget_SetImageFileName(GWEN_WIDGET *w, const char *s);
 
 
 GWENHYWFAR_API
+const char *GWEN_Widget_GetForeColor(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetForeColor(GWEN_WIDGET *w, const char *s);
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetBackColor(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetBackColor(GWEN_WIDGET *w, const char *s);
+
+
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetShadowColor(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetShadowColor(GWEN_WIDGET *w, const char *s);
+
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetHiliteColor(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetHiliteColor(GWEN_WIDGET *w, const char *s);
+
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetBorderColor(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetBorderColor(GWEN_WIDGET *w, const char *s);
+
+
+
+GWENHYWFAR_API
+const char *GWEN_Widget_GetFont(const GWEN_WIDGET *w);
+
+GWENHYWFAR_API
+void GWEN_Widget_SetFont(GWEN_WIDGET *w, const char *s);
+
+
+
+
+
+GWENHYWFAR_API
 GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s);
 
 GWENHYWFAR_API

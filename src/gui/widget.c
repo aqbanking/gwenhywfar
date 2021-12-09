@@ -80,6 +80,11 @@ void GWEN_Widget_free(GWEN_WIDGET *w)
         free(w->text[i]);
       free(w->iconFile);
       free(w->imageFile);
+      free(w->hiliteColor);
+      free(w->shadowColor);
+      free(w->backColor);
+      free(w->foreColor);
+      free(w->font);
       w->refCount=0;
       GWEN_FREE_OBJECT(w);
     }
@@ -383,6 +388,178 @@ void GWEN_Widget_SetImageFileName(GWEN_WIDGET *w, const char *s)
 
 
 
+const char *GWEN_Widget_GetForeColor(const GWEN_WIDGET *w)
+{
+  assert(w);
+  assert(w->refCount);
+
+  while(w) {
+    if (w->foreColor!=NULL)
+      return w->foreColor;
+    w=GWEN_Widget_Tree_GetParent(w);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_Widget_SetForeColor(GWEN_WIDGET *w, const char *s)
+{
+  assert(w);
+  assert(w->refCount);
+  free(w->foreColor);
+  if (s)
+    w->foreColor=strdup(s);
+  else
+    w->foreColor=NULL;
+}
+
+
+
+const char *GWEN_Widget_GetBackColor(const GWEN_WIDGET *w)
+{
+  assert(w);
+  assert(w->refCount);
+
+  while(w) {
+    if (w->backColor!=NULL)
+      return w->backColor;
+    w=GWEN_Widget_Tree_GetParent(w);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_Widget_SetBackColor(GWEN_WIDGET *w, const char *s)
+{
+  assert(w);
+  assert(w->refCount);
+  free(w->backColor);
+  if (s)
+    w->backColor=strdup(s);
+  else
+    w->backColor=NULL;
+}
+
+
+
+const char *GWEN_Widget_GetShadowColor(const GWEN_WIDGET *w)
+{
+  assert(w);
+  assert(w->refCount);
+
+  while(w) {
+    if (w->shadowColor!=NULL)
+      return w->shadowColor;
+    w=GWEN_Widget_Tree_GetParent(w);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_Widget_SetShadowColor(GWEN_WIDGET *w, const char *s)
+{
+  assert(w);
+  assert(w->refCount);
+  free(w->shadowColor);
+  if (s)
+    w->shadowColor=strdup(s);
+  else
+    w->shadowColor=NULL;
+}
+
+
+
+const char *GWEN_Widget_GetHiliteColor(const GWEN_WIDGET *w)
+{
+  assert(w);
+  assert(w->refCount);
+
+  while(w) {
+    if (w->hiliteColor!=NULL)
+      return w->hiliteColor;
+    w=GWEN_Widget_Tree_GetParent(w);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_Widget_SetHiliteColor(GWEN_WIDGET *w, const char *s)
+{
+  assert(w);
+  assert(w->refCount);
+  free(w->hiliteColor);
+  if (s)
+    w->hiliteColor=strdup(s);
+  else
+    w->hiliteColor=NULL;
+}
+
+
+
+const char *GWEN_Widget_GetBorderColor(const GWEN_WIDGET *w)
+{
+  assert(w);
+  assert(w->refCount);
+
+  while(w) {
+    if (w->borderColor!=NULL)
+      return w->borderColor;
+    w=GWEN_Widget_Tree_GetParent(w);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_Widget_SetBorderColor(GWEN_WIDGET *w, const char *s)
+{
+  assert(w);
+  assert(w->refCount);
+  free(w->borderColor);
+  if (s)
+    w->borderColor=strdup(s);
+  else
+    w->borderColor=NULL;
+}
+
+
+
+const char *GWEN_Widget_GetFont(const GWEN_WIDGET *w)
+{
+  assert(w);
+  assert(w->refCount);
+
+  while(w) {
+    if (w->font!=NULL)
+      return w->font;
+    w=GWEN_Widget_Tree_GetParent(w);
+  }
+
+  return NULL;
+}
+
+
+
+void GWEN_Widget_SetFont(GWEN_WIDGET *w, const char *s)
+{
+  assert(w);
+  assert(w->refCount);
+  free(w->font);
+  if (s)
+    w->font=strdup(s);
+  else
+    w->font=NULL;
+}
+
 
 
 GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s)
@@ -591,6 +768,10 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s)
         fl|=GWEN_WIDGET_FLAGS_FRAME_THICK;
       else if (strcasecmp(wstart, "frameGroove")==0)
         fl|=GWEN_WIDGET_FLAGS_FRAME_GROOVE;
+      else if (strcasecmp(wstart, "fontBold")==0)
+        fl|=GWEN_WIDGET_FLAGS_FONT_BOLD;
+      else if (strcasecmp(wstart, "fontItalic")==0)
+        fl|=GWEN_WIDGET_FLAGS_FONT_ITALIC;
     }
     if (copy)
       free(copy);
@@ -678,6 +859,26 @@ int GWEN_Widget_ReadXml(GWEN_WIDGET *w, GWEN_XMLNODE *node)
       return GWEN_ERROR_BAD_DATA;
     }
   }
+
+  s=GWEN_XMLNode_GetProperty(node, "foreColor", NULL);
+  if (s && *s)
+    GWEN_Widget_SetForeColor(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "backColor", NULL);
+  if (s && *s)
+    GWEN_Widget_SetBackColor(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "shadowColor", NULL);
+  if (s && *s)
+    GWEN_Widget_SetShadowColor(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "hiliteColor", NULL);
+  if (s && *s)
+    GWEN_Widget_SetHiliteColor(w, s);
+
+  s=GWEN_XMLNode_GetProperty(node, "font", NULL);
+  if (s && *s)
+    GWEN_Widget_SetFont(w, s);
 
   return 0;
 }
