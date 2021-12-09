@@ -1,16 +1,15 @@
 /***************************************************************************
     begin       : Fri Jan 22 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef FOX16_GUI_DIALOG_L_HPP
-#define FOX16_GUI_DIALOG_L_HPP
+#ifndef FOX16_GUI_DIALOG_HPP
+#define FOX16_GUI_DIALOG_HPP
 
-#include "fox16_gui.hpp"
 #include <gwen-gui-cpp/cppdialog.hpp>
 
 #include <fx.h>
@@ -88,11 +87,12 @@ public:
   int closeDialog();
 
 
-  FXDialogBox *getMainWindow() { return _mainWidget;};
+  FXWindow *getMainWindow() { return m_mainWidget;};
+  FXWindow *setupTree(FXWindow *parentWindow, GWEN_WIDGET *w);
 
 protected:
   int _widgetCount;
-  FXDialogBox *_mainWidget;
+  FXWindow *m_mainWidget;
   FXIconSource *m_iconSource;
   std::list<FXIcon*> m_iconList;
   std::list<RadioButtonGroup*> m_radioGroups;
@@ -100,7 +100,8 @@ protected:
 
   FOX16_GuiDialog();
 
-  FXWindow *setupTree(FXWindow *parentWindow, GWEN_WIDGET *w);
+
+  FXDialogBox *getDialogBox() const;
 
   virtual int setIntProperty(GWEN_WIDGET *w,
                              GWEN_DIALOG_PROPERTY prop,

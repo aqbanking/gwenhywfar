@@ -9,7 +9,6 @@ pkgconfig_DATA = gwengui-fox16.pc
 lib_LTLIBRARIES=libgwengui-fox16.la
 
 noinst_HEADERS=\
-  fox16_gui_dialog_l.hpp \
   fox16_gui_sortinglist_l.hpp \
   fox16_gui_updater_l.hpp \
   fox16_htmlctx_p.hpp \
@@ -32,6 +31,7 @@ libgwengui_fox16_la_SOURCES=\
 iheaderdir=${gwenhywfar_headerdir_am}/gwen-gui-fox16
 iheader_HEADERS=\
  fox16_gui.hpp \
+ fox16_gui_dialog.hpp \
  fox16_htmlctx.hpp \
  fox16_htmllabel.hpp \
  fox16_htmltext.hpp \

@@ -11,7 +11,7 @@
 # include <config.h>
 #endif
 
-#include "fox16_gui_dialog_l.hpp"
+#include "fox16_gui_dialog.hpp"
 #include "fox16_gui_sortinglist_l.hpp"
 #include "fox16_htmllabel.hpp"
 #include "fox16_htmltext.hpp"
@@ -55,7 +55,7 @@ FOX16_GuiDialog::FOX16_GuiDialog()
   :FXObject()
   ,CppDialog()
   ,_widgetCount(0)
-  ,_mainWidget(NULL)
+  ,m_mainWidget(NULL)
   ,m_iconSource(NULL)
   ,m_sizeChanged(FALSE) {
 }
@@ -66,7 +66,7 @@ FOX16_GuiDialog::FOX16_GuiDialog(GWEN_DIALOG *dlg)
   :FXObject()
   ,CppDialog(dlg)
   ,_widgetCount(0)
-  ,_mainWidget(NULL)
+  ,m_mainWidget(NULL)
   ,m_iconSource(NULL)
   ,m_sizeChanged(FALSE) {
 }
@@ -74,8 +74,8 @@ FOX16_GuiDialog::FOX16_GuiDialog(GWEN_DIALOG *dlg)
 
 
 FOX16_GuiDialog::~FOX16_GuiDialog() {
-  if (_mainWidget)
-    delete _mainWidget;
+  if (m_mainWidget)
+    delete m_mainWidget;
   if (!m_iconList.empty()) {
     std::list<FXIcon*>::iterator it;
 
@@ -102,6 +102,14 @@ FOX16_GuiDialog *FOX16_GuiDialog::getDialog(GWEN_DIALOG *dlg) {
   cppDlg=CppDialog::getDialog(dlg);
   if (cppDlg)
     return dynamic_cast<FOX16_GuiDialog*>(cppDlg);
+  return NULL;
+}
+
+
+
+FXDialogBox *FOX16_GuiDialog::getDialogBox() const {
+  if (m_mainWidget)
+    return dynamic_cast<FXDialogBox*>(m_mainWidget);
   return NULL;
 }
 
@@ -150,7 +158,7 @@ int FOX16_GuiDialog::execute() {
   FXDialogBox *dialogBox;
   int rv;
 
-  dialogBox=_mainWidget;
+  dialogBox=getDialogBox();
 
   /* execute dialog */
   dialogBox->show(PLACEMENT_OWNER);
@@ -1615,7 +1623,7 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   }
   wname=GWEN_Widget_GetName(w);
 
-  dialogBox=_mainWidget;
+  dialogBox=getDialogBox();
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Command for [%s] (type: %s)",
             wname?wname:"(unnamed)",
@@ -1665,11 +1673,13 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
     ;
   }
 
-  if (rv==GWEN_DialogEvent_ResultAccept) {
-    dialogBox->getApp()->stopModal(dialogBox, 1);
-  }
-  else if (rv==GWEN_DialogEvent_ResultReject) {
-    dialogBox->getApp()->stopModal(dialogBox, 0);
+  if (dialogBox) {
+    if (rv==GWEN_DialogEvent_ResultAccept) {
+      dialogBox->getApp()->stopModal(dialogBox, 1);
+    }
+    else if (rv==GWEN_DialogEvent_ResultReject) {
+      dialogBox->getApp()->stopModal(dialogBox, 0);
+    }
   }
 
   return 1;
@@ -1688,7 +1698,7 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
     return 0;
   }
 
-  dialogBox=_mainWidget;
+  dialogBox=getDialogBox();
 
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeUnknown:
@@ -1727,13 +1737,15 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
     ;
   }
 
-  if (rv==GWEN_DialogEvent_ResultAccept) {
-    GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeFini, "");
-    dialogBox->getApp()->stopModal(dialogBox, 1);
-  }
-  else if (rv==GWEN_DialogEvent_ResultReject) {
-    GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeFini, "");
-    dialogBox->getApp()->stopModal(dialogBox, 0);
+  if (dialogBox) {
+    if (rv==GWEN_DialogEvent_ResultAccept) {
+      GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeFini, "");
+      dialogBox->getApp()->stopModal(dialogBox, 1);
+    }
+    else if (rv==GWEN_DialogEvent_ResultReject) {
+      GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeFini, "");
+      dialogBox->getApp()->stopModal(dialogBox, 0);
+    }
   }
 
   return 1;
@@ -1788,8 +1800,10 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
     rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyPressed, "", event->code, NULL);
-    if (rv!=GWEN_DialogEvent_ResultNotHandled)
+    if (rv==GWEN_DialogEvent_ResultHandled) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Key handled");
       return 1;
+    }
   }
 
   return 0;
@@ -1842,7 +1856,7 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
     rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyReleased, "", event->code, NULL);
-    if (rv!=GWEN_DialogEvent_ResultNotHandled)
+    if (rv==GWEN_DialogEvent_ResultHandled)
       return 1;
   }
 
@@ -1874,8 +1888,7 @@ bool FOX16_GuiDialog::setup(FXWindow *parentWindow) {
     return false;
   }
 
-  _mainWidget=dynamic_cast<FXDialogBox*>(xw);
-  assert(_mainWidget);
+  m_mainWidget=xw;
 
   /* create X11 server side resources */
   xw->create();
@@ -2281,8 +2294,10 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
 int FOX16_GuiDialog::cont() {
   FXDialogBox *dialogBox;
 
-  dialogBox=_mainWidget;
-  return dialogBox->getApp()->runModalFor(dialogBox);
+  dialogBox=getDialogBox();
+  if (dialogBox)
+    return dialogBox->getApp()->runModalFor(dialogBox);
+  return 0;
 }
 
 
@@ -2290,12 +2305,12 @@ int FOX16_GuiDialog::cont() {
 int FOX16_GuiDialog::openDialog() {
   FXDialogBox *dialogBox;
 
-  dialogBox=_mainWidget;
-
-  /* show dialog */
-  dialogBox->layout();
-  dialogBox->show(PLACEMENT_OWNER);
-
+  dialogBox=getDialogBox();
+  if (dialogBox) {
+    /* show dialog */
+    dialogBox->layout();
+    dialogBox->show(PLACEMENT_OWNER);
+  }
   return 0;
 }
 
@@ -2304,15 +2319,17 @@ int FOX16_GuiDialog::openDialog() {
 int FOX16_GuiDialog::closeDialog() {
   FXDialogBox *dialogBox;
 
-  dialogBox=_mainWidget;
+  dialogBox=getDialogBox();
 
   /* let dialog write its settings */
   GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeFini, "");
 
-  /* hide dialog */
-  dialogBox->hide();
-  delete _mainWidget;
-  _mainWidget=NULL;
+  if (dialogBox) {
+    /* hide dialog */
+    dialogBox->hide();
+    delete m_mainWidget;
+    m_mainWidget=NULL;
+  }
 
   return 0;
 }

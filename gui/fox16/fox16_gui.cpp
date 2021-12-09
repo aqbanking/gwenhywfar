@@ -13,7 +13,7 @@
 
 
 #include "fox16_gui.hpp"
-#include "fox16_gui_dialog_l.hpp"
+#include "fox16_gui_dialog.hpp"
 #include "fox16_gui_updater_l.hpp"
 
 #include <gwenhywfar/debug.h>
