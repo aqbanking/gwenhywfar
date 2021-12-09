@@ -381,6 +381,7 @@ int GWEN_Dialog_EmitSignalToAll2(GWEN_DIALOG *dlg,
 {
   int rv;
   GWEN_DIALOG *subdlg;
+  int anyDialogHasHandledThisSignal=0;
 
   assert(dlg);
   assert(dlg->refCount);
@@ -388,6 +389,8 @@ int GWEN_Dialog_EmitSignalToAll2(GWEN_DIALOG *dlg,
   subdlg=GWEN_Dialog_List_First(dlg->subDialogs);
   while (subdlg) {
     rv=GWEN_Dialog_EmitSignalToAll2(subdlg, t, sender, intArg, stringArg);
+    if (rv==GWEN_DialogEvent_ResultHandled)
+      anyDialogHasHandledThisSignal=1;
     if (rv!=GWEN_DialogEvent_ResultHandled &&
         rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
@@ -396,18 +399,25 @@ int GWEN_Dialog_EmitSignalToAll2(GWEN_DIALOG *dlg,
 
   if (dlg->signalHandler2) {
     rv=(dlg->signalHandler2)(dlg, t, sender, intArg, stringArg);
+    if (rv==GWEN_DialogEvent_ResultHandled)
+      anyDialogHasHandledThisSignal=1;
     if (rv!=GWEN_DialogEvent_ResultHandled &&
         rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
   }
   else if (dlg->signalHandler) {
     rv=(dlg->signalHandler)(dlg, t, sender);
+    if (rv==GWEN_DialogEvent_ResultHandled)
+      anyDialogHasHandledThisSignal=1;
     if (rv!=GWEN_DialogEvent_ResultHandled &&
 	rv!=GWEN_DialogEvent_ResultNotHandled)
       return rv;
   }
 
-  return GWEN_DialogEvent_ResultHandled;
+  if (anyDialogHasHandledThisSignal)
+    return GWEN_DialogEvent_ResultHandled;
+  else
+    return GWEN_DialogEvent_ResultNotHandled;
 }
 
 
