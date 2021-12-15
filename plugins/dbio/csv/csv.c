@@ -429,6 +429,9 @@ int _csvImport(GWEN_DBIO *dbio, GWEN_SYNCIO *sio, GWEN_DB_NODE *data, GWEN_DB_NO
 	GWEN_DB_AddGroup(data, n); /* add data */
 	GWEN_StringList_free(sl);
       }
+      else {
+        DBG_INFO(GWEN_LOGDOMAIN, "Line contains no strings");
+      }
     } /* if this is not the title line */
     lines++;
   } /* for */
@@ -611,6 +614,7 @@ void _stringListToDb(GWEN_STRINGLIST *sl, GWEN_DB_NODE *colgr, GWEN_DB_NODE *dbD
 
 
 
+/* only used by _csvCheckFile(), not for actual import! */
 int _readCsvLine(GWEN_FAST_BUFFER *fb, GWEN_STRINGLIST *sl)
 {
   int err;
@@ -643,11 +647,13 @@ int _readCsvLine(GWEN_FAST_BUFFER *fb, GWEN_STRINGLIST *sl)
                                  GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
                                  GWEN_TEXT_FLAGS_DEL_QUOTES,
                                  &s);
-    if (rv) {
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(wbuffer);
       GWEN_Buffer_free(lbuffer);
       return rv;
     }
+
     GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(wbuffer), 0, 0);
     GWEN_Buffer_Reset(wbuffer);
     if (*s) {
