@@ -583,6 +583,14 @@ uint32_t GWEN_Widget_Flags_fromString(const char *s)
         fl|=GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY;
       else if (strcasecmp(wstart, "noWordWrap")==0)
         fl|=GWEN_WIDGET_FLAGS_NO_WORDWRAP;
+      else if (strcasecmp(wstart, "frameSunken")==0)
+        fl|=GWEN_WIDGET_FLAGS_FRAME_SUNKEN;
+      else if (strcasecmp(wstart, "frameRaised")==0)
+        fl|=GWEN_WIDGET_FLAGS_FRAME_RAISED;
+      else if (strcasecmp(wstart, "frameThick")==0)
+        fl|=GWEN_WIDGET_FLAGS_FRAME_THICK;
+      else if (strcasecmp(wstart, "frameGroove")==0)
+        fl|=GWEN_WIDGET_FLAGS_FRAME_GROOVE;
     }
     if (copy)
       free(copy);

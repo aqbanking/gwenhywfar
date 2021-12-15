@@ -531,6 +531,7 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_SortDirection:
     case GWEN_DialogProperty_Sort:
     case GWEN_DialogProperty_ToolTip:
+    case GWEN_DialogProperty_WindowId:
     case GWEN_DialogProperty_None:
     case GWEN_DialogProperty_Unknown:
       ;
@@ -814,6 +815,9 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
     case GWEN_DialogProperty_Focus:
       return (f->hasFocus())?1:0;
+
+    case GWEN_DialogProperty_WindowId:
+      return f->id();
 
     case GWEN_DialogProperty_Title:
     case GWEN_DialogProperty_Value:
@@ -1190,6 +1194,7 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Sort:
   case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_ToolTip:
+  case GWEN_DialogProperty_WindowId:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1564,6 +1569,7 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_DialogProperty_Sort:
   case GWEN_DialogProperty_Visibility:
   case GWEN_DialogProperty_ToolTip:
+  case GWEN_DialogProperty_WindowId:
   case GWEN_DialogProperty_None:
   case GWEN_DialogProperty_Unknown:
     break;
@@ -1739,6 +1745,8 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
 
 long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr) {
   GWEN_WIDGET *w;
+  FXEvent* event=(FXEvent*)ptr;
+  int rv;
 
   w=GWEN_Dialog_FindWidgetByImplData(_dialog, FOX16_DIALOG_WIDGET_REAL, sender);
   if (w==NULL) {
@@ -1753,7 +1761,7 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 
   case GWEN_Widget_TypeDialog:
     /* catch ENTER key */
-    if (((FXEvent*)ptr)->code==KEY_Return || ((FXEvent*)ptr)->code==KEY_KP_Enter) {
+    if (event->code==KEY_Return || event->code==KEY_KP_Enter) {
       return 1;
     }
     return 0;
@@ -1781,7 +1789,9 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
-    ;
+    rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyPressed, "", event->code, NULL);
+    if (rv!=GWEN_DialogEvent_ResultNotHandled)
+      return 1;
   }
 
   return 0;
@@ -1791,6 +1801,8 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
 
 long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *ptr) {
   GWEN_WIDGET *w;
+  FXEvent* event=(FXEvent*)ptr;
+  int rv;
 
   w=GWEN_Dialog_FindWidgetByImplData(_dialog, FOX16_DIALOG_WIDGET_REAL, sender);
   if (w==NULL) {
@@ -1801,7 +1813,7 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   switch(GWEN_Widget_GetType(w)) {
   case GWEN_Widget_TypeDialog:
     /* catch ENTER key */
-    if (((FXEvent*)ptr)->code==KEY_Return || ((FXEvent*)ptr)->code==KEY_KP_Enter) {
+    if (event->code==KEY_Return || event->code==KEY_KP_Enter) {
       return 1;
     }
     return 0;
@@ -1831,7 +1843,9 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
-    ;
+    rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyReleased, "", event->code, NULL);
+    if (rv!=GWEN_DialogEvent_ResultNotHandled)
+      return 1;
   }
 
   return 0;
@@ -1961,6 +1975,14 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
     opts|=JUSTIFY_CENTER_X;
   if (flags & GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY)
     opts|=JUSTIFY_CENTER_Y;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_SUNKEN)
+    opts|=FRAME_SUNKEN;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_RAISED)
+    opts|=FRAME_RAISED;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_THICK)
+    opts|=FRAME_THICK;
+  if (flags & GWEN_WIDGET_FLAGS_FRAME_GROOVE)
+    opts|=FRAME_GROOVE;
 
   /* create THIS widget */
   switch(GWEN_Widget_GetType(w)) {

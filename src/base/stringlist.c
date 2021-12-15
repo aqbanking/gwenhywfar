@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Apr 03 2003
- copyright   : (C) 2003 by Martin Preuss
+ copyright   : (C) 2021 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -817,6 +817,7 @@ GWEN_STRINGLIST *GWEN_StringList_fromString2(const char *str, const char *delimi
       if (!(*s))
         break;
 
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Reading word from here: [%s] (delimiters: [%s])", s, delimiters);
       if (GWEN_Text_GetWordToBuffer(s, delimiters, wbuf, flags, &s))
         break;
 
@@ -907,4 +908,6 @@ void GWEN_StringList_AppendStringList(GWEN_STRINGLIST *slDest, const GWEN_STRING
     } /* while */
   }
 }
+
+
 

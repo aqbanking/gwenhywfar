@@ -563,6 +563,8 @@ int GWENHYWFAR_CB GWEN_DlgProgress_SignalHandler(GWEN_DIALOG *dlg,
     else
       return GWEN_DialogEvent_ResultAccept;
 
+  case GWEN_DialogEvent_TypeKeyPressed:
+  case GWEN_DialogEvent_TypeKeyReleased:
   case GWEN_DialogEvent_TypeLast:
     return GWEN_DialogEvent_ResultNotHandled;
   }

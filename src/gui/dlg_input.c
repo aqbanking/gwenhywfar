@@ -360,6 +360,8 @@ int GWENHYWFAR_CB GWEN_DlgInput_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
     return GWEN_DialogEvent_ResultAccept;
 
+  case GWEN_DialogEvent_TypeKeyPressed:
+  case GWEN_DialogEvent_TypeKeyReleased:
   case GWEN_DialogEvent_TypeLast:
     return GWEN_DialogEvent_ResultNotHandled;
   }

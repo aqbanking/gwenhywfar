@@ -81,6 +81,10 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeLast:
     fprintf(stderr, "Last, ignored\n");
     return GWEN_DialogEvent_ResultNotHandled;
+  case GWEN_DialogEvent_TypeKeyPressed:
+  case GWEN_DialogEvent_TypeKeyReleased:
+    fprintf(stderr, "Key events ignored\n");
+    return GWEN_DialogEvent_ResultNotHandled;
   }
   return GWEN_DialogEvent_ResultHandled;
 }

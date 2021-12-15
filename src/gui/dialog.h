@@ -57,33 +57,41 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWEN_Dialog, GWENHYWFAR_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_DIALOG, GWEN_Dialog, GWENHYWFAR_API)
 
 
-#define GWEN_WIDGET_FLAGS_NONE              0x00000000L
-#define GWEN_WIDGET_FLAGS_FILLX             0x80000000L
-#define GWEN_WIDGET_FLAGS_FILLY             0x40000000L
-#define GWEN_WIDGET_FLAGS_READONLY          0x20000000L
-#define GWEN_WIDGET_FLAGS_PASSWORD          0x10000000L
-#define GWEN_WIDGET_FLAGS_DEFAULT_WIDGET    0x08000000L
+#define GWEN_WIDGET_FLAGS_NONE                0x00000000L
+#define GWEN_WIDGET_FLAGS_FILLX               0x80000000L
+#define GWEN_WIDGET_FLAGS_FILLY               0x40000000L
+#define GWEN_WIDGET_FLAGS_READONLY            0x20000000L
+#define GWEN_WIDGET_FLAGS_PASSWORD            0x10000000L
+#define GWEN_WIDGET_FLAGS_DEFAULT_WIDGET      0x08000000L
 
-#define GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE  0x04000000L
-#define GWEN_WIDGET_FLAGS_DECOR_STRETCHABLE 0x02000000L
-#define GWEN_WIDGET_FLAGS_DECOR_MINIMIZE    0x01000000L
-#define GWEN_WIDGET_FLAGS_DECOR_MAXIMIZE    0x00800000L
-#define GWEN_WIDGET_FLAGS_DECOR_CLOSE       0x00400000L
-#define GWEN_WIDGET_FLAGS_DECOR_MENU        0x00200000L
+#define GWEN_WIDGET_FLAGS_DECOR_SHRINKABLE    0x04000000L
+#define GWEN_WIDGET_FLAGS_DECOR_STRETCHABLE   0x02000000L
+#define GWEN_WIDGET_FLAGS_DECOR_MINIMIZE      0x01000000L
+#define GWEN_WIDGET_FLAGS_DECOR_MAXIMIZE      0x00800000L
+#define GWEN_WIDGET_FLAGS_DECOR_CLOSE         0x00400000L
+#define GWEN_WIDGET_FLAGS_DECOR_MENU          0x00200000L
 
-#define GWEN_WIDGET_FLAGS_FIXED_WIDTH       0x00100000L
-#define GWEN_WIDGET_FLAGS_FIXED_HEIGHT      0x00080000L
-#define GWEN_WIDGET_FLAGS_EQUAL_WIDTH       0x00040000L
-#define GWEN_WIDGET_FLAGS_EQUAL_HEIGHT      0x00020000L
+#define GWEN_WIDGET_FLAGS_FIXED_WIDTH         0x00100000L
+#define GWEN_WIDGET_FLAGS_FIXED_HEIGHT        0x00080000L
+#define GWEN_WIDGET_FLAGS_EQUAL_WIDTH         0x00040000L
+#define GWEN_WIDGET_FLAGS_EQUAL_HEIGHT        0x00020000L
 
-#define GWEN_WIDGET_FLAGS_JUSTIFY_LEFT      0x00010000L
-#define GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT     0x00008000L
-#define GWEN_WIDGET_FLAGS_JUSTIFY_TOP       0x00004000L
-#define GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM    0x00002000L
-#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX   0x00001000L
-#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY   0x00000800L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_LEFT        0x00010000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_RIGHT       0x00008000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_TOP         0x00004000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_BOTTOM      0x00002000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERX     0x00001000L
+#define GWEN_WIDGET_FLAGS_JUSTIFY_CENTERY     0x00000800L
 
-#define GWEN_WIDGET_FLAGS_NO_WORDWRAP       0x00000400L
+#define GWEN_WIDGET_FLAGS_NO_WORDWRAP         0x00000400L
+
+#define GWEN_WIDGET_FLAGS_HANDLE_KEYS         0x00000200L
+
+#define GWEN_WIDGET_FLAGS_FRAME_SUNKEN        0x00000100L
+#define GWEN_WIDGET_FLAGS_FRAME_RAISED        0x00000080L
+#define GWEN_WIDGET_FLAGS_FRAME_THICK         0x00000040L
+#define GWEN_WIDGET_FLAGS_FRAME_GROOVE        0x00000020L
+
 
 
 
@@ -95,6 +103,8 @@ typedef enum {
   GWEN_DialogEvent_TypeEnabled,
   GWEN_DialogEvent_TypeDisabled,
   GWEN_DialogEvent_TypeClose,
+  GWEN_DialogEvent_TypeKeyPressed,
+  GWEN_DialogEvent_TypeKeyReleased,
 
   GWEN_DialogEvent_TypeLast
 } GWEN_DIALOG_EVENTTYPE;
@@ -122,6 +132,16 @@ enum {
 typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
                                                       GWEN_DIALOG_EVENTTYPE t,
                                                       const char *sender);
+
+/**
+ * New signal handler definition. This one allows conveying arguments.
+ * The meaning of the arguments depends on the signal.
+ */
+typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SIGNALHANDLER2)(GWEN_DIALOG *dlg,
+                                                       GWEN_DIALOG_EVENTTYPE t,
+                                                       const char *sender,
+                                                       int intArg,
+                                                       const char *stringArg);
 
 
 
@@ -226,6 +246,14 @@ GWEN_DIALOG_SIGNALHANDLER GWEN_Dialog_SetSignalHandler(GWEN_DIALOG *dlg,
                                                        GWEN_DIALOG_SIGNALHANDLER fn);
 
 
+/**
+ * Sets the new signal handler of the dialog. Please note that this doesn't set the signal
+ * handler of any sub-dialog, so each dialog will only receive its own signals.
+ */
+GWENHYWFAR_API
+GWEN_DIALOG_SIGNALHANDLER2 GWEN_Dialog_SetSignalHandler2(GWEN_DIALOG *dlg, GWEN_DIALOG_SIGNALHANDLER2 fn);
+
+
 
 
 
@@ -251,6 +279,8 @@ typedef enum {
   GWEN_DialogProperty_Sort,
   GWEN_DialogProperty_Visibility,
   GWEN_DialogProperty_ToolTip,
+
+  GWEN_DialogProperty_WindowId,
 
   GWEN_DialogProperty_Unknown=-1
 } GWEN_DIALOG_PROPERTY;
