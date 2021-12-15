@@ -10,6 +10,7 @@
 #ifndef FOX16_DIALOG_HPP
 #define FOX16_DIALOG_HPP
 
+#include <gwen-gui-fox16/api.h>
 #include <gwen-gui-cpp/cppdialog.hpp>
 
 #include <fx.h>
@@ -22,7 +23,7 @@
 
 
 
-class FOX16_Dialog: public FXObject, public CppDialog {
+class FOX16GUI_API FOX16_Dialog: public FXObject, public CppDialog {
   FXDECLARE(FOX16_Dialog)
 
 protected:
@@ -128,6 +129,7 @@ protected:
                                       const char *defaultValue);
 
 };
+
 
 
 
