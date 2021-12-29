@@ -850,7 +850,7 @@ AC_SUBST(ICONV_LIBS)
 AC_ARG_WITH(guis,
   [  --with-guis=list      space separated list of GUI implementations (default:all)],
   [gwenhywfar_guis="$withval"],
-  [gwenhywfar_guis="qt4 gtk2"]
+  [gwenhywfar_guis="qt5 gtk3"]
 )
 if test "$gwenhywfar_guis" = "none"; then
   gwenhywfar_guis=""
