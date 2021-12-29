@@ -36,7 +36,7 @@ endif
 
 noinst_PROGRAMS=cttest
 cttest_SOURCES=cttest.c
-cttest_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+cttest_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname) @i18n_libs@
 
 
 if IF_HAVE_OPENSSL
