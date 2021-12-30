@@ -5,10 +5,11 @@ noinst_HEADERS=args.h
 xmlmerge_SOURCES=args.c main.c
 
 xmlmerge_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+xmlmerge_LDFLAGS=@i18n_libs@
 
 if IS_WINDOWS
 
-xmlmerge_LDFLAGS=-mconsole
+xmlmerge_LDFLAGS+=-mconsole
 xmlmerge_LDADD+=$(PROG_LIBRARIES)
 
 endif

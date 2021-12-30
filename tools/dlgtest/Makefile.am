@@ -7,3 +7,5 @@ dlgtest_LDADD = \
   $(top_builddir)/src/$(gwenhywfar_internal_libname) \
   $(top_builddir)/gwenui/libgwenui.la \
   $(PROG_LIBRARIES)
+dlgtest_LDFLAGS=@i18n_libs@
+
