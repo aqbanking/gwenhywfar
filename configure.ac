@@ -29,7 +29,7 @@ AC_CONFIG_HEADERS([config.h])
 #
 GWENHYWFAR_VERSION_MAJOR=5
 GWENHYWFAR_VERSION_MINOR=8
-GWENHYWFAR_VERSION_PATCHLEVEL=0
+GWENHYWFAR_VERSION_PATCHLEVEL=1
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="stable"
@@ -42,7 +42,7 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 GWENHYWFAR_SO_CURRENT="87"
 GWENHYWFAR_SO_AGE="8"
-GWENHYWFAR_SO_REVISION="0"
+GWENHYWFAR_SO_REVISION="1"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -498,7 +498,7 @@ AC_MSG_RESULT($gwenhywfar_plugin_searchdir)
 # check data search dir
 #
 AC_MSG_CHECKING(data search dir)
-AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for gwen's data files],
+AC_ARG_WITH(data-searchdir, [  --with-data-searchdir=DIR where to search for data files],
   [gwenhywfar_data_searchdir="$withval"],
   [gwenhywfar_data_searchdir=""])
 
@@ -748,31 +748,44 @@ AC_SUBST(MAKE_I18N_FILES)
 AM_CONDITIONAL(IF_MAKE_I18N_FILES, [test "$MAKE_I18N_FILES" = "yes"])
 
 
-# then check whether i18n support is to be compiled in
-i18n_libs=""
-HAVE_I18N="yes"
-AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
+## then check whether i18n support is to be compiled in
+#i18n_libs=""
+#HAVE_I18N="yes"
+#AC_CHECK_HEADERS([locale.h libintl.h], [], [HAVE_I18N="no"])
 
-if test "$OS_TYPE" != "windows"; then
-  oldlibs="$LIBS"
-  LIBS=""
-  AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
-  i18n_libs="$LIBS"
-  LIBS="$oldlibs"
-else
-  if test "$HAVE_I18N" != "no"; then
-    i18n_libs="-lintl"
-    all_libraries="${all_libraries} -lintl"
-  fi
-fi
+#if test "$OS_TYPE" != "windows"; then
+#  oldlibs="$LIBS"
+#  LIBS=""
+#  AC_SEARCH_LIBS(libintl_bindtextdomain, intl, [], [HAVE_I18N="no"])
+#  i18n_libs="$LIBS"
+#  LIBS="$oldlibs"
+#else
+#  if test "$HAVE_I18N" != "no"; then
+#    i18n_libs="-lintl"
+#    all_libraries="${all_libraries} -lintl"
+#  fi
+#fi
+#
+#if test "$HAVE_I18N" != "no"; then
+#  AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
+#fi
+#
+#AC_SUBST(HAVE_I18N)
+#AC_SUBST(i18n_libs)
+
+
+
+AM_GNU_GETTEXT([external])
+i18n_libs="$LTLIBINTL"
+all_libraries="${all_libraries} $LTLIBINTL"
+HAVE_I18N="$USE_NLS"
 
 if test "$HAVE_I18N" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
 fi
 
-AC_SUBST(HAVE_I18N)
 AC_SUBST(i18n_libs)
-
+AC_SUBST(HAVE_I18N)
 
 
 ###-------------------------------------------------------------------------
@@ -837,7 +850,7 @@ AC_SUBST(ICONV_LIBS)
 AC_ARG_WITH(guis,
   [  --with-guis=list      space separated list of GUI implementations (default:all)],
   [gwenhywfar_guis="$withval"],
-  [gwenhywfar_guis="qt4 gtk2"]
+  [gwenhywfar_guis="qt5 gtk3"]
 )
 if test "$gwenhywfar_guis" = "none"; then
   gwenhywfar_guis=""
