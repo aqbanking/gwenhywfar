@@ -3174,7 +3174,7 @@ static void check_generated_rsa_key(gcry_sexp_t key, unsigned long expected_e)
 
 
 
-static void check_rsa_keys(void)
+static int check_rsa_keys(void)
 {
   gcry_sexp_t keyparm, key;
   int rc;
@@ -3262,7 +3262,7 @@ static void check_rsa_keys(void)
 
   check_generated_rsa_key(key, 65537);
   gcry_sexp_release(key);
-
+  return 0;
 }
 
 
@@ -6467,272 +6467,164 @@ int testEnviron(void)
   return 0;
 }
 
+typedef struct {
+    const char *name;
+    int (*func)(void);
+    int (*func_p)(int, char**);
+} TEST_FUNC;
 
+TEST_FUNC tests[] = {
+    { "3rsa", testCrypt3Rsa, NULL },
+    { "3rsa2", testCrypt3Rsa2, NULL },
+    { "3rsa3", testCrypt3Rsa3, NULL },
+    { "3rsa4", testCrypt3Rsa4, NULL },
+    { "822", testRfc822Import, NULL },
+    { "822x", testRfc822Export, NULL },
+    { "base64", NULL, testBase64 },
+    { "base64_2", NULL, testBase64_2 },
+    { "buf2", testBuffer2, NULL },
+    { "cryptmgr1", testCryptMgr1, NULL },
+    { "cryptmgr2", testCryptMgr2, NULL },
+    { "cryptmgr3", testCryptMgr3, NULL },
+    { "csv", testCSV, NULL },
+    { "date1", testDate1, NULL },
+    { "date2", testDate2, NULL },
+    { "db", testDB, NULL },
+    { "db2", testDB2, NULL },
+    { "dbfile", testDBfile, NULL },
+    { "dbfile2", NULL, testDBfile2 },
+    { "dbfile3", NULL, testDBfile3 },
+    { "dbfile4", testDBfile4, NULL },
+    { "des", testDES, NULL },
+    { "des2", testDES2, NULL },
+    { "des3", testDES3, NULL },
+    { "des4", NULL, testDES4 },
+    { "des5", testDES5, NULL },
+    { "des6", NULL, testDES6 },
+    { "dlg", NULL, testDialog },
+    { "env", testEnviron, NULL },
+    { "floatdouble", testFloatDouble, NULL },
+    { "fslock", NULL, testFsLock },
+    { "fslock2", NULL, testFsLock2 },
+    { "gtls", testGnutls, NULL },
+    { "hashtree", NULL, testHashTree },
+    { "http1", NULL, testHttp1 },
+    { "http2", NULL, testHttp2 },
+    { "httpsServer", NULL, testHttpsServer },
+    { "httpsession", NULL, testHttpSession },
+    { "list", NULL, testListMsg },
+    { "map", testMap, NULL },
+    { "map2", testMap2, NULL },
+    { "map3", testMap3, NULL },
+    { "map4", testMap4, NULL },
+    { "mem", testMem, NULL },
+    { "modules", NULL, testModules },
+    { "msg", testMsg, NULL },
+    { "newxml", NULL, testNewXML },
+    { "olddb", testOldDbImport, NULL },
+    { "option", NULL, testOptions },
+    { "params1", testParams1, NULL },
+    { "params2", testParams2, NULL },
+    { "params3", testParams3, NULL },
+    { "parity", NULL, testParity },
+    { "process", NULL, testProcess },
+    { "process2", testProcess2, NULL },
+    { "pss1", testPss1, NULL },
+    { "pss2", testPss2, NULL },
+    { "pss3", testPss3, NULL },
+    { "ptr", testPtr, NULL },
+    { "pw1", testPasswordStore1, NULL },
+    { "pw2", testPasswordStore2, NULL },
+    { "pw3", testPasswordStore3, NULL },
+    { "pw4", NULL, testPasswordStore4 },
+    { "rsa", check_rsa_keys, NULL },
+    { "sar1", NULL, testSar1 },
+    { "sar2", NULL, testSar2 },
+    { "sar3", NULL, testSar3 },
+    { "sar4", NULL, testSar4 },
+    { "setBinDataDb", NULL, testSetBinDataDb },
+    { "signals1", testSignals1, NULL },
+    { "signals2", testSignals2, NULL },
+    { "signals3", testSignals3, NULL },
+    { "sio1", NULL, testSyncIo1 },
+    { "sio2", NULL, testSyncIo2 },
+    { "sio3", NULL, testSyncIo3 },
+    { "sl", testStringListFromString, NULL },
+    { "sl2", testStringList2, NULL },
+    { "sn", testSnprintf, NULL },
+    { "socketServer", NULL, testSocketServer },
+    { "sort", NULL, testSort },
+    { "threads1", testThreads1, NULL },
+    { "threads2", testThreads2, NULL },
+    { "time", testTime, NULL },
+    { "time1", NULL, testTimeToString },
+    { "time2", NULL, testTimeFromString },
+    { "tlsServer", NULL, testTlsServer },
+    { "tresor1", testTresor1, NULL },
+    { "tresor2", testTresor2, NULL },
+    { "url", NULL, testUrl },
+    { "xml", NULL, testXML },
+    { "xml2", NULL, testXML2 },
+    { "xml3", NULL, testXML3 },
+    { "xml4", NULL, testXML4 },
+    { "xml5", testXML5, NULL },
+    { "xml6", NULL, testXML6 },
+    { "xml7", NULL, testXML7 },
+    { "xml8", NULL, testXML8 },
+    { "xmldb1", testXmlDbExport, NULL },
+    { "xmldb2", testXmlDbImport, NULL },
+    { NULL, NULL, NULL },
+};
+
+static void print_usage(const char *app_name)
+{
+    TEST_FUNC *p;
+
+    fprintf(stderr, "Usage: %s <test>\n  where <test> is one of", app_name);
+    for(p = tests; p->name; p++) {
+      fprintf(stderr, " %s", p->name);
+    }
+    fprintf(stderr, "\n");
+}
+
+TEST_FUNC* get_test(const char *name)
+{
+  TEST_FUNC *p;
+
+  for(p = tests; p->name; p++) {
+    if (strcasecmp(name, p->name)==0 && (p->func || p->func_p))
+      return p;
+  }
+  return NULL;
+}
 
 int main(int argc, char **argv)
 {
+  TEST_FUNC *test;
   int rv;
 
   GWEN_Init();
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Debug);
   //GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
-  if (argc<2) {
-    fprintf(stderr,
-            "Usage: %s <test>\n  where <test> is one of db, dbfile, dbfile2, list, key, mkkey, cpkey, xml, xml2, sn, ssl, accept, connect\n",
-            argv[0]);
+  if (argc < 2) {
+    print_usage(argv[0]);
     GWEN_Fini();
     return 1;
   }
 
-
-  if (strcasecmp(argv[1], "dbfile")==0)
-    rv=testDBfile();
-  else if (strcasecmp(argv[1], "des")==0)
-    rv=testDES();
-  else if (strcasecmp(argv[1], "des2")==0)
-    rv=testDES2();
-  else if (strcasecmp(argv[1], "des3")==0)
-    rv=testDES3();
-  else if (strcasecmp(argv[1], "des4")==0)
-    rv=testDES4(argc, argv);
-  else if (strcasecmp(argv[1], "des5")==0) {
-    rv=testDES5();
-  }
-  else if (strcasecmp(argv[1], "des6")==0) {
-    rv=testDES6(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "db")==0)
-    rv=testDB();
-  else if (strcasecmp(argv[1], "db2")==0)
-    rv=testDB2();
-  else if (strcasecmp(argv[1], "dbfile2")==0)
-    rv=testDBfile2(argc, argv);
-  else if (strcasecmp(argv[1], "dbfile3")==0)
-    rv=testDBfile3(argc, argv);
-  else if (strcasecmp(argv[1], "dbfile4")==0)
-    rv=testDBfile4();
-  else if (strcasecmp(argv[1], "msg")==0)
-    rv=testMsg();
-  else if (strcasecmp(argv[1], "list")==0)
-    rv=testListMsg(argc, argv);
-  else if (strcasecmp(argv[1], "xml")==0)
-    rv=testXML(argc, argv);
-  else if (strcasecmp(argv[1], "xml2")==0)
-    rv=testXML2(argc, argv);
-  else if (strcasecmp(argv[1], "xml3")==0)
-    rv=testXML3(argc, argv);
-  else if (strcasecmp(argv[1], "xml4")==0)
-    rv=testXML4(argc, argv);
-  else if (strcasecmp(argv[1], "xml5")==0)
-    rv=testXML5();
-  else if (strcasecmp(argv[1], "xml6")==0)
-    rv=testXML6(argc, argv);
-  else if (strcasecmp(argv[1], "xml7")==0)
-    rv=testXML7(argc, argv);
-  else if (strcasecmp(argv[1], "xml8")==0)
-    rv=testXML8(argc, argv);
-  else if (strcasecmp(argv[1], "sn")==0)
-    rv=testSnprintf();
-  else if (strcasecmp(argv[1], "process")==0)
-    rv=testProcess(argc, argv);
-  else if (strcasecmp(argv[1], "process2")==0)
-    rv=testProcess2();
-  else if (strcasecmp(argv[1], "option")==0)
-    rv=testOptions(argc, argv);
-  else if (strcasecmp(argv[1], "base64")==0)
-    rv=testBase64(argc, argv);
-  else if (strcasecmp(argv[1], "base64_2")==0)
-    rv=testBase64_2(argc, argv);
-  else if (strcasecmp(argv[1], "time")==0)
-    rv=testTime();
-  else if (strcasecmp(argv[1], "time2")==0)
-    rv=testTimeFromString(argc, argv);
-  else if (strcasecmp(argv[1], "time1")==0)
-    rv=testTimeToString(argc, argv);
-  else if (strcasecmp(argv[1], "olddb")==0)
-    rv=testOldDbImport();
-  else if (strcasecmp(argv[1], "822")==0)
-    rv=testRfc822Import();
-  else if (strcasecmp(argv[1], "822x")==0)
-    rv=testRfc822Export();
-  else if (strcasecmp(argv[1], "xmldb1")==0)
-    rv=testXmlDbExport();
-  else if (strcasecmp(argv[1], "xmldb2")==0)
-    rv=testXmlDbImport();
-  else if (strcasecmp(argv[1], "fslock")==0)
-    rv=testFsLock(argc, argv);
-  else if (strcasecmp(argv[1], "fslock2")==0)
-    rv=testFsLock2(argc, argv);
-  else if (strcasecmp(argv[1], "ptr")==0)
-    rv=testPtr();
-  else if (strcasecmp(argv[1], "sl2")==0)
-    rv=testStringList2();
-  else if (strcasecmp(argv[1], "sort")==0)
-    rv=testSort(argc, argv);
-  else if (strcasecmp(argv[1], "buf2")==0)
-    rv=testBuffer2();
-  else if (strcasecmp(argv[1], "mem")==0)
-    rv=testMem();
-  else if (strcasecmp(argv[1], "floatdouble")==0)
-    rv=testFloatDouble();
-  else if (strcasecmp(argv[1], "map")==0)
-    rv=testMap();
-  else if (strcasecmp(argv[1], "map2")==0)
-    rv=testMap2();
-  else if (strcasecmp(argv[1], "map3")==0)
-    rv=testMap3();
-  else if (strcasecmp(argv[1], "map4")==0)
-    rv=testMap4();
-  else if (strcasecmp(argv[1], "signals1")==0)
-    rv=testSignals1();
-  else if (strcasecmp(argv[1], "signals2")==0)
-    rv=testSignals2();
-  else if (strcasecmp(argv[1], "signals3")==0)
-    rv=testSignals3();
-  else if (strcasecmp(argv[1], "url")==0)
-    rv=testUrl(argc, argv);
-  else if (strcasecmp(argv[1], "newxml")==0)
-    rv=testNewXML(argc, argv);
-  else if (strcasecmp(argv[1], "3rsa")==0)
-    rv=testCrypt3Rsa();
-  else if (strcasecmp(argv[1], "3rsa2")==0)
-    rv=testCrypt3Rsa2();
-  else if (strcasecmp(argv[1], "3rsa3")==0)
-    rv=testCrypt3Rsa3();
-  else if (strcasecmp(argv[1], "3rsa4")==0)
-    rv=testCrypt3Rsa4();
-  else if (strcasecmp(argv[1], "gtls")==0)
-    rv=testGnutls();
-  else if (strcasecmp(argv[1], "httpsession")==0)
-    rv=testHttpSession(argc, argv);
-  else if (strcasecmp(argv[1], "rsa")==0) {
-    check_rsa_keys();
-    rv=0;
-  }
-  else if (strcasecmp(argv[1], "cryptmgr1")==0) {
-    rv=testCryptMgr1();
-  }
-  else if (strcasecmp(argv[1], "cryptmgr2")==0) {
-    rv=testCryptMgr2();
-  }
-  else if (strcasecmp(argv[1], "cryptmgr3")==0) {
-    rv=testCryptMgr3();
-  }
-  else if (strcasecmp(argv[1], "pss1")==0) {
-    rv=testPss1();
-  }
-  else if (strcasecmp(argv[1], "pss2")==0) {
-    rv=testPss2();
-  }
-  else if (strcasecmp(argv[1], "dlg")==0) {
-    rv=testDialog(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sio1")==0) {
-    rv=testSyncIo1(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sio2")==0) {
-    rv=testSyncIo2(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sio3")==0) {
-    rv=testSyncIo3(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "http1")==0) {
-    rv=testHttp1(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "http2")==0) {
-    rv=testHttp2(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "tresor1")==0) {
-    rv=testTresor1();
-  }
-  else if (strcasecmp(argv[1], "tresor2")==0) {
-    rv=testTresor2();
-  }
-  else if (strcasecmp(argv[1], "hashtree")==0) {
-    rv=testHashTree(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "date1")==0) {
-    rv=testDate1();
-  }
-  else if (strcasecmp(argv[1], "date2")==0) {
-    rv=testDate2();
-  }
-  else if (strcasecmp(argv[1], "sar1")==0) {
-    rv=testSar1(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sar2")==0) {
-    rv=testSar2(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sar3")==0) {
-    rv=testSar3(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sar4")==0) {
-    rv=testSar4(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "sl")==0) {
-    rv=testStringListFromString();
-  }
-  else if (strcasecmp(argv[1], "pw1")==0) {
-    rv=testPasswordStore1();
-  }
-  else if (strcasecmp(argv[1], "pw2")==0) {
-    rv=testPasswordStore2();
-  }
-  else if (strcasecmp(argv[1], "pw3")==0) {
-    rv=testPasswordStore3();
-  }
-  else if (strcasecmp(argv[1], "pw4")==0) {
-    rv=testPasswordStore4(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "csv")==0) {
-    rv=testCSV();
-  }
-  else if (strcasecmp(argv[1], "params1")==0) {
-    rv=testParams1();
-  }
-  else if (strcasecmp(argv[1], "params2")==0) {
-    rv=testParams2();
-  }
-  else if (strcasecmp(argv[1], "params3")==0) {
-    rv=testParams3();
-  }
-  else if (strcasecmp(argv[1], "socketServer")==0) {
-    rv=testSocketServer(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "tlsServer")==0) {
-    rv=testTlsServer(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "httpsServer")==0) {
-    rv=testHttpsServer(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "parity")==0) {
-    rv=testParity(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "modules")==0) {
-    rv=testModules(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "pss3")==0) {
-    rv=testPss3();
-  }
-  else if (strcasecmp(argv[1], "threads1")==0) {
-    rv=testThreads1();
-  }
-  else if (strcasecmp(argv[1], "threads2")==0) {
-    rv=testThreads2();
-  }
-  else if (strcasecmp(argv[1], "setBinDataDb")==0) {
-    rv=testSetBinDataDb(argc, argv);
-  }
-  else if (strcasecmp(argv[1], "env")==0) {
-    rv=testEnviron();
-  }
-  else {
-    fprintf(stderr, "Unknown command \"%s\"\n", argv[1]);
+  test=get_test(argv[1]);
+  if (test==NULL) {
+    fprintf(stderr, "Unknown test \"%s\"\n", argv[1]);
+    print_usage(argv[0]);
     GWEN_Fini();
     return 1;
   }
 
+  if (test->func)
+    rv = (test->func)();
+  else
+    rv = (test->func_p)(argc, argv);
   GWEN_Fini();
   return rv;
 }
