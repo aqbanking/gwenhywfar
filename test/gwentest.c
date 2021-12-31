@@ -6537,6 +6537,7 @@ TEST_FUNC tests[] = {
     { "pw2", testPasswordStore2, NULL },
     { "pw3", testPasswordStore3, NULL },
     { "pw4", NULL, testPasswordStore4 },
+    { "pw5", NULL, testPasswordStore5 },
     { "rsa", check_rsa_keys, NULL },
     { "sar1", NULL, testSar1 },
     { "sar2", NULL, testSar2 },
