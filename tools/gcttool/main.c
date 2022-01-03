@@ -18,6 +18,7 @@
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/cgui.h>
 
+#include "funcs.h"
 #include "globals.h"
 
 #ifdef OS_WIN32
@@ -148,6 +149,22 @@ int main(int argc, char **argv)
       "Show this help screen"       /* long description */
     }
   };
+  const GWEN_FUNCS funcs[]= {
+    GWEN_Funcs_Entry_DB_NODE_Args_Help("create", createToken, I18N("This command creates a crypt token")),
+    GWEN_Funcs_Entry_DB_NODE_Args_Help("showuser", showUser, I18N("Display user data stored on the token")),
+    GWEN_Funcs_Entry_DB_NODE_Args_Help("showkey", showKey, I18N("Display key info stored on the token")),
+    GWEN_Funcs_Entry_DB_NODE_Args("genkey", genKey),
+    GWEN_Funcs_Entry_DB_NODE_Args("activateKey", activateKey),
+    GWEN_Funcs_Entry_DB_NODE_Args_Help("update", updateToken, I18N("Update Crypt Token to newer version (e.g. OpenHBCI key files")),
+    GWEN_Funcs_Entry_DB_NODE_Args("setsignseq", setSignSeq),
+    GWEN_Funcs_Entry_DB_NODE_Args("changepin", changePin),
+    GWEN_Funcs_Entry_DB_NODE_Args("setkey", setKey),
+    GWEN_Funcs_Entry_DB_NODE_Args("hashTree", hashTree),
+    GWEN_Funcs_Entry_DB_NODE_Args("checkTree", checkTree),
+    GWEN_Funcs_Entry_DB_NODE_Args_Help("showpasswords", showPasswords, I18N("Display passwords store in a GWEN_PASSWD_STORE file")),
+    GWEN_Funcs_Entry_End(),
+  };
+  const GWEN_FUNCS *func;
 
   err=GWEN_Init();
   if (err) {
@@ -209,30 +226,8 @@ int main(int argc, char **argv)
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("\nCommands:\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  create:\n"
-                                  "    This command creates a crypt token"
-                                  "\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  showuser:\n"
-                                  "    Display user data stored on the "
-                                  "token\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  showkey:\n"
-                                  "    Display key info stored on the "
-                                  "token\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  update:\n"
-                                  "    Update Crypt Token to newer version (e.g. OpenHBCI key"
-                                  "files)\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  showpasswords:\n"
-                                  "    Display passwords store in a GWEN_PASSWD_STORE file\n\n"));
-
-    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
+    fprintf(stderr, "%s\n", I18N("\nCommands:\n\n"));
+    GWEN_Funcs_Usage_With_Help(funcs);
     return 0;
   }
   if (rv) {
@@ -246,41 +241,9 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  if (strcasecmp(cmd, "create")==0) {
-    rv=createToken(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "showuser")==0) {
-    rv=showUser(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "showkey")==0) {
-    rv=showKey(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "genkey")==0) {
-    rv=genKey(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "activatekey")==0) {
-    rv=activateKey(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "update")==0) {
-    rv=updateToken(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "setsignseq")==0) {
-    rv=setSignSeq(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "changepin")==0) {
-    rv=changePin(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "setkey")==0) {
-    rv=setKey(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "hashTree")==0) {
-    rv=hashTree(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "checkTree")==0) {
-    rv=checkTree(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "showpasswords")==0) {
-    rv=showPasswords(db, argc, argv);
+  func=GWEN_Funcs_Find(funcs, cmd);
+  if (func!=NULL) {
+    rv=GWEN_Funcs_Call_DB_NODE_Args(func, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

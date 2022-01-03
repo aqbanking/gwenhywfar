@@ -1,4 +1,5 @@
-AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir)
+AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir) -I$(top_srcdir)/src/base
+
 if IF_HAVE_OPENSSL
 AM_CPPFLAGS+= $(OPENSSL_CFLAGS)
 endif
@@ -25,7 +26,7 @@ gct_tool_SOURCES=\
   showpasswords.c \
   main.c
 
-gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
+gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname) $(top_builddir)/src/base/libbase.la
 
 if IS_WINDOWS
 
