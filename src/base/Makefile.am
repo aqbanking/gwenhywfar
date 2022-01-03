@@ -70,6 +70,7 @@ iheader_HEADERS=\
  buffer.h \
  debug.h \
  error.h \
+ funcs.h \
  gwensignal.h \
  i18n.h \
  idlist64.h \
@@ -108,6 +109,7 @@ libbase_la_SOURCES=\
  buffer.c \
  debug.c \
  error.c \
+ funcs.c \
  gwensignal.c \
  i18n.c \
  idlist64.c \
