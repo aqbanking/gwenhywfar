@@ -93,6 +93,7 @@
 #endif
 
 #include "buffer-t.h"
+#include "funcs.h"
 #include "simpleptrlist-t.h"
 #include "idlist64-t.h"
 
@@ -6467,141 +6468,119 @@ int testEnviron(void)
   return 0;
 }
 
-typedef struct {
-    const char *name;
-    int (*func)(void);
-    int (*func_p)(int, char**);
-} TEST_FUNC;
-
-TEST_FUNC tests[] = {
-    { "3rsa", testCrypt3Rsa, NULL },
-    { "3rsa2", testCrypt3Rsa2, NULL },
-    { "3rsa3", testCrypt3Rsa3, NULL },
-    { "3rsa4", testCrypt3Rsa4, NULL },
-    { "822", testRfc822Import, NULL },
-    { "822x", testRfc822Export, NULL },
-    { "base64", NULL, testBase64 },
-    { "base64_2", NULL, testBase64_2 },
-    { "buf2", testBuffer2, NULL },
-    { "cryptmgr1", testCryptMgr1, NULL },
-    { "cryptmgr2", testCryptMgr2, NULL },
-    { "cryptmgr3", testCryptMgr3, NULL },
-    { "csv", testCSV, NULL },
-    { "date1", testDate1, NULL },
-    { "date2", testDate2, NULL },
-    { "db", testDB, NULL },
-    { "db2", testDB2, NULL },
-    { "dbfile", testDBfile, NULL },
-    { "dbfile2", NULL, testDBfile2 },
-    { "dbfile3", NULL, testDBfile3 },
-    { "dbfile4", testDBfile4, NULL },
-    { "des", testDES, NULL },
-    { "des2", testDES2, NULL },
-    { "des3", testDES3, NULL },
-    { "des4", NULL, testDES4 },
-    { "des5", testDES5, NULL },
-    { "des6", NULL, testDES6 },
-    { "dlg", NULL, testDialog },
-    { "env", testEnviron, NULL },
-    { "floatdouble", testFloatDouble, NULL },
-    { "fslock", NULL, testFsLock },
-    { "fslock2", NULL, testFsLock2 },
-    { "gtls", testGnutls, NULL },
-    { "hashtree", NULL, testHashTree },
-    { "http1", NULL, testHttp1 },
-    { "http2", NULL, testHttp2 },
-    { "httpsServer", NULL, testHttpsServer },
-    { "httpsession", NULL, testHttpSession },
-    { "list", NULL, testListMsg },
-    { "map", testMap, NULL },
-    { "map2", testMap2, NULL },
-    { "map3", testMap3, NULL },
-    { "map4", testMap4, NULL },
-    { "mem", testMem, NULL },
-    { "modules", NULL, testModules },
-    { "msg", testMsg, NULL },
-    { "newxml", NULL, testNewXML },
-    { "olddb", testOldDbImport, NULL },
-    { "option", NULL, testOptions },
-    { "params1", testParams1, NULL },
-    { "params2", testParams2, NULL },
-    { "params3", testParams3, NULL },
-    { "parity", NULL, testParity },
-    { "process", NULL, testProcess },
-    { "process2", testProcess2, NULL },
-    { "pss1", testPss1, NULL },
-    { "pss2", testPss2, NULL },
-    { "pss3", testPss3, NULL },
-    { "ptr", testPtr, NULL },
-    { "pw1", testPasswordStore1, NULL },
-    { "pw2", testPasswordStore2, NULL },
-    { "pw3", testPasswordStore3, NULL },
-    { "pw4", NULL, testPasswordStore4 },
-    { "pw5", NULL, testPasswordStore5 },
-    { "rsa", check_rsa_keys, NULL },
-    { "sar1", NULL, testSar1 },
-    { "sar2", NULL, testSar2 },
-    { "sar3", NULL, testSar3 },
-    { "sar4", NULL, testSar4 },
-    { "setBinDataDb", NULL, testSetBinDataDb },
-    { "signals1", testSignals1, NULL },
-    { "signals2", testSignals2, NULL },
-    { "signals3", testSignals3, NULL },
-    { "sio1", NULL, testSyncIo1 },
-    { "sio2", NULL, testSyncIo2 },
-    { "sio3", NULL, testSyncIo3 },
-    { "sl", testStringListFromString, NULL },
-    { "sl2", testStringList2, NULL },
-    { "sn", testSnprintf, NULL },
-    { "socketServer", NULL, testSocketServer },
-    { "sort", NULL, testSort },
-    { "threads1", testThreads1, NULL },
-    { "threads2", testThreads2, NULL },
-    { "time", testTime, NULL },
-    { "time1", NULL, testTimeToString },
-    { "time2", NULL, testTimeFromString },
-    { "tlsServer", NULL, testTlsServer },
-    { "tresor1", testTresor1, NULL },
-    { "tresor2", testTresor2, NULL },
-    { "url", NULL, testUrl },
-    { "xml", NULL, testXML },
-    { "xml2", NULL, testXML2 },
-    { "xml3", NULL, testXML3 },
-    { "xml4", NULL, testXML4 },
-    { "xml5", testXML5, NULL },
-    { "xml6", NULL, testXML6 },
-    { "xml7", NULL, testXML7 },
-    { "xml8", NULL, testXML8 },
-    { "xmldb1", testXmlDbExport, NULL },
-    { "xmldb2", testXmlDbImport, NULL },
-    { NULL, NULL, NULL },
+const GWEN_FUNCS tests[] = {
+  GWEN_Funcs_Entry("3rsa", testCrypt3Rsa),
+  GWEN_Funcs_Entry("3rsa2", testCrypt3Rsa2),
+  GWEN_Funcs_Entry("3rsa3", testCrypt3Rsa3),
+  GWEN_Funcs_Entry("3rsa4", testCrypt3Rsa4),
+  GWEN_Funcs_Entry("822", testRfc822Import),
+  GWEN_Funcs_Entry("822x", testRfc822Export),
+  GWEN_Funcs_Entry_Args("base64", testBase64),
+  GWEN_Funcs_Entry_Args("base64_2", testBase64_2),
+  GWEN_Funcs_Entry("buf2", testBuffer2),
+  GWEN_Funcs_Entry("cryptmgr1", testCryptMgr1),
+  GWEN_Funcs_Entry("cryptmgr2", testCryptMgr2),
+  GWEN_Funcs_Entry("cryptmgr3", testCryptMgr3),
+  GWEN_Funcs_Entry("csv", testCSV),
+  GWEN_Funcs_Entry("date1", testDate1),
+  GWEN_Funcs_Entry("date2", testDate2),
+  GWEN_Funcs_Entry("db", testDB),
+  GWEN_Funcs_Entry("db2", testDB2),
+  GWEN_Funcs_Entry("dbfile", testDBfile),
+  GWEN_Funcs_Entry_Args("dbfile2", testDBfile2),
+  GWEN_Funcs_Entry_Args("dbfile3", testDBfile3),
+  GWEN_Funcs_Entry("dbfile4", testDBfile4),
+  GWEN_Funcs_Entry("des", testDES),
+  GWEN_Funcs_Entry("des2", testDES2),
+  GWEN_Funcs_Entry("des3", testDES3),
+  GWEN_Funcs_Entry_Args("des4", testDES4),
+  GWEN_Funcs_Entry("des5", testDES5),
+  GWEN_Funcs_Entry_Args("des6", testDES6),
+  GWEN_Funcs_Entry_Args("dlg", testDialog),
+  GWEN_Funcs_Entry("env", testEnviron),
+  GWEN_Funcs_Entry("floatdouble", testFloatDouble),
+  GWEN_Funcs_Entry_Args("fslock", testFsLock),
+  GWEN_Funcs_Entry_Args("fslock2", testFsLock2),
+  GWEN_Funcs_Entry("gtls", testGnutls),
+  GWEN_Funcs_Entry_Args("hashtree", testHashTree),
+  GWEN_Funcs_Entry_Args("http1", testHttp1),
+  GWEN_Funcs_Entry_Args("http2", testHttp2),
+  GWEN_Funcs_Entry_Args("httpsServer", testHttpsServer),
+  GWEN_Funcs_Entry_Args("httpsession", testHttpSession),
+  GWEN_Funcs_Entry_Args("list", testListMsg),
+  GWEN_Funcs_Entry("map", testMap),
+  GWEN_Funcs_Entry("map2", testMap2),
+  GWEN_Funcs_Entry("map3", testMap3),
+  GWEN_Funcs_Entry("map4", testMap4),
+  GWEN_Funcs_Entry("mem", testMem),
+  GWEN_Funcs_Entry_Args("modules", testModules),
+  GWEN_Funcs_Entry("msg", testMsg),
+  GWEN_Funcs_Entry_Args("newxml", testNewXML),
+  GWEN_Funcs_Entry("olddb", testOldDbImport),
+  GWEN_Funcs_Entry_Args("option", testOptions),
+  GWEN_Funcs_Entry("params1", testParams1),
+  GWEN_Funcs_Entry("params2", testParams2),
+  GWEN_Funcs_Entry("params3", testParams3),
+  GWEN_Funcs_Entry_Args("parity", testParity),
+  GWEN_Funcs_Entry_Args("process", testProcess),
+  GWEN_Funcs_Entry("process2", testProcess2),
+  GWEN_Funcs_Entry("pss1", testPss1),
+  GWEN_Funcs_Entry("pss2", testPss2),
+  GWEN_Funcs_Entry("pss3", testPss3),
+  GWEN_Funcs_Entry("ptr", testPtr),
+  GWEN_Funcs_Entry("pw1", testPasswordStore1),
+  GWEN_Funcs_Entry("pw2", testPasswordStore2),
+  GWEN_Funcs_Entry("pw3", testPasswordStore3),
+  GWEN_Funcs_Entry_Args("pw4", testPasswordStore4),
+  GWEN_Funcs_Entry_Args("pw5", testPasswordStore5),
+  GWEN_Funcs_Entry("rsa", check_rsa_keys),
+  GWEN_Funcs_Entry_Args("sar1", testSar1),
+  GWEN_Funcs_Entry_Args("sar2", testSar2),
+  GWEN_Funcs_Entry_Args("sar3", testSar3),
+  GWEN_Funcs_Entry_Args("sar4", testSar4),
+  GWEN_Funcs_Entry_Args("setBinDataDb", testSetBinDataDb),
+  GWEN_Funcs_Entry("signals1", testSignals1),
+  GWEN_Funcs_Entry("signals2", testSignals2),
+  GWEN_Funcs_Entry("signals3", testSignals3),
+  GWEN_Funcs_Entry_Args("sio1", testSyncIo1),
+  GWEN_Funcs_Entry_Args("sio2", testSyncIo2),
+  GWEN_Funcs_Entry_Args("sio3", testSyncIo3),
+  GWEN_Funcs_Entry("sl", testStringListFromString),
+  GWEN_Funcs_Entry("sl2", testStringList2),
+  GWEN_Funcs_Entry("sn", testSnprintf),
+  GWEN_Funcs_Entry_Args("socketServer", testSocketServer),
+  GWEN_Funcs_Entry_Args("sort", testSort),
+  GWEN_Funcs_Entry("threads1", testThreads1),
+  GWEN_Funcs_Entry("threads2", testThreads2),
+  GWEN_Funcs_Entry("time", testTime),
+  GWEN_Funcs_Entry_Args("time1", testTimeToString),
+  GWEN_Funcs_Entry_Args("time2", testTimeFromString),
+  GWEN_Funcs_Entry_Args("tlsServer", testTlsServer),
+  GWEN_Funcs_Entry("tresor1", testTresor1),
+  GWEN_Funcs_Entry("tresor2", testTresor2),
+  GWEN_Funcs_Entry_Args("url", testUrl),
+  GWEN_Funcs_Entry_Args("xml", testXML),
+  GWEN_Funcs_Entry_Args("xml2", testXML2),
+  GWEN_Funcs_Entry_Args("xml3", testXML3),
+  GWEN_Funcs_Entry_Args("xml4", testXML4),
+  GWEN_Funcs_Entry("xml5", testXML5),
+  GWEN_Funcs_Entry_Args("xml6", testXML6),
+  GWEN_Funcs_Entry_Args("xml7", testXML7),
+  GWEN_Funcs_Entry_Args("xml8", testXML8),
+  GWEN_Funcs_Entry("xmldb1", testXmlDbExport),
+  GWEN_Funcs_Entry("xmldb2", testXmlDbImport),
+  GWEN_Funcs_Entry_End()
 };
 
 static void print_usage(const char *app_name)
 {
-    TEST_FUNC *p;
-
     fprintf(stderr, "Usage: %s <test>\n  where <test> is one of", app_name);
-    for(p = tests; p->name; p++) {
-      fprintf(stderr, " %s", p->name);
-    }
-    fprintf(stderr, "\n");
-}
-
-TEST_FUNC* get_test(const char *name)
-{
-  TEST_FUNC *p;
-
-  for(p = tests; p->name; p++) {
-    if (strcasecmp(name, p->name)==0 && (p->func || p->func_p))
-      return p;
-  }
-  return NULL;
+    GWEN_Funcs_Usage(tests);
 }
 
 int main(int argc, char **argv)
 {
-  TEST_FUNC *test;
+  const GWEN_FUNCS *test;
   int rv;
 
   GWEN_Init();
@@ -6614,7 +6593,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  test=get_test(argv[1]);
+  test=GWEN_Funcs_Find(tests, argv[1]);
   if (test==NULL) {
     fprintf(stderr, "Unknown test \"%s\"\n", argv[1]);
     print_usage(argv[0]);
@@ -6622,10 +6601,10 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  if (test->func)
-    rv = (test->func)();
+  if (GWEN_Funcs_Has_Call(test))
+    rv=GWEN_Funcs_Call(test);
   else
-    rv = (test->func_p)(argc, argv);
+    rv=GWEN_Funcs_Call_Args(test, argc, argv);
   GWEN_Fini();
   return rv;
 }

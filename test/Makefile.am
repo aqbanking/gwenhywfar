@@ -16,7 +16,8 @@ noinst_HEADERS=\
 noinst_PROGRAMS=gwentest
 gwentest_SOURCES=gwentest.c testthread.c
 gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
-  $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS)
+  $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS) \
+  $(top_builddir)/src/base/libbase.la
 
 EXTRA_DIST = README.MSVC gwentest.vcproj testdialog.xml
 
