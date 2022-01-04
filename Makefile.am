@@ -163,41 +163,43 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
 
 
-po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
+$(srcdir)/po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
 	rm -f po/tmp*
 	if test -n "$(I18NFILES)"; then \
+	  cd $(srcdir); \
 	  $(XGETTEXT) -C -c -ki18n -ktr2i18n -kI18N -kI18S\
 	    -kI18N_NOOP -ktranslate -kaliasLocale \
-            -ktr -ktrUtf8 \
+	    -ktr -ktrUtf8 \
 	    '--msgid-bugs-address=aqbanking-user@lists.aqbanking.de' \
 	    -o po/tmppot \
 	    $(I18NFILES) ; \
 	fi
 	for i in $(DLGFILES); do \
-          po4a-gettextize -f xml -m $$i -p po/tmppot1 -o attributes=text && \
+	  cd $(srcdir); \
+	  po4a-gettextize -f xml -m $$i -p po/tmppot1 -o attributes=text && \
 	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
 	  mv po/tmppot2 po/tmppot; \
 	done
 	for i in $(PDFILES); do \
-          po4a-gettextize -f xml -m $$i -p po/tmppot1 -o wrap \
+	  po4a-gettextize -f xml -m $$i -p $(srcdir)/po/tmppot1 -o wrap \
 	    -o translated="<plugin><short> <plugin><descr>" \
 	    -o untranslated="<plugin><version> <plugin><author>" \
 	    && \
-	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
-	  mv po/tmppot2 po/tmppot; \
+	  msghack -o $(srcdir)/po/tmppot2 --append $(srcdir)/po/tmppot $(srcdir)/po/tmppot1 && \
+	  mv $(srcdir)/po/tmppot2 $(srcdir)/po/tmppot; \
 	done
-	mv po/tmppot po/$(PACKAGE).pot
-	rm -f po/tmppot1
+	mv $(srcdir)/po/tmppot $(srcdir)/po/$(PACKAGE).pot
+	rm -f $(srcdir)/po/tmppot1
 
 
 # This rule is called automatically at install time. However, it is
 # necessary only for the translators, so maybe it shouldn't be called
 # at install time.
-merge: po/$(PACKAGE).pot
+merge: $(srcdir)/po/$(PACKAGE).pot
 	@catalogs=$(I18NLINGUAS); \
 	for cat in $$catalogs; do \
-	echo msgmerge -o $$cat.new $$cat ./po/$(PACKAGE).pot ; \
-	msgmerge -o $$cat.new $$cat ./po/$(PACKAGE).pot ; \
+	echo msgmerge -o $$cat.new $$cat $(srcdir)/po/$(PACKAGE).pot ; \
+	msgmerge -o $$cat.new $$cat $(srcdir)/po/$(PACKAGE).pot ; \
 	if test -s $$cat.new; then \
 	  grep -v "\"POT-Creation" $$cat.new > $$cat.new.2 ; \
 	  grep -v "\"POT-Creation" $$cat >> $$cat.new.1; \
