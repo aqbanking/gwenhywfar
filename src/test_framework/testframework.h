@@ -15,6 +15,10 @@
 #include <gwenhywfar/testmodule.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct GWEN_TEST_FRAMEWORK GWEN_TEST_FRAMEWORK;
 
@@ -29,6 +33,11 @@ GWENHYWFAR_API int TestFramework_Run(GWEN_TEST_FRAMEWORK *tf, int argc, char **a
 GWENHYWFAR_API GWEN_TEST_MODULE *TestFramework_GetModulesRoot(const GWEN_TEST_FRAMEWORK *tf);
 
 GWENHYWFAR_API void TestFramework_free(GWEN_TEST_FRAMEWORK *tf);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 
