@@ -511,6 +511,72 @@ const char *GWEN_Dialog_TranslateString(const GWEN_DIALOG *dlg, const char *s);
 /*@}*/
 
 
+
+/** @name Convenience Functions
+ *
+ */
+/*@{*/
+
+/**
+ * Write current config of a list widget supporting columns (like GWEN_Widget_TypeListBox).
+ *
+ * @param dlg dialog containing the widget to handle
+ * @param widgetName name of the widget to handle
+ * @param variablePrefix prefix for the different settings, this will be prepended to the variable names used in
+ *                       the given dbPrefs settings. The following variable names will be used:
+ *                       - $(prefix)columns: one value for each column stating the column width
+ *                       - $(prefix)sortbycolumn: Index of the column to sort the list by (in most cases indicated in the GUI)
+ *                       - $(prefix)sortdir: Sort direction (GWEN_DialogSortDirection_Up or GWEN_DialogSortDirection_Down)
+ * @param maxColumns maximum number of columns to handle
+ * @param minColumnSize minimum width of each column
+ * @param dbPrefs GWEN_DB_NODE to store the settings in
+ */
+GWENHYWFAR_API
+void GWEN_Dialog_ListWriteColumnSettings(GWEN_DIALOG *dlg,
+					 const char *widgetName,
+					 const char *variablePrefix,
+					 int maxColumns,
+					 int minColumnSize,
+					 GWEN_DB_NODE *dbPrefs);
+
+
+GWENHYWFAR_API
+void GWEN_Dialog_ListReadColumnSettings(GWEN_DIALOG *dlg,
+                                        const char *widgetName,
+                                        const char *variablePrefix,
+                                        int maxColumns,
+                                        int minColumnSize,
+					GWEN_DB_NODE *dbPrefs);
+
+/**
+ * Get the content of the first column of a given list entry (or whole content if only single column).
+ *
+ * @return NULL or pointer to the content (caller is responsible for freeing the pointer)
+ * @param dlg dialog containing the widget to handle
+ * @param widgetName name of the widget to handle
+ * @param row index of the list item (beginning with 0)
+ */
+GWENHYWFAR_API
+char *GWEN_Dialog_ListGetFirstColumnData(GWEN_DIALOG *dlg, const char *widgetName, int row);
+
+
+/**
+ * Return index of list element whose content of the first column matches the given string.
+ *
+ * The idea is to have the first column of a list entry contain a unique id by which the list can be searched.
+ *
+ * @return -1 if none found, index otherwise (starting with 0)
+ * @param dlg dialog containing the widget to handle
+ * @param widgetName name of the widget to handle
+ * @param dataToMatch string to match against
+ */
+GWENHYWFAR_API
+int GWEN_Dialog_ListGetItemMatchingFirstColumn(GWEN_DIALOG *dlg, const char *widgetName, const char *dataToMatch);
+
+/*@}*/
+
+
+
 #ifdef __cplusplus
 }
 #endif
