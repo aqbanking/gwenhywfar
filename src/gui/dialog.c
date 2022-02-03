@@ -1082,7 +1082,6 @@ void GWEN_Dialog_ListReadColumnSettings(GWEN_DIALOG *dlg,
 
   /* read column sizes */
   GWEN_Buffer_AppendString(nameBuf, "columns");
-  GWEN_DB_DeleteVar(dbPrefs, GWEN_Buffer_GetStart(nameBuf));
   for (i=0; i<maxColumns; i++) {
     j=GWEN_DB_GetIntValue(dbPrefs, GWEN_Buffer_GetStart(nameBuf), i, -1);
     if (j<minColumnSize)
