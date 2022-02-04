@@ -303,7 +303,6 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     case GWEN_DialogProperty_Value:
       fi=f->getItem(value);
       if (fi) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Selecting item %d", value);
 	f->killSelection();
 	f->setCurrentItem(fi, doSignal?TRUE:FALSE);
 	f->selectItem(fi);
