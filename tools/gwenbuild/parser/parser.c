@@ -688,13 +688,22 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
   const char *fileName;
   GWEN_BUFFER *fileNameBuffer;
   GWB_FILE *file;
+  const char *installPath;
   int rv;
+
+  rv=GWEN_XMLNode_ExpandProperties(xmlNode, GWB_Context_GetVars(currentContext));
+  if (rv<0) {
+    DBG_INFO(NULL, "here (%d)", rv);
+    return rv;
+  }
 
   fileName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(fileName && *fileName)) {
     DBG_ERROR(NULL, "No name for <writeFile>");
     return GWEN_ERROR_GENERIC;
   }
+
+  installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
 
   fileNameBuffer=_getSourcePathForFileName(currentContext, fileName);
   GWEN_Buffer_AppendString(fileNameBuffer, ".in");
@@ -711,6 +720,10 @@ int _parseWriteFile(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
                                       GWB_Context_GetCurrentRelativeDir(currentContext),
                                       fileName);
   GWB_File_AddFlags(file, GWB_FILE_FLAGS_GENERATED);
+  if (installPath && *installPath) {
+    GWB_File_AddFlags(file, GWB_FILE_FLAGS_INSTALL);
+    GWB_File_SetInstallPath(file, installPath);
+  }
 
   /* add input file */
   GWEN_Buffer_Reset(fileNameBuffer);
