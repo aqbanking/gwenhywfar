@@ -295,20 +295,19 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeListBox: {
     FOX16_GuiSortingList *f;
     FXFoldingItem *fi;
-    int i=0;
 
     f=(FOX16_GuiSortingList*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
     assert(f);
 
     switch(prop) {
     case GWEN_DialogProperty_Value:
-      fi=f->getFirstItem();
-      while(fi && i<value) {
-        fi=fi->getNext();
-        i++;
+      fi=f->getItem(value);
+      if (fi) {
+	f->killSelection();
+	f->setCurrentItem(fi, doSignal?TRUE:FALSE);
+	f->selectItem(fi);
+	f->makeItemVisible(fi);
       }
-      if (fi && i==value)
-        f->setCurrentItem(fi, doSignal?TRUE:FALSE);
       else {
         DBG_ERROR(GWEN_LOGDOMAIN, "Value %d out of range", value);
         return GWEN_ERROR_INVALID;

@@ -41,6 +41,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <strings.h>
 
 
 GWEN_INHERIT_FUNCTIONS(GWEN_DIALOG)
@@ -1005,6 +1006,169 @@ GWEN_DB_NODE *GWEN_Dialog_GetPreferences(const GWEN_DIALOG *dlg)
 
   return dlg->dbPreferences;
 }
+
+
+
+
+
+void GWEN_Dialog_ListWriteColumnSettings(GWEN_DIALOG *dlg,
+					 const char *widgetName,
+					 const char *variablePrefix,
+					 int maxColumns,
+					 int minColumnSize,
+					 GWEN_DB_NODE *dbPrefs)
+{
+  GWEN_BUFFER *nameBuf;
+  uint32_t posInBuffer;
+  int i;
+
+  nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(nameBuf, variablePrefix);
+  posInBuffer=GWEN_Buffer_GetPos(nameBuf);
+
+  /* write column sizes */
+  GWEN_Buffer_AppendString(nameBuf, "columns");
+  GWEN_DB_DeleteVar(dbPrefs, GWEN_Buffer_GetStart(nameBuf));
+  for (i=0; i<maxColumns; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ColumnWidth, i, -1);
+    if (j<minColumnSize)
+      j=minColumnSize;
+    GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_DEFAULT, GWEN_Buffer_GetStart(nameBuf), j);
+  }
+
+  /* determine column to sort by */
+  GWEN_Buffer_Crop(nameBuf, 0, posInBuffer);
+  GWEN_Buffer_AppendString(nameBuf, "sortbycolumn");
+  GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(nameBuf), -1);
+  for (i=0; i<maxColumns; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, widgetName, GWEN_DialogProperty_SortDirection, i, GWEN_DialogSortDirection_None);
+    if (j!=GWEN_DialogSortDirection_None) {
+
+      GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(nameBuf), i);
+
+      GWEN_Buffer_Crop(nameBuf, 0, posInBuffer);
+      GWEN_Buffer_AppendString(nameBuf, "sortdir");
+      GWEN_DB_SetIntValue(dbPrefs,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  GWEN_Buffer_GetStart(nameBuf),
+			  (j==GWEN_DialogSortDirection_Up)?1:0);
+      break;
+    }
+  }
+  GWEN_Buffer_free(nameBuf);
+}
+
+
+
+void GWEN_Dialog_ListReadColumnSettings(GWEN_DIALOG *dlg,
+					const char *widgetName,
+					const char *variablePrefix,
+					int maxColumns,
+					int minColumnSize,
+					GWEN_DB_NODE *dbPrefs)
+{
+  GWEN_BUFFER *nameBuf;
+  uint32_t posInBuffer;
+  int i;
+  int j;
+
+  nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(nameBuf, variablePrefix);
+  posInBuffer=GWEN_Buffer_GetPos(nameBuf);
+
+  /* read column sizes */
+  GWEN_Buffer_AppendString(nameBuf, "columns");
+  for (i=0; i<maxColumns; i++) {
+    j=GWEN_DB_GetIntValue(dbPrefs, GWEN_Buffer_GetStart(nameBuf), i, -1);
+    if (j<minColumnSize)
+      j=minColumnSize;
+    GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_ColumnWidth, i, j, 0);
+  }
+
+  /* determine column to sort by */
+  GWEN_Buffer_Crop(nameBuf, 0, posInBuffer);
+  GWEN_Buffer_AppendString(nameBuf, "sortbycolumn");
+  i=GWEN_DB_GetIntValue(dbPrefs, GWEN_Buffer_GetStart(nameBuf), 0, -1);
+  GWEN_Buffer_Crop(nameBuf, 0, posInBuffer);
+  GWEN_Buffer_AppendString(nameBuf, "sortdir");
+  j=GWEN_DB_GetIntValue(dbPrefs, GWEN_Buffer_GetStart(nameBuf), 0, -1);
+  if (i>=0 && j>=0)
+    GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_SortDirection, i, j, 0);
+  GWEN_Buffer_free(nameBuf);
+}
+
+
+
+char *GWEN_Dialog_ListGetFirstColumnData(GWEN_DIALOG *dlg, const char *widgetName, int row)
+{
+  const char *s;
+
+  s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, row, NULL);
+  if (s && *s) {
+    const char *p;
+
+    p=strchr(s, '\t');
+    if (p) {
+      int len;
+
+      len=(int)(p-s);
+      if (len) {
+	char *res;
+
+	res=(char *) malloc(len+1);
+	assert(res);
+	memmove(res, s, len);
+	res[len]=0;
+	return res;
+      }
+    }
+    else
+      /* no tab, use the whole line */
+      return strdup(s);
+  }
+
+  return NULL;
+}
+
+
+
+int GWEN_Dialog_ListGetItemMatchingFirstColumn(GWEN_DIALOG *dlg, const char *widgetName, const char *dataToMatch)
+{
+  if (dataToMatch) {
+    int idx;
+    int lengthOfDataToMatch;
+
+    lengthOfDataToMatch=strlen(dataToMatch);
+    for (idx=0; ; idx++) {
+      const char *s;
+
+      s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, idx, NULL);
+      if (s && *s) {
+	const char *p;
+
+	p=strchr(s, '\t');
+	if (p) {
+	  int len;
+
+	  len=(int)(p-s);
+	  if (len && len==lengthOfDataToMatch && strncasecmp(s, dataToMatch, len)==0)
+	    return idx;
+	}
+	else if (strcasecmp(s, dataToMatch)==0)
+	  return idx;
+      }
+      else
+	break;
+    }
+  }
+
+  return -1;
+}
+
 
 
 
