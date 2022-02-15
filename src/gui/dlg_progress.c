@@ -290,7 +290,7 @@ void GWEN_DlgProgress_AddLogText(GWEN_DIALOG *dlg,
   else if (level==GWEN_LoggerLevel_Warning)
     col="blue";
   else if (level==GWEN_LoggerLevel_Info)
-    col="green";
+    col="darkgreen";
   else
     col=NULL;
   if (col) {
