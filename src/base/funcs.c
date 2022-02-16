@@ -55,7 +55,7 @@ void GWEN_Funcs_Usage_With_Help(const GWEN_FUNCS *funcs)
     const GWEN_FUNCS *p;
 
     for (p=funcs; p->name; p++) {
-      fprintf(stderr, "  %s:\n\n    %s\n\n", p->name, p->description ? p->description : "");
+      fprintf(stderr, "  %s:\n    %s\n\n", p->name, p->description ? p->description : "");
     }
 }
 
