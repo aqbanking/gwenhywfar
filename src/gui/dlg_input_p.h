@@ -24,6 +24,7 @@ struct GWEN_DLGINPUT {
   int maxLen;
 
   char *response;
+  int storePasswordCheckEnabled;
   int flagAllowStore;
 };
 typedef struct GWEN_DLGINPUT GWEN_DLGINPUT;

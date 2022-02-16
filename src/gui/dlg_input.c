@@ -125,6 +125,7 @@ GWEN_DIALOG *GWEN_DlgInput_new(uint32_t flags,
 
   if (!(n & 2)) {
     GWEN_Dialog_RemoveWidget(dlg, "storePasswordCheck");
+    xdlg->storePasswordCheckEnabled = 1;
   }
 
   return dlg;
@@ -221,7 +222,7 @@ void GWEN_DlgInput_Init(GWEN_DIALOG *dlg)
 
   GWEN_Dialog_SetIntProperty(dlg, "input1", GWEN_DialogProperty_Focus, 0, 1, 0);
 
-
+  xdlg->storePasswordCheckEnabled = 0;
   xdlg->wasInit=1;
 }
 
@@ -251,7 +252,10 @@ void GWEN_DlgInput_Fini(GWEN_DIALOG *dlg)
     s=GWEN_Dialog_GetCharProperty(dlg, "input1", GWEN_DialogProperty_Value, 0, NULL);
     if (s)
       xdlg->response=strdup(s);
-    xdlg->flagAllowStore=GWEN_Dialog_GetIntProperty(dlg, "storePasswordCheck", GWEN_DialogProperty_Value, 0, 0);
+    if (xdlg->storePasswordCheckEnabled)
+      xdlg->flagAllowStore=GWEN_Dialog_GetIntProperty(dlg, "storePasswordCheck", GWEN_DialogProperty_Value, 0, 0);
+    else
+      xdlg->flagAllowStore=0;
   }
 
 #if 0
