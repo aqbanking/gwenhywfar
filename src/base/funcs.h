@@ -64,6 +64,12 @@ typedef struct {
 #define GWEN_Funcs_Entry_Args(a,b) { a, 0, b, NULL, NULL }
 #define GWEN_Funcs_Entry_DB_NODE_Args(a,b) { a, NULL, NULL, b, NULL }
 
+/* Shortcuts */
+#define GWEN_FE_DAH GWEN_Funcs_Entry_DB_NODE_Args_Help
+#define GWEN_FE_DA GWEN_Funcs_Entry_DB_NODE_Args
+#define GWEN_FE_D GWEN_Funcs_Entry_DB_NODE
+#define GWEN_FE_END GWEN_Funcs_Entry_End
+
 /* Checks if a command variant exists */
 GWENHYWFAR_API
 int GWEN_Funcs_Has_Call(const GWEN_FUNCS *func);
