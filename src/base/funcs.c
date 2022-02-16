@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 
+
 /**
  * This function prints out a space separated list of all defined functions
  */
@@ -38,7 +39,7 @@ void GWEN_Funcs_Usage(const GWEN_FUNCS *funcs)
 {
     const GWEN_FUNCS *p;
 
-    for(p = funcs; p->name; p++) {
+    for (p=funcs; p->name; p++) {
       fprintf(stderr, " %s", p->name);
       if (p->description)
         fprintf(stderr, " (%s)", p->description);
@@ -53,7 +54,7 @@ void GWEN_Funcs_Usage_With_Help(const GWEN_FUNCS *funcs)
 {
     const GWEN_FUNCS *p;
 
-    for(p = funcs; p->name; p++) {
+    for (p=funcs; p->name; p++) {
       fprintf(stderr, "  %s:\n\n    %s\n\n", p->name, p->description ? p->description : "");
     }
 }
@@ -66,7 +67,7 @@ const GWEN_FUNCS* GWEN_Funcs_Find(const GWEN_FUNCS *funcs, const char *name)
 {
   const GWEN_FUNCS *p;
 
-  for(p = funcs; p->name; p++) {
+  for (p=funcs; p->name; p++) {
     if (strcasecmp(name, p->name)==0)
       return p;
   }
