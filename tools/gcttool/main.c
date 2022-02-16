@@ -150,19 +150,19 @@ int main(int argc, char **argv)
     }
   };
   const GWEN_FUNCS funcs[]= {
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("create", createToken, I18N("This command creates a crypt token")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("showuser", showUser, I18N("Display user data stored on the token")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("showkey", showKey, I18N("Display key info stored on the token")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("genkey", genKey, I18N("Generate keys on crypt token")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("activateKey", activateKey, I18N("Activate keys on crypt token")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("update", updateToken, I18N("Update Crypt Token to newer version (e.g. OpenHBCI key files")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("setsignseq", setSignSeq, I18N("Set signature counter")),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("changepin", changePin, I18N("Change pin of the crypt token")),
-    GWEN_Funcs_Entry_DB_NODE_Args("setkey", setKey),
-    GWEN_Funcs_Entry_DB_NODE_Args("hashTree", hashTree),
-    GWEN_Funcs_Entry_DB_NODE_Args("checkTree", checkTree),
-    GWEN_Funcs_Entry_DB_NODE_Args_Help("showpasswords", showPasswords, I18N("Display passwords store in a GWEN_PASSWD_STORE file")),
-    GWEN_Funcs_Entry_End(),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("create", createToken, I18N("This command creates a crypt token")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("showuser", showUser, I18N("Display user data stored on the token")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("showkey", showKey, I18N("Display key info stored on the token")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("genkey", genKey, I18N("Generate keys on crypt token")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("activateKey", activateKey, I18N("Activate keys on crypt token")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("update", updateToken, I18N("Update Crypt Token to newer version (e.g. OpenHBCI key files")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("setsignseq", setSignSeq, I18N("Set signature counter")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("changepin", changePin, I18N("Change pin of the crypt token")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("setkey", setKey),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("hashTree", hashTree),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("checkTree", checkTree),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("showpasswords", showPasswords, I18N("Display passwords store in a GWEN_PASSWD_STORE file")),
+    GWEN_FUNCS_ENTRY_END(),
   };
   const GWEN_FUNCS *func;
 

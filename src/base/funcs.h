@@ -48,27 +48,27 @@ typedef struct {
 } GWEN_FUNCS;
 
 /* Defines a command without parameters but with description  */
-#define GWEN_Funcs_Entry_Help(a,b,c) { a, b, NULL, NULL, c }
+#define GWEN_FUNCS_ENTRY_HELP(a,b,c) { a, b, NULL, NULL, c }
 
 /* Defines a command with argc/argv parameter and description */
-#define GWEN_Funcs_Entry_Args_Help(a,b,c) { a, 0, b, NULL, c }
+#define GWEN_FUNNCS_ENTRY_ARGS_HELP(a,b,c) { a, 0, b, NULL, c }
 
 /* Defines a command with DB_NODE type and argc/argv parameter and description */
-#define GWEN_Funcs_Entry_DB_NODE_Args_Help(a,b,c) { a, NULL, NULL, b, c }
+#define GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP(a,b,c) { a, NULL, NULL, b, c }
 
 /* Defines the end of the command table */
-#define GWEN_Funcs_Entry_End() { NULL, NULL, NULL, NULL, NULL }
+#define GWEN_FUNCS_ENTRY_END() { NULL, NULL, NULL, NULL, NULL }
 
 /* Defines one of the above commands without description */
-#define GWEN_Funcs_Entry(a,b) { a, b, NULL, NULL, NULL }
-#define GWEN_Funcs_Entry_Args(a,b) { a, 0, b, NULL, NULL }
-#define GWEN_Funcs_Entry_DB_NODE_Args(a,b) { a, NULL, NULL, b, NULL }
+#define GWEN_FUNCS_ENTRY(a,b) { a, b, NULL, NULL, NULL }
+#define GWEN_FUNCS_ENTRY_ARGS(a,b) { a, 0, b, NULL, NULL }
+#define GWEN_FUNCS_ENTRY_DB_NODE_ARGS(a,b) { a, NULL, NULL, b, NULL }
 
 /* Shortcuts */
-#define GWEN_FE_DAH GWEN_Funcs_Entry_DB_NODE_Args_Help
-#define GWEN_FE_DA GWEN_Funcs_Entry_DB_NODE_Args
-#define GWEN_FE_D GWEN_Funcs_Entry_DB_NODE
-#define GWEN_FE_END GWEN_Funcs_Entry_End
+#define GWEN_FE_DAH GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP
+#define GWEN_FE_DA GWEN_FUNCS_ENTRY_DB_NODE_ARGS
+#define GWEN_FE_D GWEN_FUNCS_ENTRY_DB_NODE
+#define GWEN_FE_END GWEN_FUNCS_ENTRY_END
 
 /* Checks if a command variant exists */
 GWENHYWFAR_API
