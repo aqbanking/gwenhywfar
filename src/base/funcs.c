@@ -31,6 +31,35 @@
 
 #include <stdio.h>
 
+int GWEN_Funcs_Has_Call(const GWEN_FUNCS *func)
+{
+  return func->func1!=NULL;
+}
+
+int GWEN_Funcs_Has_Call_Args(const GWEN_FUNCS *func)
+{
+  return func->func2!=NULL;
+}
+
+int GWEN_Funcs_Has_Call_DB_NODE_Args(const GWEN_FUNCS *func)
+{
+  return func->func3!=NULL;
+}
+
+int GWEN_Funcs_Call(const GWEN_FUNCS *func)
+{
+   return func->func1();
+}
+
+int GWEN_Funcs_Call_Args(const GWEN_FUNCS *func, int argc, char **argv)
+{
+  return func->func2(argc, argv);
+}
+
+int GWEN_Funcs_Call_DB_NODE_Args(const GWEN_FUNCS *func, GWEN_DB_NODE *node, int argc, char **argv)
+{
+  return func->func3(node, argc, argv);
+}
 
 /**
  * This function prints out a space separated list of all defined functions

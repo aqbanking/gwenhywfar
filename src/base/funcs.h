@@ -65,14 +65,20 @@ typedef struct {
 #define GWEN_Funcs_Entry_DB_NODE_Args(a,b) { a, NULL, NULL, b, NULL }
 
 /* Checks if a command variant exists */
-#define GWEN_Funcs_Has_Call(func) (func)->func1
-#define GWEN_Funcs_Has_Call_Args(func) (func)->func2
-#define GWEN_Funcs_Has_Call_DB_NODE_Args(func) (func)->func3
+GWENHYWFAR_API
+int GWEN_Funcs_Has_Call(const GWEN_FUNCS *func);
+GWENHYWFAR_API
+int GWEN_Funcs_Has_Call_Args(const GWEN_FUNCS *func);
+GWENHYWFAR_API
+int GWEN_Funcs_Has_Call_DB_NODE_Args(const GWEN_FUNCS *func);
 
 /* Functions to call a specified command */
-#define GWEN_Funcs_Call(func) (func->func1)()
-#define GWEN_Funcs_Call_Args(func,a,b) (func->func2)(a,b)
-#define GWEN_Funcs_Call_DB_NODE_Args(func,a,b,c) (func->func3)(a,b,c)
+GWENHYWFAR_API
+int GWEN_Funcs_Call(const GWEN_FUNCS *func);
+GWENHYWFAR_API
+int GWEN_Funcs_Call_Args(const GWEN_FUNCS *func, int argc, char **argv);
+GWENHYWFAR_API
+int GWEN_Funcs_Call_DB_NODE_Args(const GWEN_FUNCS *func, GWEN_DB_NODE *node, int argc, char **argv);
 
 /**
  * This function prints out a space separated list of all defined functions
