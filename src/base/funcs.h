@@ -29,6 +29,7 @@
 #define GWENHYWFAR_Funcs_H
 
 #include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/db.h>
 
 #ifdef __cplusplus
 extern "C" {

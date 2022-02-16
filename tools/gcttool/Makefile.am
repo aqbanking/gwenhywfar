@@ -26,7 +26,7 @@ gct_tool_SOURCES=\
   showpasswords.c \
   main.c
 
-gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname) $(top_builddir)/src/base/libbase.la
+gct_tool_LDADD=$(top_builddir)/src/$(gwenhywfar_internal_libname)
 
 if IS_WINDOWS
 

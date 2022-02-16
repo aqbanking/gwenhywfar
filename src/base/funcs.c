@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Wed Feb 15 2022
     copyright   : (C) 2022 by Ralf Habacker
     email       : ralf.habacker@freenet.de
@@ -25,7 +22,10 @@
  *                                                                         *
  ***************************************************************************/
 
-typedef struct GWEN_DB_NODE GWEN_DB_NODE;
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 #include "funcs.h"
 
@@ -36,7 +36,7 @@ typedef struct GWEN_DB_NODE GWEN_DB_NODE;
  */
 void GWEN_Funcs_Usage(const GWEN_FUNCS *funcs)
 {
-    GWEN_FUNCS *p;
+    const GWEN_FUNCS *p;
 
     for(p = funcs; p->name; p++) {
       fprintf(stderr, " %s", p->name);
@@ -51,7 +51,7 @@ void GWEN_Funcs_Usage(const GWEN_FUNCS *funcs)
  */
 void GWEN_Funcs_Usage_With_Help(const GWEN_FUNCS *funcs)
 {
-    GWEN_FUNCS *p;
+    const GWEN_FUNCS *p;
 
     for(p = funcs; p->name; p++) {
       fprintf(stderr, "  %s:\n\n    %s\n\n", p->name, p->description ? p->description : "");
@@ -64,7 +64,7 @@ void GWEN_Funcs_Usage_With_Help(const GWEN_FUNCS *funcs)
  */
 const GWEN_FUNCS* GWEN_Funcs_Find(const GWEN_FUNCS *funcs, const char *name)
 {
-  GWEN_FUNCS *p;
+  const GWEN_FUNCS *p;
 
   for(p = funcs; p->name; p++) {
     if (strcasecmp(name, p->name)==0)
