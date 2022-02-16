@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Wed Feb 15 2022
     copyright   : (C) 2022 by Ralf Habacker
     email       : ralf.habacker@freenet.de
