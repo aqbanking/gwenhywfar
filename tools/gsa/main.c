@@ -17,6 +17,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/cgui.h>
 
+#include "funcs.h"
 #include "globals.h"
 
 
@@ -86,6 +87,19 @@ int main(int argc, char **argv)
       "Show this help screen"       /* long description */
     }
   };
+  const GWEN_FUNCS funcs[]= {
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("create", createArchive, I18N("This command creates an archive file")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("add", add2Archive, I18N("Add files and folders to an archive file")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("list", listArchive, I18N("List files and folders in an archive file")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("check", checkArchive, I18N("Check integrity of files and folders in an archive file")),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("extract", extractArchive),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("sign", signArchive),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("verify", verifyArchive),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("mkkey", mkArchiveKey),
+    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("rfi", releaseFillIn),
+    GWEN_FUNCS_ENTRY_END(),
+  };
+  const GWEN_FUNCS *func;
 
   err=GWEN_Init();
   if (err) {
@@ -144,25 +158,11 @@ int main(int argc, char **argv)
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("\nCommands:\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  create:\n"
-                                  "    This command creates an archive file"
-                                  "\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  add:\n"
-                                  "    Add files and folders to an archive file\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  list:\n"
-                                  "    List files and folders in an archive file\n\n"));
-
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  check:\n"
-                                  "    Check integrity of files and folders in an archive file\n\n"));
-
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
+
+    fprintf(stderr, "%s\n", I18N("\nCommands:\n\n"));
+    GWEN_Funcs_Usage_With_Help(funcs);
     return 0;
   }
   if (rv) {
@@ -176,32 +176,9 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  if (strcasecmp(cmd, "create")==0) {
-    rv=createArchive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "add")==0) {
-    rv=add2Archive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "list")==0) {
-    rv=listArchive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "check")==0) {
-    rv=checkArchive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "extract")==0) {
-    rv=extractArchive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sign")==0) {
-    rv=signArchive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "verify")==0) {
-    rv=verifyArchive(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "mkkey")==0) {
-    rv=mkArchiveKey(db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "rfi")==0) {
-    rv=releaseFillIn(db, argc, argv);
+  func=GWEN_Funcs_Find(funcs, cmd);
+  if (func!=NULL) {
+    rv=GWEN_Funcs_Call_DB_NODE_Args(func, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);

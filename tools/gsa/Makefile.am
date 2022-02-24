@@ -1,4 +1,4 @@
-AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir)
+AM_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -I$(gwenhywfar_symlinkdir) -I$(top_srcdir)/src/base
 
 #EXTRA_DIST=
 

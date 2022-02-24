@@ -5,19 +5,20 @@
 #
 # Martin Preuss <martin@libchipcard.de>, 2004, 2005, 2007.
 # Martin Preuss <martin@aqbanking.de>, 2010.
+# Ralf Habacker <ralf.habacker@freenet.de>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2022-08-10 19:57+0200\n"
 "PO-Revision-Date: 2021-02-16 21:00+0100\n"
-"Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
+"Last-Translator: Ralf Habacker <ralf.habacker@freenet.de>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.0\n"
+"X-Generator: Lokalize 20.04.2\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-Basepath: /home/martin/projekte/c/gwenhywfar/git\n"
 
@@ -1188,45 +1189,21 @@ msgstr ""
 msgid "GWEN's Simple Archiver"
 msgstr "GWEN's Simple Archiver - Einfache Archiverstellung"
 
-#: tools/gsa/main.c:150
-msgid ""
-"  create:\n"
-"    This command creates an archive file\n"
-"\n"
-msgstr ""
-"  create:\n"
-"    Dieser Befehl erzeugt eine Archiv-Datei\n"
-"\n"
+#: tools/gsa/main.c:91
+msgid "This command creates an archive file"
+msgstr "Erzeugen einer Archiv-Datei"
 
-#: tools/gsa/main.c:154
-msgid ""
-"  add:\n"
-"    Add files and folders to an archive file\n"
-"\n"
-msgstr ""
-"  add:\n"
-"    Dateien und Ordner zu einer Archiv-Datei hinzufügen\n"
-"\n"
+#: tools/gsa/main.c:92
+msgid "Add files and folders to an archive file"
+msgstr "Dateien und Ordner zu einer Archiv-Datei hinzufügen"
 
-#: tools/gsa/main.c:157
-msgid ""
-"  list:\n"
-"    List files and folders in an archive file\n"
-"\n"
-msgstr ""
-"  list:\n"
-"    Die Dateien und Ordner aus einer Archiv-Datei anzeigen\n"
-"\n"
+#: tools/gsa/main.c:93
+msgid "List files and folders in an archive file"
+msgstr "Dateien und Ordner aus einer Archiv-Datei anzeigen"
 
-#: tools/gsa/main.c:161
-msgid ""
-"  check:\n"
-"    Check integrity of files and folders in an archive file\n"
-"\n"
-msgstr ""
-"  check:\n"
-"    Die Integrität der Dateien und Ordner einer Archiv-Datei überprüfen\n"
-"\n"
+#: tools/gsa/main.c:94
+msgid "Check integrity of files and folders in an archive file"
+msgstr "Integrität der Dateien und Ordner einer Archiv-Datei überprüfen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/gui/dlg_input.dlg:7
