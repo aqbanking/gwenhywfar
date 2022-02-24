@@ -226,6 +226,9 @@ int main(int argc, char **argv)
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
+    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
+    GWEN_Buffer_free(ubuf);
+
     fprintf(stderr, "%s\n", I18N("\nCommands:\n\n"));
     GWEN_Funcs_Usage_With_Help(funcs);
     return 0;
