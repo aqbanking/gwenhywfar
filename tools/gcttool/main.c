@@ -150,19 +150,19 @@ int main(int argc, char **argv)
     }
   };
   const GWEN_FUNCS funcs[]= {
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("create", createToken, I18N("This command creates a crypt token")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("showuser", showUser, I18N("Display user data stored on the token")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("showkey", showKey, I18N("Display key info stored on the token")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("genkey", genKey, I18N("Generate keys on crypt token")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("activateKey", activateKey, I18N("Activate keys on crypt token")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("update", updateToken, I18N("Update Crypt Token to newer version (e.g. OpenHBCI key files")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("setsignseq", setSignSeq, I18N("Set signature counter")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("changepin", changePin, I18N("Change pin of the crypt token")),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("setkey", setKey),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("hashTree", hashTree),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS("checkTree", checkTree),
-    GWEN_FUNCS_ENTRY_DB_NODE_ARGS_HELP("showpasswords", showPasswords, I18N("Display passwords store in a GWEN_PASSWD_STORE file")),
-    GWEN_FUNCS_ENTRY_END(),
+    GWEN_FE_DAH("create", createToken, I18N("This command creates a crypt token")),
+    GWEN_FE_DAH("showuser", showUser, I18N("Display user data stored on the token")),
+    GWEN_FE_DAH("showkey", showKey, I18N("Display key info stored on the token")),
+    GWEN_FE_DAH("genkey", genKey, I18N("Generate keys on crypt token")),
+    GWEN_FE_DAH("activateKey", activateKey, I18N("Activate keys on crypt token")),
+    GWEN_FE_DAH("update", updateToken, I18N("Update Crypt Token to newer version (e.g. OpenHBCI key files")),
+    GWEN_FE_DAH("setsignseq", setSignSeq, I18N("Set signature counter")),
+    GWEN_FE_DAH("changepin", changePin, I18N("Change pin of the crypt token")),
+    GWEN_FE_DA("setkey", setKey),
+    GWEN_FE_DA("hashTree", hashTree),
+    GWEN_FE_DA("checkTree", checkTree),
+    GWEN_FE_DAH("showpasswords", showPasswords, I18N("Display passwords store in a GWEN_PASSWD_STORE file")),
+    GWEN_FE_END(),
   };
   const GWEN_FUNCS *func;
 
