@@ -162,6 +162,7 @@ I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 # you would simply set this to an empty variable.
 I18NCATALOGS = $(foreach lang,$(ALL_LINGUAS),$(top_builddir)/po/$(lang).mo)
 
+MSGHACK="$(srcdir)/tools/msghack"
 
 $(srcdir)/po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
 	rm -f po/tmp*
@@ -177,7 +178,7 @@ $(srcdir)/po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
 	for i in $(DLGFILES); do \
 	  cd $(srcdir); \
 	  po4a-gettextize -f xml -m $$i -p po/tmppot1 -o attributes=text && \
-	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
+	  $(MSGHACK) -o po/tmppot2 --append po/tmppot po/tmppot1 && \
 	  mv po/tmppot2 po/tmppot; \
 	done
 	for i in $(PDFILES); do \
@@ -185,7 +186,7 @@ $(srcdir)/po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
 	    -o translated="<plugin><short> <plugin><descr>" \
 	    -o untranslated="<plugin><version> <plugin><author>" \
 	    && \
-	  msghack -o $(srcdir)/po/tmppot2 --append $(srcdir)/po/tmppot $(srcdir)/po/tmppot1 && \
+	  $(MSGHACK) -o $(srcdir)/po/tmppot2 --append $(srcdir)/po/tmppot $(srcdir)/po/tmppot1 && \
 	  mv $(srcdir)/po/tmppot2 $(srcdir)/po/tmppot; \
 	done
 	mv $(srcdir)/po/tmppot $(srcdir)/po/$(PACKAGE).pot
