@@ -1159,9 +1159,25 @@ msgstr " Zeige auf dem CryptToken gespeicherte Benutzer an"
 msgid "Display key info stored on the token"
 msgstr "Zeige auf dem CryptToken gespeicherte Schlüsselinformationen an"
 
+#: tools/gcttool/main.c:156
+msgid "Generate keys on crypt token"
+msgstr "Schlüssel auf Krypto-Token generieren"
+
+#: tools/gcttool/main.c:157
+msgid "Activate keys on crypt token"
+msgstr "Schlüsselaktivierung von Krypto-Token"
+
 #: tools/gcttool/main.c:158
 msgid "Update Crypt Token to newer version (e.g. OpenHBCI key files"
 msgstr "Aktualisiert Sicherheitsmedien (z.B. OpenHBCI Schlüsseldateien)"
+
+#: tools/gcttool/main.c:159
+msgid "Set signature counter"
+msgstr "Setze Unterschriftenzähler"
+
+#: tools/gcttool/main.c:160
+msgid "Change pin of the crypt token"
+msgstr "Pin des Krypto-Tokens ändern"
 
 #: tools/gcttool/main.c:164
 msgid "Display passwords store in a GWEN_PASSWD_STORE file"
