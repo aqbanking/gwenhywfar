@@ -1,4 +1,8 @@
 
+gwbuild:
+- new entry "prefix" (internally translate to option_prefix stuff like in AqFinance)
+
+
 GUI dialogs:
 - implement "keyPressed" and "keyReleased" events in GTK3 and QT5 frontends
 - implement "frame*" widget flags in GTK3 and QT5 frontends
