@@ -1481,6 +1481,83 @@ int testTimeFromString(int argc, char **argv)
 
 
 
+int testDateFromString(int argc, char **argv)
+{
+  GWEN_DATE *dt;
+  const char *s;
+  const char *tmpl;
+  GWEN_BUFFER *tbuf;
+
+  if (argc>3)
+    tmpl=argv[3];
+  else
+    tmpl="YYYYMMDD";
+  if (argc<3) {
+    fprintf(stderr, "Arguments needed: %s %s DATE [TEMPLATE]\n",
+	    argv[0], argv[1]);
+    return 1;
+  }
+
+  s=argv[2];
+
+  dt=GWEN_Date_fromStringWithTemplate(s, tmpl);
+  if (!dt) {
+    fprintf(stderr, "Could not convert string to date.\n");
+    return 2;
+  }
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (GWEN_Date_toStringWithTemplate(dt, "YYYY/MM/DD", tbuf)) {
+    fprintf(stderr, "Could not convert date to string.\n");
+    return 2;
+  }
+  fprintf(stdout, "date \"%s\": %s\n",
+	  s, GWEN_Buffer_GetStart(tbuf));
+
+  return 0;
+}
+
+
+
+int testDateAddDays(int argc, char **argv)
+{
+  GWEN_DATE *dt;
+  const char *s;
+  int toAdd=1;
+  GWEN_BUFFER *tbuf;
+
+  if (argc>3) {
+    if (1!=sscanf(argv[3], "%d", &toAdd)) {
+    }
+  }
+  if (argc<3) {
+    fprintf(stderr, "Arguments needed: %s %s DATE [DAYS_TO_ADD]\n", argv[0], argv[1]);
+    return 1;
+  }
+
+  s=argv[2];
+
+  dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+  if (!dt) {
+    fprintf(stderr, "Could not convert string to date.\n");
+    return 2;
+  }
+
+  GWEN_Date_AddDays(dt, toAdd);
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Date_toStringWithTemplate(dt, "YYYY/MM/DD", tbuf)) {
+    fprintf(stderr, "Could not convert date to string.\n");
+    return 2;
+  }
+  fprintf(stdout, "date \"%s\" + %d days: %s\n",
+	  s, toAdd, GWEN_Buffer_GetStart(tbuf));
+
+  return 0;
+}
+
+
 int testOldDbImport(void)
 {
   GWEN_DB_NODE *db;
@@ -6484,6 +6561,8 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("csv", testCSV),
   GWEN_FUNCS_ENTRY("date1", testDate1),
   GWEN_FUNCS_ENTRY("date2", testDate2),
+  GWEN_FUNCS_ENTRY_ARGS("date3", testDateFromString),
+  GWEN_FUNCS_ENTRY_ARGS("date4", testDateAddDays),
   GWEN_FUNCS_ENTRY("db", testDB),
   GWEN_FUNCS_ENTRY("db2", testDB2),
   GWEN_FUNCS_ENTRY("dbfile", testDBfile),
