@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Jul 07 2009
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -46,6 +46,7 @@ static const uint8_t daysInMonth[12]= {
 
 static void _writeAsString(GWEN_DATE *gd);
 static GWEN_DATE *_createFromGregorianAndUseGivenString(int y, int m, int d, const char *s);
+static int _daysInMonth(int month, int year);
 
 
 
@@ -63,10 +64,16 @@ GWEN_DATE *_createFromGregorianAndUseGivenString(int y, int m, int d, const char
 {
   GWEN_DATE *gd;
 
-  if (m<1 || m>12 || d<1 || d>31) {
+  if (m<1 || m>12 || d<1 || d>31 || y<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Bad date values (erroneous year=%d, month=%d, day=%d)", y, m, d);
     return NULL;
   }
+
+  if (d>_daysInMonth(m, y)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad date values (day value too high, erroneous year=%d, month=%d, day=%d)", y, m, d);
+    return NULL;
+  }
+
 
   GWEN_NEW_OBJECT(GWEN_DATE, gd);
   gd->year=y;
@@ -339,13 +346,22 @@ int GWEN_Date_IsLeapYear(int y)
 
 int GWEN_Date_DaysInMonth(const GWEN_DATE *gd)
 {
-  assert(gd);
-  if (gd->month==2 &&
-      ((((gd->year%4)==0) && ((gd->year)%100!=0)) || ((gd->year)%400==0)))
+  return _daysInMonth(gd->month, gd->year);
+}
+
+
+
+int _daysInMonth(int month, int year)
+{
+  if (month>12) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad month %d", month);
+    return GWEN_ERROR_GENERIC;
+  }
+  if (month==2 && GWEN_Date_IsLeapYear(year))
     /* February in a leap year */
     return 29;
   else
-    return daysInMonth[gd->month-1];
+    return daysInMonth[month-1];
 }
 
 
