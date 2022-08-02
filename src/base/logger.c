@@ -712,7 +712,7 @@ GWEN_LOGGER_LEVEL GWEN_Logger_Name2Level(const char *name)
     return GWEN_LoggerLevel_Info;
   else if (strcasecmp(name, "debug")==0)
     return GWEN_LoggerLevel_Debug;
-  else if (strcasecmp(name, "verbous")==0)
+  else if (strcasecmp(name, "verbous")==0 || strcasecmp(name, "verbose")==0)
     return GWEN_LoggerLevel_Verbous;
   else {
     return GWEN_LoggerLevel_Unknown;
@@ -751,6 +751,7 @@ const char *GWEN_Logger_Level2Name(GWEN_LOGGER_LEVEL level)
     s="debug";
     break;
   case GWEN_LoggerLevel_Verbous:
+    /* yes, we know the spelling is wrong. But it's a historic bug, fixing it would make Gwen incompatible with previous versions. */
     s="verbous";
     break;
   case GWEN_LoggerLevel_Unknown:
