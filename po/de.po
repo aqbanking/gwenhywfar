@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gwenhywfar\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2021-09-21 14:57+0200\n"
+"POT-Creation-Date: 2022-08-10 19:57+0200\n"
 "PO-Revision-Date: 2021-02-16 21:00+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
@@ -412,31 +412,31 @@ msgstr "Kommando wird empfangen..."
 msgid "Command received."
 msgstr "Kommando empfangen."
 
-#: src/os/gwendate.c:670
+#: src/os/gwendate.c:686
 msgid "Sunday"
 msgstr "Sonntag"
 
-#: src/os/gwendate.c:673
+#: src/os/gwendate.c:689
 msgid "Monday"
 msgstr "Montag"
 
-#: src/os/gwendate.c:676
+#: src/os/gwendate.c:692
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: src/os/gwendate.c:679
+#: src/os/gwendate.c:695
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: src/os/gwendate.c:682
+#: src/os/gwendate.c:698
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: src/os/gwendate.c:685
+#: src/os/gwendate.c:701
 msgid "Friday"
 msgstr "Freitag"
 
-#: src/os/gwendate.c:688
+#: src/os/gwendate.c:704
 msgid "Saturday"
 msgstr "Samstag"
 
@@ -1097,15 +1097,15 @@ msgstr ""
 "--compact        schreibe eine kompakte Datei\n"
 "-V | --version   Versionsnummer ausgeben und abbrechen\n"
 
-#: tools/typemaker2/main.c:187 tools/gcttool/main.c:201 tools/gsa/main.c:136
+#: tools/typemaker2/main.c:187 tools/gcttool/main.c:218 tools/gsa/main.c:136
 msgid "Usage: "
 msgstr "Benutzung: "
 
-#: tools/typemaker2/main.c:190 tools/gcttool/main.c:204 tools/gsa/main.c:139
+#: tools/typemaker2/main.c:190 tools/gcttool/main.c:221 tools/gsa/main.c:139
 msgid " [GLOBAL OPTIONS] COMMAND [LOCAL OPTIONS]\n"
 msgstr "[GLOBALE OPTIONEN] KOMMANDO [LOCALE OPTIONEN]\n"
 
-#: tools/typemaker2/main.c:193 tools/gcttool/main.c:207 tools/gsa/main.c:142
+#: tools/typemaker2/main.c:193 tools/gcttool/main.c:224 tools/gsa/main.c:142
 msgid ""
 "\n"
 "Global Options:\n"
@@ -1113,7 +1113,7 @@ msgstr ""
 "\n"
 "Globale Optionen:\n"
 
-#: tools/typemaker2/main.c:199 tools/gcttool/main.c:213 tools/gsa/main.c:148
+#: tools/typemaker2/main.c:199 tools/gcttool/main.c:229 tools/gsa/main.c:148
 msgid ""
 "\n"
 "Commands:\n"
