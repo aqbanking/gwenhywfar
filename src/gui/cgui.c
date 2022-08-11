@@ -60,6 +60,9 @@
 #ifdef HAVE_ICONV_H
 # include <iconv.h>
 #endif
+#ifdef OS_WIN32
+#include <windows.h>
+#endif
 #ifndef ICONV_CONST
 # define ICONV_CONST
 #endif
@@ -162,8 +165,76 @@ char GWEN_Gui_CGui__readCharFromStdin(int waitFor)
   return chr;
 }
 
+#ifdef OS_WIN32
+int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
+                         uint32_t flags,
+                         char *buffer,
+                         int minLen,
+                         int maxLen,
+                         uint32_t guiid)
+{
+  const char ABORT=3;
+  const char BACKSPACE=8;
+  const char RETURN=13;
+  const int show_asterisk=!(flags & GWEN_GUI_INPUT_FLAGS_SHOW);
+  int rv = 0;
 
+  unsigned char ch=0;
+  char *p=buffer;
 
+  DWORD con_mode;
+  DWORD dwRead;
+
+  HANDLE hIn=GetStdHandle(STD_INPUT_HANDLE);
+  if (hIn == INVALID_HANDLE_VALUE) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Cannot get handle to stdin");
+    rv=GWEN_ERROR_GENERIC;
+    return rv;
+  }
+
+  if (!GetConsoleMode(hIn, &con_mode)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on getting console mode for stdin: %d", GetLastError());
+    rv=GWEN_ERROR_GENERIC;
+    return rv;
+  }
+
+  if (!SetConsoleMode(hIn, con_mode & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_OUTPUT))) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on seting console mode for stdin: %d", GetLastError());
+    rv=GWEN_ERROR_GENERIC;
+    return rv;
+  }
+
+  while(ReadConsoleA(hIn, &ch, 1, &dwRead, NULL) && ch !=RETURN) {
+    if (ch==BACKSPACE) {
+      if (p>buffer) {
+        if (show_asterisk) {
+          putchar('\b');
+          putchar(' ');
+          putchar('\b');
+        }
+        *--p='\0';
+      }
+    } else if (ch==ABORT) {
+      DBG_INFO(GWEN_LOGDOMAIN, "User aborted");
+      rv=GWEN_ERROR_USER_ABORTED;
+      break;
+    } else if (p-buffer<maxLen) {
+      *p++=ch;
+      *p='\0';
+      if (show_asterisk)
+        putchar('*');
+      else
+        putchar(ch);
+    }
+  }
+  putchar('\n');
+  if (!SetConsoleMode(hIn, con_mode)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on resetting console mode for stdin: %d", GetLastError());
+    rv=GWEN_ERROR_GENERIC;
+  }
+  return rv;
+}
+#else
 int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
                          uint32_t flags,
                          char *buffer,
@@ -372,7 +443,7 @@ int GWEN_Gui_CGui__input(GWEN_UNUSED GWEN_GUI *gui,
 #endif
   return rv;
 }
-
+#endif
 
 
 int GWENHYWFAR_CB GWEN_Gui_CGui_MessageBox(GWEN_GUI *gui,
