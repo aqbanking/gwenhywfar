@@ -1032,7 +1032,7 @@ void GWEN_Dialog_ListWriteColumnSettings(GWEN_DIALOG *dlg,
   for (i=0; i<maxColumns; i++) {
     int j;
 
-    j=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ColumnWidth, i, -1);
+    j=GWEN_Dialog_GetIntProperty(dlg, widgetName, GWEN_DialogProperty_ColumnWidth, i, -1);
     if (j<minColumnSize)
       j=minColumnSize;
     GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_DEFAULT, GWEN_Buffer_GetStart(nameBuf), j);
