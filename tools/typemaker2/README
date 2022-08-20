@@ -1,3 +1,9 @@
+TODO:
+- maybe define inlines to be used when used as member of other types
+  (using the normal <inlines> element doesn't work in structs because that duplicates
+   code)
+
+
 <?xml?>
 
 <tm2>
