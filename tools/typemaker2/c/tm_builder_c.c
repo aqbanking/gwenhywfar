@@ -504,15 +504,12 @@ static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
   TYPEMAKER2_TYPE *structType;
   GWEN_BUFFER *tbuf;
-  uint32_t flags;
   /* TYPEMAKER2_TYPEMANAGER *tym; */
 
   structType=ty;
 
   /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  flags=Typemaker2_Type_GetFlags(ty);
 
   while (ty) {
     TYPEMAKER2_MEMBER_LIST *tml;
@@ -529,6 +526,9 @@ static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 	/* TODO: Check that we don't create duplicate code here!! */
         if (mty && mty!=structType && mty!=ty) {
           TYPEMAKER2_INLINE *ti;
+          uint32_t flags;
+
+          flags=Typemaker2_Type_GetFlags(mty);
 
           /* get inlines from member type */
           ti=Typemaker2_Inline_List_First(Typemaker2_Type_GetInlines(mty));
