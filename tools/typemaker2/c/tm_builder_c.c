@@ -134,22 +134,24 @@ static int _buildEndHeaders(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
   hl=Typemaker2_Type_GetHeaders(ty);
   if (hl) {
     TYPEMAKER2_HEADER *h;
+    int markAdded=0;
 
     h=Typemaker2_Header_List_First(hl);
-    if (h) {
-      GWEN_Buffer_AppendString(tbuf, "/* end-headers */\n");
-      while (h) {
-        if (Typemaker2_Header_GetLocation(h)==Typemaker2_HeaderLocation_HeaderEnd) {
-          GWEN_Buffer_AppendString(tbuf, "#include ");
-
-          if (Typemaker2_Header_GetType(h)==Typemaker2_HeaderType_System)
-            GWEN_Buffer_AppendArgs(tbuf, "<%s>", Typemaker2_Header_GetFileName(h));
-          else
-            GWEN_Buffer_AppendArgs(tbuf, "\"%s\"", Typemaker2_Header_GetFileName(h));
-          GWEN_Buffer_AppendString(tbuf, "\n");
+    while (h) {
+      if (Typemaker2_Header_GetLocation(h)==Typemaker2_HeaderLocation_HeaderEnd) {
+        if (!markAdded) {
+          GWEN_Buffer_AppendString(tbuf, "/* end-headers */\n");
+          markAdded=1;
         }
-        h=Typemaker2_Header_List_Next(h);
+        GWEN_Buffer_AppendString(tbuf, "#include ");
+
+        if (Typemaker2_Header_GetType(h)==Typemaker2_HeaderType_System)
+          GWEN_Buffer_AppendArgs(tbuf, "<%s>", Typemaker2_Header_GetFileName(h));
+        else
+          GWEN_Buffer_AppendArgs(tbuf, "\"%s\"", Typemaker2_Header_GetFileName(h));
+        GWEN_Buffer_AppendString(tbuf, "\n");
       }
+      h=Typemaker2_Header_List_Next(h);
     }
     GWEN_Buffer_AppendString(tbuf, "\n");
   }
