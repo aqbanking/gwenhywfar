@@ -493,6 +493,7 @@ static int _buildInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
     }
     ty=Typemaker2_Type_GetExtendsPtr(ty);
   }
+  GWEN_Buffer_free(tbuf);
 
   return 0;
 }
@@ -501,9 +502,12 @@ static int _buildInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
 static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
+  TYPEMAKER2_TYPE *structType;
   GWEN_BUFFER *tbuf;
   uint32_t flags;
   /* TYPEMAKER2_TYPEMANAGER *tym; */
+
+  structType=ty;
 
   /* tym=Typemaker2_Builder_GetTypeManager(tb); */
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -521,8 +525,9 @@ static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
       while (tm) {
         TYPEMAKER2_TYPE *mty;
 
-        mty=Typemaker2_Member_GetTypePtr(tm);
-        if (mty) {
+	mty=Typemaker2_Member_GetTypePtr(tm);
+	/* TODO: Check that we don't create duplicate code here!! */
+        if (mty && mty!=structType && mty!=ty) {
           TYPEMAKER2_INLINE *ti;
 
           /* get inlines from member type */
