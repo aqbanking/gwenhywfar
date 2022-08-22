@@ -97,6 +97,7 @@ GWB_FILE_LIST2 *GWB_BuildCtx_GetFileList(const GWB_BUILD_CONTEXT *bctx)
 void GWB_BuildCtx_AddFile(GWB_BUILD_CONTEXT *bctx, GWB_FILE *file)
 {
   GWB_File_SetId(file, ++(bctx->lastFileId));
+  DBG_INFO(NULL, "Adding file%s/%s", GWB_File_GetFolder(file), GWB_File_GetName(file));
   GWB_File_List2_PushBack(bctx->fileList, file);
 }
 
@@ -120,7 +121,7 @@ void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *b
     GWB_FILE *fileCopy;
 
     fileCopy=GWB_File_dup(file);
-    GWB_BuildCmd_AddInFile(bcmd, fileCopy);
+    GWB_BuildCmd_AddInFile(bcmd, fileCopy); /* TODO: Reverse order? */
     GWB_BuildCtx_AddFile(bctx, fileCopy);
   }
 }
