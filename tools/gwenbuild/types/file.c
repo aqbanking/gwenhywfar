@@ -367,7 +367,8 @@ GWB_FILE *GWB_File_List2_GetFileByPathAndName(const GWB_FILE_LIST2 *fileList, co
         const char *currentFolder;
 
         currentFolder=GWB_File_GetFolder(file);
-        if (currentFolder && *currentFolder && strcasecmp(currentFolder, folder)==0) {
+        if ((currentFolder==NULL && folder==NULL) ||
+            (currentFolder && *currentFolder && strcasecmp(currentFolder, folder)==0)) {
           GWB_File_List2Iterator_free(it);
           return file;
         }
