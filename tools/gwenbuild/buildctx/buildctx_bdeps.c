@@ -132,7 +132,7 @@ int GWB_BuildCtx_AddBuildCmdsByBuilderNameToList(const GWB_BUILD_CMD_LIST2 *sour
 
         bcmd=GWB_BuildCmd_List2Iterator_Data(it);
         while(bcmd) {
-          if (GWB_BuildCmd_GetFlags(bcmd) &GWB_BUILD_CMD_FLAGS_AUTO) {
+          if (GWB_BuildCmd_GetFlags(bcmd) & GWB_BUILD_CMD_FLAGS_AUTO) {
             if (!_cmdIsInList(targetCmdList, bcmd)) {
               if (GWB_BuildCmd_GetCurrentCommand(bcmd)) {
                 GWB_BuildCmd_List2_PushBack(targetCmdList, bcmd);
@@ -205,7 +205,7 @@ void _clearDepsInFiles(GWB_BUILD_CONTEXT *bctx)
 void _setupDepsForCmd(GWB_BUILD_CMD *bcmd, GWB_BUILD_CMD_LIST2 *targetCmdList)
 {
   GWB_FILE_LIST2 *fileList;
-  
+
   fileList=GWB_BuildCmd_GetInFileList2(bcmd);
   if (fileList) {
     GWB_FILE_LIST2_ITERATOR *it;
@@ -217,7 +217,7 @@ void _setupDepsForCmd(GWB_BUILD_CMD *bcmd, GWB_BUILD_CMD_LIST2 *targetCmdList)
       file=GWB_File_List2Iterator_Data(it);
       while(file) {
         GWB_BUILD_CMD *fileBuildCmd;
-      
+
         fileBuildCmd=GWB_File_GetBuildCmd(file);
         if (fileBuildCmd) {
           GWB_File_AddWaitingBuildCmd(file, bcmd);
