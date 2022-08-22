@@ -523,19 +523,18 @@ static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
       tm=Typemaker2_Member_List_First(tml);
       while (tm) {
         TYPEMAKER2_TYPE *mty;
+        uint32_t memberFlags;
 
+        memberFlags=Typemaker2_Member_GetFlags(tm);
 	mty=Typemaker2_Member_GetTypePtr(tm);
 	/* TODO: Check that we don't create duplicate code here!! */
         if (mty && mty!=structType && mty!=ty) {
           TYPEMAKER2_INLINE *ti;
-          uint32_t flags;
-
-          flags=Typemaker2_Type_GetFlags(mty);
 
           /* get inlines from member type */
           ti=Typemaker2_Inline_List_First(Typemaker2_Type_GetInlines(mty));
           while (ti) {
-            if ((flags & Typemaker2_Inline_GetTypeFlagsMask(ti))==Typemaker2_Inline_GetTypeFlagsValue(ti)) {
+            if ((memberFlags & Typemaker2_Inline_GetTypeFlagsMask(ti))==Typemaker2_Inline_GetTypeFlagsValue(ti)) {
               const char *content;
 
               content=Typemaker2_Inline_GetContent(ti);
