@@ -121,8 +121,8 @@ void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *b
     GWB_FILE *fileCopy;
 
     fileCopy=GWB_File_dup(file);
-    GWB_BuildCmd_AddInFile(bcmd, fileCopy); /* TODO: Reverse order? */
     GWB_BuildCtx_AddFile(bctx, fileCopy);
+    GWB_BuildCmd_AddInFile(bcmd, fileCopy);
   }
 }
 
@@ -158,8 +158,8 @@ void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *
     GWB_FILE *fileCopy;
 
     fileCopy=GWB_File_dup(file);
-    GWB_BuildCmd_AddOutFile(bcmd, fileCopy);
     GWB_BuildCtx_AddFile(bctx, fileCopy);
+    GWB_BuildCmd_AddOutFile(bcmd, fileCopy);
   }
 }
 
