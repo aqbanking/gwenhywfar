@@ -578,8 +578,8 @@ void GWB_BuildCmd_Dump(const GWB_BUILD_CMD *bcmd, int indent)
 
   GWBUILD_Debug_PrintValue(   "folder.......", bcmd->folder, indent+2);
   GWBUILD_Debug_PrintIntValue("blockingFiles", bcmd->blockingFiles, indent+2);
-  GWBUILD_Debug_PrintKvpList("prepareCommandList", bcmd->prepareCommandList, indent+2);
-  GWBUILD_Debug_PrintKvpList("buildCommandList", bcmd->buildCommandList, indent+2);
+  GWB_BuildSubCmd_List_Dump(bcmd->prepareCommandList, indent+2, "prepareCommandList");
+  GWB_BuildSubCmd_List_Dump(bcmd->buildCommandList, indent+2, "buildCommandList");
   GWBUILD_Debug_PrintFileList2("inFileList2", bcmd->inFileList2, indent+2);
   GWBUILD_Debug_PrintFileList2("outFileList2", bcmd->outFileList2, indent+2);
 
@@ -614,21 +614,23 @@ void GWB_BuildCmd_PrintDescriptionWithText(const GWB_BUILD_CMD *bcmd, int indent
 
         for(i=0; i<indent; i++)
           fprintf(stderr, " ");
-        fprintf(stderr, "%s: %s (%s -> %s)\n",
+        fprintf(stderr, "%s: %s (%s -> %s) [%d blocking files]\n",
                 folder?folder:"<no folder>",
                 text?text:"BuildCmd",
                 fileNameIn?fileNameIn:"<no filename>",
-                fileNameOut?fileNameOut:"<no filename>");
+                fileNameOut?fileNameOut:"<no filename>",
+                bcmd->blockingFiles);
       }
       else if (fileIn) {
         int i;
 
         for(i=0; i<indent; i++)
           fprintf(stderr, " ");
-        fprintf(stderr, "%s: %s (%s) \n",
+        fprintf(stderr, "%s: %s (%s) [%d blocking files]\n",
                 folder?folder:"<no folder>",
                 text?text:"BuildCmd",
-                fileNameIn?fileNameIn:"<no filename>");
+                fileNameIn?fileNameIn:"<no filename>",
+                bcmd->blockingFiles);
       }
     }
   }

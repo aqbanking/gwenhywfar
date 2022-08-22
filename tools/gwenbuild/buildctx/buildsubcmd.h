@@ -55,4 +55,8 @@ GWB_BUILD_SUBCMD *GWB_BuildSubCmd_fromXml(GWEN_XMLNODE *xmlNode);
 GWB_BUILD_SUBCMD_LIST *GWB_BuildSubCmd_List_dup(const GWB_BUILD_SUBCMD_LIST *cmdList);
 
 
+void GWB_BuildSubCmd_Dump(const GWB_BUILD_SUBCMD *cmd, int indent);
+void GWB_BuildSubCmd_List_Dump(const GWB_BUILD_SUBCMD_LIST *cmdList, int indent, const char *text);
+
+
 #endif

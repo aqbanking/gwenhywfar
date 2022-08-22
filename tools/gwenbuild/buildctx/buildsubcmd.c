@@ -220,3 +220,58 @@ GWB_BUILD_SUBCMD_LIST *GWB_BuildSubCmd_List_dup(const GWB_BUILD_SUBCMD_LIST *cmd
 
 
 
+void GWB_BuildSubCmd_Dump(const GWB_BUILD_SUBCMD *cmd, int indent)
+{
+  if (cmd) {
+    int i;
+
+    for(i=0; i<indent; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "Command    : %s\n", (cmd->command)?(cmd->command):"<empty>");
+
+    for(i=0; i<indent; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "Arguments  : %s\n", (cmd->arguments)?(cmd->arguments):"<empty>");
+
+    for(i=0; i<indent; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "Message    : %s\n", (cmd->buildMessage)?(cmd->buildMessage):"<empty>");
+
+    for(i=0; i<indent; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "DepFilePath: %s\n", (cmd->depFilePath)?(cmd->depFilePath):"<empty>");
+  }
+}
+
+
+
+void GWB_BuildSubCmd_List_Dump(const GWB_BUILD_SUBCMD_LIST *cmdList, int indent, const char *text)
+{
+  int i;
+
+  if (text) {
+    for(i=0; i<indent; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "%s\n", text);
+  }
+  if (cmdList) {
+    const GWB_BUILD_SUBCMD *cmd;
+
+    cmd=GWB_BuildSubCmd_List_First(cmdList);
+    while(cmd) {
+      for(i=0; i<indent+2; i++)
+        fprintf(stderr, " ");
+      fprintf(stderr, "Sub Command:\n");
+      GWB_BuildSubCmd_Dump(cmd, indent+4);
+      cmd=GWB_BuildSubCmd_List_Next(cmd);
+    }
+  }
+  else {
+    for(i=0; i<indent+2; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "<empty>\n");
+  }
+}
+
+
+
