@@ -250,7 +250,8 @@ void GWB_Builder_AddFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FILE 
   initialSourceDir=GWB_Context_GetInitialSourceDir(context);
 
   folder=GWB_File_GetFolder(file);
-
+  if (!(folder && *folder))
+    folder=".";
   realFileFolderBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
     GWEN_Buffer_AppendString(realFileFolderBuffer, initialSourceDir);
@@ -319,6 +320,8 @@ void GWB_Builder_AddAbsFileNameToBuffer(const GWB_CONTEXT *context, const GWB_FI
   initialSourceDir=GWB_Context_GetInitialSourceDir(context);
 
   folder=GWB_File_GetFolder(file);
+  if (!(folder && *folder))
+    folder=".";
 
   realFileFolderBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   if (!(GWB_File_GetFlags(file) & GWB_FILE_FLAGS_GENERATED)) {
