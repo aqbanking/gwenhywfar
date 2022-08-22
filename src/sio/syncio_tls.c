@@ -530,7 +530,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     /* try to find OpenSSL certificates */
 # ifdef OS_WIN32
     if (trustFileSet==0) {
-      char defaultPath[2*MAX_PATH+1];
+      char defaultPath[2*_MAX_PATH+1];
       const char *defaultFile = "ca-bundle.crt";
       GWEN_STRINGLIST *paths;
       GWEN_BUFFER *nbuf;
