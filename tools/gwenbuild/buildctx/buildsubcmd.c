@@ -62,9 +62,25 @@ void GWB_BuildSubCmd_free(GWB_BUILD_SUBCMD *cmd)
     free(cmd->command);
     free(cmd->arguments);
     free(cmd->buildMessage);
+    free(cmd->logFilename);
 
     GWEN_FREE_OBJECT(cmd);
   }
+}
+
+
+
+const char *GWB_BuildSubCmd_GetLogFilename(const GWB_BUILD_SUBCMD *cmd)
+{
+  return cmd->logFilename;
+}
+
+
+
+void GWB_BuildSubCmd_SetLogFilename(GWB_BUILD_SUBCMD *cmd, const char *s)
+{
+  free(cmd->logFilename);
+  cmd->logFilename=s?strdup(s):NULL;
 }
 
 

@@ -26,6 +26,8 @@ struct GWB_BUILD_CONTEXT {
   GWB_BUILD_CMD_LIST2 *runningQueue;
   GWB_BUILD_CMD_LIST2 *finishedQueue;
 
+  char *logPath;
+  int lastLogfileId;
 };
 
 

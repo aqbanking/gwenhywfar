@@ -24,6 +24,7 @@ struct GWB_BUILD_SUBCMD {
   char *buildMessage;
 
   char *depFilePath;
+  char *logFilename;
 };
 
 

@@ -16,6 +16,7 @@
 typedef struct GWB_BUILD_CONTEXT GWB_BUILD_CONTEXT;
 
 #include "gwenbuild/buildctx/buildcmd.h"
+#include "gwenbuild/buildctx/buildsubcmd.h"
 #include "gwenbuild/types/file.h"
 
 
@@ -40,6 +41,10 @@ void GWB_BuildCtx_AddOutFilesToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD 
 void GWB_BuildCtx_AddInFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 void GWB_BuildCtx_AddOutFileToCtxAndCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, GWB_FILE *file);
 
+const char *GWB_BuildCtx_GetLogPath(const GWB_BUILD_CONTEXT *bctx);
+void GWB_BuildCtx_SetLogPath(GWB_BUILD_CONTEXT *bctx, const char *s);
+
+int GWB_BuildCtx_CreateAndSetLogFilenameForSubCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_SUBCMD *cmd);
 
 void GWB_BuildCtx_toXml(const GWB_BUILD_CONTEXT *bctx, GWEN_XMLNODE *xmlNode);
 GWB_BUILD_CONTEXT *GWB_BuildCtx_fromXml(GWEN_XMLNODE *xmlNode);

@@ -25,6 +25,11 @@
 
 #include <unistd.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <string.h>
+
 
 
 #define GWB_BUILDCTX_PROCESS_WAIT_TIMEOUT 10.0
@@ -33,10 +38,12 @@
 static void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
 static void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
 static int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
-static int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles);
+static int _startCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles);
 static int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
 static void _signalJobFinished(GWB_BUILD_CMD *bcmd);
 static void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
+static void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_SUBCMD *cmd);
+
 static int _waitForRunningJobs(GWB_BUILD_CONTEXT *bctx);
 static void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
 static void _abortCommandsInQueue(GWB_BUILD_CMD_LIST2 *cmdList);
@@ -252,7 +259,7 @@ int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed)
                                                             bctx->initialSourceDir);
         if (_needRunCurrentCommand(bcmd, slInFiles, slOutFiles)) {
 
-	  rv=_startCommand(bcmd, slOutFiles);
+	  rv=_startCommand(bctx, bcmd, slOutFiles);
 	  if (rv<0) {
 	    GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
 	    errors++;
@@ -558,7 +565,7 @@ int _checkDatesOfFileAgainstList(const char *fileName, const GWEN_STRINGLIST *sl
 
 
 
-int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles)
+int _startCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles)
 {
   GWB_BUILD_SUBCMD *currentCommand;
 
@@ -576,6 +583,7 @@ int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles)
       GWEN_PROCESS *process;
       GWEN_PROCESS_STATE pstate;
       const char *buildMessage;
+      int rv;
 
       if (GWB_BuildSubCmd_List_Previous(currentCommand)==NULL) {
         /* first command */
@@ -590,9 +598,20 @@ int _startCommand(GWB_BUILD_CMD *bcmd, const GWEN_STRINGLIST *slOutFiles)
       else
         fprintf(stdout, "%s %s\n", cmd, args);
 
+      rv=GWB_BuildCtx_CreateAndSetLogFilenameForSubCmd(bctx, currentCommand);
+      if (rv<0) {
+        DBG_ERROR(NULL, "Error creating logfile path for output redirection (%d)", rv);
+        GWB_BuildCmd_SetCurrentProcess(bcmd, NULL);
+        return GWEN_ERROR_GENERIC;
+      }
+
       process=GWEN_Process_new();
       if (folder && *folder)
         GWEN_Process_SetFolder(process, folder);
+
+      GWEN_Process_SetFilenameStdOut(process, GWB_BuildSubCmd_GetLogFilename(currentCommand));
+      GWEN_Process_SetFilenameStdErr(process, GWB_BuildSubCmd_GetLogFilename(currentCommand));
+
       GWB_BuildCmd_SetCurrentProcess(bcmd, process);
       pstate=GWEN_Process_Start(process, cmd, args);
       if (pstate!=GWEN_ProcessStateRunning) {
@@ -641,13 +660,33 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
         int result;
 
         result=GWEN_Process_GetResult(process);
+#if 1
+        _printCmdOutputIfNotEmptyAndDeleteFile(currentCommand);
+        if (result) {
+          if (GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT) {
+            DBG_INFO(NULL, "Command exited with result %d, ignoring", result);
+            _finishCurrentCommand(bctx, bcmd, currentCommand);
+          }
+          else {
+            DBG_INFO(NULL, "Command exited with result %d", result);
+            errors++;
+          }
+          //_printCmdOutput(currentCommand);
+        }
+        else {
+          _finishCurrentCommand(bctx, bcmd, currentCommand);
+        }
+#else
         if (result && !(GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT)) {
           DBG_INFO(NULL, "Command exited with result %d", result);
           GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
+          _printCmdOutput(currentCommand);
           errors++;
         }
-	else
-	  _finishCurrentCommand(bctx, bcmd, currentCommand);
+        else {
+          _finishCurrentCommand(bctx, bcmd, currentCommand);
+        }
+#endif
       }
       else {
         DBG_ERROR(NULL, "Command aborted (status: %d)", pstate);
@@ -731,6 +770,39 @@ void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommand
     GWB_BuildCmd_List2Iterator_free(it);
   }
 }
+
+
+
+void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_SUBCMD *cmd)
+{
+  const char *fileName;
+
+  fileName=GWB_BuildSubCmd_GetLogFilename(cmd);
+  if (fileName) {
+    struct stat sb;
+
+    if (stat(fileName, &sb)==-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %d [%s]", fileName, errno, strerror(errno));
+    }
+    else {
+      if (sb.st_size>0) {
+        int rv;
+        GWEN_BUFFER *dbuf;
+
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        rv=GWEN_SyncIo_Helper_ReadFile(fileName, dbuf);
+        if (rv<0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Error reading command output from file \"%s\": %d", fileName, rv);
+        }
+        else
+          fprintf(stderr, "%s", GWEN_Buffer_GetStart(dbuf));
+        GWEN_Buffer_free(dbuf);
+      }
+      unlink(fileName);
+    }
+  }
+}
+
 
 
 

@@ -21,9 +21,13 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/gwentime.h>
 
 #include <unistd.h>
 #include <ctype.h>
+
+
+static int _prepareBaseLogPath(GWB_BUILD_CONTEXT *bctx);
 
 
 
@@ -54,6 +58,21 @@ void GWB_BuildCtx_free(GWB_BUILD_CONTEXT *bctx)
 
     GWEN_FREE_OBJECT(bctx);
   }
+}
+
+
+
+const char *GWB_BuildCtx_GetLogPath(const GWB_BUILD_CONTEXT *bctx)
+{
+  return bctx->logPath;
+}
+
+
+
+void GWB_BuildCtx_SetLogPath(GWB_BUILD_CONTEXT *bctx, const char *s)
+{
+  free(bctx->logPath);
+  bctx->logPath=s?strdup(s):NULL;
 }
 
 
@@ -198,6 +217,75 @@ void GWB_BuildCtx_Dump(const GWB_BUILD_CONTEXT *bctx, int indent)
 
 
 
+int GWB_BuildCtx_CreateAndSetLogFilenameForSubCmd(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_SUBCMD *cmd)
+{
+  GWEN_BUFFER *dbuf;
+  int rv;
 
+  if (bctx->logPath==NULL) {
+    rv=_prepareBaseLogPath(bctx);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(dbuf, bctx->logPath);
+
+#if 0
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(dbuf), 0);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error opening/creating folder \"%s\": %d", GWEN_Buffer_GetStart(dbuf), rv);
+    GWEN_Buffer_free(dbuf);
+    return rv;
+  }
+#endif
+  /*GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);*/
+  GWEN_Buffer_AppendString(dbuf, "-");
+  GWEN_Buffer_AppendArgs(dbuf, "%05d", ++(bctx->lastLogfileId));
+  GWEN_Buffer_AppendString(dbuf, ".log");
+
+  GWB_BuildSubCmd_SetLogFilename(cmd, GWEN_Buffer_GetStart(dbuf));
+  GWEN_Buffer_free(dbuf);
+
+  return 0;
+}
+
+
+
+int _prepareBaseLogPath(GWB_BUILD_CONTEXT *bctx)
+{
+  GWEN_BUFFER *dbuf;
+  GWEN_TIME *ti;
+  int rv;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  ti=GWEN_CurrentTime();
+
+  GWEN_Buffer_AppendString(dbuf, ".logs");
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(dbuf), 0);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error getting path \"%s\": %d", GWEN_Buffer_GetStart(dbuf), rv);
+    GWEN_Time_free(ti);
+    GWEN_Buffer_free(dbuf);
+    return rv;
+  }
+  GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);
+
+  rv=GWEN_Time_toString(ti, "YYYYMMDD-hhmmss", dbuf);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error adding time string to buffer: %d", rv);
+    GWEN_Time_free(ti);
+    GWEN_Buffer_free(dbuf);
+    return rv;
+  }
+
+  GWB_BuildCtx_SetLogPath(bctx, GWEN_Buffer_GetStart(dbuf));
+  GWEN_Time_free(ti);
+  GWEN_Buffer_free(dbuf);
+
+  return 0;
+}
 
 

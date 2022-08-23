@@ -48,6 +48,9 @@ const char *GWB_BuildSubCmd_GetDepFilePath(const GWB_BUILD_SUBCMD *cmd);
 void GWB_BuildSubCmd_SetDepFilePath(GWB_BUILD_SUBCMD *cmd, const char *s);
 
 
+const char *GWB_BuildSubCmd_GetLogFilename(const GWB_BUILD_SUBCMD *cmd);
+void GWB_BuildSubCmd_SetLogFilename(GWB_BUILD_SUBCMD *cmd, const char *s);
+
 
 void GWB_BuildSubCmd_toXml(const GWB_BUILD_SUBCMD *cmd, GWEN_XMLNODE *xmlNode);
 GWB_BUILD_SUBCMD *GWB_BuildSubCmd_fromXml(GWEN_XMLNODE *xmlNode);
