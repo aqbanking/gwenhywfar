@@ -49,6 +49,10 @@ struct GWEN_PROCESS {
   GWEN_SYNCIO *stdOut;
   GWEN_SYNCIO *stdErr;
 
+  char *filenameStdIn;
+  char *filenameStdOut;
+  char *filenameStdErr;
+
   char *folder;
 };
 
@@ -59,10 +63,6 @@ GWEN_PROCESS_STATE GWEN_Process_GetState(GWEN_PROCESS *pr, int w);
 
 static
 GWEN_PROCESS_STATE GWEN_Process_MakeState(GWEN_PROCESS *pr, int status);
-
-static
-int GWEN_Process_Redirect(GWEN_PROCESS *pr);
-
 
 #endif
 

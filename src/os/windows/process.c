@@ -70,8 +70,12 @@ GWEN_PROCESS *GWEN_Process_new(void)
 void GWEN_Process_free(GWEN_PROCESS *pr)
 {
   if (pr) {
-    /* close handles */
+    free(pr->filenameStdIn);
+    free(pr->filenameStdOut);
+    free(pr->filenameStdErr);
+
     free(pr->folder);
+    /* close handles */
     CloseHandle(pr->processInfo.hThread);
     CloseHandle(pr->processInfo.hProcess);
     GWEN_SyncIo_free(pr->stdIn);
@@ -348,8 +352,30 @@ GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr)
 
 
 
+void GWEN_Process_SetFilenameStdIn(GWEN_PROCESS *pr, const char *s)
+{
+  assert(pr);
+  free(pr->filenameStdIn);
+  pr->filenameStdIn=s?strdup(s):NULL;
+}
 
 
+
+void GWEN_Process_SetFilenameStdOut(GWEN_PROCESS *pr, const char *s)
+{
+  assert(pr);
+  free(pr->filenameStdOut);
+  pr->filenameStdOut=s?strdup(s):NULL;
+}
+
+
+
+void GWEN_Process_SetFilenameStdErr(GWEN_PROCESS *pr, const char *s)
+{
+  assert(pr);
+  free(pr->filenameStdErr);
+  pr->filenameStdErr=s?strdup(s):NULL;
+}
 
 
 

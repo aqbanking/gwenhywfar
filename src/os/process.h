@@ -182,6 +182,17 @@ GWENHYWFAR_API
 GWEN_SYNCIO *GWEN_Process_GetStderr(const GWEN_PROCESS *pr);
 
 
+
+GWENHYWFAR_API
+void GWEN_Process_SetFilenameStdIn(GWEN_PROCESS *pr, const char *s);
+
+GWENHYWFAR_API
+void GWEN_Process_SetFilenameStdOut(GWEN_PROCESS *pr, const char *s);
+
+GWENHYWFAR_API
+void GWEN_Process_SetFilenameStdErr(GWEN_PROCESS *pr, const char *s);
+
+
 /**
  * Start a process which executes the given command with the given arguments, and gathers
  * stdout of the process into the given buffer (if any).

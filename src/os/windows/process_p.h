@@ -45,6 +45,10 @@ struct GWEN_PROCESS {
   GWEN_SYNCIO *stdOut;
   GWEN_SYNCIO *stdErr;
 
+  char *filenameStdIn;
+  char *filenameStdOut;
+  char *filenameStdErr;
+
   char *folder;
 };
 
