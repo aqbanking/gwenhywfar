@@ -271,17 +271,18 @@ GWEN_PROCESS_STATE GWEN_Process_Start(GWEN_PROCESS *pr,
 
   /* child */
   DBG_DEBUG(GWEN_LOGDOMAIN, "I'm the child process");
+
+  if (usePipeRedirs)
+    _setupPipeRedirectionsInChild(pr);
+  else
+    _setupFileRedirectionsInChild(pr);
+
   if (pr->folder) {
     if (chdir(pr->folder)) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Aborting due to error on chdir(%s): %s", pr->folder, strerror(errno));
       exit(2);
     }
   }
-
-  if (usePipeRedirs)
-    _setupPipeRedirectionsInChild(pr);
-  else
-    _setupFileRedirectionsInChild(pr);
 
   _setupArgsAndExec(prg, args);
 
@@ -427,20 +428,30 @@ void _setupFileRedirectionsInChild(GWEN_PROCESS *pr)
 
   if (pr->filenameStdIn) {
     fd=open(pr->filenameStdIn, O_RDONLY);
-    close(0);
-    if (dup(fd)==-1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection STDIN to \"%s\"", pr->filenameStdIn);
+    if (fd==-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not open \"%s\" (errno=%d, \"%s\")", pr->filenameStdIn, errno, strerror(errno));
     }
-    close(fd);
+    else {
+      close(0);
+      if (dup(fd)==-1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection STDIN to \"%s\"", pr->filenameStdIn);
+      }
+      close(fd);
+    }
   }
 
   if (pr->filenameStdOut) {
-    fd=open(pr->filenameStdOut, O_WRONLY|O_APPEND);
-    close(1);
-    if (dup(fd)==-1) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection STDOUT to \"%s\"", pr->filenameStdOut);
+    fd=open(pr->filenameStdOut, O_WRONLY|O_APPEND|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+    if (fd==-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not open \"%s\" (errno=%d, \"%s\")", pr->filenameStdOut, errno, strerror(errno));
     }
-    close(fd);
+    else {
+      close(1);
+      if (dup(fd)==-1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection STDOUT to \"%s\"", pr->filenameStdOut);
+      }
+      close(fd);
+    }
   }
 
   if (pr->filenameStdErr) {
@@ -452,12 +463,17 @@ void _setupFileRedirectionsInChild(GWEN_PROCESS *pr)
       }
     }
     else {
-      fd=open(pr->filenameStdErr, O_WRONLY|O_APPEND);
-      close(2);
-      if (dup(fd)==-1) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection STDERR to \"%s\"", pr->filenameStdErr);
+      fd=open(pr->filenameStdErr, O_WRONLY|O_APPEND|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+      if (fd==-1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Could not open \"%s\" (errno=%d, \"%s\")", pr->filenameStdErr, errno, strerror(errno));
       }
-      close(fd);
+      else {
+        close(2);
+        if (dup(fd)==-1) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup redirection STDERR to \"%s\"", pr->filenameStdErr);
+        }
+        close(fd);
+      }
     }
   }
 }
