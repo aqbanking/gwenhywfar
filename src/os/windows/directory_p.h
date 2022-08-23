@@ -36,7 +36,6 @@
 
 
 #include <sys/types.h>
-#include <dirent.h>
 #include <windows.h>
 
 #include <gwenhywfar/gwenhywfarapi.h>
