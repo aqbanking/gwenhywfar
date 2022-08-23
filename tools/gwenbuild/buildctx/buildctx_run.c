@@ -660,7 +660,6 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
         int result;
 
         result=GWEN_Process_GetResult(process);
-#if 1
         _printCmdOutputIfNotEmptyAndDeleteFile(currentCommand);
         if (result) {
           if (GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT) {
@@ -676,17 +675,6 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
         else {
           _finishCurrentCommand(bctx, bcmd, currentCommand);
         }
-#else
-        if (result && !(GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT)) {
-          DBG_INFO(NULL, "Command exited with result %d", result);
-          GWB_BuildCmd_List2_PushBack(bctx->finishedQueue, bcmd);
-          _printCmdOutput(currentCommand);
-          errors++;
-        }
-        else {
-          _finishCurrentCommand(bctx, bcmd, currentCommand);
-        }
-#endif
       }
       else {
         DBG_ERROR(NULL, "Command aborted (status: %d)", pstate);
@@ -794,8 +782,16 @@ void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_SUBCMD *cmd)
         if (rv<0) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Error reading command output from file \"%s\": %d", fileName, rv);
         }
-        else
-          fprintf(stderr, "%s", GWEN_Buffer_GetStart(dbuf));
+        else {
+          const char *buildMessage;
+          const char *exe;
+      
+          buildMessage=GWB_BuildSubCmd_GetBuildMessage(cmd);
+          exe=GWB_BuildSubCmd_GetCommand(cmd);
+          fprintf(stderr, "Output from [%s]\n", buildMessage?buildMessage:(exe?exe:"NONE"));
+          fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(dbuf));
+          fflush(stderr);
+        }
         GWEN_Buffer_free(dbuf);
       }
       unlink(fileName);
