@@ -41,6 +41,11 @@ AH_BOTTOM([
   typedef SSIZE_T ssize_t;
 #endif
 
+/* MSVC has no mode_t; this is the type of st_mode in its struct stat. */
+#ifdef _MSC_VER
+  typedef unsigned short mode_t;
+#endif
+
 /* MSVC lacks the POSIX permission bits and file type macros. Windows
    has no execute permission and no group or other permissions. */
 #ifdef _MSC_VER
