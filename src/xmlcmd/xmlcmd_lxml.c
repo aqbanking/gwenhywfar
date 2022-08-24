@@ -32,6 +32,7 @@
 #include "xmlcmd_lxml_p.h"
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 #include <ctype.h>
@@ -625,7 +626,7 @@ GWEN_XMLCMD_LXML_TWOSTRINGS *_twoStrings_fromString(const char *source, uint8_t 
     int idx;
 
     idx=s-source;
-    ts->string1=strndup(source, idx);
+    ts->string1=GWEN_Text_strndup(source, idx);
     ts->ownStringsBitmap|=1;
     s++;
     if (s &&*s)
