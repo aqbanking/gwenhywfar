@@ -34,6 +34,12 @@ AH_BOTTOM([
 #  define strncasecmp _strnicmp
 # endif
 #endif
+
+/* MSVC has no ssize_t. This is the same typedef as in gcrypt.h. */
+#ifdef _MSC_VER
+# include <basetsd.h>
+  typedef SSIZE_T ssize_t;
+#endif
 ])
 
 ###-------------------------------------------------------------------------
