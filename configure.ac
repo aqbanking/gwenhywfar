@@ -34,6 +34,9 @@ AH_BOTTOM([
 # include <basetsd.h>
 typedef SSIZE_T ssize_t;
 
+/* MSVC has no mode_t. */
+typedef unsigned short mode_t;
+
 /* MSVC lacks the POSIX permission bits and file type macros. Windows
    has no execute permission and no group or other permissions. */
 # include <sys/types.h>
