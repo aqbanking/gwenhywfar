@@ -40,6 +40,33 @@ AH_BOTTOM([
 # include <basetsd.h>
   typedef SSIZE_T ssize_t;
 #endif
+
+/* MSVC lacks the POSIX permission bits and file type macros. Windows
+   has no execute permission and no group or other permissions. */
+#ifdef _MSC_VER
+# include <sys/types.h>
+# include <sys/stat.h>
+# ifndef S_IRUSR
+#  define S_IRUSR _S_IREAD
+#  define S_IWUSR _S_IWRITE
+#  define S_IXUSR 0
+#  define S_IRWXU (S_IRUSR | S_IWUSR | S_IXUSR)
+#  define S_IRGRP 0
+#  define S_IWGRP 0
+#  define S_IXGRP 0
+#  define S_IRWXG 0
+#  define S_IROTH 0
+#  define S_IWOTH 0
+#  define S_IXOTH 0
+#  define S_IRWXO 0
+# endif
+# if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#  define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+# endif
+# if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
+#  define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+# endif
+#endif
 ])
 
 ###-------------------------------------------------------------------------
