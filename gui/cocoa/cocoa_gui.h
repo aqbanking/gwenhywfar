@@ -13,7 +13,7 @@
 
 
 
-#if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
+#if (defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))) || defined _MSC_VER
 # ifdef BUILDING_COCOA_GUI
 #   define COCOAGUI_API __attribute__ ((visibility("default")))
 # else

@@ -14,7 +14,7 @@
 #define QT5_GUI_H
 
 
-#if defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
+#if (defined __GNUC__ && (! defined (__sun)) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))) || defined _MSC_VER
 # ifdef BUILDING_QT5_GUI
 #   define QT5GUI_API __attribute__ ((visibility("default")))
 # else
