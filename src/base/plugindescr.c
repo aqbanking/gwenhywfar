@@ -47,6 +47,7 @@ static GWEN_PLUGIN_DESCRIPTION *_pdList2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd,
 
 static int _getLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd, const char *s, GWEN_BUFFER *buf);
 static GWEN_PLUGIN_DESCRIPTION *_readPluginDescriptionFromFile(const char *folder, const char *fullFileName, const char *pluginType);
+static GWEN_XMLNODE *_getLocalOrMainPluginNode(GWEN_XMLNODE *pluginDescrNode);
 
 
 
@@ -563,59 +564,40 @@ GWEN_PLUGIN_DESCRIPTION *_readPluginDescriptionFromFile(const char *folder, cons
     DBG_WARN(GWEN_LOGDOMAIN, "Bad file \"%s\"", fullFileName);
   }
   else {
-    GWEN_XMLNODE *node;
-    GWEN_XMLNODE *n=NULL;
-    GWEN_STRINGLIST *langl;
-  
-    node=GWEN_XMLNode_FindFirstTag(fileNode, "PluginDescr", 0, 0);
-    if (!node)
-      node=fileNode;
-    langl=GWEN_I18N_GetCurrentLocaleList();
-    if (langl) {
-      GWEN_STRINGLISTENTRY *se;
-  
-      se=GWEN_StringList_FirstEntry(langl);
-      while (se) {
-        const char *l;
-  
-        l=GWEN_StringListEntry_Data(se);
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
-        assert(l);
-        n=GWEN_XMLNode_FindFirstTag(node, "plugin", "lang", l);
-        if (n)
-          break;
-        se=GWEN_StringListEntry_Next(se);
-      } /* while */
-    } /* if language list available */
-  
-    if (!n)
-      n=GWEN_XMLNode_FindFirstTag(node, "plugin", 0, 0);
-    if (n) {
+    GWEN_XMLNODE *pluginDescrNode;
+    GWEN_XMLNODE *pluginNode=NULL;
+
+    pluginDescrNode=GWEN_XMLNode_FindFirstTag(fileNode, "PluginDescr", NULL, NULL);
+    if (!pluginDescrNode)
+      pluginDescrNode=fileNode;
+
+    pluginNode=_getLocalOrMainPluginNode(pluginDescrNode);
+    if (pluginNode) {
       GWEN_PLUGIN_DESCRIPTION *pd;
-      int loadIt;
+      int typeMatches=1;
   
-      loadIt=1;
       if (pluginType) {
         const char *ft;
   
-        ft=GWEN_XMLNode_GetProperty(n, "type", 0);
+        ft=GWEN_XMLNode_GetProperty(pluginNode, "type", NULL);
         if (!ft)
-          loadIt=0;
+          typeMatches=0;
         else if (strcasecmp(ft, pluginType)!=0) {
-          loadIt=0;
+          typeMatches=0;
         }
       } /* if pluginType specified */
-      if (loadIt) {
-        pd=GWEN_PluginDescription_fromXml(n);
+      if (typeMatches) {
+        pd=GWEN_PluginDescription_fromXml(pluginNode);
         if (!pd) {
           DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
         }
         else {
           GWEN_PluginDescription_SetFileName(pd, fullFileName);
           GWEN_PluginDescription_SetPath(pd, folder);
+          GWEN_XMLNode_free(fileNode);
           return pd;
         }
-      } /* if loadIt */
+      } /* if typeMatches */
       else {
         DBG_INFO(GWEN_LOGDOMAIN, "Ignoring file \"%s\" (bad/missing pluginType)", fullFileName);
       }
@@ -630,7 +612,34 @@ GWEN_PLUGIN_DESCRIPTION *_readPluginDescriptionFromFile(const char *folder, cons
 
 
 
+GWEN_XMLNODE *_getLocalOrMainPluginNode(GWEN_XMLNODE *pluginDescrNode)
+{
+  GWEN_XMLNODE *n=NULL;
+  GWEN_STRINGLIST *languageList;
 
+  languageList=GWEN_I18N_GetCurrentLocaleList();
+  if (languageList) {
+    GWEN_STRINGLISTENTRY *se;
+  
+    se=GWEN_StringList_FirstEntry(languageList);
+    while (se) {
+      const char *l;
+  
+      l=GWEN_StringListEntry_Data(se);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+      assert(l);
+      n=GWEN_XMLNode_FindFirstTag(pluginDescrNode, "plugin", "lang", l);
+      if (n)
+        break;
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  } /* if language list available */
+  
+  if (!n)
+    n=GWEN_XMLNode_FindFirstTag(pluginDescrNode, "plugin", 0, 0);
+
+  return n;
+}
 
 
 
