@@ -84,6 +84,11 @@ const char *GWEN_Plugin_GetFileName(const GWEN_PLUGIN *p);
 GWENHYWFAR_API
 GWEN_LIBLOADER *GWEN_Plugin_GetLibLoader(const GWEN_PLUGIN *p);
 
+GWENHYWFAR_API
+const GWEN_PLUGIN_DESCRIPTION *GWEN_Plugin_GetPluginDescription(const GWEN_PLUGIN *p);
+
+GWENHYWFAR_API
+void GWEN_Plugin_SetPluginDescription(GWEN_PLUGIN *p, GWEN_PLUGIN_DESCRIPTION *pd);
 
 
 

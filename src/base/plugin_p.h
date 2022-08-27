@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Fri Sep 12 2003
     copyright   : (C) 2003 by Martin Preuss
     email       : martin@libchipcard.de
@@ -52,17 +49,9 @@ struct GWEN_PLUGIN {
   char *name;
   char *fileName;
   GWEN_LIBLOADER *libLoader;
+  GWEN_PLUGIN_DESCRIPTION *pluginDescription;
   uint32_t refCount;
 };
-
-
-
-void GWEN_Plugin_SetLibLoader(GWEN_PLUGIN *p, GWEN_LIBLOADER *ll);
-GWEN_PLUGIN *GWEN_PluginManager__FindPlugin(GWEN_PLUGIN_MANAGER *pm,
-                                            const char *s);
-
-
-
 
 
 

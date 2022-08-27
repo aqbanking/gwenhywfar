@@ -29,9 +29,6 @@
 #ifndef GWENHYWFAR_PLUGINDESCR_H
 #define GWENHYWFAR_PLUGINDESCR_H
 
-#include <gwenhywfar/gwenhywfarapi.h>
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/misc2.h>
 #include <gwenhywfar/xml.h>
 
 #ifdef __cplusplus
@@ -46,12 +43,13 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription, GW
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
 
-GWENHYWFAR_API
-void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl);
 
+GWENHYWFAR_API GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(void);
+GWENHYWFAR_API GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_fromXml(GWEN_XMLNODE *node);
 
-GWENHYWFAR_API
-GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path);
+GWENHYWFAR_API void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl);
+
+GWENHYWFAR_API GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path);
 
 
 /**
@@ -62,22 +60,15 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_LoadPluginDescrs(const char *path);
  * @param type plugin type (property "type" of tag "plugin")
  * @param pdl plugin descriptions list2 to load descriptions to
  */
-GWENHYWFAR_API
-int GWEN_LoadPluginDescrsByType(const char *path,
-                                const char *type,
-                                GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl);
+GWENHYWFAR_API int GWEN_LoadPluginDescrsByType(const char *path, const char *type, GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl);
 
 
-GWENHYWFAR_API
-void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_free(GWEN_PLUGIN_DESCRIPTION *pd);
 
 
-GWENHYWFAR_API
-GWEN_PLUGIN_DESCRIPTION *
-GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTION *pd);
 
-GWENHYWFAR_API
-void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd);
 
 
 /**
@@ -88,46 +79,31 @@ void GWEN_PluginDescription_Attach(GWEN_PLUGIN_DESCRIPTION *pd);
  * this XML node will be, too. So you have to call GWEN_XMLNode_dup() if
  * you want the XML node to survive the description.
  */
-GWENHYWFAR_API
-GWEN_XMLNODE *
-GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API GWEN_XMLNODE *GWEN_PluginDescription_GetXmlNode(const GWEN_PLUGIN_DESCRIPTION *pd);
 
-GWENHYWFAR_API
-const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd,
-                                    const char *s);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetName(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetName(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-const char *GWEN_PluginDescription_GetName(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetType(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetShortDescr(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-const char *
-GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetAuthor(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-const char *
-GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetVersion(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-const char *
-GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetLongDescr(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
-GWENHYWFAR_API
-const char *
-GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd);
-
-GWENHYWFAR_API
-const char *
-GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd);
-
-GWENHYWFAR_API
-void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
-                                        const char *s);
+GWENHYWFAR_API const char *GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd, const char *s);
 
 
 
@@ -151,17 +127,12 @@ void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
  * @param buf buffer to append the description to
  */
 GWENHYWFAR_API GWEN_DEPRECATED
-int
-GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                            const char *s,
-                                            GWEN_BUFFER *buf);
+int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd, const char *s, GWEN_BUFFER *buf);
 #endif  // ifndef NO_DEPRECATED_SYMBOLS
 
-GWENHYWFAR_API
-int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
+GWENHYWFAR_API int GWEN_PluginDescription_IsActive(const GWEN_PLUGIN_DESCRIPTION *pd);
 
-GWENHYWFAR_API
-void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i);
+GWENHYWFAR_API void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i);
 
 
 #ifdef __cplusplus

@@ -53,21 +53,6 @@ struct GWEN_PLUGIN_DESCRIPTION {
   uint32_t refCount;
 };
 
-GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node);
-
-GWEN_PLUGIN_DESCRIPTION *
-GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd, void *);
-
-int
-GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                             const char *s,
-                                             GWEN_BUFFER *buf);
-
-int
-GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                                      const char *s,
-                                                      const char *lang,
-                                                      GWEN_BUFFER *buf);
 
 
 #endif /* GWENHYWFAR_PLUGINDESCR_P_H */

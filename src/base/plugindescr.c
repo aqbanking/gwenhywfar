@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Apr 03 2003
- copyright   : (C) 2003-2010 by Martin Preuss
+ copyright   : (C) 2022 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -36,17 +36,6 @@
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/i18n.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include <errno.h>
-#include <string.h>
-#ifdef HAVE_STRINGS_H
-# include <strings.h>
-#endif
-
 
 
 GWEN_LIST_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
@@ -54,15 +43,33 @@ GWEN_LIST2_FUNCTIONS(GWEN_PLUGIN_DESCRIPTION, GWEN_PluginDescription)
 
 
 
-GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(GWEN_XMLNODE *node)
+static GWEN_PLUGIN_DESCRIPTION *_pdList2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd, void *);
+
+static int _getLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd, const char *s, GWEN_BUFFER *buf);
+static GWEN_PLUGIN_DESCRIPTION *_readPluginDescriptionFromFile(const char *folder, const char *fullFileName, const char *pluginType);
+
+
+
+
+GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_new(void)
 {
   GWEN_PLUGIN_DESCRIPTION *pd;
-  const char *p;
 
   GWEN_NEW_OBJECT(GWEN_PLUGIN_DESCRIPTION, pd);
   pd->refCount=1;
   DBG_MEM_INC("GWEN_PLUGIN_DESCRIPTION", 0);
   GWEN_LIST_INIT(GWEN_PLUGIN_DESCRIPTION, pd);
+  return pd;
+}
+
+
+
+GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_fromXml(GWEN_XMLNODE *node)
+{
+  GWEN_PLUGIN_DESCRIPTION *pd;
+  const char *p;
+
+  pd=GWEN_PluginDescription_new();
   p=GWEN_XMLNode_GetProperty(node, "name", 0);
   if (!p) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unnamed plugin");
@@ -180,6 +187,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTIO
   if (s)
     np->longDescr=strdup(s);
   np->isActive=pd->isActive;
+
   if (pd->xmlNode)
     np->xmlNode=GWEN_XMLNode_dup(pd->xmlNode);
 
@@ -188,8 +196,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_dup(const GWEN_PLUGIN_DESCRIPTIO
 
 
 
-GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd,
-                                                                 __attribute__((unused)) void *user_data)
+GWEN_PLUGIN_DESCRIPTION *_pdList2_freeAll_cb(GWEN_PLUGIN_DESCRIPTION *pd, GWEN_UNUSED void *user_data)
 {
   GWEN_PluginDescription_free(pd);
   return 0;
@@ -199,10 +206,7 @@ GWEN_PLUGIN_DESCRIPTION *GWEN_PluginDescription_List2_freeAll_cb(GWEN_PLUGIN_DES
 
 void GWEN_PluginDescription_List2_freeAll(GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl)
 {
-  GWEN_PluginDescription_List2_ForEach
-  (pdl,
-   GWEN_PluginDescription_List2_freeAll_cb,
-   0);
+  GWEN_PluginDescription_List2_ForEach(pdl, _pdList2_freeAll_cb, 0);
   GWEN_PluginDescription_List2_free(pdl);
 }
 
@@ -216,8 +220,7 @@ const char *GWEN_PluginDescription_GetPath(const GWEN_PLUGIN_DESCRIPTION *pd)
 
 
 
-void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd,
-                                    const char *s)
+void GWEN_PluginDescription_SetPath(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
 {
   assert(pd);
   free(pd->path);
@@ -237,10 +240,28 @@ const char *GWEN_PluginDescription_GetName(const GWEN_PLUGIN_DESCRIPTION *pd)
 
 
 
+void GWEN_PluginDescription_SetName(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
+{
+  assert(pd);
+  free(pd->name);
+  pd->name=s?strdup(s):NULL;
+}
+
+
+
 const char *GWEN_PluginDescription_GetType(const GWEN_PLUGIN_DESCRIPTION *pd)
 {
   assert(pd);
   return pd->type;
+}
+
+
+
+void GWEN_PluginDescription_SetType(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
+{
+  assert(pd);
+  free(pd->type);
+  pd->type=s?strdup(s):NULL;
 }
 
 
@@ -253,10 +274,28 @@ const char *GWEN_PluginDescription_GetShortDescr(const GWEN_PLUGIN_DESCRIPTION *
 
 
 
+void GWEN_PluginDescription_SetShortDescr(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
+{
+  assert(pd);
+  free(pd->shortDescr);
+  pd->shortDescr=s?strdup(s):NULL;
+}
+
+
+
 const char *GWEN_PluginDescription_GetAuthor(const GWEN_PLUGIN_DESCRIPTION *pd)
 {
   assert(pd);
   return pd->author;
+}
+
+
+
+void GWEN_PluginDescription_SetAuthor(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
+{
+  assert(pd);
+  free(pd->author);
+  pd->author=s?strdup(s):NULL;
 }
 
 
@@ -269,6 +308,15 @@ const char *GWEN_PluginDescription_GetVersion(const GWEN_PLUGIN_DESCRIPTION *pd)
 
 
 
+void GWEN_PluginDescription_SetVersion(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
+{
+  assert(pd);
+  free(pd->version);
+  pd->version=s?strdup(s):NULL;
+}
+
+
+
 const char *GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *pd)
 {
   assert(pd);
@@ -277,78 +325,80 @@ const char *GWEN_PluginDescription_GetLongDescr(const GWEN_PLUGIN_DESCRIPTION *p
 
 
 
-int GWEN_PluginDescription__GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                                 const char *s,
-                                                 GWEN_BUFFER *buf)
+void GWEN_PluginDescription_SetLongDescr(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
 {
-  GWEN_XMLNODE *n;
-
   assert(pd);
-  assert(pd->xmlNode);
-
-  n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
-  if (n) {
-    n=GWEN_XMLNode_FindFirstTag(n, "text", "format", s);
-    while (n) {
-      if (0==GWEN_XMLNode_GetProperty(n, "lang", 0)) {
-        int rv;
-
-        rv=GWEN_XMLNode_toBuffer(n, buf, GWEN_XML_FLAGS_TOLERANT_ENDTAGS);
-        if (rv) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-          return rv;
-        }
-        return 0;
-      }
-      n=GWEN_XMLNode_FindNextTag(n, "text", "format", s);
-    } /* while */
-  }
-
-  return -1;
+  free(pd->longDescr);
+  pd->longDescr=s?strdup(s):NULL;
 }
 
 
 
-int GWEN_PluginDescription__GetLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                                          const char *s,
-                                                          const char *lang,
-                                                          GWEN_BUFFER *buf)
+int _getLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd, const char *s, GWEN_BUFFER *buf)
 {
-  GWEN_XMLNODE *n;
-
   assert(pd);
-  assert(pd->xmlNode);
+  if (pd->xmlNode) {
+    GWEN_XMLNODE *n;
 
-  n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
-  if (n) {
-    n=GWEN_XMLNode_FindFirstTag(n, "text", "lang", lang);
-    while (n) {
-      const char *fmt;
+    n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
+    if (n) {
+      n=GWEN_XMLNode_FindFirstTag(n, "text", "format", s);
+      while (n) {
+        if (0==GWEN_XMLNode_GetProperty(n, "lang", 0)) {
+          int rv;
 
-      fmt=GWEN_XMLNode_GetProperty(n, "format", 0);
-      if (fmt && strcasecmp(fmt, s)==0) {
-        int rv;
-
-        rv=GWEN_XMLNode_toBuffer(n, buf, GWEN_XML_FLAGS_TOLERANT_ENDTAGS);
-        if (rv) {
-          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-          return rv;
+          rv=GWEN_XMLNode_toBuffer(n, buf, GWEN_XML_FLAGS_TOLERANT_ENDTAGS);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            return rv;
+          }
+          return 0;
         }
-        return 0;
-      }
-      n=GWEN_XMLNode_FindNextTag(n, "text", "lang", lang);
-    } /* while */
+        n=GWEN_XMLNode_FindNextTag(n, "text", "format", s);
+      } /* while */
+    }
   }
-
-  return -1;
+  return GWEN_ERROR_GENERIC;
 }
 
 
 
 #ifndef NO_DEPRECATED_SYMBOLS
-int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd,
-                                                const char *s,
-                                                GWEN_BUFFER *buf)
+static int _getLocalizedLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd, const char *s, const char *lang, GWEN_BUFFER *buf)
+{
+  assert(pd);
+
+  if (pd->xmlNode) {
+    GWEN_XMLNODE *n;
+
+    n=GWEN_XMLNode_FindFirstTag(pd->xmlNode, "descr", 0, 0);
+    if (n) {
+      n=GWEN_XMLNode_FindFirstTag(n, "text", "lang", lang);
+      while (n) {
+        const char *fmt;
+
+        fmt=GWEN_XMLNode_GetProperty(n, "format", 0);
+        if (fmt && strcasecmp(fmt, s)==0) {
+          int rv;
+
+          rv=GWEN_XMLNode_toBuffer(n, buf, GWEN_XML_FLAGS_TOLERANT_ENDTAGS);
+          if (rv) {
+            DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+            return rv;
+          }
+          return 0;
+        }
+        n=GWEN_XMLNode_FindNextTag(n, "text", "lang", lang);
+      } /* while */
+    }
+  }
+
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *pd, const char *s, GWEN_BUFFER *buf)
 {
   GWEN_STRINGLIST *langl;
   int rv;
@@ -365,10 +415,7 @@ int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *p
       DBG_NOTICE(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
       assert(l);
 
-      rv=GWEN_PluginDescription__GetLocalizedLongDescrByFormat(pd,
-                                                               s,
-                                                               l,
-                                                               buf);
+      rv=_getLocalizedLongDescrByFormat(pd, s, l, buf);
       if (rv==0)
         return rv;
 
@@ -377,7 +424,7 @@ int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *p
   } /* if language list available */
 
   /* no localized version found, return text for default language */
-  rv=GWEN_PluginDescription__GetLongDescrByFormat(pd, s, buf);
+  rv=_getLongDescrByFormat(pd, s, buf);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -388,6 +435,7 @@ int GWEN_PluginDescription_GetLongDescrByFormat(const GWEN_PLUGIN_DESCRIPTION *p
 #endif  // ifndef NO_DEPRECATED_SYMBOLS
 
 
+
 const char *GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd)
 {
   assert(pd);
@@ -396,8 +444,7 @@ const char *GWEN_PluginDescription_GetFileName(const GWEN_PLUGIN_DESCRIPTION *pd
 
 
 
-void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd,
-                                        const char *s)
+void GWEN_PluginDescription_SetFileName(GWEN_PLUGIN_DESCRIPTION *pd, const char *s)
 {
   assert(pd);
   free(pd->fileName);
@@ -449,152 +496,136 @@ void GWEN_PluginDescription_SetIsActive(GWEN_PLUGIN_DESCRIPTION *pd, int i)
 
 
 
-int GWEN_LoadPluginDescrsByType(const char *path,
-                                const char *type,
-                                GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl)
+int GWEN_LoadPluginDescrsByType(const char *folder, const char *pluginType, GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl)
 {
-  GWEN_DIRECTORY *d;
-  GWEN_BUFFER *nbuf;
-  char nbuffer[64];
-  unsigned int pathLen;
+  GWEN_STRINGLIST *fileNameList;
+  int rv;
 
-  if (!path)
-    path="";
-
-  /* create path */
-  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(nbuf, path);
-  pathLen=GWEN_Buffer_GetUsedBytes(nbuf);
-
-  d=GWEN_Directory_new();
-  if (GWEN_Directory_Open(d, GWEN_Buffer_GetStart(nbuf))) {
-    DBG_INFO(GWEN_LOGDOMAIN,
-             "Path \"%s\" is not available",
-             GWEN_Buffer_GetStart(nbuf));
-    GWEN_Buffer_free(nbuf);
-    GWEN_Directory_free(d);
-    return -1;
+  fileNameList=GWEN_StringList_new();
+  rv=GWEN_Directory_GetFileEntries(folder?folder:"", fileNameList, ".xml");
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "No matching files found in %s", folder?folder:"<empty>");
+    GWEN_StringList_free(fileNameList);
+    return rv;
   }
 
-  while (!GWEN_Directory_Read(d,
-                              nbuffer,
-                              sizeof(nbuffer))) {
-    if (strcmp(nbuffer, ".") &&
-        strcmp(nbuffer, "..")) {
-      int nlen;
+  if (GWEN_StringList_Count(fileNameList)) {
+    GWEN_STRINGLISTENTRY *se;
 
-      nlen=strlen(nbuffer);
-      if (nlen>3) {
-        if (strcasecmp(nbuffer+nlen-4, ".xml")==0) {
-          struct stat st;
+    se=GWEN_StringList_FirstEntry(fileNameList);
+    if (se) {
+      GWEN_BUFFER *nbuf;
+      unsigned int pathLen;
 
+      nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (folder && *folder) {
+        GWEN_Buffer_AppendString(nbuf, folder);
+        GWEN_Buffer_AppendString(nbuf, GWEN_DIR_SEPARATOR_S);
+      }
+      pathLen=GWEN_Buffer_GetUsedBytes(nbuf);
+
+      while(se) {
+        const char *fileName;
+
+        fileName=GWEN_StringListEntry_Data(se);
+        if (fileName && *fileName) {
+          GWEN_PLUGIN_DESCRIPTION *pd;
+
+          GWEN_Buffer_AppendString(nbuf, fileName);
+          pd=_readPluginDescriptionFromFile(folder, GWEN_Buffer_GetStart(nbuf), pluginType);
+          if (pd) {
+            DBG_INFO(GWEN_LOGDOMAIN,
+                     "Adding loaded plugin description %s/%s (%s)",
+                     pluginType, GWEN_PluginDescription_GetName(pd), GWEN_Buffer_GetStart(nbuf));
+            GWEN_PluginDescription_List2_PushBack(pdl, pd);
+          }
           GWEN_Buffer_Crop(nbuf, 0, pathLen);
           GWEN_Buffer_SetPos(nbuf, pathLen);
-          GWEN_Buffer_AppendByte(nbuf, GWEN_DIR_SEPARATOR);
-          GWEN_Buffer_AppendString(nbuf, nbuffer);
-
-          if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "stat(%s): %s",
-                      GWEN_Buffer_GetStart(nbuf),
-                      strerror(errno));
-          }
-          else {
-            if (!S_ISDIR(st.st_mode)) {
-              GWEN_XMLNODE *fileNode;
-
-              fileNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
-              if (GWEN_XML_ReadFile(fileNode,
-                                    GWEN_Buffer_GetStart(nbuf),
-                                    GWEN_XML_FLAGS_DEFAULT |
-                                    GWEN_XML_FLAGS_HANDLE_HEADERS |
-                                    GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
-                DBG_WARN(GWEN_LOGDOMAIN,
-                         "Bad file \"%s\"", GWEN_Buffer_GetStart(nbuf));
-              }
-              else {
-                GWEN_XMLNODE *node;
-                GWEN_XMLNODE *n;
-                GWEN_STRINGLIST *langl;
-
-                n=0;
-                node=GWEN_XMLNode_FindFirstTag(fileNode, "PluginDescr", 0, 0);
-                if (!node)
-                  node=fileNode;
-                langl=GWEN_I18N_GetCurrentLocaleList();
-                if (langl) {
-                  GWEN_STRINGLISTENTRY *se;
-
-                  se=GWEN_StringList_FirstEntry(langl);
-                  while (se) {
-                    const char *l;
-
-                    l=GWEN_StringListEntry_Data(se);
-                    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
-                    assert(l);
-                    n=GWEN_XMLNode_FindFirstTag(node, "plugin", "lang", l);
-                    if (n)
-                      break;
-                    se=GWEN_StringListEntry_Next(se);
-                  } /* while */
-                } /* if language list available */
-
-                if (!n)
-                  n=GWEN_XMLNode_FindFirstTag(node, "plugin", 0, 0);
-                if (n) {
-                  GWEN_PLUGIN_DESCRIPTION *pd;
-                  int loadIt;
-
-                  loadIt=1;
-                  if (type) {
-                    const char *ft;
-
-                    ft=GWEN_XMLNode_GetProperty(n, "type", 0);
-                    if (!ft)
-                      loadIt=0;
-                    else if (strcasecmp(ft, type)!=0) {
-                      loadIt=0;
-                    }
-                  } /* if type specified */
-                  if (loadIt) {
-                    pd=GWEN_PluginDescription_new(n);
-                    if (!pd) {
-                      DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
-                    }
-                    else {
-                      GWEN_PluginDescription_SetFileName
-                      (pd, GWEN_Buffer_GetStart(nbuf));
-                      GWEN_Buffer_Crop(nbuf, 0, pathLen);
-                      GWEN_Buffer_SetPos(nbuf, pathLen);
-                      GWEN_PluginDescription_SetPath
-                      (pd, GWEN_Buffer_GetStart(nbuf));
-                      GWEN_PluginDescription_List2_PushBack(pdl, pd);
-                    }
-                  } /* if loadIt */
-                  else {
-                    DBG_INFO(GWEN_LOGDOMAIN,
-                             "Ignoring file \"%s\" (bad/missing type)",
-                             GWEN_Buffer_GetStart(nbuf));
-                  }
-                }
-                else {
-                  DBG_WARN(GWEN_LOGDOMAIN,
-                           "File \"%s\" does not contain a plugin "
-                           "description",
-                           GWEN_Buffer_GetStart(nbuf));
-                }
-              }
-              GWEN_XMLNode_free(fileNode);
-            } /* if !dir */
-          } /* if stat was ok */
-        } /* if XML */
-      } /* if name has more than 3 chars */
-    } /* if not "." and not ".." */
-  } /* while */
-  GWEN_Directory_Close(d);
-  GWEN_Directory_free(d);
-  GWEN_Buffer_free(nbuf);
-
+        }
+        se=GWEN_StringListEntry_Next(se);
+      } /* while(se) */
+      GWEN_Buffer_free(nbuf);
+    } /* if (se) */
+  } /* if stringlist not empty */
+  GWEN_StringList_free(fileNameList);
   return 0;
+}
+
+
+
+GWEN_PLUGIN_DESCRIPTION *_readPluginDescriptionFromFile(const char *folder, const char *fullFileName, const char *pluginType)
+{
+  GWEN_XMLNODE *fileNode;
+  
+  fileNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  if (GWEN_XML_ReadFile(fileNode, fullFileName,
+                        GWEN_XML_FLAGS_DEFAULT | GWEN_XML_FLAGS_HANDLE_HEADERS | GWEN_XML_FLAGS_HANDLE_OPEN_HTMLTAGS)) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Bad file \"%s\"", fullFileName);
+  }
+  else {
+    GWEN_XMLNODE *node;
+    GWEN_XMLNODE *n=NULL;
+    GWEN_STRINGLIST *langl;
+  
+    node=GWEN_XMLNode_FindFirstTag(fileNode, "PluginDescr", 0, 0);
+    if (!node)
+      node=fileNode;
+    langl=GWEN_I18N_GetCurrentLocaleList();
+    if (langl) {
+      GWEN_STRINGLISTENTRY *se;
+  
+      se=GWEN_StringList_FirstEntry(langl);
+      while (se) {
+        const char *l;
+  
+        l=GWEN_StringListEntry_Data(se);
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Trying locale \"%s\"", l);
+        assert(l);
+        n=GWEN_XMLNode_FindFirstTag(node, "plugin", "lang", l);
+        if (n)
+          break;
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    } /* if language list available */
+  
+    if (!n)
+      n=GWEN_XMLNode_FindFirstTag(node, "plugin", 0, 0);
+    if (n) {
+      GWEN_PLUGIN_DESCRIPTION *pd;
+      int loadIt;
+  
+      loadIt=1;
+      if (pluginType) {
+        const char *ft;
+  
+        ft=GWEN_XMLNode_GetProperty(n, "type", 0);
+        if (!ft)
+          loadIt=0;
+        else if (strcasecmp(ft, pluginType)!=0) {
+          loadIt=0;
+        }
+      } /* if pluginType specified */
+      if (loadIt) {
+        pd=GWEN_PluginDescription_fromXml(n);
+        if (!pd) {
+          DBG_WARN(GWEN_LOGDOMAIN, "Bad plugin description");
+        }
+        else {
+          GWEN_PluginDescription_SetFileName(pd, fullFileName);
+          GWEN_PluginDescription_SetPath(pd, folder);
+          return pd;
+        }
+      } /* if loadIt */
+      else {
+        DBG_INFO(GWEN_LOGDOMAIN, "Ignoring file \"%s\" (bad/missing pluginType)", fullFileName);
+      }
+    }
+    else {
+      DBG_WARN(GWEN_LOGDOMAIN, "File \"%s\" does not contain a plugin description", fullFileName);
+    }
+  }
+  GWEN_XMLNode_free(fileNode);
+  return NULL;
 }
 
 
