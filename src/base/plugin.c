@@ -654,36 +654,21 @@ GWEN_STRINGLIST *GWEN_PluginManager_GetPaths(const GWEN_PLUGIN_MANAGER *pm)
 
 GWEN_PLUGIN_DESCRIPTION *GWEN_PluginManager_GetPluginDescr(GWEN_PLUGIN_MANAGER *pm, const char *modName)
 {
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *dl;
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
 
-  dl=GWEN_PluginManager_GetPluginDescrs(pm);
-  if (dl==0)
-    return 0;
-  else {
-    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *dit;
+  pdl=GWEN_PluginManager_GetPluginDescrs(pm);
+  if (pdl) {
+    GWEN_PLUGIN_DESCRIPTION *pd;
 
-    dit=GWEN_PluginDescription_List2_First(dl);
-    if (dit) {
-      GWEN_PLUGIN_DESCRIPTION *d;
-
-      d=GWEN_PluginDescription_List2Iterator_Data(dit);
-      while (d) {
-        if (strcasecmp(GWEN_PluginDescription_GetName(d), modName)==0)
-          break;
-        d=GWEN_PluginDescription_List2Iterator_Next(dit);
-      }
-      GWEN_PluginDescription_List2Iterator_free(dit);
-
-      if (d) {
-        d=GWEN_PluginDescription_dup(d);
-        GWEN_PluginDescription_List2_freeAll(dl);
-        return d;
-      }
+    pd=_findPluginDescrByNameInList2(pdl, modName);
+    if (pd) {
+      GWEN_PluginDescription_Attach(pd);
+      GWEN_PluginDescription_List2_freeAll(pdl);
+      return pd;
     }
-    GWEN_PluginDescription_List2_freeAll(dl);
+    GWEN_PluginDescription_List2_freeAll(pdl);
   }
-
-  return 0;
+  return NULL;
 }
 
 
