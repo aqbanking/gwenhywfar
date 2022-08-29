@@ -503,7 +503,7 @@ int GWEN_LoadPluginDescrsByType(const char *folder, const char *pluginType, GWEN
   int rv;
 
   fileNameList=GWEN_StringList_new();
-  rv=GWEN_Directory_GetFileEntries(folder?folder:"", fileNameList, ".xml");
+  rv=GWEN_Directory_GetFileEntries(folder?folder:"", fileNameList, "*.xml");
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "No matching files found in %s", folder?folder:"<empty>");
     GWEN_StringList_free(fileNameList);
@@ -529,6 +529,7 @@ int GWEN_LoadPluginDescrsByType(const char *folder, const char *pluginType, GWEN
         const char *fileName;
 
         fileName=GWEN_StringListEntry_Data(se);
+        DBG_INFO(GWEN_LOGDOMAIN, "Checking entry \"%s\" (%s)\n", fileName, GWEN_Buffer_GetStart(nbuf));
         if (fileName && *fileName) {
           GWEN_PLUGIN_DESCRIPTION *pd;
 
@@ -540,6 +541,9 @@ int GWEN_LoadPluginDescrsByType(const char *folder, const char *pluginType, GWEN
                      pluginType, GWEN_PluginDescription_GetName(pd), GWEN_Buffer_GetStart(nbuf));
             GWEN_PluginDescription_List2_PushBack(pdl, pd);
           }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN, "Could not read description from \"%s\"\n", fileName);
+          }
           GWEN_Buffer_Crop(nbuf, 0, pathLen);
           GWEN_Buffer_SetPos(nbuf, pathLen);
         }
@@ -548,6 +552,9 @@ int GWEN_LoadPluginDescrsByType(const char *folder, const char *pluginType, GWEN
       GWEN_Buffer_free(nbuf);
     } /* if (se) */
   } /* if stringlist not empty */
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "Not matching files in \"%s\"\n", folder);
+  }
   GWEN_StringList_free(fileNameList);
   return 0;
 }

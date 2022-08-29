@@ -53,6 +53,7 @@ static GWEN_PLUGIN_DESCRIPTION_LIST2 *_loadPluginDescrs(GWEN_PLUGIN_MANAGER *pm)
 static GWEN_PLUGIN_DESCRIPTION_LIST2 *_combinedPluginDescrList(const GWEN_PLUGIN_DESCRIPTION_LIST2 *pdlLoaded,
 							       const GWEN_PLUGIN_DESCRIPTION_LIST2 *pdlFromPluginList);
 static GWEN_PLUGIN_DESCRIPTION *_findPluginDescrByNameInList2(const GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl, const char *name);
+/*static void _dumpDescriptorList(const GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl, const char *text);*/
 
 
 
@@ -631,8 +632,8 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *GWEN_PluginManager_GetPluginDescrs(GWEN_PLUGIN_MA
     GWEN_PLUGIN_DESCRIPTION_LIST2 *pdlOut;
 
     pdlOut=_combinedPluginDescrList(pdlLoaded, pdlFromPluginList);
-    GWEN_PluginDescription_List2_free(pdlFromPluginList);
-    GWEN_PluginDescription_List2_free(pdlLoaded);
+    GWEN_PluginDescription_List2_freeAll(pdlFromPluginList);
+    GWEN_PluginDescription_List2_freeAll(pdlLoaded);
     return pdlOut;
   }
   else if (pdlFromPluginList) {
@@ -776,8 +777,7 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *_loadPluginDescrs(GWEN_PLUGIN_MANAGER *pm)
     assert(path);
     rv=GWEN_LoadPluginDescrsByType(path, pm->name, pl);
     if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "Error loading plugin description in \"%s\"", path);
+      DBG_INFO(GWEN_LOGDOMAIN, "Error loading plugin description in \"%s\"", path);
     }
     se=GWEN_StringListEntry_Next(se);
   } /* while */
@@ -809,7 +809,8 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *_combinedPluginDescrList(const GWEN_PLUGIN_DESCRI
 
     pd=GWEN_PluginDescription_List2Iterator_Data(iter);
     while(pd) {
-      GWEN_PluginDescription_List2_PushBack(pdlOut, pd);
+	GWEN_PluginDescription_Attach(pd);
+        GWEN_PluginDescription_List2_PushBack(pdlOut, pd);
       pd=GWEN_PluginDescription_List2Iterator_Next(iter);
     }
 
@@ -826,8 +827,10 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *_combinedPluginDescrList(const GWEN_PLUGIN_DESCRI
       const char *name;
 
       name=GWEN_PluginDescription_GetName(pd);
-      if (name && *name && NULL==_findPluginDescrByNameInList2(pdlOut, name))
+      if (name && *name && NULL==_findPluginDescrByNameInList2(pdlOut, name)) {
+	GWEN_PluginDescription_Attach(pd);
 	GWEN_PluginDescription_List2_PushBack(pdlOut, pd);
+      }
       pd=GWEN_PluginDescription_List2Iterator_Next(iter);
     }
 
@@ -867,5 +870,37 @@ GWEN_PLUGIN_DESCRIPTION *_findPluginDescrByNameInList2(const GWEN_PLUGIN_DESCRIP
 
   return pd;
 }
+
+
+
+#if 0
+void _dumpDescriptorList(const GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl, const char *text)
+{
+  fprintf(stderr, "Descriptor List: %s\n", text?text:"");
+  if (pdl) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *iter;
+
+    iter=GWEN_PluginDescription_List2_First(pdl);
+    if (iter) {
+      GWEN_PLUGIN_DESCRIPTION *pd=NULL;
+
+      pd=GWEN_PluginDescription_List2Iterator_Data(iter);
+      while(pd) {
+	const char *name;
+
+	name=GWEN_PluginDescription_GetName(pd);
+	fprintf(stderr, "- %s\n", name?name:"<empty>");
+	pd=GWEN_PluginDescription_List2Iterator_Next(iter);
+      }
+
+      GWEN_PluginDescription_List2Iterator_free(iter);
+    }
+  }
+  else {
+    fprintf(stderr, "- <empty list>\n");
+  }
+}
+#endif
+
 
 
