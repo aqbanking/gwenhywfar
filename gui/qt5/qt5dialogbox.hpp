@@ -20,7 +20,7 @@ class QT5_GuiDialog;
 class QT5_DialogBox: public QDialog {
   Q_OBJECT
 public:
-  QT5_DialogBox(QT5_GuiDialog *dialog, QWidget *parent=0, bool modal=false, Qt::WindowFlags f=0);
+  QT5_DialogBox(QT5_GuiDialog *dialog, QWidget *parent=0, bool modal=false, Qt::WindowFlags f={});
   virtual ~QT5_DialogBox();
 
   void accept();
