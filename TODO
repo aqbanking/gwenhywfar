@@ -82,3 +82,21 @@ while ((dent = readdir(d)) != NULL) {
 closedir(d);
 
 
+
+
+Ideas for threaded gui
+======================
+- server-gui: gui in main thread
+- client-gui: gui in other thread
+- use an event socket when transmitting commands from client-gui to server-gui
+  - client-gui writes request into a queue
+  - event socket alerts server-gui that there is a request in the queue
+  - server-gui
+    - takes request
+    - handles it
+    - puts response into queue of client-gui
+    - notifies client-gui via another event socket?
+- only implement primary callbacks in this manner (input, msgbox, progress etc)
+- don't implement dialog callbacks in client-gui (code running in secondary thread should be simple without complex dialog handling)
+
+
