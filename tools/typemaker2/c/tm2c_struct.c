@@ -33,12 +33,18 @@ int TM2C_BuildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
   uint32_t flags;
   const char *sTypeId;
   int rv;
+  int pack;
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   flags=Typemaker2_Type_GetFlags(ty);
 
   sTypeId=Typemaker2_Type_GetIdentifier(ty);
+
+  pack=Typemaker2_Type_GetPack(ty);
+
+  if (pack)
+    GWEN_Buffer_AppendArgs(tbuf, "#pragma pack(push, %d)\n", pack);
 
   GWEN_Buffer_AppendArgs(tbuf, "struct %s {\n", sTypeId);
 
@@ -67,7 +73,24 @@ int TM2C_BuildStruct(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
   GWEN_Buffer_AppendString(tbuf, "};\n");
 
-  Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+  if (pack)
+    GWEN_Buffer_AppendArgs(tbuf, "#pragma pack(pop)\n");
+
+  /* add to declaration according to structAccess (defaults to "private") */
+  switch(Typemaker2_Type_GetStructAccess(ty)) {
+  case TypeMaker2_Access_Public:
+    Typemaker2_Builder_AddPublicDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    break;
+  case TypeMaker2_Access_Library:
+    Typemaker2_Builder_AddLibraryDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    break;
+  case TypeMaker2_Access_Protected:
+    Typemaker2_Builder_AddProtectedDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    break;
+  case TypeMaker2_Access_Private:
+    Typemaker2_Builder_AddPrivateDeclaration(tb, GWEN_Buffer_GetStart(tbuf));
+    break;
+  }
   GWEN_Buffer_free(tbuf);
 
   return 0;

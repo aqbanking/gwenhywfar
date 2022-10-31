@@ -29,6 +29,7 @@ struct TYPEMAKER2_TYPE {
 
   int access;
   int usePrivateConstructor;
+  int structAccess;
 
   int type;
 
@@ -47,6 +48,7 @@ struct TYPEMAKER2_TYPE {
 
   char *freeHook;
 
+  int pack;
 
   TYPEMAKER2_HEADER_LIST *headers;
   TYPEMAKER2_ENUM_LIST *enums;

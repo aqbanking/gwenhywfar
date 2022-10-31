@@ -286,6 +286,26 @@ void Typemaker2_Type_SetExtends(TYPEMAKER2_TYPE *ty, const char *s)
 
 
 
+int Typemaker2_Type_GetPack(const TYPEMAKER2_TYPE *ty)
+{
+  assert(ty);
+  assert(ty->refCount);
+  return ty->pack;
+}
+
+
+
+void Typemaker2_Type_SetPack(TYPEMAKER2_TYPE *ty, int i)
+{
+  assert(ty);
+  assert(ty->refCount);
+  ty->pack=i;
+}
+
+
+
+
+
 const char *Typemaker2_Type_GetBaseType(const TYPEMAKER2_TYPE *ty)
 {
   assert(ty);
@@ -466,6 +486,28 @@ void Typemaker2_Type_SetAccess(TYPEMAKER2_TYPE *ty, int i)
   assert(ty);
   assert(ty->refCount);
   ty->access=i;
+}
+
+
+
+int Typemaker2_Type_GetStructAccess(const TYPEMAKER2_TYPE *ty)
+{
+  assert(ty);
+  assert(ty->refCount);
+
+  if (ty->structAccess==TypeMaker2_Access_Unknown && ty->extendsPtr)
+    return Typemaker2_Type_GetStructAccess(ty->extendsPtr);
+
+  return ty->structAccess;
+}
+
+
+
+void Typemaker2_Type_SetStructAccess(TYPEMAKER2_TYPE *ty, int i)
+{
+  assert(ty);
+  assert(ty->refCount);
+  ty->structAccess=i;
 }
 
 
@@ -880,6 +922,19 @@ int Typemaker2_Type_readXml(TYPEMAKER2_TYPE *ty, GWEN_XMLNODE *node, const char 
 
   s=GWEN_XMLNode_GetCharValue(langNode, "freeHook", NULL);
   Typemaker2_Type_SetFreeHook(ty, s);
+
+  ty->pack=GWEN_XMLNode_GetIntValue(langNode, "pack", 0);
+
+  s=GWEN_XMLNode_GetCharValue(langNode, "structAccess", "private");
+  if (s && *s) {
+    ty->structAccess=Typemaker2_AccessFromString(s);
+    if (ty->structAccess==TypeMaker2_Access_Unknown) {
+      DBG_ERROR(0, "Invalid structAcces entry [%s]", s);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+  else
+    ty->structAccess=TypeMaker2_Access_Private;
 
   /* read flags. this element exists for <type> elements.
    * For <typedef> elements the flags are stored in the <defaults> group. */
