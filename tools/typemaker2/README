@@ -230,6 +230,79 @@ TODO:
 <!-- 
   Hiermit einfacher, komplexe Datenstrukturen zu verwalten, z.B. solche, die aus mehreren variablen bestehen.
 -->
+
+
+extending types:
+
+<typedef id="aqdatabase_uint8_t" extends="uint8_t" lang="c">
+  <structCode>
+    <codedef id="toObject">
+      {
+        int64_t v64=(int64_t) ($(src));
+        $(retval)=AQDB_Object_SetFieldInt64($(object), $(fieldId), v64);
+      }
+    </codedef>
+
+    <codedef id="fromObject">
+      {
+        int64_t v64;
+        
+        $(retval)=AQDB_Object_GetFieldInt64($(object), $(fieldId), &amp;v64);
+        if ($(retval)&gt;=0)
+          $(dst)=(int) v64;
+      }
+    </codedef>
+
+
+</typedef>
+
+
+
+<!-- struct -->
+  <type>
+    <codeList>init fini get set</codeList>
+    <ifFlagsHasAllOf type="type" value="with_db">
+      <codeListAdd>toDb fromDb</codeListAdd>
+    </ifFlagsHasAllOf>
+
+
+    <codedef id="toDb">
+      <proto>
+        $(api) int $(typePrefix)_toDb(const $(typeId) *p_struct, GWEN_DB_NODE *p_db);
+      </proto>
+    
+      <impl>
+        int $(typePrefix)_toDb(const $(typeId) *p_struct, GWEN_DB_NODE *p_db) {
+        <ForEveryMember>
+          <IfNotHasMemberFlag value="volatile">
+            <ifTypeEquals value="pointer">
+              if (p_struct->$(memberName)) {
+            </ifTypeEquals>
+                int p_rv;
+    
+                <InvokeMemberFn id="toDb" src="p_struct->$(memberName)" dest="p_rv" db="p_db"/>
+                if (p_rv&lt;0) {
+                  DBG_ERROR($(logdomain), "here (%d)", p_rv);
+                  return p_rv;
+                }
+            <ifTypeEquals value="pointer">
+              }
+            </ifTypeEquals>
+            </ifTypeEquals>
+          </IfNotHasMemberFlag>
+        </ForEveryMember>
+          return 0;
+        }
+      </impl>
+      
+    </codeDef>
+    
+  </type>
+
+
+
+<!-- individual types such as int -->
+
   <structCode>
 
     <placement>
@@ -254,7 +327,7 @@ TODO:
     </codedef>
 
 
-    <codedef id="get">
+    <functiondef id="get">
       <proto>
         $(api) const char *$(typePrefix)_Get$(memberNameToUpper)(const $(typeId) *p_struct);
       </proto>
@@ -264,10 +337,10 @@ TODO:
           return p_struct->$(memberName);
         }
       </impl>
-    </codedef>
+    </functiondef>
   
   
-    <codedef id="set">
+    <functiondef id="set">
       <proto>
         <ifFlagsHasAnyOf type="set" value="const,dup">
           <then>
@@ -307,7 +380,7 @@ TODO:
         </ifFlagsHasAnyOf>
             }
       </impl>
-    </codedef>
+    </functiondef>
     
     
     <codedef id="toDb">
