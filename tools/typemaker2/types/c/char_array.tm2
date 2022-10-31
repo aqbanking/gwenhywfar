@@ -21,14 +21,25 @@
 
       <codedef id="assign">
         <code>
-          $(dst)=$(src);
+          if ($(src)) {
+            strncpy($(dst), $(src), $(maxlen)-1);
+            ($(dst))[$(maxlen)-1]=0;
+          }
+          else {
+            ($(dst))[0]=0;
+          }
         </code>
       </codedef>
 
       <codedef id="dup">
         <code>
-          strncpy($(dst), $(src), $(maxlen)-1);
-          ($(dst))[$(maxlen)-1]=0;
+          if ($(src)) {
+            strncpy($(dst), $(src), $(maxlen)-1);
+            ($(dst))[$(maxlen)-1]=0;
+          }
+          else {
+            ($(dst))[0]=0;
+          }
         </code>
       </codedef>
 
