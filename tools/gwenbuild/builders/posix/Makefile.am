@@ -2,6 +2,7 @@
 builderdatadir=$(datadir)/gwenhywfar/gwenbuild/builders/posix
 dist_builderdata_DATA=\
   app.gwb \
+  avrhexfile.gwb \
   cxxapp.gwb \
   cbuilder.gwb \
   cxxbuilder.gwb \

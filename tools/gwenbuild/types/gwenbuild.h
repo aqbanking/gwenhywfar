@@ -25,6 +25,7 @@ typedef enum {
   GWBUILD_TargetType_Objects,
   GWBUILD_TargetType_Module,
   GWBUILD_TargetType_I18nCatalog,
+  GWBUILD_TargetType_AvrHexFile,
 } GWBUILD_TARGETTYPE;
 
 
