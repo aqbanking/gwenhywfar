@@ -200,7 +200,7 @@ int _parseUsedTargets(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     return rv;
   }
 
-  targetNameList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+  targetNameList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode, 1);
   if (targetNameList) {
     GWEN_STRINGLISTENTRY *se;
 
@@ -243,7 +243,7 @@ int _parseIncludes(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
 
   builderType=GWEN_XMLNode_GetProperty(xmlNode, "type", "c");
 
-  entryList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+  entryList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode, 0);
   if (entryList) {
     GWEN_STRINGLISTENTRY *se;
 
@@ -324,7 +324,7 @@ int _parseLibraries(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     return rv;
   }
 
-  entryList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+  entryList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode, 1);
   if (entryList) {
     GWEN_STRINGLISTENTRY *se;
 

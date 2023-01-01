@@ -65,11 +65,11 @@ void _readSettingsFromXml(GWB_GBUILDER_DESCR *descr)
 
     n=GWEN_XMLNode_FindFirstTag(nInputFiles, "acceptedInputTypes", NULL, NULL);
     if (n)
-      descr->acceptedInputTypes=GWB_Parser_ReadXmlDataIntoStringList(NULL, n);
+      descr->acceptedInputTypes=GWB_Parser_ReadXmlDataIntoStringList(NULL, n, 1);
 
     n=GWEN_XMLNode_FindFirstTag(nInputFiles, "acceptedInputFiles", NULL, NULL);
     if (n)
-      descr->acceptedInputExt=GWB_Parser_ReadXmlDataIntoStringList(NULL, n);
+      descr->acceptedInputExt=GWB_Parser_ReadXmlDataIntoStringList(NULL, n, 1);
   }
 }
 

@@ -113,11 +113,11 @@ int _parseProg(GWEN_UNUSED GWB_PROJECT *project, GWB_CONTEXT *currentContext, GW
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "alternativeNames", NULL, NULL);
   if (n)
-    slAltNames=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), n);
+    slAltNames=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), n, 1);
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "paths", NULL, NULL);
   if (n)
-    slPaths=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), n);
+    slPaths=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), n, 1);
   else {
     slPaths=GWBUILD_GetPathFromEnvironment();
     if (slPaths==NULL)
