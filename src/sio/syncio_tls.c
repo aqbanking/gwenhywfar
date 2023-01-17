@@ -816,6 +816,13 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
     errFlags|=GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND;
   }
 
+  if (status & GNUTLS_CERT_SIGNATURE_FAILURE) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Certificate signature failure");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
+                         I18N("Certificate signature failure"));
+    errFlags|=GWEN_SSL_CERT_FLAGS_INVALID;
+  }
+
   if (status & GNUTLS_CERT_INVALID) {
     DBG_INFO(GWEN_LOGDOMAIN, "Certificate is not trusted");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
