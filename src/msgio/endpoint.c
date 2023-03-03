@@ -48,7 +48,7 @@ GWEN_LIST_FUNCTIONS(GWEN_MSG_ENDPOINT, GWEN_MsgEndpoint)
 
 
 
-GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name)
+GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT *ep;
 
@@ -59,6 +59,7 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name)
   ep->receivedMessageList=GWEN_Msg_List_new();
   ep->sendMessageList=GWEN_Msg_List_new();
   ep->name=name?strdup(name):"<unnamed>";
+  ep->groupId=groupId;
 
   return ep;
 }
@@ -91,6 +92,13 @@ int GWEN_MsgEndpoint_GetFd(const GWEN_MSG_ENDPOINT *ep)
 void GWEN_MsgEndpoint_SetFd(GWEN_MSG_ENDPOINT *ep, int fd)
 {
   ep->fd=fd;
+}
+
+
+
+int GWEN_MsgEndpoint_GetGroupId(const GWEN_MSG_ENDPOINT *ep)
+{
+  return ep->groupId;
 }
 
 
@@ -167,6 +175,20 @@ GWEN_MSG *GWEN_MsgEndpoint_TakeFirstReceivedMessage(GWEN_MSG_ENDPOINT *ep)
 void GWEN_MsgEndpoint_AddSendMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m)
 {
   GWEN_Msg_List_Add(m, ep->sendMessageList);
+}
+
+
+
+int GWEN_MsgEndpoint_HaveMessageToSend(const GWEN_MSG_ENDPOINT *ep)
+{
+  return (GWEN_Msg_List_GetCount(ep->sendMessageList)>0)?1:0;
+}
+
+
+
+GWEN_MSG *GWEN_MsgEndpoint_GetFirstSendMessage(const GWEN_MSG_ENDPOINT *ep)
+{
+  return GWEN_Msg_List_First(ep->sendMessageList);
 }
 
 
@@ -254,37 +276,6 @@ int GWEN_MsgEndpoint_DiscardInput(GWEN_MSG_ENDPOINT *ep)
 
 
 
-int GWEN_MsgEndpoint_StartMsg(GWEN_MSG_ENDPOINT *ep)
-{
-  int rv;
-
-  rv=(ep->startMsgFn)?(ep->startMsgFn(ep)):0;
-  if (rv==0)
-    ep->sendingMessage=1;
-  return rv;
-}
-
-
-
-int GWEN_MsgEndpoint_EndMsg(GWEN_MSG_ENDPOINT *ep)
-{
-  int rv;
-
-  rv=(ep->endMsgFn)?(ep->endMsgFn(ep)):0;
-  if (rv==0)
-    ep->sendingMessage=0;
-  return rv;
-}
-
-
-
-int GWEN_MsgEndpoint_CheckMsg(GWEN_MSG_ENDPOINT *ep)
-{
-  return (ep->checkMsgFn)?(ep->checkMsgFn(ep)):1;
-}
-
-
-
 GWEN_MSG_ENDPOINT_HANDLEREADABLE_FN GWEN_MsgEndpoint_SetHandleReadableFn(GWEN_MSG_ENDPOINT *ep,
                                                                          GWEN_MSG_ENDPOINT_HANDLEREADABLE_FN f)
 {
@@ -339,39 +330,6 @@ GWEN_MSG_ENDPOINT_RUN_FN GWEN_MsgEndpoint_SetRunFn(GWEN_MSG_ENDPOINT *ep, GWEN_M
 
   oldFn=ep->runFn;
   ep->runFn=f;
-  return oldFn;
-}
-
-
-
-GWEN_MSG_ENDPOINT_STARTMSG_FN GWEN_MsgEndpoint_SetStartMsgFn(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_STARTMSG_FN f)
-{
-  GWEN_MSG_ENDPOINT_STARTMSG_FN oldFn;
-
-  oldFn=ep->startMsgFn;
-  ep->startMsgFn=f;
-  return oldFn;
-}
-
-
-
-GWEN_MSG_ENDPOINT_ENDMSG_FN GWEN_MsgEndpoint_SetEndMsgFn(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_ENDMSG_FN f)
-{
-  GWEN_MSG_ENDPOINT_ENDMSG_FN oldFn;
-
-  oldFn=ep->endMsgFn;
-  ep->endMsgFn=f;
-  return oldFn;
-}
-
-
-
-GWEN_MSG_ENDPOINT_CHECKMSG_FN GWEN_MsgEndpoint_SetCheckMsgFn(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_CHECKMSG_FN f)
-{
-  GWEN_MSG_ENDPOINT_CHECKMSG_FN oldFn;
-
-  oldFn=ep->checkMsgFn;
-  ep->checkMsgFn=f;
   return oldFn;
 }
 

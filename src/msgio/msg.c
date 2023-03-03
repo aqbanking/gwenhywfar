@@ -29,6 +29,7 @@ GWEN_MSG *GWEN_Msg_new(uint32_t bufferSize)
   GWEN_MSG *msg;
 
   GWEN_NEW_OBJECT(GWEN_MSG, msg);
+  msg->refCount=1;
   GWEN_LIST_INIT(GWEN_MSG, msg);
   if (bufferSize) {
     msg->buffer=(uint8_t*) malloc(bufferSize);
@@ -38,13 +39,24 @@ GWEN_MSG *GWEN_Msg_new(uint32_t bufferSize)
 }
 
 
+void GWEN_Msg_Attach(GWEN_MSG *msg)
+{
+  if (msg && msg->refCount>0)
+    msg->refCount++;
+}
+
+
 
 void GWEN_Msg_free(GWEN_MSG *msg)
 {
-  if (msg) {
-    GWEN_LIST_FINI(GWEN_MSG, msg);
-    free(msg->buffer);
-    GWEN_FREE_OBJECT(msg);
+  if (msg && msg->refCount>0) {
+    if (msg->refCount==1) {
+      GWEN_LIST_FINI(GWEN_MSG, msg);
+      free(msg->buffer);
+      GWEN_FREE_OBJECT(msg);
+    }
+    else
+      msg->refCount--;
   }
 }
 
@@ -52,15 +64,18 @@ void GWEN_Msg_free(GWEN_MSG *msg)
 
 GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg)
 {
-  GWEN_MSG *msg;
+  if (srcMsg && srcMsg->refCount>0) {
+    GWEN_MSG *msg;
 
-  msg=GWEN_Msg_new(srcMsg->maxSize);
-  if (srcMsg->maxSize)
-    memmove(msg->buffer, srcMsg->buffer, msg->maxSize);
-  msg->bytesInBuffer=srcMsg->bytesInBuffer;
-  msg->currentPos=srcMsg->currentPos;
+    msg=GWEN_Msg_new(srcMsg->maxSize);
+    if (srcMsg->maxSize)
+      memmove(msg->buffer, srcMsg->buffer, msg->maxSize);
+    msg->bytesInBuffer=srcMsg->bytesInBuffer;
+    msg->currentPos=srcMsg->currentPos;
 
-  return msg;
+    return msg;
+  }
+  return NULL;
 }
 
 
@@ -83,7 +98,7 @@ const uint8_t *GWEN_Msg_GetConstBuffer(const GWEN_MSG *msg)
 
 
 
-uint8_t GWEN_Msg_GetBytesInBuffer(const GWEN_MSG *msg)
+uint32_t GWEN_Msg_GetBytesInBuffer(const GWEN_MSG *msg)
 {
   if (msg)
     return msg->bytesInBuffer;
@@ -93,7 +108,7 @@ uint8_t GWEN_Msg_GetBytesInBuffer(const GWEN_MSG *msg)
 
 
 
-uint8_t GWEN_Msg_GetCurrentPos(const GWEN_MSG *msg)
+uint32_t GWEN_Msg_GetCurrentPos(const GWEN_MSG *msg)
 {
   if (msg)
     return msg->currentPos;
@@ -131,7 +146,7 @@ int GWEN_Msg_ReadNextByte(GWEN_MSG *msg)
 
 
 
-int GWEN_Msg_IncCurrentPos(GWEN_MSG *msg, uint8_t i)
+int GWEN_Msg_IncCurrentPos(GWEN_MSG *msg, uint32_t i)
 {
   if (msg) {
     if (((msg->currentPos+i)<msg->maxSize) &&

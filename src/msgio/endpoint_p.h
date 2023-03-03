@@ -20,6 +20,7 @@ struct GWEN_MSG_ENDPOINT {
 
   int fd;
   char *name;
+  int groupId;
 
   GWEN_MSG_LIST *receivedMessageList;
   GWEN_MSG_LIST *sendMessageList;
@@ -30,9 +31,6 @@ struct GWEN_MSG_ENDPOINT {
   GWEN_MSG_ENDPOINT_GET_READFD_FN getReadFdFn;
   GWEN_MSG_ENDPOINT_GET_WRITEFD_FN getWriteFdFn;
   GWEN_MSG_ENDPOINT_RUN_FN runFn;
-  GWEN_MSG_ENDPOINT_STARTMSG_FN startMsgFn;
-  GWEN_MSG_ENDPOINT_ENDMSG_FN endMsgFn;
-  GWEN_MSG_ENDPOINT_CHECKMSG_FN checkMsgFn;
 
   uint32_t flags;
 

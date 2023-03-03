@@ -22,10 +22,21 @@
 
 #include <errno.h>
 
+/* According to POSIX.1-2001, POSIX.1-2008 */
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
+/* According to earlier standards */
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
-static int _ioLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr);
-static void _runAllEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr);
+
+
+static int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet);
+static int _sampleWriteSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *writeSet);
+static void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet);
 
 
 
@@ -73,62 +84,23 @@ void GWEN_MsgEndpointMgr_DelEndpoint(GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *emgr, GW
 
 
 
-int GWEN_MsgEndpointMgr_LoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr)
+int GWEN_MsgEndpointMgr_IoLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr)
 {
-  int rv;
-
-  rv=_ioLoopOnce(emgr);
-  _runAllEndpoints(emgr);
-  return rv;
-}
-
-
-
-int _ioLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr)
-{
-  GWEN_MSG_ENDPOINT *ep;
   fd_set readSet;
   fd_set writeSet;
-  int highestRdFd=-1;
-  int highestWrFd=-1;
+  int highestRdFd;
+  int highestWrFd;
   struct timeval tv;
   int rv;
 
   FD_ZERO(&readSet);
   FD_ZERO(&writeSet);
-  tv.tv_sec=2;
+  tv.tv_sec=1;
   tv.tv_usec=0;
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Sampling sockets");
-  ep=GWEN_MsgEndpoint_List_First(emgr->endpointList);
-  if (ep==NULL) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "No endpoints.");
-    return GWEN_ERROR_GENERIC;
-  }
-  while(ep) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
-    if (!(GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_NOIO)) {
-      int fd;
-
-      fd=GWEN_MsgEndpoint_GetReadFd(ep);
-      if (fd>=0) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "  - adding socket %d for read", fd);
-        FD_SET(fd, &readSet);
-        highestRdFd=(fd>highestRdFd)?fd:highestRdFd;
-      }
-
-      fd=GWEN_MsgEndpoint_GetWriteFd(ep);
-      if (fd>=0) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "  - adding socket %d for write", fd);
-        FD_SET(fd, &writeSet);
-        highestWrFd=(fd>highestWrFd)?fd:highestWrFd;
-      }
-    }
-    else {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "  - endpoint %s does not support IO", GWEN_MsgEndpoint_GetName(ep));
-    }
-    ep=GWEN_MsgEndpoint_List_Next(ep);
-  }
+  highestRdFd=_sampleReadSockets(emgr, &readSet);
+  highestWrFd=_sampleWriteSockets(emgr, &writeSet);
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Calling select (highest read socket: %d, highest write socket: %d)", highestRdFd, highestWrFd);
   rv=select(((highestRdFd>highestWrFd)?highestRdFd:highestWrFd)+1,
@@ -148,36 +120,8 @@ int _ioLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr)
     DBG_DEBUG(GWEN_LOGDOMAIN, "timeout");
     return GWEN_ERROR_TRY_AGAIN;
   }
-  else if (rv) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Letting all endpoints handle IO");
-    ep=GWEN_MsgEndpoint_List_First(emgr->endpointList);
-    while(ep) {
-      GWEN_MSG_ENDPOINT *epNext;
-      int fd;
-      int rv;
-
-      epNext=GWEN_MsgEndpoint_List_Next(ep);
-      fd=GWEN_MsgEndpoint_GetFd(ep);
-      if (fd!=-1 && FD_ISSET(fd, &readSet)) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): read", GWEN_MsgEndpoint_GetName(ep));
-        rv=GWEN_MsgEndpoint_HandleReadable(ep, emgr);
-        if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
-          fd=-1;
-          GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
-        }
-      }
-      if (fd!=-1 && FD_ISSET(fd, &writeSet)) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): write", GWEN_MsgEndpoint_GetName(ep));
-        rv=GWEN_MsgEndpoint_HandleWritable(ep, emgr);
-        if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
-          fd=-1;
-          GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
-        }
-      }
-      ep=epNext;
-    }
+  else if (rv>0) {
+    _handleIo(emgr, &readSet, &writeSet);
   }
 
   return 0;
@@ -185,7 +129,112 @@ int _ioLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr)
 
 
 
-void _runAllEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr)
+int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet)
+{
+  GWEN_MSG_ENDPOINT *ep;
+  int highestFd=-1;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Sampling read sockets");
+  ep=GWEN_MsgEndpoint_List_First(emgr->endpointList);
+  if (ep==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No endpoints.");
+    return GWEN_ERROR_GENERIC;
+  }
+  while(ep) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+    if (!(GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_NOIO)) {
+      int fd;
+
+      fd=GWEN_MsgEndpoint_GetReadFd(ep);
+      if (fd>=0) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "  - adding socket %d for read", fd);
+        FD_SET(fd, readSet);
+        highestFd=(fd>highestFd)?fd:highestFd;
+      }
+    }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "  - endpoint %s does not support IO", GWEN_MsgEndpoint_GetName(ep));
+    }
+    ep=GWEN_MsgEndpoint_List_Next(ep);
+  }
+  return highestFd;
+}
+
+
+
+int _sampleWriteSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *writeSet)
+{
+  GWEN_MSG_ENDPOINT *ep;
+  int highestFd=-1;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Sampling write sockets");
+  ep=GWEN_MsgEndpoint_List_First(emgr->endpointList);
+  if (ep==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No endpoints.");
+    return GWEN_ERROR_GENERIC;
+  }
+  while(ep) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+    if (!(GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_NOIO)) {
+      int fd;
+
+      fd=GWEN_MsgEndpoint_GetWriteFd(ep);
+      if (fd>=0) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "  - adding socket %d for write", fd);
+        FD_SET(fd, writeSet);
+        highestFd=(fd>highestFd)?fd:highestFd;
+      }
+    }
+    else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "  - endpoint %s does not support IO", GWEN_MsgEndpoint_GetName(ep));
+    }
+    ep=GWEN_MsgEndpoint_List_Next(ep);
+  }
+  return highestFd;
+}
+
+
+
+void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet)
+{
+  GWEN_MSG_ENDPOINT *ep;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Letting all endpoints handle IO");
+  ep=GWEN_MsgEndpoint_List_First(emgr->endpointList);
+  while(ep) {
+    GWEN_MSG_ENDPOINT *epNext;
+    int fd;
+    int rv;
+
+    epNext=GWEN_MsgEndpoint_List_Next(ep);
+    fd=GWEN_MsgEndpoint_GetFd(ep);
+    if (fd!=-1 && FD_ISSET(fd, readSet)) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): read", GWEN_MsgEndpoint_GetName(ep));
+      rv=GWEN_MsgEndpoint_HandleReadable(ep, emgr);
+      if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+        fd=-1;
+        GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
+      }
+    }
+    if (fd!=-1 && FD_ISSET(fd, writeSet)) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): write", GWEN_MsgEndpoint_GetName(ep));
+      rv=GWEN_MsgEndpoint_HandleWritable(ep, emgr);
+      if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+        fd=-1;
+        GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
+      }
+    }
+    ep=epNext;
+  }
+}
+
+
+
+
+
+void GWEN_MsgEndpointMgr_RunAllEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr)
 {
   GWEN_MSG_ENDPOINT *ep;
 

@@ -42,7 +42,8 @@ GWENHYWFAR_API GWEN_MSG_ENDPOINT_LIST *GWEN_MsgEndpointMgr_GetEndpointList(const
 GWENHYWFAR_API void GWEN_MsgEndpointMgr_AddEndpoint(GWEN_MSG_ENDPOINT_MGR *emgr, GWEN_MSG_ENDPOINT *ep);
 GWENHYWFAR_API void GWEN_MsgEndpointMgr_DelEndpoint(GWEN_MSG_ENDPOINT_MGR *emgr, GWEN_MSG_ENDPOINT *ep);
 
-GWENHYWFAR_API int GWEN_MsgEndpointMgr_LoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr);
+GWENHYWFAR_API int GWEN_MsgEndpointMgr_IoLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr);
+GWENHYWFAR_API void GWEN_MsgEndpointMgr_RunAllEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr);
 
 
 
