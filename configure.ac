@@ -262,6 +262,7 @@ AC_CHECK_HEADERS([sys/types.h])
 AC_CHECK_HEADERS([sys/wait.h])
 AC_CHECK_HEADERS([regex.h])
 AC_CHECK_HEADERS([endian.h])
+AC_CHECK_HEADERS([sys/select.h])
 
 
 ###-------------------------------------------------------------------------
