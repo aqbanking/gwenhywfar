@@ -1,4 +1,9 @@
 
+msgio:
+- EndpointIpcUnix
+- EndpointIpcTcp
+
+
 gwbuild:
 - new entry "prefix" (internally translate to option_prefix stuff like in AqFinance)
 
