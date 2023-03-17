@@ -11,6 +11,7 @@
 
 
 #include <gwenhywfar/error.h>
+#include <gwenhywfar/inherit.h>
 
 
 #ifdef __cplusplus
@@ -19,6 +20,7 @@ extern "C" {
 
 
 typedef struct GWEN_MSG_ENDPOINT_MGR GWEN_MSG_ENDPOINT_MGR;
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_MSG_ENDPOINT_MGR, GWENHYWFAR_API)
 
 
 #ifdef __cplusplus

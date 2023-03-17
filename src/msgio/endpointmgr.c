@@ -32,6 +32,8 @@
 #include <unistd.h>
 
 
+GWEN_INHERIT_FUNCTIONS(GWEN_MSG_ENDPOINT_MGR)
+
 
 
 static int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet);
@@ -46,6 +48,7 @@ GWEN_MSG_ENDPOINT_MGR *GWEN_MsgEndpointMgr_new(void)
   GWEN_MSG_ENDPOINT_MGR *emgr;
 
   GWEN_NEW_OBJECT(GWEN_MSG_ENDPOINT_MGR, emgr);
+  GWEN_INHERIT_INIT(GWEN_MSG_ENDPOINT_MGR, emgr);
   emgr->endpointList=GWEN_MsgEndpoint_List_new();
   return emgr;
 }
@@ -55,6 +58,7 @@ GWEN_MSG_ENDPOINT_MGR *GWEN_MsgEndpointMgr_new(void)
 void GWEN_MsgEndpointMgr_free(GWEN_MSG_ENDPOINT_MGR *emgr)
 {
   if (emgr) {
+    GWEN_INHERIT_FINI(GWEN_MSG_ENDPOINT_MGR, emgr);
     GWEN_MsgEndpoint_List_free(emgr->endpointList);
     GWEN_FREE_OBJECT(emgr);
   }
