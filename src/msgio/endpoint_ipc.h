@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 
-GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_MsgEndpointIpc_new(const char *name, int groupId);
+GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_new(const char *name, int groupId);
 
 
 #ifdef __cplusplus

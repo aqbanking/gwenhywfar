@@ -41,7 +41,7 @@ static int _handleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
 
 
 
-GWEN_MSG_ENDPOINT *GWEN_MsgEndpointIpc_new(const char *name, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_new(const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT *ep;
 
@@ -100,6 +100,7 @@ int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *em
     msg=GWEN_MsgEndpoint_GetCurrentlyReceivedMsg(ep);
     if (msg==NULL) {
       msg=GWEN_Msg_new(GWEN_ENDPOINT_IPC_BUFFERSIZE);
+      GWEN_Msg_SetGroupId(msg, GWEN_MsgEndpoint_GetGroupId(ep));
       GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, msg);
     }
     rv=GWEN_Msg_AddByte(msg, buffer[i]);
@@ -107,7 +108,7 @@ int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *em
       DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-    rv=GWEN_MsgIpc_IsMsgComplete(msg);
+    rv=GWEN_IpcMsg_IsMsgComplete(msg);
     if (rv<0) {
       /* invalid message */
       DBG_ERROR(GWEN_LOGDOMAIN, "Invalid message, discarding");

@@ -22,16 +22,16 @@
 
 
 
-GWENHYWFAR_API GWEN_MSG *GWEN_MsgIpc_new(uint8_t protoId,
+GWENHYWFAR_API GWEN_MSG *GWEN_IpcMsg_new(uint8_t protoId,
                                          uint8_t protoVer,
                                          uint16_t code,
                                          uint32_t payloadLen,
                                          const uint8_t *payload);
-GWENHYWFAR_API int GWEN_MsgIpc_IsMsgComplete(const GWEN_MSG *msg);
-GWENHYWFAR_API uint32_t GWEN_MsgIpc_GetMsgSize(const GWEN_MSG *msg);
-GWENHYWFAR_API uint8_t GWEN_MsgIpc_GetProtoId(const GWEN_MSG *msg);
-GWENHYWFAR_API uint8_t GWEN_MsgIpc_GetProtoVersion(const GWEN_MSG *msg);
-GWENHYWFAR_API uint16_t GWEN_MsgIpc_GetCode(const GWEN_MSG *msg);
+GWENHYWFAR_API int GWEN_IpcMsg_IsMsgComplete(const GWEN_MSG *msg);
+GWENHYWFAR_API uint32_t GWEN_IpcMsg_GetMsgSize(const GWEN_MSG *msg);
+GWENHYWFAR_API uint8_t GWEN_IpcMsg_GetProtoId(const GWEN_MSG *msg);
+GWENHYWFAR_API uint8_t GWEN_IpcMsg_GetProtoVersion(const GWEN_MSG *msg);
+GWENHYWFAR_API uint16_t GWEN_IpcMsg_GetCode(const GWEN_MSG *msg);
 
 
 #endif

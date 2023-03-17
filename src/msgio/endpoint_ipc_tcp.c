@@ -50,7 +50,7 @@ int _setSocketNonBlocking(int fd);
 
 
 
-GWEN_MSG_ENDPOINT *GWEN_MsgEndpointIpcTcp_new(const char *host, int port, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *host, int port, int groupId)
 {
   int fd;
   GWEN_MSG_ENDPOINT *ep;
@@ -119,7 +119,7 @@ int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *em
     return rv;
   }
 
-  newEp=GWEN_MsgEndpointIpc_new("TCP Client", GWEN_MsgEndpoint_GetGroupId(ep));
+  newEp=GWEN_IpcEndpoint_new("TCP Client", GWEN_MsgEndpoint_GetGroupId(ep));
   GWEN_MsgEndpoint_SetFd(newEp, newSock);
   GWEN_MsgEndpoint_SetFlags(newEp, GWEN_MsgEndpoint_GetFlags(ep));
 
