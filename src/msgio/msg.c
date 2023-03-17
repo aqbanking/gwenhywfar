@@ -72,10 +72,25 @@ GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg)
       memmove(msg->buffer, srcMsg->buffer, msg->maxSize);
     msg->bytesInBuffer=srcMsg->bytesInBuffer;
     msg->currentPos=srcMsg->currentPos;
+    msg->groupId=srcMsg->groupId;
 
     return msg;
   }
   return NULL;
+}
+
+
+
+int GWEN_Msg_GetGroupId(const GWEN_MSG *msg)
+{
+  return msg->groupId;
+}
+
+
+
+void GWEN_Msg_SetGroupId(GWEN_MSG *msg, int groupId)
+{
+  msg->groupId=groupId;
 }
 
 

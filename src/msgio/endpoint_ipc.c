@@ -41,11 +41,11 @@ static int _handleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
 
 
 
-GWEN_MSG_ENDPOINT *GWEN_MsgEndpointIpc_new(int groupId)
+GWEN_MSG_ENDPOINT *GWEN_MsgEndpointIpc_new(const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT *ep;
 
-  ep=GWEN_MsgEndpoint_new(GWEN_MSG_ENDPOINT_IPC_NAME, groupId);
+  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_IPC_NAME, groupId);
   GWEN_MsgEndpoint_SetHandleReadableFn(ep, _handleReadable);
   GWEN_MsgEndpoint_SetHandleWritableFn(ep, _handleWritable);
   GWEN_MsgEndpoint_SetGetReadFdFn(ep, _getReadFd);

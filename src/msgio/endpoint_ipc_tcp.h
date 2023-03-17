@@ -6,26 +6,25 @@
  * should have received along with this file.
  ****************************************************************************/
 
-
-#ifndef GWEN_MSG_MSG_P_H
-#define GWEN_MSG_MSG_P_H
-
-#include "msgio/msg.h"
+#ifndef GWEN_MSG_ENDPOINT_IPC_TCP_H
+#define GWEN_MSG_ENDPOINT_IPC_TCP_H
 
 
-struct GWEN_MSG {
-  GWEN_LIST_ELEMENT(GWEN_MSG)
+#include <gwenhywfar/endpoint.h>
 
-  uint32_t bytesInBuffer;
-  uint32_t currentPos;
-  uint32_t maxSize;
-  uint8_t *buffer;
 
-  int groupId;
 
-  int refCount;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+
+GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_MsgEndpointIpcTcp_new(const char *host, int port, int groupId);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

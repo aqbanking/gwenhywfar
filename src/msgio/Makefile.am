@@ -31,6 +31,7 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 libgwenmsgio_la_SOURCES=$(built_sources) \
   endpoint.c \
   endpoint_ipc.c \
+  endpoint_ipc_tcp.c \
   endpointmgr.c \
   msg.c \
   msg_ipc.c
@@ -40,6 +41,7 @@ iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=$(build_headers_pub) \
   endpoint.h \
   endpoint_ipc.h \
+  endpoint_ipc_tcp.h \
   endpointmgr.h \
   msg.h \
   msg_ipc.h

@@ -24,6 +24,9 @@ GWENHYWFAR_API void GWEN_Msg_Attach(GWEN_MSG *msg);
 GWENHYWFAR_API void GWEN_Msg_free(GWEN_MSG *msg);
 GWENHYWFAR_API GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg);
 
+GWENHYWFAR_API int GWEN_Msg_GetGroupId(const GWEN_MSG *msg);
+GWENHYWFAR_API void GWEN_Msg_SetGroupId(GWEN_MSG *msg, int groupId);
+
 GWENHYWFAR_API uint8_t *GWEN_Msg_GetBuffer(GWEN_MSG *msg);
 GWENHYWFAR_API const uint8_t *GWEN_Msg_GetConstBuffer(const GWEN_MSG *msg);
 GWENHYWFAR_API uint32_t GWEN_Msg_GetBytesInBuffer(const GWEN_MSG *msg);
