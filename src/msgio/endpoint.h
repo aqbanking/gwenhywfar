@@ -53,7 +53,7 @@ typedef int (*GWEN_MSG_ENDPOINT_GET_WRITEFD_FN)(GWEN_MSG_ENDPOINT *ep);
 GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId);
 GWENHYWFAR_API void GWEN_MsgEndpoint_free(GWEN_MSG_ENDPOINT *ep);
 
-int GWEN_MsgEndpoint_GetGroupId(const GWEN_MSG_ENDPOINT *ep);
+GWENHYWFAR_API int GWEN_MsgEndpoint_GetGroupId(const GWEN_MSG_ENDPOINT *ep);
 
 GWENHYWFAR_API int GWEN_MsgEndpoint_GetFd(const GWEN_MSG_ENDPOINT *ep);
 GWENHYWFAR_API void GWEN_MsgEndpoint_SetFd(GWEN_MSG_ENDPOINT *ep, int fd);
