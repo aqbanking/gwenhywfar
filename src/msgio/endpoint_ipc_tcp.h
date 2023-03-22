@@ -19,7 +19,10 @@ extern "C" {
 #endif
 
 
-GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *host, int port, int groupId);
+
+GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *name, const char *host, int port, int groupId);
+
+
 
 
 #ifdef __cplusplus

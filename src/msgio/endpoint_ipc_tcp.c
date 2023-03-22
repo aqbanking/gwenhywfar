@@ -40,6 +40,7 @@
 
 static int _getReadFd(GWEN_MSG_ENDPOINT *ep);
 static int _getWriteFd(GWEN_MSG_ENDPOINT *ep);
+static GWEN_MSG_ENDPOINT *_createChild(GWEN_MSG_ENDPOINT *ep);
 static int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
 static int _handleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
 int _setupListeningSocket(const char *host, int port);
@@ -50,7 +51,7 @@ int _setSocketNonBlocking(int fd);
 
 
 
-GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *host, int port, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *name, const char *host, int port, int groupId)
 {
   int fd;
   GWEN_MSG_ENDPOINT *ep;
@@ -61,13 +62,14 @@ GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *host, int port, int group
     return NULL;
   }
 
-  ep=GWEN_MsgEndpoint_new(GWEN_MSG_ENDPOINT_IPCTCP_NAME, groupId);
+  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_IPCTCP_NAME, groupId);
   GWEN_MsgEndpoint_SetFd(ep, fd);
 
   GWEN_MsgEndpoint_SetHandleReadableFn(ep, _handleReadable);
   GWEN_MsgEndpoint_SetHandleWritableFn(ep, _handleWritable);
   GWEN_MsgEndpoint_SetGetReadFdFn(ep, _getReadFd);
   GWEN_MsgEndpoint_SetGetWriteFdFn(ep, _getWriteFd);
+  GWEN_MsgEndpoint_SetCreateChildFn(ep, _createChild);
 
   return ep;
 }
@@ -119,11 +121,12 @@ int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *em
     return rv;
   }
 
-  newEp=GWEN_IpcEndpoint_new("TCP Client", GWEN_MsgEndpoint_GetGroupId(ep));
-  GWEN_MsgEndpoint_SetFd(newEp, newSock);
-  GWEN_MsgEndpoint_SetFlags(newEp, GWEN_MsgEndpoint_GetFlags(ep));
-
-  GWEN_MsgEndpointMgr_AddEndpoint(emgr, newEp);
+  newEp=GWEN_MsgEndpoint_CreateChild(ep);
+  if (newEp) {
+    GWEN_MsgEndpoint_SetFd(newEp, newSock);
+    GWEN_MsgEndpoint_SetFlags(newEp, GWEN_MsgEndpoint_GetFlags(ep));
+    GWEN_MsgEndpointMgr_AddEndpoint(emgr, newEp);
+  }
   return 0;
 }
 
@@ -133,6 +136,13 @@ int _handleWritable(GWEN_UNUSED GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDP
 {
   /* should not get called */
   return GWEN_ERROR_INVALID;
+}
+
+
+
+GWEN_MSG_ENDPOINT *_createChild(GWEN_MSG_ENDPOINT *ep)
+{
+  return GWEN_IpcEndpoint_new("TCP Client", GWEN_MsgEndpoint_GetGroupId(ep));
 }
 
 

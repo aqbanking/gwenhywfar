@@ -253,6 +253,25 @@ void GWEN_MsgEndpoint_Run(GWEN_MSG_ENDPOINT *ep)
 
 
 
+void GWEN_MsgEndpoint_ProcessOutMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m)
+{
+  if (ep->processOutMsgFn)
+    ep->processOutMsgFn(ep, m);
+  else
+    GWEN_MsgEndpoint_AddSendMessage(ep, m);
+}
+
+
+
+GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_CreateChild(GWEN_MSG_ENDPOINT *ep)
+{
+  if (ep->createChildFn)
+    return ep->createChildFn(ep);
+  return NULL;
+}
+
+
+
 int GWEN_MsgEndpoint_DiscardInput(GWEN_MSG_ENDPOINT *ep)
 {
   int rv;
@@ -332,6 +351,30 @@ GWEN_MSG_ENDPOINT_RUN_FN GWEN_MsgEndpoint_SetRunFn(GWEN_MSG_ENDPOINT *ep, GWEN_M
   ep->runFn=f;
   return oldFn;
 }
+
+
+
+GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN GWEN_MsgEndpoint_SetProcessOutMsgFn(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN f)
+{
+  GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN oldFn;
+
+  oldFn=ep->processOutMsgFn;
+  ep->processOutMsgFn=f;
+  return oldFn;
+}
+
+
+
+GWEN_MSG_ENDPOINT_CREATECHILD_FN GWEN_MsgEndpoint_SetCreateChildFn(GWEN_MSG_ENDPOINT *ep,
+								   GWEN_MSG_ENDPOINT_CREATECHILD_FN f)
+{
+  GWEN_MSG_ENDPOINT_CREATECHILD_FN oldFn;
+
+  oldFn=ep->createChildFn;
+  ep->createChildFn=f;
+  return oldFn;
+}
+
 
 
 

@@ -39,6 +39,7 @@ GWEN_INHERIT_FUNCTIONS(GWEN_MSG_ENDPOINT_MGR)
 static int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet);
 static int _sampleWriteSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *writeSet);
 static void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet);
+static void _deleteFlaggedEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr);
 
 
 
@@ -128,6 +129,8 @@ int GWEN_MsgEndpointMgr_IoLoopOnce(GWEN_MSG_ENDPOINT_MGR *emgr)
     _handleIo(emgr, &readSet, &writeSet);
   }
 
+  _deleteFlaggedEndpoints(emgr);
+
   return 0;
 }
 
@@ -146,7 +149,7 @@ int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet)
   }
   while(ep) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
-    if (!(GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_NOIO)) {
+    if (!(GWEN_MsgEndpoint_GetFlags(ep) & (GWEN_MSG_ENDPOINT_FLAGS_NOIO | GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED))) {
       int fd;
 
       fd=GWEN_MsgEndpoint_GetReadFd(ep);
@@ -157,7 +160,7 @@ int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet)
       }
     }
     else {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "  - endpoint %s does not support IO", GWEN_MsgEndpoint_GetName(ep));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "  - not adding endpoint %s for read", GWEN_MsgEndpoint_GetName(ep));
     }
     ep=GWEN_MsgEndpoint_List_Next(ep);
   }
@@ -179,7 +182,7 @@ int _sampleWriteSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *writeSet)
   }
   while(ep) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
-    if (!(GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_NOIO)) {
+    if (!(GWEN_MsgEndpoint_GetFlags(ep) & (GWEN_MSG_ENDPOINT_FLAGS_NOIO | GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED))) {
       int fd;
 
       fd=GWEN_MsgEndpoint_GetWriteFd(ep);
@@ -190,7 +193,7 @@ int _sampleWriteSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *writeSet)
       }
     }
     else {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "  - endpoint %s does not support IO", GWEN_MsgEndpoint_GetName(ep));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "  - not adding endpoint %s for write", GWEN_MsgEndpoint_GetName(ep));
     }
     ep=GWEN_MsgEndpoint_List_Next(ep);
   }
@@ -218,7 +221,8 @@ void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet)
       if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
         fd=-1;
-        GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
+        GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
+        /*GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);*/
       }
     }
     if (fd!=-1 && FD_ISSET(fd, writeSet)) {
@@ -227,10 +231,34 @@ void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet)
       if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
         fd=-1;
-        GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
+        GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
+        /*GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);*/
       }
     }
     ep=epNext;
+  }
+}
+
+
+
+void _deleteFlaggedEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr)
+{
+  GWEN_MSG_ENDPOINT *ep;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Sampling write sockets");
+  ep=GWEN_MsgEndpoint_List_First(emgr->endpointList);
+  if (ep) {
+    while(ep) {
+      GWEN_MSG_ENDPOINT *epNext;
+
+      epNext=GWEN_MsgEndpoint_List_Next(ep);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+      if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DELETE) {
+	DBG_DEBUG(GWEN_LOGDOMAIN, "  - deleting endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+	GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
+      }
+      ep=epNext;
+    } /* while */
   }
 }
 
