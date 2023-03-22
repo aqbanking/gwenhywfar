@@ -41,6 +41,8 @@ GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_new(int year, int month, int day,
                                                   int hour, int minute, int second);
 GWENHYWFAR_API void GWEN_Timestamp_free(GWEN_TIMESTAMP *tstamp);
 
+GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_dup(const GWEN_TIMESTAMP *tstamp);
+
 /**
  * Transform the given timestamp into a 64 bit value only to be used by
  * @ref GWEN_Timestamp_fromInt64().

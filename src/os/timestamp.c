@@ -60,6 +60,16 @@ GWEN_TIMESTAMP *GWEN_Timestamp_new(int year, int month, int day,
 
 
 
+GWEN_TIMESTAMP *GWEN_Timestamp_dup(const GWEN_TIMESTAMP *tstamp)
+{
+  if (tstamp)
+    return GWEN_Timestamp_new(tstamp->year, tstamp->month, tstamp->day,
+                              tstamp->hour, tstamp->minute, tstamp->second);
+  return NULL;
+}
+
+
+
 void GWEN_Timestamp_free(GWEN_TIMESTAMP *tstamp)
 {
   if (tstamp) {
