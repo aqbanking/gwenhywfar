@@ -11,6 +11,7 @@ dist_typedata_DATA=\
   int_array.tm2 \
   gwen_buffer.tm2 \
   gwen_date.tm2 \
+  gwen_timestamp.tm2 \
   gwen_idlist64.tm2 \
   gwen_time.tm2 \
   list1_base.tm2 \

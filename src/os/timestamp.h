@@ -58,6 +58,12 @@ GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_fromGmTime(time_t ti);
 GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_NowInLocalTime(void);
 GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_NowInGmTime(void);
 
+GWENHYWFAR_API const char *GWEN_Timestamp_GetString(const GWEN_TIMESTAMP *tstamp);
+GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_fromString(const char *s);
+
+GWENHYWFAR_API int GWEN_Timestamp_toDb(const GWEN_TIMESTAMP *tstamp, GWEN_DB_NODE *db);
+GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_fromDb(GWEN_DB_NODE *db);
+
 
 GWENHYWFAR_API void GWEN_Timestamp_SetDateAndTime(GWEN_TIMESTAMP *tstamp,
                                                   int year, int month, int day,
@@ -79,6 +85,8 @@ GWENHYWFAR_API int GWEN_Timestamp_GetHour(const GWEN_TIMESTAMP *tstamp);
 GWENHYWFAR_API int GWEN_Timestamp_GetMinute(const GWEN_TIMESTAMP *tstamp);
 
 GWENHYWFAR_API int GWEN_Timestamp_GetSecond(const GWEN_TIMESTAMP *tstamp);
+
+GWENHYWFAR_API int GWEN_Timestamp_Compare(const GWEN_TIMESTAMP *tstamp1, const GWEN_TIMESTAMP *tstamp0);
 
 
 GWENHYWFAR_API int GWEN_Timestamp_AddTests(GWEN_TEST_MODULE *mod);

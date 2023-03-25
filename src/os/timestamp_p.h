@@ -37,6 +37,8 @@ struct GWEN_TIMESTAMP {
   int hour;
   int minute;
   int second;
+
+  char asString[15];
 };
 
 

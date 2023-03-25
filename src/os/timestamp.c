@@ -39,6 +39,9 @@
  */
 
 static int _calcJulian(int y, int m, int d);
+static void _writeAsString(GWEN_TIMESTAMP *tstamp);
+static void _setDate(GWEN_TIMESTAMP *tstamp, int year, int month, int day);
+static void _setTime(GWEN_TIMESTAMP *tstamp, int hour, int minute, int second);
 
 
 
@@ -60,11 +63,14 @@ GWEN_TIMESTAMP *GWEN_Timestamp_new(int year, int month, int day,
 
 
 
-GWEN_TIMESTAMP *GWEN_Timestamp_dup(const GWEN_TIMESTAMP *tstamp)
+GWEN_TIMESTAMP *GWEN_Timestamp_dup(const GWEN_TIMESTAMP *tstampSrc)
 {
-  if (tstamp)
-    return GWEN_Timestamp_new(tstamp->year, tstamp->month, tstamp->day,
-                              tstamp->hour, tstamp->minute, tstamp->second);
+  if (tstampSrc) {
+    GWEN_TIMESTAMP *tstamp;
+
+    GWEN_NEW_OBJECT(GWEN_TIMESTAMP, tstamp);
+    memmove(tstamp, tstampSrc, sizeof(GWEN_TIMESTAMP));
+  }
   return NULL;
 }
 
@@ -75,6 +81,13 @@ void GWEN_Timestamp_free(GWEN_TIMESTAMP *tstamp)
   if (tstamp) {
     GWEN_FREE_OBJECT(tstamp);
   }
+}
+
+
+
+const char *GWEN_Timestamp_GetString(const GWEN_TIMESTAMP *tstamp)
+{
+  return tstamp->asString;
 }
 
 
@@ -166,18 +179,17 @@ void GWEN_Timestamp_SetDateAndTime(GWEN_TIMESTAMP *tstamp,
 				   int year, int month, int day,
 				   int hour, int minute, int second)
 {
-  GWEN_Timestamp_SetDate(tstamp, year, month, day);
-  GWEN_Timestamp_SetTime(tstamp, hour, minute, second);
+  _setDate(tstamp, year, month, day);
+  _setTime(tstamp, hour, minute, second);
+  _writeAsString(tstamp);
 }
 
 
 
 void GWEN_Timestamp_SetDate(GWEN_TIMESTAMP *tstamp, int year, int month, int day)
 {
-  tstamp->year=year;
-  tstamp->month=month;
-  tstamp->day=day;
-  tstamp->julian=_calcJulian(year, month, day);
+  _setDate(tstamp, year, month, day);
+  _writeAsString(tstamp);
 }
 
 
@@ -198,15 +210,16 @@ void GWEN_Timestamp_SetJulianDate(GWEN_TIMESTAMP *tstamp, int julian)
   tstamp->month=j+2-(12*l);
   tstamp->year=100*(n-49)+i+l;
   tstamp->julian=julian;
+
+  _writeAsString(tstamp);
 }
 
 
 
 void GWEN_Timestamp_SetTime(GWEN_TIMESTAMP *tstamp, int hour, int minute, int second)
 {
-  tstamp->hour=hour;
-  tstamp->minute=minute;
-  tstamp->second=second;
+  _setTime(tstamp, hour, minute, second);
+  _writeAsString(tstamp);
 }
 
 
@@ -253,6 +266,30 @@ int GWEN_Timestamp_GetSecond(const GWEN_TIMESTAMP *tstamp)
 
 
 
+int GWEN_Timestamp_Compare(const GWEN_TIMESTAMP *tstamp1, const GWEN_TIMESTAMP *tstamp0)
+{
+  if (tstamp0 && tstamp1) {
+    int64_t v1, v0;
+
+    v1=GWEN_Timestamp_toInt64(tstamp1);
+    v0=GWEN_Timestamp_toInt64(tstamp0);
+    if (v1==v0)
+      return 0;
+    else if (v1>v0)
+      return 1;
+    else
+      return -1;
+
+  }
+  else if (tstamp0)
+    return 1;
+  else if (tstamp1)
+    return -1;
+  else
+    return 0;
+}
+
+
 
 
 int _calcJulian(int y, int m, int d)
@@ -262,6 +299,158 @@ int _calcJulian(int y, int m, int d)
     (3*((y+4900+(m-14)/12)/100))/4+
     d-32075;
 }
+
+
+
+void _setDate(GWEN_TIMESTAMP *tstamp, int year, int month, int day)
+{
+  tstamp->year=year;
+  tstamp->month=month;
+  tstamp->day=day;
+  tstamp->julian=_calcJulian(year, month, day);
+}
+
+
+
+void _setTime(GWEN_TIMESTAMP *tstamp, int hour, int minute, int second)
+{
+  tstamp->hour=hour;
+  tstamp->minute=minute;
+  tstamp->second=second;
+}
+
+
+
+void _writeAsString(GWEN_TIMESTAMP *tstamp)
+{
+  char *ptr;
+  int x;
+
+  ptr=tstamp->asString+14;
+  *(ptr--)=0;
+
+  x=tstamp->second;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=tstamp->minute;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=tstamp->hour;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=tstamp->day;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=tstamp->month;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+
+  x=tstamp->year;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *(ptr--)='0'+(x%10);
+  x/=10;
+  *ptr='0'+(x%10);
+}
+
+
+
+GWEN_TIMESTAMP *GWEN_Timestamp_fromString(const char *s)
+{
+  if (s && strlen(s)>=14) {
+    int year, month, day, hour, min, sec;
+    GWEN_TIMESTAMP *result;
+    const char *originalPtr;
+
+    originalPtr=s;
+    year=*(s++)-'0';
+    year*=10;
+    year+=*(s++)-'0';
+    year*=10;
+    year+=*(s++)-'0';
+    year*=10;
+    year+=*(s++)-'0';
+
+    month=*(s++)-'0';
+    month*=10;
+    month+=*(s++)-'0';
+
+    day=*(s++)-'0';
+    day*=10;
+    day+=*(s++)-'0';
+
+    hour=*(s++)-'0';
+    hour*=10;
+    hour+=*(s++)-'0';
+
+    min=*(s++)-'0';
+    min*=10;
+    min+=*(s++)-'0';
+
+    sec=*(s++)-'0';
+    sec*=10;
+    sec+=*(s++)-'0';
+
+    result=GWEN_Timestamp_new(year, month, day, hour, min, sec);
+    if (!result) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Bad timestamp string [%s]", originalPtr);
+    }
+    return result;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "Bad timestamp string [%s]", s?s:"<empty>");
+    return NULL;
+  }
+}
+
+
+
+int GWEN_Timestamp_toDb(const GWEN_TIMESTAMP *tstamp, GWEN_DB_NODE *db)
+{
+  const char *s;
+
+  s=GWEN_Timestamp_GetString(tstamp);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "timestamp", s);
+  return 0;
+}
+
+
+
+GWEN_TIMESTAMP *GWEN_Timestamp_fromDb(GWEN_DB_NODE *db)
+{
+  const char *s;
+
+  s=GWEN_DB_GetCharValue(db, "timestamp", 0, NULL);
+  if (s && *s) {
+    GWEN_TIMESTAMP *tstamp;
+
+    tstamp=GWEN_Timestamp_fromString(s);
+    if (tstamp==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Invalid timestamp [%s]", s);
+      return NULL;
+    }
+    return tstamp;
+  }
+  else {
+    DBG_VERBOUS(GWEN_LOGDOMAIN, "no or empty timestamp");
+    return NULL;
+  }
+
+}
+
+
+
 
 
 
