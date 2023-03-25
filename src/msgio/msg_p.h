@@ -21,6 +21,11 @@ struct GWEN_MSG {
   uint32_t maxSize;
   uint8_t *buffer;
 
+  uint32_t flags;
+
+  uint32_t parsedPayloadSize;
+  uint32_t parsedPayloadOffset;
+
   int groupId;
 
   int refCount;

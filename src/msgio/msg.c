@@ -73,6 +73,9 @@ GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg)
     msg->bytesInBuffer=srcMsg->bytesInBuffer;
     msg->currentPos=srcMsg->currentPos;
     msg->groupId=srcMsg->groupId;
+    msg->parsedPayloadSize=srcMsg->parsedPayloadSize;
+    msg->parsedPayloadOffset=srcMsg->parsedPayloadOffset;
+    msg->flags=srcMsg->flags;
 
     return msg;
   }
@@ -192,6 +195,74 @@ int GWEN_Msg_GetRemainingBytes(const GWEN_MSG *msg)
     return msg->bytesInBuffer-msg->currentPos;
   return 0;
 }
+
+
+
+uint32_t GWEN_Msg_GetParsedPayloadSize(const GWEN_MSG *msg)
+{
+  if (msg)
+    return msg->parsedPayloadSize;
+  return 0;
+}
+
+
+
+void GWEN_Msg_SetParsedPayloadSize(GWEN_MSG *msg, uint32_t v)
+{
+  if (msg)
+    msg->parsedPayloadSize=v;
+}
+
+
+
+uint32_t GWEN_Msg_GetParsedPayloadOffset(const GWEN_MSG *msg)
+{
+  if (msg)
+    return msg->parsedPayloadOffset;
+  return 0;
+}
+
+
+
+void GWEN_Msg_SetParsedPayloadOffset(GWEN_MSG *msg, uint32_t v)
+{
+  if (msg)
+    msg->parsedPayloadOffset=v;
+}
+
+
+
+uint32_t GWEN_Msg_GetFlags(const GWEN_MSG *msg)
+{
+  if (msg)
+    return msg->flags;
+  return 0;
+}
+
+
+
+void GWEN_Msg_SetFlags(GWEN_MSG *msg, uint32_t f)
+{
+  if (msg)
+    msg->flags=f;
+}
+
+
+
+void GWEN_Msg_AddFlags(GWEN_MSG *msg, uint32_t f)
+{
+  if (msg)
+    msg->flags|=f;
+}
+
+
+
+void GWEN_Msg_DelFlags(GWEN_MSG *msg, uint32_t f)
+{
+  if (msg)
+    msg->flags&=~f;
+}
+
 
 
 

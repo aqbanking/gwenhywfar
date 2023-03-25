@@ -14,6 +14,11 @@
 #include <gwenhywfar/list.h>
 
 
+
+#define GWEN_MSG_FLAGS_PAYLOADINFO_SET 0x80000000u
+
+
+
 typedef struct GWEN_MSG GWEN_MSG;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_MSG, GWEN_Msg, GWENHYWFAR_API)
 
@@ -37,6 +42,24 @@ GWENHYWFAR_API int GWEN_Msg_IncCurrentPos(GWEN_MSG *msg, uint32_t i);
 GWENHYWFAR_API int GWEN_Msg_GetRemainingBytes(const GWEN_MSG *msg);
 GWENHYWFAR_API int GWEN_Msg_RewindCurrentPos(GWEN_MSG *msg);
 
+
+/** @name Parsed Information
+ *
+ * This group concerns data which is parsed by e.g. implementations of @ref GWEN_MSG_ENDPOINT
+ */
+/*@{*/
+GWENHYWFAR_API uint32_t GWEN_Msg_GetParsedPayloadSize(const GWEN_MSG *msg);
+GWENHYWFAR_API void GWEN_Msg_SetParsedPayloadSize(GWEN_MSG *msg, uint32_t v);
+
+GWENHYWFAR_API uint32_t GWEN_Msg_GetParsedPayloadOffset(const GWEN_MSG *msg);
+GWENHYWFAR_API void GWEN_Msg_SetParsedPayloadOffset(GWEN_MSG *msg, uint32_t v);
+/*@}*/
+
+
+GWENHYWFAR_API uint32_t GWEN_Msg_GetFlags(const GWEN_MSG *msg);
+GWENHYWFAR_API void GWEN_Msg_SetFlags(GWEN_MSG *msg, uint32_t f);
+GWENHYWFAR_API void GWEN_Msg_AddFlags(GWEN_MSG *msg, uint32_t f);
+GWENHYWFAR_API void GWEN_Msg_DelFlags(GWEN_MSG *msg, uint32_t f);
 
 
 #endif
