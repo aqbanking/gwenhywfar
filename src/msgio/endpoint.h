@@ -50,6 +50,7 @@ typedef GWEN_MSG_ENDPOINT* (*GWEN_MSG_ENDPOINT_CREATECHILD_FN)(GWEN_MSG_ENDPOINT
 typedef int (*GWEN_MSG_ENDPOINT_GET_READFD_FN)(GWEN_MSG_ENDPOINT *ep);
 typedef int (*GWEN_MSG_ENDPOINT_GET_WRITEFD_FN)(GWEN_MSG_ENDPOINT *ep);
 typedef void (*GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN)(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
+typedef int (*GWEN_MSG_ENDPOINT_ISMSGCOMPLETE_FN)(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
 
 
 
@@ -79,6 +80,7 @@ GWENHYWFAR_API GWEN_MSG *GWEN_MsgEndpoint_GetFirstSendMessage(const GWEN_MSG_END
 GWENHYWFAR_API int GWEN_MsgEndpoint_HaveMessageToSend(const GWEN_MSG_ENDPOINT *ep);
 
 GWENHYWFAR_API void GWEN_MsgEndpoint_ProcessOutMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
+GWENHYWFAR_API int GWEN_MsgEndpoint_IsMsgComplete(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
 
 
 GWENHYWFAR_API GWEN_MSG *GWEN_MsgEndpoint_GetCurrentlyReceivedMsg(const GWEN_MSG_ENDPOINT *ep);
@@ -109,6 +111,9 @@ GWENHYWFAR_API GWEN_MSG_ENDPOINT_RUN_FN GWEN_MsgEndpoint_SetRunFn(GWEN_MSG_ENDPO
 
 GWENHYWFAR_API GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN GWEN_MsgEndpoint_SetProcessOutMsgFn(GWEN_MSG_ENDPOINT *ep,
                                                                                     GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN f);
+
+GWENHYWFAR_API GWEN_MSG_ENDPOINT_ISMSGCOMPLETE_FN GWEN_MsgEndpoint_SetIsMsgCompleteFn(GWEN_MSG_ENDPOINT *ep,
+                                                                                      GWEN_MSG_ENDPOINT_ISMSGCOMPLETE_FN f);
 
 GWENHYWFAR_API GWEN_MSG_ENDPOINT_CREATECHILD_FN GWEN_MsgEndpoint_SetCreateChildFn(GWEN_MSG_ENDPOINT *ep,
                                                                                   GWEN_MSG_ENDPOINT_CREATECHILD_FN f);

@@ -263,6 +263,15 @@ void GWEN_MsgEndpoint_ProcessOutMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m)
 
 
 
+int GWEN_MsgEndpoint_IsMsgComplete(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m)
+{
+  if (ep->isMsgCompleteFn)
+    return ep->isMsgCompleteFn(ep, m);
+  return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_CreateChild(GWEN_MSG_ENDPOINT *ep)
 {
   if (ep->createChildFn)
@@ -360,6 +369,17 @@ GWEN_MSG_ENDPOINT_PROC_OUTMSG_FN GWEN_MsgEndpoint_SetProcessOutMsgFn(GWEN_MSG_EN
 
   oldFn=ep->processOutMsgFn;
   ep->processOutMsgFn=f;
+  return oldFn;
+}
+
+
+
+GWEN_MSG_ENDPOINT_ISMSGCOMPLETE_FN GWEN_MsgEndpoint_SetIsMsgCompleteFn(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_ISMSGCOMPLETE_FN f)
+{
+  GWEN_MSG_ENDPOINT_ISMSGCOMPLETE_FN oldFn;
+
+  oldFn=ep->isMsgCompleteFn;
+  ep->isMsgCompleteFn=f;
   return oldFn;
 }
 
