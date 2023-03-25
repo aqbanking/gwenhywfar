@@ -56,7 +56,6 @@ static int _internalGetWriteFd(GWEN_MSG_ENDPOINT *ep);
 
 
 
-
 GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT *ep;
@@ -70,6 +69,11 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
   ep->sendMessageList=GWEN_Msg_List_new();
   ep->name=name?strdup(name):"<unnamed>";
   ep->groupId=groupId;
+
+  ep->handleReadableFn=_internalHandleReadable;
+  ep->handleWritableFn=_internalHandleWritable;
+  ep->getReadFdFn=_internalGetReadFd;
+  ep->getWriteFdFn=_internalGetWriteFd;
 
   return ep;
 }
@@ -234,28 +238,28 @@ void GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m
 
 int GWEN_MsgEndpoint_GetReadFd(GWEN_MSG_ENDPOINT *ep)
 {
-  return (ep->getReadFdFn)?(ep->getReadFdFn(ep)):_internalGetReadFd(ep);
+  return (ep->getReadFdFn)?(ep->getReadFdFn(ep)):GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
 int GWEN_MsgEndpoint_GetWriteFd(GWEN_MSG_ENDPOINT *ep)
 {
-  return (ep->getWriteFdFn)?(ep->getWriteFdFn(ep)):_internalGetWriteFd(ep);
+  return (ep->getWriteFdFn)?(ep->getWriteFdFn(ep)):GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
 int GWEN_MsgEndpoint_HandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr)
 {
-  return (ep->handleReadableFn)?(ep->handleReadableFn(ep, emgr)):_internalHandleReadable(ep, emgr);
+  return (ep->handleReadableFn)?(ep->handleReadableFn(ep, emgr)):GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
 
 int GWEN_MsgEndpoint_HandleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr)
 {
-  return (ep->handleWritableFn)?(ep->handleWritableFn(ep, emgr)):_internalHandleWritable(ep, emgr);
+  return (ep->handleWritableFn)?(ep->handleWritableFn(ep, emgr)):GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
 
