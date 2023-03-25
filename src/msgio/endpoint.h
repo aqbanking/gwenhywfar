@@ -65,6 +65,10 @@ GWENHYWFAR_API void GWEN_MsgEndpoint_SetFd(GWEN_MSG_ENDPOINT *ep, int fd);
 
 GWENHYWFAR_API const char *GWEN_MsgEndpoint_GetName(const GWEN_MSG_ENDPOINT *ep);
 
+GWENHYWFAR_API uint32_t GWEN_MsgEndpoint_GetDefaultBufferSize(const GWEN_MSG_ENDPOINT *ep);
+GWENHYWFAR_API void GWEN_MsgEndpoint_SetDefaultBufferSize(GWEN_MSG_ENDPOINT *ep, uint32_t v);
+
+
 GWENHYWFAR_API uint32_t GWEN_MsgEndpoint_GetFlags(const GWEN_MSG_ENDPOINT *ep);
 GWENHYWFAR_API void GWEN_MsgEndpoint_SetFlags(GWEN_MSG_ENDPOINT *ep, uint32_t f);
 GWENHYWFAR_API void GWEN_MsgEndpoint_AddFlags(GWEN_MSG_ENDPOINT *ep, uint32_t f);

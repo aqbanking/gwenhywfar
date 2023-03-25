@@ -13,9 +13,7 @@
 /*#define DISABLE_DEBUGLOG*/
 
 
-#include "msgio/endpoint_ipc_tcp.h"
-#include "msgio/endpoint_ipc.h"
-#include "msgio/msg_ipc.h"
+#include "msgio/endpoint_tcpd.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -33,25 +31,23 @@
 
 
 
-#define GWEN_MSG_ENDPOINT_IPCTCP_NAME   "ipctcp"
-#define GWEN_MSG_ENDPOINTICPTCP_BACKLOG 10
+#define GWEN_MSG_ENDPOINT_TCPD_NAME   "tcpd"
+#define GWEN_MSG_ENDPOINT_TCPD_BACKLOG 10
 
 
 
-static int _getReadFd(GWEN_MSG_ENDPOINT *ep);
 static int _getWriteFd(GWEN_MSG_ENDPOINT *ep);
-static GWEN_MSG_ENDPOINT *_createChild(GWEN_MSG_ENDPOINT *ep);
 static int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
 static int _handleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
-int _setupListeningSocket(const char *host, int port);
-int _setSocketNonBlocking(int fd);
+static int _setupListeningSocket(const char *host, int port);
+static int _setSocketNonBlocking(int fd);
 
 
 
 
 
 
-GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *name, const char *host, int port, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_TcpdEndpoint_new(const char *host, int port, const char *name, int groupId)
 {
   int fd;
   GWEN_MSG_ENDPOINT *ep;
@@ -62,24 +58,14 @@ GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *name, const char *host, i
     return NULL;
   }
 
-  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_IPCTCP_NAME, groupId);
+  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_TCPD_NAME, groupId);
   GWEN_MsgEndpoint_SetFd(ep, fd);
 
   GWEN_MsgEndpoint_SetHandleReadableFn(ep, _handleReadable);
   GWEN_MsgEndpoint_SetHandleWritableFn(ep, _handleWritable);
-  GWEN_MsgEndpoint_SetGetReadFdFn(ep, _getReadFd);
   GWEN_MsgEndpoint_SetGetWriteFdFn(ep, _getWriteFd);
-  GWEN_MsgEndpoint_SetCreateChildFn(ep, _createChild);
 
   return ep;
-}
-
-
-
-
-int _getReadFd(GWEN_MSG_ENDPOINT *ep)
-{
-  return GWEN_MsgEndpoint_GetFd(ep);
 }
 
 
@@ -140,13 +126,6 @@ int _handleWritable(GWEN_UNUSED GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDP
 
 
 
-GWEN_MSG_ENDPOINT *_createChild(GWEN_MSG_ENDPOINT *ep)
-{
-  return GWEN_IpcEndpoint_new("TCP Client", GWEN_MsgEndpoint_GetGroupId(ep));
-}
-
-
-
 int _setupListeningSocket(const char *host, int port)
 {
   struct sockaddr_in addr;
@@ -160,12 +139,15 @@ int _setupListeningSocket(const char *host, int port)
 
   if (inet_aton(host, &(addr.sin_addr))==0) {
     /* bad address */
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad address \"%s\": %s", host, strerror(errno));
+    return GWEN_ERROR_IO;
   }
 
   sk=socket(AF_INET, SOCK_STREAM, 0);
   if (sk<0) {
     /* socket error */
     DBG_ERROR(GWEN_LOGDOMAIN, "socket(): %s", strerror(errno));
+    return GWEN_ERROR_IO;
   }
 
   i=1;
@@ -191,7 +173,7 @@ int _setupListeningSocket(const char *host, int port)
     return GWEN_ERROR_IO;
   }
 
-  rv=listen(sk, GWEN_MSG_ENDPOINTICPTCP_BACKLOG);
+  rv=listen(sk, GWEN_MSG_ENDPOINT_TCPD_BACKLOG);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "listen(): %s", strerror(errno));
     close(sk);

@@ -13,48 +13,38 @@
 /*#define DISABLE_DEBUGLOG*/
 
 
+#include "msgio/endpoint_tcpd_ipc.h"
 #include "msgio/endpoint_ipc.h"
+#include "msgio/endpoint_tcpd.h"
 #include "msgio/msg_ipc.h"
 
 #include <gwenhywfar/debug.h>
 
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
+
+#define GWEN_MSG_ENDPOINT_TCPD_IPC_NAME   "tcpd_ipc"
 
 
 
-
-#define GWEN_MSG_ENDPOINT_IPC_NAME   "ipc"
-#define GWEN_ENDPOINT_IPC_BUFFERSIZE 256
-
-
-
-
-static int _isMsgComplete(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg);
+static GWEN_MSG_ENDPOINT *_createChild(GWEN_MSG_ENDPOINT *ep);
 
 
 
 
 
-
-GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_new(const char *name, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_IpcTcpdEndpoint_new(const char *host, int port, const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT *ep;
 
-  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_IPC_NAME, groupId);
-  GWEN_MsgEndpoint_SetDefaultBufferSize(ep, GWEN_ENDPOINT_IPC_BUFFERSIZE);
-
-  GWEN_MsgEndpoint_SetIsMsgCompleteFn(ep, _isMsgComplete);
-
+  ep=GWEN_TcpdEndpoint_new(host, port, name?name:GWEN_MSG_ENDPOINT_TCPD_IPC_NAME, groupId);
+  GWEN_MsgEndpoint_SetCreateChildFn(ep, _createChild);
   return ep;
 }
 
 
 
-int _isMsgComplete(GWEN_UNUSED GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg)
+GWEN_MSG_ENDPOINT *_createChild(GWEN_MSG_ENDPOINT *ep)
 {
-  return GWEN_IpcMsg_IsMsgComplete(msg);
+  return GWEN_IpcEndpoint_new("TCP Client", GWEN_MsgEndpoint_GetGroupId(ep));
 }
 
 

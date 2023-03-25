@@ -6,8 +6,8 @@
  * should have received along with this file.
  ****************************************************************************/
 
-#ifndef GWEN_MSG_ENDPOINT_IPC_TCP_H
-#define GWEN_MSG_ENDPOINT_IPC_TCP_H
+#ifndef GWEN_MSG_ENDPOINT_TCPD_H
+#define GWEN_MSG_ENDPOINT_TCPD_H
 
 
 #include <gwenhywfar/endpoint.h>
@@ -20,7 +20,7 @@ extern "C" {
 
 
 
-GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_TcpIpcEndpoint_new(const char *name, const char *host, int port, int groupId);
+GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_TcpdEndpoint_new(const char *host, int port, const char *name, int groupId);
 
 
 

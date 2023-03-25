@@ -47,6 +47,15 @@ GWEN_LIST_FUNCTIONS(GWEN_MSG_ENDPOINT, GWEN_MsgEndpoint)
 
 
 
+static int _internalHandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
+static int _internalHandleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
+static int _internalGetReadFd(GWEN_MSG_ENDPOINT *ep);
+static int _internalGetWriteFd(GWEN_MSG_ENDPOINT *ep);
+
+
+
+
+
 
 GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
 {
@@ -56,6 +65,7 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
   GWEN_INHERIT_INIT(GWEN_MSG_ENDPOINT, ep);
   GWEN_LIST_INIT(GWEN_MSG_ENDPOINT, ep);
   ep->fd=-1;
+  ep->defaultBufferSize=GWEN_MSG_ENDPOINT_BUFFERSIZE;
   ep->receivedMessageList=GWEN_Msg_List_new();
   ep->sendMessageList=GWEN_Msg_List_new();
   ep->name=name?strdup(name):"<unnamed>";
@@ -106,6 +116,20 @@ int GWEN_MsgEndpoint_GetGroupId(const GWEN_MSG_ENDPOINT *ep)
 const char *GWEN_MsgEndpoint_GetName(const GWEN_MSG_ENDPOINT *ep)
 {
   return ep->name;
+}
+
+
+
+uint32_t GWEN_MsgEndpoint_GetDefaultBufferSize(const GWEN_MSG_ENDPOINT *ep)
+{
+  return ep->defaultBufferSize;
+}
+
+
+
+void GWEN_MsgEndpoint_SetDefaultBufferSize(GWEN_MSG_ENDPOINT *ep, uint32_t v)
+{
+  ep->defaultBufferSize=v;
 }
 
 
@@ -210,37 +234,28 @@ void GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m
 
 int GWEN_MsgEndpoint_GetReadFd(GWEN_MSG_ENDPOINT *ep)
 {
-  return (ep->getReadFdFn)?(ep->getReadFdFn(ep)):(ep->fd);
+  return (ep->getReadFdFn)?(ep->getReadFdFn(ep)):_internalGetReadFd(ep);
 }
 
 
 
 int GWEN_MsgEndpoint_GetWriteFd(GWEN_MSG_ENDPOINT *ep)
 {
-  if (ep->getWriteFdFn)
-    return ep->getWriteFdFn(ep);
-  else {
-    int somethingToWrite;
-
-    somethingToWrite=(GWEN_Msg_List_First(ep->sendMessageList)!=NULL)?1:0;
-    if (somethingToWrite)
-      return ep->fd;
-  }
-  return GWEN_ERROR_NO_DATA;
+  return (ep->getWriteFdFn)?(ep->getWriteFdFn(ep)):_internalGetWriteFd(ep);
 }
 
 
 
 int GWEN_MsgEndpoint_HandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr)
 {
-  return (ep->handleReadableFn)?(ep->handleReadableFn(ep, emgr)):0;
+  return (ep->handleReadableFn)?(ep->handleReadableFn(ep, emgr)):_internalHandleReadable(ep, emgr);
 }
 
 
 
 int GWEN_MsgEndpoint_HandleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr)
 {
-  return (ep->handleWritableFn)?(ep->handleWritableFn(ep, emgr)):0;
+  return (ep->handleWritableFn)?(ep->handleWritableFn(ep, emgr)):_internalHandleWritable(ep, emgr);
 }
 
 
@@ -395,6 +410,123 @@ GWEN_MSG_ENDPOINT_CREATECHILD_FN GWEN_MsgEndpoint_SetCreateChildFn(GWEN_MSG_ENDP
   return oldFn;
 }
 
+
+
+int _internalHandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *emgr)
+{
+  int rv;
+  uint8_t buffer[GWEN_MSG_ENDPOINT_BUFFERSIZE];
+  int len;
+  int i;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+  do {
+    rv=read(GWEN_MsgEndpoint_GetFd(ep), buffer, sizeof(buffer));
+  } while( (rv<0) && errno==EINTR);
+  if (rv<0) {
+    if (errno==EAGAIN || errno==EWOULDBLOCK)
+      return GWEN_ERROR_TRY_AGAIN;
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
+    return GWEN_ERROR_IO;
+  }
+  else if (rv==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "EOF met on read()");
+    return GWEN_ERROR_IO;
+  }
+  len=rv;
+
+  for (i=0; i<len; i++) {
+    GWEN_MSG *msg;
+
+    msg=GWEN_MsgEndpoint_GetCurrentlyReceivedMsg(ep);
+    if (msg==NULL) {
+      msg=GWEN_Msg_new(ep->defaultBufferSize);
+      GWEN_Msg_SetGroupId(msg, GWEN_MsgEndpoint_GetGroupId(ep));
+      GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, msg);
+    }
+    rv=GWEN_Msg_AddByte(msg, buffer[i]);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    rv=GWEN_MsgEndpoint_IsMsgComplete(ep, msg);
+    if (rv<0) {
+      /* invalid message */
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid message, discarding");
+      GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, NULL);
+      rv=GWEN_MsgEndpoint_DiscardInput(ep);
+      if (rv<0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+    else if (rv>0) {
+      /* complete msg received, add to list */
+      GWEN_Msg_Attach(msg);
+      GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, NULL);
+      GWEN_MsgEndpoint_AddReceivedMessage(ep, msg);
+    }
+  } /* for */
+
+  return 0;
+}
+
+
+
+int _internalHandleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *emgr)
+{
+  GWEN_MSG *msg;
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Writing to endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+  msg=GWEN_MsgEndpoint_GetFirstSendMessage(ep);
+  if (msg) {
+    uint8_t pos;
+    int remaining;
+    int rv;
+
+    pos=GWEN_Msg_GetCurrentPos(msg);
+    remaining=GWEN_Msg_GetRemainingBytes(msg);
+    if (remaining>0) {
+      const uint8_t *buf;
+      int fd;
+
+      fd=GWEN_MsgEndpoint_GetFd(ep);
+      /* start new message */
+      buf=GWEN_Msg_GetBuffer(msg)+pos;
+      do {
+        rv=write(fd, buf, remaining);
+      } while(rv<0 && errno==EINTR);
+      if (rv<0) {
+        if (errno==EAGAIN || errno==EWOULDBLOCK)
+          return GWEN_ERROR_TRY_AGAIN;
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on write(): %s (%d)", strerror(errno), errno);
+        return GWEN_ERROR_IO;
+      }
+      GWEN_Msg_IncCurrentPos(msg, rv);
+      if (rv==remaining) {
+        /* end current message */
+        GWEN_Msg_List_Del(msg);
+	GWEN_Msg_free(msg);
+      }
+    }
+  }
+  return 0;
+}
+
+
+
+int _internalGetReadFd(GWEN_MSG_ENDPOINT *ep)
+{
+  return GWEN_MsgEndpoint_GetFd(ep);
+}
+
+
+
+int _internalGetWriteFd(GWEN_MSG_ENDPOINT *ep)
+{
+  return GWEN_MsgEndpoint_HaveMessageToSend(ep)?GWEN_MsgEndpoint_GetFd(ep):GWEN_ERROR_NO_DATA;
+}
 
 
 

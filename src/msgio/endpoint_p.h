@@ -36,6 +36,7 @@ struct GWEN_MSG_ENDPOINT {
   GWEN_MSG_ENDPOINT_CREATECHILD_FN createChildFn;
 
   uint32_t flags;
+  uint32_t defaultBufferSize;
 
   int sendingMessage;
 };
