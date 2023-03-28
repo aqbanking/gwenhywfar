@@ -509,11 +509,15 @@ int _internalHandleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT
       }
       GWEN_Msg_IncCurrentPos(msg, rv);
       if (rv==remaining) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Message completely sent");
         /* end current message */
         GWEN_Msg_List_Del(msg);
 	GWEN_Msg_free(msg);
       }
     }
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "Nothing to send");
   }
   return 0;
 }
