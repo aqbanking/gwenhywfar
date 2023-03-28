@@ -126,6 +126,14 @@ uint32_t GWEN_Msg_GetBytesInBuffer(const GWEN_MSG *msg)
 
 
 
+void GWEN_Msg_SetBytesInBuffer(GWEN_MSG *msg, uint32_t i)
+{
+  if (msg && i<=msg->maxSize)
+    msg->bytesInBuffer=i;
+}
+
+
+
 uint32_t GWEN_Msg_GetCurrentPos(const GWEN_MSG *msg)
 {
   if (msg)
@@ -167,8 +175,8 @@ int GWEN_Msg_ReadNextByte(GWEN_MSG *msg)
 int GWEN_Msg_IncCurrentPos(GWEN_MSG *msg, uint32_t i)
 {
   if (msg) {
-    if (((msg->currentPos+i)<msg->maxSize) &&
-        ((msg->currentPos+i)<msg->bytesInBuffer)) {
+    if (((msg->currentPos+i)<=msg->maxSize) &&
+        ((msg->currentPos+i)<=msg->bytesInBuffer)) {
       msg->currentPos+=i;
       return 0;
     }
