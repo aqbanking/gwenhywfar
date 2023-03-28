@@ -17,7 +17,7 @@ typedef struct GWEN_ENDPOINT_TCPC GWEN_ENDPOINT_TCPC;
 struct GWEN_ENDPOINT_TCPC {
   char *host;
   int port;
-  int mode;
+  int state;
 
   GWEN_MSG_ENDPOINT_HANDLEWRITABLE_FN handleWritableFn;
   GWEN_MSG_ENDPOINT_GET_WRITEFD_FN getWriteFdFn;
