@@ -148,7 +148,10 @@ int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet)
     return GWEN_ERROR_GENERIC;
   }
   while(ep) {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+    const char *epName;
+
+    epName=GWEN_MsgEndpoint_GetName(ep);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", epName);
     if (!(GWEN_MsgEndpoint_GetFlags(ep) & (GWEN_MSG_ENDPOINT_FLAGS_NOIO | GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED))) {
       int fd;
 
@@ -160,7 +163,7 @@ int _sampleReadSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet)
       }
     }
     else {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "  - not adding endpoint %s for read", GWEN_MsgEndpoint_GetName(ep));
+      DBG_DEBUG(GWEN_LOGDOMAIN, "  - not adding endpoint %s for read (%08x)", epName, GWEN_MsgEndpoint_GetFlags(ep));
     }
     ep=GWEN_MsgEndpoint_List_Next(ep);
   }
@@ -219,7 +222,7 @@ void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet)
       DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): read", GWEN_MsgEndpoint_GetName(ep));
       rv=GWEN_MsgEndpoint_HandleReadable(ep, emgr);
       if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+        DBG_DEBUG(GWEN_LOGDOMAIN, "error, disabling endpoint %s", GWEN_MsgEndpoint_GetName(ep));
         fd=-1;
         GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
         /*GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);*/
