@@ -165,8 +165,19 @@ int _getReadFd(GWEN_MSG_ENDPOINT *ep)
 
     xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_TCPC, ep);
     if (xep) {
-      if (xep->state>=GWEN_MSG_ENDPOINT_TCPC_STATE_CONNECTED)
-        return xep->getReadFdFn(ep);
+      if (xep->state>=GWEN_MSG_ENDPOINT_TCPC_STATE_CONNECTED) {
+        if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED) {
+          int fd;
+
+          fd=GWEN_MsgEndpoint_GetFd(ep);
+          close(fd);
+          GWEN_MsgEndpoint_SetFd(ep, -1);
+          xep->state=GWEN_MSG_ENDPOINT_TCPC_STATE_UNCONNECTED;
+          GWEN_MsgEndpoint_DelFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
+        }
+        else
+          return xep->getReadFdFn(ep);
+      }
     }
   }
   return -1;
