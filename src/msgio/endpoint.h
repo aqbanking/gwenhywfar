@@ -263,14 +263,67 @@ GWENHYWFAR_API int GWEN_MsgEndpoint_HaveMessageToSend(const GWEN_MSG_ENDPOINT *e
  * This is always set by the source endpoint class which received the message to the groupid of the receiving endpoint.
  */
 GWENHYWFAR_API void GWEN_MsgEndpoint_ProcessOutMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
+
+/**
+ * This virtual function is called by the internal implementation of @ref GWEN_MsgEndpoint_HandleReadable to check whether a
+ * message is completely received.
+ * @return 1 if complete, 0 otherwise, negative on error (see @ref GWEN_ERROR_GENERIC)
+ * @param ep endpoint
+ * @param m message to check
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_IsMsgComplete(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
 
+/**
+ * Get message currently in receiption.
+ *
+ * @return message (endpoint keeps ownership)
+ * @param ep endpoint
+ */
 GWENHYWFAR_API GWEN_MSG *GWEN_MsgEndpoint_GetCurrentlyReceivedMsg(const GWEN_MSG_ENDPOINT *ep);
+
+/**
+ * Set message currently in receiption. Replaces previously set message. Endpoint takes over
+ * ownership of the new message (if any).
+ * This function is mainly called by implementations of @ref GWEN_MsgEndpoint_HandleReadable.
+ *
+ * @param ep endpoint
+ * @param m message currently under receiption
+ */
 GWENHYWFAR_API void GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m);
 
+/**
+ * Not used by the base msgio functions/classes but by derived classes (especially in AqHome).
+ *
+ * groupids should only contain a single bit set so that they can simply be ORed together.
+ * Default value is the one given as groupId in the constructor (see @ref GWEN_MsgEndpoint_new).
+ *
+ * @return accepted group ids
+ * @param ep endpoint
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_GetAcceptedGroupIds(const GWEN_MSG_ENDPOINT *ep);
+
+/**
+ * Set accepted group ids (only used by derived classes).
+ *
+ * @param ep endpoint
+ * @param i groupids to set
+ */
 GWENHYWFAR_API void GWEN_MsgEndpoint_SetAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, int i);
+
+/**
+ * Add accepted group ids (only used by derived classes).
+ *
+ * @param ep endpoint
+ * @param i groupids to add
+ */
 GWENHYWFAR_API void GWEN_MsgEndpoint_AddAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, int i);
+
+/**
+ * Remove accepted group ids (only used by derived classes).
+ *
+ * @param ep endpoint
+ * @param i groupids to remove
+ */
 GWENHYWFAR_API void GWEN_MsgEndpoint_DelAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, int i);
 
 
@@ -291,15 +344,85 @@ GWENHYWFAR_API void GWEN_MsgEndpoint_DelAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, 
  * (i.e. the flag @ref GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED is added to the endpoints flags).
  */
 /*@{*/
+
+/**
+ * Virtual function to get file descriptor to be used for the read list of "select" (see man 3 select).
+ *
+ * If the implementation wants to read a message it returns the file descriptor/socket. If the endpoint
+ * does not to read it should return -1 here.
+ *
+ * The internal implementation always returns the file descriptor set by @ref GWEN_MsgEndpoint_SetFd.
+ *
+ * @return file descriptor/socket to read from (-1 if none)
+ * @param ep endpoint
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_GetReadFd(GWEN_MSG_ENDPOINT *ep);
+
+/**
+ * Virtual function to get file descriptor to be used for the write list of "select" (see man 3 select).
+ *
+ * If the implementation wants to write a message it returns the file descriptor/socket. If the endpoint
+ * does not to write it should return -1 here.
+ *
+ * The internal implementation returns the file descriptor set by @ref GWEN_MsgEndpoint_SetFd when the endpoint
+ * has outbound messages in its internal list.
+ *
+ * @return file descriptor/socket to write to (-1 if none)
+ * @param ep endpoint
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_GetWriteFd(GWEN_MSG_ENDPOINT *ep);
 
+/**
+ * This virtual function is called when the "select" call indicates that the file descriptor given by
+ * @ref GWEN_MsgEndpoint_GetReadFd is readable.
+ *
+ * The internal implementation just reads data from the file descriptor and sends it to the current message in
+ * receiption (@ref GWEN_MsgEndpoint_GetCurrentlyReceivedMsg) as long as @ref GWEN_MsgEndpoint_IsMsgComplete
+ * indicates that the current message is not complete.
+ * If the current message is complete it will be added to the internal list of received messages and a new message
+ * is created and set as the current message in receiption. The groupid of the newly created message is set to the
+ * groupid of the endpoint (see @ref GWEN_MsgEndpoint_GetGroupId).
+ *
+ * @return 0 if okay, error code otherwise (see @ref GWEN_ERROR_GENERIC and others)
+ * @param ep endpoint
+ * @param emgr endpoint manager to which this endpoint belongs (i.e. the caller of this function)
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_HandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
+
+/**
+ * This virtual function is called when the "select" call indicates that the file descriptor given by
+ * @ref GWEN_MsgEndpoint_GetReadFd is writable.
+ *
+ * The internal implementation just writes data from the currently first outbound message until all data is send.
+ * After complete sending the message is removed from the outbound list and free'd.
+ *
+ * @return 0 if okay, error code otherwise (see @ref GWEN_ERROR_GENERIC and others)
+ * @param ep endpoint
+ * @param emgr endpoint manager to which this endpoint belongs (i.e. the caller of this function)
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_HandleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr);
+
+/**
+ * Virtual function called to handle incoming messages or to initiate connections etc.
+ *
+ * @param ep endpoint
+ */
 GWENHYWFAR_API void GWEN_MsgEndpoint_Run(GWEN_MSG_ENDPOINT *ep);
 
+/**
+ * This virtual function is called from implementations which can spawn other endpoints.
+ * An example is the TCP server endpoint class. It has a file descriptor/socket which is only used to
+ * accept connections. For an accepted incoming connection a new endpoint needs to be created.
+ * This virtual function can be used to create specific endpoints (see @ref GWEN_TcpdEndpoint_new).
+ */
 GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_CreateChild(GWEN_MSG_ENDPOINT *ep);
 
+/**
+ * This function can be used to drain the file descriptor/socket from waiting data.
+ * An example is an endpoint implementation from AqHome which uses an USB serial device. When message receiption
+ * errors occur (e.g. due to collisions on the data line) the rest of data on the line needs to be discarded
+ * because it might belong the the errornous previous message.
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_DiscardInput(GWEN_MSG_ENDPOINT *ep);
 
 /*@}*/
