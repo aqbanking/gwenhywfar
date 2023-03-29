@@ -11,7 +11,7 @@
 /** @defgroup MOD_IOLAYER Input Output Layer Functions */
 /** @defgroup MOD_IO Input Output Functions */
 /** @defgroup MOD_NET Networking Functions */
-/** @defgroup MOD_IPC Inter Process communication */
+/** @defgroup MOD_MSGIO Message Input/Output */
 /** @defgroup MOD_PARSER Data Management And Parsing */
 /** @defgroup MOD_CRYPT Cryptographic Functions */
 /** @defgroup MOD_GUI Graphical User Interface */

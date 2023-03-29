@@ -69,6 +69,7 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
   ep->sendMessageList=GWEN_Msg_List_new();
   ep->name=name?strdup(name):"<unnamed>";
   ep->groupId=groupId;
+  ep->acceptedGroupIds=groupId;
 
   ep->handleReadableFn=_internalHandleReadable;
   ep->handleWritableFn=_internalHandleWritable;
@@ -113,6 +114,34 @@ void GWEN_MsgEndpoint_SetFd(GWEN_MSG_ENDPOINT *ep, int fd)
 int GWEN_MsgEndpoint_GetGroupId(const GWEN_MSG_ENDPOINT *ep)
 {
   return ep->groupId;
+}
+
+
+
+int GWEN_MsgEndpoint_GetAcceptedGroupIds(const GWEN_MSG_ENDPOINT *ep)
+{
+  return ep->acceptedGroupIds;
+}
+
+
+
+void GWEN_MsgEndpoint_SetAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, int i)
+{
+  ep->acceptedGroupIds=i;
+}
+
+
+
+void GWEN_MsgEndpoint_AddAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, int i)
+{
+  ep->acceptedGroupIds|=i;
+}
+
+
+
+void GWEN_MsgEndpoint_DelAcceptedGroupIds(GWEN_MSG_ENDPOINT *ep, int i)
+{
+  ep->acceptedGroupIds&=~i;
 }
 
 

@@ -21,6 +21,7 @@ struct GWEN_MSG_ENDPOINT {
   int fd;
   char *name;
   int groupId;
+  int acceptedGroupIds;
 
   GWEN_MSG_LIST *receivedMessageList;
   GWEN_MSG_LIST *sendMessageList;
