@@ -99,6 +99,14 @@ GWENHYWFAR_API void GWEN_MsgEndpoint_free(GWEN_MSG_ENDPOINT *ep);
  */
 /*@{*/
 
+/**
+ * Groupid is a variable completely free to use by implementations.
+ * The internal implementations of some virtual functions use this value for newly received
+ * messages (see @ref GWEN_Msg_GetGroupId).
+ *
+ * @return groupid set in the constructor
+ * @param ep endpoint
+ */
 GWENHYWFAR_API int GWEN_MsgEndpoint_GetGroupId(const GWEN_MSG_ENDPOINT *ep);
 
 /**
