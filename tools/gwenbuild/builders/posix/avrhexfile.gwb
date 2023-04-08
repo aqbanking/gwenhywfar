@@ -10,6 +10,7 @@
   <outputFiles>
     <file type="AvrHexFile" >$(target_name).hex</file>
     <file type="listfile" >$(target_name).list</file>
+    <file type="mapfile" >$(target_name).map</file>
   </outputFiles>
   
   <buildCommands>
@@ -24,6 +25,10 @@
         <fixed>-l</fixed>
         <blank/>
         <outputFiles index="1" />
+        <blank/>
+        <fixed>-m</fixed>
+        <blank/>
+        <outputFiles index="2" />
         <blank/>
         <inputFiles match="*.asm" />
       </args>
