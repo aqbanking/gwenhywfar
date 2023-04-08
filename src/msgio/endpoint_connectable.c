@@ -149,6 +149,15 @@ void GWEN_ConnectableMsgEndpoint_Disconnect(GWEN_MSG_ENDPOINT *ep)
   xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_CONN_ENDPOINT, ep);
   if (xep && xep->disconnectFn)
     xep->disconnectFn(ep);
+  else {
+    int fd;
+
+    fd=GWEN_MsgEndpoint_GetFd(ep);
+    if (fd!=-1) {
+      close(fd);
+      GWEN_MsgEndpoint_SetFd(ep, -1);
+    }
+  }
 }
 
 
