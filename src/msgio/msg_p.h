@@ -16,6 +16,7 @@
 struct GWEN_MSG {
   GWEN_LIST_ELEMENT(GWEN_MSG)
 
+  GWEN_MSG_ENDPOINT *endpoint;
   uint32_t bytesInBuffer;
   uint32_t currentPos;
   uint32_t maxSize;

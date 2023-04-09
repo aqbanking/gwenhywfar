@@ -68,6 +68,7 @@ GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg)
     GWEN_MSG *msg;
 
     msg=GWEN_Msg_new(srcMsg->maxSize);
+    msg->endpoint=srcMsg->endpoint;
     if (srcMsg->maxSize)
       memmove(msg->buffer, srcMsg->buffer, msg->maxSize);
     msg->bytesInBuffer=srcMsg->bytesInBuffer;
@@ -80,6 +81,20 @@ GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg)
     return msg;
   }
   return NULL;
+}
+
+
+
+GWEN_MSG_ENDPOINT *GWEN_Msg_GetEndpoint(const GWEN_MSG *msg)
+{
+  return msg->endpoint;
+}
+
+
+
+void GWEN_Msg_SetEndpoint(GWEN_MSG *msg, GWEN_MSG_ENDPOINT *ep)
+{
+  msg->endpoint=ep;
 }
 
 
