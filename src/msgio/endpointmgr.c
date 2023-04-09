@@ -218,26 +218,40 @@ void _handleIo(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *readSet, fd_set *writeSet)
 
     epNext=GWEN_MsgEndpoint_List_Next(ep);
     fd=GWEN_MsgEndpoint_GetFd(ep);
+
     if (fd!=-1 && FD_ISSET(fd, readSet)) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): read", GWEN_MsgEndpoint_GetName(ep));
       rv=GWEN_MsgEndpoint_HandleReadable(ep, emgr);
       if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
         DBG_DEBUG(GWEN_LOGDOMAIN, "error, disabling endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+        if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DELONDISCONNECT)
+          GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DELETE | GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
+        else
+          GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
         fd=-1;
-        GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
-        /*GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);*/
       }
     }
+
     if (fd!=-1 && FD_ISSET(fd, writeSet)) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "- endpoint(%s): write", GWEN_MsgEndpoint_GetName(ep));
       rv=GWEN_MsgEndpoint_HandleWritable(ep, emgr);
       if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "error, removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+        DBG_DEBUG(GWEN_LOGDOMAIN, "error, disabling endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+        if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DELONDISCONNECT)
+          GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DELETE | GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
+        else
+          GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
         fd=-1;
-        GWEN_MsgEndpoint_AddFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
-        /*GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);*/
       }
     }
+
+    if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DELETE) {
+      DBG_INFO(GWEN_LOGDOMAIN, "removing endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+      GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
+      GWEN_MsgEndpoint_free(ep);
+      ep=NULL;
+    }
+
     ep=epNext;
   }
 }

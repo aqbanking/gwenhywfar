@@ -111,6 +111,7 @@ int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT_MGR *em
   if (newEp) {
     GWEN_MsgEndpoint_SetFd(newEp, newSock);
     GWEN_MsgEndpoint_SetFlags(newEp, GWEN_MsgEndpoint_GetFlags(ep));
+    GWEN_MsgEndpoint_AddFlags(newEp, GWEN_MSG_ENDPOINT_FLAGS_DELONDISCONNECT);
     GWEN_MsgEndpointMgr_AddEndpoint(emgr, newEp);
   }
   return 0;
