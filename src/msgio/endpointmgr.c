@@ -194,6 +194,9 @@ int _sampleWriteSockets(GWEN_MSG_ENDPOINT_MGR *emgr, fd_set *writeSet)
         FD_SET(fd, writeSet);
         highestFd=(fd>highestFd)?fd:highestFd;
       }
+      else {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "  - not adding endpoint %s for write (fd=%d)", GWEN_MsgEndpoint_GetName(ep), fd);
+      }
     }
     else {
       DBG_DEBUG(GWEN_LOGDOMAIN, "  - not adding endpoint %s for write", GWEN_MsgEndpoint_GetName(ep));
