@@ -74,6 +74,11 @@ GWENHYWFAR_API void GWEN_Msg_AddFlags(GWEN_MSG *msg, uint32_t f);
 GWENHYWFAR_API void GWEN_Msg_DelFlags(GWEN_MSG *msg, uint32_t f);
 
 
+GWENHYWFAR_API uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, int defaultValue);
+GWENHYWFAR_API uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, int defaultValue);
+GWENHYWFAR_API uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, int defaultValue);
+
+
 #endif
 
 

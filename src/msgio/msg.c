@@ -288,6 +288,51 @@ void GWEN_Msg_DelFlags(GWEN_MSG *msg, uint32_t f)
 
 
 
+uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, int defaultValue)
+{
+  if (msg) {
+    if (msg->bytesInBuffer>=offs+4) {
+      const uint8_t *ptr;
+
+      ptr=msg->buffer+offs;
+      return (uint32_t)(ptr[0])+(ptr[1]<<8)+(ptr[2]<<16)+(ptr[3]<<24);
+    }
+  }
+  return defaultValue;
+}
+
+
+
+uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, int defaultValue)
+{
+  if (msg) {
+    if (msg->bytesInBuffer>=offs+2) {
+      const uint8_t *ptr;
+
+      ptr=msg->buffer+offs;
+      return (uint16_t)(ptr[0])+(ptr[1]<<8);
+    }
+  }
+  return defaultValue;
+}
+
+
+
+uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, int defaultValue)
+{
+  if (msg) {
+    if (msg->bytesInBuffer>=offs+1) {
+      const uint8_t *ptr;
+
+      ptr=msg->buffer+offs;
+      return ptr[0];
+    }
+  }
+  return defaultValue;
+}
+
+
+
 
 
 
