@@ -1041,10 +1041,6 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
       rv=gnutls_x509_crt_get_dn_by_oid(cert, GNUTLS_OID_X520_COMMON_NAME, 0, 0, buffer1, &size);
       if (rv==0) {
         GWEN_SslCertDescr_SetCommonName(certDescr, buffer1);
-        if (xio->hostName && strcasecmp(xio->hostName, buffer1)!=0) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Owner of certificate does not match hostname");
-          errFlags|=GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME;
-        }
       }
 
       size=sizeof(buffer1)-1;
