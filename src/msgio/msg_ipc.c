@@ -43,7 +43,7 @@ GWEN_MSG *GWEN_IpcMsg_new(uint8_t protoId, uint8_t protoVer, uint16_t code, uint
   msg->buffer[GWEN_MSGIPC_OFFS_CODE+1]=(code>>8) & 0xff;
 
   if (payloadLen && payload)
-    memmove(msg->buffer, payload, payloadLen);
+    memmove(msg->buffer+GWEN_MSGIPC_OFFS_PAYLOAD, payload, payloadLen);
   msg->bytesInBuffer=len;
   return msg;
 }
