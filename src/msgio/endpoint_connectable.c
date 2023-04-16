@@ -196,10 +196,14 @@ int _getWriteFd(GWEN_MSG_ENDPOINT *ep)
 
     xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_CONN_ENDPOINT, ep);
     if (xep) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s, state: %d", GWEN_MsgEndpoint_GetName(ep), xep->state);
       if (xep->state==GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING)
         return GWEN_MsgEndpoint_GetFd(ep);
       else if (xep->state>=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
         return xep->getWriteFdFn(ep);
+      }
+      else {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Unexpected state %d", xep->state);
       }
     }
   }
