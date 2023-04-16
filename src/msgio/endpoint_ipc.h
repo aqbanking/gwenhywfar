@@ -21,6 +21,9 @@ extern "C" {
 
 GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_new(const char *name, int groupId);
 
+GWENHYWFAR_API void GWEN_IpcEndpoint_Extend(GWEN_MSG_ENDPOINT *ep);
+
+
 
 #ifdef __cplusplus
 }

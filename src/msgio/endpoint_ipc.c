@@ -43,11 +43,18 @@ GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_new(const char *name, int groupId)
   GWEN_MSG_ENDPOINT *ep;
 
   ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_IPC_NAME, groupId);
-  GWEN_MsgEndpoint_SetDefaultBufferSize(ep, GWEN_ENDPOINT_IPC_BUFFERSIZE);
-
-  GWEN_MsgEndpoint_SetIsMsgCompleteFn(ep, _isMsgComplete);
-
+  GWEN_IpcEndpoint_Extend(ep);
   return ep;
+}
+
+
+
+void GWEN_IpcEndpoint_Extend(GWEN_MSG_ENDPOINT *ep)
+{
+  if (ep) {
+    GWEN_MsgEndpoint_SetDefaultBufferSize(ep, GWEN_ENDPOINT_IPC_BUFFERSIZE);
+    GWEN_MsgEndpoint_SetIsMsgCompleteFn(ep, _isMsgComplete);
+  }
 }
 
 
