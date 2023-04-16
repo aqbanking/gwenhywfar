@@ -231,6 +231,8 @@ GWEN_MSG *GWEN_MsgEndpoint_TakeFirstReceivedMessage(GWEN_MSG_ENDPOINT *ep)
 
 void GWEN_MsgEndpoint_AddSendMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *m)
 {
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Adding message to send list", ep->name);
+  GWEN_Msg_RewindCurrentPos(m);
   GWEN_Msg_List_Add(m, ep->sendMessageList);
 }
 
@@ -338,11 +340,11 @@ int GWEN_MsgEndpoint_DiscardInput(GWEN_MSG_ENDPOINT *ep)
     rv=read(ep->fd, buffer, sizeof(buffer));
   } while(rv>0 || (rv<0 && errno==EINTR));
   if (rv<0 && errno!=EAGAIN && errno!=EWOULDBLOCK) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
+    DBG_INFO(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
     return GWEN_ERROR_IO;
   }
   else if (rv==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "EOF met on read()");
+    DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
 #if 0
     return GWEN_ERROR_IO;
 #endif
@@ -459,11 +461,11 @@ int _internalHandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT
   if (rv<0) {
     if (errno==EAGAIN || errno==EWOULDBLOCK)
       return GWEN_ERROR_TRY_AGAIN;
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
+    DBG_INFO(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
     return GWEN_ERROR_IO;
   }
   else if (rv==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "EOF met on read()");
+    DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
     return GWEN_ERROR_IO;
   }
   len=rv;
