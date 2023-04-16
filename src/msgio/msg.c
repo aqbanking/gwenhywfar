@@ -39,6 +39,23 @@ GWEN_MSG *GWEN_Msg_new(uint32_t bufferSize)
 }
 
 
+
+GWEN_MSG *GWEN_Msg_fromBytes(const uint8_t *ptr, uint32_t len)
+{
+  if (ptr && len) {
+    GWEN_MSG *msg;
+
+    msg=GWEN_Msg_new(len);
+    memmove(msg->buffer, ptr, len);
+    msg->bytesInBuffer=len;
+    return msg;
+  }
+
+  return NULL;
+}
+
+
+
 void GWEN_Msg_Attach(GWEN_MSG *msg)
 {
   if (msg && msg->refCount>0)

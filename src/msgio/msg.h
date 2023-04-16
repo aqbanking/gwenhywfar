@@ -28,6 +28,8 @@ GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_MSG, GWEN_Msg, GWENHYWFAR_API)
 
 
 GWENHYWFAR_API GWEN_MSG *GWEN_Msg_new(uint32_t bufferSize);
+GWENHYWFAR_API GWEN_MSG *GWEN_Msg_fromBytes(const uint8_t *ptr, uint32_t len);
+
 GWENHYWFAR_API void GWEN_Msg_Attach(GWEN_MSG *msg);
 GWENHYWFAR_API void GWEN_Msg_free(GWEN_MSG *msg);
 GWENHYWFAR_API GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg);
