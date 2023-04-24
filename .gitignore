@@ -13,6 +13,7 @@
 .deps
 .libs
 core
+core.*
 
 Makefile
 Makefile.in
