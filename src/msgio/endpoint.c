@@ -462,7 +462,7 @@ int _internalHandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT
   int len;
   int i;
 
-  DBG_ERROR(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
   do {
     rv=read(GWEN_MsgEndpoint_GetFd(ep), buffer, sizeof(buffer));
   } while( (rv<0) && errno==EINTR);
