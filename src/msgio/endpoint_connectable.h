@@ -40,6 +40,9 @@ GWENHYWFAR_API void GWEN_ConnectableMsgEndpoint_SetReconnectWaitTime(GWEN_MSG_EN
 GWENHYWFAR_API int GWEN_ConnectableMsgEndpoint_GetState(const GWEN_MSG_ENDPOINT *ep);
 GWENHYWFAR_API void GWEN_ConnectableMsgEndpoint_SetState(GWEN_MSG_ENDPOINT *ep, int m);
 
+GWENHYWFAR_API int GWEN_ConnectableMsgEndpoint_GetFullyConnectedState(const GWEN_MSG_ENDPOINT *ep);
+GWENHYWFAR_API void GWEN_ConnectableMsgEndpoint_SetFullyConnectedState(GWEN_MSG_ENDPOINT *ep, int m);
+
 GWENHYWFAR_API time_t GWEN_ConnectableMsgEndpoint_GetTimeOfLastStateChange(const GWEN_MSG_ENDPOINT *ep);
 
 GWENHYWFAR_API int GWEN_ConnectableMsgEndpoint_Connect(GWEN_MSG_ENDPOINT *ep);

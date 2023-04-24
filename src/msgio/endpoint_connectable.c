@@ -51,6 +51,8 @@ void GWEN_ConnectableMsgEndpoint_Extend(GWEN_MSG_ENDPOINT *ep)
   xep->handleReadableFn=GWEN_MsgEndpoint_SetHandleReadableFn(ep, _handleReadable);
   xep->handleWritableFn=GWEN_MsgEndpoint_SetHandleWritableFn(ep, _handleWritable);
   xep->runFn=GWEN_MsgEndpoint_SetRunFn(ep, _run);
+
+  xep->fullyConnectedState=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED; /* preset */
 }
 
 
@@ -86,6 +88,7 @@ void GWEN_ConnectableMsgEndpoint_SetState(GWEN_MSG_ENDPOINT *ep, int m)
   if (xep) {
     if (xep->state!=m) {
       xep->timeOfLastStateChange=time(NULL);
+      DBG_INFO(GWEN_LOGDOMAIN, "Changing status of endpoint %s to %d", GWEN_MsgEndpoint_GetName(ep), m);
     }
     xep->state=m;
   }
@@ -103,6 +106,30 @@ time_t GWEN_ConnectableMsgEndpoint_GetTimeOfLastStateChange(const GWEN_MSG_ENDPO
   }
   return 0;
 }
+
+
+
+int GWEN_ConnectableMsgEndpoint_GetFullyConnectedState(const GWEN_MSG_ENDPOINT *ep)
+{
+  GWEN_CONN_ENDPOINT *xep;
+
+  xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_CONN_ENDPOINT, ep);
+  if (xep)
+    return xep->fullyConnectedState;
+  return GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED;
+}
+
+
+
+void GWEN_ConnectableMsgEndpoint_SetFullyConnectedState(GWEN_MSG_ENDPOINT *ep, int m)
+{
+  GWEN_CONN_ENDPOINT *xep;
+
+  xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_CONN_ENDPOINT, ep);
+  if (xep)
+    xep->fullyConnectedState=m;
+}
+
 
 
 
@@ -170,7 +197,7 @@ int _getReadFd(GWEN_MSG_ENDPOINT *ep)
     xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_CONN_ENDPOINT, ep);
     if (xep) {
       if (xep->state>=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
-        if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED) {
+	if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED) {
           int fd;
 
           fd=GWEN_MsgEndpoint_GetFd(ep);
@@ -179,8 +206,13 @@ int _getReadFd(GWEN_MSG_ENDPOINT *ep)
           xep->state=GWEN_MSG_ENDPOINT_CONN_STATE_DISCONNECTED;
           GWEN_MsgEndpoint_DelFlags(ep, GWEN_MSG_ENDPOINT_FLAGS_DISCONNECTED);
         }
-        else
-          return xep->getReadFdFn(ep);
+	else {
+	  int fd;
+
+	  fd=xep->getReadFdFn(ep);
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "GetReadFd: Endpoint %s, state: %d (fd=%d)", GWEN_MsgEndpoint_GetName(ep), xep->state, fd);
+	  return fd;
+	}
       }
     }
   }
@@ -196,14 +228,28 @@ int _getWriteFd(GWEN_MSG_ENDPOINT *ep)
 
     xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_CONN_ENDPOINT, ep);
     if (xep) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s, state: %d", GWEN_MsgEndpoint_GetName(ep), xep->state);
-      if (xep->state==GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING)
-        return GWEN_MsgEndpoint_GetFd(ep);
-      else if (xep->state>=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
-        return xep->getWriteFdFn(ep);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "GetWriteFd: Endpoint %s, state: %d", GWEN_MsgEndpoint_GetName(ep), xep->state);
+      if (xep->state>=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING) {
+	if (xep->state<GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
+	  int fd;
+
+	  /* not yet physically connected, return socket directly */
+	  fd=GWEN_MsgEndpoint_GetFd(ep);
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "GetWriteFd: Not physically connected (\"%s\", state: %d, fd: %d)",
+		    GWEN_MsgEndpoint_GetName(ep), xep->state, fd);
+	  return fd;
+	}
+	else {
+	  int fd;
+
+	  /* physically connected, so message exchange can appear, call virtual function */
+	  fd=xep->getWriteFdFn(ep);
+	  DBG_DEBUG(GWEN_LOGDOMAIN, "GetWriteFd: At least physically connected (fd=%d)", fd);
+	  return fd;
+	}
       }
       else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Unexpected state %d", xep->state);
+	DBG_INFO(GWEN_LOGDOMAIN, "GetWriteFd: Unexpected state %d", xep->state);
       }
     }
   }
@@ -221,11 +267,24 @@ int _handleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr)
     int rv;
 
     rv=xep->handleReadableFn(ep, emgr);
-    if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Error reading, disconnecting");
-      GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_DISCONNECTED);
-      GWEN_ConnectableMsgEndpoint_Disconnect(ep);
+    if (rv<0) {
+      if (rv!=GWEN_ERROR_TRY_AGAIN) {
+	DBG_INFO(GWEN_LOGDOMAIN, "Error reading, disconnecting");
+	GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_DISCONNECTED);
+	GWEN_ConnectableMsgEndpoint_Disconnect(ep);
+      }
+      return rv;
     }
+
+    if (xep->state<xep->fullyConnectedState) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "HandleReadable: Continue connecting...");
+      rv=_connect(ep);
+      if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+    }
+
     return rv;
   }
 
@@ -242,17 +301,20 @@ int _handleWritable(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_MGR *emgr)
   if (xep) {
     int rv;
 
-    if (xep->state==GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING) {
-      DBG_INFO(GWEN_LOGDOMAIN, "Continue connecting...");
+    DBG_DEBUG(GWEN_LOGDOMAIN, "HandleWritable: Endpoint %s, state: %d", GWEN_MsgEndpoint_GetName(ep), xep->state);
+//    if (xep->state==GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING) {
+    if (xep->state<xep->fullyConnectedState) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "HandleWritable: Continue connecting...");
       rv=_connect(ep);
       if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-        return rv;
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
       }
     }
-    else if (xep->state>=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
+    if (xep->state>=GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "HandleWritable: Connected, writing.");
       if (xep->handleWritableFn) {
-        rv=xep->handleWritableFn(ep, emgr);
+	rv=xep->handleWritableFn(ep, emgr);
         if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
           DBG_INFO(GWEN_LOGDOMAIN, "Error writing, disconnecting");
           GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_DISCONNECTED);
@@ -287,7 +349,7 @@ void _run(GWEN_MSG_ENDPOINT *ep)
       if ((int)(now-xep->timeOfLastStateChange)>xep->reconnectWaitTime) {
         int rv;
 
-        DBG_INFO(GWEN_LOGDOMAIN, "Trying to connect");
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Trying to connect");
         rv=_connect(ep);
         if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -345,6 +407,7 @@ int _connect(GWEN_MSG_ENDPOINT *ep)
   if (xep) {
     int rv;
 
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s, state: %d", GWEN_MsgEndpoint_GetName(ep), xep->state);
     rv=GWEN_ConnectableMsgEndpoint_Connect(ep);
     if (rv<0) {
       if (rv!=GWEN_ERROR_TRY_AGAIN) {
@@ -352,13 +415,13 @@ int _connect(GWEN_MSG_ENDPOINT *ep)
         GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_DISCONNECTED);
       }
       else {
-        DBG_INFO(GWEN_LOGDOMAIN, "Connecting...");
-        GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING);
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Connecting...");
+	//GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING);
       }
     }
     else {
-      DBG_INFO(GWEN_LOGDOMAIN, "Connected");
-      GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Connected");
+      //GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED);
     }
     return rv;
   }

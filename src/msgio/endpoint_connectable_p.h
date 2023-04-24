@@ -18,6 +18,8 @@ typedef struct GWEN_CONN_ENDPOINT GWEN_CONN_ENDPOINT;
 struct GWEN_CONN_ENDPOINT {
   int state;
   time_t timeOfLastStateChange;
+  int fullyConnectedState;
+
   int reconnectWaitTime;
   GWEN_CONN_ENDPOINT_CONNECT_FN connectFn;
   GWEN_CONN_ENDPOINT_DISCONNECT_FN disconnectFn;

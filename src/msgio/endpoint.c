@@ -336,18 +336,26 @@ int GWEN_MsgEndpoint_DiscardInput(GWEN_MSG_ENDPOINT *ep)
   int rv;
   uint8_t buffer[64];
 
-  do {
-    rv=read(ep->fd, buffer, sizeof(buffer));
-  } while(rv>0 || (rv<0 && errno==EINTR));
-  if (rv<0 && errno!=EAGAIN && errno!=EWOULDBLOCK) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
-    return GWEN_ERROR_IO;
-  }
-  else if (rv==0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
-#if 0
-    return GWEN_ERROR_IO;
-#endif
+  for (;;) {
+    do {
+      rv=read(ep->fd, buffer, sizeof(buffer));
+    } while(rv>0 || (rv<0 && errno==EINTR));
+    if (rv<0) {
+      if (errno==EAGAIN || errno==EWOULDBLOCK) {
+	/* nothing more in the queue */
+	break;
+      }
+      else {
+	DBG_INFO(GWEN_LOGDOMAIN, "Error on read(): %s (%d)", strerror(errno), errno);
+	return GWEN_ERROR_IO;
+      }
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
+  #if 0
+      return GWEN_ERROR_IO;
+  #endif
+    }
   }
   return 0;
 }
@@ -454,7 +462,7 @@ int _internalHandleReadable(GWEN_MSG_ENDPOINT *ep, GWEN_UNUSED GWEN_MSG_ENDPOINT
   int len;
   int i;
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+  DBG_ERROR(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
   do {
     rv=read(GWEN_MsgEndpoint_GetFd(ep), buffer, sizeof(buffer));
   } while( (rv<0) && errno==EINTR);

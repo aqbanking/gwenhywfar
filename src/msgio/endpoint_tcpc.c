@@ -89,11 +89,13 @@ int _connect(GWEN_MSG_ENDPOINT *ep)
   int state;
 
   state=GWEN_ConnectableMsgEndpoint_GetState(ep);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Calling connect (%d)", state);
   if (state<GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED) {
     int fd;
     int rv;
 
     if (state<GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "New socket, connect not yet started");
       fd=_createAndSetupSocket();
       if (fd<0) {
 	DBG_INFO(NULL, "here");
@@ -101,24 +103,39 @@ int _connect(GWEN_MSG_ENDPOINT *ep)
       }
     }
     else if (state==GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING){
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Socket in connecting state");
       fd=GWEN_MsgEndpoint_GetFd(ep);
       if (fd<0) {
 	DBG_INFO(NULL, "here");
 	return GWEN_ERROR_IO;
       }
     }
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Trying to connect");
     rv=_reallyConnect(ep, fd);
-    if (rv<0 && rv!=GWEN_ERROR_TRY_AGAIN) {
-      close(fd);
-      GWEN_MsgEndpoint_SetFd(ep, -1);
+    if (rv<0) {
+      if (rv==GWEN_ERROR_TRY_AGAIN) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Connect started...");
+        GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTING);
+        GWEN_MsgEndpoint_SetFd(ep, fd);
+      }
+      else {
+        DBG_INFO(GWEN_LOGDOMAIN, "Error connecting.");
+        GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_DISCONNECTED);
+        close(fd);
+        GWEN_MsgEndpoint_SetFd(ep, -1);
+      }
     }
     else {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Connected.");
       GWEN_MsgEndpoint_SetFd(ep, fd);
+      GWEN_ConnectableMsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_CONN_STATE_CONNECTED);
     }
     return rv;
   }
-
-  return GWEN_ERROR_GENERIC;
+  else {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Already connected");
+    return GWEN_ERROR_GENERIC;
+  }
 }
 
 
