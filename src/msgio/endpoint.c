@@ -91,6 +91,7 @@ void GWEN_MsgEndpoint_free(GWEN_MSG_ENDPOINT *ep)
     GWEN_Msg_free(ep->currentlyReceivedMsg);
     GWEN_Msg_List_free(ep->receivedMessageList);
     GWEN_Msg_List_free(ep->sendMessageList);
+    free(ep->name);
     GWEN_FREE_OBJECT(ep);
   }
 }
