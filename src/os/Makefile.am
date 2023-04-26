@@ -41,6 +41,9 @@ libos_la_SOURCES=\
  process_all.c \
  timestamp.c
 
+EXTRA_DIST=\
+  timestamp-t.c
+
 
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la
 

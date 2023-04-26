@@ -56,6 +56,7 @@ iheader_HEADERS=$(build_headers_pub) \
 noinst_HEADERS=$(build_headers_priv) \
   endpoint_p.h \
   endpoint_connectable_p.h \
+  endpoint_tcpc_p.h \
   endpointmgr_p.h \
   msg_p.h
 
