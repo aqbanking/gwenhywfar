@@ -70,6 +70,7 @@ GWEN_TIMESTAMP *GWEN_Timestamp_dup(const GWEN_TIMESTAMP *tstampSrc)
 
     GWEN_NEW_OBJECT(GWEN_TIMESTAMP, tstamp);
     memmove(tstamp, tstampSrc, sizeof(GWEN_TIMESTAMP));
+    return tstamp;
   }
   return NULL;
 }
