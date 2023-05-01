@@ -355,6 +355,8 @@ int GWEN_MsgEndpoint_DiscardInput(GWEN_MSG_ENDPOINT *ep)
       DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
   #if 0
       return GWEN_ERROR_IO;
+# else
+      break;
   #endif
     }
   }
