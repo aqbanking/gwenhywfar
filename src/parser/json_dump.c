@@ -45,16 +45,16 @@ void GWEN_JsonElement_DumpToBuffer(const GWEN_JSON_ELEM *jeRoot, int indent, GWE
   const char *s;
 
   GWEN_Buffer_FillWithBytes(buf, ' ', indent);
-  s=GWEN_JsonElementGetData(jeRoot);
-  switch(GWEN_JsonElementGetType(jeRoot)) {
-  case GWEN_JSON_ELEMTYPE_KEY:    GWEN_Buffer_AppendArgs(buf,   "type=KEY, ..... data=%s", s?s:"<empty"); break;
+  s=GWEN_JsonElement_GetData(jeRoot);
+  switch(GWEN_JsonElement_GetType(jeRoot)) {
+  case GWEN_JSON_ELEMTYPE_KEY:    GWEN_Buffer_AppendArgs(buf,   "type=KEY, ..... data=%s", s?s:"<empty>"); break;
   case GWEN_JSON_ELEMTYPE_NULL:   GWEN_Buffer_AppendString(buf, "type=NULL"); break;
-  case GWEN_JSON_ELEMTYPE_BOOL:   GWEN_Buffer_AppendArgs(buf,   "type=BOOL, .... data=%s", s?s:"<empty"); break;
-  case GWEN_JSON_ELEMTYPE_NUM:    GWEN_Buffer_AppendArgs(buf,   "type=NUM, ..... data=%s", s?s:"<empty"); break;
-  case GWEN_JSON_ELEMTYPE_STRING: GWEN_Buffer_AppendArgs(buf,   "type=STRING, .. data=%s", s?s:"<empty"); break;
+  case GWEN_JSON_ELEMTYPE_BOOL:   GWEN_Buffer_AppendArgs(buf,   "type=BOOL, .... data=%s", s?s:"<empty>"); break;
+  case GWEN_JSON_ELEMTYPE_NUM:    GWEN_Buffer_AppendArgs(buf,   "type=NUM, ..... data=%s", s?s:"<empty>"); break;
+  case GWEN_JSON_ELEMTYPE_STRING: GWEN_Buffer_AppendArgs(buf,   "type=STRING, .. data=%s", s?s:"<empty>"); break;
   case GWEN_JSON_ELEMTYPE_ARRAY:  GWEN_Buffer_AppendString(buf, "type=ARRAY"); break;
   case GWEN_JSON_ELEMTYPE_OBJECT: GWEN_Buffer_AppendString(buf, "type=OBJECT"); break;
-  default:                        GWEN_Buffer_AppendArgs(buf,   "type=<unknown>, data=%s", s?s:"<empty"); break;
+  default:                        GWEN_Buffer_AppendArgs(buf,   "type=<%d>, data=%s", GWEN_JsonElement_GetType(jeRoot), s?s:"<empty>"); break;
   }
   GWEN_Buffer_AppendString(buf, "\n");
 

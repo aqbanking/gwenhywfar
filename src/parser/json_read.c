@@ -337,9 +337,11 @@ int _readTokenUntilChar(const char *s, GWEN_BUFFER *buf, int c, const char **nex
 	lastWasEscape=1;
       else {
 	if (*s==c || strchr(",:{}[]", *s)!=NULL)
-	  break;
-	GWEN_Buffer_AppendByte(buf, *s);
-	bytesAdded++;
+          break;
+        if (!iscntrl(*s)) {
+          GWEN_Buffer_AppendByte(buf, *s);
+          bytesAdded++;
+        }
       }
     }
     s++;

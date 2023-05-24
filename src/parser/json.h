@@ -50,12 +50,16 @@ enum {
 GWENHYWFAR_API GWEN_JSON_ELEM *GWEN_JsonElement_new(int t, const char *sData);
 GWENHYWFAR_API void GWEN_JsonElement_free(GWEN_JSON_ELEM *je);
 
-GWENHYWFAR_API int GWEN_JsonElementGetType(const GWEN_JSON_ELEM *je);
-GWENHYWFAR_API void GWEN_JsonElementSetType(GWEN_JSON_ELEM *je, int t);
+GWENHYWFAR_API int GWEN_JsonElement_GetType(const GWEN_JSON_ELEM *je);
+GWENHYWFAR_API void GWEN_JsonElement_SetType(GWEN_JSON_ELEM *je, int t);
 
-GWENHYWFAR_API const char *GWEN_JsonElementGetData(const GWEN_JSON_ELEM *je);
-GWENHYWFAR_API void GWEN_JsonElementSetData(GWEN_JSON_ELEM *je, const char *s);
+GWENHYWFAR_API const char *GWEN_JsonElement_GetData(const GWEN_JSON_ELEM *je);
+GWENHYWFAR_API void GWEN_JsonElement_SetData(GWEN_JSON_ELEM *je, const char *s);
 
+GWENHYWFAR_API GWEN_JSON_ELEM *GWEN_JsonElement_FindFirstByTypeAndData(const GWEN_JSON_ELEM *je, int t, const char *s);
+GWENHYWFAR_API GWEN_JSON_ELEM *GWEN_JsonElement_FindNextByTypeAndData(const GWEN_JSON_ELEM *je, int t, const char *s);
+
+GWENHYWFAR_API GWEN_JSON_ELEM *GWEN_JsonElement_GetElementByPath(GWEN_JSON_ELEM *je, const char *path, uint32_t flags);
 
 
 #endif
