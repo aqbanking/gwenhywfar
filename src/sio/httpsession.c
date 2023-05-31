@@ -365,7 +365,7 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "Pragma", "no-cache");
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "Cache-control", "no cache");
+                         "Cache-control", "no-cache");
   }
   if (sess->httpContentType)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
