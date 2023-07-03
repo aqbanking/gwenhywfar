@@ -25,6 +25,7 @@ GWENHYWFAR_API GWEN_MSG_ENDPOINT2 *GWEN_TcpcEndpoint2_new(const char *host, int 
                                                           GWEN_MSG_ENDPOINT_MGR2 *mgr,
                                                           const char *name, int groupId);
 
+GWENHYWFAR_API int GWEN_TcpcEndpoint2_StartConnect(GWEN_MSG_ENDPOINT2 *ep);
 
 
 #ifdef __cplusplus

@@ -24,8 +24,10 @@
 
 
 
-GWEN_INHERIT(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC)
-
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
@@ -35,6 +37,16 @@ static void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_
 static int _startConnect(GWEN_MSG_ENDPOINT2 *ep);
 static GWEN_SOCKET *_createAndSetupSocket(void);
 static GWEN_INETADDRESS *_createAndSetupAddress(const char *host, int port);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+GWEN_INHERIT(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC)
 
 
 
@@ -62,6 +74,40 @@ GWEN_MSG_ENDPOINT2 *GWEN_TcpcEndpoint2_new(const char *host, int port,
 
 
 
+int GWEN_TcpcEndpoint2_StartConnect(GWEN_MSG_ENDPOINT2 *ep)
+{
+  if (ep) {
+    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
+      int rv;
+
+      /* connect, set state */
+      rv=_startConnect(ep);
+      if (rv==GWEN_ERROR_IN_PROGRESS) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Connect in progress");
+        GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTING);
+      }
+      else if (rv==0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Connected.");
+        GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
+      }
+      else {
+        DBG_INFO(GWEN_LOGDOMAIN, "Error on connect(%d)", rv);
+      }
+      return rv;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Endpoint \"%s\" not unconnected", GWEN_MsgEndpoint2_GetName(ep));
+    }
+  }
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No endpoint");
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+
 void _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_ENDPOINT2_TCPC *xep;
@@ -75,38 +121,32 @@ void _freeData(GWEN_UNUSED void *bp, void *p)
 
 void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet)
 {
-  if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
-    time_t now;
-
-    now=time(NULL);
-    if ((now-GWEN_MsgEndpoint2_GetTimeOfLastStateChange(ep))>=GWEN_ENDPOINT2_TCPC_RECONNECT_TIME) {
-      int rv;
-
-      /* (re)connect, set state */
-      rv=_startConnect(ep);
-      if (rv==GWEN_ERROR_IN_PROGRESS) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Connect in progress");
-        GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTING);
-      }
-      else if (rv==0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Connected.");
-        GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
-      }
-      else {
-        DBG_INFO(GWEN_LOGDOMAIN, "Error on connect(%d)", rv);
+  if (ep) {
+    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
+      time_t now;
+  
+      now=time(NULL);
+      if ((now-GWEN_MsgEndpoint2_GetTimeOfLastStateChange(ep))>=GWEN_ENDPOINT2_TCPC_RECONNECT_TIME) {
+        int rv;
+  
+        /* (re)connect, set state */
+        rv=GWEN_TcpcEndpoint2_StartConnect(ep);
+        if (rv<0 && rv!=GWEN_ERROR_IN_PROGRESS) {
+          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        }
       }
     }
-  }
-
-  if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
-    GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint2_GetSocket(ep));
-  }
-
-  if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
-    GWEN_SocketSet_AddSocket(readSet, GWEN_MsgEndpoint2_GetSocket(ep));
-    if (GWEN_MsgEndpoint2_HaveMessageToSend(ep))
+  
+    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
       GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint2_GetSocket(ep));
-  }
+    }
+  
+    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
+      GWEN_SocketSet_AddSocket(readSet, GWEN_MsgEndpoint2_GetSocket(ep));
+      if (GWEN_MsgEndpoint2_HaveMessageToSend(ep))
+        GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint2_GetSocket(ep));
+    }
+  } /* if (ep) */
 }
 
 
@@ -116,41 +156,46 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
                    GWEN_SOCKETSET *writeSet,
                    GWEN_UNUSED GWEN_SOCKETSET *xSet)
 {
-  GWEN_SOCKET *sk;
-
-  sk=GWEN_MsgEndpoint2_GetSocket(ep);
-  if (sk) {
-    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
-      if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
-        int rv;
-
-        rv=GWEN_Socket_GetSocketError(sk);
-        if (rv==GWEN_ERROR_IN_PROGRESS) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Connect still in progress");
-        }
-        else if (rv==0) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Connected.");
-          GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
-        }
-        else {
-          DBG_INFO(GWEN_LOGDOMAIN, "Error on connect(%d)", rv);
+  if (ep) {
+    GWEN_SOCKET *sk;
+  
+    sk=GWEN_MsgEndpoint2_GetSocket(ep);
+    if (sk) {
+      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
+        if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
+          int rv;
+  
+          rv=GWEN_Socket_GetSocketError(sk);
+          if (rv==GWEN_ERROR_IN_PROGRESS) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Connect still in progress");
+          }
+          else if (rv==0) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Connected.");
+            GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN, "Error on connect(%d)", rv);
+          }
         }
       }
-    }
 
 #if 0
-    /* this belongs in higher layers */
-
-    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
-      if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
+      /* this belongs in higher layers */
+  
+      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
+        if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
+        }
+  
+        if (GWEN_SocketSet_HasSocket(readSet, sk)) {
+        }
       }
-
-      if (GWEN_SocketSet_HasSocket(readSet, sk)) {
-      }
-    }
 #endif
 
-  }
+    } /* if (sk) */
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "Endpoint \"%s\": No socket", GWEN_MsgEndpoint2_GetName(ep));
+    }
+  } /* if (ep) */
 }
 
 
