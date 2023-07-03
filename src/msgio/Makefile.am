@@ -36,6 +36,8 @@ libgwenmsgio_la_SOURCES=$(built_sources) \
   endpoint_tcpd.c \
   endpoint_tcpd_ipc.c \
   endpointmgr.c \
+  endpoint2.c \
+  endpoint2_tcpc.c \
   msg.c \
   msg_ipc.c
 
@@ -49,6 +51,8 @@ iheader_HEADERS=$(build_headers_pub) \
   endpoint_tcpd.h \
   endpoint_tcpd_ipc.h \
   endpointmgr.h \
+  endpoint2.h \
+  endpoint2_tcpc.h \
   msg.h \
   msg_ipc.h
 
@@ -58,6 +62,8 @@ noinst_HEADERS=$(build_headers_priv) \
   endpoint_connectable_p.h \
   endpoint_tcpc_p.h \
   endpointmgr_p.h \
+  endpoint2_p.h \
+  endpoint2_tcpc_p.h \
   msg_p.h
 
 
