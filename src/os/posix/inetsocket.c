@@ -91,6 +91,8 @@ int GWEN_Socket_NetError2GwenError(int rv)
     return GWEN_ERROR_NOT_OPEN;
   case ENOTSOCK:
     return GWEN_ERROR_INVALID;
+  case EINPROGRESS:
+    return GWEN_ERROR_IN_PROGRESS;
   default:
     DBG_INFO(GWEN_LOGDOMAIN, "socket error: %d (%s)", rv, strerror(rv));
     return GWEN_ERROR_IO;
@@ -531,7 +533,7 @@ int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize)
   else
     i=recv(sp->socket, buffer, *bsize, 0);
   if (i<0) {
-    if (errno==EAGAIN || errno==ENOTCONN)
+    if (errno==EAGAIN || errno==EWOULDBLOCK || errno==ENOTCONN)
       return GWEN_ERROR_TIMEOUT;
     else if (errno==EINTR)
       return GWEN_ERROR_INTERRUPTED;
