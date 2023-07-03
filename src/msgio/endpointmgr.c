@@ -267,7 +267,7 @@ void _deleteFlaggedEndpoints(GWEN_MSG_ENDPOINT_MGR *emgr)
       epNext=GWEN_MsgEndpoint_List_Next(ep);
       DBG_DEBUG(GWEN_LOGDOMAIN, "- checking endpoint %s", GWEN_MsgEndpoint_GetName(ep));
       if (GWEN_MsgEndpoint_GetFlags(ep) & GWEN_MSG_ENDPOINT_FLAGS_DELETE) {
-	DBG_DEBUG(GWEN_LOGDOMAIN, "  - deleting endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+	DBG_INFO(GWEN_LOGDOMAIN, "  - deleting endpoint %s", GWEN_MsgEndpoint_GetName(ep));
 	GWEN_MsgEndpointMgr_DelEndpoint(emgr, ep);
         GWEN_MsgEndpoint_free(ep);
       }
