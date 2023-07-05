@@ -19,26 +19,30 @@
 #include <gwenhywfar/text.h>
 
 
+#define GWEN_MSG_ENDPOINT2_DEFAULT_MSGSIZE 1024
+
+
 
 GWEN_INHERIT_FUNCTIONS(GWEN_MSG_ENDPOINT2)
-GWEN_LIST_FUNCTIONS(GWEN_MSG_ENDPOINT2, GWEN_MsgEndpoint2)
+GWEN_TREE2_FUNCTIONS(GWEN_MSG_ENDPOINT2, GWEN_MsgEndpoint2)
 
 
 
-GWEN_MSG_ENDPOINT2 *GWEN_MsgEndpoint2_new(GWEN_MSG_ENDPOINT_MGR2 *mgr, const char *name, int groupId)
+GWEN_MSG_ENDPOINT2 *GWEN_MsgEndpoint2_new(const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT2 *ep;
 
   GWEN_NEW_OBJECT(GWEN_MSG_ENDPOINT2, ep);
   GWEN_INHERIT_INIT(GWEN_MSG_ENDPOINT2, ep);
-  GWEN_LIST_INIT(GWEN_MSG_ENDPOINT2, ep);
+  GWEN_TREE2_INIT(GWEN_MSG_ENDPOINT2, ep, GWEN_MsgEndpoint2);
 
-  ep->manager=mgr;
   ep->name=name?strdup(name):"<unnamed>";
   ep->groupId=groupId;
 
   ep->receivedMessageList=GWEN_Msg_List_new();
   ep->sendMessageList=GWEN_Msg_List_new();
+
+  ep->defaultMessageSize=GWEN_MSG_ENDPOINT2_DEFAULT_MSGSIZE;
 
   return ep;
 }
@@ -48,7 +52,7 @@ GWEN_MSG_ENDPOINT2 *GWEN_MsgEndpoint2_new(GWEN_MSG_ENDPOINT_MGR2 *mgr, const cha
 void GWEN_MsgEndpoint2_free(GWEN_MSG_ENDPOINT2 *ep)
 {
   if (ep) {
-    GWEN_LIST_FINI(GWEN_MSG_ENDPOINT2, ep);
+    GWEN_TREE2_FINI(GWEN_MSG_ENDPOINT2, ep, GWEN_MsgEndpoint2);
     GWEN_INHERIT_FINI(GWEN_MSG_ENDPOINT2, ep);
     if (ep->socket) {
       GWEN_Socket_Close(ep->socket);
@@ -60,13 +64,6 @@ void GWEN_MsgEndpoint2_free(GWEN_MSG_ENDPOINT2 *ep)
     free(ep->name);
     GWEN_FREE_OBJECT(ep);
   }
-}
-
-
-
-GWEN_MSG_ENDPOINT_MGR2 *GWEN_MsgEndpoint2_GetManager(const GWEN_MSG_ENDPOINT2 *ep)
-{
-  return (ep?ep->manager:NULL);
 }
 
 
@@ -166,6 +163,21 @@ void GWEN_MsgEndpoint2_DelFlags(GWEN_MSG_ENDPOINT2 *ep, uint32_t f)
 
 
 
+int GWEN_MsgEndpoint2_GetDefaultMessageSize(const GWEN_MSG_ENDPOINT2 *ep)
+{
+  return ep?ep->defaultMessageSize:0;
+}
+
+
+
+void GWEN_MsgEndpoint2_SetDefaultMessageSize(GWEN_MSG_ENDPOINT2 *ep, int i)
+{
+  if (ep)
+    ep->defaultMessageSize=i;
+}
+
+
+
 GWEN_MSG_LIST *GWEN_MsgEndpoint2_GetReceivedMessageList(const GWEN_MSG_ENDPOINT2 *ep)
 {
   return (ep?ep->receivedMessageList:NULL);
@@ -188,17 +200,21 @@ void GWEN_MsgEndpoint2_AddReceivedMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *m)
 
 
 
+GWEN_MSG *GWEN_MsgEndpoint2_GetFirstReceivedMessage(const GWEN_MSG_ENDPOINT2 *ep)
+{
+  return ep?GWEN_Msg_List_First(ep->receivedMessageList):NULL;
+}
+
+
+
 GWEN_MSG *GWEN_MsgEndpoint2_TakeFirstReceivedMessage(GWEN_MSG_ENDPOINT2 *ep)
 {
-  if (ep) {
-    GWEN_MSG *msg;
+  GWEN_MSG *msg;
 
-    msg=GWEN_Msg_List_First(ep->receivedMessageList);
-    if (msg)
-      GWEN_Msg_List_Del(msg);
-    return msg;
-  }
-  return NULL;
+  msg=GWEN_MsgEndpoint2_GetFirstReceivedMessage(ep);
+  if (msg)
+    GWEN_Msg_List_Del(msg);
+  return msg;
 }
 
 
@@ -261,6 +277,75 @@ void GWEN_MsgEndpoint2_Run(GWEN_MSG_ENDPOINT2 *ep)
   if (ep && ep->runFn)
     ep->runFn(ep);
 }
+
+
+
+void GWEN_MsgEndpoint2_ChildrenAddSockets(GWEN_MSG_ENDPOINT2 *ep,
+                                          GWEN_SOCKETSET *readSet,
+                                          GWEN_SOCKETSET *writeSet,
+                                          GWEN_SOCKETSET *xSet)
+{
+  GWEN_MSG_ENDPOINT2 *epChild;
+
+  epChild=GWEN_MsgEndpoint2_Tree2_GetFirstChild(ep);
+  while(epChild) {
+    GWEN_MsgEndpoint2_AddSockets(epChild, readSet, writeSet, xSet);
+    epChild=GWEN_MsgEndpoint2_Tree2_GetNext(epChild);
+  }
+}
+
+
+
+void GWEN_MsgEndpoint2_ChildrenCheckSockets(GWEN_MSG_ENDPOINT2 *ep,
+                                            GWEN_SOCKETSET *readSet,
+                                            GWEN_SOCKETSET *writeSet,
+                                            GWEN_SOCKETSET *xSet)
+{
+  GWEN_MSG_ENDPOINT2 *epChild;
+
+  epChild=GWEN_MsgEndpoint2_Tree2_GetFirstChild(ep);
+  while(epChild) {
+    GWEN_MsgEndpoint2_CheckSockets(epChild, readSet, writeSet, xSet);
+    epChild=GWEN_MsgEndpoint2_Tree2_GetNext(epChild);
+  }
+}
+
+
+
+void GWEN_MsgEndpoint2_ChildrenRun(GWEN_MSG_ENDPOINT2 *ep)
+{
+  GWEN_MSG_ENDPOINT2 *epChild;
+
+  epChild=GWEN_MsgEndpoint2_Tree2_GetFirstChild(ep);
+  while(epChild) {
+    GWEN_MsgEndpoint2_Run(epChild);
+    epChild=GWEN_MsgEndpoint2_Tree2_GetNext(epChild);
+  }
+}
+
+
+
+void GWEN_MsgEndpoint2_RemoveUnconnectedAndEmptyChildren(GWEN_MSG_ENDPOINT2 *ep)
+{
+  if (ep) {
+    GWEN_MSG_ENDPOINT2 *epChild;
+
+    epChild=GWEN_MsgEndpoint2_Tree2_GetFirstChild(ep);
+    while(epChild) {
+      GWEN_MSG_ENDPOINT2 *epNext;
+
+      epNext=GWEN_MsgEndpoint2_Tree2_GetNext(epChild);
+      if ((GWEN_MsgEndpoint2_GetState(epChild)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) &&
+          (GWEN_MsgEndpoint2_GetFirstReceivedMessage(epChild)==NULL)) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Disconnected and empty, removing", GWEN_MsgEndpoint2_GetName(epChild));
+        GWEN_MsgEndpoint2_Tree2_Unlink(epChild);
+        GWEN_MsgEndpoint2_free(epChild);
+      }
+      epChild=epNext;
+    }
+  }
+}
+
 
 
 
@@ -332,6 +417,10 @@ void GWEN_MsgEndpoint2_Disconnect(GWEN_MSG_ENDPOINT2 *ep)
     GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_UNCONNECTED);
   }
 }
+
+
+
+
 
 
 

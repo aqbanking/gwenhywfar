@@ -51,14 +51,12 @@ GWEN_INHERIT(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC)
 
 
 
-GWEN_MSG_ENDPOINT2 *GWEN_TcpcEndpoint2_new(const char *host, int port,
-                                           GWEN_MSG_ENDPOINT_MGR2 *mgr,
-                                           const char *name, int groupId)
+GWEN_MSG_ENDPOINT2 *GWEN_TcpcEndpoint2_new(const char *host, int port, const char *name, int groupId)
 {
   GWEN_MSG_ENDPOINT2 *ep;
   GWEN_ENDPOINT2_TCPC *xep;
 
-  ep=GWEN_MsgEndpoint2_new(mgr, name?name:GWEN_MSG_ENDPOINT2_TCPC_NAME, groupId);
+  ep=GWEN_MsgEndpoint2_new(name?name:GWEN_MSG_ENDPOINT2_TCPC_NAME, groupId);
   GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_UNCONNECTED);
 
   GWEN_NEW_OBJECT(GWEN_ENDPOINT2_TCPC, xep);
@@ -83,20 +81,20 @@ int GWEN_TcpcEndpoint2_StartConnect(GWEN_MSG_ENDPOINT2 *ep)
       /* connect, set state */
       rv=_startConnect(ep);
       if (rv==GWEN_ERROR_IN_PROGRESS) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Connect in progress");
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Connect in progress", GWEN_MsgEndpoint2_GetName(ep));
         GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTING);
       }
       else if (rv==0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Connected.");
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Connected.", GWEN_MsgEndpoint2_GetName(ep));
         GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
       }
       else {
-        DBG_INFO(GWEN_LOGDOMAIN, "Error on connect(%d)", rv);
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Error on connect (%d)", GWEN_MsgEndpoint2_GetName(ep), rv);
       }
       return rv;
     }
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Endpoint \"%s\" not unconnected", GWEN_MsgEndpoint2_GetName(ep));
+      DBG_ERROR(GWEN_LOGDOMAIN, "Endpoint %s: Not unconnected", GWEN_MsgEndpoint2_GetName(ep));
     }
   }
   else {
@@ -204,6 +202,7 @@ int _startConnect(GWEN_MSG_ENDPOINT2 *ep)
 {
   GWEN_ENDPOINT2_TCPC *xep;
 
+  DBG_INFO(GWEN_LOGDOMAIN, "Starting to connect");
   xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC, ep);
   if (xep) {
     GWEN_INETADDRESS *addr;

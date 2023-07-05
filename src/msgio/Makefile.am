@@ -37,7 +37,10 @@ libgwenmsgio_la_SOURCES=$(built_sources) \
   endpoint_tcpd_ipc.c \
   endpointmgr.c \
   endpoint2.c \
+  endpoint2_msgio.c \
   endpoint2_tcpc.c \
+  endpoint2_tcpd.c \
+  endpoint2_ipc.c \
   msg.c \
   msg_ipc.c
 
@@ -52,7 +55,10 @@ iheader_HEADERS=$(build_headers_pub) \
   endpoint_tcpd_ipc.h \
   endpointmgr.h \
   endpoint2.h \
+  endpoint2_msgio.h \
   endpoint2_tcpc.h \
+  endpoint2_tcpd.h \
+  endpoint2_ipc.h \
   msg.h \
   msg_ipc.h
 
@@ -63,7 +69,9 @@ noinst_HEADERS=$(build_headers_priv) \
   endpoint_tcpc_p.h \
   endpointmgr_p.h \
   endpoint2_p.h \
+  endpoint2_msgio_p.h \
   endpoint2_tcpc_p.h \
+  endpoint2_tcpd_p.h \
   msg_p.h
 
 

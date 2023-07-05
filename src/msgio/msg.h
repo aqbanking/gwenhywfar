@@ -51,6 +51,7 @@ GWENHYWFAR_API uint32_t GWEN_Msg_GetBytesInBuffer(const GWEN_MSG *msg);
 GWENHYWFAR_API void GWEN_Msg_SetBytesInBuffer(GWEN_MSG *msg, uint32_t i);
 GWENHYWFAR_API uint32_t GWEN_Msg_GetCurrentPos(const GWEN_MSG *msg);
 GWENHYWFAR_API int GWEN_Msg_AddByte(GWEN_MSG *msg, uint8_t b);
+GWENHYWFAR_API int GWEN_Msg_AddBytes(GWEN_MSG *msg, const uint8_t *bufferPtr, uint32_t bufferLen);
 GWENHYWFAR_API int GWEN_Msg_ReadNextByte(GWEN_MSG *msg);
 GWENHYWFAR_API int GWEN_Msg_IncCurrentPos(GWEN_MSG *msg, uint32_t i);
 GWENHYWFAR_API int GWEN_Msg_GetRemainingBytes(const GWEN_MSG *msg);

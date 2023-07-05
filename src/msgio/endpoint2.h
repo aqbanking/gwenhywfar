@@ -11,13 +11,13 @@
 
 
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/list.h>
+#include <gwenhywfar/tree2.h>
 #include <gwenhywfar/inetsocket.h>
 
 
 
-#define GWEN_MSG_ENDPOINT2_FLAGS_DELETE           0x80000000u
-#define GWEN_MSG_ENDPOINT2_FLAGS_NOIO             0x40000000u
+#define GWEN_MSG_ENDPOINT2_FLAGS_DELETE     0x80000000u
+#define GWEN_MSG_ENDPOINT2_FLAGS_NOIO       0x40000000u
 
 
 #define GWEN_MSG_ENDPOINT_STATE_UNCONNECTED 0
@@ -36,14 +36,13 @@ extern "C" {
  */
 typedef struct GWEN_MSG_ENDPOINT2 GWEN_MSG_ENDPOINT2;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_MSG_ENDPOINT2, GWENHYWFAR_API)
-GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_MSG_ENDPOINT2, GWEN_MsgEndpoint2, GWENHYWFAR_API)
+GWEN_TREE2_FUNCTION_LIB_DEFS(GWEN_MSG_ENDPOINT2, GWEN_MsgEndpoint2, GWENHYWFAR_API)
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#include <gwenhywfar/endpointmgr2.h>
 #include <gwenhywfar/msg.h>
 
 #include <time.h>
@@ -77,12 +76,11 @@ typedef void (*GWEN_MSG_ENDPOINT2_RUN_FN)(GWEN_MSG_ENDPOINT2 *ep);
 
 
 
-GWENHYWFAR_API GWEN_MSG_ENDPOINT2 *GWEN_MsgEndpoint2_new(GWEN_MSG_ENDPOINT_MGR2 *mgr, const char *name, int groupId);
+GWENHYWFAR_API GWEN_MSG_ENDPOINT2 *GWEN_MsgEndpoint2_new(const char *name, int groupId);
 
 GWENHYWFAR_API void GWEN_MsgEndpoint2_free(GWEN_MSG_ENDPOINT2 *ep);
 
 
-GWENHYWFAR_API GWEN_MSG_ENDPOINT_MGR2 *GWEN_MsgEndpoint2_GetManager(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API const char *GWEN_MsgEndpoint2_GetName(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API int GWEN_MsgEndpoint2_GetGroupId(const GWEN_MSG_ENDPOINT2 *ep);
 
@@ -93,17 +91,20 @@ GWENHYWFAR_API int GWEN_MsgEndpoint2_GetState(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API void GWEN_MsgEndpoint2_SetState(GWEN_MSG_ENDPOINT2 *ep, int m);
 GWENHYWFAR_API time_t GWEN_MsgEndpoint2_GetTimeOfLastStateChange(const GWEN_MSG_ENDPOINT2 *ep);
 
-
 GWENHYWFAR_API uint32_t GWEN_MsgEndpoint2_GetFlags(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API void GWEN_MsgEndpoint2_SetFlags(GWEN_MSG_ENDPOINT2 *ep, uint32_t f);
 GWENHYWFAR_API void GWEN_MsgEndpoint2_AddFlags(GWEN_MSG_ENDPOINT2 *ep, uint32_t f);
 GWENHYWFAR_API void GWEN_MsgEndpoint2_DelFlags(GWEN_MSG_ENDPOINT2 *ep, uint32_t f);
+
+GWENHYWFAR_API int GWEN_MsgEndpoint2_GetDefaultMessageSize(const GWEN_MSG_ENDPOINT2 *ep);
+GWENHYWFAR_API void GWEN_MsgEndpoint2_SetDefaultMessageSize(GWEN_MSG_ENDPOINT2 *ep, int i);
 
 
 GWENHYWFAR_API GWEN_MSG_LIST *GWEN_MsgEndpoint2_GetReceivedMessageList(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API GWEN_MSG_LIST *GWEN_MsgEndpoint2_GetSendMessageList(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API void GWEN_MsgEndpoint2_AddReceivedMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *m);
 
+GWENHYWFAR_API GWEN_MSG *GWEN_MsgEndpoint2_GetFirstReceivedMessage(const GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API GWEN_MSG *GWEN_MsgEndpoint2_TakeFirstReceivedMessage(GWEN_MSG_ENDPOINT2 *ep);
 GWENHYWFAR_API void GWEN_MsgEndpoint2_AddSendMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *m);
 GWENHYWFAR_API GWEN_MSG *GWEN_MsgEndpoint2_GetFirstSendMessage(const GWEN_MSG_ENDPOINT2 *ep);
@@ -130,11 +131,24 @@ GWENHYWFAR_API void GWEN_MsgEndpoint2_Run(GWEN_MSG_ENDPOINT2 *ep);
 
 
 
+GWENHYWFAR_API void GWEN_MsgEndpoint2_ChildrenAddSockets(GWEN_MSG_ENDPOINT2 *ep,
+                                                         GWEN_SOCKETSET *readSet,
+                                                         GWEN_SOCKETSET *writeSet,
+                                                         GWEN_SOCKETSET *xSet);
+
+GWENHYWFAR_API void GWEN_MsgEndpoint2_ChildrenCheckSockets(GWEN_MSG_ENDPOINT2 *ep,
+                                                           GWEN_SOCKETSET *readSet,
+                                                           GWEN_SOCKETSET *writeSet,
+                                                           GWEN_SOCKETSET *xSet);
+
+GWENHYWFAR_API void GWEN_MsgEndpoint2_ChildrenRun(GWEN_MSG_ENDPOINT2 *ep);
+
+GWENHYWFAR_API void GWEN_MsgEndpoint2_RemoveUnconnectedAndEmptyChildren(GWEN_MSG_ENDPOINT2 *ep);
+
 
 
 GWENHYWFAR_API int GWEN_MsgEndpoint2_ReadFromSocket(GWEN_MSG_ENDPOINT2 *ep, uint8_t *bufferPtr, uint32_t bufferLen);
 GWENHYWFAR_API int GWEN_MsgEndpoint2_WriteToSocket(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, uint32_t bufferLen);
-
 GWENHYWFAR_API void GWEN_MsgEndpoint2_Disconnect(GWEN_MSG_ENDPOINT2 *ep);
 
 

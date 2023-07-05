@@ -17,6 +17,7 @@
 
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/debug.h>
 
 
 
@@ -187,6 +188,28 @@ int GWEN_Msg_AddByte(GWEN_MSG *msg, uint8_t b)
     }
   }
   return GWEN_ERROR_MEMORY_FULL;
+}
+
+
+
+int GWEN_Msg_AddBytes(GWEN_MSG *msg, const uint8_t *bufferPtr, uint32_t bufferLen)
+{
+  if (msg) {
+    if (((msg->bytesInBuffer+bufferLen)<=msg->maxSize) &&
+        ((msg->currentPos)+bufferLen<=msg->maxSize)) {
+      memmove(msg->buffer+msg->currentPos, bufferPtr, bufferLen);
+      msg->currentPos+=bufferLen;
+      msg->bytesInBuffer+=bufferLen;
+      return 0;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Buffer too small (adding %d bytes at %d, space left=%d bytes)",
+               bufferLen, msg->currentPos, msg->maxSize-msg->currentPos);
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
 }
 
 
