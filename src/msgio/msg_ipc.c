@@ -85,7 +85,7 @@ uint32_t GWEN_IpcMsg_GetMsgSize(const GWEN_MSG *msg)
 
 uint8_t GWEN_IpcMsg_GetProtoId(const GWEN_MSG *msg)
 {
-  if (msg && msg->bytesInBuffer>GWEN_MSGIPC_OFFS_PAYLOAD)
+  if (msg && msg->bytesInBuffer>=GWEN_MSGIPC_OFFS_PAYLOAD)
     return msg->buffer[GWEN_MSGIPC_OFFS_PROTOID];
   return 0;
 }
@@ -94,7 +94,7 @@ uint8_t GWEN_IpcMsg_GetProtoId(const GWEN_MSG *msg)
 
 uint8_t GWEN_IpcMsg_GetProtoVersion(const GWEN_MSG *msg)
 {
-  if (msg && msg->bytesInBuffer>GWEN_MSGIPC_OFFS_PAYLOAD)
+  if (msg && msg->bytesInBuffer>=GWEN_MSGIPC_OFFS_PAYLOAD)
     return msg->buffer[GWEN_MSGIPC_OFFS_PROTOVER];
   return 0;
 }
@@ -103,7 +103,7 @@ uint8_t GWEN_IpcMsg_GetProtoVersion(const GWEN_MSG *msg)
 
 uint16_t GWEN_IpcMsg_GetCode(const GWEN_MSG *msg)
 {
-  if (msg && msg->bytesInBuffer>GWEN_MSGIPC_OFFS_PAYLOAD)
+  if (msg && msg->bytesInBuffer>=GWEN_MSGIPC_OFFS_PAYLOAD)
     return msg->buffer[GWEN_MSGIPC_OFFS_CODE]+(msg->buffer[GWEN_MSGIPC_OFFS_CODE+1]<<8);
   return 0;
 }

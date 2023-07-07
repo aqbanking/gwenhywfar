@@ -18,6 +18,7 @@
 #include <gwenhywfar/error.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -372,6 +373,16 @@ uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, int defaultValue)
 }
 
 
+
+void GWEN_Msg_Dump(const GWEN_MSG *msg, GWEN_BUFFER *buf)
+{
+  GWEN_Buffer_AppendArgs(buf, "Msg: bytesInBuffer=%d, maxSize=%d, currentPos=%d",
+                         msg->bytesInBuffer, msg->maxSize, msg->currentPos);
+  if (msg->buffer && msg->bytesInBuffer) {
+    GWEN_Buffer_AppendByte(buf, '\n');
+    GWEN_Text_DumpString2Buffer((const char*)(msg->buffer), msg->bytesInBuffer, buf, 2);
+  }
+}
 
 
 

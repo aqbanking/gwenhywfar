@@ -12,6 +12,7 @@
 
 
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/buffer.h>
 
 
 
@@ -80,6 +81,9 @@ GWENHYWFAR_API void GWEN_Msg_DelFlags(GWEN_MSG *msg, uint32_t f);
 GWENHYWFAR_API uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, int defaultValue);
 GWENHYWFAR_API uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, int defaultValue);
 GWENHYWFAR_API uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, int defaultValue);
+
+
+GWENHYWFAR_API void GWEN_Msg_Dump(const GWEN_MSG *msg, GWEN_BUFFER *buf);
 
 
 #endif

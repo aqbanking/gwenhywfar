@@ -6604,11 +6604,13 @@ int testIpcClient()
 {
   GWEN_MSG_ENDPOINT2 *epClient;
   int loop;
+  GWEN_MSG *msg;
 
   epClient=GWEN_IpcEndpoint2_CreateIpcTcpClient("127.0.0.1", 55555, NULL, 1);
-  for (loop=0;; loop++) {
-    GWEN_MSG *msg;
+  msg=GWEN_IpcMsg_new(1, 2, 3, 0, NULL); /* create a simple test message without payload */
+  GWEN_MsgEndpoint2_AddSendMessage(epClient, msg);
 
+  for (loop=0;; loop++) {
     DBG_INFO(GWEN_LOGDOMAIN, "Loop %d:", loop);
     GWEN_MsgEndpoint2_IoLoop(epClient, 2000); /* 2000 ms */
 

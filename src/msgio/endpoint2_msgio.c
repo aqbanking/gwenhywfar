@@ -97,9 +97,12 @@ void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET
 
         sk=GWEN_MsgEndpoint2_GetSocket(ep);
         if (sk) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket to read set", GWEN_MsgEndpoint2_GetName(ep));
           GWEN_SocketSet_AddSocket(readSet, sk);
-          if (GWEN_MsgEndpoint2_HaveMessageToSend(ep))
+          if (GWEN_MsgEndpoint2_HaveMessageToSend(ep)) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket to write set", GWEN_MsgEndpoint2_GetName(ep));
             GWEN_SocketSet_AddSocket(writeSet, sk);
+          }
         } /* if socket */
       }
       else if (xep->addSocketsFn) {
@@ -243,10 +246,12 @@ int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, i
       if (xep->getBytesNeededFn) {
 	GWEN_MSG *msg;
 
+        DBG_INFO(GWEN_LOGDOMAIN, "Distributing %d received bytes", bufferLen);
 	msg=GWEN_MsgEndpoint2_GetCurrentlyReceivedMsg(ep);
 	while(bufferLen) {
 	  int bytesNeeded;
-      
+
+          DBG_INFO(GWEN_LOGDOMAIN, "%d remaining bytes in buffer", bufferLen);
 	  if (msg==NULL) {
 	    DBG_INFO(GWEN_LOGDOMAIN, "Creating new message");
 	    msg=GWEN_Msg_new(GWEN_MsgEndpoint2_GetDefaultMessageSize(ep));
@@ -255,27 +260,34 @@ int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, i
 	  }
       
 	  bytesNeeded=xep->getBytesNeededFn(ep, msg);
-	  if (bytesNeeded==0) {
-	    /* message finished */
-	    GWEN_Msg_Attach(msg);
-	    GWEN_MsgEndpoint2_SetCurrentlyReceivedMsg(ep, NULL);
-	    GWEN_MsgEndpoint2_AddReceivedMessage(ep, msg);
-	    msg=NULL;
-	  }
+          DBG_INFO(GWEN_LOGDOMAIN, "current message still needs %d bytes", bytesNeeded);
+          if (bytesNeeded==0) {
+            /* message finished already before adding bytes?? */
+            DBG_ERROR(GWEN_LOGDOMAIN, "Incoming message complete, SNH!");
+          }
 	  else {
 	    int rv;
       
 	    /* add bytes to message */
 	    if (bytesNeeded>bufferLen)
 	      bytesNeeded=bufferLen;
+            DBG_INFO(GWEN_LOGDOMAIN, "adding %d bytes to current message", bytesNeeded);
 	    rv=GWEN_Msg_AddBytes(msg, bufferPtr, bytesNeeded);
 	    if (rv<0) {
 	      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
 	      return rv;
 	    }
-	    bufferPtr+=bytesNeeded;
-	    bufferLen-=bytesNeeded;
-	  }
+            if (xep->getBytesNeededFn(ep, msg)==0) {
+              /* message finished */
+              DBG_INFO(GWEN_LOGDOMAIN, "Incoming message complete");
+              GWEN_Msg_Attach(msg);
+              GWEN_MsgEndpoint2_SetCurrentlyReceivedMsg(ep, NULL);
+              GWEN_MsgEndpoint2_AddReceivedMessage(ep, msg);
+              msg=NULL;
+            }
+            bufferPtr+=bytesNeeded;
+            bufferLen-=bytesNeeded;
+          }
 	} /* while */
     
 	return 0;
