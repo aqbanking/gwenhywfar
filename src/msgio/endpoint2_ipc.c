@@ -21,6 +21,9 @@
 #include <gwenhywfar/debug.h>
 
 
+#define GWEN_MSG_ENDPOINT2_IPC_NAME       "ipc"
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -68,7 +71,7 @@ GWEN_MSG_ENDPOINT2 *GWEN_IpcEndpoint2_CreateIpcTcpClient(const char *host, int p
 {
   GWEN_MSG_ENDPOINT2 *ep;
 
-  ep=GWEN_TcpcEndpoint2_new(host, port, name, groupId);
+  ep=GWEN_TcpcEndpoint2_new(host, port, name?name:GWEN_MSG_ENDPOINT2_IPC_NAME, groupId);
   GWEN_MsgIoEndpoint2_Extend(ep);
   GWEN_IpcEndpoint2_Extend(ep);
   return ep;
@@ -80,7 +83,7 @@ GWEN_MSG_ENDPOINT2 *GWEN_IpcEndpoint2_CreateIpcTcpServiceForSocket(GWEN_SOCKET *
 {
   GWEN_MSG_ENDPOINT2 *ep;
 
-  ep=GWEN_MsgEndpoint2_new(name, groupId);
+  ep=GWEN_MsgEndpoint2_new(name?name:GWEN_MSG_ENDPOINT2_IPC_NAME, groupId);
   GWEN_MsgEndpoint2_SetSocket(ep, sk);
   GWEN_MsgIoEndpoint2_Extend(ep);
   GWEN_IpcEndpoint2_Extend(ep);
