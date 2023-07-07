@@ -271,6 +271,14 @@ GWEN_SOCKET *_createAndSetupSocket(void)
   int rv;
 
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+
+  rv=GWEN_Socket_Open(sk);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error opening socket: %d", rv);
+    GWEN_Socket_free(sk);
+    return NULL;
+  }
+
   rv=GWEN_Socket_SetReuseAddress(sk, 1);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error setting up address reuse on socket: %d", rv);

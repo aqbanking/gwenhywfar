@@ -83,15 +83,9 @@ GWEN_MSG_ENDPOINT2 *GWEN_IpcEndpoint2_CreateIpcTcpServiceForSocket(GWEN_SOCKET *
   ep=GWEN_MsgEndpoint2_new(name, groupId);
   GWEN_MsgEndpoint2_SetSocket(ep, sk);
   GWEN_MsgIoEndpoint2_Extend(ep);
+  GWEN_IpcEndpoint2_Extend(ep);
   return ep;
 }
-
-
-
-
-
-
-
 
 
 

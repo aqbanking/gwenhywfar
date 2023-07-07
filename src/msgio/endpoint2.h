@@ -128,6 +128,9 @@ GWENHYWFAR_API void GWEN_MsgEndpoint2_CheckSockets(GWEN_MSG_ENDPOINT2 *ep,
 
 GWENHYWFAR_API void GWEN_MsgEndpoint2_Run(GWEN_MSG_ENDPOINT2 *ep);
 
+GWENHYWFAR_API void GWEN_MsgEndpoint2_IoLoop(GWEN_MSG_ENDPOINT2 *ep, int timeout);
+
+
 
 
 
@@ -143,7 +146,11 @@ GWENHYWFAR_API void GWEN_MsgEndpoint2_ChildrenCheckSockets(GWEN_MSG_ENDPOINT2 *e
 
 GWENHYWFAR_API void GWEN_MsgEndpoint2_ChildrenRun(GWEN_MSG_ENDPOINT2 *ep);
 
+GWENHYWFAR_API void GWEN_MsgEndpoint2_ChildrenIoLoop(GWEN_MSG_ENDPOINT2 *ep, int timeout);
+
+
 GWENHYWFAR_API void GWEN_MsgEndpoint2_RemoveUnconnectedAndEmptyChildren(GWEN_MSG_ENDPOINT2 *ep);
+
 
 
 

@@ -63,6 +63,11 @@
 #include <gwenhywfar/httpsession.h>
 #include <gwenhywfar/dialog.h>
 
+#include <gwenhywfar/endpoint2_ipc.h>
+#include <gwenhywfar/endpoint2_tcpd.h>
+#include <gwenhywfar/msg_ipc.h>
+
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -6545,7 +6550,87 @@ int testEnviron(void)
   return 0;
 }
 
+
+
+GWEN_MSG_ENDPOINT2 *_acceptTcpConnection(GWEN_UNUSED GWEN_MSG_ENDPOINT2 *ep,
+                                         GWEN_SOCKET *sk,
+                                         GWEN_UNUSED const GWEN_INETADDRESS *addr,
+                                         GWEN_UNUSED void *data)
+{
+  GWEN_MSG_ENDPOINT2 *epIncoming;
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Incoming connection");
+  epIncoming=GWEN_IpcEndpoint2_CreateIpcTcpServiceForSocket(sk, NULL, 1);
+  return epIncoming;
+}
+
+
+
+int testIpcDaemon()
+{
+  GWEN_MSG_ENDPOINT2 *epServer;
+  int loop;
+
+  epServer=GWEN_TcpdEndpoint2_new("127.0.0.1", 55555, NULL, 1);
+  GWEN_TcpdEndpoint2_SetAcceptFn(epServer, _acceptTcpConnection, NULL);
+  for (loop=0;; loop++) {
+    GWEN_MSG_ENDPOINT2 *ep;
+
+    DBG_INFO(GWEN_LOGDOMAIN, "Loop %d:", loop);
+    GWEN_MsgEndpoint2_IoLoop(epServer, 2000); /* 2000 ms */
+    ep=GWEN_MsgEndpoint2_Tree2_GetFirstChild(epServer);
+    while(ep) {
+      GWEN_MSG *msg;
+
+      DBG_INFO(GWEN_LOGDOMAIN, "- Checking endpoint");
+      while( (msg=GWEN_MsgEndpoint2_TakeFirstReceivedMessage(ep)) ) {
+        DBG_INFO(GWEN_LOGDOMAIN,
+                 "  - received msg: protoId=%d, protoVer=%d, code=%d",
+                 GWEN_IpcMsg_GetProtoId(msg),
+                 GWEN_IpcMsg_GetProtoVersion(msg),
+                 GWEN_IpcMsg_GetCode(msg));
+        GWEN_Msg_free(msg);
+      } /* while */
+      ep=GWEN_MsgEndpoint2_Tree2_GetNext(ep);
+    }
+    GWEN_MsgEndpoint2_RemoveUnconnectedAndEmptyChildren(epServer);
+  }
+  return 0;
+}
+
+
+
+int testIpcClient()
+{
+  GWEN_MSG_ENDPOINT2 *epClient;
+  int loop;
+
+  epClient=GWEN_IpcEndpoint2_CreateIpcTcpClient("127.0.0.1", 55555, NULL, 1);
+  for (loop=0;; loop++) {
+    GWEN_MSG *msg;
+
+    DBG_INFO(GWEN_LOGDOMAIN, "Loop %d:", loop);
+    GWEN_MsgEndpoint2_IoLoop(epClient, 2000); /* 2000 ms */
+
+    DBG_INFO(GWEN_LOGDOMAIN, "- Checking endpoint");
+    while( (msg=GWEN_MsgEndpoint2_TakeFirstReceivedMessage(epClient)) ) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "  - received msg: protoId=%d, protoVer=%d, code=%d",
+               GWEN_IpcMsg_GetProtoId(msg),
+               GWEN_IpcMsg_GetProtoVersion(msg),
+               GWEN_IpcMsg_GetCode(msg));
+      GWEN_Msg_free(msg);
+    } /* while */
+  }
+  return 0;
+}
+
+
+
+
 const GWEN_FUNCS tests[] = {
+  GWEN_FUNCS_ENTRY("ipcd", testIpcDaemon),
+  GWEN_FUNCS_ENTRY("ipcc", testIpcClient),
   GWEN_FUNCS_ENTRY("3rsa", testCrypt3Rsa),
   GWEN_FUNCS_ENTRY("3rsa2", testCrypt3Rsa2),
   GWEN_FUNCS_ENTRY("3rsa3", testCrypt3Rsa3),

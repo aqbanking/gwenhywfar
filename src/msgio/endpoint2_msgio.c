@@ -29,6 +29,7 @@
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
+static void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet);
 static void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
 static int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep);
 static int _readCurrentMessage(GWEN_MSG_ENDPOINT2 *ep);
@@ -52,6 +53,7 @@ void GWEN_MsgIoEndpoint2_Extend(GWEN_MSG_ENDPOINT2 *ep)
   GWEN_NEW_OBJECT(GWEN_ENDPOINT2_MSGIO, xep);
   GWEN_INHERIT_SETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep, xep, _freeData);
 
+  xep->addSocketsFn=GWEN_MsgEndpoint2_SetAddSocketsFn(ep, _addSockets);
   xep->checkSocketsFn=GWEN_MsgEndpoint2_SetCheckSocketsFn(ep, _checkSockets);
 }
 
@@ -83,6 +85,33 @@ void GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOI
 
 
 
+void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet)
+{
+  if (ep) {
+    GWEN_ENDPOINT2_MSGIO *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    if (xep) {
+      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
+        GWEN_SOCKET *sk;
+
+        sk=GWEN_MsgEndpoint2_GetSocket(ep);
+        if (sk) {
+          GWEN_SocketSet_AddSocket(readSet, sk);
+          if (GWEN_MsgEndpoint2_HaveMessageToSend(ep))
+            GWEN_SocketSet_AddSocket(writeSet, sk);
+        } /* if socket */
+      }
+      else if (xep->addSocketsFn) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Not connected, calling base function", GWEN_MsgEndpoint2_GetName(ep));
+        xep->addSocketsFn(ep, readSet, writeSet, xSet);
+      }
+    } /* if (xep) */
+  } /* if (ep) */
+}
+
+
+
 void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet)
 {
   if (ep) {
@@ -98,6 +127,7 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETS
         sk=GWEN_MsgEndpoint2_GetSocket(ep);
         if (sk) {
           if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Has socket in write set", GWEN_MsgEndpoint2_GetName(ep));
             rv=_writeCurrentMessage(ep);
             if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
               DBG_INFO(GWEN_LOGDOMAIN,
@@ -110,6 +140,7 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETS
           }
 
           if (GWEN_SocketSet_HasSocket(readSet, sk)) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Has socket in read set", GWEN_MsgEndpoint2_GetName(ep));
             rv=_readCurrentMessage(ep);
             if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
               DBG_INFO(GWEN_LOGDOMAIN,
@@ -121,7 +152,7 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETS
             }
           }
         }
-      }
+      } /* if connected */
       else if (xep->checkSocketsFn) {
         DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Not connected, calling base function", GWEN_MsgEndpoint2_GetName(ep));
         xep->checkSocketsFn(ep, readSet, writeSet, xSet);

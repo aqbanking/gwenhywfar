@@ -36,7 +36,7 @@ GWEN_MSG_ENDPOINT2 *GWEN_MsgEndpoint2_new(const char *name, int groupId)
   GWEN_INHERIT_INIT(GWEN_MSG_ENDPOINT2, ep);
   GWEN_TREE2_INIT(GWEN_MSG_ENDPOINT2, ep, GWEN_MsgEndpoint2);
 
-  ep->name=name?strdup(name):"<unnamed>";
+  ep->name=strdup(name?name:"<unnamed>");
   ep->groupId=groupId;
 
   ep->receivedMessageList=GWEN_Msg_List_new();
@@ -346,6 +346,69 @@ void GWEN_MsgEndpoint2_RemoveUnconnectedAndEmptyChildren(GWEN_MSG_ENDPOINT2 *ep)
   }
 }
 
+
+
+void GWEN_MsgEndpoint2_IoLoop(GWEN_MSG_ENDPOINT2 *ep, int timeout)
+{
+  GWEN_SOCKETSET *readSet;
+  GWEN_SOCKETSET *writeSet;
+  GWEN_SOCKETSET *xSet;
+  int rv;
+
+  readSet=GWEN_SocketSet_new();
+  writeSet=GWEN_SocketSet_new();
+  xSet=GWEN_SocketSet_new();
+  GWEN_MsgEndpoint2_AddSockets(ep, readSet, writeSet, xSet);
+
+  do {
+    rv=GWEN_Socket_Select(GWEN_SocketSet_GetSocketCount(readSet)?readSet:NULL,
+                          GWEN_SocketSet_GetSocketCount(writeSet)?writeSet:NULL,
+                          GWEN_SocketSet_GetSocketCount(xSet)?xSet:NULL,
+                          timeout);
+  } while(rv==GWEN_ERROR_INTERRUPTED);
+  if (rv<0) {
+    if (rv!=GWEN_ERROR_TIMEOUT) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error on GWEN_Socket_Select: %d", rv);
+    }
+  }
+  else
+    GWEN_MsgEndpoint2_CheckSockets(ep, readSet, writeSet, xSet);
+  GWEN_SocketSet_free(xSet);
+  GWEN_SocketSet_free(writeSet);
+  GWEN_SocketSet_free(readSet);
+}
+
+
+
+void GWEN_MsgEndpoint2_ChildrenIoLoop(GWEN_MSG_ENDPOINT2 *ep, int timeout)
+{
+  GWEN_SOCKETSET *readSet;
+  GWEN_SOCKETSET *writeSet;
+  GWEN_SOCKETSET *xSet;
+  int rv;
+
+  readSet=GWEN_SocketSet_new();
+  writeSet=GWEN_SocketSet_new();
+  xSet=GWEN_SocketSet_new();
+  GWEN_MsgEndpoint2_ChildrenAddSockets(ep, readSet, writeSet, xSet);
+
+  do {
+    rv=GWEN_Socket_Select(GWEN_SocketSet_GetSocketCount(readSet)?readSet:NULL,
+                          GWEN_SocketSet_GetSocketCount(writeSet)?writeSet:NULL,
+                          GWEN_SocketSet_GetSocketCount(xSet)?xSet:NULL,
+                          timeout);
+  } while(rv==GWEN_ERROR_INTERRUPTED);
+  if (rv<0) {
+    if (rv!=GWEN_ERROR_TIMEOUT) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Error on GWEN_Socket_Select: %d", rv);
+    }
+  }
+  else
+    GWEN_MsgEndpoint2_ChildrenCheckSockets(ep, readSet, writeSet, xSet);
+  GWEN_SocketSet_free(xSet);
+  GWEN_SocketSet_free(writeSet);
+  GWEN_SocketSet_free(readSet);
+}
 
 
 

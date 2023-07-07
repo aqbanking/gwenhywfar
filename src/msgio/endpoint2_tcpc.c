@@ -128,6 +128,7 @@ void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET
         int rv;
   
         /* (re)connect, set state */
+        DBG_INFO(GWEN_LOGDOMAIN, "Starting to (re-)connect");
         rv=GWEN_TcpcEndpoint2_StartConnect(ep);
         if (rv<0 && rv!=GWEN_ERROR_IN_PROGRESS) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -176,19 +177,6 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
           }
         }
       }
-
-#if 0
-      /* this belongs in higher layers */
-  
-      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
-        if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
-        }
-  
-        if (GWEN_SocketSet_HasSocket(readSet, sk)) {
-        }
-      }
-#endif
-
     } /* if (sk) */
     else {
       DBG_INFO(GWEN_LOGDOMAIN, "Endpoint \"%s\": No socket", GWEN_MsgEndpoint2_GetName(ep));
@@ -246,6 +234,14 @@ GWEN_SOCKET *_createAndSetupSocket(void)
   int rv;
 
   sk=GWEN_Socket_new(GWEN_SocketTypeTCP);
+
+  rv=GWEN_Socket_Open(sk);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Error opening socket: %d", rv);
+    GWEN_Socket_free(sk);
+    return NULL;
+  }
+
   rv=GWEN_Socket_SetBlocking(sk, 0);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "Error setting socket nonblocking: %d", rv);
