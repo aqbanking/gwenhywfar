@@ -31,6 +31,8 @@ static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
 static void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet);
 static void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
+static int _sendMsgStart(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
+static void _sendMsgFinish(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
 static int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep);
 static int _readCurrentMessage(GWEN_MSG_ENDPOINT2 *ep);
 static int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, int bufferLen);
@@ -80,6 +82,60 @@ void GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOI
     xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
     if (xep)
       xep->getBytesNeededFn=f;
+  }
+}
+
+
+
+void GWEN_MsgIoEndpoint2_SetSendMsgStartFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_SENDMSGSTART_FN f)
+{
+  if (ep) {
+    GWEN_ENDPOINT2_MSGIO *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    if (xep)
+      xep->sendMsgStartFn=f;
+  }
+}
+
+
+
+void GWEN_MsgIoEndpoint2_SetSendMsgFinishFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_SENDMSGFINISH_FN f)
+{
+  if (ep) {
+    GWEN_ENDPOINT2_MSGIO *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    if (xep)
+      xep->sendMsgFinishFn=f;
+  }
+}
+
+
+
+int _sendMsgStart(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
+{
+  if (ep) {
+    GWEN_ENDPOINT2_MSGIO *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    if (xep && xep->sendMsgStartFn)
+      return xep->sendMsgStartFn(ep, msg);
+  }
+
+  return 0;
+}
+
+
+
+void _sendMsgFinish(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
+{
+  if (ep) {
+    GWEN_ENDPOINT2_MSGIO *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    if (xep && xep->sendMsgStartFn)
+      xep->sendMsgFinishFn(ep, msg);
   }
 }
 
@@ -179,6 +235,23 @@ int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 
     pos=GWEN_Msg_GetCurrentPos(msg);
     remaining=GWEN_Msg_GetRemainingBytes(msg);
+    if (pos==0 && remaining>0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Starting to write packet");
+      rv=_sendMsgStart(ep, msg);
+      if (rv<0) {
+        if (rv==GWEN_ERROR_TIMEOUT) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Line busy");
+          return rv;
+        }
+        else {
+          DBG_INFO(GWEN_LOGDOMAIN, "Error starting message (%d)", rv);
+          return rv;
+        }
+      }
+      else {
+        DBG_INFO(GWEN_LOGDOMAIN, "Okay to write packet");
+      }
+    }
     if (remaining>0) {
       const uint8_t *buf;
 
@@ -194,6 +267,7 @@ int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
       GWEN_Msg_IncCurrentPos(msg, rv);
       if (rv==remaining) {
         DBG_INFO(GWEN_LOGDOMAIN, "Message completely sent");
+        _sendMsgFinish(ep, msg);
         /* end current message */
         GWEN_Msg_List_Del(msg);
         GWEN_Msg_free(msg);

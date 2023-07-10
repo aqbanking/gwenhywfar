@@ -33,6 +33,10 @@ extern "C" {
 typedef int (*GWEN_ENDPOINT2_MSGIO_GETBYTESNEEDED_FN)(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
 
 
+typedef int (*GWEN_ENDPOINT2_MSGIO_SENDMSGSTART_FN)(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
+typedef void (*GWEN_ENDPOINT2_MSGIO_SENDMSGFINISH_FN)(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
+
+
 /**
  * Create a base class for message based endpoints (which are basically all endpoints).
  * It contains code to automatically read and write messages from/to the internal queues
@@ -43,6 +47,9 @@ typedef int (*GWEN_ENDPOINT2_MSGIO_GETBYTESNEEDED_FN)(GWEN_MSG_ENDPOINT2 *ep, GW
 GWENHYWFAR_API void GWEN_MsgIoEndpoint2_Extend(GWEN_MSG_ENDPOINT2 *ep);
 
 GWENHYWFAR_API void GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_GETBYTESNEEDED_FN f);
+
+GWENHYWFAR_API void GWEN_MsgIoEndpoint2_SetSendMsgStartFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_SENDMSGSTART_FN f);
+GWENHYWFAR_API void GWEN_MsgIoEndpoint2_SetSendMsgFinishFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_SENDMSGFINISH_FN f);
 
 
 #ifdef __cplusplus
