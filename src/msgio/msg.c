@@ -168,6 +168,13 @@ void GWEN_Msg_SetBytesInBuffer(GWEN_MSG *msg, uint32_t i)
 
 
 
+uint32_t GWEN_Msg_GetMaxSize(const GWEN_MSG *msg)
+{
+  return msg?(msg->maxSize):0;
+}
+
+
+
 uint32_t GWEN_Msg_GetCurrentPos(const GWEN_MSG *msg)
 {
   if (msg)
