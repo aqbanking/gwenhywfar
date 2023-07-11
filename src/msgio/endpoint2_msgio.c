@@ -153,10 +153,14 @@ void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET
 
         sk=GWEN_MsgEndpoint2_GetSocket(ep);
         if (sk) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket to read set", GWEN_MsgEndpoint2_GetName(ep));
+          DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket %d to read set",
+                   GWEN_MsgEndpoint2_GetName(ep),
+                   GWEN_Socket_GetSocketInt(sk));
           GWEN_SocketSet_AddSocket(readSet, sk);
           if (GWEN_MsgEndpoint2_HaveMessageToSend(ep)) {
-            DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket to write set", GWEN_MsgEndpoint2_GetName(ep));
+            DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket %d to write set",
+                     GWEN_MsgEndpoint2_GetName(ep),
+                     GWEN_Socket_GetSocketInt(sk));
             GWEN_SocketSet_AddSocket(writeSet, sk);
           }
         } /* if socket */
