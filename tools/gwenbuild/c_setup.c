@@ -309,6 +309,11 @@ int _getAllToolPaths(GWEN_DB_NODE *dbVars, const char *sCompileTarget, const GWE
   else
     GWEN_DB_SetCharValue(dbVars, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgfmt_EXISTS", "TRUE");
 
+  rv=_getToolPath(dbVars, NULL, sl, "avra", "AVRA", "GWBUILD_TOOL_AVRA");
+  if (rv<0) {
+    DBG_INFO(NULL, "Tool avra not found, only needed when assembling AVR assembler code.");
+  }
+
   /* add more tools here */
 
 

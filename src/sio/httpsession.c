@@ -38,6 +38,9 @@ GWEN_INHERIT_FUNCTIONS(GWEN_HTTP_SESSION)
 
 
 static void _setHostHeaderFromUrl(const char *sUrl, GWEN_DB_NODE *dbHeader);
+static int _initSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
+static int _recvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf);
+static int _recvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
 
 
 
@@ -322,7 +325,7 @@ int GWEN_HttpSession_Init(GWEN_HTTP_SESSION *sess)
     }
 
     /* allow derived classes to modify the given GWEN_SIO */
-    rv=GWEN_HttpSession_InitSyncIo(sess, sio);
+    rv=_initSyncIo(sess, sio);
     if (rv<0 && rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_SyncIo_free(sio);
@@ -563,7 +566,7 @@ int GWEN_HttpSession_SendStatus(GWEN_HTTP_SESSION *sess,
 
 
 
-int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
+int _recvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
 {
   int rv;
 
@@ -584,7 +587,7 @@ int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
       GWEN_DB_NODE *dbHeaderIn;
 
       dbHeaderIn=GWEN_SyncIo_Http_GetDbHeaderIn(sess->syncIo);
-
+      /* TODO: read set-cookie headers */
       if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info) {
         DBG_INFO(GWEN_LOGDOMAIN, "Detailed Error Log For Packet:");
 
@@ -650,7 +653,7 @@ int GWEN_HttpSession_RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf)
     GWEN_Gui_ProgressLog(0,
                          GWEN_LoggerLevel_Debug,
                          I18N("Receiving response..."));
-    rv=GWEN_HttpSession__RecvPacket(sess, buf);
+    rv=_recvPacket(sess, buf);
     if (rv<0 || rv<200 || rv>299) {
       DBG_INFO(GWEN_LOGDOMAIN,
                "Error receiving packet (%d)", rv);
@@ -699,7 +702,7 @@ int GWEN_HttpSession_RecvCommand(GWEN_HTTP_SESSION *sess,
   pos=GWEN_Buffer_GetPos(buf);
   for (;;) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Receiving command..."));
-    rv=GWEN_HttpSession__RecvPacket(sess, buf);
+    rv=_recvPacket(sess, buf);
     if (rv<0 || (rv>0 && rv<200) || rv>299) {
       DBG_INFO(GWEN_LOGDOMAIN, "Error receiving packet (%d)", rv);
       GWEN_SyncIo_Disconnect(sess->syncIo);
@@ -739,7 +742,7 @@ int GWEN_HttpSession_RecvCommand(GWEN_HTTP_SESSION *sess,
 
 
 
-int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+int _recvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 {
   int rv;
 
@@ -819,7 +822,7 @@ int GWEN_HttpSession_RecvPacketToFile(GWEN_HTTP_SESSION *sess, const char *fname
     GWEN_Gui_ProgressLog(0,
                          GWEN_LoggerLevel_Debug,
                          I18N("Receiving response..."));
-    rv=GWEN_HttpSession__RecvPacketToSio(sess, sio);
+    rv=_recvPacketToSio(sess, sio);
     if (rv<0 || rv<200 || rv>299) {
       DBG_INFO(GWEN_LOGDOMAIN,
                "Error receiving packet (%d)", rv);
@@ -911,7 +914,7 @@ int GWEN_HttpSession_ConnectionTest(GWEN_HTTP_SESSION *sess)
 
 
 
-int GWEN_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+int _initSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 {
   if (sess->initSyncIoFn)
     return sess->initSyncIoFn(sess, sio);

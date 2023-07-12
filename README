@@ -52,7 +52,7 @@ Requirements
 
 - GnuTLS >= 1.4 (>=2.0.1 recommended)
 - libgcrypt (>=1.2.0)
-
+- pkg-config
 
 
 Platforms

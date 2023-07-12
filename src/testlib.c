@@ -9,6 +9,10 @@
 #include <gwenhywfar/list.h>
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/gwendate.h>
+#include <gwenhywfar/syncio.h>
+#include <gwenhywfar/json.h>
+#include <gwenhywfar/json_read.h>
+#include <gwenhywfar/json_dump.h>
 #include <errno.h>
 #include "gwenhywfar.h"
 
@@ -355,6 +359,45 @@ int test_date()
 
 
 
+int test_json(const char *fname, const char *sSearch)
+{
+  int rv;
+  GWEN_BUFFER *buf;
+  GWEN_JSON_ELEM *je;
+  GWEN_JSON_ELEM *jeSearch;
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SyncIo_Helper_ReadFile(fname, buf);
+  if (rv<0) {
+    fprintf(stderr, "Error reading JSON file (%d).\n", rv);
+    return 3;
+  }
+
+  je=GWEN_JsonElement_fromString(GWEN_Buffer_GetStart(buf));
+  if (je==NULL) {
+    fprintf(stderr, "Error parsing JSON file.\n");
+    return 3;
+  }
+  fprintf(stdout, "File successfully read.\n");
+
+  GWEN_Buffer_Reset(buf);
+  GWEN_JsonElement_DumpToBuffer(je, 2, buf);
+  fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(buf));
+
+  jeSearch=GWEN_JsonElement_GetElementByPath(je, sSearch, 0);
+  if (jeSearch) {
+    fprintf(stdout, "Found element %s:\n", sSearch);
+    GWEN_Buffer_Reset(buf);
+    GWEN_JsonElement_DumpToBuffer(jeSearch, 2, buf);
+    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(buf));
+  }
+
+  GWEN_Buffer_free(buf);
+  return 0;
+}
+
+
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -380,6 +423,13 @@ int main(int argc, char **argv)
   }
   else if (strcasecmp(cmd, "date")==0) {
     rv=test_date();
+  }
+  else if (strcasecmp(cmd, "json")==0) {
+    if (argc<4) {
+      fprintf(stderr, "args: FILENAME SEARCHPATH.\n");
+      return 1;
+    }
+    rv=test_json(argv[2], argv[3]);
   }
   else {
     fprintf(stderr, "Unknown command \"%s\"\n", cmd);

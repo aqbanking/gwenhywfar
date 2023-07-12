@@ -36,13 +36,6 @@ struct GWEN_HTTP_SESSION {
 };
 
 
-static int GWEN_HttpSession__RecvPacket(GWEN_HTTP_SESSION *sess, GWEN_BUFFER *buf);
-static int GWEN_HttpSession__RecvPacketToSio(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
-
-
-static int GWEN_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
-
-
 
 #endif
 

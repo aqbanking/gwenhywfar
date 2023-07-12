@@ -175,6 +175,7 @@ GWEN_STRINGLIST *GWBUILD_GetPathFromEnvironment()
 
 GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
 {
+  /* TODO: Create from builder files */
   if (s && *s) {
     if (strcasecmp(s, "InstallLibrary")==0)
       return GWBUILD_TargetType_InstallLibrary;
@@ -191,6 +192,8 @@ GWBUILD_TARGETTYPE GWBUILD_TargetType_fromString(const char *s)
       return GWBUILD_TargetType_Module;
     else if (strcasecmp(s, "I18nCatalog")==0)
       return GWBUILD_TargetType_I18nCatalog;
+    else if (strcasecmp(s, "AvrHexFile")==0)
+      return GWBUILD_TargetType_AvrHexFile;
     else {
       DBG_ERROR(NULL, "Invalid target type \"%s\"", s);
     }
@@ -216,6 +219,7 @@ const char *GWBUILD_TargetType_toString(GWBUILD_TARGETTYPE tt)
   case GWBUILD_TargetType_Objects:            return "objects";
   case GWBUILD_TargetType_Module:             return "module";
   case GWBUILD_TargetType_I18nCatalog:        return "I18nCatalog";
+  case GWBUILD_TargetType_AvrHexFile:         return "AvrHexFile";
   }
 
   return "invalid";
@@ -1178,6 +1182,10 @@ GWB_BUILDER *_genBuilderForTarget(GWB_PROJECT *project, GWB_TARGET *target)
   case GWBUILD_TargetType_I18nCatalog:
     builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "msgfmt");
     break;
+  case GWBUILD_TargetType_AvrHexFile:
+    builder=_getBuilderByName(gwenbuild, GWB_Target_GetContext(target), "avrhexfile");
+    break;
+
   }
   if (builder==NULL) {
     DBG_ERROR(NULL,

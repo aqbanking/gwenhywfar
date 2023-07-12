@@ -280,7 +280,7 @@ int _getAndCheckRequiredGwenVersion(GWEN_XMLNODE *xmlGwbuildNode)
 
 
 
-GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode)
+GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XMLNODE *xmlNode, int ignoreDupes)
 {
   GWEN_BUFFER *buf;
 
@@ -288,7 +288,7 @@ GWEN_STRINGLIST *GWB_Parser_ReadXmlDataIntoStringList(GWEN_DB_NODE *db, GWEN_XML
   if (buf) {
     GWEN_STRINGLIST *sl;
 
-    sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", 1);
+    sl=GWEN_StringList_fromString(GWEN_Buffer_GetStart(buf), " ", ignoreDupes);
     if (sl==NULL) {
       DBG_INFO(NULL, "Could not generate string list from data [%s]", GWEN_Buffer_GetStart(buf));
       GWEN_Buffer_free(buf);
@@ -368,7 +368,7 @@ int GWB_Parser_ParseSubdirs(GWB_PROJECT *project, GWB_CONTEXT *currentContext, G
 {
   GWEN_STRINGLIST *sl;
 
-  sl=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+  sl=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode, 1);
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
 
@@ -1017,7 +1017,7 @@ int GWB_Parser_ParseSourcesOrHeaders(GWB_PROJECT *project,
   if (s && *s && (strcasecmp(s, "true")==0 || strcasecmp(s, "yes")==0))
     flags|=GWB_FILE_FLAGS_DIST;
 
-  fileNameList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+  fileNameList=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode, 1);
   if (fileNameList) {
     GWEN_STRINGLISTENTRY *se;
 

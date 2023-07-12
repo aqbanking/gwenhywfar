@@ -20,7 +20,8 @@ iheader_HEADERS=\
  process.h \
  mutex.h \
  gwensemaphore.h \
- gwendate.h
+ gwendate.h \
+ timestamp.h
 
 noinst_HEADERS= \
  gwendate_p.h \
@@ -29,14 +30,19 @@ noinst_HEADERS= \
  inetaddr_l.h \
  inetsocket_l.h \
  libloader_l.h \
- process_l.h
+ process_l.h \
+ timestamp_p.h
 
 noinst_LTLIBRARIES=libos.la
 libos_la_SOURCES=\
  directory_all.c \
  gwentime_all.c \
  gwendate.c \
- process_all.c
+ process_all.c \
+ timestamp.c
+
+EXTRA_DIST=\
+  timestamp-t.c
 
 
 libos_la_LIBADD=@GWEN_OS@/libosimpl.la

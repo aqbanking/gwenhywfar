@@ -346,7 +346,7 @@ int _parseI18n(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *
 
     installPath=GWEN_XMLNode_GetProperty(xmlNode, "install", NULL);
 
-    sl=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode);
+    sl=GWB_Parser_ReadXmlDataIntoStringList(GWB_Context_GetVars(currentContext), xmlNode, 1);
     if (sl) {
       GWEN_STRINGLISTENTRY *se;
 

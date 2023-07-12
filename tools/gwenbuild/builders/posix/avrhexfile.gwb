@@ -1,0 +1,43 @@
+<?xml?>
+
+<GwenBuilder name="AvrHexFile">
+
+  <inputFiles>
+    <acceptedInputTypes>avrasm</acceptedInputTypes>
+    <acceptedInputFiles>*.asm</acceptedInputFiles>
+  </inputFiles>
+
+  <outputFiles>
+    <file type="AvrHexFile" >$(target_name).hex</file>
+    <file type="listfile" >$(target_name).list</file>
+    <file type="mapfile" >$(target_name).map</file>
+  </outputFiles>
+  
+  <buildCommands>
+    <cmd tool="$(GWBUILD_TOOL_AVRA)" deleteOutFileFirst="FALSE" >
+      <args>
+        <includes type="avrasm" />
+        <blank/>
+        <fixed>-o</fixed>
+        <blank/>
+        <outputFiles index="0" />
+        <blank/>
+        <fixed>-l</fixed>
+        <blank/>
+        <outputFiles index="1" />
+        <blank/>
+        <fixed>-m</fixed>
+        <blank/>
+        <outputFiles index="2" />
+        <blank/>
+        <inputFiles match="*.asm" />
+      </args>
+      <mainInputFile index="0" />
+      <buildMessage>Assembling '$(target_name).hex'</buildMessage>
+    </cmd>
+
+  </buildCommands>
+  
+
+
+</GwenBuilder>
