@@ -194,8 +194,10 @@ GWEN_MSG_LIST *GWEN_MsgEndpoint2_GetSendMessageList(const GWEN_MSG_ENDPOINT2 *ep
 
 void GWEN_MsgEndpoint2_AddReceivedMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *m)
 {
-  if (ep)
+  if (ep && m) {
+    GWEN_Msg_RewindCurrentPos(m);
     GWEN_Msg_List_Add(m, ep->receivedMessageList);
+  }
 }
 
 
@@ -221,8 +223,10 @@ GWEN_MSG *GWEN_MsgEndpoint2_TakeFirstReceivedMessage(GWEN_MSG_ENDPOINT2 *ep)
 
 void GWEN_MsgEndpoint2_AddSendMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *m)
 {
-  if (ep)
+  if (ep && m) {
+    GWEN_Msg_RewindCurrentPos(m);
     GWEN_Msg_List_Add(m, ep->sendMessageList);
+  }
 }
 
 
