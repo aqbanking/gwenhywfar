@@ -166,7 +166,7 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
   
           rv=GWEN_Socket_GetSocketError(sk);
           if (rv==GWEN_ERROR_IN_PROGRESS) {
-            DBG_INFO(GWEN_LOGDOMAIN, "Connect still in progress");
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Connect still in progress");
           }
           else if (rv==0) {
             DBG_INFO(GWEN_LOGDOMAIN, "Connected.");

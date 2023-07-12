@@ -422,7 +422,7 @@ int GWEN_MsgEndpoint2_ReadFromSocket(GWEN_MSG_ENDPOINT2 *ep, uint8_t *bufferPtr,
   int rv;
 
   len=bufferLen;
-  DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Reading from socket", GWEN_MsgEndpoint2_GetName(ep));
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Reading from socket", GWEN_MsgEndpoint2_GetName(ep));
   do {
     rv=GWEN_Socket_Read(ep->socket, (char*) bufferPtr, &len);
   } while(rv==GWEN_ERROR_INTERRUPTED);
@@ -430,7 +430,7 @@ int GWEN_MsgEndpoint2_ReadFromSocket(GWEN_MSG_ENDPOINT2 *ep, uint8_t *bufferPtr,
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Read %d bytes from socket", GWEN_MsgEndpoint2_GetName(ep), len);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Read %d bytes from socket", GWEN_MsgEndpoint2_GetName(ep), len);
   return len;
 }
 
