@@ -74,6 +74,23 @@ void _freeData(void *bp, void *p)
 
 
 
+time_t GWEN_MsgEndpoint2_GetTimeOfLastIo(const GWEN_MSG_ENDPOINT2 *ep)
+{
+  if (ep) {
+    GWEN_ENDPOINT2_MSGIO *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    if (xep)
+      return xep->timeOfLastIo;
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Endpoint %s: Not of type \"GWEN_ENDPOINT2_MSGIO\"", GWEN_MsgEndpoint2_GetName(ep));
+    }
+  }
+  return 0;
+}
+
+
+
 void GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_GETBYTESNEEDED_FN f)
 {
   if (ep) {
@@ -228,58 +245,64 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETS
 
 int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 {
-  GWEN_MSG *msg;
+  GWEN_ENDPOINT2_MSGIO *xep;
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Writing to endpoint %s", GWEN_MsgEndpoint2_GetName(ep));
-  msg=GWEN_MsgEndpoint2_GetFirstSendMessage(ep);
-  if (msg) {
-    uint8_t pos;
-    int remaining;
-    int rv;
-
-    pos=GWEN_Msg_GetCurrentPos(msg);
-    remaining=GWEN_Msg_GetRemainingBytes(msg);
-    if (pos==0 && remaining>0) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Starting to write packet");
-      rv=_sendMsgStart(ep, msg);
-      if (rv<0) {
-        if (rv==GWEN_ERROR_TIMEOUT) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Line busy");
-          return rv;
+  xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+  if (xep) {
+    GWEN_MSG *msg;
+  
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Writing to endpoint %s", GWEN_MsgEndpoint2_GetName(ep));
+    msg=GWEN_MsgEndpoint2_GetFirstSendMessage(ep);
+    if (msg) {
+      uint8_t pos;
+      int remaining;
+      int rv;
+  
+      pos=GWEN_Msg_GetCurrentPos(msg);
+      remaining=GWEN_Msg_GetRemainingBytes(msg);
+      if (pos==0 && remaining>0) {
+        DBG_DEBUG(GWEN_LOGDOMAIN, "Starting to write packet");
+        rv=_sendMsgStart(ep, msg);
+        if (rv<0) {
+          if (rv==GWEN_ERROR_TIMEOUT) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Line busy");
+            return rv;
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN, "Error starting message (%d)", rv);
+            return rv;
+          }
         }
         else {
-          DBG_INFO(GWEN_LOGDOMAIN, "Error starting message (%d)", rv);
-          return rv;
+          DBG_DEBUG(GWEN_LOGDOMAIN, "Okay to write packet");
         }
       }
-      else {
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Okay to write packet");
-      }
-    }
-    if (remaining>0) {
-      const uint8_t *buf;
-
-      /* start new message */
-      buf=GWEN_Msg_GetBuffer(msg)+pos;
-      rv=GWEN_MsgEndpoint2_WriteToSocket(ep, buf, remaining);
-      if (rv<0) {
-        if (rv==GWEN_ERROR_TIMEOUT)
+      if (remaining>0) {
+        const uint8_t *buf;
+  
+        /* start new message */
+        buf=GWEN_Msg_GetBuffer(msg)+pos;
+        rv=GWEN_MsgEndpoint2_WriteToSocket(ep, buf, remaining);
+        if (rv<0) {
+          if (rv==GWEN_ERROR_TIMEOUT)
+            return rv;
+          DBG_ERROR(GWEN_LOGDOMAIN, "Error on write() (%d)", rv);
           return rv;
-        DBG_ERROR(GWEN_LOGDOMAIN, "Error on write() (%d)", rv);
-        return rv;
-      }
-      GWEN_Msg_IncCurrentPos(msg, rv);
-      if (rv==remaining) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Message completely sent");
-        _sendMsgFinish(ep, msg);
-        /* end current message */
-        GWEN_Msg_List_Del(msg);
-        GWEN_Msg_free(msg);
+        }
+        GWEN_Msg_IncCurrentPos(msg, rv);
+        xep->timeOfLastIo=time(NULL);
+        if (rv==remaining) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Message completely sent");
+          _sendMsgFinish(ep, msg);
+          /* end current message */
+          GWEN_Msg_List_Del(msg);
+          GWEN_Msg_free(msg);
+        }
       }
     }
-  }
-  else {
-    DBG_INFO(GWEN_LOGDOMAIN, "Nothing to send");
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "Nothing to send");
+    }
   }
   return 0;
 }
@@ -289,26 +312,31 @@ int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 
 int _readCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 {
-  int rv;
-  uint8_t buffer[GWEN_ENDPOINT_MSGIO_BUFFERSIZE];
+  GWEN_ENDPOINT2_MSGIO *xep;
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint2_GetName(ep));
-  rv=GWEN_MsgEndpoint2_ReadFromSocket(ep, buffer, sizeof(buffer));
-  if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+  if (xep) {
+    int rv;
+    uint8_t buffer[GWEN_ENDPOINT_MSGIO_BUFFERSIZE];
+  
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint2_GetName(ep));
+    rv=GWEN_MsgEndpoint2_ReadFromSocket(ep, buffer, sizeof(buffer));
+    if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
+      return GWEN_ERROR_IO;
+    }
+  
+    xep->timeOfLastIo=time(NULL);
+    rv=_distributeBufferContent(ep, buffer, rv);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
-  else if (rv==0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "EOF met on read()");
-    return GWEN_ERROR_IO;
-  }
-
-  rv=_distributeBufferContent(ep, buffer, rv);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
   return 0;
 }
 
