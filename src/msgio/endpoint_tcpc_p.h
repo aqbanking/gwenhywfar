@@ -6,18 +6,16 @@
  * should have received along with this file.
  ****************************************************************************/
 
-#ifndef GWEN_MSG_ENDPOINT2_TCPD_P_H
-#define GWEN_MSG_ENDPOINT2_TCPD_P_H
+#ifndef GWEN_MSG_ENDPOINT_TCPC_P_H
+#define GWEN_MSG_ENDPOINT_TCPC_P_H
 
-#include <gwenhywfar/endpoint2_tcpd.h>
+#include <gwenhywfar/endpoint_tcpc.h>
 
 
-typedef struct GWEN_ENDPOINT2_TCPD GWEN_ENDPOINT2_TCPD;
-struct GWEN_ENDPOINT2_TCPD {
+typedef struct GWEN_ENDPOINT_TCPC GWEN_ENDPOINT_TCPC;
+struct GWEN_ENDPOINT_TCPC {
   char *host;
   int port;
-  GWEN_ENDPOINT2_TCPD_ACCEPT_FN acceptFn;
-  void *acceptData;
 };
 
 

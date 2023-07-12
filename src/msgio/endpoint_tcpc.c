@@ -13,14 +13,14 @@
 /*#define DISABLE_DEBUGLOG*/
 
 
-#include "./endpoint2_tcpc_p.h"
+#include "./endpoint_tcpc_p.h"
 
 #include <gwenhywfar/debug.h>
 
 
 
-#define GWEN_MSG_ENDPOINT2_TCPC_NAME       "tcpclient"
-#define GWEN_ENDPOINT2_TCPC_RECONNECT_TIME 5
+#define GWEN_MSG_ENDPOINT_TCPC_NAME       "tcpclient"
+#define GWEN_ENDPOINT_TCPC_RECONNECT_TIME 5
 
 
 
@@ -31,10 +31,10 @@
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
-static void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
-static void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
+static void _addSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
+static void _checkSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
 
-static int _startConnect(GWEN_MSG_ENDPOINT2 *ep);
+static int _startConnect(GWEN_MSG_ENDPOINT *ep);
 static GWEN_SOCKET *_createAndSetupSocket(void);
 static GWEN_INETADDRESS *_createAndSetupAddress(const char *host, int port);
 
@@ -46,55 +46,55 @@ static GWEN_INETADDRESS *_createAndSetupAddress(const char *host, int port);
 
 
 
-GWEN_INHERIT(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC)
+GWEN_INHERIT(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_TCPC)
 
 
 
 
-GWEN_MSG_ENDPOINT2 *GWEN_TcpcEndpoint2_new(const char *host, int port, const char *name, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_TcpcEndpoint_new(const char *host, int port, const char *name, int groupId)
 {
-  GWEN_MSG_ENDPOINT2 *ep;
-  GWEN_ENDPOINT2_TCPC *xep;
+  GWEN_MSG_ENDPOINT *ep;
+  GWEN_ENDPOINT_TCPC *xep;
 
-  ep=GWEN_MsgEndpoint2_new(name?name:GWEN_MSG_ENDPOINT2_TCPC_NAME, groupId);
-  GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_UNCONNECTED);
+  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_TCPC_NAME, groupId);
+  GWEN_MsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_STATE_UNCONNECTED);
 
-  GWEN_NEW_OBJECT(GWEN_ENDPOINT2_TCPC, xep);
-  GWEN_INHERIT_SETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC, ep, xep, _freeData);
+  GWEN_NEW_OBJECT(GWEN_ENDPOINT_TCPC, xep);
+  GWEN_INHERIT_SETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_TCPC, ep, xep, _freeData);
   xep->host=host?strdup(host):NULL;
   xep->port=port;
 
-  GWEN_MsgEndpoint2_SetAddSocketsFn(ep, _addSockets);
-  GWEN_MsgEndpoint2_SetCheckSocketsFn(ep, _checkSockets);
+  GWEN_MsgEndpoint_SetAddSocketsFn(ep, _addSockets);
+  GWEN_MsgEndpoint_SetCheckSocketsFn(ep, _checkSockets);
 
   return ep;
 }
 
 
 
-int GWEN_TcpcEndpoint2_StartConnect(GWEN_MSG_ENDPOINT2 *ep)
+int GWEN_TcpcEndpoint_StartConnect(GWEN_MSG_ENDPOINT *ep)
 {
   if (ep) {
-    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
+    if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
       int rv;
 
       /* connect, set state */
       rv=_startConnect(ep);
       if (rv==GWEN_ERROR_IN_PROGRESS) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Connect in progress", GWEN_MsgEndpoint2_GetName(ep));
-        GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTING);
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Connect in progress", GWEN_MsgEndpoint_GetName(ep));
+        GWEN_MsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTING);
       }
       else if (rv==0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Connected.", GWEN_MsgEndpoint2_GetName(ep));
-        GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Connected.", GWEN_MsgEndpoint_GetName(ep));
+        GWEN_MsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
       }
       else {
-        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Error on connect (%d)", GWEN_MsgEndpoint2_GetName(ep), rv);
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Error on connect (%d)", GWEN_MsgEndpoint_GetName(ep), rv);
       }
       return rv;
     }
     else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Endpoint %s: Not unconnected", GWEN_MsgEndpoint2_GetName(ep));
+      DBG_ERROR(GWEN_LOGDOMAIN, "Endpoint %s: Not unconnected", GWEN_MsgEndpoint_GetName(ep));
     }
   }
   else {
@@ -108,49 +108,49 @@ int GWEN_TcpcEndpoint2_StartConnect(GWEN_MSG_ENDPOINT2 *ep)
 
 void _freeData(GWEN_UNUSED void *bp, void *p)
 {
-  GWEN_ENDPOINT2_TCPC *xep;
+  GWEN_ENDPOINT_TCPC *xep;
 
-  xep=(GWEN_ENDPOINT2_TCPC*) p;
+  xep=(GWEN_ENDPOINT_TCPC*) p;
   free(xep->host);
   GWEN_FREE_OBJECT(xep);
 }
 
 
 
-void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet)
+void _addSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet)
 {
   if (ep) {
-    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
+    if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_UNCONNECTED) {
       time_t now;
   
       now=time(NULL);
-      if ((now-GWEN_MsgEndpoint2_GetTimeOfLastStateChange(ep))>=GWEN_ENDPOINT2_TCPC_RECONNECT_TIME) {
+      if ((now-GWEN_MsgEndpoint_GetTimeOfLastStateChange(ep))>=GWEN_ENDPOINT_TCPC_RECONNECT_TIME) {
         int rv;
   
         /* (re)connect, set state */
         DBG_INFO(GWEN_LOGDOMAIN, "Starting to (re-)connect");
-        rv=GWEN_TcpcEndpoint2_StartConnect(ep);
+        rv=GWEN_TcpcEndpoint_StartConnect(ep);
         if (rv<0 && rv!=GWEN_ERROR_IN_PROGRESS) {
           DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
         }
       }
     }
   
-    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
-      GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint2_GetSocket(ep));
+    if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
+      GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint_GetSocket(ep));
     }
   
-    if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
-      GWEN_SocketSet_AddSocket(readSet, GWEN_MsgEndpoint2_GetSocket(ep));
-      if (GWEN_MsgEndpoint2_HaveMessageToSend(ep))
-        GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint2_GetSocket(ep));
+    if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
+      GWEN_SocketSet_AddSocket(readSet, GWEN_MsgEndpoint_GetSocket(ep));
+      if (GWEN_MsgEndpoint_HaveMessageToSend(ep))
+        GWEN_SocketSet_AddSocket(writeSet, GWEN_MsgEndpoint_GetSocket(ep));
     }
   } /* if (ep) */
 }
 
 
 
-void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
+void _checkSockets(GWEN_MSG_ENDPOINT *ep,
                    GWEN_UNUSED GWEN_SOCKETSET *readSet,
                    GWEN_SOCKETSET *writeSet,
                    GWEN_UNUSED GWEN_SOCKETSET *xSet)
@@ -158,9 +158,9 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
   if (ep) {
     GWEN_SOCKET *sk;
   
-    sk=GWEN_MsgEndpoint2_GetSocket(ep);
+    sk=GWEN_MsgEndpoint_GetSocket(ep);
     if (sk) {
-      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
+      if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTING) {
         if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
           int rv;
   
@@ -170,7 +170,7 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
           }
           else if (rv==0) {
             DBG_INFO(GWEN_LOGDOMAIN, "Connected.");
-            GWEN_MsgEndpoint2_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
+            GWEN_MsgEndpoint_SetState(ep, GWEN_MSG_ENDPOINT_STATE_CONNECTED);
           }
           else {
             DBG_INFO(GWEN_LOGDOMAIN, "Error on connect(%d)", rv);
@@ -179,19 +179,19 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep,
       }
     } /* if (sk) */
     else {
-      DBG_INFO(GWEN_LOGDOMAIN, "Endpoint \"%s\": No socket", GWEN_MsgEndpoint2_GetName(ep));
+      DBG_INFO(GWEN_LOGDOMAIN, "Endpoint \"%s\": No socket", GWEN_MsgEndpoint_GetName(ep));
     }
   } /* if (ep) */
 }
 
 
 
-int _startConnect(GWEN_MSG_ENDPOINT2 *ep)
+int _startConnect(GWEN_MSG_ENDPOINT *ep)
 {
-  GWEN_ENDPOINT2_TCPC *xep;
+  GWEN_ENDPOINT_TCPC *xep;
 
   DBG_INFO(GWEN_LOGDOMAIN, "Starting to connect");
-  xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_TCPC, ep);
+  xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_TCPC, ep);
   if (xep) {
     GWEN_INETADDRESS *addr;
     GWEN_SOCKET *sk;
@@ -219,7 +219,7 @@ int _startConnect(GWEN_MSG_ENDPOINT2 *ep)
         return rv;
       }
     }
-    GWEN_MsgEndpoint2_SetSocket(ep, sk);
+    GWEN_MsgEndpoint_SetSocket(ep, sk);
     GWEN_InetAddr_free(addr);
     return rv;
   }

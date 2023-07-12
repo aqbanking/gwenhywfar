@@ -6,16 +6,16 @@
  * should have received along with this file.
  ****************************************************************************/
 
-#ifndef GWEN_MSG_ENDPOINT2_P_H
-#define GWEN_MSG_ENDPOINT2_P_H
+#ifndef GWEN_MSG_ENDPOINT_P_H
+#define GWEN_MSG_ENDPOINT_P_H
 
 
-#include <gwenhywfar/endpoint2.h>
+#include <gwenhywfar/endpoint.h>
 
 
-struct GWEN_MSG_ENDPOINT2 {
-  GWEN_INHERIT_ELEMENT(GWEN_MSG_ENDPOINT2)
-  GWEN_TREE2_ELEMENT(GWEN_MSG_ENDPOINT2)
+struct GWEN_MSG_ENDPOINT {
+  GWEN_INHERIT_ELEMENT(GWEN_MSG_ENDPOINT)
+  GWEN_TREE2_ELEMENT(GWEN_MSG_ENDPOINT)
 
   char *name;
   int groupId;
@@ -29,9 +29,9 @@ struct GWEN_MSG_ENDPOINT2 {
   GWEN_MSG_LIST *sendMessageList;
   GWEN_MSG *currentlyReceivedMsg;
 
-  GWEN_MSG_ENDPOINT2_ADDSOCKETS_FN addSocketsFn;
-  GWEN_MSG_ENDPOINT2_CHECKSOCKETS_FN checkSocketsFn;
-  GWEN_MSG_ENDPOINT2_RUN_FN runFn;
+  GWEN_MSG_ENDPOINT_ADDSOCKETS_FN addSocketsFn;
+  GWEN_MSG_ENDPOINT_CHECKSOCKETS_FN checkSocketsFn;
+  GWEN_MSG_ENDPOINT_RUN_FN runFn;
 
   int defaultMessageSize;
 };

@@ -13,7 +13,7 @@
 /*#define DISABLE_DEBUGLOG*/
 
 
-#include "./endpoint2_msgio_p.h"
+#include "./endpoint_msgio_p.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -29,13 +29,13 @@
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
-static void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet);
-static void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
-static int _sendMsgStart(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
-static void _sendMsgFinish(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
-static int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep);
-static int _readCurrentMessage(GWEN_MSG_ENDPOINT2 *ep);
-static int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, int bufferLen);
+static void _addSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet);
+static void _checkSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet);
+static int _sendMsgStart(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg);
+static void _sendMsgFinish(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg);
+static int _writeCurrentMessage(GWEN_MSG_ENDPOINT *ep);
+static int _readCurrentMessage(GWEN_MSG_ENDPOINT *ep);
+static int _distributeBufferContent(GWEN_MSG_ENDPOINT *ep, const uint8_t *bufferPtr, int bufferLen);
 
 
 
@@ -44,42 +44,42 @@ static int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *buffe
  * ------------------------------------------------------------------------------------------------
  */
 
-GWEN_INHERIT(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO)
+GWEN_INHERIT(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO)
 
 
 
-void GWEN_MsgIoEndpoint2_Extend(GWEN_MSG_ENDPOINT2 *ep)
+void GWEN_MsgIoEndpoint_Extend(GWEN_MSG_ENDPOINT *ep)
 {
-  GWEN_ENDPOINT2_MSGIO *xep;
+  GWEN_ENDPOINT_MSGIO *xep;
 
-  GWEN_NEW_OBJECT(GWEN_ENDPOINT2_MSGIO, xep);
-  GWEN_INHERIT_SETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep, xep, _freeData);
+  GWEN_NEW_OBJECT(GWEN_ENDPOINT_MSGIO, xep);
+  GWEN_INHERIT_SETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep, xep, _freeData);
 
-  xep->addSocketsFn=GWEN_MsgEndpoint2_SetAddSocketsFn(ep, _addSockets);
-  xep->checkSocketsFn=GWEN_MsgEndpoint2_SetCheckSocketsFn(ep, _checkSockets);
+  xep->addSocketsFn=GWEN_MsgEndpoint_SetAddSocketsFn(ep, _addSockets);
+  xep->checkSocketsFn=GWEN_MsgEndpoint_SetCheckSocketsFn(ep, _checkSockets);
 }
 
 
 
 void _freeData(void *bp, void *p)
 {
-  GWEN_MSG_ENDPOINT2 *ep;
-  GWEN_ENDPOINT2_MSGIO *xep;
+  GWEN_MSG_ENDPOINT *ep;
+  GWEN_ENDPOINT_MSGIO *xep;
 
-  ep=(GWEN_MSG_ENDPOINT2*) bp;
-  xep=(GWEN_ENDPOINT2_MSGIO*) p;
-  GWEN_MsgEndpoint2_SetCheckSocketsFn(ep, xep->checkSocketsFn);
+  ep=(GWEN_MSG_ENDPOINT*) bp;
+  xep=(GWEN_ENDPOINT_MSGIO*) p;
+  GWEN_MsgEndpoint_SetCheckSocketsFn(ep, xep->checkSocketsFn);
   GWEN_FREE_OBJECT(xep);
 }
 
 
 
-void GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_GETBYTESNEEDED_FN f)
+void GWEN_MsgIoEndpoint_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT *ep, GWEN_ENDPOINT_MSGIO_GETBYTESNEEDED_FN f)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep)
       xep->getBytesNeededFn=f;
   }
@@ -87,12 +87,12 @@ void GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOI
 
 
 
-void GWEN_MsgIoEndpoint2_SetSendMsgStartFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_SENDMSGSTART_FN f)
+void GWEN_MsgIoEndpoint_SetSendMsgStartFn(GWEN_MSG_ENDPOINT *ep, GWEN_ENDPOINT_MSGIO_SENDMSGSTART_FN f)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep)
       xep->sendMsgStartFn=f;
   }
@@ -100,12 +100,12 @@ void GWEN_MsgIoEndpoint2_SetSendMsgStartFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT
 
 
 
-void GWEN_MsgIoEndpoint2_SetSendMsgFinishFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOINT2_MSGIO_SENDMSGFINISH_FN f)
+void GWEN_MsgIoEndpoint_SetSendMsgFinishFn(GWEN_MSG_ENDPOINT *ep, GWEN_ENDPOINT_MSGIO_SENDMSGFINISH_FN f)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep)
       xep->sendMsgFinishFn=f;
   }
@@ -113,12 +113,12 @@ void GWEN_MsgIoEndpoint2_SetSendMsgFinishFn(GWEN_MSG_ENDPOINT2 *ep, GWEN_ENDPOIN
 
 
 
-int _sendMsgStart(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
+int _sendMsgStart(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep && xep->sendMsgStartFn)
       return xep->sendMsgStartFn(ep, msg);
   }
@@ -128,12 +128,12 @@ int _sendMsgStart(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
 
 
 
-void _sendMsgFinish(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
+void _sendMsgFinish(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep && xep->sendMsgStartFn)
       xep->sendMsgFinishFn(ep, msg);
   }
@@ -141,32 +141,32 @@ void _sendMsgFinish(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
 
 
 
-void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet)
+void _addSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_UNUSED GWEN_SOCKETSET *xSet)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep) {
-      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
+      if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
         GWEN_SOCKET *sk;
 
-        sk=GWEN_MsgEndpoint2_GetSocket(ep);
+        sk=GWEN_MsgEndpoint_GetSocket(ep);
         if (sk) {
           DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket %d to read set",
-                    GWEN_MsgEndpoint2_GetName(ep),
+                    GWEN_MsgEndpoint_GetName(ep),
                     GWEN_Socket_GetSocketInt(sk));
           GWEN_SocketSet_AddSocket(readSet, sk);
-          if (GWEN_MsgEndpoint2_HaveMessageToSend(ep)) {
+          if (GWEN_MsgEndpoint_HaveMessageToSend(ep)) {
             DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Adding socket %d to write set",
-                      GWEN_MsgEndpoint2_GetName(ep),
+                      GWEN_MsgEndpoint_GetName(ep),
                       GWEN_Socket_GetSocketInt(sk));
             GWEN_SocketSet_AddSocket(writeSet, sk);
           }
         } /* if socket */
       }
       else if (xep->addSocketsFn) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Not connected, calling base function", GWEN_MsgEndpoint2_GetName(ep));
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Not connected, calling base function", GWEN_MsgEndpoint_GetName(ep));
         xep->addSocketsFn(ep, readSet, writeSet, xSet);
       }
     } /* if (xep) */
@@ -175,49 +175,49 @@ void _addSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET
 
 
 
-void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet)
+void _checkSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep) {
       int rv;
 
-      if (GWEN_MsgEndpoint2_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
+      if (GWEN_MsgEndpoint_GetState(ep)==GWEN_MSG_ENDPOINT_STATE_CONNECTED) {
         GWEN_SOCKET *sk;
       
-        sk=GWEN_MsgEndpoint2_GetSocket(ep);
+        sk=GWEN_MsgEndpoint_GetSocket(ep);
         if (sk) {
           if (GWEN_SocketSet_HasSocket(writeSet, sk)) {
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Has socket in write set", GWEN_MsgEndpoint2_GetName(ep));
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Has socket in write set", GWEN_MsgEndpoint_GetName(ep));
             rv=_writeCurrentMessage(ep);
             if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
               DBG_INFO(GWEN_LOGDOMAIN,
                        "Endpoint %s: Error writing current message (%d), disconnecting",
-                       GWEN_MsgEndpoint2_GetName(ep),
+                       GWEN_MsgEndpoint_GetName(ep),
                        rv);
-              GWEN_MsgEndpoint2_Disconnect(ep);
+              GWEN_MsgEndpoint_Disconnect(ep);
               return;
             }
           }
 
           if (GWEN_SocketSet_HasSocket(readSet, sk)) {
-            DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Has socket in read set", GWEN_MsgEndpoint2_GetName(ep));
+            DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Has socket in read set", GWEN_MsgEndpoint_GetName(ep));
             rv=_readCurrentMessage(ep);
             if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
               DBG_INFO(GWEN_LOGDOMAIN,
                        "Endpoint %s: Error reading current message (%d), disconnecting",
-                       GWEN_MsgEndpoint2_GetName(ep),
+                       GWEN_MsgEndpoint_GetName(ep),
                        rv);
-              GWEN_MsgEndpoint2_Disconnect(ep);
+              GWEN_MsgEndpoint_Disconnect(ep);
               return;
             }
           }
         }
       } /* if connected */
       else if (xep->checkSocketsFn) {
-        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Not connected, calling base function", GWEN_MsgEndpoint2_GetName(ep));
+        DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Not connected, calling base function", GWEN_MsgEndpoint_GetName(ep));
         xep->checkSocketsFn(ep, readSet, writeSet, xSet);
       }
     }
@@ -226,12 +226,12 @@ void _checkSockets(GWEN_MSG_ENDPOINT2 *ep, GWEN_SOCKETSET *readSet, GWEN_SOCKETS
 
 
 
-int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
+int _writeCurrentMessage(GWEN_MSG_ENDPOINT *ep)
 {
   GWEN_MSG *msg;
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Writing to endpoint %s", GWEN_MsgEndpoint2_GetName(ep));
-  msg=GWEN_MsgEndpoint2_GetFirstSendMessage(ep);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Writing to endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+  msg=GWEN_MsgEndpoint_GetFirstSendMessage(ep);
   if (msg) {
     uint8_t pos;
     int remaining;
@@ -261,7 +261,7 @@ int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 
       /* start new message */
       buf=GWEN_Msg_GetBuffer(msg)+pos;
-      rv=GWEN_MsgEndpoint2_WriteToSocket(ep, buf, remaining);
+      rv=GWEN_MsgEndpoint_WriteToSocket(ep, buf, remaining);
       if (rv<0) {
         if (rv==GWEN_ERROR_TIMEOUT)
           return rv;
@@ -287,13 +287,13 @@ int _writeCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 
 
 
-int _readCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
+int _readCurrentMessage(GWEN_MSG_ENDPOINT *ep)
 {
   int rv;
   uint8_t buffer[GWEN_ENDPOINT_MSGIO_BUFFERSIZE];
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint2_GetName(ep));
-  rv=GWEN_MsgEndpoint2_ReadFromSocket(ep, buffer, sizeof(buffer));
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
+  rv=GWEN_MsgEndpoint_ReadFromSocket(ep, buffer, sizeof(buffer));
   if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -314,27 +314,27 @@ int _readCurrentMessage(GWEN_MSG_ENDPOINT2 *ep)
 
 
 
-int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, int bufferLen)
+int _distributeBufferContent(GWEN_MSG_ENDPOINT *ep, const uint8_t *bufferPtr, int bufferLen)
 {
   if (ep) {
-    GWEN_ENDPOINT2_MSGIO *xep;
+    GWEN_ENDPOINT_MSGIO *xep;
 
-    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT2, GWEN_ENDPOINT2_MSGIO, ep);
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MSGIO, ep);
     if (xep) {
       if (xep->getBytesNeededFn) {
 	GWEN_MSG *msg;
 
         DBG_DEBUG(GWEN_LOGDOMAIN, "Distributing %d received bytes", bufferLen);
-	msg=GWEN_MsgEndpoint2_GetCurrentlyReceivedMsg(ep);
+	msg=GWEN_MsgEndpoint_GetCurrentlyReceivedMsg(ep);
 	while(bufferLen) {
 	  int bytesNeeded;
 
           DBG_DEBUG(GWEN_LOGDOMAIN, "%d remaining bytes in buffer", bufferLen);
 	  if (msg==NULL) {
 	    DBG_DEBUG(GWEN_LOGDOMAIN, "Creating new message");
-	    msg=GWEN_Msg_new(GWEN_MsgEndpoint2_GetDefaultMessageSize(ep));
-	    GWEN_Msg_SetGroupId(msg, GWEN_MsgEndpoint2_GetGroupId(ep));
-	    GWEN_MsgEndpoint2_SetCurrentlyReceivedMsg(ep, msg);
+	    msg=GWEN_Msg_new(GWEN_MsgEndpoint_GetDefaultMessageSize(ep));
+	    GWEN_Msg_SetGroupId(msg, GWEN_MsgEndpoint_GetGroupId(ep));
+	    GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, msg);
 	  }
       
 	  bytesNeeded=xep->getBytesNeededFn(ep, msg);
@@ -359,8 +359,8 @@ int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, i
               /* message finished */
               DBG_DEBUG(GWEN_LOGDOMAIN, "Incoming message complete");
               GWEN_Msg_Attach(msg);
-              GWEN_MsgEndpoint2_SetCurrentlyReceivedMsg(ep, NULL);
-              GWEN_MsgEndpoint2_AddReceivedMessage(ep, msg);
+              GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, NULL);
+              GWEN_MsgEndpoint_AddReceivedMessage(ep, msg);
               msg=NULL;
             }
             bufferPtr+=bytesNeeded;
@@ -371,7 +371,7 @@ int _distributeBufferContent(GWEN_MSG_ENDPOINT2 *ep, const uint8_t *bufferPtr, i
 	return 0;
       }
       else {
-	DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Function \"getBytesNeeded\" not set", GWEN_MsgEndpoint2_GetName(ep));
+	DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: Function \"getBytesNeeded\" not set", GWEN_MsgEndpoint_GetName(ep));
       }
     } /* if (xep) */
   } /* if (ep) */

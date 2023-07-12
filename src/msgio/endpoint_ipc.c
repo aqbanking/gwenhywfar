@@ -13,15 +13,15 @@
 /*#define DISABLE_DEBUGLOG*/
 
 
-#include "./endpoint2_ipc.h"
-#include "./endpoint2_msgio.h"
-#include "./endpoint2_tcpc.h"
+#include "./endpoint_ipc.h"
+#include "./endpoint_msgio.h"
+#include "./endpoint_tcpc.h"
 #include "./msg_ipc.h"
 
 #include <gwenhywfar/debug.h>
 
 
-#define GWEN_MSG_ENDPOINT2_IPC_NAME       "ipc"
+#define GWEN_MSG_ENDPOINT_IPC_NAME       "ipc"
 
 
 
@@ -30,7 +30,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static int _getBytesNeededForMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
+static int _getBytesNeededForMessage(GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg);
 
 
 
@@ -39,16 +39,16 @@ static int _getBytesNeededForMessage(GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg);
  * ------------------------------------------------------------------------------------------------
  */
 
-void GWEN_IpcEndpoint2_Extend(GWEN_MSG_ENDPOINT2 *ep)
+void GWEN_IpcEndpoint_Extend(GWEN_MSG_ENDPOINT *ep)
 {
   if (ep) {
-    GWEN_MsgIoEndpoint2_SetGetNeededBytesFn(ep, _getBytesNeededForMessage);
+    GWEN_MsgIoEndpoint_SetGetNeededBytesFn(ep, _getBytesNeededForMessage);
   }
 }
 
 
 
-int _getBytesNeededForMessage(GWEN_UNUSED GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
+int _getBytesNeededForMessage(GWEN_UNUSED GWEN_MSG_ENDPOINT *ep, GWEN_MSG *msg)
 {
   uint32_t bytesInMsg;
 
@@ -67,26 +67,26 @@ int _getBytesNeededForMessage(GWEN_UNUSED GWEN_MSG_ENDPOINT2 *ep, GWEN_MSG *msg)
 
 
 
-GWEN_MSG_ENDPOINT2 *GWEN_IpcEndpoint2_CreateIpcTcpClient(const char *host, int port, const char *name, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_CreateIpcTcpClient(const char *host, int port, const char *name, int groupId)
 {
-  GWEN_MSG_ENDPOINT2 *ep;
+  GWEN_MSG_ENDPOINT *ep;
 
-  ep=GWEN_TcpcEndpoint2_new(host, port, name?name:GWEN_MSG_ENDPOINT2_IPC_NAME, groupId);
-  GWEN_MsgIoEndpoint2_Extend(ep);
-  GWEN_IpcEndpoint2_Extend(ep);
+  ep=GWEN_TcpcEndpoint_new(host, port, name?name:GWEN_MSG_ENDPOINT_IPC_NAME, groupId);
+  GWEN_MsgIoEndpoint_Extend(ep);
+  GWEN_IpcEndpoint_Extend(ep);
   return ep;
 }
 
 
 
-GWEN_MSG_ENDPOINT2 *GWEN_IpcEndpoint2_CreateIpcTcpServiceForSocket(GWEN_SOCKET *sk, const char *name, int groupId)
+GWEN_MSG_ENDPOINT *GWEN_IpcEndpoint_CreateIpcTcpServiceForSocket(GWEN_SOCKET *sk, const char *name, int groupId)
 {
-  GWEN_MSG_ENDPOINT2 *ep;
+  GWEN_MSG_ENDPOINT *ep;
 
-  ep=GWEN_MsgEndpoint2_new(name?name:GWEN_MSG_ENDPOINT2_IPC_NAME, groupId);
-  GWEN_MsgEndpoint2_SetSocket(ep, sk);
-  GWEN_MsgIoEndpoint2_Extend(ep);
-  GWEN_IpcEndpoint2_Extend(ep);
+  ep=GWEN_MsgEndpoint_new(name?name:GWEN_MSG_ENDPOINT_IPC_NAME, groupId);
+  GWEN_MsgEndpoint_SetSocket(ep, sk);
+  GWEN_MsgIoEndpoint_Extend(ep);
+  GWEN_IpcEndpoint_Extend(ep);
   return ep;
 }
 

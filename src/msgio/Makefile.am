@@ -29,31 +29,31 @@ build_headers_pub=
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 libgwenmsgio_la_SOURCES=$(built_sources) \
-  endpoint2.c \
-  endpoint2_msgio.c \
-  endpoint2_tcpc.c \
-  endpoint2_tcpd.c \
-  endpoint2_ipc.c \
+  endpoint.c \
+  endpoint_msgio.c \
+  endpoint_tcpc.c \
+  endpoint_tcpd.c \
+  endpoint_ipc.c \
   msg.c \
   msg_ipc.c
 
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
 iheader_HEADERS=$(build_headers_pub) \
-  endpoint2.h \
-  endpoint2_msgio.h \
-  endpoint2_tcpc.h \
-  endpoint2_tcpd.h \
-  endpoint2_ipc.h \
+  endpoint.h \
+  endpoint_msgio.h \
+  endpoint_tcpc.h \
+  endpoint_tcpd.h \
+  endpoint_ipc.h \
   msg.h \
   msg_ipc.h
 
 
 noinst_HEADERS=$(build_headers_priv) \
-  endpoint2_p.h \
-  endpoint2_msgio_p.h \
-  endpoint2_tcpc_p.h \
-  endpoint2_tcpd_p.h \
+  endpoint_p.h \
+  endpoint_msgio_p.h \
+  endpoint_tcpc_p.h \
+  endpoint_tcpd_p.h \
   msg_p.h
 
 
