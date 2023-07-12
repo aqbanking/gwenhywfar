@@ -24,9 +24,6 @@ typedef struct GWEN_MSG GWEN_MSG;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_MSG, GWEN_Msg, GWENHYWFAR_API)
 
 
-#include <gwenhywfar/endpoint.h>
-
-
 
 GWENHYWFAR_API GWEN_MSG *GWEN_Msg_new(uint32_t bufferSize);
 GWENHYWFAR_API GWEN_MSG *GWEN_Msg_fromBytes(const uint8_t *ptr, uint32_t len);
@@ -34,14 +31,6 @@ GWENHYWFAR_API GWEN_MSG *GWEN_Msg_fromBytes(const uint8_t *ptr, uint32_t len);
 GWENHYWFAR_API void GWEN_Msg_Attach(GWEN_MSG *msg);
 GWENHYWFAR_API void GWEN_Msg_free(GWEN_MSG *msg);
 GWENHYWFAR_API GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg);
-
-/**
- * Pointer to endpoint this message belongs to.
- * Not internally used.
- */
-GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_Msg_GetEndpoint(const GWEN_MSG *msg);
-GWENHYWFAR_API void GWEN_Msg_SetEndpoint(GWEN_MSG *msg, GWEN_MSG_ENDPOINT *ep);
-
 
 GWENHYWFAR_API int GWEN_Msg_GetGroupId(const GWEN_MSG *msg);
 GWENHYWFAR_API void GWEN_Msg_SetGroupId(GWEN_MSG *msg, int groupId);
