@@ -276,14 +276,6 @@ void GWEN_MsgEndpoint_CheckSockets(GWEN_MSG_ENDPOINT *ep, GWEN_SOCKETSET *readSe
 
 
 
-void GWEN_MsgEndpoint_Run(GWEN_MSG_ENDPOINT *ep)
-{
-  if (ep && ep->runFn)
-    ep->runFn(ep);
-}
-
-
-
 void GWEN_MsgEndpoint_ChildrenAddSockets(GWEN_MSG_ENDPOINT *ep,
                                           GWEN_SOCKETSET *readSet,
                                           GWEN_SOCKETSET *writeSet,
@@ -310,19 +302,6 @@ void GWEN_MsgEndpoint_ChildrenCheckSockets(GWEN_MSG_ENDPOINT *ep,
   epChild=GWEN_MsgEndpoint_Tree2_GetFirstChild(ep);
   while(epChild) {
     GWEN_MsgEndpoint_CheckSockets(epChild, readSet, writeSet, xSet);
-    epChild=GWEN_MsgEndpoint_Tree2_GetNext(epChild);
-  }
-}
-
-
-
-void GWEN_MsgEndpoint_ChildrenRun(GWEN_MSG_ENDPOINT *ep)
-{
-  GWEN_MSG_ENDPOINT *epChild;
-
-  epChild=GWEN_MsgEndpoint_Tree2_GetFirstChild(ep);
-  while(epChild) {
-    GWEN_MsgEndpoint_Run(epChild);
     epChild=GWEN_MsgEndpoint_Tree2_GetNext(epChild);
   }
 }
@@ -521,22 +500,6 @@ GWEN_MSG_ENDPOINT_CHECKSOCKETS_FN GWEN_MsgEndpoint_SetCheckSocketsFn(GWEN_MSG_EN
   }
   return NULL;
 }
-
-
-
-GWEN_MSG_ENDPOINT_RUN_FN GWEN_MsgEndpoint_SetRunFn(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT_RUN_FN fn)
-{
-  if (ep) {
-    GWEN_MSG_ENDPOINT_RUN_FN o;
-
-    o=ep->runFn;
-    ep->runFn=fn;
-    return o;
-  }
-  return NULL;
-}
-
-
 
 
 
