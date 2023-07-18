@@ -52,6 +52,11 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
 void GWEN_MsgEndpoint_free(GWEN_MSG_ENDPOINT *ep)
 {
   if (ep) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "Deleting endpoint \"%s\" (%d msgs in recv list, %d msgs in send list)",
+             (ep->name)?(ep->name):"<unnamed>",
+             GWEN_Msg_List_GetCount(ep->receivedMessageList),
+             GWEN_Msg_List_GetCount(ep->sendMessageList));
     GWEN_TREE2_FINI(GWEN_MSG_ENDPOINT, ep, GWEN_MsgEndpoint);
     GWEN_INHERIT_FINI(GWEN_MSG_ENDPOINT, ep);
     if (ep->socket) {
