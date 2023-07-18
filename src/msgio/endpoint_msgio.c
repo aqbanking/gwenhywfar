@@ -358,7 +358,6 @@ int _distributeBufferContent(GWEN_MSG_ENDPOINT *ep, const uint8_t *bufferPtr, in
             if (xep->getBytesNeededFn(ep, msg)==0) {
               /* message finished */
               DBG_DEBUG(GWEN_LOGDOMAIN, "Incoming message complete");
-              GWEN_Msg_Attach(msg);
               GWEN_MsgEndpoint_SetCurrentlyReceivedMsg(ep, NULL);
               GWEN_MsgEndpoint_AddReceivedMessage(ep, msg);
               msg=NULL;
