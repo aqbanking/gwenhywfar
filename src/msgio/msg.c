@@ -72,6 +72,7 @@ void GWEN_Msg_free(GWEN_MSG *msg)
     if (msg->refCount==1) {
       GWEN_LIST_FINI(GWEN_MSG, msg);
       free(msg->buffer);
+      GWEN_DB_Group_free(msg->dbParsedInfo);
       GWEN_FREE_OBJECT(msg);
     }
     else
@@ -95,6 +96,8 @@ GWEN_MSG *GWEN_Msg_dup(const GWEN_MSG *srcMsg)
     msg->parsedPayloadSize=srcMsg->parsedPayloadSize;
     msg->parsedPayloadOffset=srcMsg->parsedPayloadOffset;
     msg->flags=srcMsg->flags;
+    if (srcMsg->dbParsedInfo)
+      msg->dbParsedInfo=GWEN_DB_Group_dup(srcMsg->dbParsedInfo);
 
     return msg;
   }
@@ -317,6 +320,26 @@ void GWEN_Msg_DelFlags(GWEN_MSG *msg, uint32_t f)
 {
   if (msg)
     msg->flags&=~f;
+}
+
+
+
+GWEN_DB_NODE *GWEN_Msg_GetDbParsedInfo(const GWEN_MSG *msg)
+{
+  if (msg)
+    return msg->dbParsedInfo;
+  return NULL;
+}
+
+
+
+void GWEN_Msg_SetDbParsedInfo(GWEN_MSG *msg, GWEN_DB_NODE *db)
+{
+  if (msg) {
+    if (msg->dbParsedInfo)
+      GWEN_DB_Group_free(msg->dbParsedInfo);
+    msg->dbParsedInfo=db;
+  }
 }
 
 

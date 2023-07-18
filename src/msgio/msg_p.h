@@ -28,6 +28,8 @@ struct GWEN_MSG {
 
   int groupId;
 
+  GWEN_DB_NODE *dbParsedInfo;
+
   int refCount;
 };
 

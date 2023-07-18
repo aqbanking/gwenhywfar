@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/list.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/db.h>
 
 
 
@@ -59,6 +60,10 @@ GWENHYWFAR_API void GWEN_Msg_SetParsedPayloadSize(GWEN_MSG *msg, uint32_t v);
 
 GWENHYWFAR_API uint32_t GWEN_Msg_GetParsedPayloadOffset(const GWEN_MSG *msg);
 GWENHYWFAR_API void GWEN_Msg_SetParsedPayloadOffset(GWEN_MSG *msg, uint32_t v);
+
+GWENHYWFAR_API GWEN_DB_NODE *GWEN_Msg_GetDbParsedInfo(const GWEN_MSG *msg);
+GWENHYWFAR_API void GWEN_Msg_SetDbParsedInfo(GWEN_MSG *msg, GWEN_DB_NODE *db);
+
 /*@}*/
 
 
