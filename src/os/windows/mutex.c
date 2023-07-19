@@ -72,4 +72,10 @@ int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx)
 
 
 
+CRITICAL_SECTION *GWEN_Mutex_GetCriticalSection(GWEN_MUTEX *mtx)
+{
+  return &(mtx->criticalSection);
+}
+
+
 

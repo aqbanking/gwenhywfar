@@ -21,7 +21,8 @@ iheader_HEADERS=\
  mutex.h \
  gwensemaphore.h \
  gwendate.h \
- timestamp.h
+ timestamp.h \
+ condvar.h
 
 noinst_HEADERS= \
  gwendate_p.h \

@@ -89,4 +89,11 @@ int GWEN_Mutex_Unlock(GWEN_MUTEX *mtx)
 
 
 
+pthread_mutex_t *GWEN_Mutex_GetMutex(GWEN_MUTEX *mtx)
+{
+  return &(mtx->mutex);
+}
+
+
+
 

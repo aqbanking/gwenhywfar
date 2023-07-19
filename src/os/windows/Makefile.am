@@ -26,6 +26,7 @@ noinst_HEADERS=\
  inetsocket_p.h \
  libloader_p.h \
  process_p.h \
+ mutex.h \
  mutex_p.h \
  semaphore_p.h \
  syncio_file_l.h \

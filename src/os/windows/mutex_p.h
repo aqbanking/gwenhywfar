@@ -27,7 +27,7 @@
 #ifndef GWEN_MUTEX_P_H
 #define GWEN_MUTEX_P_H
 
-#include <gwenhywfar/mutex.h>
+#include "os/windows/mutex.h"
 
 #include <windows.h>
 
