@@ -411,7 +411,7 @@ int GWEN_MsgEndpoint_ReadFromSocket(GWEN_MSG_ENDPOINT *ep, uint8_t *bufferPtr, u
     rv=GWEN_Socket_Read(ep->socket, (char*) bufferPtr, &len);
   } while(rv==GWEN_ERROR_INTERRUPTED);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(GWEN_LOGDOMAIN, "Endpoint %s: here (%d)", GWEN_MsgEndpoint_GetName(ep), rv);
     return rv;
   }
   DBG_DEBUG(GWEN_LOGDOMAIN, "Endpoint %s: Read %d bytes from socket", GWEN_MsgEndpoint_GetName(ep), len);
