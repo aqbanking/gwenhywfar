@@ -265,6 +265,14 @@ GWEN_INHERITDATA *GWEN_Inherit_FindEntry(GWEN_INHERITDATA_LIST *l,
   uint32_t t##__INHERIT_ID=0;
 
 /**
+ * This is an extern reference when you need to call GWEN_INHERIT_GETDATA from
+ * one source file while the GWEN_INHERIT stance is in another one.
+ */
+#define GWEN_INHERIT_REF(bt, t) \
+  extern uint32_t t##__INHERIT_ID;
+
+
+/**
  * This macros returns the private data of an inheriting class associated
  * with an element of its base class.
  */
