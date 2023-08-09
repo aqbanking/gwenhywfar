@@ -156,6 +156,33 @@ GWEN_TIMESTAMP *GWEN_Timestamp_fromGmTime(time_t ti)
 
 
 
+time_t GWEN_Timestamp_toTimeT(const GWEN_TIMESTAMP *tstamp)
+{
+  struct tm ti;
+  struct tm *tp;
+  time_t tt;
+
+  tt=time(NULL);
+  tp=localtime(&tt);
+  assert(tp);
+  memmove(&ti, tp, sizeof(ti));
+
+  ti.tm_sec=tstamp->second;
+  ti.tm_min=tstamp->minute;
+  ti.tm_hour=tstamp->hour;
+
+  ti.tm_year=tstamp->year-1900;
+  ti.tm_mon=tstamp->month-1;
+  ti.tm_mday=tstamp->day;
+  ti.tm_yday=0;
+  ti.tm_wday=0;
+  tt=mktime(&ti);
+  assert(tt!=(time_t)-1);
+  return tt;
+}
+
+
+
 GWEN_TIMESTAMP *GWEN_Timestamp_NowInLocalTime()
 {
   time_t ti;

@@ -55,6 +55,8 @@ GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_fromStructTm(const struct tm *ltm)
 GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_fromLocalTime(time_t ti);
 GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_fromGmTime(time_t ti);
 
+GWENHYWFAR_API time_t GWEN_Timestamp_toTimeT(const GWEN_TIMESTAMP *tstamp);
+
 GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_NowInLocalTime(void);
 GWENHYWFAR_API GWEN_TIMESTAMP *GWEN_Timestamp_NowInGmTime(void);
 
