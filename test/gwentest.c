@@ -40,6 +40,7 @@
 #include <gwenhywfar/param.h>
 #include <gwenhywfar/simpleptrlist.h>
 #include <gwenhywfar/idlist64.h>
+#include <gwenhywfar/timestamp.h>
 #include <gwenhywfar/testframework.h>
 #include <gwenhywfar/gwenthread.h>
 #ifdef OS_WIN32
@@ -6313,6 +6314,12 @@ int testModules(int argc, char **argv)
     return 2;
   }
 
+  rv=GWEN_Timestamp_AddTests(TestFramework_GetModulesRoot(tf));
+  if (rv<0) {
+    fprintf(stderr, "Adding module failed.\n");
+    return 2;
+  }
+
   argc--;
   argv++;
   rv=TestFramework_Run(tf, argc, argv);
@@ -6755,6 +6762,10 @@ int main(int argc, char **argv)
 
   if (argc < 2) {
     print_usage(argv[0]);
+    fprintf(stderr,
+            "\nNote: \"modules\" is the test for gwen's modules using the internal TestFramework, "
+            "use with \"-L LOGFILE\" for best readability.\n\n"
+            "This test is only available if Gwen has been configured with \"--enable-testcode\".");
     GWEN_Fini();
     return 1;
   }

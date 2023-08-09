@@ -23,7 +23,7 @@
  ***************************************************************************/
 
 
-#if GWEN_ENABLE_TESTCODE
+#ifdef GWENHYWFAR_ENABLE_TESTCODE
 
 
 
@@ -49,7 +49,7 @@ int GWEN_Timestamp_AddTests(GWEN_TEST_MODULE *mod)
 
   newMod=GWEN_Test_Module_AddModule(mod, "GWEN_Timestamp", NULL);
 
-  GWEN_Test_Module_AddTest(newMod, "test1", test1, NULL);
+  GWEN_Test_Module_AddTest(newMod, "test GWEN_Timestamp_toTimeT() and GWEN_Timestamp_fromLocalTime()", test1, NULL);
 
   return 0;
 }
@@ -58,6 +58,34 @@ int GWEN_Timestamp_AddTests(GWEN_TEST_MODULE *mod)
 
 int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
 {
+  GWEN_TIMESTAMP *ts1;
+  time_t t1;
+  const char *s1;
+  GWEN_TIMESTAMP *ts2;
+  time_t t2;
+  const char *s2;
+
+  ts1=GWEN_Timestamp_NowInLocalTime();
+  t1=GWEN_Timestamp_toTimeT(ts1);
+  ts2=GWEN_Timestamp_fromLocalTime(t1);
+  t2=GWEN_Timestamp_toTimeT(ts2);
+
+  s1=GWEN_Timestamp_GetString(ts1);
+  s2=GWEN_Timestamp_GetString(ts2);
+
+  if (strcasecmp(s1, s2)!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Times as string not equal (%s != %s)", s1, s2);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (t1!=t2) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Times in time_t not equal (%llu != %llu)",
+              (unsigned long long int) t1,
+              (unsigned long long int) t2);
+    return GWEN_ERROR_GENERIC;
+  }
+
   return 0;
 }
 
