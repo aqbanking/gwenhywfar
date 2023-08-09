@@ -203,6 +203,9 @@ const char *GWEN_StringList_FirstString(const GWEN_STRINGLIST *l);
 GWENHYWFAR_API
 const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *l, int idx);
 
+GWENHYWFAR_API
+int GWEN_StringList_StringAsIntAt(const GWEN_STRINGLIST *l, int idx, int defaultValue);
+
 
 /** Sorts this list. Internally this uses qsort(3), so the sorting
  * should be reasonably fast even for large lists.

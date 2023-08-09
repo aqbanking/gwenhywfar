@@ -743,6 +743,23 @@ const char *GWEN_StringList_StringAt(const GWEN_STRINGLIST *sl, int idx)
 
 
 
+int GWEN_StringList_StringAsIntAt(const GWEN_STRINGLIST *l, int idx, int defaultValue)
+{
+  const char *s;
+
+  s=GWEN_StringList_StringAt(l, idx);
+  if (s&& *s) {
+    int i;
+
+    if (1==sscanf(s, "%d", &i))
+      return i;
+  }
+
+  return defaultValue;
+}
+
+
+
 GWEN_STRINGLIST *GWEN_StringList_fromString(const char *str, const char *delimiters, int checkDouble)
 {
   if (str && *str) {
