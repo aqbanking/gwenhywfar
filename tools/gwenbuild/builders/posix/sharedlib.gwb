@@ -11,10 +11,10 @@
     <file type="sharedlib" install="target" >
       lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
     </file>
-    <file type="symlink" install="target" >
+    <file type="symlink" >
       lib$(target_name).so.$(target_so_effective)
     </file>
-    <file type="symlink" install="target" >
+    <file type="symlink" >
       lib$(target_name).so
     </file>
   </outputFiles>
@@ -94,6 +94,7 @@
           lib$(target_name).so.$(target_so_effective).$(target_so_age).$(target_so_revision)
         </fixed>
         <blank/>
+<!--
         <fixed>
           lib$(target_name).so.$(target_so_effective)
         </fixed>
@@ -102,6 +103,7 @@
           lib$(target_name).so
         </fixed>
         <blank/>
+-->
         <outputFiles index="0" useField="installPath"/>
         <fixed>/</fixed>
       </args>
