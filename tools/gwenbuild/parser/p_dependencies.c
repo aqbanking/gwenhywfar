@@ -115,17 +115,18 @@ int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode)
     return rv;
   }
 
-  sId=GWEN_XMLNode_GetProperty(xmlNode, "id", NULL);
-  if (!(sId && *sId)) {
-    DBG_ERROR(NULL, "Dependency has no id");
-    return GWEN_ERROR_GENERIC;
-  }
+  sId=GWEN_XMLNode_GetProperty(xmlNode, "prefix", NULL);
+  if (!(sId && *sId))
+    sId=GWEN_XMLNode_GetProperty(xmlNode, "id", NULL);
 
   sName=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(sName && *sName)) {
     DBG_ERROR(NULL, "Dependency has no name");
     return GWEN_ERROR_GENERIC;
   }
+
+  if (!(sId && *sId)) /* use name if no id/prefix given */
+    sId=sName;
 
   s=GWEN_XMLNode_GetProperty(xmlNode, "required", "FALSE");
   required=(strcasecmp(s, "TRUE")==0)?1:0;
