@@ -90,6 +90,18 @@ int GWB_ParseOption(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLN
     }
   }
 
+  /* <alias> entries can be used for string values to define a name which contains multiple strings.
+   * An example from AqBanking:
+   *
+   *   <option id="backends" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_BACKEND_" >
+   *     <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints aqnone</choices>
+   *     <alias name="all">aqhbci aqofxconnect aqebics aqpaypal aqnone</alias>
+   *     <default>all</default>
+   *   </option>
+   *
+   * Here "all" can be given as alias for "aqhbci aqofxconnect aqebics aqpaypal aqnone" so that the user can
+   * just specify "-O backends=all" to include all backends instead of having to specify every single one.
+   */
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "alias", NULL, NULL);
   while(n) {
     const char *sName;
