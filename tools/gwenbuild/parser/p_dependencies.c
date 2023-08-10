@@ -26,7 +26,7 @@
 
 
 static int _parseChildNodes(GWB_PROJECT *project, GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
-int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
+static int _parseDep(GWB_CONTEXT *currentContext, GWEN_XMLNODE *xmlNode);
 
 static int _checkVersion(GWEN_DB_NODE *db,
                          const char *sId,
@@ -41,9 +41,9 @@ static int _callPkgConfig(GWEN_DB_NODE *db,
                           const char *suffix,
                           const char *args);
 
-void _replaceControlCharsWithBlanks(char *ptr);
-int _retrieveVariables(GWB_CONTEXT *currentContext, GWEN_DB_NODE *db, const char *sId, const char *sName, GWEN_XMLNODE *xmlNode);
-int _retrieveVariable(GWEN_DB_NODE *db, const char *sId, const char *sName, const char *variableName);
+static void _replaceControlCharsWithBlanks(char *ptr);
+static int _retrieveVariables(GWB_CONTEXT *currentContext, GWEN_DB_NODE *db, const char *sId, const char *sName, GWEN_XMLNODE *xmlNode);
+static int _retrieveVariable(GWEN_DB_NODE *db, const char *sId, const char *sName, const char *variableName);
 
 
 
