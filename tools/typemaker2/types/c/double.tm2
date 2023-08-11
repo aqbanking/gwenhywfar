@@ -116,11 +116,7 @@
       <codedef id="toObject">
         <code>
           {
-            char numbuf[64];
-            
-            snprintf(numbuf, sizeof(numbuf)-1, "%f", $(src));
-            numbuf[sizeof(numbuf)-1]=0;
-            $(retval)=AQDB_Object_SetFieldString($(db), $(fieldId), numbuf);
+            $(retval)=AQDB_Object_SetFieldDouble($(db), $(fieldId), $(src));
           }
         </code>
       </codedef>
@@ -130,17 +126,11 @@
       <codedef id="fromObject">
         <code>
           {
-            const char *s;
+            double v;
             
-            $(retval)=AQDB_Object_GetFieldString($(db), $(fieldId), &amp;s);
-            if ($(retval)&gt;=0) {
-              double v;
-              
-              if (sscanf(s, "%lf", &amp;v)==1)
-                $(dst)=v;
-              else
-                $(dst)=0.0;
-            }
+            $(retval)=AQDB_Object_GetFieldDouble($(db), $(fieldId), &amp;v);
+            if ($(retval)&gt;=0)
+              $(dst)=v;
           }
         </code>
       </codedef>
