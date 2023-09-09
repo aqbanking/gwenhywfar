@@ -218,6 +218,7 @@ AC_CHECK_PROG(SED,sed,sed)
 
 # Check for the tool "astyle", but if not found, replace its program call by the no-op "echo" instead
 AC_CHECK_PROG(ASTYLE, astyle, astyle, echo)
+AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
 ###-------------------------------------------------------------------------
 #

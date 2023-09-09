@@ -51,8 +51,15 @@ distclean-local: distclean-local-check
 distclean-local-check:
 	rm -rf apidoc gwenhywfar5
 
-listdoc.h: $(top_builddir)/admin/mklistdoc
-	admin/mklistdoc -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar5/gwenhywfar" -name "*.h" | LC_ALL=C sort` >listdoc.h
+if CROSS_COMPILING
+mklistdoc_preqreq =
+mklistdoc_exe = mklistdoc
+else
+mklistdoc_prereq = $(top_builddir)/admin/mklistdoc
+mklistdoc_exe = admin/mklistdoc
+endif
+listdoc.h: $(mklistdoc_prereq)
+	$(mklistdoc_exe) -v -I $(top_srcdir)/src/base `find "$(top_builddir)/gwenhywfar5/gwenhywfar" -name "*.h" | LC_ALL=C sort` >$@
 
 $(top_builddir)/admin/mklistdoc:	
 	$(MAKE) -C "$(top_builddir)/admin" mklistdoc
