@@ -15,8 +15,24 @@
 #include <gwenhywfar/misc.h>
 
 
-typedef struct GWEN_TAG16 GWEN_TAG16;
+/** @defgroup MOD_TAG16 TLV Elements with 16-Bit Size Field
+ * @ingroup MOD_PARSER
+ *
+ * @brief This file contains the definition of a GWEN_TAG16, a simple TLV (Tag-Length-Value) object.
+ *
+ * Such an object starts with a one byte tag identifier, followed by a two byte (little endian) data length
+ * field and an optional data file. Thus such an object takes at three bytes of header and optional data.
+ *
+ */
+/*@{*/
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+typedef struct GWEN_TAG16 GWEN_TAG16;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_TAG16, GWEN_Tag16, GWENHYWFAR_API)
 
 
@@ -57,6 +73,14 @@ GWENHYWFAR_API GWEN_TAG16_LIST *GWEN_Tag16_List_fromBuffer(const uint8_t *p, uin
 GWENHYWFAR_API const GWEN_TAG16 *GWEN_Tag16_List_FindFirstByTagType(const GWEN_TAG16_LIST *tagList, unsigned int tagType);
 GWENHYWFAR_API const GWEN_TAG16 *GWEN_Tag16_List_FindNextByTagType(const GWEN_TAG16 *tag, unsigned int tagType);
 
+
+
+/*@}*/
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* GWENHYWFAR_PARSER_TAG16_H */
