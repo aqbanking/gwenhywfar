@@ -41,6 +41,7 @@
 #include <gwenhywfar/simpleptrlist.h>
 #include <gwenhywfar/idlist64.h>
 #include <gwenhywfar/timestamp.h>
+#include <gwenhywfar/tag16-t.h>
 #include <gwenhywfar/testframework.h>
 #include <gwenhywfar/gwenthread.h>
 #ifdef OS_WIN32
@@ -6315,6 +6316,12 @@ int testModules(int argc, char **argv)
   }
 
   rv=GWEN_Timestamp_AddTests(TestFramework_GetModulesRoot(tf));
+  if (rv<0) {
+    fprintf(stderr, "Adding module failed.\n");
+    return 2;
+  }
+
+  rv=GWEN_Tag16_AddTests(TestFramework_GetModulesRoot(tf));
   if (rv<0) {
     fprintf(stderr, "Adding module failed.\n");
     return 2;

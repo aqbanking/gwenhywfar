@@ -8,23 +8,20 @@
  ***************************************************************************/
 
 
-#ifndef GWENHYWFAR_PARSER_TAG16_P_H
-#define GWENHYWFAR_PARSER_TAG16_P_H
+#ifndef GWENHYWFAR_TAG16_T_H
+#define GWENHYWFAR_TAG16_T_H
 
 
-#include "tag16.h"
+#include <gwenhywfar/gwenhywfarapi.h>
+#include <gwenhywfar/testframework.h>
+
+/**
+ * Internal tests for GWEN_TAG16.
+ */
+GWENHYWFAR_API int GWEN_Tag16_AddTests(GWEN_TEST_MODULE *mod);
 
 
-struct GWEN_TAG16 {
-  GWEN_LIST_ELEMENT(GWEN_TAG16)
-  unsigned int tagSize;
-  unsigned int tagType;
-  unsigned int tagLength;
-  const uint8_t *tagData;
-  int dataOwned;
-};
+/*@}*/
 
+#endif
 
-
-
-#endif /* GWENHYWFAR_PARSER_TAG16_P_H */
