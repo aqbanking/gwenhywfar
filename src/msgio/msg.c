@@ -344,7 +344,31 @@ void GWEN_Msg_SetDbParsedInfo(GWEN_MSG *msg, GWEN_DB_NODE *db)
 
 
 
-uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, int defaultValue)
+uint64_t GWEN_Msg_GetUint64At(const GWEN_MSG *msg, int offs, uint64_t defaultValue)
+{
+  if (msg) {
+    if (msg->bytesInBuffer>=offs+8) {
+      const uint8_t *ptr;
+      uint64_t v;
+
+      ptr=msg->buffer+offs;
+      v=(uint64_t)(*(ptr++));
+      v|=(uint64_t)(*(ptr++))<<8;
+      v|=(uint64_t)(*(ptr++))<<16;
+      v|=(uint64_t)(*(ptr++))<<24;
+      v|=(uint64_t)(*(ptr++))<<32;
+      v|=(uint64_t)(*(ptr++))<<40;
+      v|=(uint64_t)(*(ptr++))<<48;
+      v|=(uint64_t)(*(ptr++))<<56;
+      return v;
+    }
+  }
+  return defaultValue;
+}
+
+
+
+uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, uint32_t defaultValue)
 {
   if (msg) {
     if (msg->bytesInBuffer>=offs+4) {
@@ -359,7 +383,7 @@ uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, int defaultValue)
 
 
 
-uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, int defaultValue)
+uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, uint16_t defaultValue)
 {
   if (msg) {
     if (msg->bytesInBuffer>=offs+2) {
@@ -374,7 +398,7 @@ uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, int defaultValue)
 
 
 
-uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, int defaultValue)
+uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, uint8_t defaultValue)
 {
   if (msg) {
     if (msg->bytesInBuffer>=offs+1) {
