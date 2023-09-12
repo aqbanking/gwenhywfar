@@ -32,6 +32,7 @@ GWEN_MSG *GWEN_Msg_new(uint32_t bufferSize)
 
   GWEN_NEW_OBJECT(GWEN_MSG, msg);
   msg->refCount=1;
+  GWEN_INHERIT_INIT(GWEN_MSG, msg);
   GWEN_LIST_INIT(GWEN_MSG, msg);
   if (bufferSize) {
     msg->buffer=(uint8_t*) malloc(bufferSize);
@@ -71,6 +72,7 @@ void GWEN_Msg_free(GWEN_MSG *msg)
   if (msg && msg->refCount>0) {
     if (msg->refCount==1) {
       GWEN_LIST_FINI(GWEN_MSG, msg);
+      GWEN_INHERIT_FINI(GWEN_MSG, msg);
       free(msg->buffer);
       GWEN_DB_Group_free(msg->dbParsedInfo);
       GWEN_FREE_OBJECT(msg);
