@@ -42,6 +42,7 @@ GWENHYWFAR_API GWEN_TAG16 *GWEN_Tag16_newCopy(unsigned int tagType, unsigned int
 GWENHYWFAR_API void GWEN_Tag16_free(GWEN_TAG16 *tag);
 
 
+GWENHYWFAR_API void GWEN_Tag16_WriteTagToBuffer(unsigned int tagType, const uint8_t *s, int size, GWEN_BUFFER *buf);
 GWENHYWFAR_API void GWEN_Tag16_WriteStringTagToBuffer(unsigned int tagType, const char *s, GWEN_BUFFER *buf);
 GWENHYWFAR_API void GWEN_Tag16_WriteUint32TagToBuffer(unsigned int tagType, uint32_t data, GWEN_BUFFER *buf);
 GWENHYWFAR_API void GWEN_Tag16_WriteUint64TagToBuffer(unsigned int tagType, uint64_t data, GWEN_BUFFER *buf);

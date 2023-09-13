@@ -307,6 +307,14 @@ GWEN_TAG16_LIST *GWEN_Tag16_List_fromBuffer(const uint8_t *p, uint32_t l, int do
 }
 
 
+
+void GWEN_Tag16_WriteTagToBuffer(unsigned int tagType, const uint8_t *s, int size, GWEN_BUFFER *buf)
+{
+  _writeTagToBuffer(tagType, s, size, buf);
+}
+
+
+
 void _writeTagToBuffer(unsigned int tagType, const uint8_t *p, int size, GWEN_BUFFER *buf)
 {
   if (GWEN_Buffer_AllocRoom(buf, size+3)==0) {
