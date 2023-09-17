@@ -294,8 +294,13 @@ int _readCurrentMessage(GWEN_MSG_ENDPOINT *ep)
 
   DBG_DEBUG(GWEN_LOGDOMAIN, "Reading from endpoint %s", GWEN_MsgEndpoint_GetName(ep));
   rv=GWEN_MsgEndpoint_ReadFromSocket(ep, buffer, sizeof(buffer));
-  if (rv<0 && rv!=GWEN_ERROR_TIMEOUT) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_TIMEOUT) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Timeout (%d)", rv);
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    }
     return rv;
   }
   else if (rv==0) {
