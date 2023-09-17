@@ -34,6 +34,7 @@ libgwenmsgio_la_SOURCES=$(built_sources) \
   endpoint_tcpc.c \
   endpoint_tcpd.c \
   endpoint_ipc.c \
+  endpoint_multilayer.c \
   msg.c \
   msg_ipc.c
 
@@ -45,6 +46,7 @@ iheader_HEADERS=$(build_headers_pub) \
   endpoint_tcpc.h \
   endpoint_tcpd.h \
   endpoint_ipc.h \
+  endpoint_multilayer.h \
   msg.h \
   msg_ipc.h
 
