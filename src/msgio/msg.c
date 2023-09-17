@@ -21,6 +21,9 @@
 #include <gwenhywfar/text.h>
 
 
+#define GWEN_MSG_SIZE_STEP 4096
+#define GWEN_MSG_SIZE_MASK (~4095)
+
 
 GWEN_LIST_FUNCTIONS(GWEN_MSG, GWEN_Msg)
 
@@ -175,15 +178,7 @@ uint32_t GWEN_Msg_GetCurrentPos(const GWEN_MSG *msg)
 
 int GWEN_Msg_AddByte(GWEN_MSG *msg, uint8_t b)
 {
-  if (msg) {
-    if ((msg->bytesInBuffer<msg->maxSize) &&
-        (msg->currentPos<msg->maxSize)) {
-      msg->buffer[(msg->currentPos)++]=b;
-      msg->bytesInBuffer++;
-      return 0;
-    }
-  }
-  return GWEN_ERROR_MEMORY_FULL;
+  return GWEN_Msg_AddBytes(msg, &b, 1);
 }
 
 
@@ -191,19 +186,28 @@ int GWEN_Msg_AddByte(GWEN_MSG *msg, uint8_t b)
 int GWEN_Msg_AddBytes(GWEN_MSG *msg, const uint8_t *bufferPtr, uint32_t bufferLen)
 {
   if (msg) {
-    if (((msg->bytesInBuffer+bufferLen)<=msg->maxSize) &&
-        ((msg->currentPos)+bufferLen<=msg->maxSize)) {
-      memmove(msg->buffer+msg->currentPos, bufferPtr, bufferLen);
-      msg->currentPos+=bufferLen;
-      msg->bytesInBuffer+=bufferLen;
-      return 0;
+    uint32_t newPos;
+
+    newPos=msg->currentPos+bufferLen;
+    if (newPos>=msg->maxSize) {
+      uint32_t newSize;
+      uint8_t *newPtr;
+
+      newSize=((msg->currentPos+bufferLen)+GWEN_MSG_SIZE_STEP) & GWEN_MSG_SIZE_MASK;
+      DBG_INFO(GWEN_LOGDOMAIN, "Resizing buffer from %u bytes to %u bytes", msg->maxSize, newSize);
+      newPtr=realloc(msg->buffer, newSize);
+      if (newPtr==NULL) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Memory full");
+	return GWEN_ERROR_MEMORY_FULL;
+      }
+      msg->buffer=newPtr;
+      msg->maxSize=newSize;
     }
-    else {
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "Buffer too small (adding %d bytes at %d, space left=%d bytes)",
-               bufferLen, msg->currentPos, msg->maxSize-msg->currentPos);
-      return GWEN_ERROR_BUFFER_OVERFLOW;
-    }
+
+    memmove(msg->buffer+msg->currentPos, bufferPtr, bufferLen);
+    msg->currentPos+=bufferLen;
+    msg->bytesInBuffer+=bufferLen;
+    return 0;
   }
   return GWEN_ERROR_GENERIC;
 }
