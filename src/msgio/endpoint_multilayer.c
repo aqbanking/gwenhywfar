@@ -144,6 +144,33 @@ void GWEN_MultilayerEndpoint_SetConnectTimeoutInSeconds(GWEN_MSG_ENDPOINT *ep, i
 
 
 
+int GWEN_MultilayerEndpoint_GetStage(const GWEN_MSG_ENDPOINT *ep)
+{
+  if (ep) {
+    GWEN_ENDPOINT_MULTILAYER *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MULTILAYER, ep);
+    if (xep)
+      return xep->stage;
+  }
+  return 0;
+}
+
+
+
+void GWEN_MultilayerEndpoint_SetStage(GWEN_MSG_ENDPOINT *ep, int i)
+{
+  if (ep) {
+    GWEN_ENDPOINT_MULTILAYER *xep;
+
+    xep=GWEN_INHERIT_GETDATA(GWEN_MSG_ENDPOINT, GWEN_ENDPOINT_MULTILAYER, ep);
+    if (xep)
+      xep->stage=i;
+  }
+}
+
+
+
 GWEN_ENDPOINT_MULTILAYER_STARTCONNECT_FN GWEN_MultilayerEndpoint_SetStartConnectFn(GWEN_MSG_ENDPOINT *ep,
                                                                                    GWEN_ENDPOINT_MULTILAYER_STARTCONNECT_FN fn)
 {

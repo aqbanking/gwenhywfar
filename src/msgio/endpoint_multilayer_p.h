@@ -19,6 +19,8 @@ struct GWEN_ENDPOINT_MULTILAYER {
 
   int reconnectTimeInSeconds;
   int connectTimeoutInSeconds;
+
+  int stage;
 };
 
 

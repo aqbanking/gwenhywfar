@@ -40,6 +40,9 @@ GWENHYWFAR_API void GWEN_MultilayerEndpoint_SetReconnectTimeInSeconds(GWEN_MSG_E
 GWENHYWFAR_API int GWEN_MultilayerEndpoint_GetConnectTimeoutInSeconds(const GWEN_MSG_ENDPOINT *ep);
 GWENHYWFAR_API void GWEN_MultilayerEndpoint_SetConnectTimeoutInSeconds(GWEN_MSG_ENDPOINT *ep, int i);
 
+GWENHYWFAR_API int GWEN_MultilayerEndpoint_GetStage(const GWEN_MSG_ENDPOINT *ep);
+GWENHYWFAR_API void GWEN_MultilayerEndpoint_SetStage(GWEN_MSG_ENDPOINT *ep, int i);
+
 
 GWENHYWFAR_API
 GWEN_ENDPOINT_MULTILAYER_STARTCONNECT_FN GWEN_MultilayerEndpoint_SetStartConnectFn(GWEN_MSG_ENDPOINT *ep,
