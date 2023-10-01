@@ -6772,7 +6772,7 @@ int main(int argc, char **argv)
     fprintf(stderr,
             "\nNote: \"modules\" is the test for gwen's modules using the internal TestFramework, "
             "use with \"-L LOGFILE\" for best readability.\n\n"
-            "This test is only available if Gwen has been configured with \"--enable-testcode\".");
+            "This test is only available if Gwen has been configured with \"--enable-testcode\".\n");
     GWEN_Fini();
     return 1;
   }
