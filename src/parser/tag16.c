@@ -336,6 +336,61 @@ void _writeTagToBuffer(unsigned int tagType, const uint8_t *p, int size, GWEN_BU
 
 
 
+int GWEN_Tag16_StartTagInBuffer(unsigned int tagType, GWEN_BUFFER *buf)
+{
+  if (buf) {
+    int pos;
+    int rv;
+
+    pos=GWEN_Buffer_GetPos(buf);
+    rv=GWEN_Buffer_AllocRoom(buf, 3);
+    if (rv==0) {
+      uint8_t *posPtr;
+
+      posPtr=(uint8_t*) GWEN_Buffer_GetPosPointer(buf);
+      *(posPtr++)=tagType & 0xff;
+      *(posPtr++)=0;
+      *(posPtr++)=0;
+      GWEN_Buffer_IncrementPos(buf, 3);
+      GWEN_Buffer_AdjustUsedBytes(buf);
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    return pos;
+  }
+  else {
+    DBG_INFO(GWEN_LOGDOMAIN, "NULLPOINTER");
+    return GWEN_ERROR_INVALID;
+  }
+}
+
+
+
+int GWEN_Tag16_EndTagInBuffer(int startPos, GWEN_BUFFER *buf)
+{
+  int currentPos;
+  int payloadSize;
+
+  currentPos=GWEN_Buffer_GetPos(buf);
+  payloadSize=currentPos-startPos-3;
+  if (payloadSize<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad size(%d) or startpos(%d)", payloadSize, startPos);
+    return GWEN_ERROR_GENERIC;
+  }
+  else {
+    uint8_t *posPtr;
+
+    posPtr=(uint8_t*) GWEN_Buffer_GetStart(buf)+startPos+1;
+    *(posPtr++)=payloadSize & 0xff;
+    *(posPtr++)=(payloadSize>>8) & 0xff;
+    return 0;
+  }
+}
+
+
+
 
 
 

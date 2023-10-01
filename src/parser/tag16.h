@@ -74,6 +74,31 @@ GWENHYWFAR_API GWEN_TAG16_LIST *GWEN_Tag16_List_fromBuffer(const uint8_t *p, uin
 GWENHYWFAR_API const GWEN_TAG16 *GWEN_Tag16_List_FindFirstByTagType(const GWEN_TAG16_LIST *tagList, unsigned int tagType);
 GWENHYWFAR_API const GWEN_TAG16 *GWEN_Tag16_List_FindNextByTagType(const GWEN_TAG16 *tag, unsigned int tagType);
 
+/**
+ * Use this function together with @ref GWEN_Tag16_EndTagInBuffer to create complex tags in a buffer.
+ * This can be used to cascade tags into a buffer.
+ *
+ * Internally this function writes the begin of a TAG16 structure into buffer. After that you can add as many bytes
+ * as you like. Finally call @ref GWEN_Tag16_EndTagInBuffer to finish the tag by correcting the size element of the
+ * tag16 in the buffer.
+ *
+ * @return start position of the newly created tag in buffer (<0 on error)
+ * @param tagType 8-bit type code/name/id of the tag (meaning of this code is up to the caller)
+ * @param buf buffer to write into
+ */
+GWENHYWFAR_API int GWEN_Tag16_StartTagInBuffer(unsigned int tagType, GWEN_BUFFER *buf);
+
+/**
+ * Use this to finish a tag16 structure in buffer you started with @ref GWEN_Tag16_StartTagInBuffer.
+ *
+ * Internally this function adjusts the size element of the tag16 object in the buffer.
+ *
+ * @return 0 if okay, <0 on error
+ * @param startPos value returned by @ref GWEN_Tag16_StartTagInBuffer (i.e. start of the tag in buffer)
+ * @param buf buffer to write into
+ */
+GWENHYWFAR_API int GWEN_Tag16_EndTagInBuffer(int startPos, GWEN_BUFFER *buf);
+
 
 
 /*@}*/

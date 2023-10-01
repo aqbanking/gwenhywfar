@@ -26,6 +26,7 @@ static int GWENHYWFAR_CB test1(GWEN_TEST_MODULE *mod);
 static int GWENHYWFAR_CB test2(GWEN_TEST_MODULE *mod);
 static int GWENHYWFAR_CB test3(GWEN_TEST_MODULE *mod);
 static int GWENHYWFAR_CB test4(GWEN_TEST_MODULE *mod);
+static int GWENHYWFAR_CB test5(GWEN_TEST_MODULE *mod);
 
 
 
@@ -44,7 +45,8 @@ int GWEN_Tag16_AddTests(GWEN_TEST_MODULE *mod)
   GWEN_Test_Module_AddTest(newMod, "add/read uint32_t tag", test1, NULL);
   GWEN_Test_Module_AddTest(newMod, "add/read uint64_t tag", test2, NULL);
   GWEN_Test_Module_AddTest(newMod, "add/read string tag",   test3, NULL);
-  GWEN_Test_Module_AddTest(newMod, "write/read tag lists",   test4, NULL);
+  GWEN_Test_Module_AddTest(newMod, "write/read tag lists",  test4, NULL);
+  GWEN_Test_Module_AddTest(newMod, "Start/endTagInBuffer",  test5, NULL);
 
   return 0;
 }
@@ -246,6 +248,52 @@ int test4(GWEN_UNUSED GWEN_TEST_MODULE *mod)
   GWEN_Tag16_List_free(tagList);
   GWEN_Buffer_free(buf);
 
+  return 0;
+}
+
+
+
+int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
+{
+  GWEN_BUFFER *buf;
+  GWEN_TAG16 *tag;
+  const char *value1="This is a test";
+  char *value2;
+  int startPos;
+  int rv;
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  startPos=GWEN_Tag16_StartTagInBuffer(0xcc, buf);
+  GWEN_Buffer_AppendString(buf, value1);
+  rv=GWEN_Tag16_EndTagInBuffer(startPos, buf);
+  if (rv<0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error ginishing tag (%d)", rv);
+    return rv;
+  }
+
+  GWEN_Buffer_Rewind(buf);
+  tag=GWEN_Tag16_fromBuffer(buf, 0);
+  if (tag==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error parsing tag from this:");
+    GWEN_Text_LogString(GWEN_Buffer_GetStart(buf), GWEN_Buffer_GetUsedBytes(buf), GWEN_LOGDOMAIN, GWEN_LoggerLevel_Error);
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+  value2=GWEN_Tag16_GetTagDataAsNewString(tag, NULL);
+  if (value2==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No value read back");
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+  if (strcmp(value1, value2)!=0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "value read (\"%s\") != value written (\"%s\")", value2, value1);
+    free(value2);
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_GENERIC;
+  }
+  free(value2);
+  GWEN_Buffer_free(buf);
   return 0;
 }
 
