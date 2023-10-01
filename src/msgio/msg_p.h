@@ -14,6 +14,7 @@
 
 
 struct GWEN_MSG {
+  GWEN_INHERIT_ELEMENT(GWEN_MSG)
   GWEN_LIST_ELEMENT(GWEN_MSG)
 
   uint32_t bytesInBuffer;

@@ -12,6 +12,7 @@
 
 
 #include <gwenhywfar/list.h>
+#include <gwenhywfar/inherit.h>
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 
@@ -23,6 +24,7 @@
 
 typedef struct GWEN_MSG GWEN_MSG;
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_MSG, GWEN_Msg, GWENHYWFAR_API)
+GWEN_INHERIT_FUNCTION_LIB_DEFS(GWEN_MSG, GWENHYWFAR_API)
 
 
 
