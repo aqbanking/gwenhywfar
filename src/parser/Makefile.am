@@ -6,7 +6,13 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
 AM_CFLAGS=@visibility_cflags@ @WERROR@ -DBUILDING_GWENHYWFAR
 
 typefiles=url.xml
-EXTRA_DIST=$(typefiles) dbrw.c xmlrw.c xmlglobalize.c README.xml2db
+EXTRA_DIST=$(typefiles) \
+  dbrw.c \
+  xmlrw.c \
+  xmlglobalize.c \
+  tag16-t.c \
+  tag16-t.h \
+  README.xml2db
 
 noinst_LTLIBRARIES=libparser.la
 

@@ -47,6 +47,7 @@ iheader_HEADERS=$(build_headers_pub) \
   endpoint_tcpd.h \
   endpoint_ipc.h \
   endpoint_multilayer.h \
+  endpoint_multilayer_p.h \
   msg.h \
   msg_ipc.h
 
