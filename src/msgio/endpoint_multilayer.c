@@ -359,6 +359,7 @@ void _checkSocketsWhenConnected(GWEN_MSG_ENDPOINT *ep, GWEN_MSG_ENDPOINT *epChil
                                 GWEN_SOCKETSET *readSet, GWEN_SOCKETSET *writeSet, GWEN_SOCKETSET *xSet)
 {
   _moveMessagesBetweenLists(GWEN_MsgEndpoint_GetSendMessageList(ep), GWEN_MsgEndpoint_GetSendMessageList(epChild));
+  _moveMessagesBetweenLists(GWEN_MsgEndpoint_GetReceivedMessageList(epChild), GWEN_MsgEndpoint_GetReceivedMessageList(ep));
   GWEN_MsgEndpoint_CheckSockets(epChild, readSet, writeSet, xSet);
   _moveMessagesBetweenLists(GWEN_MsgEndpoint_GetReceivedMessageList(epChild), GWEN_MsgEndpoint_GetReceivedMessageList(ep));
 }
