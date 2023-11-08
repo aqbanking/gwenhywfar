@@ -123,8 +123,9 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
         }
       }
       else {
-        /* got password */
-        return 0;
+	/* got password */
+	GWEN_Buffer_free(buf);
+	return 0;
       }
     }
 
