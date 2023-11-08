@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Feb 07 2003
- copyright   : (C) 2021 by Martin Preuss
+ copyright   : (C) 2023 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,6 +23,30 @@
  ***************************************************************************/
 
 /* included from gui.c */
+
+
+static int _tryReadStoredPasswd(GWEN_GUI *gui,
+				const char *pwName,
+				uint32_t flags,
+				const char *token,
+				char *buffer,
+				int minLen,
+				int maxLen);
+static int _tryReadCachedPasswd(GWEN_GUI *gui, const char *pwName, char *buffer, int minLen, int maxLen);
+static int _tryReadPasswdViaInputBox(GWEN_GUI *gui,
+				     uint32_t flags,
+				     const char *token,
+				     const char *title,
+				     const char *text,
+				     char *buffer,
+				     int minLen,
+				     int maxLen,
+				     uint32_t guiid);
+static void _tryStorePasswdInCacheAndStorage(GWEN_GUI *gui,
+					     const char *pwName,
+					     const char *token,
+					     const char *pwBuffer,
+					     int userWantsToStorePasswd);
 
 
 
@@ -62,153 +86,203 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_GetPassword(GWEN_GUI *gui,
                                                        const char *token,
                                                        const char *title,
                                                        const char *text,
-                                                       char *buffer,
+                                                       char *pwBuffer,
                                                        int minLen,
                                                        int maxLen,
                                                        GWEN_UNUSED GWEN_GUI_PASSWORD_METHOD methodId,
                                                        GWEN_UNUSED GWEN_DB_NODE *methodParams,
                                                        uint32_t guiid)
 {
-  if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) ||
-      (flags & GWEN_GUI_INPUT_FLAGS_DIRECT) ||
-      (gui->dbPasswords==NULL)
-     ) {
-    return GWEN_Gui_InputBox(flags,
-                             title,
-                             text,
-                             buffer,
-                             minLen,
-                             maxLen,
-                             guiid);
+  if ((flags & GWEN_GUI_INPUT_FLAGS_TAN) || (flags & GWEN_GUI_INPUT_FLAGS_DIRECT) || (gui->dbPasswords==NULL)) {
+    return GWEN_Gui_InputBox(flags, title, text, pwBuffer, minLen, maxLen, guiid);
   }
   else {
-    GWEN_BUFFER *buf;
+    GWEN_BUFFER *bufPasswdName;
     int rv;
-    const char *s;
 
-    buf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Text_EscapeToBufferTolerant(token, buf);
+    bufPasswdName=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Text_EscapeToBufferTolerant(token, bufPasswdName);
 
-    if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
-      s=GWEN_DB_GetCharValue(gui->dbPasswords,
-                             GWEN_Buffer_GetStart(buf),
-                             0, NULL);
-      if (s) {
-        int i;
-
-        i=strlen(s);
-        if (i>=minLen && i < maxLen) {
-          memmove(buffer, s, i+1);
-          GWEN_Buffer_free(buf);
-          return 0;
-        }
-        else {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Stored password [%s] is not within size limits (%d), rejecting.",
-                    GWEN_Buffer_GetStart(buf), i);
-        }
-      }
-    }
-
-    /* passwd not in password cache, look for it in password storage */
-    if (gui->passwdStore) {
-      rv=GWEN_PasswordStore_GetPassword(gui->passwdStore, token, buffer, minLen, maxLen);
+    rv=_tryReadStoredPasswd(gui, GWEN_Buffer_GetStart(bufPasswdName), flags, token, pwBuffer, minLen, maxLen);
+    if (rv!=0) {
+      GWEN_Buffer_free(bufPasswdName);
       if (rv<0) {
-        if (rv==GWEN_ERROR_NOT_FOUND || rv==GWEN_ERROR_NO_DATA) {
-          DBG_INFO(GWEN_LOGDOMAIN, "Password not found in PasswordStore");
-        }
-        else {
-          DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-          GWEN_Buffer_free(buf);
-          return rv;
-        }
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return rv;
       }
-      else {
+      else if (rv>0) {
 	/* got password */
-	GWEN_Buffer_free(buf);
 	return 0;
       }
     }
 
     if (gui->flags & GWEN_GUI_FLAGS_NONINTERACTIVE) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Password for [%s] missing in noninteractive mode, "
-                "aborting", GWEN_Buffer_GetStart(buf));
-      GWEN_Buffer_free(buf);
+      DBG_ERROR(GWEN_LOGDOMAIN, "Password for [%s] missing in noninteractive mode, aborting", GWEN_Buffer_GetStart(bufPasswdName));
+      GWEN_Buffer_free(bufPasswdName);
       return GWEN_ERROR_USER_ABORTED;
     }
 
-    for (;;) {
-      int rv2;
-
-      rv=GWEN_Gui_InputBox(flags,
-                           title,
-                           text,
-                           buffer,
-                           minLen,
-                           maxLen,
-                           guiid);
-      if (rv<0) {
-        GWEN_Buffer_free(buf);
-        return rv;
-      }
-      else {
-        GWEN_BUFFER *hbuf;
-        int isBad=0;
-
-        hbuf=GWEN_Buffer_new(0, 64, 0, 1);
-        GWEN_Gui__HashPair(token, buffer, hbuf);
-        isBad=GWEN_StringList_HasString(gui->badPasswords,
-                                        GWEN_Buffer_GetStart(hbuf));
-        if (!isBad) {
-          GWEN_Buffer_free(hbuf);
-          break;
-        }
-        rv2=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-                                GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-                                GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                                I18N("Enforce PIN"),
-                                I18N(
-                                  "You entered the same PIN twice.\n"
-                                  "The PIN is marked as bad, do you want\n"
-                                  "to use it anyway?"
-                                  "<html>"
-                                  "<p>"
-                                  "You entered the same PIN twice."
-                                  "</p>"
-                                  "<p>"
-                                  "The PIN is marked as <b>bad</b>, "
-                                  "do you want to use it anyway?"
-                                  "</p>"
-                                  "</html>"),
-                                I18N("Yes, use anyway"),
-                                I18N("Re-enter"),
-                                0,
-                                guiid);
-        if (rv2==1) {
-          /* accept this input */
-          GWEN_StringList_RemoveString(gui->badPasswords,
-                                       GWEN_Buffer_GetStart(hbuf));
-          GWEN_Buffer_free(hbuf);
-          break;
-        }
-        GWEN_Buffer_free(hbuf);
-      }
-    } /* for */
-
-    /* store in temporary cache */
-    GWEN_DB_SetCharValue(gui->dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         GWEN_Buffer_GetStart(buf), buffer);
-
-    /* only store passwd in storage if allowed by the user */
-    if (rv==1 && gui->passwdStore) {
-      rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, buffer);
-      if (rv<0) {
-        DBG_WARN(GWEN_LOGDOMAIN, "Could not store password (%d)", rv);
-      }
+    rv=_tryReadPasswdViaInputBox(gui, flags, token, title, text, pwBuffer, minLen, maxLen, guiid);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(bufPasswdName);
+      return rv;
     }
 
-    GWEN_Buffer_free(buf);
+    _tryStorePasswdInCacheAndStorage(gui, GWEN_Buffer_GetStart(bufPasswdName), token, pwBuffer, (rv==1)?1:0);
+
+    GWEN_Buffer_free(bufPasswdName);
     return 0;
+  }
+}
+
+
+
+int _tryReadStoredPasswd(GWEN_GUI *gui, const char *pwName, uint32_t flags, const char *token, char *buffer, int minLen, int maxLen)
+{
+  int rv;
+
+  /* look into password cache */
+  if (!(flags & GWEN_GUI_INPUT_FLAGS_CONFIRM)) {
+    rv=_tryReadCachedPasswd(gui, pwName, buffer, minLen, maxLen);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else if (rv>0) {
+      /* got password */
+      return 1;
+    }
+
+    /* look into password storage */
+    if (gui->passwdStore) {
+      rv=GWEN_PasswordStore_GetPassword(gui->passwdStore, token, buffer, minLen, maxLen);
+      if (rv<0) {
+	if (rv==GWEN_ERROR_NOT_FOUND || rv==GWEN_ERROR_NO_DATA) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "Password not found in PasswordStore");
+	}
+	else {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  return rv;
+	}
+      }
+      else {
+	/* got password */
+	return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+
+
+int _tryReadCachedPasswd(GWEN_GUI *gui, const char *pwName, char *buffer, int minLen, int maxLen)
+{
+  const char *s;
+
+  s=GWEN_DB_GetCharValue(gui->dbPasswords, pwName, 0, NULL);
+  if (s) {
+    int i;
+
+    i=strlen(s);
+    if (i>=minLen && i < maxLen) {
+      memmove(buffer, s, i+1);
+      return 1;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Stored password [%s] is not within size limits (%d), rejecting.", pwName, i);
+    }
+  }
+  return 0;
+}
+
+
+
+int _tryReadPasswdViaInputBox(GWEN_GUI *gui,
+			      uint32_t flags,
+			      const char *token,
+			      const char *title,
+			      const char *text,
+			      char *buffer,
+			      int minLen,
+			      int maxLen,
+			      uint32_t guiid)
+{
+  for (;;) {
+    int rv;
+    int rv2;
+
+    rv=GWEN_Gui_InputBox(flags, title, text, buffer, minLen, maxLen, guiid);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      GWEN_BUFFER *hbuf;
+      int isBad=0;
+
+      hbuf=GWEN_Buffer_new(0, 64, 0, 1);
+      GWEN_Gui__HashPair(token, buffer, hbuf);
+      isBad=GWEN_StringList_HasString(gui->badPasswords, GWEN_Buffer_GetStart(hbuf));
+      if (!isBad) {
+	/* password not marked as bad, return it */
+	GWEN_Buffer_free(hbuf);
+	return rv; /* return rv from GWEN_Gui_InputBox */
+      }
+      rv2=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+			      GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+			      GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+			      I18N("Enforce PIN"),
+			      I18N(
+				"You entered the same PIN twice.\n"
+				"The PIN is marked as bad, do you want\n"
+				"to use it anyway?"
+				"<html>"
+				"<p>"
+				"You entered the same PIN twice."
+				"</p>"
+				"<p>"
+				"The PIN is marked as <b>bad</b>, "
+				"do you want to use it anyway?"
+				"</p>"
+				"</html>"),
+			      I18N("Yes, use anyway"),
+			      I18N("Re-enter"),
+			      0,
+			      guiid);
+      if (rv2==1) {
+	/* accept this input */
+	GWEN_StringList_RemoveString(gui->badPasswords, GWEN_Buffer_GetStart(hbuf));
+	GWEN_Buffer_free(hbuf);
+	return rv; /* return rv from GWEN_Gui_InputBox */
+      }
+      GWEN_Buffer_free(hbuf);
+    }
+  } /* for */
+  /* should not get here */
+  return GWEN_ERROR_INTERNAL;
+}
+
+
+
+void _tryStorePasswdInCacheAndStorage(GWEN_GUI *gui,
+				      const char *pwName,
+				      const char *token,
+				      const char *pwBuffer,
+				      int userWantsToStorePasswd)
+{
+  /* store in temporary cache */
+  GWEN_DB_SetCharValue(gui->dbPasswords, GWEN_DB_FLAGS_OVERWRITE_VARS, pwName, pwBuffer);
+
+  /* only store passwd in storage if allowed by the user */
+  if (userWantsToStorePasswd && gui->passwdStore) {
+    int rv;
+
+    rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, pwBuffer);
+    if (rv<0) {
+      DBG_WARN(GWEN_LOGDOMAIN, "Could not store password (%d)", rv);
+    }
   }
 }
 
