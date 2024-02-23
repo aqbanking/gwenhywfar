@@ -155,6 +155,7 @@ static int GWEN_XMLNode__WritePropertiesToStream(const GWEN_XMLNODE *n, GWEN_FAS
       }
       p=p->next;
     }
+    GWEN_Buffer_free(buf);
   }
 
   return 0;
