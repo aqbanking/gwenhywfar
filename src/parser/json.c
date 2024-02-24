@@ -153,17 +153,35 @@ GWEN_JSON_ELEM *GWEN_JsonElement_GetElementByPath(GWEN_JSON_ELEM *je, const char
 
 GWEN_JSON_ELEM *_findByTypeAndData(GWEN_JSON_ELEM *je, int t, const char *s)
 {
+  DBG_ERROR(NULL, "Searching for \"%s\" [%d]", s, t);
   while(je) {
-    if (t==0 || (GWEN_JsonElement_GetType(je)==t)) {
+    int currentType;
+
+    currentType=GWEN_JsonElement_GetType(je);
+    if (t==0 || (currentType==t)) {
       if (s && *s) {
         const char *s2;
 
         s2=GWEN_JsonElement_GetData(je);
+	DBG_ERROR(NULL, "  Comparing \"%s\" [%d] against \"%s\" [%d]", s2?s2:"<empty>", currentType, s?s:"<empty>", t);
         if (s2 && strcasecmp(s, s2)==0)
-          return je;
+	  return je;
       }
       else
         return je;
+    }
+    else {
+      if (t==GWEN_JSON_ELEMTYPE_KEY && (currentType==GWEN_JSON_ELEMTYPE_ARRAY || currentType==GWEN_JSON_ELEMTYPE_OBJECT)) {
+	GWEN_JSON_ELEM *je2;
+
+	DBG_ERROR(NULL, "Searching below [%d]", currentType);
+	je2=GWEN_JsonElement_Tree2_GetFirstChild(je);
+	if (je2) {
+	  je2=_findByTypeAndData(je2, t, s);
+	  if (je2)
+	    return je2;
+	}
+      }
     }
     je=GWEN_JsonElement_Tree2_GetNext(je);
   }
@@ -182,6 +200,7 @@ void *_handlePath(const char *entry, void *data, int idx, GWEN_UNUSED uint32_t f
   je=GWEN_JsonElement_FindByIdxTypeAndData(jeParent, GWEN_JSON_ELEMTYPE_KEY, entry, idx);
   if (je==NULL) {
     /* does not exist */
+    return NULL;
   }
   je=GWEN_JsonElement_Tree2_GetFirstChild(je);
   return je;
