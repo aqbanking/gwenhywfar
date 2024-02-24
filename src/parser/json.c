@@ -153,7 +153,7 @@ GWEN_JSON_ELEM *GWEN_JsonElement_GetElementByPath(GWEN_JSON_ELEM *je, const char
 
 GWEN_JSON_ELEM *_findByTypeAndData(GWEN_JSON_ELEM *je, int t, const char *s)
 {
-  DBG_ERROR(NULL, "Searching for \"%s\" [%d]", s, t);
+  /*DBG_ERROR(NULL, "Searching for \"%s\" [%d]", s, t);*/
   while(je) {
     int currentType;
 
@@ -163,7 +163,7 @@ GWEN_JSON_ELEM *_findByTypeAndData(GWEN_JSON_ELEM *je, int t, const char *s)
         const char *s2;
 
         s2=GWEN_JsonElement_GetData(je);
-	DBG_ERROR(NULL, "  Comparing \"%s\" [%d] against \"%s\" [%d]", s2?s2:"<empty>", currentType, s?s:"<empty>", t);
+	/*DBG_ERROR(NULL, "  Comparing \"%s\" [%d] against \"%s\" [%d]", s2?s2:"<empty>", currentType, s?s:"<empty>", t);*/
         if (s2 && strcasecmp(s, s2)==0)
 	  return je;
       }
@@ -174,7 +174,7 @@ GWEN_JSON_ELEM *_findByTypeAndData(GWEN_JSON_ELEM *je, int t, const char *s)
       if (t==GWEN_JSON_ELEMTYPE_KEY && (currentType==GWEN_JSON_ELEMTYPE_ARRAY || currentType==GWEN_JSON_ELEMTYPE_OBJECT)) {
 	GWEN_JSON_ELEM *je2;
 
-	DBG_ERROR(NULL, "Searching below [%d]", currentType);
+	/*DBG_ERROR(NULL, "Searching below [%d]", currentType);*/
 	je2=GWEN_JsonElement_Tree2_GetFirstChild(je);
 	if (je2) {
 	  je2=_findByTypeAndData(je2, t, s);
