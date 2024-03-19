@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Sep 12 2003
-    copyright   : (C) 2020 by Martin Preuss
+    copyright   : (C) 2024 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -330,8 +330,7 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size)
       }
       return GWEN_ERROR_BUFFER_OVERFLOW;
     }
-    DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes",
-                bf->bufferSize, nsize);
+    /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Reallocating from %d to %d bytes", bf->bufferSize, nsize);*/
     if (bf->realPtr==NULL) {
       p=GWEN_Memory_malloc(nsize?(nsize+1):0);
     }
@@ -593,35 +592,39 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, unsigned int insert)
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Pos            : %d (%04x)\n", bf->pos, bf->pos);
+  fprintf(stderr, "Pos              : %d (%04x)\n", bf->pos, bf->pos);
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Buffer Size    : %d\n", bf->bufferSize);
+  fprintf(stderr, "Buffer Size      : %d\n", bf->bufferSize);
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Hard limit     : %d\n", bf->hardLimit);
+  fprintf(stderr, "Real Buffer Size : %d\n", bf->realBufferSize);
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Bytes Used     : %d\n", bf->bytesUsed);
+  fprintf(stderr, "Hard limit       : %d\n", bf->hardLimit);
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Bytes Reserved : %u\n",
+  fprintf(stderr, "Bytes Used       : %d\n", bf->bytesUsed);
+
+  for (k=0; k<insert; k++)
+    fprintf(stderr, " ");
+  fprintf(stderr, "Bytes Reserved   : %u\n",
           (uint32_t)(bf->ptr-bf->realPtr));
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Flags          : %08x ( ", bf->flags);
+  fprintf(stderr, "Flags            : %08x ( ", bf->flags);
   if (bf->flags & GWEN_BUFFER_FLAGS_OWNED)
     fprintf(stderr, "OWNED ");
   fprintf(stderr, ")\n");
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Mode           : %08x ( ", bf->mode);
+  fprintf(stderr, "Mode             : %08x ( ", bf->mode);
   if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC)
     fprintf(stderr, "DYNAMIC ");
   if (bf->mode & GWEN_BUFFER_MODE_READONLY)
@@ -632,7 +635,7 @@ void GWEN_Buffer_Dump(GWEN_BUFFER *bf, unsigned int insert)
 
   for (k=0; k<insert; k++)
     fprintf(stderr, " ");
-  fprintf(stderr, "Bookmarks      :");
+  fprintf(stderr, "Bookmarks        :");
   for (k=0; k<GWEN_BUFFER_MAX_BOOKMARKS; k++)
     fprintf(stderr, " %d", bf->bookmarks[k]);
   fprintf(stderr, "\n");
@@ -1097,19 +1100,20 @@ int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...)
   /* prepare list for va_arg */
   va_start(list, fmt);
   rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+  va_end(list);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
-    va_end(list);
     return GWEN_ERROR_GENERIC;
   }
   else if (rv>=maxUnsegmentedWrite) {
     GWEN_Buffer_AllocRoom(bf, rv+1);
     maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
     p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+    va_start(list, fmt);
     rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+    va_end(list);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
-      va_end(list);
       return GWEN_ERROR_GENERIC;
     }
   }
@@ -1117,7 +1121,6 @@ int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...)
     GWEN_Buffer_IncrementPos(bf, rv);
     GWEN_Buffer_AdjustUsedBytes(bf);
   }
-  va_end(list);
 
   return 0;
 }
