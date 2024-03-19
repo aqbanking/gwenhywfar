@@ -262,7 +262,8 @@ GWEN_LIST1_ELEMENT *_list1_element;
  * own lists (this is sometimes needed).
  */
 #define GWEN_LIST_FUNCTION_LIB_DEFS_CONST(t, pr, decl) \
-  typedef GWEN_LIST1 t##_LIST; \
+  /*typedef GWEN_LIST1 t##_LIST;*/ \
+  typedef struct t##_LIST t##_LIST; \
   typedef int GWENHYWFAR_CB (*t##_LIST_SORT_FN)(const t *a, const t *b, int ascending); \
   typedef t* (t##_LIST_FOREACH)(t *element, void *user_data); \
                                                                                         \
@@ -366,15 +367,15 @@ GWEN_LIST1_ELEMENT *_list1_element;
 #define GWEN_LIST_FUNCTIONS(t, pr) \
   \
   int pr##_List_Add(t *element, t##_LIST *l) { \
-    return GWEN_List1_Add(l, element->_list1_element); \
+    return GWEN_List1_Add((GWEN_LIST1*)l, element->_list1_element); \
   } \
   \
   int pr##_List_AddList(t##_LIST *dst, t##_LIST *l) { \
-    return GWEN_List1_AddList(dst, l); \
+    return GWEN_List1_AddList((GWEN_LIST1*)dst, (GWEN_LIST1*)l); \
   } \
   \
   int pr##_List_Insert(t *element, t##_LIST *l) { \
-    return GWEN_List1_Insert(l, element->_list1_element); \
+    return GWEN_List1_Insert((GWEN_LIST1*)l, element->_list1_element); \
   } \
   \
   int pr##_List_Del(t *element){ \
@@ -382,18 +383,18 @@ GWEN_LIST1_ELEMENT *_list1_element;
   }\
   \
   t* pr##_List_First(const t##_LIST *l) { \
-    if (l) return (t*)GWEN_List1_GetFirst(l);\
+    if (l) return (t*)GWEN_List1_GetFirst((GWEN_LIST1*)l);\
     else return 0; \
   } \
   \
   t* pr##_List_Last(const t##_LIST *l) { \
-    if (l) return (t*) GWEN_List1_GetLast(l);\
+    if (l) return (t*) GWEN_List1_GetLast((GWEN_LIST1*)l);\
     else return 0; \
   } \
   \
   void pr##_List_Clear(t##_LIST *l) { \
     t* el; \
-    while( (el=(t*) GWEN_List1_GetFirst(l)) ) {\
+    while( (el=(t*) GWEN_List1_GetFirst((GWEN_LIST1*)l)) ) {\
       pr##_List_Del(el);\
       pr##_free(el);\
     } /* while */ \
@@ -401,7 +402,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
   \
   int pr##_List_HasElement(const t##_LIST *l, const t *element) { \
     const t* el; \
-    el=(t*)GWEN_List1_GetFirst(l); \
+    el=(t*)GWEN_List1_GetFirst((GWEN_LIST1*)l); \
     while(el) {\
       if (el==element) \
         return 1; \
@@ -417,7 +418,7 @@ GWEN_LIST1_ELEMENT *_list1_element;
   void pr##_List_free(t##_LIST *l) {\
     if (l) { \
       pr##_List_Clear(l);\
-      GWEN_List1_free(l); \
+      GWEN_List1_free((GWEN_LIST1*)l); \
     }\
   } \
   \
@@ -430,15 +431,15 @@ GWEN_LIST1_ELEMENT *_list1_element;
   } \
   \
   uint32_t pr##_List_GetCount(const t##_LIST *l){\
-    return GWEN_List1_GetCount(l);\
+    return GWEN_List1_GetCount((GWEN_LIST1*)l);\
   } \
   \
   t##_LIST_SORT_FN pr##_List_SetSortFn(t##_LIST *l, t##_LIST_SORT_FN fn) { \
-    return (t##_LIST_SORT_FN) GWEN_List1_SetSortFn(l, (GWEN_LIST1_SORT_FN) fn); \
+    return (t##_LIST_SORT_FN) GWEN_List1_SetSortFn((GWEN_LIST1*)l, (GWEN_LIST1_SORT_FN) fn); \
   } \
   \
   void pr##_List_Sort(t##_LIST *l, int ascending){\
-    GWEN_List1_Sort(l, ascending);\
+    GWEN_List1_Sort((GWEN_LIST1*)l, ascending);\
   }\
   \
   t* pr##_List_ForEach(t##_LIST *l, t##_LIST_FOREACH fn, void *user_data){ \
