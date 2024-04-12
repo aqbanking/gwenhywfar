@@ -35,6 +35,8 @@
 #define GWB_BUILDCTX_PROCESS_WAIT_TIMEOUT 10.0
 
 
+static int _commandLogNum=0;
+
 static void _setupCommands(GWB_BUILD_CONTEXT *bctx, int forPrepareCommands);
 static void _createCommandQueues(GWB_BUILD_CONTEXT *bctx);
 static int _checkWaitingQueue(GWB_BUILD_CONTEXT *bctx, int maxStartAllowed);
@@ -42,7 +44,7 @@ static int _startCommand(GWB_BUILD_CONTEXT *bctx, GWB_BUILD_CMD *bcmd, const GWE
 static int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx);
 static void _signalJobFinished(GWB_BUILD_CMD *bcmd);
 static void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommands);
-static void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_SUBCMD *cmd);
+static void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_CMD *cmd, GWB_BUILD_SUBCMD *subCmd);
 
 static int _waitForRunningJobs(GWB_BUILD_CONTEXT *bctx);
 static void _abortAllCommands(GWB_BUILD_CONTEXT *bctx);
@@ -660,7 +662,7 @@ int _checkRunningQueue(GWB_BUILD_CONTEXT *bctx)
         int result;
 
         result=GWEN_Process_GetResult(process);
-        _printCmdOutputIfNotEmptyAndDeleteFile(currentCommand);
+        _printCmdOutputIfNotEmptyAndDeleteFile(bcmd, currentCommand);
         if (result) {
           if (GWB_BuildSubCmd_GetFlags(currentCommand) & GWB_BUILD_SUBCMD_FLAGS_IGNORE_RESULT) {
             DBG_INFO(NULL, "Command exited with result %d, ignoring", result);
@@ -761,11 +763,11 @@ void _decBlockingFilesInWaitingBuildCommands(GWB_BUILD_CMD_LIST2 *waitingCommand
 
 
 
-void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_SUBCMD *cmd)
+void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_CMD *cmd, GWB_BUILD_SUBCMD *subCmd)
 {
   const char *fileName;
 
-  fileName=GWB_BuildSubCmd_GetLogFilename(cmd);
+  fileName=GWB_BuildSubCmd_GetLogFilename(subCmd);
   if (fileName) {
     struct stat sb;
 
@@ -785,11 +787,17 @@ void _printCmdOutputIfNotEmptyAndDeleteFile(GWB_BUILD_SUBCMD *cmd)
         else {
           const char *buildMessage;
           const char *exe;
-      
-          buildMessage=GWB_BuildSubCmd_GetBuildMessage(cmd);
-          exe=GWB_BuildSubCmd_GetCommand(cmd);
+	  const char *folder;
+
+          folder=GWB_BuildCmd_GetFolder(cmd);
+          buildMessage=GWB_BuildSubCmd_GetBuildMessage(subCmd);
+          exe=GWB_BuildSubCmd_GetCommand(subCmd);
           fprintf(stderr, "Output from [%s]\n", buildMessage?buildMessage:(exe?exe:"NONE"));
-          fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(dbuf));
+          if (folder && *folder)
+	    fprintf(stderr, "make[%d]: Entering directory '%s'\n", ++_commandLogNum, folder);
+	  fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(dbuf));
+          if (folder && *folder)
+	    fprintf(stderr, "make[%d]: Leaving directory '%s'\n", _commandLogNum, folder);
           fflush(stderr);
         }
         GWEN_Buffer_free(dbuf);
