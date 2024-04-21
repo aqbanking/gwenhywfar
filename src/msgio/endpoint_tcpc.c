@@ -106,7 +106,7 @@ int GWEN_TcpcEndpoint_StartConnect(GWEN_MSG_ENDPOINT *ep)
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_ENDPOINT_TCPC *xep;
 

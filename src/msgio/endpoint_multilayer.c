@@ -80,7 +80,7 @@ GWEN_MSG_ENDPOINT *GWEN_MultilayerEndpoint_new(const char *name, int groupId)
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_ENDPOINT_MULTILAYER *xep;
 

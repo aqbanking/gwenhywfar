@@ -61,7 +61,7 @@ void GWEN_MsgIoEndpoint_Extend(GWEN_MSG_ENDPOINT *ep)
 
 
 
-void _freeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   GWEN_MSG_ENDPOINT *ep;
   GWEN_ENDPOINT_MSGIO *xep;

@@ -75,7 +75,7 @@ GWEN_MSG_ENDPOINT *GWEN_TcpdEndpoint_new(const char *host, int port, const char 
 
 
 
-void _freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_ENDPOINT_TCPD *xep;
 
