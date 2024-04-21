@@ -236,7 +236,7 @@ uint64_t GWEN_Tag16_GetTagDataAsUint64(const GWEN_TAG16 *tag, uint64_t defaultVa
 char *GWEN_Tag16_GetTagDataAsNewString(const GWEN_TAG16 *tag, const char *defaultValue)
 {
   if (tag && tag->tagLength)
-    return strndup((const char*)(tag->tagData), tag->tagLength);
+    return GWEN_Text_strndup((const char*)(tag->tagData), tag->tagLength);
   return defaultValue?strdup(defaultValue):NULL;
 }
 
