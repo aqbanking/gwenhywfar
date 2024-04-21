@@ -107,14 +107,6 @@ macro GWEN_MEMORY_DEBUG.
 - "1" only shows those objects whose count is not 0
 
 
-"GWEN_SSL_DEBUG"
-----------------
-
-If this environment variable exists the SSL code will append data received
-via an SSL connection to "/tmp/read.bin" and append data sent via an SSL
-connection to /tmp/written.bin".
-
-
 "GWEN_TLS_CIPHER_PRIORITIES"
 --------------------------
 
@@ -184,6 +176,6 @@ The name of this library was chosen to honour a very special person ;-)
 
 
 
-Hamburg, Germany 2021/09/30
+2024/04/21
 
 
