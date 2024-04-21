@@ -374,7 +374,7 @@ int GWEN_Date_DaysInYear(const GWEN_DATE *gd)
   assert(gd);
 
   gd11=GWEN_Date_fromGregorian(gd->year, 1, 1);
-  result=(gd->julian)-(gd11->julian);
+  result=(gd->julian)-(gd11->julian)+1; /* count current day also (e.g. return 1 for Jan 1) */
   GWEN_Date_free(gd11);
 
   return result;
