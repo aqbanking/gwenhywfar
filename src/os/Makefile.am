@@ -22,7 +22,8 @@ iheader_HEADERS=\
  gwensemaphore.h \
  gwendate.h \
  timestamp.h \
- condvar.h
+ condvar.h \
+ portable_endian.h
 
 noinst_HEADERS= \
  gwendate_p.h \
