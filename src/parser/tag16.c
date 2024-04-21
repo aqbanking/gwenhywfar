@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sun Jun 13 2004
-    copyright   : (C) 2023 by Martin Preuss
+    copyright   : (C) 2024 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,11 +19,11 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/portable_endian.h>
 
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <endian.h>
 
 
 
