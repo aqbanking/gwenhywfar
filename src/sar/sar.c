@@ -728,7 +728,7 @@ int GWEN_Sar_AddFile(GWEN_SAR *sr, const char *fname)
   assert(sr->refCount);
 
   /* stat file to be added */
-#if _BSD_SOURCE || _XOPEN_SOURCE >= 500 || _XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED
+#if ((_BSD_SOURCE || _XOPEN_SOURCE >= 500 || (_XOPEN_SOURCE && _XOPEN_SOURCE_EXTENDED) || _POSIX_C_SOURCE >= 200112L) && !defined(__MINGW32__)) || defined(OS_DARWIN)
   rv=lstat(fname, &st);
 #else
   rv=stat(fname, &st);
