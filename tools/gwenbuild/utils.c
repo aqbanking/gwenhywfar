@@ -514,7 +514,7 @@ int _copyLink(const char *sSrcPath, const char *sDestPath, const struct stat *st
     bufSizeNeeded=st->st_size+1;
   symlinkbuf=(char*) malloc(bufSizeNeeded);
   assert(symlinkbuf);
-  rv=readlink(sSrcPath, symlinkbuf, bufSizeNeeded);
+  rv=readlink(sSrcPath, symlinkbuf, bufSizeNeeded); /* doesn't add '0'!! */
   if (rv==-1) {
     DBG_ERROR(NULL, "ERROR: readlink(%s): %s", sSrcPath, strerror(errno));
     free(symlinkbuf);
@@ -525,6 +525,7 @@ int _copyLink(const char *sSrcPath, const char *sDestPath, const struct stat *st
     free(symlinkbuf);
     return GWEN_ERROR_GENERIC;
   }
+  symlinkbuf[rv]=0;
 
   rv=GWEN_Directory_GetPath(sDestPath,
                             GWEN_DIR_FLAGS_PUBLIC_PATH | GWEN_DIR_FLAGS_PUBLIC_NAME |
