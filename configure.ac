@@ -693,7 +693,7 @@ esac
 #
 # check for library for common error values and messages in GnuPG components
 #
-AM_PATH_GPG_ERROR
+PKG_CHECK_MODULES([GPG_ERROR], [gpg-error])
 
 
 
