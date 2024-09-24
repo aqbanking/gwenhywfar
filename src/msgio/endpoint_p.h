@@ -33,6 +33,8 @@ struct GWEN_MSG_ENDPOINT {
   GWEN_MSG_ENDPOINT_CHECKSOCKETS_FN checkSocketsFn;
 
   int defaultMessageSize;
+
+  uint32_t lastMsgId;
 };
 
 
