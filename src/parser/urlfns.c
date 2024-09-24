@@ -193,7 +193,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
     bValue=GWEN_Buffer_new(0, 256, 0, 1);
     s++;
     p=s;
-    while (*p && *p!='?' && *p!='=')
+    while (*p && *p!='&' && *p!='=')
       p++;
     if (p!=s)
       GWEN_Buffer_AppendBytes(bName, s, (p-s));
@@ -201,7 +201,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
     if (*p=='=') {
       s++;
       p=s;
-      while (*p && *p!='?')
+      while (*p && *p!='&')
         p++;
       if (p!=s)
         GWEN_Buffer_AppendBytes(bValue, s, (p-s));
