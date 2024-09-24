@@ -6621,7 +6621,7 @@ int testIpcClient()
   GWEN_MSG *msg;
 
   epClient=GWEN_IpcEndpoint_CreateIpcTcpClient("127.0.0.1", 55555, NULL, 1);
-  msg=GWEN_IpcMsg_new(1, 2, 3, 0, NULL); /* create a simple test message without payload */
+  msg=GWEN_IpcMsg_new(1, 2, 3, GWEN_MsgEndpoint_GetNextMessageId(epClient), 0, 0, NULL); /* simple test message without payload */
   GWEN_MsgEndpoint_AddSendMessage(epClient, msg);
 
   for (loop=0;; loop++) {
