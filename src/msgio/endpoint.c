@@ -183,6 +183,13 @@ void GWEN_MsgEndpoint_SetDefaultMessageSize(GWEN_MSG_ENDPOINT *ep, int i)
 
 
 
+uint32_t GWEN_MsgEndpoint_GetNextMessageId(GWEN_MSG_ENDPOINT *ep)
+{
+  return ep?(++(ep->lastMsgId)):0;
+}
+
+
+
 GWEN_MSG_LIST *GWEN_MsgEndpoint_GetReceivedMessageList(const GWEN_MSG_ENDPOINT *ep)
 {
   return (ep?ep->receivedMessageList:NULL);
