@@ -6,7 +6,6 @@
  * should have received along with this file.
  ****************************************************************************/
 
-
 #ifndef GWEN_MSG_MSG_H
 #define GWEN_MSG_MSG_H
 
@@ -79,6 +78,20 @@ GWENHYWFAR_API uint64_t GWEN_Msg_GetUint64At(const GWEN_MSG *msg, int offs, uint
 GWENHYWFAR_API uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, uint32_t defaultValue);
 GWENHYWFAR_API uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, uint16_t defaultValue);
 GWENHYWFAR_API uint8_t GWEN_Msg_GetUint8At(const GWEN_MSG *msg, int offs, uint8_t defaultValue);
+
+GWENHYWFAR_API int GWEN_Msg_WriteUint64At(GWEN_MSG *msg, uint32_t pos, uint64_t v);
+GWENHYWFAR_API int GWEN_Msg_WriteUint32At(GWEN_MSG *msg, uint32_t pos, uint32_t v);
+GWENHYWFAR_API int GWEN_Msg_WriteUint16At(GWEN_MSG *msg, uint32_t pos, uint16_t v);
+GWENHYWFAR_API int GWEN_Msg_WriteUint8At(GWEN_MSG *msg, uint32_t pos, uint8_t v);
+GWENHYWFAR_API int GWEN_Msg_WriteBytesAt(GWEN_MSG *msg, uint32_t pos, const uint8_t *bufferPtr, uint32_t bufferLen);
+
+
+GWENHYWFAR_API int GWEN_Msg_AddUint64(GWEN_MSG *msg, uint64_t v);
+GWENHYWFAR_API int GWEN_Msg_AddUint32(GWEN_MSG *msg, uint32_t v);
+GWENHYWFAR_API int GWEN_Msg_AddUint16(GWEN_MSG *msg, uint16_t v);
+GWENHYWFAR_API int GWEN_Msg_AddUint8(GWEN_MSG *msg, uint8_t v);
+GWENHYWFAR_API int GWEN_Msg_AddString(GWEN_MSG *msg, const char *s, uint32_t maxSize, uint8_t filler);
+GWENHYWFAR_API int GWEN_Msg_AddStringWithTrailingNull(GWEN_MSG *msg, const char *s, uint32_t maxSize, uint8_t filler);
 
 
 GWENHYWFAR_API void GWEN_Msg_Dump(const GWEN_MSG *msg, GWEN_BUFFER *buf);

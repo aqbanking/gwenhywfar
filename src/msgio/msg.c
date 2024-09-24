@@ -19,6 +19,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/endianfns.h>
 
 
 #define GWEN_MSG_SIZE_STEP 4096
@@ -27,6 +28,9 @@
 
 GWEN_LIST_FUNCTIONS(GWEN_MSG, GWEN_Msg)
 GWEN_INHERIT_FUNCTIONS(GWEN_MSG)
+
+
+static int _ensureWritePos(GWEN_MSG *msg, uint32_t newPos);
 
 
 
@@ -190,23 +194,14 @@ int GWEN_Msg_AddBytes(GWEN_MSG *msg, const uint8_t *bufferPtr, uint32_t bufferLe
 {
   if (msg) {
     uint32_t newPos;
+    int rv;
 
     newPos=msg->currentPos+bufferLen;
-    if (newPos>=msg->maxSize) {
-      uint32_t newSize;
-      uint8_t *newPtr;
-
-      newSize=((msg->currentPos+bufferLen)+GWEN_MSG_SIZE_STEP) & GWEN_MSG_SIZE_MASK;
-      DBG_INFO(GWEN_LOGDOMAIN, "Resizing buffer from %u bytes to %u bytes", msg->maxSize, newSize);
-      newPtr=realloc(msg->buffer, newSize);
-      if (newPtr==NULL) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Memory full");
-	return GWEN_ERROR_MEMORY_FULL;
-      }
-      msg->buffer=newPtr;
-      msg->maxSize=newSize;
+    rv=_ensureWritePos(msg, newPos);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
     }
-
     memmove(msg->buffer+msg->currentPos, bufferPtr, bufferLen);
     msg->currentPos+=bufferLen;
     msg->bytesInBuffer+=bufferLen;
@@ -214,6 +209,246 @@ int GWEN_Msg_AddBytes(GWEN_MSG *msg, const uint8_t *bufferPtr, uint32_t bufferLe
   }
   return GWEN_ERROR_GENERIC;
 }
+
+
+
+int GWEN_Msg_WriteUint64At(GWEN_MSG *msg, uint32_t pos, uint64_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=_ensureWritePos(msg, pos+8);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      uint64_t *ptr=(uint64_t*)(msg->buffer+pos);
+      *ptr=GWEN_ENDIAN_HTOLE64(v);
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_WriteUint32At(GWEN_MSG *msg, uint32_t pos, uint32_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=_ensureWritePos(msg, pos+4);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      uint32_t *ptr=(uint32_t*)(msg->buffer+pos);
+      *ptr=GWEN_ENDIAN_HTOLE32(v);
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_WriteUint16At(GWEN_MSG *msg, uint32_t pos, uint16_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=_ensureWritePos(msg, pos+2);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      uint16_t *ptr=(uint16_t*)(msg->buffer+pos);
+      *ptr=GWEN_ENDIAN_HTOLE16(v);
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_WriteUint8At(GWEN_MSG *msg, uint32_t pos, uint8_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=_ensureWritePos(msg, pos+1);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      uint8_t *ptr=(uint8_t*)(msg->buffer+pos);
+      *ptr=v;
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_WriteBytesAt(GWEN_MSG *msg, uint32_t pos, const uint8_t *bufferPtr, uint32_t bufferLen)
+{
+  if (msg && bufferPtr && bufferLen) {
+    int rv;
+
+    rv=_ensureWritePos(msg, pos+bufferLen);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      uint8_t *ptr=(uint8_t*)(msg->buffer+pos);
+      memmove(ptr, bufferPtr, bufferLen);
+      return 0;
+    }
+  }
+  return GWEN_ERROR_INVALID;
+}
+
+
+
+int GWEN_Msg_AddUint64(GWEN_MSG *msg, uint64_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=GWEN_Msg_WriteUint64At(msg, msg->currentPos, v);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      msg->currentPos+=8;
+      msg->bytesInBuffer+=8;
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_AddUint32(GWEN_MSG *msg, uint32_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=GWEN_Msg_WriteUint32At(msg, msg->currentPos, v);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      msg->currentPos+=4;
+      msg->bytesInBuffer+=4;
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_AddUint16(GWEN_MSG *msg, uint16_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=GWEN_Msg_WriteUint16At(msg, msg->currentPos, v);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      msg->currentPos+=2;
+      msg->bytesInBuffer+=2;
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_AddUint8(GWEN_MSG *msg, uint8_t v)
+{
+  if (msg) {
+    int rv;
+
+    rv=GWEN_Msg_WriteUint8At(msg, msg->currentPos, v);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    else {
+      msg->currentPos+=1;
+      msg->bytesInBuffer+=1;
+      return 0;
+    }
+  }
+  return GWEN_ERROR_GENERIC;
+}
+
+
+
+int GWEN_Msg_AddString(GWEN_MSG *msg, const char *s, uint32_t maxSize, uint8_t filler)
+{
+  if (msg) {
+    int len=maxSize;
+    int i;
+
+    if (s) {
+      len=strlen(s);
+      if (len>maxSize) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "String too long (%d > %d)", len, maxSize);
+	return GWEN_ERROR_INVALID;
+      }
+      GWEN_Msg_AddBytes(msg, (const uint8_t*) s, len);
+      len=maxSize-len;
+    }
+    for (i=0; i<len; i++)
+      GWEN_Msg_AddUint8(msg, filler);
+    return 0;
+  }
+  return GWEN_ERROR_INVALID;
+}
+
+
+
+int GWEN_Msg_AddStringWithTrailingNull(GWEN_MSG *msg, const char *s, uint32_t maxSize, uint8_t filler)
+{
+  if (msg) {
+    int len=maxSize;
+    int i;
+
+    if (s) {
+      len=strlen(s)+1;
+      if (len>maxSize) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "String too long (%d > %d)", len, maxSize);
+	return GWEN_ERROR_INVALID;
+      }
+      GWEN_Msg_AddBytes(msg, (const uint8_t*) s, len);
+      len=maxSize-len;
+    }
+    for (i=0; i<len; i++)
+      GWEN_Msg_AddUint8(msg, filler);
+    return 0;
+  }
+  return GWEN_ERROR_INVALID;
+}
+
+
+
 
 
 
@@ -355,19 +590,9 @@ uint64_t GWEN_Msg_GetUint64At(const GWEN_MSG *msg, int offs, uint64_t defaultVal
 {
   if (msg) {
     if (msg->bytesInBuffer>=offs+8) {
-      const uint8_t *ptr;
-      uint64_t v;
+      const uint64_t *ptr=(uint64_t*)(msg->buffer+offs);
 
-      ptr=msg->buffer+offs;
-      v=(uint64_t)(*(ptr++));
-      v|=(uint64_t)(*(ptr++))<<8;
-      v|=(uint64_t)(*(ptr++))<<16;
-      v|=(uint64_t)(*(ptr++))<<24;
-      v|=(uint64_t)(*(ptr++))<<32;
-      v|=(uint64_t)(*(ptr++))<<40;
-      v|=(uint64_t)(*(ptr++))<<48;
-      v|=(uint64_t)(*(ptr++))<<56;
-      return v;
+      return GWEN_ENDIAN_LE64TOH(*ptr);
     }
   }
   return defaultValue;
@@ -379,10 +604,9 @@ uint32_t GWEN_Msg_GetUint32At(const GWEN_MSG *msg, int offs, uint32_t defaultVal
 {
   if (msg) {
     if (msg->bytesInBuffer>=offs+4) {
-      const uint8_t *ptr;
+      const uint32_t *ptr=(uint32_t*)(msg->buffer+offs);
 
-      ptr=msg->buffer+offs;
-      return (uint32_t)(ptr[0])+(ptr[1]<<8)+(ptr[2]<<16)+(ptr[3]<<24);
+      return GWEN_ENDIAN_LE32TOH(*ptr);
     }
   }
   return defaultValue;
@@ -394,10 +618,9 @@ uint16_t GWEN_Msg_GetUint16At(const GWEN_MSG *msg, int offs, uint16_t defaultVal
 {
   if (msg) {
     if (msg->bytesInBuffer>=offs+2) {
-      const uint8_t *ptr;
+      const uint16_t *ptr=(uint16_t*)(msg->buffer+offs);
 
-      ptr=msg->buffer+offs;
-      return (uint16_t)(ptr[0])+(ptr[1]<<8);
+      return GWEN_ENDIAN_LE16TOH(*ptr);
     }
   }
   return defaultValue;
@@ -432,4 +655,26 @@ void GWEN_Msg_Dump(const GWEN_MSG *msg, GWEN_BUFFER *buf)
 
 
 
+int _ensureWritePos(GWEN_MSG *msg, uint32_t newPos)
+{
+  if (msg) {
+    if (newPos>=msg->maxSize) {
+      uint32_t newSize;
+      uint8_t *newPtr;
+
+      newSize=(newPos+GWEN_MSG_SIZE_STEP) & GWEN_MSG_SIZE_MASK;
+      DBG_INFO(GWEN_LOGDOMAIN, "Resizing buffer from %u bytes to %u bytes", msg->maxSize, newSize);
+      newPtr=realloc(msg->buffer, newSize);
+      if (newPtr==NULL) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Memory full");
+	return GWEN_ERROR_MEMORY_FULL;
+      }
+      memset(newPtr+msg->currentPos, 0, newSize-msg->maxSize);
+      msg->buffer=newPtr;
+      msg->maxSize=newSize;
+    }
+    return 0;
+  }
+  return GWEN_ERROR_INVALID;
+}
 
