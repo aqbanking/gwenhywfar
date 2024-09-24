@@ -346,7 +346,11 @@ int _distributeBufferContent(GWEN_MSG_ENDPOINT *ep, const uint8_t *bufferPtr, in
           DBG_DEBUG(GWEN_LOGDOMAIN, "current message still needs %d bytes", bytesNeeded);
           if (bytesNeeded==0) {
             /* message finished already before adding bytes?? */
-            DBG_ERROR(GWEN_LOGDOMAIN, "Incoming message complete, SNH!");
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Incoming message complete, SNH!");
+          }
+          else if (bytesNeeded<0) {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "Unknown how many bytes needed? SNH! (%d)", bytesNeeded);
+	    return GWEN_ERROR_IO;
           }
 	  else {
 	    int rv;
