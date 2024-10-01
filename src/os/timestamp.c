@@ -42,6 +42,7 @@ static int _calcJulian(int y, int m, int d);
 static void _writeAsString(GWEN_TIMESTAMP *tstamp);
 static void _setDate(GWEN_TIMESTAMP *tstamp, int year, int month, int day);
 static void _setTime(GWEN_TIMESTAMP *tstamp, int hour, int minute, int second);
+static void _setFromInt64(GWEN_TIMESTAMP *tstamp, int64_t i);
 
 
 
@@ -113,16 +114,23 @@ GWEN_TIMESTAMP *GWEN_Timestamp_fromInt64(int64_t i)
   GWEN_TIMESTAMP *tstamp=NULL;
 
   GWEN_NEW_OBJECT(GWEN_TIMESTAMP, tstamp);
-  tstamp->second=i%60;
-  i/=60;
-  tstamp->minute=i%60;
-  i/=60;
-  tstamp->hour=i%24;
-  i/=24;
-
-  GWEN_Timestamp_SetJulianDate(tstamp, i);
-
+  _setFromInt64(tstamp, i);
   return tstamp;
+}
+
+
+
+void _setFromInt64(GWEN_TIMESTAMP *tstamp, int64_t i)
+{
+  if (tstamp) {
+    tstamp->second=i%60;
+    i/=60;
+    tstamp->minute=i%60;
+    i/=60;
+    tstamp->hour=i%24;
+    i/=24;
+    GWEN_Timestamp_SetJulianDate(tstamp, i);
+  }
 }
 
 
@@ -477,6 +485,16 @@ GWEN_TIMESTAMP *GWEN_Timestamp_fromDb(GWEN_DB_NODE *db)
 
 }
 
+
+void GWEN_Timestamp_AddSeconds(GWEN_TIMESTAMP *tstamp, int seconds)
+{
+  if (tstamp && seconds!=0) {
+    int64_t ti;
+
+    ti=GWEN_Timestamp_toInt64(tstamp)+seconds;
+    _setFromInt64(tstamp, ti);
+  }
+}
 
 
 

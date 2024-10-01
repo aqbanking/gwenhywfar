@@ -88,6 +88,11 @@ GWENHYWFAR_API int GWEN_Timestamp_GetMinute(const GWEN_TIMESTAMP *tstamp);
 
 GWENHYWFAR_API int GWEN_Timestamp_GetSecond(const GWEN_TIMESTAMP *tstamp);
 
+
+GWENHYWFAR_API void GWEN_Timestamp_AddSeconds(GWEN_TIMESTAMP *tstamp, int seconds);
+
+
+
 GWENHYWFAR_API int GWEN_Timestamp_Compare(const GWEN_TIMESTAMP *tstamp1, const GWEN_TIMESTAMP *tstamp0);
 
 
