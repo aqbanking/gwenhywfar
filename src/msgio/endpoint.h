@@ -193,6 +193,7 @@ typedef void (*GWEN_MSG_ENDPOINT_CHECKSOCKETS_FN)(GWEN_MSG_ENDPOINT *ep,
 
 
 GWENHYWFAR_API GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId);
+GWENHYWFAR_API void GWEN_MsgEndpoint_Attach(GWEN_MSG_ENDPOINT *ep);
 
 GWENHYWFAR_API void GWEN_MsgEndpoint_free(GWEN_MSG_ENDPOINT *ep);
 

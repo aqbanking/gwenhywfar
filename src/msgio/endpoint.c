@@ -33,6 +33,7 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
   GWEN_MSG_ENDPOINT *ep;
 
   GWEN_NEW_OBJECT(GWEN_MSG_ENDPOINT, ep);
+  ep->refCount=1;
   GWEN_INHERIT_INIT(GWEN_MSG_ENDPOINT, ep);
   GWEN_TREE2_INIT(GWEN_MSG_ENDPOINT, ep, GWEN_MsgEndpoint);
 
@@ -49,25 +50,38 @@ GWEN_MSG_ENDPOINT *GWEN_MsgEndpoint_new(const char *name, int groupId)
 
 
 
+void GWEN_MsgEndpoint_Attach(GWEN_MSG_ENDPOINT *ep)
+{
+  if (ep && ep->refCount)
+    ep->refCount++;
+}
+
+
+
 void GWEN_MsgEndpoint_free(GWEN_MSG_ENDPOINT *ep)
 {
   if (ep) {
-    DBG_INFO(GWEN_LOGDOMAIN,
-             "Deleting endpoint \"%s\" (%d msgs in recv list, %d msgs in send list)",
-             (ep->name)?(ep->name):"<unnamed>",
-             GWEN_Msg_List_GetCount(ep->receivedMessageList),
-             GWEN_Msg_List_GetCount(ep->sendMessageList));
-    GWEN_TREE2_FINI(GWEN_MSG_ENDPOINT, ep, GWEN_MsgEndpoint);
-    GWEN_INHERIT_FINI(GWEN_MSG_ENDPOINT, ep);
-    if (ep->socket) {
-      GWEN_Socket_Close(ep->socket);
-      GWEN_Socket_free(ep->socket);
+    if (ep->refCount>1)
+      ep->refCount--;
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Deleting endpoint \"%s\" (%d msgs in recv list, %d msgs in send list)",
+               (ep->name)?(ep->name):"<unnamed>",
+               GWEN_Msg_List_GetCount(ep->receivedMessageList),
+               GWEN_Msg_List_GetCount(ep->sendMessageList));
+      GWEN_TREE2_FINI(GWEN_MSG_ENDPOINT, ep, GWEN_MsgEndpoint);
+      GWEN_INHERIT_FINI(GWEN_MSG_ENDPOINT, ep);
+      if (ep->socket) {
+        GWEN_Socket_Close(ep->socket);
+        GWEN_Socket_free(ep->socket);
+      }
+      GWEN_Msg_free(ep->currentlyReceivedMsg);
+      GWEN_Msg_List_free(ep->receivedMessageList);
+      GWEN_Msg_List_free(ep->sendMessageList);
+      free(ep->name);
+      ep->refCount=0;
+      GWEN_FREE_OBJECT(ep);
     }
-    GWEN_Msg_free(ep->currentlyReceivedMsg);
-    GWEN_Msg_List_free(ep->receivedMessageList);
-    GWEN_Msg_List_free(ep->sendMessageList);
-    free(ep->name);
-    GWEN_FREE_OBJECT(ep);
   }
 }
 

@@ -35,6 +35,8 @@ struct GWEN_MSG_ENDPOINT {
   int defaultMessageSize;
 
   uint32_t lastMsgId;
+
+  int refCount;
 };
 
 
