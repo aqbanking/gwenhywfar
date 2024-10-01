@@ -36,7 +36,8 @@ libgwenmsgio_la_SOURCES=$(built_sources) \
   endpoint_ipc.c \
   endpoint_multilayer.c \
   msg.c \
-  msg_ipc.c
+  msg_ipc.c \
+  request.c
 
 
 iheaderdir=$(gwenhywfar_headerdir_am)/gwenhywfar
@@ -49,7 +50,8 @@ iheader_HEADERS=$(build_headers_pub) \
   endpoint_multilayer.h \
   endpoint_multilayer_p.h \
   msg.h \
-  msg_ipc.h
+  msg_ipc.h \
+  request.h
 
 
 noinst_HEADERS=$(build_headers_priv) \
@@ -57,7 +59,8 @@ noinst_HEADERS=$(build_headers_priv) \
   endpoint_msgio_p.h \
   endpoint_tcpc_p.h \
   endpoint_tcpd_p.h \
-  msg_p.h
+  msg_p.h \
+  request_p.h
 
 
 EXTRA_DIST=$(typefiles) $(build_headers) $(built_sources)
