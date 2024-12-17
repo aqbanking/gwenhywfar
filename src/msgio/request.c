@@ -216,10 +216,10 @@ void GWEN_MsgRequest_SubRequestFinished(GWEN_MSG_REQUEST *rq, GWEN_MSG_REQUEST *
 
 
 
-void GWEN_MsgRequest_Abort(GWEN_MSG_REQUEST *rq)
+void GWEN_MsgRequest_Abort(GWEN_MSG_REQUEST *rq, int reason)
 {
   if (rq && rq->abortFn) {
-    rq->abortFn(rq);
+    rq->abortFn(rq, reason);
     GWEN_MsgRequest_SetState(rq, GWEN_MSG_REQUEST_STATE_DONE);
   }
   else {
