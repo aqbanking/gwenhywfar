@@ -15,9 +15,6 @@
 #include "o_grid_l.h"
 
 
-HTML_OBJECT *HtmlObject_Grid_new();
-
-
 typedef struct OBJECT_GRID OBJECT_GRID;
 struct OBJECT_GRID {
   int rows;
