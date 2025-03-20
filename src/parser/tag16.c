@@ -185,6 +185,23 @@ void GWEN_Tag16_WriteStringTagToBuffer(unsigned int tagType, const char *s, GWEN
 
 
 
+void GWEN_Tag16_WriteUint8TagToBuffer(unsigned int tagType, uint8_t data, GWEN_BUFFER *buf)
+{
+  _writeTagToBuffer(tagType, (const uint8_t*) &data, 1, buf);
+}
+
+
+
+void GWEN_Tag16_WriteUint16TagToBuffer(unsigned int tagType, uint16_t data, GWEN_BUFFER *buf)
+{
+  uint16_t dataInLittleEndian;
+
+  dataInLittleEndian=htole16(data);
+  _writeTagToBuffer(tagType, (const uint8_t*) &dataInLittleEndian, sizeof(uint16_t), buf);
+}
+
+
+
 void GWEN_Tag16_WriteUint32TagToBuffer(unsigned int tagType, uint32_t data, GWEN_BUFFER *buf)
 {
   uint32_t dataInLittleEndian;
@@ -211,6 +228,24 @@ void GWEN_Tag16_DirectlyToBuffer(unsigned int tagType,
                                  GWEN_BUFFER *buf)
 {
   _writeTagToBuffer(tagType, (const uint8_t*) p, (size==-1)?strlen(p):size, buf);
+}
+
+
+
+uint8_t GWEN_Tag16_GetTagDataAsUint8(const GWEN_TAG16 *tag, uint8_t defaultValue)
+{
+  if (tag && tag->tagLength>=sizeof(uint8_t))
+    return *(uint8_t*)(tag->tagData);
+  return defaultValue;
+}
+
+
+
+uint16_t GWEN_Tag16_GetTagDataAsUint16(const GWEN_TAG16 *tag, uint16_t defaultValue)
+{
+  if (tag && tag->tagLength>=sizeof(uint16_t))
+    return le16toh(*(uint16_t*)(tag->tagData));
+  return defaultValue;
 }
 
 
