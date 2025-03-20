@@ -765,3 +765,27 @@ const char *GWEN_Socket_ErrorString(int c)
 
 
 
+uint32_t GWEN_Socket_GetFlags(const GWEN_SOCKET *sp)
+{
+  assert(sp);
+  return sp->flags;
+}
+
+
+
+void GWEN_Socket_AddFlags(GWEN_SOCKET *sp, uint32_t f)
+{
+  assert(sp);
+  sp->flags|=f;
+}
+
+
+
+void GWEN_Socket_SubFlags(GWEN_SOCKET *sp, uint32_t f)
+{
+  assert(sp);
+  sp->flags&=~f;
+}
+
+
+

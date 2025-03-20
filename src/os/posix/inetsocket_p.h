@@ -51,6 +51,7 @@ struct GWEN_SOCKET {
   GWEN_SOCKETTYPE type;
   int haveWaited;
   int isNonSocket;
+  uint32_t flags;
 };
 
 

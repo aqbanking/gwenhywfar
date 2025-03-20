@@ -32,6 +32,7 @@
 #include "inetsocket_p.h"
 #include "inetaddr_p.h"
 #include <gwenhywfar/misc.h>
+#include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <errno.h>
 #include <unistd.h>
@@ -543,6 +544,11 @@ int GWEN_Socket_Read(GWEN_SOCKET *sp, char *buffer, int *bsize)
     }
   }
   *bsize=i;
+  if (sp->flags & GWEN_SOCKET_FLAGS_DUMP_READ) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Received from socket:");
+    GWEN_Text_LogString((const char*) buffer, i, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Error);
+  }
+
   return 0;
 }
 
@@ -824,6 +830,31 @@ int GWEN_Socket_GetSocketInt(const GWEN_SOCKET *sp)
   assert(sp);
   return sp->socket;
 }
+
+
+
+uint32_t GWEN_Socket_GetFlags(const GWEN_SOCKET *sp)
+{
+  assert(sp);
+  return sp->flags;
+}
+
+
+
+void GWEN_Socket_AddFlags(GWEN_SOCKET *sp, uint32_t f)
+{
+  assert(sp);
+  sp->flags|=f;
+}
+
+
+
+void GWEN_Socket_SubFlags(GWEN_SOCKET *sp, uint32_t f)
+{
+  assert(sp);
+  sp->flags&=~f;
+}
+
 
 
 

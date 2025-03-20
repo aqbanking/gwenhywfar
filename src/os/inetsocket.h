@@ -37,6 +37,10 @@
 #include <gwenhywfar/list2.h>
 
 
+#define GWEN_SOCKET_FLAGS_DUMP_READ  0x00000001
+#define GWEN_SOCKET_FLAGS_DUMP_WRITE 0x00000002
+
+
 typedef struct GWEN_SOCKET GWEN_SOCKET;
 typedef struct GWEN_SOCKETSETSTRUCT GWEN_SOCKETSET;
 
@@ -227,6 +231,14 @@ GWENHYWFAR_API GWEN_SOCKETTYPE GWEN_Socket_GetSocketType(GWEN_SOCKET *sp);
 GWENHYWFAR_API
 int GWEN_Socket_GetPeerAddr(GWEN_SOCKET *sp,
                             GWEN_INETADDRESS **addr);
+
+
+GWENHYWFAR_API uint32_t GWEN_Socket_GetFlags(const GWEN_SOCKET *sp);
+
+GWENHYWFAR_API void GWEN_Socket_AddFlags(GWEN_SOCKET *sp, uint32_t f);
+
+GWENHYWFAR_API void GWEN_Socket_SubFlags(GWEN_SOCKET *sp, uint32_t f);
+
 
 /**
  * This function waits for a group of sockets to change their state.

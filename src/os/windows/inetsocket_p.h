@@ -52,6 +52,7 @@ GWENHYWFAR_API struct GWEN_SOCKET {
   GWEN_LIST_ELEMENT(GWEN_SOCKET)
   int socket;
   GWEN_SOCKETTYPE type;
+  uint32_t flags;
 };
 
 
