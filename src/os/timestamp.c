@@ -281,6 +281,14 @@ int GWEN_Timestamp_GetDay(const GWEN_TIMESTAMP *tstamp)
 
 
 
+int GWEN_Timestamp_GetWeekDay(const GWEN_TIMESTAMP *tstamp)
+{
+  assert(tstamp);
+  return (tstamp->julian+1)%7; /* 0=Sunday */
+}
+
+
+
 int GWEN_Timestamp_GetHour(const GWEN_TIMESTAMP *tstamp)
 {
   return tstamp->hour;
