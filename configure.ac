@@ -436,7 +436,7 @@ case "$OS_TYPE" in
             all_libraries="${all_libraries} -framework CoreFoundation"
           fi
         fi
-        
+
         gwenbuild_tool="gwenbuild"
     	;;
     windows)
@@ -1000,8 +1000,12 @@ AM_CONDITIONAL(WITH_GUI_QT4, [test "$with_gui_qt4" = "yes"])
 #
 
 case "$gwenhywfar_guis" in
-  *qt5*)
-  AX_HAVE_QT
+  *qt5*qt6* | *qt6*qt5*)
+    AC_MSG_ERROR(**** Configuring for Qt5 and Qt6 at the same time is not supported)
+    ;;
+  *qt5* | *qt6*)
+    AX_HAVE_QT
+    ;;
 esac
 
 
@@ -1460,6 +1464,9 @@ AC_CONFIG_FILES([Doxyfile
                  gui/qt5/gwengui-qt5.pc
                  gui/qt5/gwengui-qt5-config.cmake
                  gui/qt5/gwengui-qt5-config-version.cmake
+                 gui/qt5/gwengui-qt6.pc
+                 gui/qt5/gwengui-qt6-config.cmake
+                 gui/qt5/gwengui-qt6-config-version.cmake
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile

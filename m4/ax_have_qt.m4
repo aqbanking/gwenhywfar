@@ -25,17 +25,12 @@
 #     QT_LRELEASE
 #     QT_LUPDATE
 #     QT_DIR
+#     QMAKE
 #
 #   which respectively contain an "-I" flag pointing to the Qt include
 #   directory, link flags necessary to link with Qt and X, the full path to
 #   the meta object compiler and the user interface compiler both, and
 #   finally the variable QTDIR as Qt likes to see it defined.
-#
-#   Also the usually unneeded var
-#
-#   QT_QMAKE
-#
-#   to qmake is defined.
 #
 #   Example lines for Makefile.in:
 #
@@ -60,7 +55,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 17
+#serial 27
 
 AU_ALIAS([BNV_HAVE_QT], [AX_HAVE_QT])
 AC_DEFUN([AX_HAVE_QT],
@@ -69,19 +64,31 @@ AC_DEFUN([AX_HAVE_QT],
   AC_REQUIRE([AC_PATH_X])
   AC_REQUIRE([AC_PATH_XTRA])
 
-  AC_ARG_WITH(qt5-qmake,
-    [  --with-qt5-qmake=FILE    uses given qmake],
-    [QT_QMAKE="$withval"],
-    [QT_QMAKE="qmake"]
+  # openSUSE leap 15.3 installs qmake-qt5, not qmake, for example.
+  # Store the full name (like qmake-qt5) into QMAKE
+  # and the specifier (like -qt5 or empty) into am_have_qt_qmexe_suff.
+  AC_ARG_VAR([QMAKE],[Qt make tool])
+  AC_CHECK_TOOLS([QMAKE],[qmake qmake-qt6 qmake6 qmake-qt5],[false])
+
+  AC_ARG_WITH(qmake,
+    [  --with-qmake=FILE    uses given qmake],
+    [QMAKE="$withval"],
+    []
   )
+
+
   AC_MSG_CHECKING(for Qt)
+  am_have_qt_qmexe_suff=`echo $QMAKE | sed 's,^.*qmake,,'`
   # If we have Qt5 or later in the path, we're golden
-  ver=`$QT_QMAKE --version | grep -o "Qt version ."`
+  ver=`$QMAKE --version | grep -o "Qt version ."`
+
   if test "$ver" ">" "Qt version 4"; then
+    QT_MAJOR_VERSION="5"
     have_qt=yes
     # This pro file dumps qmake's variables, but it only works on Qt 5 or later
     am_have_qt_dir=`mktemp -d`
     am_have_qt_pro="$am_have_qt_dir/test.pro"
+    am_have_qt_stash="$am_have_qt_dir/.qmake.stash"
     am_have_qt_makefile="$am_have_qt_dir/Makefile"
     # http://qt-project.org/doc/qt-5/qmake-variable-reference.html#qt
     cat > $am_have_qt_pro << EOF
@@ -89,37 +96,93 @@ win32 {
     CONFIG -= debug_and_release
     CONFIG += release
 }
+qtHaveModule(axcontainer):       QT += axcontainer
+qtHaveModule(axserver):          QT += axserver
+qtHaveModule(concurrent):        QT += concurrent
 qtHaveModule(core):              QT += core
+qtHaveModule(dbus):              QT += dbus
+qtHaveModule(declarative):       QT += declarative
+qtHaveModule(designer):          QT += designer
 qtHaveModule(gui):               QT += gui
-qtHaveModule(widgets):           QT += widgets
+qtHaveModule(help):              QT += help
+qtHaveModule(multimedia):        QT += multimedia
+qtHaveModule(multimediawidgets): QT += multimediawidgets
+qtHaveModule(network):           QT += network
+qtHaveModule(opengl):            QT += opengl
+qtHaveModule(printsupport):      QT += printsupport
+qtHaveModule(qml):               QT += qml
+qtHaveModule(qmltest):           QT += qmltest
+qtHaveModule(x11extras):         QT += x11extras
+qtHaveModule(script):            QT += script
+qtHaveModule(scripttools):       QT += scripttools
+qtHaveModule(sensors):           QT += sensors
+qtHaveModule(serialport):        QT += serialport
+qtHaveModule(sql):               QT += sql
+qtHaveModule(svg):               QT += svg
+qtHaveModule(testlib):           QT += testlib
+qtHaveModule(uitools):           QT += uitools
+qtHaveModule(webkit):            QT += webkit
+qtHaveModule(webkitwidgets):     QT += webkitwidgets
+qtHaveModule(xml):               QT += xml
+qtHaveModule(xmlpatterns):       QT += xmlpatterns
 percent.target = %
 percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
 EOF
-    $QT_QMAKE $am_have_qt_pro -o $am_have_qt_makefile
+    $QMAKE $am_have_qt_pro -o $am_have_qt_makefile
     QT_CXXFLAGS=`cd $am_have_qt_dir; make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
     QT_LIBS=`cd $am_have_qt_dir; make -s -f $am_have_qt_makefile LIBS`
-    rm $am_have_qt_pro $am_have_qt_makefile
+    rm $am_have_qt_pro $am_have_qt_stash $am_have_qt_makefile
     rmdir $am_have_qt_dir
 
-    # Look for specific tools in $PATH
-    AC_ARG_WITH(qt5-moc,
-      [  --with-qt5-moc=FILE      uses given qt moc],
-      [QT_MOC="$withval"],
-      [QT_MOC=`which moc`]
-    )
-    AC_ARG_WITH(qt5-uic,
-      [  --with-qt5-uic=FILE      uses given qt uic],
-      [QT_UIC="$withval"],
-      [QT_UIC=`which uic`]
-    )
+    if test "$ver" ">" "Qt version 5"; then
+      QT_MAJOR_VERSION="6"
+      AC_CHECK_TOOLS([QTPATHS],[qtpaths-qt6 qtpaths6 qtpaths],[false])
+    else
+      AC_CHECK_TOOLS([QTPATHS],[qtpaths-qt5 qtpaths5 qtpaths],[false])
+    fi
 
-    QT_RCC=`which rcc`
-    QT_LRELEASE=`which lrelease`
-    QT_LUPDATE=`which lupdate`
+    ver=`$QTPATHS --version | cut -d' ' -f 2`
+    if test "$ver" = "2.0"; then
+      # Add QT_HOST_BINS and QT_HOST_LIBEXECS paths to PATH
+      for var in QT_HOST_BINS QT_HOST_LIBEXECS; do
+        PATH=$PATH:`$QTPATHS --query $var`
+      done
+    fi
+
+    # Look for specific tools in $PATH
+    AC_ARG_VAR([QT_MOC],[Qt moc tool])
+    AC_PATH_PROG([QT_MOC],[moc$am_have_qt_qmexe_suff])
+    if test "$QT_MOC" = ""; then
+      AC_PATH_PROG([QT_MOC],[moc])
+    fi
+
+    AC_ARG_VAR([QT_UIC],[Qt uic tool])
+    AC_PATH_PROG([QT_UIC],[uic$am_have_qt_qmexe_suff])
+    if test "$QT_UIC" = ""; then
+      AC_PATH_PROG([QT_UIC],[uic])
+    fi
+
+    AC_ARG_VAR([QT_RCC],[Qt rcc tool])
+    AC_PATH_PROG([QT_RCC],[rcc$am_have_qt_qmexe_suff])
+    if test "$QT_RCC" = ""; then
+      AC_PATH_PROG([QT_RCC],[rcc])
+    fi
+
+    AC_ARG_VAR([QT_LRELEASE],[Qt lrelease tool])
+    AC_PATH_PROG([QT_LRELEASE],[lrelease$am_have_qt_qmexe_suff])
+    if test "$QT_LRELEASE" = ""; then
+      AC_PATH_PROG([QT_LRELEASE],[lrelease])
+    fi
+
+    AC_ARG_VAR([QT_LUPDATE],[Qt lupdate tool])
+    AC_PATH_PROG([QT_LUPDATE],[lupdate$am_have_qt_qmexe_suff])
+    if test "$QT_LUPDATE" = ""; then
+      AC_PATH_PROG([QT_LUPDATE],[lupdate])
+    fi
 
     # Get Qt version from qmake
-    QT_DIR=`$QT_QMAKE --version | grep -o -E /.+`
+    QT_DIR=`$QMAKE --version | grep -o -E /.+`
 
     # All variables are defined, report the result
     AC_MSG_RESULT([$have_qt:
@@ -130,7 +193,8 @@ EOF
     QT_MOC=$QT_MOC
     QT_RCC=$QT_RCC
     QT_LRELEASE=$QT_LRELEASE
-    QT_LUPDATE=$QT_LUPDATE])
+    QT_LUPDATE=$QT_LUPDATE
+    QT_MAJOR_VERSION=$QT_MAJOR_VERSION])
   else
     # Qt was not found
     have_qt=no
@@ -142,16 +206,13 @@ EOF
     QT_RCC=
     QT_LRELEASE=
     QT_LUPDATE=
+    QT_MAJOR_VERSION=
     AC_MSG_RESULT($have_qt)
   fi
   AC_SUBST(QT_CXXFLAGS)
   AC_SUBST(QT_DIR)
   AC_SUBST(QT_LIBS)
-  AC_SUBST(QT_UIC)
-  AC_SUBST(QT_MOC)
-  AC_SUBST(QT_RCC)
-  AC_SUBST(QT_LRELEASE)
-  AC_SUBST(QT_LUPDATE)
+  AC_SUBST(QT_MAJOR_VERSION)
 
   #### Being paranoid:
   if test x"$have_qt" = xyes; then

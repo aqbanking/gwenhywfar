@@ -20,8 +20,8 @@ endmacro()
 
 include(CMakeFindDependencyMacro)
 find_dependency(gwengui-cpp "@GWENHYWFAR_VERSION_STRING@")
-find_dependency(Qt5Core)
-find_dependency(Qt5Widgets)
+find_dependency(Qt@QT_MAJOR_VERSION@Core)
+find_dependency(Qt@QT_MAJOR_VERSION@Widgets)
 
 
 set_and_check(prefix "@prefix@")
@@ -29,21 +29,21 @@ set_and_check(exec_prefix "@exec_prefix@")
 set_and_check(includedir "@includedir@")
 set_and_check(${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS "@gwenhywfar_headerdir@")
 if(WIN32)
-    set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt5.dll.a")
+    set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt@QT_MAJOR_VERSION@.dll.a")
 elseif(APPLE)
-    set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt5.dylib")
+    set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt@QT_MAJOR_VERSION@.dylib")
 else()
-    set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt5.so")
+    set_and_check(${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES "@libdir@/libgwengui-qt@QT_MAJOR_VERSION@.so")
 endif()
 
 set(${CMAKE_FIND_PACKAGE_NAME}_FOUND true)
 
-if(NOT TARGET gwenhywfar::gui-qt5)
-  add_library(gwenhywfar::gui-qt5 UNKNOWN IMPORTED)
-  set_target_properties(gwenhywfar::gui-qt5 PROPERTIES
+if(NOT TARGET gwenhywfar::gui-qt@QT_MAJOR_VERSION@)
+  add_library(gwenhywfar::gui-qt@QT_MAJOR_VERSION@ UNKNOWN IMPORTED)
+  set_target_properties(gwenhywfar::gui-qt@QT_MAJOR_VERSION@ PROPERTIES
     IMPORTED_LOCATION "${${CMAKE_FIND_PACKAGE_NAME}_LIBRARIES}"
     INTERFACE_INCLUDE_DIRECTORIES "${${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS}"
-    INTERFACE_LINK_LIBRARIES "gwenhywfar::core;gwenhywfar::gui-cpp;Qt5::Core;Qt5::Widgets"
+    INTERFACE_LINK_LIBRARIES "gwenhywfar::core;gwenhywfar::gui-cpp;Qt@QT_MAJOR_VERSION@::Core;Qt@QT_MAJOR_VERSION@::Widgets"
   )
 endif()
 

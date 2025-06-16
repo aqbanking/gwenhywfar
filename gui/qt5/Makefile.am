@@ -5,26 +5,26 @@ qt5_moc      = @QT_MOC@
 qt5_uic      = @QT_UIC@
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = gwengui-qt5.pc
+pkgconfig_DATA = gwengui-qt@QT_MAJOR_VERSION@.pc
 
-cmakeconfigdir = $(libdir)/cmake/gwengui-qt5-@GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@
-cmakeconfig_DATA = gwengui-qt5-config.cmake gwengui-qt5-config-version.cmake
+cmakeconfigdir = $(libdir)/cmake/gwengui-qt@QT_MAJOR_VERSION@-@GWENHYWFAR_VERSION_MAJOR@.@GWENHYWFAR_VERSION_MINOR@
+cmakeconfig_DATA = gwengui-qt@QT_MAJOR_VERSION@-config.cmake gwengui-qt@QT_MAJOR_VERSION@-config-version.cmake
 
-lib_LTLIBRARIES=libgwengui-qt5.la
+lib_LTLIBRARIES=libgwengui-qt@QT_MAJOR_VERSION@.la
 noinst_PROGRAMS=libtest
 
 noinst_HEADERS=
 
-libgwengui_qt5_la_LIBADD=$(QT_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname) $(builddir)/../cpp/libgwengui-cpp.la
-libgwengui_qt5_la_LDFLAGS=-no-undefined -version-info \
+libgwengui_qt@QT_MAJOR_VERSION@_la_LIBADD=$(QT_LIBS) $(top_builddir)/src/$(gwenhywfar_internal_libname) $(builddir)/../cpp/libgwengui-cpp.la
+libgwengui_qt@QT_MAJOR_VERSION@_la_LDFLAGS=-no-undefined -version-info \
    $(GWENHYWFAR_SO_CURRENT):$(GWENHYWFAR_SO_REVISION):$(GWENHYWFAR_SO_AGE)
 
-libgwengui_qt5_la_SOURCES=\
+libgwengui_qt@QT_MAJOR_VERSION@_la_SOURCES=\
   qt5dialogbox.cpp \
   qt5_gui.cpp \
   qt5_gui_dialog.cpp
 
-nodist_libgwengui_qt5_la_SOURCES=
+nodist_libgwengui_qt@QT_MAJOR_VERSION@_la_SOURCES=
 
 nodist_noinst_HEADERS=
 
@@ -67,7 +67,7 @@ EXTRA_DIST=$(UI_FILES) \
   w_spinbox.cpp
 
 libtest_SOURCES=libtest.cpp
-libtest_LDADD=libgwengui-qt5.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(QT_LIBS) \
+libtest_LDADD=libgwengui-qt@QT_MAJOR_VERSION@.la $(top_builddir)/src/$(gwenhywfar_internal_libname) $(QT_LIBS) \
   $(top_builddir)/gui/cpp/libgwengui-cpp.la \
   $(builddir)/../testdialogs/libgwengui-test.la
 
@@ -82,7 +82,7 @@ SUFFIXES = .ui .ui.hpp .ui.cpp .moc
 
 
 sources:
-	for f in $(libgwengui_qt5_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
+	for f in $(libgwengui_qt@QT_MAJOR_VERSION@_la_SOURCES) $(foreach uifile,$(UI_FILES),$(uifile).cpp); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/qtsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -95,5 +95,5 @@ built_sources: $(BUILT_SOURCES)
 	done ;
 
 
-BUILT_SOURCES = $(MOC_FILES) $(nodist_libgwengui_qt5_la_SOURCES)
+BUILT_SOURCES = $(MOC_FILES) $(nodist_libgwengui_qt@QT_MAJOR_VERSION@_la_SOURCES)
 CLEANFILES = $(BUILT_SOURCES)
