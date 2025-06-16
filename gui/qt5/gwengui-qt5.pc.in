@@ -1,4 +1,4 @@
-# pkg-config configuration for gwengui_qt5
+# pkg-config configuration for gwengui_qt@QT_MAJOR_VERSION@
 # For information about the syntax, see pkg-config(1)
 
 # General installation directories
@@ -13,11 +13,11 @@ bindir=@bindir@
 sysconfdir=@sysconfdir@
 
 # Human-readable name
-Name: gwengui-qt5
+Name: gwengui-qt@QT_MAJOR_VERSION@
 # Human-readable description
-Description: QT5 Implementation of the GWEN_DIALOG framework.
+Description: Qt@QT_MAJOR_VERSION@ Implementation of the GWEN_DIALOG framework.
 
 Version: @VERSION@
-Libs: -L@libdir@ -lgwengui-qt5 -lgwengui-cpp
+Libs: -L@libdir@ -lgwengui-qt@QT_MAJOR_VERSION@ -lgwengui-cpp
 Cflags: -I@includedir@
 
