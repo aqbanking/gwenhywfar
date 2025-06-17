@@ -368,7 +368,7 @@ int GWENHYWFAR_CB _logHook(GWEN_UNUSED GWEN_GUI *gui,
              GWEN_UNUSED GWEN_LOGGER_LEVEL priority,
              GWEN_UNUSED const char *s)
 {
-  return 1;
+  return 0;
 }
 
 
