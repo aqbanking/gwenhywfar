@@ -232,6 +232,12 @@ int GWEN_Logger_Open(const char *logDomain,
 
   lg=GWEN_LoggerDomain_GetLogger(logDomain);
   assert(lg);
+
+  if (lg->open) {
+    GWEN_Logger_Log(logDomain, GWEN_LoggerLevel_Debug, "Already open");
+    return 0;
+  }
+
   lg->logType=logtype;
 
   GWEN_Logger_SetIdent(logDomain, ident);
