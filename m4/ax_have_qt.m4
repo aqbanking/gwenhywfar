@@ -137,7 +137,7 @@ EOF
     rmdir $am_have_qt_dir
 
     ver=`$QTPATHS --version | cut -d' ' -f 2`
-    if test "$ver" '>' "1"; then
+    if test "$ver" = "2.0"; then
       QT_MAJOR_VERSION="6"
       # Add QT_HOST_BINS and QT_HOST_LIBEXECS paths to PATH
       for var in QT_HOST_BINS QT_HOST_LIBEXECS; do
