@@ -436,7 +436,7 @@ case "$OS_TYPE" in
             all_libraries="${all_libraries} -framework CoreFoundation"
           fi
         fi
-        
+
         gwenbuild_tool="gwenbuild"
     	;;
     windows)
@@ -1000,8 +1000,12 @@ AM_CONDITIONAL(WITH_GUI_QT4, [test "$with_gui_qt4" = "yes"])
 #
 
 case "$gwenhywfar_guis" in
-  *qt5*)
-  AX_HAVE_QT
+  *qt5*qt6* | *qt6*qt5*)
+    AC_MSG_ERROR(**** Configuring for Qt5 and Qt6 at the same time is not supported)
+    ;;
+  *qt5* | *qt6*)
+    AX_HAVE_QT
+    ;;
 esac
 
 
