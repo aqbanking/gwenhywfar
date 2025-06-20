@@ -1460,6 +1460,9 @@ AC_CONFIG_FILES([Doxyfile
                  gui/qt5/gwengui-qt5.pc
                  gui/qt5/gwengui-qt5-config.cmake
                  gui/qt5/gwengui-qt5-config-version.cmake
+                 gui/qt5/gwengui-qt6.pc
+                 gui/qt5/gwengui-qt6-config.cmake
+                 gui/qt5/gwengui-qt6-config-version.cmake
                  gui/fox16/Makefile
                  gui/fox16/gwengui-fox16.pc
                  gui/gtk2/Makefile
