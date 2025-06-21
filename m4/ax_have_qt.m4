@@ -76,7 +76,6 @@ AC_DEFUN([AX_HAVE_QT],
     []
   )
 
-  AC_CHECK_TOOLS([QTPATHS],[qtpaths qtpaths-qt6 qtpaths6 qtpaths-qt5 qtpaths5],[false])
 
   AC_MSG_CHECKING(for Qt)
   am_have_qt_qmexe_suff=`echo $QMAKE | sed 's,^.*qmake,,'`
@@ -136,9 +135,16 @@ EOF
     rm $am_have_qt_pro $am_have_qt_stash $am_have_qt_makefile
     rmdir $am_have_qt_dir
 
-    ver=`$QTPATHS --version | cut -d' ' -f 2`
-    if test "$ver" = "2.0"; then
+    if test "$ver" ">" "Qt version 5"; then
       QT_MAJOR_VERSION="6"
+      AC_CHECK_TOOLS([QTPATHS],[qtpaths-qt6 qtpaths6 qtpaths],[false])
+    else
+      AC_CHECK_TOOLS([QTPATHS],[qtpaths-qt5 qtpaths5 qtpaths],[false])
+    fi
+
+    ver=`$QTPATHS --version | cut -d' ' -f 2`
+    echo "QTPATH version: $ver" >&AS_MESSAGE_LOG_FD
+    if test "$ver" = "2.0"; then
       # Add QT_HOST_BINS and QT_HOST_LIBEXECS paths to PATH
       for var in QT_HOST_BINS QT_HOST_LIBEXECS; do
         PATH=$PATH:`$QTPATHS --query $var`
