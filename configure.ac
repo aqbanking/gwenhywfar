@@ -1544,6 +1544,15 @@ for d in gui/qt4; do
   done
 done
 
+# qt6
+#
+if test ! -L gui/qt6; then
+  rm -rf gui/qt6
+  cd gui
+  ln -s ./qt5 qt6
+  cd ..
+fi
+
 # qt5
 #
 rm -Rf gwenhywfar5/gwen-gui-qt5 2>/dev/null
