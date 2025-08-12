@@ -65,7 +65,7 @@ libgwenhywfar_la_LIBADD=\
   sar/libsar.la \
   xmlcmd/libxmlcmd.la \
   msgio/libgwenmsgio.la \
-  test_framework/libtestframework.la $(i18n_libs) $(PTHREAD_CFLAGS) $(PTHREAD_LIBS) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(LIBXML_LIBS) $(all_libraries)
+  test_framework/libtestframework.la $(i18n_libs) $(PTHREAD_CFLAGS) $(PTHREAD_LIBS) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(LIBXML_LIBS) $(LIBLD_LIBS) $(all_libraries)
 
 libgwenhywfar_la_CFLAGS=$(PTHREAD_CFLAGS)
 

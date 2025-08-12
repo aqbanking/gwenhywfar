@@ -224,8 +224,6 @@ AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 #
 # Checks for libraries.
 #
-AC_CHECK_LIB(dl, dlopen)
-# note: this AC_CHECK_LIB will also add -ldl to LIBS.
 
 AX_PTHREAD
 
@@ -1055,13 +1053,18 @@ AC_SUBST(DOXYGEN_TAGFILES)
 #
 # Search for dlopen
 #
+AC_LANG_SAVE
+AC_LANG_C
 LIBS=""
 AC_SEARCH_LIBS(dlopen, c dl)
-if test "$LIBS" = "-lc"; then
-    LIBS=""
-fi
-ld_library="$LIBS"
+#if test "$LIBS" = "-lc"; then
+#    LIBS=""
+#fi
+LIBLD_LIBS="$LIBS"
 LIBS=""
+AC_LANG_RESTORE
+AC_SUBST(LIBLD_LIBS)
+
 all_libraries="$all_libraries $ld_library"
 
 
