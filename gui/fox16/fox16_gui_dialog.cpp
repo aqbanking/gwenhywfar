@@ -155,7 +155,10 @@ int FOX16_GuiDialog::execute() {
   dialogBox=_mainWidget;
 
   /* execute dialog */
+  dialogBox->layout();
   dialogBox->show(PLACEMENT_OWNER);
+  dialogBox->recalc(); /* set DIRTY flag */
+  dialogBox->resize(dialogBox->getWidth(), dialogBox->getHeight());
   rv=dialogBox->execute();
   GWEN_Dialog_EmitSignalToAll(_dialog, GWEN_DialogEvent_TypeFini, "");
 
