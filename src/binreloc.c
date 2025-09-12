@@ -342,7 +342,7 @@ br_init(BrInitError *error)
 int
 br_init_lib(BrInitError *error)
 {
-  exe = _br_find_exe_for_symbol((const void *) "", error);
+  exe = _br_find_exe_for_symbol(br_init_lib, error);
   return exe != NULL;
 }
 
