@@ -128,6 +128,9 @@ GWENHYWFAR_API int GWEN_Date_toDb(const GWEN_DATE *dt, GWEN_DB_NODE *db);
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db);
 
 
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisWeekStartFromMonday(const GWEN_DATE *dt);
+GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisWeekStartFromSunday(const GWEN_DATE *dt);
+
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisMonthStart(const GWEN_DATE *dt);
 GWENHYWFAR_API GWEN_DATE *GWEN_Date_GetThisMonthEnd(const GWEN_DATE *dt);
 

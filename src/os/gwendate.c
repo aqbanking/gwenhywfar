@@ -833,6 +833,31 @@ GWEN_DATE *GWEN_Date_fromDb(GWEN_DB_NODE *db)
 
 
 
+GWEN_DATE *GWEN_Date_GetThisWeekStartFromMonday(const GWEN_DATE *dt)
+{
+  if (dt) {
+    int weekDay;
+
+    weekDay=GWEN_Date_WeekDay(dt);
+    if (weekDay==0)
+      return GWEN_Date_fromJulian(dt->julian-5);
+    else
+      return GWEN_Date_fromJulian((dt->julian-weekDay)+1);
+  }
+  return NULL;
+}
+
+
+
+GWEN_DATE *GWEN_Date_GetThisWeekStartFromSunday(const GWEN_DATE *dt)
+{
+  if (dt)
+    GWEN_Date_fromJulian(dt->julian-GWEN_Date_WeekDay(dt));
+  return NULL;
+}
+
+
+
 GWEN_DATE *GWEN_Date_GetThisMonthStart(const GWEN_DATE *dt)
 {
   return GWEN_Date_fromGregorian(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt), 1);
