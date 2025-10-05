@@ -840,7 +840,7 @@ GWEN_DATE *GWEN_Date_GetThisWeekStartFromMonday(const GWEN_DATE *dt)
 
     weekDay=GWEN_Date_WeekDay(dt);
     if (weekDay==0)
-      return GWEN_Date_fromJulian(dt->julian-5);
+      return GWEN_Date_fromJulian(dt->julian-6);
     else
       return GWEN_Date_fromJulian((dt->julian-weekDay)+1);
   }
