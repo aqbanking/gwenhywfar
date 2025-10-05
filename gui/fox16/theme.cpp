@@ -17,7 +17,7 @@
 
 // Draw rectangle
 static void drawRectangle(FXDC& dc,FXColor lower,FXColor upper,FXint x,FXint y,FXint w,FXint h) {
-  register FXint rr,gg,bb,dr,dg,db,r1,g1,b1,r2,g2,b2,yl,yh,yy,dy,n,t;
+  FXint rr,gg,bb,dr,dg,db,r1,g1,b1,r2,g2,b2,yl,yh,yy,dy,n,t;
   const FXint MAXSTEPS=128;
 
   if(0<w && 0<h) {
@@ -820,8 +820,8 @@ ThemeHeaderItem::ThemeHeaderItem(const FXString& text, FXIcon* ic, FXint s, void
 
 
 void ThemeHeaderItem::draw(const FXHeader* header,FXDC& dc,FXint x,FXint y,FXint w,FXint h) {
-  register FXint tx,ty,tw,th,ix,iy,iw,ih,s,ml,mr,mt,mb,beg,end,t,xx,yy,bb,aa,ax,ay;
-  register FXFont *font=header->getFont();
+  FXint tx,ty,tw,th,ix,iy,iw,ih,s,ml,mr,mt,mb,beg,end,t,xx,yy,bb,aa,ax,ay;
+  FXFont *font=header->getFont();
   FXColor top         = FXRGB(0xfe,0xfd,0xfd);
   FXColor bottom      = FXRGB(0xdd,0xd7,0xce);
   FXColor shade       = FXRGB(0xdc,0xd9,0xd4);
