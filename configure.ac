@@ -28,8 +28,8 @@ AC_CONFIG_HEADERS([config.h])
 # versions
 #
 GWENHYWFAR_VERSION_MAJOR=5
-GWENHYWFAR_VERSION_MINOR=12
-GWENHYWFAR_VERSION_PATCHLEVEL=2
+GWENHYWFAR_VERSION_MINOR=13
+GWENHYWFAR_VERSION_PATCHLEVEL=0
 GWENHYWFAR_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "cvs"
 GWENHYWFAR_VERSION_TAG="stable"
@@ -40,9 +40,9 @@ GWENHYWFAR_VERSION_TAG="stable"
 #
 # SO version for Gwenhywfar
 #
-GWENHYWFAR_SO_CURRENT="91"
-GWENHYWFAR_SO_AGE="12"
-GWENHYWFAR_SO_REVISION="2"
+GWENHYWFAR_SO_CURRENT="92"
+GWENHYWFAR_SO_AGE="13"
+GWENHYWFAR_SO_REVISION="0"
 GWENHYWFAR_SO_EFFECTIVE="`echo \$(($GWENHYWFAR_SO_CURRENT-$GWENHYWFAR_SO_AGE))`"
 
 
@@ -1290,7 +1290,7 @@ for plugin in $plugins; do
       AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_CT_OHBCI, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$plugin\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$plugin'")
       ;;
   esac
 done
@@ -1332,7 +1332,7 @@ for plugin in $plugins; do
       AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_DBIO_XMLDB, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$plugin\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$plugin'")
       ;;
   esac
 done
@@ -1364,7 +1364,7 @@ for plugin in $plugins; do
       AC_DEFINE(GWENHYWFAR_WITH_PLUGIN_CFGMGR_DIR, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$plugin\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$plugin'")
       ;;
   esac
 done
