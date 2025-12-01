@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sun Dec 05 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,15 +44,12 @@
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
-#ifdef HAVE_TIME_H
-# include <time.h>
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+
+#include <time.h>
+#include <unistd.h>
 
 
-static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
+static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=NULL;
 
 
 
@@ -61,11 +58,7 @@ int GWEN_Logger_ModuleInit(void)
   const char *s;
   GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevel_Warning;
 
-  GWEN_Logger_Open(GWEN_LOGDOMAIN,
-                   "gwen",
-                   0,
-                   GWEN_LoggerType_Console,
-                   GWEN_LoggerFacility_User);
+  GWEN_Logger_Open(GWEN_LOGDOMAIN, "gwen", 0, GWEN_LoggerType_Console, GWEN_LoggerFacility_User);
   s=getenv("GWEN_LOGLEVEL");
   if (s) {
     ll=GWEN_Logger_Name2Level(s);
@@ -280,10 +273,7 @@ int GWEN_Logger_Open(const char *logDomain,
       break;
     }
 
-    openlog(ident,
-            LOG_CONS |
-            LOG_PID,
-            fac);
+    openlog(ident, LOG_CONS | LOG_PID, fac);
     lg->enabled=1;
   } /* if syslog */
 #endif /* ifdef HAVE_SYSLOG_H */
@@ -328,94 +318,37 @@ int GWEN_Logger_IsOpen(const char *logDomain)
   if (!logDomain)
     logDomain="default";
   ld=GWEN_LoggerDomain_Find(logDomain);
-  if (ld)
-    return ld->logger->open;
-  return 0;
+  return ld?(ld->logger->open):0;
 }
 
 
-int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
-                               GWEN_LOGGER_LEVEL priority, const char *s,
-                               GWEN_BUFFER *mbuf)
+int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s, GWEN_BUFFER *mbuf)
 {
-#ifdef HAVE_SNPRINTF
-  unsigned int i;
-#endif /* HAVE_SNPRINTF */
-#ifdef HAVE_TIME_H
   struct tm *t;
   time_t tt;
-#endif /* HAVE_TIME_H */
-  char buffer[256];
 
-  assert(lg);
-  if (lg->logIdent) {
-    if (strlen(lg->logIdent)+32>=sizeof(buffer)) {
-      fprintf(stderr, " LOGGER: Logbuffer too small (1).\n");
-      return 1;
-    }
-  }
-
-#ifdef HAVE_TIME_H
   tt=time(0);
   t=localtime(&tt);
 
-# ifdef HAVE_SNPRINTF
-#  ifdef HAVE_GETPID
-  i=snprintf(buffer, sizeof(buffer)-1,
-             "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):", priority,
-             t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-             t->tm_hour, t->tm_min, t->tm_sec,
-             lg->logIdent, (int)getpid());
-#  else
-  i=snprintf(buffer, sizeof(buffer)-1,
-             "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:", priority,
-             t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-             t->tm_hour, t->tm_min, t->tm_sec,
-             lg->logIdent);
-#  endif /* HAVE_GETPID */
-  if (i>=sizeof(buffer)) {
-    fprintf(stderr, " LOGGER: Logbuffer too small (2).\n");
-    return 1;
-  }
-# else   /* HAVE_SNPRINTF */
-#  ifdef HAVE_GETPID
-  sprintf(buffer, "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):", priority,
-          t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-          t->tm_hour, t->tm_min, t->tm_sec,
-          lg->logIdent, (int)getpid());
-#  else
-  sprintf(buffer, "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:", priority,
-          t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-          t->tm_hour, t->tm_min, t->tm_sec,
-          lg->logIdent);
-#  endif /* HAVE_GETPID */
-# endif  /* HAVE_SNPRINTF */
-#else    /* HAVE_TIME_H */
-# ifdef HAVE_SNPRINTF
-  buffer[sizeof(buffer)-1]=0;
-  i=snprintf(buffer, sizeof(buffer)-1,
-             "%d:%s:", priority,
-             lg->logIdent);
-  if (i>=sizeof(buffer)) {
-    fprintf(stderr, " LOGGER: Logbuffer too small (3).\n");
-    return 1;
-  }
-# else   /* HAVE_SNPRINTF */
-  sprintf(buffer, "%d:%s:", priority,
-          lg->logIdent);
-# endif  /* HAVE_SNPRINTF */
-#endif   /* HAVE_TIME_H */
-  GWEN_Buffer_AppendString(mbuf, buffer);
-  GWEN_Buffer_AppendString(mbuf, s);
+  /* priority and timestamp */
+  GWEN_Buffer_AppendArgs(mbuf, "%d:%04d/%02d/%02d %02d-%02d-%02d:",
+			 priority, t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+  GWEN_Buffer_AppendString(mbuf, (lg->logIdent)?(lg->logIdent):"<empty>");
+#ifdef HAVE_GETPID
+  GWEN_Buffer_AppendArgs(mbuf, "(%d)", (int)getpid());
+#else
+  GWEN_Buffer_AppendArgs(mbuf, "(%d)", 0);
+#endif
+  GWEN_Buffer_AppendByte(mbuf, ':');
+
+  GWEN_Buffer_AppendString(mbuf, s?s:"<no msg>");
   GWEN_Buffer_AppendByte(mbuf, '\n');
   return 0;
 }
 
 
 
-int GWEN_Logger_CreateLogMessage(const char *logDomain,
-                                 GWEN_LOGGER_LEVEL priority, const char *s,
-                                 GWEN_BUFFER *mbuf)
+int GWEN_Logger_CreateLogMessage(const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s, GWEN_BUFFER *mbuf)
 {
   GWEN_LOGGER *lg;
 
@@ -427,8 +360,7 @@ int GWEN_Logger_CreateLogMessage(const char *logDomain,
 
 
 
-int GWEN_Logger__Log(GWEN_LOGGER *lg,
-                     GWEN_LOGGER_LEVEL priority, const char *s)
+int GWEN_Logger__Log(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s)
 {
   while (lg) {
     FILE *f;
@@ -556,8 +488,7 @@ int GWEN_Logger__Log(GWEN_LOGGER *lg,
 
 
 
-void GWEN_Logger_Log(const char *logDomain,
-                     GWEN_LOGGER_LEVEL priority, const char *s)
+void GWEN_Logger_Log(const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s)
 {
   if (!GWEN_Gui_LogHook(logDomain, priority, s)) {
     const char *p;
