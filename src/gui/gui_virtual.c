@@ -753,7 +753,7 @@ int GWEN_Gui_WaitForSockets(GWEN_SOCKET_LIST2 *readSockets,
         if (msecs) {
           /* only sleep if a timeout was given */
           DBG_DEBUG(GWEN_LOGDOMAIN, "Sleeping (no socket)");
-          GWEN_Socket_Select(NULL, NULL, NULL, GWEN_GUI_CPU_TIMEOUT);
+          GWEN_Socket_Select(NULL, NULL, NULL, msecs);
         }
         GWEN_Gui_ProgressEnd(pid);
         return GWEN_ERROR_TIMEOUT;
