@@ -222,6 +222,21 @@ void GWEN_Tag16_WriteUint64TagToBuffer(unsigned int tagType, uint64_t data, GWEN
 
 
 
+void GWEN_Tag16_WriteDoubleTagToBuffer(unsigned int tagType, double data, GWEN_BUFFER *buf)
+{
+  uint64_t dataInLittleEndian;
+  union {
+    double d;
+    uint64_t u;
+  } v;
+
+  v.d=data;
+  dataInLittleEndian=htole64(v.u);
+  _writeTagToBuffer(tagType, (const uint8_t*) &dataInLittleEndian, sizeof(uint64_t), buf);
+}
+
+
+
 void GWEN_Tag16_DirectlyToBuffer(unsigned int tagType,
                                  const char *p,
                                  int size,
@@ -263,6 +278,22 @@ uint64_t GWEN_Tag16_GetTagDataAsUint64(const GWEN_TAG16 *tag, uint64_t defaultVa
 {
   if (tag && tag->tagLength>=sizeof(uint64_t))
     return le64toh(*(uint64_t*)(tag->tagData));
+  return defaultValue;
+}
+
+
+
+double GWEN_Tag16_GetTagDataAsDouble(const GWEN_TAG16 *tag, double defaultValue)
+{
+  if (tag && tag->tagLength>=sizeof(uint64_t)) {
+    union {
+      double d;
+      uint64_t u;
+    } v;
+
+    v.u=le64toh(*(uint64_t*)(tag->tagData));
+    return v.d;
+  }
   return defaultValue;
 }
 

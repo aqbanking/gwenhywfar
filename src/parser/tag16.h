@@ -48,6 +48,7 @@ GWENHYWFAR_API void GWEN_Tag16_WriteUint8TagToBuffer(unsigned int tagType, uint8
 GWENHYWFAR_API void GWEN_Tag16_WriteUint16TagToBuffer(unsigned int tagType, uint16_t data, GWEN_BUFFER *buf);
 GWENHYWFAR_API void GWEN_Tag16_WriteUint32TagToBuffer(unsigned int tagType, uint32_t data, GWEN_BUFFER *buf);
 GWENHYWFAR_API void GWEN_Tag16_WriteUint64TagToBuffer(unsigned int tagType, uint64_t data, GWEN_BUFFER *buf);
+GWENHYWFAR_API void GWEN_Tag16_WriteDoubleTagToBuffer(unsigned int tagType, double data, GWEN_BUFFER *buf);
 
 GWENHYWFAR_API void GWEN_Tag16_DirectlyToBuffer(unsigned int tagType,
                                                 const char *p,
@@ -67,6 +68,7 @@ GWENHYWFAR_API uint16_t GWEN_Tag16_GetTagDataAsUint16(const GWEN_TAG16 *tag, uin
 GWENHYWFAR_API uint32_t GWEN_Tag16_GetTagDataAsUint32(const GWEN_TAG16 *tag, uint32_t defaultValue);
 GWENHYWFAR_API uint64_t GWEN_Tag16_GetTagDataAsUint64(const GWEN_TAG16 *tag, uint64_t defaultValue);
 GWENHYWFAR_API char *GWEN_Tag16_GetTagDataAsNewString(const GWEN_TAG16 *tag, const char *defaultValue);
+GWENHYWFAR_API double GWEN_Tag16_GetTagDataAsDouble(const GWEN_TAG16 *tag, double defaultValue);
 
 /**
  * Return the full size of the complete tag including type, length and data fields.
