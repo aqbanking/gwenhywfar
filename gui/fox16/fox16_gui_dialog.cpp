@@ -462,6 +462,26 @@ int FOX16_GuiDialog::setIntProperty(GWEN_WIDGET *w,
     break;
   }
 
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
+    {
+      FXSplitter *f;
+
+      f=(FXSplitter*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      assert(f);
+
+      switch(prop) {
+      case GWEN_DialogProperty_Value:
+        f->setSplit(0, value);
+        return 0;
+
+      default:
+        break;
+      }
+      break;
+    }
+
+
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypePushButton:
   case GWEN_Widget_TypeLineEdit:
@@ -778,6 +798,25 @@ int FOX16_GuiDialog::getIntProperty(GWEN_WIDGET *w,
 
     break;
   }
+
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
+    {
+      FXSplitter *f;
+
+      f=(FXSplitter*)GWEN_Widget_GetImplData(w, FOX16_DIALOG_WIDGET_REAL);
+      assert(f);
+      switch(prop) {
+      case GWEN_DialogProperty_Value:
+        return f->getSplit(0);
+
+      default:
+        break;
+      }
+
+      break;
+    }
+
 
   case GWEN_Widget_TypeLabel:
   case GWEN_Widget_TypePushButton:
@@ -1171,6 +1210,8 @@ int FOX16_GuiDialog::setCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
     ;
   }
 
@@ -1546,6 +1587,8 @@ const char *FOX16_GuiDialog::getCharProperty(GWEN_WIDGET *w,
   case GWEN_Widget_TypeWidgetStack:
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
     break;
   }
 
@@ -1665,6 +1708,8 @@ long FOX16_GuiDialog::onSelCommand(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
     /* nothing to do for these types */
     ;
   }
@@ -1728,6 +1773,8 @@ long FOX16_GuiDialog::onSelChanged(FXObject *sender, FXSelector sel, void *ptr) 
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
     ;
   }
 
@@ -1791,6 +1838,8 @@ long FOX16_GuiDialog::onSelKeyPress(FXObject *sender, FXSelector sel, void *ptr)
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
     rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyPressed, "", event->code, NULL);
     if (rv!=GWEN_DialogEvent_ResultNotHandled)
       return 1;
@@ -1845,6 +1894,8 @@ long FOX16_GuiDialog::onSelKeyRelease(FXObject *sender, FXSelector sel, void *pt
   case GWEN_Widget_TypeHLine:
   case GWEN_Widget_TypeVLine:
   case GWEN_Widget_TypeTextBrowser:
+  case GWEN_Widget_TypeVSplitter:
+  case GWEN_Widget_TypeHSplitter:
     rv=GWEN_Dialog_EmitSignalToAll2(_dialog, GWEN_DialogEvent_TypeKeyReleased, "", event->code, NULL);
     if (rv!=GWEN_DialogEvent_ResultNotHandled)
       return 1;
@@ -2250,6 +2301,14 @@ FXWindow *FOX16_GuiDialog::setupTree(FXWindow *parentWindow, GWEN_WIDGET *w) {
                          this,
                          ID_WIDGET_FIRST+_widgetCount,
                          opts | SPIN_NORMAL);
+    break;
+
+  case GWEN_Widget_TypeHSplitter:
+    wChild=new FXSplitter(parentComposite, opts | SPLITTER_HORIZONTAL, 0, 0, 0, 0);
+    break;
+
+  case GWEN_Widget_TypeVSplitter:
+    wChild=new FXSplitter(parentComposite, opts | SPLITTER_VERTICAL, 0, 0, 0, 0);
     break;
 
   case GWEN_Widget_TypeUnknown:
