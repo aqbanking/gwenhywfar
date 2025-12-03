@@ -72,7 +72,9 @@ typedef enum {
   GWEN_Widget_TypeHLine,
   GWEN_Widget_TypeVLine,
   GWEN_Widget_TypeTextBrowser,
-  GWEN_Widget_TypeSpinBox
+  GWEN_Widget_TypeSpinBox,
+  GWEN_Widget_TypeHSplitter,
+  GWEN_Widget_TypeVSplitter,
 }
 GWEN_WIDGET_TYPE;
 

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed Jan 20 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -440,6 +440,10 @@ GWEN_WIDGET_TYPE GWEN_Widget_Type_fromString(const char *s)
       return GWEN_Widget_TypeTextBrowser;
     else if (strcasecmp(s, "spinBox")==0)
       return GWEN_Widget_TypeSpinBox;
+    else if (strcasecmp(s, "hSplitter")==0)
+      return GWEN_Widget_TypeHSplitter;
+    else if (strcasecmp(s, "vSplitter")==0)
+      return GWEN_Widget_TypeVSplitter;
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unknown widget type [%s]", s);
     }
@@ -502,6 +506,10 @@ const char *GWEN_Widget_Type_toString(GWEN_WIDGET_TYPE t)
     return "textBrowser";
   case GWEN_Widget_TypeSpinBox:
     return "spinBox";
+  case GWEN_Widget_TypeHSplitter:
+    return "hSplitter";
+  case GWEN_Widget_TypeVSplitter:
+    return "vSplitter";
   case GWEN_Widget_TypeUnknown:
     return "unknown";
   }
