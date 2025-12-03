@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sun Dec 05 2003
-    copyright   : (C) 2003 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,28 +44,81 @@
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
-#ifdef HAVE_TIME_H
-# include <time.h>
-#endif
+
+#include <time.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 
 
-static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=0;
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static GWEN_LOGGER_DOMAIN *_loggerDomain_new(const char *name);
+static void _loggerDomain_free(GWEN_LOGGER_DOMAIN *ld);
+static GWEN_LOGGER_DOMAIN *_loggerDomain_Find(const char *name);
+static void _loggerDomain_Add(GWEN_LOGGER_DOMAIN *ld);
+static void _loggerDomain_Del(GWEN_LOGGER_DOMAIN *ld);
+static GWEN_LOGGER *_loggerDomain_GetLogger(const char *name);
+
+static int _createMessage(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s, GWEN_BUFFER *mbuf);
+static int _logMessage(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s);
+static int _logMessageToFile(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s);
+static int _logMessageToFunction(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s);
+static int _logMessageToConsole(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s);
+#ifdef HAVE_SYSLOG_H
+static int _logMessageToSyslog(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s);
+#endif
+
+static GWEN_LOGGER *GWEN_Logger_new(GWEN_LOGGER_DOMAIN *domain);
+static void GWEN_Logger_free(GWEN_LOGGER *lg);
+/* static void GWEN_Logger_Attach(GWEN_LOGGER *lg); */
 
 
+#ifndef NO_DEPRECATED_SYMBOLS
+/**
+ * Adds a logger to the given one. So if the old logger is to log something
+ * then the newly added logger will log the same message as well.
+ * The new logger must already be open (via @ref GWEN_Logger_Open).
+ */
+GWENHYWFAR_API void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger) GWEN_DEPRECATED;
+#endif // ifndef NO_DEPRECATED_SYMBOLS
+
+
+#ifndef NO_DEPRECATED_SYMBOLS
+/**
+ * DEPRECATED. Only sets the new default logger if it not already is
+ * set or if the new default logger is NULL.  You must call
+ * GWEN_Logger_Open on that logger prior to calling this function.
+ */
+GWENHYWFAR_API void GWEN_Logger_SetDefaultLogger(GWEN_LOGGER *lg) GWEN_DEPRECATED ;
+#endif // ifndef NO_DEPRECATED_SYMBOLS
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * global vars
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static GWEN_LOGGER_DOMAIN *gwen_loggerdomains=NULL;
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 int GWEN_Logger_ModuleInit(void)
 {
   const char *s;
   GWEN_LOGGER_LEVEL ll=GWEN_LoggerLevel_Warning;
 
-  GWEN_Logger_Open(GWEN_LOGDOMAIN,
-                   "gwen",
-                   0,
-                   GWEN_LoggerType_Console,
-                   GWEN_LoggerFacility_User);
+  GWEN_Logger_Open(GWEN_LOGDOMAIN, "gwen", 0, GWEN_LoggerType_Console, GWEN_LoggerFacility_User);
   s=getenv("GWEN_LOGLEVEL");
   if (s) {
     ll=GWEN_Logger_Name2Level(s);
@@ -83,15 +136,15 @@ int GWEN_Logger_ModuleFini(void)
   GWEN_LOGGER_DOMAIN *ld;
 
   while ((ld=gwen_loggerdomains)) {
-    GWEN_LoggerDomain_Del(ld);
-    GWEN_LoggerDomain_free(ld);
+    _loggerDomain_Del(ld);
+    _loggerDomain_free(ld);
   }
   return 0;
 }
 
 
 
-GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_new(const char *name)
+GWEN_LOGGER_DOMAIN *_loggerDomain_new(const char *name)
 {
   GWEN_LOGGER_DOMAIN *ld;
 
@@ -103,7 +156,7 @@ GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_new(const char *name)
 
 
 
-void GWEN_LoggerDomain_free(GWEN_LOGGER_DOMAIN *ld)
+void _loggerDomain_free(GWEN_LOGGER_DOMAIN *ld)
 {
   if (ld) {
     free(ld->name);
@@ -113,7 +166,7 @@ void GWEN_LoggerDomain_free(GWEN_LOGGER_DOMAIN *ld)
 }
 
 
-GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_Find(const char *name)
+GWEN_LOGGER_DOMAIN *_loggerDomain_Find(const char *name)
 {
   GWEN_LOGGER_DOMAIN *ld;
 
@@ -130,7 +183,7 @@ GWEN_LOGGER_DOMAIN *GWEN_LoggerDomain_Find(const char *name)
 
 
 
-void GWEN_LoggerDomain_Add(GWEN_LOGGER_DOMAIN *ld)
+void _loggerDomain_Add(GWEN_LOGGER_DOMAIN *ld)
 {
   assert(ld);
   GWEN_LIST_INSERT(GWEN_LOGGER_DOMAIN, ld, &gwen_loggerdomains);
@@ -138,7 +191,7 @@ void GWEN_LoggerDomain_Add(GWEN_LOGGER_DOMAIN *ld)
 
 
 
-void GWEN_LoggerDomain_Del(GWEN_LOGGER_DOMAIN *ld)
+void _loggerDomain_Del(GWEN_LOGGER_DOMAIN *ld)
 {
   assert(ld);
   GWEN_LIST_DEL(GWEN_LOGGER_DOMAIN, ld, &gwen_loggerdomains);
@@ -146,21 +199,21 @@ void GWEN_LoggerDomain_Del(GWEN_LOGGER_DOMAIN *ld)
 
 
 
-GWEN_LOGGER *GWEN_LoggerDomain_GetLogger(const char *name)
+GWEN_LOGGER *_loggerDomain_GetLogger(const char *name)
 {
   GWEN_LOGGER_DOMAIN *ld;
 
   if (!name)
     name="default";
 
-  ld=GWEN_LoggerDomain_Find(name);
+  ld=_loggerDomain_Find(name);
   if (ld) {
     return ld->logger;
   }
-  ld=GWEN_LoggerDomain_new(name);
+  ld=_loggerDomain_new(name);
   ld->logger=GWEN_Logger_new(ld);
 
-  GWEN_LoggerDomain_Add(ld);
+  _loggerDomain_Add(ld);
   return ld->logger;
 }
 
@@ -195,14 +248,16 @@ void GWEN_Logger_free(GWEN_LOGGER *lg)
 
 
 
+/*
 void GWEN_Logger_Attach(GWEN_LOGGER *lg)
 {
   assert(lg);
   lg->usage++;
 }
+*/
 
 
-
+#ifndef NO_DEPRECATED_SYMBOLS
 void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger)
 {
   assert(newLogger);
@@ -210,6 +265,7 @@ void GWEN_Logger_AddLogger(GWEN_LOGGER *oldLogger, GWEN_LOGGER *newLogger)
   assert(oldLogger);
   GWEN_LIST_ADD(GWEN_LOGGER, newLogger, &(oldLogger->next));
 }
+#endif
 
 
 
@@ -230,7 +286,7 @@ int GWEN_Logger_Open(const char *logDomain,
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
 
   if (lg->open) {
@@ -280,10 +336,7 @@ int GWEN_Logger_Open(const char *logDomain,
       break;
     }
 
-    openlog(ident,
-            LOG_CONS |
-            LOG_PID,
-            fac);
+    openlog(ident, LOG_CONS | LOG_PID, fac);
     lg->enabled=1;
   } /* if syslog */
 #endif /* ifdef HAVE_SYSLOG_H */
@@ -305,7 +358,7 @@ void GWEN_Logger_Close(const char *logDomain)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
   GWEN_Logger_Log(logDomain, GWEN_LoggerLevel_Debug, "stopped");
   lg->logType=GWEN_LoggerType_Console;
@@ -315,8 +368,8 @@ void GWEN_Logger_Close(const char *logDomain)
 #endif
   lg->open=0;
   /* remove logdomain after it has been closed */
-  GWEN_LoggerDomain_Del(lg->domain);
-  GWEN_LoggerDomain_free(lg->domain);
+  _loggerDomain_Del(lg->domain);
+  _loggerDomain_free(lg->domain);
 }
 
 
@@ -327,283 +380,69 @@ int GWEN_Logger_IsOpen(const char *logDomain)
 
   if (!logDomain)
     logDomain="default";
-  ld=GWEN_LoggerDomain_Find(logDomain);
-  if (ld)
-    return ld->logger->open;
-  return 0;
-}
-
-
-int GWEN_Logger__CreateMessage(GWEN_LOGGER *lg,
-                               GWEN_LOGGER_LEVEL priority, const char *s,
-                               GWEN_BUFFER *mbuf)
-{
-#ifdef HAVE_SNPRINTF
-  unsigned int i;
-#endif /* HAVE_SNPRINTF */
-#ifdef HAVE_TIME_H
-  struct tm *t;
-  time_t tt;
-#endif /* HAVE_TIME_H */
-  char buffer[256];
-
-  assert(lg);
-  if (lg->logIdent) {
-    if (strlen(lg->logIdent)+32>=sizeof(buffer)) {
-      fprintf(stderr, " LOGGER: Logbuffer too small (1).\n");
-      return 1;
-    }
-  }
-
-#ifdef HAVE_TIME_H
-  tt=time(0);
-  t=localtime(&tt);
-
-# ifdef HAVE_SNPRINTF
-#  ifdef HAVE_GETPID
-  i=snprintf(buffer, sizeof(buffer)-1,
-             "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):", priority,
-             t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-             t->tm_hour, t->tm_min, t->tm_sec,
-             lg->logIdent, (int)getpid());
-#  else
-  i=snprintf(buffer, sizeof(buffer)-1,
-             "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:", priority,
-             t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-             t->tm_hour, t->tm_min, t->tm_sec,
-             lg->logIdent);
-#  endif /* HAVE_GETPID */
-  if (i>=sizeof(buffer)) {
-    fprintf(stderr, " LOGGER: Logbuffer too small (2).\n");
-    return 1;
-  }
-# else   /* HAVE_SNPRINTF */
-#  ifdef HAVE_GETPID
-  sprintf(buffer, "%d:%04d/%02d/%02d %02d-%02d-%02d:%s(%d):", priority,
-          t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-          t->tm_hour, t->tm_min, t->tm_sec,
-          lg->logIdent, (int)getpid());
-#  else
-  sprintf(buffer, "%d:%04d/%02d/%02d %02d-%02d-%02d:%s:", priority,
-          t->tm_year+1900, t->tm_mon+1, t->tm_mday,
-          t->tm_hour, t->tm_min, t->tm_sec,
-          lg->logIdent);
-#  endif /* HAVE_GETPID */
-# endif  /* HAVE_SNPRINTF */
-#else    /* HAVE_TIME_H */
-# ifdef HAVE_SNPRINTF
-  buffer[sizeof(buffer)-1]=0;
-  i=snprintf(buffer, sizeof(buffer)-1,
-             "%d:%s:", priority,
-             lg->logIdent);
-  if (i>=sizeof(buffer)) {
-    fprintf(stderr, " LOGGER: Logbuffer too small (3).\n");
-    return 1;
-  }
-# else   /* HAVE_SNPRINTF */
-  sprintf(buffer, "%d:%s:", priority,
-          lg->logIdent);
-# endif  /* HAVE_SNPRINTF */
-#endif   /* HAVE_TIME_H */
-  GWEN_Buffer_AppendString(mbuf, buffer);
-  GWEN_Buffer_AppendString(mbuf, s);
-  GWEN_Buffer_AppendByte(mbuf, '\n');
-  return 0;
+  ld=_loggerDomain_Find(logDomain);
+  return ld?(ld->logger->open):0;
 }
 
 
 
-int GWEN_Logger_CreateLogMessage(const char *logDomain,
-                                 GWEN_LOGGER_LEVEL priority, const char *s,
-                                 GWEN_BUFFER *mbuf)
+int GWEN_Logger_CreateLogMessage(const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s, GWEN_BUFFER *mbuf)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
 
-  return GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
+  return _createMessage(lg, priority, s, mbuf);
 }
 
 
 
-int GWEN_Logger__Log(GWEN_LOGGER *lg,
-                     GWEN_LOGGER_LEVEL priority, const char *s)
+void GWEN_Logger_Log(const char *logDomain, GWEN_LOGGER_LEVEL priority, const char *s)
 {
-  while (lg) {
-    FILE *f;
-#ifdef HAVE_SYSLOG_H
-    int pri;
-#endif /* HAVE_SYSLOG_H */
-    GWEN_BUFFER *mbuf;
-    int rv;
-
-    assert(lg);
-    if (priority>lg->logLevel)
-      /* priority too low, don't log */
-      return 0;
-
-    mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    switch (lg->logType) {
-    case GWEN_LoggerType_File:
-      rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
-      if (rv) {
-        GWEN_Buffer_free(mbuf);
-        return rv;
-      }
-
-      f=fopen(lg->logFile, "a+");
-      if (f==0) {
-        fprintf(stderr,
-                "LOGGER: Unable to open file \"%s\" (%s)\n",
-                lg->logFile,
-                strerror(errno));
-        lg->logType=GWEN_LoggerType_Console;
-        GWEN_Buffer_free(mbuf);
-        return 1;
-      }
-
-      if (fwrite(GWEN_Buffer_GetStart(mbuf),
-                 GWEN_Buffer_GetUsedBytes(mbuf), 1, f)!=1) {
-        fprintf(stderr,
-                "LOGGER: Unable to write to file \"%s\" (%s)\n",
-                lg->logFile,
-                strerror(errno));
-        fclose(f);
-        lg->logType=GWEN_LoggerType_Console;
-        GWEN_Buffer_free(mbuf);
-        return 1;
-      }
-      if (fclose(f)) {
-        fprintf(stderr,
-                "LOGGER: Unable to close file \"%s\" (%s)\n",
-                lg->logFile,
-                strerror(errno));
-        lg->logType=GWEN_LoggerType_Console;
-        GWEN_Buffer_free(mbuf);
-        return 1;
-      }
-      break;
-
-#ifdef HAVE_SYSLOG_H
-    case GWEN_LoggerType_Syslog:
-      switch (priority) {
-      case GWEN_LoggerLevel_Emergency:
-        pri=LOG_EMERG;
-        break;
-      case GWEN_LoggerLevel_Alert:
-        pri=LOG_ALERT;
-        break;
-      case GWEN_LoggerLevel_Critical:
-        pri=LOG_CRIT;
-        break;
-      case GWEN_LoggerLevel_Error:
-        pri=LOG_ERR;
-        break;
-      case GWEN_LoggerLevel_Warning:
-        pri=LOG_WARNING;
-        break;
-      case GWEN_LoggerLevel_Notice:
-        pri=LOG_NOTICE;
-        break;
-      case GWEN_LoggerLevel_Info:
-        pri=LOG_NOTICE;
-        break;
-
-      case GWEN_LoggerLevel_Debug:
-      case GWEN_LoggerLevel_Verbous:
-      case GWEN_LoggerLevel_Unknown:
-      default:
-        pri=LOG_DEBUG;
-        break;
-      } /* switch */
-      syslog(pri, "%s", s);
-      break;
-#endif /* HAVE_SYSLOG_H */
-
-    case GWEN_LoggerType_Function:
-      if (lg->logFunction==0) {
-        fprintf(stderr,
-                "LOGGER: Logtype is \"Function\", but no function is set.\n");
-        GWEN_Buffer_free(mbuf);
-        return 1;
-      }
-      rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
-      if (rv) {
-        GWEN_Buffer_free(mbuf);
-        return rv;
-      }
-      (lg->logFunction)(GWEN_Buffer_GetStart(mbuf));
-      break;
-
-    case GWEN_LoggerType_Console:
-    case GWEN_LoggerType_Unknown:
-    default:
-      rv=GWEN_Logger__CreateMessage(lg, priority, s, mbuf);
-      if (rv) {
-        GWEN_Buffer_free(mbuf);
-        return rv;
-      }
-
-      fprintf(stderr, "%s", GWEN_Buffer_GetStart(mbuf));
-      break;
-    } /* switch */
-    lg=lg->next;
-    GWEN_Buffer_free(mbuf);
-  } /* while lg */
-  return 0;
-}
-
-
-
-void GWEN_Logger_Log(const char *logDomain,
-                     GWEN_LOGGER_LEVEL priority, const char *s)
-{
-  if (!GWEN_Gui_LogHook(logDomain, priority, s)) {
-    const char *p;
-    /*int rv;*/
-    unsigned int i;
-    GWEN_BUFFER *mbuf;
+  if (s) {
     GWEN_LOGGER *lg;
-
-    lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  
+    lg=_loggerDomain_GetLogger(logDomain);
     assert(lg);
+  
+    if (lg->enabled) {
+      if (!GWEN_Gui_LogHook(logDomain, priority, s)) {
+	if (priority<=lg->logLevel) {
+	  const char *p;
+	  int slen;
+	  unsigned int i;
+	  GWEN_BUFFER *mbuf;
 
-    if (!lg->enabled)
-      return /*1*/;
+	  /* temporarily disable logging to avoid endless loops */
+	  lg->enabled=0;
+	  slen=strlen(s);
+	  /* copy buffer, exchange all newlines by 0 */
+	  mbuf=GWEN_Buffer_new(0, slen+1, 0, 1);
+	  for (i=0; i<slen+1; i++) {
+	    if (s[i]=='\n') {
+	      GWEN_Buffer_AppendByte(mbuf, 0);
+	    }
+	    else
+	      GWEN_Buffer_AppendByte(mbuf, s[i]);
+	  }
 
-    if (priority>lg->logLevel)
-      /* priority too low, don't log */
-      return /*0*/;
-
-    /* temporarily disable logging to avoid endless loops */
-    lg->enabled=0;
-    /* copy buffer, exchange all newlines by 0 */
-    mbuf=GWEN_Buffer_new(0, strlen(s)+1, 0, 1);
-    for (i=0; i<strlen(s)+1; i++) {
-      if (s[i]=='\n') {
-        GWEN_Buffer_AppendByte(mbuf, 0);
+	  /* now log each line */
+	  /*rv=0;*/
+	  p=GWEN_Buffer_GetStart(mbuf);
+	  while (*p) {
+	    _logMessage(lg, priority, p);
+	    while (*p)
+	      p++;
+	    p++;
+	  }
+	  GWEN_Buffer_free(mbuf);
+	  /* reenable logging */
+	  lg->enabled=1;
+	}
       }
-      else
-        GWEN_Buffer_AppendByte(mbuf, s[i]);
     }
-
-    /* now log each line */
-    /*rv=0;*/
-    p=GWEN_Buffer_GetStart(mbuf);
-    while (*p) {
-      GWEN_Logger__Log(lg, priority, p);
-      while (*p)
-        p++;
-      p++;
-    }
-    GWEN_Buffer_free(mbuf);
-    /* reenable logging */
-    lg->enabled=1;
-    return /*rv*/;
   }
-  else
-    return /*0*/;
 }
 
 
@@ -612,7 +451,7 @@ void GWEN_Logger_Enable(const char *logDomain, int f)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
   lg->enabled=f;
 }
@@ -623,7 +462,7 @@ int GWEN_Logger_IsEnabled(const char *logDomain)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
   return lg->enabled;
 }
@@ -634,7 +473,7 @@ void GWEN_Logger_SetLevel(const char *logDomain, GWEN_LOGGER_LEVEL l)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
   lg->logLevel=l;
 }
@@ -645,7 +484,7 @@ int GWEN_Logger_GetLevel(const char *logDomain)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
 
   return lg->logLevel;
@@ -657,7 +496,7 @@ void GWEN_Logger_SetIdent(const char *logDomain, const char *id)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
 
   free(lg->logIdent);
@@ -673,7 +512,7 @@ void GWEN_Logger_SetFilename(const char *logDomain, const char *name)
 {
   GWEN_LOGGER *lg;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
 
   free(lg->logFile);
@@ -691,7 +530,7 @@ GWEN_LOGGERFUNCTIONLOG GWEN_Logger_SetLogFunction(const char *logDomain,
   GWEN_LOGGER *lg;
   GWEN_LOGGERFUNCTIONLOG oldFn;
 
-  lg=GWEN_LoggerDomain_GetLogger(logDomain);
+  lg=_loggerDomain_GetLogger(logDomain);
   assert(lg);
   oldFn=lg->logFunction;
   lg->logFunction=fn;
@@ -817,9 +656,199 @@ const char *GWEN_Logger_Logtype2Name(GWEN_LOGGER_LOGTYPE lt)
 int GWEN_Logger_Exists(const char *logDomain)
 {
   assert(logDomain);
-  return (GWEN_LoggerDomain_Find(logDomain)!=0);
+  return (_loggerDomain_Find(logDomain)!=0);
 }
 
+
+
+
+
+
+int _logMessage(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s)
+{
+  while (lg) {
+    if (priority<=lg->logLevel) {
+      int rv;
+
+      switch (lg->logType) {
+#ifdef HAVE_SYSLOG_H
+      case GWEN_LoggerType_Syslog:   rv=_logMessageToSyslog(lg, priority, s);   break;
+#endif /* HAVE_SYSLOG_H */
+      case GWEN_LoggerType_File:     rv=_logMessageToFile(lg, priority, s);     break;
+      case GWEN_LoggerType_Function: rv=_logMessageToFunction(lg, priority, s); break;
+      case GWEN_LoggerType_Console:
+      case GWEN_LoggerType_Unknown:
+      default:                       rv=_logMessageToConsole(lg, priority, s);  break;
+      break;
+      } /* switch */
+      if (rv<0) {
+	lg->logType=GWEN_LoggerType_Console;
+      }
+    }
+    lg=lg->next;
+  } /* while lg */
+  return 0;
+}
+
+
+
+int _logMessageToFile(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s)
+{
+  FILE *f;
+  GWEN_BUFFER *mbuf;
+  int rv;
+
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=_createMessage(lg, priority, s, mbuf);
+  if (rv) {
+    GWEN_Buffer_free(mbuf);
+    return rv;
+  }
+
+  f=fopen(lg->logFile, "a+");
+  if (f==0) {
+    fprintf(stderr, "LOGGER: Unable to open file \"%s\" (%s)\n", lg->logFile, strerror(errno));
+    lg->logType=GWEN_LoggerType_Console;
+    GWEN_Buffer_free(mbuf);
+    return GWEN_ERROR_IO;
+  }
+
+  if (fwrite(GWEN_Buffer_GetStart(mbuf), GWEN_Buffer_GetUsedBytes(mbuf), 1, f)!=1) {
+    fprintf(stderr, "LOGGER: Unable to write to file \"%s\" (%s)\n", lg->logFile, strerror(errno));
+    fclose(f);
+    lg->logType=GWEN_LoggerType_Console;
+    GWEN_Buffer_free(mbuf);
+    return GWEN_ERROR_IO;
+  }
+  if (fclose(f)) {
+    fprintf(stderr, "LOGGER: Unable to close file \"%s\" (%s)\n", lg->logFile, strerror(errno));
+    lg->logType=GWEN_LoggerType_Console;
+    GWEN_Buffer_free(mbuf);
+    return GWEN_ERROR_IO;
+  }
+  GWEN_Buffer_free(mbuf);
+
+  return 0;
+}
+
+
+
+int _logMessageToConsole(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s)
+{
+  GWEN_BUFFER *mbuf;
+  int rv;
+
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=_createMessage(lg, priority, s, mbuf);
+  if (rv) {
+    GWEN_Buffer_free(mbuf);
+    return rv;
+  }
+  fprintf(stderr, "%s", GWEN_Buffer_GetStart(mbuf));
+  GWEN_Buffer_free(mbuf);
+
+  return 0;
+}
+
+
+
+#ifdef HAVE_SYSLOG_H
+int _logMessageToSyslog(GWEN_UNUSED GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s)
+{
+  int pri;
+
+  switch (priority) {
+  case GWEN_LoggerLevel_Emergency:
+    pri=LOG_EMERG;
+    break;
+  case GWEN_LoggerLevel_Alert:
+    pri=LOG_ALERT;
+    break;
+  case GWEN_LoggerLevel_Critical:
+    pri=LOG_CRIT;
+    break;
+  case GWEN_LoggerLevel_Error:
+    pri=LOG_ERR;
+    break;
+  case GWEN_LoggerLevel_Warning:
+    pri=LOG_WARNING;
+    break;
+  case GWEN_LoggerLevel_Notice:
+    pri=LOG_NOTICE;
+    break;
+  case GWEN_LoggerLevel_Info:
+    pri=LOG_NOTICE;
+    break;
+
+  case GWEN_LoggerLevel_Debug:
+  case GWEN_LoggerLevel_Verbous:
+  case GWEN_LoggerLevel_Unknown:
+  default:
+    pri=LOG_DEBUG;
+    break;
+  } /* switch */
+  syslog(pri, "%s", s);
+
+  return 0;
+}
+#endif
+
+
+
+
+int _logMessageToFunction(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s)
+{
+  GWEN_BUFFER *mbuf;
+  int rv;
+
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=_createMessage(lg, priority, s, mbuf);
+  if (rv) {
+    GWEN_Buffer_free(mbuf);
+    return rv;
+  }
+
+  if (lg->logFunction==0) {
+    fprintf(stderr, "LOGGER: Logtype is \"Function\", but no function is set.\n");
+    GWEN_Buffer_free(mbuf);
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+  }
+  rv=_createMessage(lg, priority, s, mbuf);
+  if (rv) {
+    GWEN_Buffer_free(mbuf);
+    return rv;
+  }
+  (lg->logFunction)(GWEN_Buffer_GetStart(mbuf));
+  GWEN_Buffer_free(mbuf);
+  return 0;
+}
+
+
+
+int _createMessage(GWEN_LOGGER *lg, GWEN_LOGGER_LEVEL priority, const char *s, GWEN_BUFFER *mbuf)
+{
+  struct tm *t;
+  time_t tt;
+
+  tt=time(0);
+  t=localtime(&tt);
+
+  /* priority and timestamp */
+  GWEN_Buffer_AppendArgs(mbuf,
+                         "%d:%04d/%02d/%02d %02d-%02d-%02d:",
+			 priority, t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+  GWEN_Buffer_AppendString(mbuf, (lg->logIdent)?(lg->logIdent):"<empty>");
+#ifdef HAVE_GETPID
+  GWEN_Buffer_AppendArgs(mbuf, "(%d)", (int)getpid());
+#else
+  GWEN_Buffer_AppendArgs(mbuf, "(%d)", 0);
+#endif
+  GWEN_Buffer_AppendByte(mbuf, ':');
+
+  GWEN_Buffer_AppendString(mbuf, s?s:"<no msg>");
+  GWEN_Buffer_AppendByte(mbuf, '\n');
+  return 0;
+}
 
 
 
