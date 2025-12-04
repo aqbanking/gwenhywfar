@@ -62,6 +62,8 @@
 #include "w_scrollarea.c"
 #include "w_radiobutton.c"
 #include "w_spinbox.c"
+#include "w_vsplitter.c"
+#include "w_hsplitter.c"
 
 
 
@@ -448,6 +450,10 @@ int Gtk3Gui_Dialog_SetupTree(GWEN_WIDGET *w)
   case GWEN_Widget_TypeRadioButton:
     rv=Gtk3Gui_WRadioButton_Setup(w);
     break;
+  case GWEN_Widget_TypeVSplitter:
+    rv=Gtk3Gui_WVSplitter_Setup(w);
+  case GWEN_Widget_TypeHSplitter:
+    rv=Gtk3Gui_WHSplitter_Setup(w);
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d", GWEN_Widget_GetType(w));
     rv=GWEN_ERROR_INVALID;
