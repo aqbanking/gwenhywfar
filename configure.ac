@@ -663,7 +663,6 @@ fi
 #
 # check for libgcrypt
 #
-NEED_LIBGCRYPT_API=1
 NEED_LIBGCRYPT_VERSION=1.2.0
 AC_DEFINE_UNQUOTED(NEED_LIBGCRYPT_VERSION, "$NEED_LIBGCRYPT_VERSION",
                                      [Required version of Libgcrypt])
@@ -675,12 +674,12 @@ case "$OS_TYPE" in
     AC_SUBST(LIBGCRYPT_LIBS)
     ;;
   *)
-    AM_PATH_LIBGCRYPT("$NEED_LIBGCRYPT_API:$NEED_LIBGCRYPT_VERSION",
+    PKG_CHECK_MODULES([LIBGCRYPT], [libgcrypt >= $NEED_LIBGCRYPT_VERSION],
                       [have_gcrypt="yes"], [have_gcrypt="no"])
     if test "$have_gcrypt" != "yes"; then
       AC_MSG_ERROR([
     **** Libgcrypt is required for Gwenhywfar. Please install it (including devel packages)
-    **** (at least version $NEED_LIBGCRYPT_VERSION using API $NEED_LIBGCRYPT_API is required.)])
+    **** (at least version $NEED_LIBGCRYPT_VERSION is required.)])
     fi
     ;;
 esac
