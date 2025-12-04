@@ -94,10 +94,10 @@ int Gtk3Gui_WVSplitter_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
   gChild=GTK_WIDGET(GWEN_Widget_GetImplData(wChild, GTK3_DIALOG_WIDGET_REAL));
   assert(gChild);
 
-  if (GWEN_Widget_Tree_GetPrevious(wChild))
-    gtk_paned_add2(GTK_PANED(g), gChild);
-  else
+  if (GWEN_Widget_Tree_GetPrevious(wChild)==NULL)
     gtk_paned_add1(GTK_PANED(g), gChild);
+  else
+    gtk_paned_add2(GTK_PANED(g), gChild);
 
   return 0;
 }
