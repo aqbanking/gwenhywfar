@@ -121,6 +121,16 @@
         </widget>
       </widget>
 
+      <widget type="tabpage" name="tabpage9" text="Ninth Page" flags="fillX fillY" >
+        <widget type="vlayout" name="vlayout1" flags="fillX fillY" >
+          <widget type="vsplitter" name="vsplitter9.1" flags="fillX fillY" >
+            <widget type="label" name="label9.1" text="Simple Label" flags="fillX fillY" />
+            <widget type="textBrowser" name="textbrowser9.1" flags="fillX fillY" />
+          </widget>
+        </widget>
+      </widget>
+
+
     </widget>
 
   

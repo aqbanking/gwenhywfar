@@ -140,6 +140,30 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
                                10,
                                0);
 
+    /* page 9 */
+    GWEN_Dialog_SetCharProperty(dlg, "textBrowser9.1",
+                                GWEN_DialogProperty_Value,
+                                0,
+                                "This is BOLD text, while this one is would be i t a l i c.\n"
+                                "This is a list:\n"
+                                "- first item\n"
+                                "- second item\n"
+                                "- third item\n"
+                                "- fourth item\n"
+                                "This paragraph should follow the list."
+                                "<html>"
+                                "<p>This is <b>bold</b> text, while this one is <i>italic</i>.</p>"
+                                "This is a list:"
+                                "<ul>"
+                                "<li>first item</li>"
+                                "<li>second item</li>"
+                                "<li>third item</li>"
+                                "<li>fourth item</li>"
+                                "</ul>"
+                                "<p>This paragraph should follow the list.</p>"
+                                "</html>",
+                                0);
+
 
     GWEN_Dialog_SetIntProperty(dlg, "",
                                GWEN_DialogProperty_Width,
