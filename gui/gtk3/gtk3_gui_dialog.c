@@ -573,3 +573,12 @@ int Gtk3Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf)
 }
 
 
+
+void Gtk3Gui_ApplyFlags(GtkWidget *g, uint32_t flags)
+{
+  gtk_widget_set_hexpand(g, (flags & GWEN_WIDGET_FLAGS_FILLX)?TRUE:FALSE);
+  gtk_widget_set_vexpand(g, (flags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE);
+
+}
+
+

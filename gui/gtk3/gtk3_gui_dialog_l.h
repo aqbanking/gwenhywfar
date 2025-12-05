@@ -46,6 +46,8 @@ void Gtk3Gui_Dialog_Leave(GWEN_DIALOG *dlg, int result);
 
 int Gtk3Gui_GetRawText(const char *text, GWEN_BUFFER *tbuf);
 
+void Gtk3Gui_ApplyFlags(GtkWidget *g, uint32_t flags);
+
 #endif
 
 

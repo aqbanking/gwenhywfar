@@ -202,6 +202,7 @@ int Gtk3Gui_WLineEdit_Setup(GWEN_WIDGET *w)
   if (s && *s)
     gtk_entry_set_text(GTK_ENTRY(g), s);
   gtk_entry_set_visibility(GTK_ENTRY(g), text_is_visible);
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(g), GWEN_Widget_GetFlags(w));
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);

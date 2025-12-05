@@ -272,6 +272,8 @@ int Gtk3Gui_WComboBox_Setup(GWEN_WIDGET *w)
   }
   g_object_unref(store);
 
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(g), GWEN_Widget_GetFlags(w));
+
   cr=gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(g), cr, TRUE);
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(g), cr, "text", 0, NULL);
