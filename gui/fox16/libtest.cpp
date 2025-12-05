@@ -31,32 +31,16 @@
 int test1(int argc, char **argv) {
   FXApp a("libtest","Martin Preuss");
   FOX16_Gui *gui;
-  //int rv;
-  const char testString[]=
-#if 0
-# if 0
-    "This is <b>a</b> test. "
-    "And this, is the second line: followed by something else."
-    "<table>"
-    "  <tr>"
-    "    <th>header1</th>"
-    "    <th>header2</th>"
-    "  </tr>"
-    "  <tr>"
-    "    <td>data1</td>"
-    "    <td>data2</td>"
-    "  </tr>"
-    "</table>"
-    "And   this is   after the table.<br>"
-    "and this <font color=\"red\">one</font> is red.";
-# else
-    "This is before right"
-    "<right>RIGHT</right>"
-    "and this after right.";
-# endif
-#else
-    "word";
-#endif
+  GWEN_DIALOG *dlg;
+  int rv;
+
+  rv=GWEN_Init();
+  if (rv) {
+    DBG_ERROR_ERR(0, rv);
+    return 2;
+  }
+
+  GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Info);
 
   a.init(argc,argv);
   a.create();
@@ -64,11 +48,15 @@ int test1(int argc, char **argv) {
   gui=new FOX16_Gui(&a);
   GWEN_Gui_SetGui(gui->getCInterface());
 
-  FOX16_HtmlCtx ctx(0);
-  ctx.setText(testString);
-  //rv=ctx.layout(300, 1024);
-  //fprintf(stderr, "Result of layout: %d\n", rv);
-  ctx.dump();
+  dlg=Dlg_Test1_new();
+  if (dlg==NULL) {
+    fprintf(stderr, "Could not create dialog.\n");
+    return 2;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg, 0);
+  fprintf(stderr, "Result: %d\n", rv);
+
 
   GWEN_Gui_SetGui(NULL);
   delete gui;
@@ -612,7 +600,7 @@ int main(int argc, char **argv) {
       return test12(argc, argv);
   }
   else
-    return test7(argc, argv);
+    return test1(argc, argv);
 }
 
 
