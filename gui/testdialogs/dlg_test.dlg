@@ -14,6 +14,9 @@
       
             <widget type="label" name="label2" text="Input 2" />
             <widget type="lineEdit" name="edit2" flags="fillX" />
+
+            <widget type="label" name="label3" text="Input 3" />
+            <widget type="lineEdit" name="edit3" flags="fillX readOnly" />
           </widget>
         </widget>
     
