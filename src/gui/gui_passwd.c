@@ -279,6 +279,7 @@ void _tryStorePasswdInCacheAndStorage(GWEN_GUI *gui,
   if (userWantsToStorePasswd && gui->passwdStore) {
     int rv;
 
+    DBG_INFO(GWEN_LOGDOMAIN, "Storing password \"%s\"", pwName);
     rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, pwBuffer);
     if (rv<0) {
       DBG_WARN(GWEN_LOGDOMAIN, "Could not store password (%d)", rv);
@@ -315,6 +316,7 @@ static int GWENHYWFAR_CB GWEN_Gui_Internal_SetPasswordStatus(GWEN_GUI *gui,
       if (gui->passwdStore) {
 	int rv;
 
+        DBG_INFO(GWEN_LOGDOMAIN, "Removing password \"%s\" from store", token);
 	rv=GWEN_PasswordStore_SetPassword(gui->passwdStore, token, NULL);
 	if (rv<0) {
 	  DBG_WARN(GWEN_LOGDOMAIN, "Could not remove password from storage (%d)", rv);
