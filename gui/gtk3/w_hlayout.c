@@ -130,6 +130,7 @@ int Gtk3Gui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
 
   cflags=GWEN_Widget_GetFlags(wChild);
 
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(gChild), cflags);
   gtk_box_pack_start(GTK_BOX(g), gChild,
                      (cflags & GWEN_WIDGET_FLAGS_FILLX)?TRUE:FALSE,
                      (cflags & GWEN_WIDGET_FLAGS_FILLX)?TRUE:FALSE,

@@ -143,6 +143,7 @@ int Gtk3Gui_WStack_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
   gChild=GTK_WIDGET(GWEN_Widget_GetImplData(wChild, GTK3_DIALOG_WIDGET_REAL));
   assert(gChild);
 
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(gChild), GWEN_Widget_GetFlags(wChild));
   gtk_notebook_append_page(GTK_NOTEBOOK(g), gChild, NULL);
 
   return 0;

@@ -85,6 +85,7 @@ int Gtk3Gui_WHSpacer_Setup(GWEN_WIDGET *w)
 
   g=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   GWEN_Widget_AddFlags(w, GWEN_WIDGET_FLAGS_FILLX);
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(g), GWEN_Widget_GetFlags(w));
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) g);

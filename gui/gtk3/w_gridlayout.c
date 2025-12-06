@@ -176,6 +176,7 @@ int Gtk3Gui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
     }
   }
 
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(gChild), GWEN_Widget_GetFlags(wChild));
   gtk_grid_attach(GTK_GRID(g), gChild, x, y, 1, 1);
 
   return 0;
