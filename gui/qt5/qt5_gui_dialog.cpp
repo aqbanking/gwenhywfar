@@ -305,6 +305,16 @@ int QT5_GuiDialog::setupTree(GWEN_WIDGET *w) {
   case GWEN_Widget_TypeSpinBox:
     xw=new Qt5_W_SpinBox(w);
     break;
+  case GWEN_Widget_TypeHSplitter:
+#warning "Creating HLayout instead of HSplitter until implemented"
+    DBG_ERROR(GWEN_LOGDOMAIN, "HSplitter not implemented, using HLayout instead");
+    xw=new Qt5_W_HLayout(w);
+    break;
+  case GWEN_Widget_TypeVSplitter:
+#warning "Creating VLayout instead of VSplitter until implemented"
+    DBG_ERROR(GWEN_LOGDOMAIN, "VSplitter not implemented, using VLayout instead");
+    xw=new Qt5_W_VLayout(w);
+    break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d (%s)",
               GWEN_Widget_GetType(w), GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
