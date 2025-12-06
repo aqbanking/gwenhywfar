@@ -154,7 +154,7 @@ int Gtk3Gui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
   assert(gChild);
 
   cflags=GWEN_Widget_GetFlags(wChild);
-
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(gChild), cflags);
   gtk_box_pack_start(GTK_BOX(g), gChild,
                      (cflags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE,
                      (cflags & GWEN_WIDGET_FLAGS_FILLY)?TRUE:FALSE,
@@ -177,6 +177,8 @@ int Gtk3Gui_WScrollArea_Setup(GWEN_WIDGET *w)
   g=gtk_scrolled_window_new(NULL, NULL);
   gContent=gtk_box_new(GTK_ORIENTATION_VERTICAL,
                        GTK3_GUI_DIALOG_DEFAULT_BOX_SPACING);
+  Gtk3Gui_ApplyFlags(GTK_WIDGET(gContent), GWEN_WIDGET_FLAGS_FILLX|GWEN_WIDGET_FLAGS_FILLY);
+  gtk_container_add(GTK_CONTAINER(g), gContent);
 
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_REAL, (void *) g);
   GWEN_Widget_SetImplData(w, GTK3_DIALOG_WIDGET_CONTENT, (void *) gContent);
