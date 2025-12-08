@@ -44,6 +44,7 @@
 
 #ifdef OS_WIN32
 # include <windows.h>
+# include <winreg.h>
 #endif
 
 
