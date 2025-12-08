@@ -46,7 +46,8 @@ EXTRA_DIST=\
   w_scrollarea.c \
   w_radiobutton.c \
   w_spinbox.c \
-  w_vsplitter.c
+  w_vsplitter.c \
+  w_hsplitter.c
 
 
 
