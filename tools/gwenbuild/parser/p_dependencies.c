@@ -237,7 +237,7 @@ int _checkVersion(GWEN_DB_NODE *db,
   }
   GWEN_Buffer_AppendString(argBuffer, sName);
 
-  DBG_DEBUG(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
+  DBG_DEBUG(NULL, "Running command 'pkg-config' with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
   rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer),
                                           stdOutBuffer, stdErrBuffer);
   if (rv<0) {
@@ -338,7 +338,7 @@ int _callPkgConfig(GWEN_DB_NODE *db,
   GWEN_Buffer_AppendString(argBuffer, " ");
   GWEN_Buffer_AppendString(argBuffer, sName);
 
-  DBG_DEBUG(NULL, "Running command with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
+  DBG_DEBUG(NULL, "Running command 'pkg-config' with args: [%s]", GWEN_Buffer_GetStart(argBuffer));
   rv=GWEN_Process_RunCommandWaitAndGather("pkg-config", GWEN_Buffer_GetStart(argBuffer), stdOutBuffer, stdErrBuffer);
   if (rv<0) {
     DBG_ERROR(NULL, "Error running pkg-config (%d)", rv);
