@@ -54,7 +54,7 @@ QuickStart for Development
 --------------------------
 
 - builder (modules which generate commands to compile or link source files) are defined in XML files in "builders/" (see *.gwb files).
-- new builders should be added in file "gwenbuild.c" in functions "_genBuilderForSourceFile()" and "_genBuilderForTarget()" at
+- new builders should be added in file "types/gwenbuild.c" in functions "_genBuilderForSourceFile()" and "_genBuilderForTarget()" at
   the bottom of that file.
 
 
