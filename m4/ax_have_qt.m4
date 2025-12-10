@@ -144,9 +144,9 @@ EOF
 
     ver=`$QTPATHS --version | cut -d' ' -f 2`
     if test "$ver" = "2.0"; then
-      # Add QT_HOST_BINS and QT_HOST_LIBEXECS paths to PATH
+      # Prepend QT_HOST_BINS and QT_HOST_LIBEXECS paths to PATH
       for var in QT_HOST_BINS QT_HOST_LIBEXECS; do
-        PATH=$PATH:`$QTPATHS --query $var`
+        PATH=`$QTPATHS --query $var`:$PATH
       done
     fi
 
