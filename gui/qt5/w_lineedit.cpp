@@ -47,7 +47,7 @@ public:
     if (flags & GWEN_WIDGET_FLAGS_FILLY)
       vpolicy=QSizePolicy::Expanding;
     qw->setSizePolicy(hpolicy, vpolicy);
-    qw->setEnabled((flags & GWEN_WIDGET_FLAGS_READONLY)?false:true);
+    qw->setReadOnly(flags & GWEN_WIDGET_FLAGS_READONLY);
 
     if (flags & GWEN_WIDGET_FLAGS_PASSWORD)
       qw->setEchoMode(QLineEdit::Password);
