@@ -51,6 +51,12 @@ int GWB_Prepare(GWEN_UNUSED GWEN_DB_NODE *dbArgs)
     return 2;
   }
 
+  rv=GWB_BuildCtx_Run(buildCtx, 10, 0, "tm2builder");
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Error preparing builds.\n");
+    return 2;
+  }
+
   return 0;
 }
 
