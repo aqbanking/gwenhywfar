@@ -176,6 +176,11 @@ static int GWENHYWFAR_CB _gwenGuiSignalHandler(GWEN_DIALOG *dlg,
                                480,
                                0);
 
+    GWEN_Dialog_SetIntProperty(dlg, "vsplitter9.1",
+                               GWEN_DialogProperty_Value,
+                               0,
+                               200,
+                               0);
     break;
 
   case GWEN_DialogEvent_TypeFini:

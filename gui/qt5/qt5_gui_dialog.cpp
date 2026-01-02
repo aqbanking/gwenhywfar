@@ -37,6 +37,8 @@
 #include <QSpinBox>
 #include <QRadioButton>
 #include <QHeaderView>
+#include <QSplitter>
+#include <QList>
 
 #include <QDebug>
 
@@ -70,6 +72,7 @@
 #include "w_listbox.cpp"
 #include "w_radiobutton.cpp"
 #include "w_spinbox.cpp"
+#include "w_splitter.cpp"
 
 
 
@@ -308,14 +311,10 @@ int QT5_GuiDialog::setupTree(GWEN_WIDGET *w) {
     xw=new Qt5_W_SpinBox(w);
     break;
   case GWEN_Widget_TypeHSplitter:
-#warning "Creating HLayout instead of HSplitter until implemented"
-    DBG_ERROR(GWEN_LOGDOMAIN, "HSplitter not implemented, using HLayout instead");
-    xw=new Qt5_W_HLayout(w);
+    xw=new Qt5_W_HSplitter(w);
     break;
   case GWEN_Widget_TypeVSplitter:
-#warning "Creating VLayout instead of VSplitter until implemented"
-    DBG_ERROR(GWEN_LOGDOMAIN, "VSplitter not implemented, using VLayout instead");
-    xw=new Qt5_W_VLayout(w);
+    xw=new Qt5_W_VSplitter(w);
     break;
   default:
     DBG_ERROR(GWEN_LOGDOMAIN, "Unhandled widget type %d (%s)",

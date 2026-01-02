@@ -64,6 +64,7 @@ EXTRA_DIST=$(UI_FILES) \
   w_progressbar.cpp \
   w_listbox.cpp \
   w_radiobutton.cpp \
+  w_splitter.cpp \
   w_spinbox.cpp
 
 libtest_SOURCES=libtest.cpp
