@@ -8,9 +8,6 @@
  ***************************************************************************/
 
 
-#include <gwen-gui-cpp/cppwidget.hpp>
-
-
 class Qt5_W_Widget: public CppWidget {
 public:
   Qt5_W_Widget(GWEN_WIDGET *w):CppWidget(w) {

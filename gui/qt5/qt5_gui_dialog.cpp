@@ -14,6 +14,8 @@
 #include <gwenhywfar/widget_be.h>
 #include <gwenhywfar/debug.h>
 
+#include <gwen-gui-cpp/cppwidget.hpp>
+
 #include <QApplication>
 #include <QLabel>
 #include <QPushButton>

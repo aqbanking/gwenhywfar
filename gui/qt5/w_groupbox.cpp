@@ -8,9 +8,6 @@
  ***************************************************************************/
 
 
-#include <gwen-gui-cpp/cppwidget.hpp>
-
-
 class Qt5_W_GroupBox: public Qt5_W_Widget {
 public:
   Qt5_W_GroupBox(GWEN_WIDGET *w):Qt5_W_Widget(w) {

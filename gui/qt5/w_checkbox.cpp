@@ -8,9 +8,6 @@
  ***************************************************************************/
 
 
-#include <gwen-gui-cpp/cppwidget.hpp>
-
-
 class Qt5_W_CheckBox: public Qt5_W_Widget {
 public:
   Qt5_W_CheckBox(GWEN_WIDGET *w):Qt5_W_Widget(w) {
