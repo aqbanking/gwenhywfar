@@ -140,6 +140,8 @@ int _compareInts_cb(const void *pA, const void *pB, void *pArg)
 
 #else
 
+#include "debug.h"
+
 int GWEN_Quicksort_AddTests(GWEN_TEST_MODULE *mod)
 {
   DBG_ERROR(GWEN_LOGDOMAIN, "Gwenhywfar was compiled without test code enabled.");
