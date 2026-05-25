@@ -115,3 +115,4 @@ gwenhywfar-config-version.cmake
 gwenhywfar-config.cmake
 
 *ax_qt_*
+build*/**
