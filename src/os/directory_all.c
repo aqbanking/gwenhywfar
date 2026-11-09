@@ -571,6 +571,7 @@ int GWEN_Directory_GetDirEntries(const char *folder, GWEN_STRINGLIST *sl,
     }
   }
 
+  GWEN_Buffer_free(pbuf);
   GWEN_Directory_Close(d);
   GWEN_Directory_free(d);
   return 0;
