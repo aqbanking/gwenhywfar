@@ -595,21 +595,35 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
 
 
   while (tlv_len < len) {
+    int rv;
+
     /* read TAG */
     tag_len=0;
-    byte = GWEN_Buffer_ReadByte(mbuf);
+    rv=GWEN_Buffer_ReadByte(mbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Truncated BER-TLV tag");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    byte=(uint8_t) rv;
     isConstructed = byte & BER_TLV_TAG_IS_CONSTRUCTED;
     tlv_len++;
     _writeByteAsHex(byte, &tag[tag_len]);
     tag_len+=2;
     anotherByte=((byte & BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS)==BER_TLV_TAG_FIRST_BYTE_BYTE_FOLLOWS);
     while (anotherByte) {
-      byte=GWEN_Buffer_ReadByte(mbuf);
-      tlv_len++;
-      if ((tag_len+3)<=sizeof(tag)) {
-	_writeByteAsHex(byte, &tag[tag_len]);
-	tag_len+=2;
+      rv=GWEN_Buffer_ReadByte(mbuf);
+      if (rv<0) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Truncated BER-TLV tag");
+	return GWEN_ERROR_BAD_DATA;
       }
+      byte=(uint8_t) rv;
+      tlv_len++;
+      if ((tag_len+3)>sizeof(tag)) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "BER-TLV tag too long");
+	return GWEN_ERROR_BAD_DATA;
+      }
+      _writeByteAsHex(byte, &tag[tag_len]);
+      tag_len+=2;
       anotherByte=byte>127;
     }
     dbTLV=GWEN_DB_Group_new((const char*) tag);
@@ -636,15 +650,19 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
 
     /* write VALUE */
     if (isConstructed) {
-      tlv_len+=GWEN_TLV_Buffer_To_DB(dbTLV, mbuf, data_len);
+      rv=GWEN_TLV_Buffer_To_DB(dbTLV, mbuf, data_len);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	GWEN_DB_Group_free(dbTLV);
+      }
+      tlv_len+=rv;
     }
     else {
       char *buffer;
 
       buffer=(char *)GWEN_Memory_malloc((data_len*2)+1);
       assert(buffer);
-      GWEN_Text_ToHex(GWEN_Buffer_GetPosPointer(mbuf), data_len,
-                      buffer, data_len*2+1);
+      GWEN_Text_ToHex(GWEN_Buffer_GetPosPointer(mbuf), data_len, buffer, data_len*2+1);
       GWEN_DB_SetCharValue(dbTLV, 0, "data", buffer);
       GWEN_DB_SetBinValue(dbTLV, 0, "dataBin", GWEN_Buffer_GetPosPointer(mbuf), data_len);
       GWEN_Memory_dealloc(buffer);
