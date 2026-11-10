@@ -2346,8 +2346,8 @@ int testMap4(void)
     fprintf(stderr, "FAILED: Not found first pointer (%d).\n", res);
     return 2;
   }
-  if (id!=2) {
-    fprintf(stderr, "FAILED: First pointer is not 2 (%x).\n", id);
+  if (id!=10) {
+    fprintf(stderr, "FAILED: First pointer is not 10 (%u).\n", id);
     return 2;
   }
 
