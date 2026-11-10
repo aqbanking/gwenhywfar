@@ -4629,15 +4629,25 @@ int testPss1(void)
     0x00, 0x6d, 0x9d, 0x67, 0x58, 0xa9, 0x23, 0xf5, 0x46, 0xdc, 0x6d, 0x2b, 0xd7, 0xea, 0x78, 0xab,
     0x1d, 0xcf, 0x6d, 0x47, 0x37, 0x35, 0xae, 0x93, 0xa9, 0x3b, 0x69, 0x17, 0xcc, 0xe1, 0xf5, 0x05
   };
+  uint8_t mHash[32];
   GWEN_MDIGEST *md;
   int rv;
 
+  /* em encodes the message's "hash", so the PSS input is SHA-256(hash) */
   md=GWEN_MDigest_Sha256_new();
+  rv=GWEN_MDigest_Digest(md, hash, sizeof(hash), mHash, sizeof(mHash));
+  if (rv<0) {
+    fprintf(stderr, "Error hashing message (%d)\n", rv);
+    GWEN_MDigest_free(md);
+    return 2;
+  }
+
   rv=GWEN_Padd_VerifyPkcs1Pss(em, sizeof(em),
                               1984,
-                              hash, sizeof(hash),
+                              mHash, sizeof(mHash),
                               32,
                               md);
+  GWEN_MDigest_free(md);
   if (rv<0) {
     fprintf(stderr, "Error decoding em\n");
     return 2;
