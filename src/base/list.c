@@ -554,7 +554,7 @@ void GWEN_List_Erase(GWEN_LIST *l, GWEN_LIST_ITERATOR *it)
       else
         it->current=0;
       current->usage--;
-      it->current->linkCount--;
+      current->linkCount--;
     }
   }
 }
