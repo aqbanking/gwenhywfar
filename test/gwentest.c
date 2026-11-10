@@ -3759,6 +3759,9 @@ int testDES(void)
   GWEN_Buffer_IncrementPos(buf2, l);
   GWEN_Buffer_AdjustUsedBytes(buf2);
 
+  /* reset the CBC chaining state before decrypting */
+  GWEN_Crypt_KeyDes3K_SetIV(skey, NULL, 0);
+
   /* decrypt buf2 */
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf3);
   rv=GWEN_Crypt_Key_Decipher(skey,
@@ -3863,6 +3866,9 @@ int testDES2(void)
   }
   GWEN_Buffer_IncrementPos(buf2, l);
   GWEN_Buffer_AdjustUsedBytes(buf2);
+
+  /* reset the CBC chaining state before decrypting */
+  GWEN_Crypt_KeyDes3K_SetIV(skey, NULL, 0);
 
   /* decrypt buf2 */
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(buf3);
