@@ -6652,9 +6652,37 @@ int testIpcClient()
 
 
 
+/*
+ * Commands registered with GWEN_FUNCS_ENTRY() take no arguments, and
+ * commands registered with GWEN_FUNCS_ENTRY_ARGS() take arguments. The
+ * macros below register commands with a property, which the usage text
+ * and "gwentest --list" show.
+ */
+static const char gwentest_interactive[]="interactive";
+static const char gwentest_tool[]="diagnostic tool";
+static const char gwentest_args_optional[]="arguments optional";
+static const char gwentest_network[]="needs network";
+
+/* a command without arguments that asks the user for input */
+#define GWENTEST_ENTRY_INTERACTIVE(a,b) \
+  GWEN_FUNCS_ENTRY_HELP(a, b, gwentest_interactive)
+
+/* a command without arguments that runs until stopped and has no result */
+#define GWENTEST_ENTRY_TOOL(a,b) \
+  GWEN_FUNCS_ENTRY_HELP(a, b, gwentest_tool)
+
+/* a command without arguments that connects to a host on the internet */
+#define GWENTEST_ENTRY_NETWORK(a,b) \
+  GWEN_FUNCS_ENTRY_HELP(a, b, gwentest_network)
+
+/* a command whose arguments are optional */
+#define GWENTEST_ENTRY_ARGS_OPTIONAL(a,b) \
+  GWEN_FUNNCS_ENTRY_ARGS_HELP(a, b, gwentest_args_optional)
+
+
 const GWEN_FUNCS tests[] = {
-  GWEN_FUNCS_ENTRY("ipcd", testIpcDaemon),
-  GWEN_FUNCS_ENTRY("ipcc", testIpcClient),
+  GWENTEST_ENTRY_TOOL("ipcd", testIpcDaemon),
+  GWENTEST_ENTRY_TOOL("ipcc", testIpcClient),
   GWEN_FUNCS_ENTRY("3rsa", testCrypt3Rsa),
   GWEN_FUNCS_ENTRY("3rsa2", testCrypt3Rsa2),
   GWEN_FUNCS_ENTRY("3rsa3", testCrypt3Rsa3),
@@ -6689,7 +6717,7 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("floatdouble", testFloatDouble),
   GWEN_FUNCS_ENTRY_ARGS("fslock", testFsLock),
   GWEN_FUNCS_ENTRY_ARGS("fslock2", testFsLock2),
-  GWEN_FUNCS_ENTRY("gtls", testGnutls),
+  GWENTEST_ENTRY_NETWORK("gtls", testGnutls),
   GWEN_FUNCS_ENTRY_ARGS("hashtree", testHashTree),
   GWEN_FUNCS_ENTRY_ARGS("http1", testHttp1),
   GWEN_FUNCS_ENTRY_ARGS("http2", testHttp2),
@@ -6701,7 +6729,7 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("map3", testMap3),
   GWEN_FUNCS_ENTRY("map4", testMap4),
   GWEN_FUNCS_ENTRY("mem", testMem),
-  GWEN_FUNCS_ENTRY_ARGS("modules", testModules),
+  GWENTEST_ENTRY_ARGS_OPTIONAL("modules", testModules),
   GWEN_FUNCS_ENTRY("msg", testMsg),
   GWEN_FUNCS_ENTRY_ARGS("newxml", testNewXML),
   GWEN_FUNCS_ENTRY("olddb", testOldDbImport),
@@ -6716,9 +6744,9 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("pss2", testPss2),
   GWEN_FUNCS_ENTRY("pss3", testPss3),
   GWEN_FUNCS_ENTRY("ptr", testPtr),
-  GWEN_FUNCS_ENTRY("pw1", testPasswordStore1),
-  GWEN_FUNCS_ENTRY("pw2", testPasswordStore2),
-  GWEN_FUNCS_ENTRY("pw3", testPasswordStore3),
+  GWENTEST_ENTRY_INTERACTIVE("pw1", testPasswordStore1),
+  GWENTEST_ENTRY_INTERACTIVE("pw2", testPasswordStore2),
+  GWENTEST_ENTRY_INTERACTIVE("pw3", testPasswordStore3),
   GWEN_FUNCS_ENTRY_ARGS("pw4", testPasswordStore4),
   GWEN_FUNCS_ENTRY_ARGS("pw5", testPasswordStore5),
   GWEN_FUNCS_ENTRY("rsa", check_rsa_keys),
@@ -6766,6 +6794,45 @@ static void print_usage(const char *app_name)
     GWEN_Funcs_Usage(tests);
 }
 
+/*
+ * Prints one line per command, with tab-separated fields:
+ *   name
+ *   arguments: "none", "required" or "optional"
+ *   kind: "interactive", "tool", "network", or empty
+ */
+static void print_list(void)
+{
+  const GWEN_FUNCS *p;
+
+  for (p=tests; p->name; p++) {
+    const char *args;
+    const char *kind;
+
+#ifdef GWENHYWFAR_SKIP_NETWORK_CHECKS
+    if (p->description==gwentest_network)
+      continue;
+#endif
+
+    if (GWEN_Funcs_Has_Call(p))
+      args="none";
+    else if (p->description==gwentest_args_optional)
+      args="optional";
+    else
+      args="required";
+
+    if (p->description==gwentest_interactive)
+      kind="interactive";
+    else if (p->description==gwentest_tool)
+      kind="tool";
+    else if (p->description==gwentest_network)
+      kind="network";
+    else
+      kind="";
+
+    printf("%s\t%s\t%s\n", p->name, args, kind);
+  }
+}
+
 int main(int argc, char **argv)
 {
   const GWEN_FUNCS *test;
@@ -6783,6 +6850,12 @@ int main(int argc, char **argv)
             "This test is only available if Gwen has been configured with \"--enable-testcode\".\n");
     GWEN_Fini();
     return 1;
+  }
+
+  if (strcmp(argv[1], "--list")==0) {
+    print_list();
+    GWEN_Fini();
+    return 0;
   }
 
   test=GWEN_Funcs_Find(tests, argv[1]);
