@@ -53,6 +53,8 @@ void Typemaker2_TypeManager_free(TYPEMAKER2_TYPEMANAGER *tym)
   if (tym) {
     Typemaker2_Type_List_free(tym->typeList);
     GWEN_StringList_free(tym->folders);
+    free(tym->lang);
+    free(tym->apiDeclaration);
     GWEN_FREE_OBJECT(tym);
   }
 }

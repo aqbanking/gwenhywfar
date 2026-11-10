@@ -177,6 +177,7 @@ int main(int argc, char **argv)
                      db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
+    GWEN_DB_Group_free(db);
     return -1;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
@@ -193,6 +194,8 @@ int main(int argc, char **argv)
                              I18N("\nGlobal Options:\n"));
     if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
+      GWEN_Buffer_free(ubuf);
+      GWEN_DB_Group_free(db);
       return 1;
     }
     GWEN_Buffer_AppendString(ubuf,
@@ -204,6 +207,7 @@ int main(int argc, char **argv)
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
+    GWEN_DB_Group_free(db);
     return 0;
   }
   if (rv) {
@@ -217,6 +221,7 @@ int main(int argc, char **argv)
     rv=buildDefs(db);
   else
     rv=build(db);
+  GWEN_DB_Group_free(db);
 
   err=GWEN_Fini();
   if (err) {

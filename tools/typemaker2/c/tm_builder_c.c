@@ -166,13 +166,11 @@ static int _buildEndHeaders(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
 static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 {
-  GWEN_BUFFER *tbuf;
   TYPEMAKER2_MEMBER_LIST *tml;
   uint32_t flags;
   /* TYPEMAKER2_TYPEMANAGER *tym; */
 
   /* tym=Typemaker2_Builder_GetTypeManager(tb); */
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   flags=Typemaker2_Type_GetFlags(ty);
 
@@ -216,7 +214,6 @@ static int _buildGetByMember(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
       }
       tm=Typemaker2_Member_List_Next(tm);
     }
-    GWEN_Buffer_AppendString(tbuf, "  return p_cl;\n");
   }
 
   return 0;
@@ -362,6 +359,7 @@ static int _buildDefineDefines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
       td=Typemaker2_Define_List_Next(td);
     }
+    GWEN_Buffer_free(tbuf);
   }
   return 0;
 }
@@ -478,6 +476,7 @@ static int _buildInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
           db=Typemaker2_Builder_CreateDbForCall(tb, ty, NULL, NULL, NULL);
           assert(db);
           rv=Typemaker2_Builder_ReplaceVars(content, db, tbuf);
+          GWEN_DB_Group_free(db);
           if (rv<0) {
             DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
             GWEN_Buffer_free(tbuf);
@@ -553,6 +552,7 @@ static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
                 db=Typemaker2_Builder_CreateDbForCall(tb, ty, tm, NULL, NULL);
                 assert(db);
                 rv=Typemaker2_Builder_ReplaceVars(content, db, tbuf);
+                GWEN_DB_Group_free(db);
                 if (rv<0) {
                   DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
                   GWEN_Buffer_free(tbuf);
@@ -583,6 +583,7 @@ static int _buildMemberInlines(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
     ty=Typemaker2_Type_GetExtendsPtr(ty);
   }
+  GWEN_Buffer_free(tbuf);
 
   return 0;
 }

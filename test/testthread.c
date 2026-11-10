@@ -79,6 +79,7 @@ void GWENHYWFAR_CB _threadRun_cb(GWEN_UNUSED GWEN_THREAD *thr)
   }
 
   GWEN_Gui_SetGui(NULL);
+  GWEN_Gui_free(gui);
 }
 
 

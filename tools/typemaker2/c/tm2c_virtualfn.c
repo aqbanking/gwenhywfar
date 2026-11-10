@@ -789,6 +789,7 @@ int TM2C_BuildGetterVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
       vf=Typemaker2_VirtualFn_List_Next(vf);
     }
+    GWEN_Buffer_free(tbuf);
   }
 
   return 0;

@@ -64,6 +64,7 @@ void GWEN_RefPtrObject_free(GWEN_REFPTR_POBJECT *rpo)
         if (rpo->infoPtr->freeFn)
           rpo->infoPtr->freeFn(rpo->ptr);
       }
+      GWEN_RefPtrInfo_free(rpo->infoPtr);
       GWEN_FREE_OBJECT(rpo);
     }
   }

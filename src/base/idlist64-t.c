@@ -582,6 +582,8 @@ int test7(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     }
   }
 
+  GWEN_IdList64_free(ptrList2);
+  GWEN_IdList64_free(ptrList1);
   return 0;
 }
 
@@ -724,6 +726,7 @@ int test8(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     }
   }
 
+  GWEN_IdList64_free(ptrList2);
   return 0;
 }
 
@@ -828,6 +831,8 @@ int test9(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     }
   }
 
+  GWEN_IdList64_free(ptrList2);
+  GWEN_IdList64_free(ptrList1);
   return 0;
 }
 

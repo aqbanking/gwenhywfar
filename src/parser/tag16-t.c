@@ -76,6 +76,7 @@ int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     GWEN_Buffer_free(buf);
     return GWEN_ERROR_GENERIC;
   }
+  GWEN_Tag16_free(tag);
   GWEN_Buffer_free(buf);
 
   return 0;
@@ -107,6 +108,7 @@ int test2(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     GWEN_Buffer_free(buf);
     return GWEN_ERROR_GENERIC;
   }
+  GWEN_Tag16_free(tag);
   GWEN_Buffer_free(buf);
 
   return 0;
@@ -145,6 +147,7 @@ int test3(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     return GWEN_ERROR_GENERIC;
   }
   free(value2);
+  GWEN_Tag16_free(tag);
   GWEN_Buffer_free(buf);
   return 0;
 }
@@ -293,6 +296,7 @@ int test5(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     return GWEN_ERROR_GENERIC;
   }
   free(value2);
+  GWEN_Tag16_free(tag);
   GWEN_Buffer_free(buf);
   return 0;
 }

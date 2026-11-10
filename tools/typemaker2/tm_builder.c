@@ -83,6 +83,7 @@ void Typemaker2_Builder_free(TYPEMAKER2_BUILDER *tb)
     free(tb->fileNameProtected);
     free(tb->fileNamePrivate);
     free(tb->fileNameCode);
+    free(tb->sourceFileName);
     free(tb->destFolder);
     GWEN_FREE_OBJECT(tb);
   }

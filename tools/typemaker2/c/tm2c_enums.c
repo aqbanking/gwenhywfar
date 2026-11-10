@@ -115,6 +115,7 @@ int TM2C_BuildDefineEnums(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
 
       te=Typemaker2_Enum_List_Next(te);
     }
+    GWEN_Buffer_free(tbuf);
   }
 
   return 0;
