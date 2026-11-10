@@ -425,6 +425,7 @@ TYPEMAKER2_VIRTUALFN_PARAM *Typemaker2_VirtualFn_Param_new()
 void Typemaker2_VirtualFn_Param_free(TYPEMAKER2_VIRTUALFN_PARAM *prm)
 {
   if (prm) {
+    GWEN_LIST_FINI(TYPEMAKER2_VIRTUALFN_PARAM, prm);
     free(prm->name);
     free(prm->type);
     free(prm->descr);

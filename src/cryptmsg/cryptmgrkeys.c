@@ -89,6 +89,7 @@ void GWEN_CryptMgrKeys_FreeData(GWEN_UNUSED void *bp, void *p)
     GWEN_Crypt_Key_free(xcm->localKey);
   if (xcm->ownPeerKey)
     GWEN_Crypt_Key_free(xcm->peerKey);
+  GWEN_FREE_OBJECT(xcm);
 }
 
 

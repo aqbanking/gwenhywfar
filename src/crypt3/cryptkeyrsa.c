@@ -170,6 +170,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     rv=GWEN_Crypt_KeyRsa__getNamedElement(pkey, "n", &n);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      gcry_sexp_release(pkey);
       gcry_sexp_release(key);
       return GWEN_ERROR_GENERIC;
     }
@@ -178,6 +179,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       gcry_mpi_release(n);
+      gcry_sexp_release(pkey);
       gcry_sexp_release(key);
       return GWEN_ERROR_GENERIC;
     }
@@ -197,12 +199,14 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
 
     gcry_mpi_release(e);
     gcry_mpi_release(n);
+    gcry_sexp_release(pkey);
   }
 
 
   pkey=gcry_sexp_find_token(key, "private-key", 0);
   if (!pkey) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Private part missing in return value");
+    GWEN_Crypt_Key_free(pubKey);
     gcry_sexp_release(key);
     return GWEN_ERROR_GENERIC;
   }
@@ -218,6 +222,8 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     rv=GWEN_Crypt_KeyRsa__getNamedElement(pkey, "n", &n);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      gcry_sexp_release(pkey);
+      GWEN_Crypt_Key_free(pubKey);
       gcry_sexp_release(key);
       return GWEN_ERROR_GENERIC;
     }
@@ -226,6 +232,8 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       gcry_mpi_release(n);
+      gcry_sexp_release(pkey);
+      GWEN_Crypt_Key_free(pubKey);
       gcry_sexp_release(key);
       return GWEN_ERROR_GENERIC;
     }
@@ -235,6 +243,8 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       gcry_mpi_release(e);
       gcry_mpi_release(n);
+      gcry_sexp_release(pkey);
+      GWEN_Crypt_Key_free(pubKey);
       gcry_sexp_release(key);
       return GWEN_ERROR_GENERIC;
     }
@@ -256,6 +266,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair(unsigned int nbytes, int use65537e,
     gcry_mpi_release(d);
     gcry_mpi_release(e);
     gcry_mpi_release(n);
+    gcry_sexp_release(pkey);
   }
 
   gcry_sexp_release(key);

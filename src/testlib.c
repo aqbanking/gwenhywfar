@@ -73,6 +73,9 @@ int check1()
 
   fprintf(stderr, "PASSED.\n");
 
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+
   return 0;
 }
 
@@ -270,6 +273,7 @@ int print_paths()
       GWEN_PathManager_GetPaths(GWEN_PM_LIBNAME, pathname);
     printf("Path %s has %d elements.\n", pathname, GWEN_StringList_Count(sl));
     GWEN_StringList_ForEach(sl, printfunc, (void *)pathname);
+    GWEN_StringList_free(sl);
   }
   return 0;
 }
@@ -329,6 +333,9 @@ int check2()
   }
 
   fprintf(stderr, "PASSED.\n");
+
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
 
   return 0;
 }

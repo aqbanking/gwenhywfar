@@ -86,6 +86,8 @@ int test1(GWEN_UNUSED GWEN_TEST_MODULE *mod)
     return GWEN_ERROR_GENERIC;
   }
 
+  GWEN_Timestamp_free(ts2);
+  GWEN_Timestamp_free(ts1);
   return 0;
 }
 

@@ -1415,6 +1415,11 @@ int testTime(void)
   DBG_NOTICE(0, "Time 2:");
   GWEN_DB_Dump(db2, 2);
 
+  GWEN_DB_Group_free(db2);
+  GWEN_Time_free(ti2);
+  GWEN_DB_Group_free(db1);
+  GWEN_Time_free(ti1);
+
   return 0;
 }
 
@@ -1746,7 +1751,10 @@ int testPtr(void)
   fprintf(stderr, "Data2 is now: %s\n",
           (char *)GWEN_RefPtr_GetData(rp2));
 
+  GWEN_RefPtr_free(rp2);
   GWEN_RefPtr_free(rp);
+  free(dp2);
+  free(dp1);
   return 0;
 }
 
@@ -1923,6 +1931,7 @@ int testStringList2(void)
   }
 
 
+  GWEN_StringList2_free(sl2copy);
   GWEN_StringList2_free(sl2);
 
   return 0;
@@ -2128,6 +2137,8 @@ int testMap(void)
     return 2;
   }
 
+  GWEN_IdMap_free(map);
+
   return 0;
 }
 
@@ -2306,6 +2317,10 @@ int testMap3(void)
     return 2;
   }
 
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+  GWEN_Buffer_IdMap_free(map);
+
   return 0;
 }
 
@@ -2366,6 +2381,10 @@ int testMap4(void)
     return 2;
   }
 
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+  GWEN_Buffer_IdMap_free(map);
+
   return 0;
 }
 
@@ -2419,6 +2438,9 @@ int testXmlDbExport(void)
     DBG_ERROR(0, "Could not write outfile");
   }
 
+  GWEN_DB_Group_free(dbParams);
+  GWEN_DB_Group_free(db);
+
   return 0;
 }
 
@@ -2441,6 +2463,8 @@ int testXmlDbImport(void)
                          GWEN_DB_FLAGS_DEFAULT |
                          GWEN_PATH_FLAGS_CREATE_GROUP)) {
     DBG_ERROR(0, "Could not read test file");
+    GWEN_DB_Group_free(dbParams);
+    GWEN_DB_Group_free(db);
     return 2;
   }
 
@@ -2449,6 +2473,9 @@ int testXmlDbImport(void)
                         GWEN_DB_FLAGS_DEFAULT)) {
     DBG_ERROR(0, "Could not write outfile");
   }
+
+  GWEN_DB_Group_free(dbParams);
+  GWEN_DB_Group_free(db);
 
   return 0;
 }
@@ -2750,6 +2777,9 @@ int testCrypt3Rsa(void)
     return 2;
   }
 
+  GWEN_Crypt_Key_free(secretKey);
+  GWEN_Crypt_Key_free(pubKey);
+
   return 0;
 }
 
@@ -2857,6 +2887,11 @@ int testCrypt3Rsa2(void)
     GWEN_Text_DumpString((const char *)buffer2, len2, 1);
     return 2;
   }
+
+  GWEN_Crypt_Key_free(secretKey);
+  GWEN_Crypt_Key_free(pubKey);
+  GWEN_DB_Group_free(dbSecretKey);
+  GWEN_DB_Group_free(dbPubKey);
 
   return 0;
 }
@@ -2966,6 +3001,11 @@ int testCrypt3Rsa3(void)
     return 2;
   }
 
+  GWEN_Crypt_Key_free(secretKey);
+  GWEN_Crypt_Key_free(pubKey);
+  GWEN_DB_Group_free(dbSecretKey);
+  GWEN_DB_Group_free(dbPubKey);
+
   return 0;
 }
 
@@ -3042,6 +3082,7 @@ int testCrypt3Rsa4(void)
     return 2;
   }
 
+  GWEN_Crypt_Key_free(secretKey);
   secretKey=GWEN_Crypt_KeyRsa_fromModPrivExp(nbytes,
                                              modBuffer, modLen,
                                              pubExpBuffer, pubExpLen,
@@ -3099,6 +3140,10 @@ int testCrypt3Rsa4(void)
     GWEN_Text_DumpString((const char *)buffer2, len2, 1);
     return 2;
   }
+
+  GWEN_Crypt_Key_free(secretKey);
+  GWEN_Crypt_Key_free(pubKey);
+  GWEN_DB_Group_free(dbPubKey);
 
   return 0;
 }
@@ -4458,6 +4503,10 @@ int testCryptMgr1(void)
 
   fprintf(stderr, "Signature is valid.\n");
 
+  GWEN_Buffer_free(tbuf2);
+  GWEN_Buffer_free(tbuf1);
+  GWEN_CryptMgr_free(cm);
+
   return 0;
 }
 
@@ -4529,6 +4578,10 @@ int testCryptMgr2(void)
 
   fprintf(stderr, "Crypto-stuff ok.\n");
 
+  GWEN_Buffer_free(tbuf2);
+  GWEN_Buffer_free(tbuf1);
+  GWEN_CryptMgr_free(cm);
+
   return 0;
 }
 
@@ -4599,6 +4652,10 @@ int testCryptMgr3(void)
   }
 
   fprintf(stderr, "Crypto-stuff ok.\n");
+
+  GWEN_Buffer_free(tbuf2);
+  GWEN_Buffer_free(tbuf1);
+  GWEN_CryptMgr_free(cm);
 
   return 0;
 }
@@ -4720,6 +4777,7 @@ int testPss2(void)
   }
 
   fprintf(stderr, "Success\n");
+  GWEN_MDigest_free(md);
   return 0;
 }
 
@@ -5297,6 +5355,9 @@ int testTresor1(void)
 
   fprintf(stderr, "Finished.\n");
 
+  GWEN_Buffer_free(buf2);
+  GWEN_Buffer_free(buf1);
+
   return 0;
 }
 
@@ -5353,6 +5414,8 @@ int testTresor2(void)
       return 2;
     }
     fprintf(stderr, "Round %d... Ok.\n", i);
+    GWEN_Buffer_free(buf2);
+    GWEN_Buffer_free(buf1);
   }
 
   fprintf(stderr, "Finished.\n");
@@ -5435,6 +5498,7 @@ int testDate1(void)
     }
   }
 
+  GWEN_Date_free(ti1);
 
   return 0;
 }
@@ -5460,6 +5524,9 @@ int testDate2(void)
   GWEN_Buffer_Reset(dbuf);
   GWEN_Date_toStringWithTemplate(ti1, "w*, D.M.YYYY (W)", dbuf);
   DBG_NOTICE(0, "or like this: %s", GWEN_Buffer_GetStart(dbuf));
+
+  GWEN_Buffer_free(dbuf);
+  GWEN_Date_free(ti1);
 
   return 0;
 }
@@ -5683,6 +5750,7 @@ int testStringListFromString(void)
       fprintf(stderr, "Got this: [%s]\n", s?s:"(empty)");
       se=GWEN_StringListEntry_Next(se);
     }
+    GWEN_StringList_free(sl);
   }
   return 0;
 }
@@ -5937,6 +6005,8 @@ int testCSV(void)
   dbio=GWEN_DBIO_GetPlugin("csv");
   if (!dbio) {
     DBG_ERROR(0, "GWEN DBIO plugin \"CSV\" not available");
+    GWEN_DB_Group_free(dbData);
+    GWEN_DB_Group_free(dbParams);
     return 0;
   }
 
@@ -5961,6 +6031,11 @@ int testCSV(void)
 
   fprintf(stderr, "Imported this:\n");
   GWEN_DB_Dump(dbData, 2);
+
+  GWEN_SyncIo_free(sio);
+  GWEN_DBIO_free(dbio);
+  GWEN_DB_Group_free(dbData);
+  GWEN_DB_Group_free(dbParams);
 
   return 0;
 }
@@ -6080,6 +6155,13 @@ int testParams1(void)
   else {
     fprintf(stdout, "no errors.\n");
   }
+
+  GWEN_XMLNode_free(xn2);
+  GWEN_Param_List_free(pl2);
+  GWEN_Buffer_free(tbuf);
+  GWEN_XMLNode_free(xn);
+  GWEN_Param_List_free(pl);
+
   return 0;
 }
 
@@ -6176,6 +6258,9 @@ int testParams2(void)
   else {
     fprintf(stdout, "no errors.\n");
   }
+
+  GWEN_Param_List_free(pl);
+
   return 0;
 }
 
@@ -6298,6 +6383,12 @@ int testParams3(void)
   else {
     fprintf(stdout, "no errors.\n");
   }
+
+  GWEN_XMLNode_free(xn2);
+  GWEN_Buffer_free(tbuf);
+  GWEN_XMLNode_free(xn);
+  GWEN_Param_List_free(pl);
+
   return 0;
 }
 

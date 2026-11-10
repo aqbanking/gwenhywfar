@@ -394,6 +394,7 @@ int write_hl_file_c(ARGUMENTS *args, GWEN_XMLNODE *node)
     return -1;
   }
 
+  GWEN_SyncIo_free(sio);
   GWEN_Buffer_free(hbuf);
   return 0;
 }

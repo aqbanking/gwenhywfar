@@ -49,11 +49,13 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
     }
     else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Unsupported language [%s]", s);
+      Typemaker2_TypeManager_free(tym);
       return 1;
     }
   }
   else {
     DBG_ERROR(GWEN_LOGDOMAIN, "Missing language specification");
+    Typemaker2_TypeManager_free(tym);
     return 1;
   }
 
@@ -106,6 +108,9 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
   rv=Typemaker2_TypeManager_LoadTypeFile2(tym, fname, tlist);
   if (rv<0) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unable to load file [%s] (%d)", fname, rv);
+    Typemaker2_Type_List2_free(tlist);
+    Typemaker2_Builder_free(tb);
+    Typemaker2_TypeManager_free(tym);
     return 2;
   }
 
@@ -122,6 +127,10 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
       rv=Typemaker2_Builder_Build(tb, ty);
       if (rv<0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+        Typemaker2_Type_List2Iterator_free(it);
+        Typemaker2_Type_List2_free(tlist);
+        Typemaker2_Builder_free(tb);
+        Typemaker2_TypeManager_free(tym);
         return 2;
       }
 
@@ -130,6 +139,10 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
         rv=Typemaker2_Builder_WriteFiles(tb, ty, TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_DEFS);
         if (rv<0) {
           DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+          Typemaker2_Type_List2Iterator_free(it);
+          Typemaker2_Type_List2_free(tlist);
+          Typemaker2_Builder_free(tb);
+          Typemaker2_TypeManager_free(tym);
           return 2;
         }
       }
@@ -165,6 +178,9 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
     rv=Typemaker2_Builder_WriteFiles(tb, ty, TYPEMAKER2_BUILDER_WRITEFILE_FLAGS_WRITE_TYPE);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+      Typemaker2_Type_List2_free(tlist);
+      Typemaker2_Builder_free(tb);
+      Typemaker2_TypeManager_free(tym);
       return 2;
     }
 
@@ -172,6 +188,8 @@ int buildFile2(GWEN_DB_NODE *dbArgs, const char *fname)
   Typemaker2_Type_List2_free(tlist);
 
 
+  Typemaker2_Builder_free(tb);
+  Typemaker2_TypeManager_free(tym);
   return 0;
 }
 

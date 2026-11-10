@@ -141,6 +141,7 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     GWEN_SyncIo_free(sio);
+    GWEN_DBIO_free(dbio);
     return rv;
   }
 
@@ -150,6 +151,7 @@ int GWEN_DB_ReadFileAs(GWEN_DB_NODE *db,
   }
   GWEN_SyncIo_Disconnect(sio);
   GWEN_SyncIo_free(sio);
+  GWEN_DBIO_free(dbio);
 
   return rv;
 }
@@ -172,6 +174,7 @@ int GWEN_DB_WriteFileAs(GWEN_DB_NODE *db,
   }
 
   rv=GWEN_DBIO_ExportToFile(dbio, fname, db, params, dbflags);
+  GWEN_DBIO_free(dbio);
   if (rv) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
     return rv;

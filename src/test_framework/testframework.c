@@ -69,6 +69,7 @@ GWEN_GUI *_setupGui(GWEN_TEST_FRAMEWORK *tf, int argc, char **argv)
   gui=GWEN_Gui_GetGui();
   if (gui==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Need to create and set a GUI first!");
+    GWEN_DB_Group_free(dbArgs);
     return NULL;
   }
 
@@ -79,6 +80,7 @@ GWEN_GUI *_setupGui(GWEN_TEST_FRAMEWORK *tf, int argc, char **argv)
     TestGui_SetLogFile(gui, s);
   i=GWEN_DB_GetIntValue(dbArgs, "logLastLines", 0, 0);
   TestGui_SetLogLastX(gui, i);
+  GWEN_DB_Group_free(dbArgs);
 
   return gui;
 }
