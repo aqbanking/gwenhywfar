@@ -124,8 +124,9 @@ int GWEN_Init(void)
       return err;
 
     /* Define some paths used by gwenhywfar; add the windows
-       registry entries first, because on Unix those functions
-       simply do nothing and on windows they will ensure that the
+       registry and apple bundle entries first, because on
+       other systems those functions simply do nothing and on
+       windows / in a apple bundle they will ensure that the
        most valid paths (which are those from the registry) are
        first in the path lists. */
 
@@ -137,6 +138,11 @@ int GWEN_Init(void)
                                        GWEN_PM_SYSCONFDIR,
                                        GWEN_REGKEY_PATHS,
                                        GWEN_REGNAME_SYSCONFDIR);
+    GWEN_PathManager_AddPathFromBundleResource(GWEN_PM_LIBNAME,
+                                               GWEN_PM_LIBNAME,
+                                               GWEN_PM_SYSCONFDIR,
+                                               GWEN_APPLE_BUNDLE_ID,
+                                               GWEN_SYSCONF_DIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
@@ -160,6 +166,11 @@ int GWEN_Init(void)
                                        GWEN_PM_LOCALEDIR,
                                        GWEN_REGKEY_PATHS,
                                        GWEN_REGNAME_LOCALEDIR);
+    GWEN_PathManager_AddPathFromBundleResource(GWEN_PM_LIBNAME,
+                                               GWEN_PM_LIBNAME,
+                                               GWEN_PM_LOCALEDIR,
+                                               GWEN_APPLE_BUNDLE_ID,
+                                               LOCALEDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
@@ -206,6 +217,11 @@ int GWEN_Init(void)
                                        GWEN_PM_DATADIR,
                                        GWEN_REGKEY_PATHS,
                                        GWEN_REGNAME_DATADIR);
+    GWEN_PathManager_AddPathFromBundleResource(GWEN_PM_LIBNAME,
+                                               GWEN_PM_LIBNAME,
+                                               GWEN_PM_DATADIR,
+                                               GWEN_APPLE_BUNDLE_ID,
+                                               GWEN_DATADIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,
@@ -229,6 +245,11 @@ int GWEN_Init(void)
                                        GWEN_PM_SYSDATADIR,
                                        GWEN_REGKEY_PATHS,
                                        GWEN_REGNAME_SYSDATADIR);
+    GWEN_PathManager_AddPathFromBundleResource(GWEN_PM_LIBNAME,
+                                               GWEN_PM_LIBNAME,
+                                               GWEN_PM_DATADIR,
+                                               GWEN_APPLE_BUNDLE_ID,
+                                               GWEN_DATADIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(GWEN_PM_LIBNAME,

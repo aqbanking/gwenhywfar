@@ -469,6 +469,26 @@ dnl --- no longer needed since $libdir is used directly
 
 ###-------------------------------------------------------------------------
 #
+# check Apple bundle identifier
+#
+AC_MSG_CHECKING(Apple bundle identifier)
+AC_ARG_WITH(bundle-identifier, [  --with-bundle-identifier=Apple bundle identifier],
+  [bundle_identifier="$withval"],
+  [])
+
+if test -n "$bundle_identifier"; then
+  AC_DEFINE_UNQUOTED([GWEN_APPLE_BUNDLE_ID],
+                     ["$bundle_identifier"],
+                     [Apple bundle identifier])
+else
+  AC_DEFINE([GWEN_APPLE_BUNDLE_ID], [NULL],
+            [Apple bundle identifier])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # check plugin search path
 #
 AC_MSG_CHECKING(plugin search dir)
