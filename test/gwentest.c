@@ -28,6 +28,7 @@
 #include <gwenhywfar/url.h>
 #include <gwenhywfar/tree.h>
 #include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/syncio_http.h>
 #include <gwenhywfar/syncio_socket.h>
@@ -4262,6 +4263,212 @@ int testTls(int argc, char **argv)
 
 
 
+#ifndef OS_WIN32
+/* --------------------------------------------------------------------------------------------------------------------
+ * TLS handshake survey (needs network access, not part of "make check").
+ *
+ * Connects the TLS layer to each given server the way AqBanking does (system trust store, host name for SNI and
+ * the certificate check), records the certificate, and rejects it, so no application data is sent. Run by
+ * test/tls-survey.sh, which compares the records of different builds.
+ * --------------------------------------------------------------------------------------------------------------------
+ */
+
+/* adds "https://SERVER:PORT" of the given URL to sl, once per server and port */
+static void _tlsSurveyAddUrl(GWEN_STRINGLIST *sl, const char *sUrl)
+{
+  GWEN_URL *u;
+  const char *server;
+
+  u=GWEN_Url_fromString(sUrl);
+  if (u==NULL) {
+    fprintf(stderr, "Invalid URL [%s], ignoring\n", sUrl);
+    return;
+  }
+  server=GWEN_Url_GetServer(u);
+  if (server && *server) {
+    GWEN_BUFFER *buf;
+    int port;
+
+    port=GWEN_Url_GetPort(u);
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendArgs(buf, "https://%s:%d", server, (port>0)?port:443);
+    GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(buf), 0, 1);
+    GWEN_Buffer_free(buf);
+  }
+  GWEN_Url_free(u);
+}
+
+
+
+/* adds the servers of all HBCI PIN/TAN services of one bank to sl */
+static void _tlsSurveyAddBank(GWEN_STRINGLIST *sl, GWEN_DB_NODE *dbBank)
+{
+  GWEN_DB_NODE *dbServices;
+
+  dbServices=GWEN_DB_FindFirstGroup(dbBank, "services");
+  while (dbServices) {
+    GWEN_DB_NODE *dbService;
+
+    dbService=GWEN_DB_FindFirstGroup(dbServices, "element");
+    while (dbService) {
+      const char *sType;
+      const char *sMode;
+      const char *sAddress;
+
+      sType=GWEN_DB_GetCharValue(dbService, "type", 0, NULL);
+      sMode=GWEN_DB_GetCharValue(dbService, "mode", 0, NULL);
+      sAddress=GWEN_DB_GetCharValue(dbService, "address", 0, NULL);
+      if (sType && sMode && sAddress && *sAddress &&
+          strcasecmp(sType, "HBCI")==0 && strcasecmp(sMode, "PINTAN")==0)
+        _tlsSurveyAddUrl(sl, sAddress);
+      dbService=GWEN_DB_FindNextGroup(dbService, "element");
+    }
+    dbServices=GWEN_DB_FindNextGroup(dbServices, "services");
+  }
+}
+
+
+
+/* adds the servers of all HBCI PIN/TAN services in an AqBanking bank data file (e.g. bankinfo/de/banks.data),
+ * which holds one record per bank, separated by empty lines */
+static int _tlsSurveyAddBankData(GWEN_STRINGLIST *sl, const char *fname)
+{
+  GWEN_SYNCIO *sio;
+  GWEN_FAST_BUFFER *fb;
+  int rv;
+
+  sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
+  GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr, "Could not open bank data file [%s] (%d)\n", fname, rv);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  fb=GWEN_FastBuffer_new(1024, sio);
+  for (;;) {
+    GWEN_DB_NODE *dbBank;
+
+    dbBank=GWEN_DB_Group_new("bank");
+    rv=GWEN_DB_ReadFromFastBuffer(dbBank, fb,
+                                  GWEN_DB_FLAGS_DEFAULT |
+                                  GWEN_PATH_FLAGS_CREATE_GROUP |
+                                  GWEN_DB_FLAGS_UNTIL_EMPTY_LINE);
+    if (rv<0) {
+      GWEN_DB_Group_free(dbBank);
+      break;
+    }
+    _tlsSurveyAddBank(sl, dbBank);
+    GWEN_DB_Group_free(dbBank);
+  }
+  GWEN_FastBuffer_free(fb);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
+
+  if (rv!=GWEN_ERROR_EOF) {
+    fprintf(stderr, "Could not read bank data file [%s] (%d)\n", fname, rv);
+    return rv;
+  }
+  return 0;
+}
+
+
+
+static void _tlsSurveyRunOne(const char *sUrl)
+{
+  GWEN_SYNCIO *sio;
+  GWEN_SYNCIO *sioTls;
+  int rv;
+
+  GWEN_SslCertDescr_free(tlsTestSeenCert);
+  tlsTestSeenCert=NULL;
+  tlsTestAccept=0;
+
+  fprintf(stdout, "[%s]\n", sUrl);
+  rv=GWEN_Gui_GetSyncIo(sUrl, "https", 443, &sio);
+  if (rv<0) {
+    fprintf(stdout, "  syncio: %d\n", rv);
+    return;
+  }
+  sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
+  if (sioTls==NULL) {
+    fprintf(stdout, "  syncio: no TLS layer\n");
+    GWEN_SyncIo_free(sio);
+    return;
+  }
+
+  /* the flags that GWEN_HttpSession and AqHBCI set for a client connection */
+  GWEN_SyncIo_AddFlags(sioTls,
+                       GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT |
+                       GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS |
+                       GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE);
+  GWEN_SyncIo_Tls_SetCheckCertFn(sioTls, _tlsTestCheckCert);
+
+  rv=GWEN_SyncIo_Connect(sioTls);
+  fprintf(stdout, "  connect: %d\n", rv);
+  if (tlsTestSeenCert)
+    _tlsTestPrintCert(tlsTestSeenCert);
+  else
+    fprintf(stdout, "  cert: none\n");
+  fflush(stdout);
+
+  if (rv==0)
+    GWEN_SyncIo_Disconnect(sioTls);
+  GWEN_SyncIo_free(sio);
+}
+
+
+
+int testTlsSurvey(int argc, char **argv)
+{
+  GWEN_GUI *gui;
+  GWEN_STRINGLIST *sl;
+  GWEN_STRINGLISTENTRY *se;
+  int i;
+
+  if (argc<3) {
+    fprintf(stderr,
+            "%s %s BANKDATAFILE|URL [BANKDATAFILE|URL...]\n"
+            "  BANKDATAFILE: an AqBanking bank data file like bankinfo/de/banks.data\n",
+            argv[0], argv[1]);
+    return 1;
+  }
+
+  /* GWEN_Gui_GetSyncIo() needs a GUI; the certificate decision does not go through it */
+  gui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+  signal(SIGPIPE, SIG_IGN);
+
+  sl=GWEN_StringList_new();
+  for (i=2; i<argc; i++) {
+    if (strstr(argv[i], "://"))
+      _tlsSurveyAddUrl(sl, argv[i]);
+    else if (_tlsSurveyAddBankData(sl, argv[i])<0) {
+      GWEN_StringList_free(sl);
+      return 2;
+    }
+  }
+  GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
+  fprintf(stderr, "Connecting to %d server(s).\n", GWEN_StringList_Count(sl));
+
+  se=GWEN_StringList_FirstEntry(sl);
+  while (se) {
+    _tlsSurveyRunOne(GWEN_StringListEntry_Data(se));
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  GWEN_SslCertDescr_free(tlsTestSeenCert);
+  tlsTestSeenCert=NULL;
+  GWEN_StringList_free(sl);
+  GWEN_Gui_SetGui(NULL);
+  GWEN_Gui_free(gui);
+  return 0;
+}
+#endif
+
+
+
 int testDES(void)
 {
   GWEN_CRYPT_KEY *skey;
@@ -7407,6 +7614,9 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY_ARGS("time1", testTimeToString),
   GWEN_FUNCS_ENTRY_ARGS("time2", testTimeFromString),
   GWEN_FUNCS_ENTRY_ARGS("tlsServer", testTlsServer),
+#ifndef OS_WIN32
+  GWEN_FUNCS_ENTRY_ARGS("tlssurvey", testTlsSurvey),
+#endif
   GWEN_FUNCS_ENTRY_ARGS("tlstest", testTls),
   GWEN_FUNCS_ENTRY("tresor1", testTresor1),
   GWEN_FUNCS_ENTRY("tresor2", testTresor2),

@@ -25,6 +25,7 @@ CLEANFILES = tls-record.txt
 
 EXTRA_DIST = README.MSVC gwentest.vcproj testdialog.xml \
   tls-tests.sh \
+  tls-survey.sh \
   testdata/tls/mkcerts.sh \
   testdata/tls/ca.crt \
   testdata/tls/server.crt \
