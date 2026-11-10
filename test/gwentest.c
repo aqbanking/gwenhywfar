@@ -47,7 +47,9 @@
 # include <winsock2.h>
 #else
 # include <sys/socket.h>
+# include <sys/wait.h>
 # include <netinet/in.h>
+# include <signal.h>
 #endif
 
 #include <gwenhywfar/idmap.h>
@@ -3747,6 +3749,514 @@ int testHttpsServer(int argc, char **argv)
 
 
 
+
+#ifndef OS_WIN32
+/* --------------------------------------------------------------------------------------------------------------------
+ * Local tests of the TLS layer (GWEN_SyncIo_Tls).
+ *
+ * Client and server run in two processes connected by a socketpair, so no network is needed. Below each TLS layer
+ * sits a TESTIO layer, which can shorten reads and writes and can return GWEN_ERROR_TIMEOUT or
+ * GWEN_ERROR_INTERRUPTED (with errno set as a socket would) instead of doing I/O. The test prints to stdout what
+ * GWEN_SyncIo_Tls returns. This can be then used for comparing against baseline or comparing different crypto backends.
+ * --------------------------------------------------------------------------------------------------------------------
+ */
+
+#define TESTIO_TYPE "testio"
+#define TESTIO_HEAD_SIZE 4096
+
+
+typedef struct TESTIO TESTIO;
+struct TESTIO {
+  int fd;
+  uint32_t maxChunk;
+  uint32_t errorEvery;
+  uint32_t calls;
+  GWEN_BUFFER *headBuf;
+};
+
+GWEN_INHERIT(GWEN_SYNCIO, TESTIO)
+
+
+
+static void GWENHYWFAR_CB _testIoFreeData(GWEN_UNUSED void *bp, void *p)
+{
+  TESTIO *xio;
+
+  xio=(TESTIO *) p;
+  if (xio->fd>=0)
+    close(xio->fd);
+  GWEN_Buffer_free(xio->headBuf);
+  GWEN_FREE_OBJECT(xio);
+}
+
+
+
+/* returns 1 if this call should fail with an injected error, sets *pErr to that error */
+static int _testIoInjectError(TESTIO *xio, int *pErr)
+{
+  xio->calls++;
+  if (xio->errorEvery && (xio->calls % xio->errorEvery)==0) {
+    if ((xio->calls/xio->errorEvery) & 1) {
+      errno=EAGAIN;
+      *pErr=GWEN_ERROR_TIMEOUT;
+    }
+    else {
+      errno=EINTR;
+      *pErr=GWEN_ERROR_INTERRUPTED;
+    }
+    return 1;
+  }
+  return 0;
+}
+
+
+
+static int GWENHYWFAR_CB _testIoConnect(GWEN_SYNCIO *sio)
+{
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Connected);
+  return 0;
+}
+
+
+
+static int GWENHYWFAR_CB _testIoDisconnect(GWEN_SYNCIO *sio)
+{
+  TESTIO *xio;
+
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, TESTIO, sio);
+  if (xio->fd>=0) {
+    close(xio->fd);
+    xio->fd=-1;
+  }
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+  return 0;
+}
+
+
+
+static int GWENHYWFAR_CB _testIoRead(GWEN_SYNCIO *sio, uint8_t *buffer, uint32_t size)
+{
+  TESTIO *xio;
+  ssize_t n;
+  int err;
+
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, TESTIO, sio);
+  if (xio->fd<0)
+    return GWEN_ERROR_NOT_CONNECTED;
+  if (_testIoInjectError(xio, &err))
+    return err;
+  if (xio->maxChunk && size>xio->maxChunk)
+    size=xio->maxChunk;
+  n=read(xio->fd, buffer, size);
+  if (n<0)
+    return (errno==EINTR)?GWEN_ERROR_INTERRUPTED:GWEN_ERROR_IO;
+  if (n>0 && GWEN_Buffer_GetUsedBytes(xio->headBuf)<TESTIO_HEAD_SIZE)
+    GWEN_Buffer_AppendBytes(xio->headBuf, (const char *) buffer, n);
+  return (int) n;
+}
+
+
+
+static int GWENHYWFAR_CB _testIoWrite(GWEN_SYNCIO *sio, const uint8_t *buffer, uint32_t size)
+{
+  TESTIO *xio;
+  ssize_t n;
+  int err;
+
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, TESTIO, sio);
+  if (xio->fd<0)
+    return GWEN_ERROR_NOT_CONNECTED;
+  if (_testIoInjectError(xio, &err))
+    return err;
+  if (xio->maxChunk && size>xio->maxChunk)
+    size=xio->maxChunk;
+  n=write(xio->fd, buffer, size);
+  if (n<0)
+    return (errno==EINTR)?GWEN_ERROR_INTERRUPTED:GWEN_ERROR_IO;
+  return (int) n;
+}
+
+
+
+static GWEN_SYNCIO *_testIoNew(int fd, uint32_t maxChunk, uint32_t errorEvery)
+{
+  GWEN_SYNCIO *sio;
+  TESTIO *xio;
+
+  sio=GWEN_SyncIo_new(TESTIO_TYPE, NULL);
+  GWEN_NEW_OBJECT(TESTIO, xio);
+  GWEN_INHERIT_SETDATA(GWEN_SYNCIO, TESTIO, sio, xio, _testIoFreeData);
+  xio->fd=fd;
+  xio->maxChunk=maxChunk;
+  xio->errorEvery=errorEvery;
+  xio->headBuf=GWEN_Buffer_new(0, TESTIO_HEAD_SIZE, 0, 1);
+
+  GWEN_SyncIo_SetConnectFn(sio, _testIoConnect);
+  GWEN_SyncIo_SetDisconnectFn(sio, _testIoDisconnect);
+  GWEN_SyncIo_SetReadFn(sio, _testIoRead);
+  GWEN_SyncIo_SetWriteFn(sio, _testIoWrite);
+  return sio;
+}
+
+
+
+static int _testIoHeadContains(GWEN_SYNCIO *sio, const char *s)
+{
+  TESTIO *xio;
+  const char *p;
+  uint32_t len;
+  size_t slen;
+  uint32_t i;
+
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, TESTIO, sio);
+  p=GWEN_Buffer_GetStart(xio->headBuf);
+  len=GWEN_Buffer_GetUsedBytes(xio->headBuf);
+  slen=strlen(s);
+  for (i=0; i+slen<=len; i++) {
+    if (memcmp(p+i, s, slen)==0)
+      return 1;
+  }
+  return 0;
+}
+
+
+
+#define TLSTEST_SERVER_EXIT_OK          0
+#define TLSTEST_SERVER_EXIT_ERROR       2
+#define TLSTEST_SERVER_EXIT_SNI_MISSING 3
+
+
+typedef struct {
+  const char *name;
+  const char *serverCert;
+  const char *hostName;
+  int accept;
+  int ignPrematureClose;
+  int prematureClose; /* server closes the socket without TLS shutdown after the echo */
+  int noCloseNotify;  /* server closes the socket without close_notify after the client's close_notify */
+  uint32_t dataSize;
+  uint32_t maxChunk;
+  uint32_t errorEvery;
+  uint32_t expectedCertFlags;
+} TLSTEST_SCENARIO;
+
+
+#define TLSTEST_OK         GWEN_SSL_CERT_FLAGS_OK
+#define TLSTEST_UNTRUSTED  (GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND | GWEN_SSL_CERT_FLAGS_INVALID)
+#define TLSTEST_EXPIRED    (GWEN_SSL_CERT_FLAGS_INVALID | GWEN_SSL_CERT_FLAGS_EXPIRED)
+#define TLSTEST_BAD_HOST   GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME
+
+/* Connecting must return 0 if the certificate is accepted, otherwise GWEN_ERROR_SSL_SECURITY. After the data,
+ * the client must see GWEN_ERROR_SSL_PREMATURE_CLOSE if the server closes prematurely and this is not ignored,
+ * otherwise 0. */
+static const TLSTEST_SCENARIO tlsTestScenarios[]= {
+  /* name                     cert              host               acc ign pcl ncn size    chunk err  cert flags */
+  {"good",                    "server.crt",     "localhost",       1,  1,  0,  0,  1000,   0,    0,   TLSTEST_OK},
+  {"partial-io",              "server.crt",     "localhost",       1,  1,  0,  0,  100000, 7,    3,   TLSTEST_OK},
+  {"large",                   "server.crt",     "localhost",       1,  1,  0,  0,  100000, 0,    0,   TLSTEST_OK},
+  {"premature-close-ignored", "server.crt",     "localhost",       1,  1,  1,  0,  1000,   0,    0,   TLSTEST_OK},
+  {"premature-close",         "server.crt",     "localhost",       1,  0,  1,  0,  1000,   0,    0,   TLSTEST_OK},
+  {"trusted-reject",          "server.crt",     "localhost",       0,  1,  0,  0,  1000,   0,    0,   TLSTEST_OK},
+  {"untrusted-accept",        "selfsigned.crt", "localhost",       1,  1,  0,  0,  1000,   0,    0,   TLSTEST_UNTRUSTED},
+  {"untrusted-reject",        "selfsigned.crt", "localhost",       0,  1,  0,  0,  1000,   0,    0,   TLSTEST_UNTRUSTED},
+  {"expired-accept",          "expired.crt",    "localhost",       1,  1,  0,  0,  1000,   0,    0,   TLSTEST_EXPIRED},
+  {"expired-reject",          "expired.crt",    "localhost",       0,  1,  0,  0,  1000,   0,    0,   TLSTEST_EXPIRED},
+  {"hostname-accept",         "server.crt",     "wrong.localhost", 1,  1,  0,  0,  1000,   0,    0,   TLSTEST_BAD_HOST},
+  {"hostname-reject",         "server.crt",     "wrong.localhost", 0,  1,  0,  0,  1000,   0,    0,   TLSTEST_BAD_HOST},
+  {"no-close-notify",         "server.crt",     "localhost",       1,  1,  0,  1,  1000,   0,    0,   TLSTEST_OK},
+  {NULL}
+};
+
+
+static GWEN_SSLCERTDESCR *tlsTestSeenCert=NULL;
+static int tlsTestAccept=0;
+
+
+
+static int GWENHYWFAR_CB _tlsTestCheckCert(GWEN_UNUSED GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+{
+  GWEN_SslCertDescr_free(tlsTestSeenCert);
+  tlsTestSeenCert=GWEN_SslCertDescr_dup(cert);
+  return tlsTestAccept?0:GWEN_ERROR_USER_ABORTED;
+}
+
+
+
+static void _tlsTestFillPattern(uint8_t *p, uint32_t size)
+{
+  uint32_t i;
+
+  for (i=0; i<size; i++)
+    p[i]=(uint8_t)((i*7+3) & 0xff);
+}
+
+
+
+static GWEN_SYNCIO *_tlsTestCreateTls(GWEN_SYNCIO *baseIo, const char *dataDir, const char *fname, int passive)
+{
+  GWEN_SYNCIO *sio;
+  GWEN_BUFFER *pbuf;
+
+  sio=GWEN_SyncIo_Tls_new(baseIo);
+  pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendArgs(pbuf, "%s/%s", dataDir, fname);
+  if (passive) {
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FLAGS_PASSIVE);
+    GWEN_SyncIo_Tls_SetLocalCertFile(sio, GWEN_Buffer_GetStart(pbuf));
+    GWEN_Buffer_Reset(pbuf);
+    GWEN_Buffer_AppendArgs(pbuf, "%s/server.key", dataDir);
+    GWEN_SyncIo_Tls_SetLocalKeyFile(sio, GWEN_Buffer_GetStart(pbuf));
+  }
+  else
+    GWEN_SyncIo_Tls_SetLocalTrustFile(sio, GWEN_Buffer_GetStart(pbuf));
+  GWEN_Buffer_free(pbuf);
+  return sio;
+}
+
+
+
+static int _tlsTestServer(const TLSTEST_SCENARIO *sc, const char *dataDir, int fd)
+{
+  GWEN_SYNCIO *baseIo;
+  GWEN_SYNCIO *sio;
+  uint8_t *buf;
+  int rv;
+  int sniSeen;
+
+  baseIo=_testIoNew(fd, sc->maxChunk, sc->errorEvery);
+  GWEN_SyncIo_AddFlags(baseIo, GWEN_SYNCIO_FLAGS_PASSIVE);
+  GWEN_SyncIo_SetStatus(baseIo, GWEN_SyncIo_Status_Connected);
+  sio=_tlsTestCreateTls(baseIo, dataDir, sc->serverCert, 1);
+
+  rv=GWEN_SyncIo_Connect(sio);
+  if (rv<0) {
+    fprintf(stderr, "server: GWEN_SyncIo_Connect(): %d\n", rv);
+    return TLSTEST_SERVER_EXIT_ERROR;
+  }
+  sniSeen=_testIoHeadContains(baseIo, sc->hostName);
+
+  buf=(uint8_t *) malloc(sc->dataSize);
+  rv=GWEN_SyncIo_ReadForced(sio, buf, sc->dataSize);
+  if (rv<0) {
+    fprintf(stderr, "server: GWEN_SyncIo_ReadForced(): %d\n", rv);
+    return TLSTEST_SERVER_EXIT_ERROR;
+  }
+  rv=GWEN_SyncIo_WriteForced(sio, buf, sc->dataSize);
+  if (rv<0) {
+    fprintf(stderr, "server: GWEN_SyncIo_WriteForced(): %d\n", rv);
+    return TLSTEST_SERVER_EXIT_ERROR;
+  }
+  free(buf);
+
+  /* without TLS shutdown, the socket is closed when the server process exits */
+  if (!sc->prematureClose) {
+    /* wait for the client to close the TLS session */
+    do {
+      uint8_t c;
+
+      rv=GWEN_SyncIo_Read(sio, &c, 1);
+    } while (rv>0 || rv==GWEN_ERROR_INTERRUPTED);
+    if (rv<0) {
+      fprintf(stderr, "server: GWEN_SyncIo_Read(): %d\n", rv);
+      return TLSTEST_SERVER_EXIT_ERROR;
+    }
+
+    if (!sc->noCloseNotify) {
+      GWEN_SyncIo_Disconnect(sio);
+      GWEN_SyncIo_free(sio);
+    }
+  }
+  return sniSeen?TLSTEST_SERVER_EXIT_OK:TLSTEST_SERVER_EXIT_SNI_MISSING;
+}
+
+
+
+/* the values written without escaping and file decoration, so the record stays readable */
+#define TLSTEST_DB_FLAGS (GWEN_DB_FLAGS_QUOTE_VALUES | GWEN_DB_FLAGS_WRITE_SUBGROUPS | GWEN_DB_FLAGS_INDEND | \
+                          GWEN_DB_FLAGS_OMIT_TYPES)
+
+/* prints the certificate description the way applications store it (AqBanking keeps it in the user data) */
+static void _tlsTestPrintCert(const GWEN_SSLCERTDESCR *cert)
+{
+  GWEN_DB_NODE *db;
+  GWEN_BUFFER *buf;
+
+  db=GWEN_DB_Group_new("cert");
+  buf=GWEN_Buffer_new(0, 2048, 0, 1);
+  if (GWEN_SslCertDescr_toDb(cert, db)<0 || GWEN_DB_WriteToBuffer(db, buf, TLSTEST_DB_FLAGS)<0)
+    fprintf(stdout, "  cert: error\n");
+  else
+    fputs(GWEN_Buffer_GetStart(buf), stdout);
+  GWEN_Buffer_free(buf);
+  GWEN_DB_Group_free(db);
+}
+
+
+
+/* runs one scenario as client, returns 0 if all expectations are met */
+static int _tlsTestRunScenario(const TLSTEST_SCENARIO *sc, const char *dataDir)
+{
+  int sv[2];
+  pid_t pid;
+  GWEN_SYNCIO *baseIo;
+  GWEN_SYNCIO *sio;
+  int rvConnect;
+  int rvEnd=0;
+  int dataOk=0;
+  int status;
+  int serverExit;
+  int secure;
+  int failed=0;
+
+  fflush(stdout);
+  fflush(stderr);
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv)) {
+    fprintf(stderr, "socketpair(): %s\n", strerror(errno));
+    return 2;
+  }
+
+  pid=fork();
+  if (pid<0) {
+    fprintf(stderr, "fork(): %s\n", strerror(errno));
+    return 2;
+  }
+  if (pid==0) {
+    close(sv[0]);
+    alarm(60);
+    _exit(_tlsTestServer(sc, dataDir, sv[1]));
+  }
+
+  close(sv[1]);
+  alarm(60);
+  baseIo=_testIoNew(sv[0], sc->maxChunk, sc->errorEvery);
+  sio=_tlsTestCreateTls(baseIo, dataDir, "ca.crt", 0);
+  GWEN_SyncIo_Tls_SetRemoteHostName(sio, sc->hostName);
+  GWEN_SyncIo_Tls_SetCheckCertFn(sio, _tlsTestCheckCert);
+  if (sc->ignPrematureClose)
+    GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE);
+  GWEN_SslCertDescr_free(tlsTestSeenCert);
+  tlsTestSeenCert=NULL;
+  tlsTestAccept=sc->accept;
+
+  rvConnect=GWEN_SyncIo_Connect(sio);
+  if (rvConnect==0) {
+    uint8_t *wbuf;
+    uint8_t *rbuf;
+    int rv;
+
+    wbuf=(uint8_t *) malloc(sc->dataSize);
+    rbuf=(uint8_t *) malloc(sc->dataSize);
+    _tlsTestFillPattern(wbuf, sc->dataSize);
+    rv=GWEN_SyncIo_WriteForced(sio, wbuf, sc->dataSize);
+    if (rv==(int) sc->dataSize) {
+      rv=GWEN_SyncIo_ReadForced(sio, rbuf, sc->dataSize);
+      if (rv==(int) sc->dataSize && memcmp(wbuf, rbuf, sc->dataSize)==0)
+        dataOk=1;
+    }
+    free(rbuf);
+    free(wbuf);
+
+    if (sc->prematureClose) {
+      uint8_t c;
+
+      do {
+        rvEnd=GWEN_SyncIo_Read(sio, &c, 1);
+      } while (rvEnd==GWEN_ERROR_INTERRUPTED);
+    }
+    else
+      rvEnd=GWEN_SyncIo_Disconnect(sio);
+  }
+  else
+    /* client rejected the connection: let the server see EOF */
+    GWEN_SyncIo_Disconnect(baseIo);
+
+  fprintf(stdout, "[%s]\n", sc->name);
+  fprintf(stdout, "  connect: %d\n", rvConnect);
+  secure=(GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_SECURE)?1:0;
+  fprintf(stdout, "  secure: %s\n", secure?"yes":"no");
+  if (tlsTestSeenCert)
+    _tlsTestPrintCert(tlsTestSeenCert);
+  else
+    fprintf(stdout, "  cert: none\n");
+  if (rvConnect==0) {
+    fprintf(stdout, "  data: %u bytes %s\n", sc->dataSize, dataOk?"ok":"BAD");
+    fprintf(stdout, "  %s: %d\n", (sc->prematureClose)?"eof":"disconnect", rvEnd);
+  }
+  GWEN_SyncIo_free(sio);
+
+  if (waitpid(pid, &status, 0)<0 || !WIFEXITED(status))
+    serverExit=-1;
+  else
+    serverExit=WEXITSTATUS(status);
+  alarm(0);
+  if (rvConnect==0)
+    fprintf(stdout, "  server: %s\n",
+            serverExit==TLSTEST_SERVER_EXIT_OK?"ok":(serverExit==TLSTEST_SERVER_EXIT_SNI_MISSING?"SNI missing":"FAILED"));
+
+  /* check expectations */
+  if (rvConnect!=(sc->accept?0:GWEN_ERROR_SSL_SECURITY))
+    failed=1;
+  if (tlsTestSeenCert==NULL || GWEN_SslCertDescr_GetStatusFlags(tlsTestSeenCert)!=sc->expectedCertFlags)
+    failed=1;
+  if (rvConnect==0 &&
+      (!dataOk || !secure || serverExit!=TLSTEST_SERVER_EXIT_OK ||
+       rvEnd!=((sc->prematureClose && !sc->ignPrematureClose)?GWEN_ERROR_SSL_PREMATURE_CLOSE:0)))
+    failed=1;
+  fprintf(stdout, "  result: %s\n", failed?"FAILED":"ok");
+  fflush(stdout);
+
+  return failed;
+}
+
+
+
+#endif /* OS_WIN32 */
+
+
+
+int testTls(int argc, char **argv)
+{
+#ifdef OS_WIN32
+  /* the tests need fork() and socketpair(); 77 tells the Automake test harness to skip them */
+  (void) argc;
+  fprintf(stderr, "%s %s: not available on Windows\n", argv[0], argv[1]);
+  return 77;
+#else
+  const char *dataDir;
+  const char *onlyName=NULL;
+  const TLSTEST_SCENARIO *sc;
+  int failures=0;
+
+  if (argc<3) {
+    fprintf(stderr, "%s %s DATADIR [SCENARIO]\n", argv[0], argv[1]);
+    return 1;
+  }
+  dataDir=argv[2];
+  if (argc>3)
+    onlyName=argv[3];
+
+  signal(SIGPIPE, SIG_IGN);
+
+  for (sc=tlsTestScenarios; sc->name; sc++) {
+    if (onlyName && strcmp(onlyName, sc->name)!=0)
+      continue;
+    if (_tlsTestRunScenario(sc, dataDir))
+      failures++;
+  }
+
+  GWEN_SslCertDescr_free(tlsTestSeenCert);
+  tlsTestSeenCert=NULL;
+
+  if (failures) {
+    fprintf(stderr, "%d TLS test scenario(s) failed.\n", failures);
+    return 2;
+  }
+  return 0;
+#endif
+}
+
+
+
 int testDES(void)
 {
   GWEN_CRYPT_KEY *skey;
@@ -6884,6 +7394,7 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY_ARGS("time1", testTimeToString),
   GWEN_FUNCS_ENTRY_ARGS("time2", testTimeFromString),
   GWEN_FUNCS_ENTRY_ARGS("tlsServer", testTlsServer),
+  GWEN_FUNCS_ENTRY_ARGS("tlstest", testTls),
   GWEN_FUNCS_ENTRY("tresor1", testTresor1),
   GWEN_FUNCS_ENTRY("tresor2", testTresor2),
   GWEN_FUNCS_ENTRY_ARGS("url", testUrl),

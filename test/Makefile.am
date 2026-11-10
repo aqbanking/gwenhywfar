@@ -19,7 +19,18 @@ gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
   $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS) \
   $(top_builddir)/src/base/libbase.la
 
-EXTRA_DIST = README.MSVC gwentest.vcproj testdialog.xml
+TESTS = tls-tests.sh
+
+CLEANFILES = tls-record.txt
+
+EXTRA_DIST = README.MSVC gwentest.vcproj testdialog.xml \
+  tls-tests.sh \
+  testdata/tls/mkcerts.sh \
+  testdata/tls/ca.crt \
+  testdata/tls/server.crt \
+  testdata/tls/server.key \
+  testdata/tls/expired.crt \
+  testdata/tls/selfsigned.crt
 
 # "make installcheck" runs gwentest from installcheck/, which is not in
 # SUBDIRS, so that "make check" does not enter it.
