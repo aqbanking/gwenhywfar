@@ -92,6 +92,8 @@ void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio);
 int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio);
 
 static void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio);
+static int GWEN_SyncIo_Tls_Handshake(GWEN_SYNCIO *sio);
+static void GWEN_SyncIo_Tls_SetCertStatus(GWEN_SSLCERTDESCR *certDescr, uint32_t errFlags);
 
 
 static int GWEN_SyncIo_Tls_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);

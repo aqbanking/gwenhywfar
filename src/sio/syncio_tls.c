@@ -767,7 +767,6 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
   uint32_t errFlags=0;
   int i;
   unsigned int status;
-  GWEN_BUFFER *sbuf=NULL;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
@@ -1078,65 +1077,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
   else
     errFlags|=GWEN_SSL_CERT_FLAGS_OK;
 
-  sbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Signer not found"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_INVALID) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Certificate is not trusted"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_REVOKED) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Certificate has been revoked"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_EXPIRED) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Certificate has expired"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_NOT_ACTIVE) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Certificate is not active yet"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Certificate owner does not match hostname"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_BAD_DATA) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("Certificate contains invalid information"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_SYSTEM) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("A system error occurred while checking the certificate"));
-  }
-
-  if (errFlags & GWEN_SSL_CERT_FLAGS_OK) {
-    if (GWEN_Buffer_GetUsedBytes(sbuf))
-      GWEN_Buffer_AppendString(sbuf, "; ");
-    GWEN_Buffer_AppendString(sbuf, I18N("The certificate is valid"));
-  }
-
-  GWEN_SslCertDescr_SetStatusText(certDescr, GWEN_Buffer_GetStart(sbuf));
-  GWEN_SslCertDescr_SetStatusFlags(certDescr, errFlags);
-  GWEN_Buffer_free(sbuf);
+  GWEN_SyncIo_Tls_SetCertStatus(certDescr, errFlags);
 
 #if 0
   if (1) {
@@ -1308,6 +1249,114 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio)
 
 
 
+int GWEN_SyncIo_Tls_Handshake(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+  int rv;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  do {
+    rv=gnutls_handshake(xio->session);
+  }
+  while (rv==GNUTLS_E_AGAIN || rv==GNUTLS_E_INTERRUPTED);
+
+  if (rv) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_handshake: %d (%s) [%s]",
+              rv, gnutls_strerror(rv), gnutls_error_is_fatal(rv)?"fatal":"non-fatal");
+    if (rv==GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
+      GWEN_Gui_ProgressLog(0,
+                           GWEN_LoggerLevel_Error,
+                           I18N("A TLS handshake error occurred. "
+                                "If you are using AqBanking you should "
+                                "consider enabling the option "
+                                "\"force SSLv3\" in the user settings "
+                                "dialog."));
+    }
+    else {
+      GWEN_Gui_ProgressLog2(0,
+                            GWEN_LoggerLevel_Error,
+                            I18N("TLS Handshake Error: %d (%s)"),
+                            rv,
+                            gnutls_strerror(rv));
+    }
+    return GWEN_ERROR_SSL;
+  }
+
+  return 0;
+}
+
+
+
+void GWEN_SyncIo_Tls_SetCertStatus(GWEN_SSLCERTDESCR *certDescr, uint32_t errFlags)
+{
+  GWEN_BUFFER *sbuf;
+
+  sbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Signer not found"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_INVALID) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Certificate is not trusted"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_REVOKED) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Certificate has been revoked"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_EXPIRED) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Certificate has expired"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_NOT_ACTIVE) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Certificate is not active yet"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Certificate owner does not match hostname"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_BAD_DATA) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("Certificate contains invalid information"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_SYSTEM) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("A system error occurred while checking the certificate"));
+  }
+
+  if (errFlags & GWEN_SSL_CERT_FLAGS_OK) {
+    if (GWEN_Buffer_GetUsedBytes(sbuf))
+      GWEN_Buffer_AppendString(sbuf, "; ");
+    GWEN_Buffer_AppendString(sbuf, I18N("The certificate is valid"));
+  }
+
+  GWEN_SslCertDescr_SetStatusText(certDescr, GWEN_Buffer_GetStart(sbuf));
+  GWEN_SslCertDescr_SetStatusFlags(certDescr, errFlags);
+  GWEN_Buffer_free(sbuf);
+}
+
+
+
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio)
 {
   GWEN_SYNCIO_TLS *xio;
@@ -1344,30 +1393,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio)
     return rv;
   }
 
-  do {
-    rv=gnutls_handshake(xio->session);
-  }
-  while (rv==GNUTLS_E_AGAIN || rv==GNUTLS_E_INTERRUPTED);
-
-  if (rv) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "gnutls_handshake: %d (%s) [%s]",
-              rv, gnutls_strerror(rv), gnutls_error_is_fatal(rv)?"fatal":"non-fatal");
-    if (rv==GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("A TLS handshake error occurred. "
-                                "If you are using AqBanking you should "
-                                "consider enabling the option "
-                                "\"force SSLv3\" in the user settings "
-                                "dialog."));
-    }
-    else {
-      GWEN_Gui_ProgressLog2(0,
-                            GWEN_LoggerLevel_Error,
-                            I18N("TLS Handshake Error: %d (%s)"),
-                            rv,
-                            gnutls_strerror(rv));
-    }
+  rv=GWEN_SyncIo_Tls_Handshake(sio);
+  if (rv<0) {
     GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
     GWEN_SyncIo_Tls_UndoPrepare(sio);
     GWEN_SyncIo_Disconnect(baseIo);
