@@ -653,7 +653,8 @@ int GWEN_TLV_Buffer_To_DB(GWEN_DB_NODE *dbRecord, GWEN_BUFFER *mbuf, int len)
       rv=GWEN_TLV_Buffer_To_DB(dbTLV, mbuf, data_len);
       if (rv<0) {
 	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-	GWEN_DB_Group_free(dbTLV);
+        GWEN_DB_Group_free(dbTLV);
+        return rv;
       }
       tlv_len+=rv;
     }
