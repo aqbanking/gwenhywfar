@@ -7,18 +7,21 @@
  ***************************************************************************/
 
 
-//#include "../testdialogs/dlg_test.h"
-
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/debug.h>
+
+#include "cocoa_gui.h"
+#include "../testdialogs/dlg_test.h"
 
 
 #include <unistd.h>
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+
+int test1(void);
 
 @interface AppDelegate : NSObject {
 	
@@ -60,7 +63,7 @@
 @end
 
 
-int test1() {
+int test1(void) {
 	//fprintf(stderr, "Test\n");
 	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
