@@ -13,7 +13,7 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaGwenGUIProtocol.h"
 
-typedef void (*gwenComboBoxActionPtr)(NSComboBox *comboBox, void *data);
+typedef void (*gwenComboBoxActionPtr)(NSControl *comboBox, void *data);
 
 
 @interface CocoaComboBox : NSComboBox <CocoaGwenGUIProtocol>
