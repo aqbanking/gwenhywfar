@@ -16,6 +16,10 @@ AC_DEFUN([AM_BINRELOC],
 
 	BINRELOC_CFLAGS=
 	BINRELOC_LIBS=
+	if test "x$enable_binreloc" = "xauto" -a "x$OS_TYPE" = "xwindows"; then
+		# MSYS2 has /proc/self/maps, native Windows programs do not
+		enable_binreloc=no
+	fi
 	if test "x$enable_binreloc" = "xauto"; then
 		AC_CHECK_FILE([/proc/self/maps])
 		AC_CACHE_CHECK([whether everything is installed to the same prefix],
