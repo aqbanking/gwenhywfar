@@ -731,7 +731,7 @@ void GWEN_Time__fillTmplChars(const GWEN_TIME *t,
                               int useUtc)
 {
   GWEN_TIME_TMPLCHAR *e;
-  int year, month, day, hour, minute, second;
+  int year=0, month=0, day=0, hour=0, minute=0, second=0;
 
   if (useUtc) {
     GWEN_Time_GetBrokenDownUtcDate(t, &day, &month, &year);
