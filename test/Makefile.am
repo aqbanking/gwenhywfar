@@ -1,5 +1,5 @@
 AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
- $(LIBGNUTLS_CFLAGS) $(GPG_ERROR_CFLAGS) \
+ $(LIBGNUTLS_CFLAGS) $(LIBGCRYPT_CFLAGS) $(GPG_ERROR_CFLAGS) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
