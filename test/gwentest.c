@@ -6675,8 +6675,9 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("3rsa2", testCrypt3Rsa2),
   GWEN_FUNCS_ENTRY("3rsa3", testCrypt3Rsa3),
   GWEN_FUNCS_ENTRY("3rsa4", testCrypt3Rsa4),
-  GWEN_FUNCS_ENTRY("822", testRfc822Import),
-  GWEN_FUNCS_ENTRY("822x", testRfc822Export),
+  /* require test data and obsolete plugin */
+  /* GWEN_FUNCS_ENTRY("822", testRfc822Import), */
+  /* GWEN_FUNCS_ENTRY("822x", testRfc822Export), */
   GWEN_FUNCS_ENTRY_ARGS("base64", testBase64),
   GWEN_FUNCS_ENTRY_ARGS("base64_2", testBase64_2),
   GWEN_FUNCS_ENTRY("buf2", testBuffer2),
@@ -6690,10 +6691,12 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY_ARGS("date4", testDateAddDays),
   GWEN_FUNCS_ENTRY("db", testDB),
   GWEN_FUNCS_ENTRY("db2", testDB2),
-  GWEN_FUNCS_ENTRY("dbfile", testDBfile),
+  /* requires test data */
+  /* GWEN_FUNCS_ENTRY("dbfile", testDBfile), */
   GWEN_FUNCS_ENTRY_ARGS("dbfile2", testDBfile2),
   GWEN_FUNCS_ENTRY_ARGS("dbfile3", testDBfile3),
-  GWEN_FUNCS_ENTRY("dbfile4", testDBfile4),
+  /* requires test data */
+  /* GWEN_FUNCS_ENTRY("dbfile4", testDBfile4), */
   GWEN_FUNCS_ENTRY("des", testDES),
   GWEN_FUNCS_ENTRY("des2", testDES2),
   GWEN_FUNCS_ENTRY("des3", testDES3),
@@ -6718,9 +6721,11 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("map4", testMap4),
   GWEN_FUNCS_ENTRY("mem", testMem),
   GWEN_FUNCS_ENTRY_ARGS("modules", testModules),
-  GWEN_FUNCS_ENTRY("msg", testMsg),
+  /* requires test data */
+  /* GWEN_FUNCS_ENTRY("msg", testMsg), */
   GWEN_FUNCS_ENTRY_ARGS("newxml", testNewXML),
-  GWEN_FUNCS_ENTRY("olddb", testOldDbImport),
+  /* requires test data */
+  /* GWEN_FUNCS_ENTRY("olddb", testOldDbImport), */
   GWEN_FUNCS_ENTRY_ARGS("option", testOptions),
   GWEN_FUNCS_ENTRY("params1", testParams1),
   GWEN_FUNCS_ENTRY("params2", testParams2),
@@ -6730,7 +6735,8 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("process2", testProcess2),
   GWEN_FUNCS_ENTRY("pss1", testPss1),
   GWEN_FUNCS_ENTRY("pss2", testPss2),
-  GWEN_FUNCS_ENTRY("pss3", testPss3),
+  /* _verifyPkcs1Pss() is not implemented */
+  /* GWEN_FUNCS_ENTRY("pss3", testPss3), */
   GWEN_FUNCS_ENTRY("ptr", testPtr),
   GWEN_FUNCS_ENTRY("pw1", testPasswordStore1),
   GWEN_FUNCS_ENTRY("pw2", testPasswordStore2),
