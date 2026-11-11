@@ -132,6 +132,7 @@ jobs:
       # result does not stop the build and tests below.
       - name: Build with --enable-error-on-warning
         if: ${{ !matrix.sanitizer_flags }}
+        continue-on-error: true
         run: |
           mkdir _werror
           cd _werror
@@ -275,6 +276,7 @@ jobs:
           echo "MSVC_PKG_CONFIG_PATH=$PWD/_deps/lib/pkgconfig" >>"$GITHUB_ENV"
       - name: Build with --enable-error-on-warning
         if: ${{ !matrix.sanitizer_flags }}
+        continue-on-error: true
         run: |
           mkdir _werror
           cd _werror
