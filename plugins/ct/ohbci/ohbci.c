@@ -17,11 +17,11 @@
 
 
 #include "ohbci_p.h"
-#include "i18n_l.h"
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/padd.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/i18n.h>
 #include <gwenhywfar/ctfile_be.h>
 #include <gwenhywfar/ctplugin_be.h>
 #include <gwenhywfar/ctf_context_be.h>
@@ -39,6 +39,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
 #ifdef OS_WIN32
 # define ftruncate chsize
