@@ -1613,7 +1613,6 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   int64_t pos;
   GWEN_MDIGEST *md;
   GWEN_BUFFER *mbuf;
-  uint32_t perms;
 
   assert(sr);
   assert(sr->refCount);
@@ -1628,7 +1627,6 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 
   fname=GWEN_SarFileHeader_GetPath(fh);
   assert(fname);
-  perms=GWEN_SarFileHeader_GetPermissions(fh);
   //fsize=GWEN_SarFileHeader_GetDataSize(fh); /* not FileSize!! */
   //dpos=GWEN_SarFileHeader_GetDataPos(fh);
 
@@ -1719,6 +1717,8 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
   GWEN_MDigest_free(md);
 
   if (!checkOnly) {
+#ifndef OS_WIN32
+    uint32_t perms=GWEN_SarFileHeader_GetPermissions(fh);
     mode_t mode=0;
 
     /* owner perms */
@@ -1755,6 +1755,8 @@ int GWEN_Sar_ExtractAndDigestFileDir(GWEN_SAR *sr, const GWEN_SAR_FILEHEADER *fh
 #ifdef S_IXOTH
     if (perms & GWEN_SYNCIO_FILE_FLAGS_OEXEC)
       mode|=S_IXOTH;
+#endif
+
 #endif
 
     /* create folder */
