@@ -255,7 +255,6 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid)
 {
   GWEN_TIME *t0;
   int distance;
-  int count;
   GWEN_FSLOCK_RESULT rv;
   uint32_t progressId;
 
@@ -281,7 +280,7 @@ GWEN_FSLOCK_RESULT GWEN_FSLock_Lock(GWEN_FSLOCK *fl, int timeout, uint32_t gid)
       distance=timeout;
   }
 
-  for (count=0;; count++) {
+  for (;;) {
     int err;
 
     err=GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_NONE);
