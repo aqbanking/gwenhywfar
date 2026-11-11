@@ -258,8 +258,13 @@ uint8_t GWEN_Tag16_GetTagDataAsUint8(const GWEN_TAG16 *tag, uint8_t defaultValue
 
 uint16_t GWEN_Tag16_GetTagDataAsUint16(const GWEN_TAG16 *tag, uint16_t defaultValue)
 {
-  if (tag && tag->tagLength>=sizeof(uint16_t))
-    return le16toh(*(uint16_t*)(tag->tagData));
+  if (tag && tag->tagLength>=sizeof(uint16_t)) {
+    uint16_t v;
+
+    /* tag data is not necessarily aligned */
+    memcpy(&v, tag->tagData, sizeof(v));
+    return le16toh(v);
+  }
   return defaultValue;
 }
 
@@ -267,8 +272,13 @@ uint16_t GWEN_Tag16_GetTagDataAsUint16(const GWEN_TAG16 *tag, uint16_t defaultVa
 
 uint32_t GWEN_Tag16_GetTagDataAsUint32(const GWEN_TAG16 *tag, uint32_t defaultValue)
 {
-  if (tag && tag->tagLength>=sizeof(uint32_t))
-    return le32toh(*(uint32_t*)(tag->tagData));
+  if (tag && tag->tagLength>=sizeof(uint32_t)) {
+    uint32_t v;
+
+    /* tag data is not necessarily aligned */
+    memcpy(&v, tag->tagData, sizeof(v));
+    return le32toh(v);
+  }
   return defaultValue;
 }
 
@@ -276,8 +286,13 @@ uint32_t GWEN_Tag16_GetTagDataAsUint32(const GWEN_TAG16 *tag, uint32_t defaultVa
 
 uint64_t GWEN_Tag16_GetTagDataAsUint64(const GWEN_TAG16 *tag, uint64_t defaultValue)
 {
-  if (tag && tag->tagLength>=sizeof(uint64_t))
-    return le64toh(*(uint64_t*)(tag->tagData));
+  if (tag && tag->tagLength>=sizeof(uint64_t)) {
+    uint64_t v;
+
+    /* tag data is not necessarily aligned */
+    memcpy(&v, tag->tagData, sizeof(v));
+    return le64toh(v);
+  }
   return defaultValue;
 }
 
@@ -291,7 +306,9 @@ double GWEN_Tag16_GetTagDataAsDouble(const GWEN_TAG16 *tag, double defaultValue)
       uint64_t u;
     } v;
 
-    v.u=le64toh(*(uint64_t*)(tag->tagData));
+    /* tag data is not necessarily aligned */
+    memcpy(&v.u, tag->tagData, sizeof(v.u));
+    v.u=le64toh(v.u);
     return v.d;
   }
   return defaultValue;
