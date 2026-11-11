@@ -13,7 +13,7 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaGwenGUIProtocol.h"
 
-typedef void (*gwenPopUpActionPtr)(NSPopUpButton *button, void *data);
+typedef void (*gwenPopUpActionPtr)(NSControl *button, void *data);
 
 
 @interface CocoaPopUpButton : NSPopUpButton <CocoaGwenGUIProtocol>
