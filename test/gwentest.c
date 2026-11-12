@@ -1148,7 +1148,7 @@ int testProcess(int argc, char **argv)
 
 
 
-int testProcess2()
+int testProcess2(void)
 {
   GWEN_BUFFER *stdOutBuffer;
   GWEN_BUFFER *stdErrBuffer;
@@ -2005,7 +2005,7 @@ int testBuffer2(void)
 }
 
 
-int testFloatDouble()
+int testFloatDouble(void)
 {
   fprintf(stderr, "Sizeof double: %d float: %d\n",
           (int)sizeof(double), (int)sizeof(float));
@@ -6385,7 +6385,7 @@ int _verifyPkcs1Pss(GWEN_UNUSED const uint8_t *ptrSrcBuffer,
 
 
 
-int testPss3()
+int testPss3(void)
 {
   GWEN_MDIGEST *md;
   int rv;
@@ -6458,7 +6458,7 @@ static GWENHYWFAR_CB void _threadTestFn(GWEN_UNUSED GWEN_THREAD *thr)
 
 
 
-int testThreads1()
+int testThreads1(void)
 {
   GWEN_THREAD *thread1;
   int rv;
@@ -6487,7 +6487,7 @@ int testThreads1()
 
 
 
-int testThreads2()
+int testThreads2(void)
 {
   GWEN_GUI *gui;
   GWEN_THREAD *thread1;
@@ -6604,7 +6604,7 @@ GWEN_MSG_ENDPOINT *_acceptTcpConnection(GWEN_UNUSED GWEN_MSG_ENDPOINT *ep,
 
 
 
-int testIpcDaemon()
+int testIpcDaemon(void)
 {
   GWEN_MSG_ENDPOINT *epServer;
   int loop;
@@ -6638,7 +6638,7 @@ int testIpcDaemon()
 
 
 
-int testIpcClient()
+int testIpcClient(void)
 {
   GWEN_MSG_ENDPOINT *epClient;
   int loop;
