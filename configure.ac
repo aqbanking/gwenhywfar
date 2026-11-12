@@ -1439,6 +1439,7 @@ AC_CONFIG_FILES([Doxyfile
                  tools/gwenbuild/types/Makefile
                  tools/gwenbuild/templates/Makefile
                  test/Makefile
+                 test/installcheck/Makefile
                  gui/Makefile
                  gui/cpp/Makefile
                  gui/cpp/gwengui-cpp-config.cmake

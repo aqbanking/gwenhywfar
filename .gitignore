@@ -99,6 +99,11 @@ qtsources
 po/gwenhywfar.pot
 test/test.db*
 test/testfile
+test/installcheck/run
+test/installcheck/list
+test/installcheck/*.gwt
+test/installcheck/*.log
+test/installcheck/*.trs
 system.h
 types.h
 version.h

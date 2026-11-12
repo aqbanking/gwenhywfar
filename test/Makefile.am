@@ -21,4 +21,12 @@ gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
 
 EXTRA_DIST = README.MSVC gwentest.vcproj testdialog.xml
 
+# "make installcheck" runs gwentest from installcheck/, which is not in
+# SUBDIRS, so that "make check" does not enter it.
+SUBDIRS =
+DIST_SUBDIRS = installcheck
+
+installcheck-local:
+	cd installcheck && $(MAKE) $(AM_MAKEFLAGS) installcheck
+
 sources:
