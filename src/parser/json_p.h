@@ -32,7 +32,7 @@
 
 
 struct GWEN_JSON_ELEM {
-  GWEN_TREE2_ELEMENT(GWEN_JSON_ELEM);
+  GWEN_TREE2_ELEMENT(GWEN_JSON_ELEM)
   int elementType;
   char *elementData;
 };

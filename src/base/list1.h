@@ -68,7 +68,7 @@ extern "C" {
  * GWEN_LIST_FUNCTION_DEFS(MYSTRUCT, MyStruct);
  *
  * struct MYSTRUCT {
- *   GWEN_LIST_ELEMENT(MYSTRUCT);
+ *   GWEN_LIST_ELEMENT(MYSTRUCT)
  *   int myData;
  * }
  *
