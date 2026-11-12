@@ -40,9 +40,7 @@
 #include <string.h>
 #include <errno.h>
 
-#ifdef HAVE_STRINGS_H
-# include <strings.h>
-#endif
+#include <strings.h>
 
 #ifdef HAVE_I18N
 # include <libintl.h>

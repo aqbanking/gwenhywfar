@@ -209,6 +209,18 @@ AC_ENABLE_SHARED(yes)
 # Checks for programs.
 #
 AC_PROG_CC
+# MSVC lacks some POSIX headers; compat/msvc provides replacements. This
+# must precede the first header checks, which libtool runs, too.
+AC_CACHE_CHECK([whether the C compiler is MSVC], [gwen_cv_c_msvc],
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifndef _MSC_VER
+# error not MSVC
+#endif
+]])], [gwen_cv_c_msvc=yes], [gwen_cv_c_msvc=no])])
+if test "$gwen_cv_c_msvc" = "yes"; then
+  gwen_abs_srcdir=`cd "$srcdir" && pwd`
+  CPPFLAGS="$CPPFLAGS -I$gwen_abs_srcdir/compat/msvc"
+fi
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_OBJC
@@ -258,9 +270,8 @@ AM_ICONV
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h])
-AC_CHECK_HEADERS([stdlib.h string.h strings.h sys/socket.h sys/time.h])
-AC_CHECK_HEADERS([syslog.h unistd.h])
-AC_CHECK_HEADERS([unistd.h])
+AC_CHECK_HEADERS([stdlib.h string.h sys/socket.h])
+AC_CHECK_HEADERS([syslog.h])
 AC_CHECK_HEADERS([dlfcn.h])
 AC_CHECK_HEADERS([signal.h termios.h langinfo.h localcharset.h iconv.h])
 AC_CHECK_HEADERS([time.h locale.h])

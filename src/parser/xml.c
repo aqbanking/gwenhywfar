@@ -52,9 +52,7 @@
 # include <fcntl.h>
 #endif
 #include <errno.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 
 #define GWEN_XML_BUFFERSIZE 512

@@ -47,9 +47,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#ifdef HAVE_STRINGS_H
-# include <strings.h>
-#endif
+#include <strings.h>
 
 #include "gwenhywfar/debug.h"
 #include "gwenhywfar/misc.h"

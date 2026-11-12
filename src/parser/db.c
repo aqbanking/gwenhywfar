@@ -53,9 +53,7 @@
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 
 #define GWEN_DB_NODE_FLAGS_MASK_INTERNAL  0xf0000000

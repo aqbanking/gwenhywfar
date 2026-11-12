@@ -42,9 +42,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 

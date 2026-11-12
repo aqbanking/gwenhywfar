@@ -41,14 +41,10 @@
 # include <syslog.h>
 #endif
 #include <string.h>
-#ifdef HAVE_STRINGS_H
-# include <strings.h>
-#endif
+#include <strings.h>
 
 #include <time.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 
 

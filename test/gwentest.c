@@ -8,9 +8,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdint.h>
-#ifndef OS_WIN32
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/db.h>
@@ -47,7 +45,6 @@
 #include <gwenhywfar/gwenthread.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
-# define sleep(x) Sleep(x*1000)
 # define strcasecmp(a, b) strcmp(a, b)
 #else
 # include <sys/socket.h>
