@@ -1,11 +1,15 @@
 # Builds consumer.c against the installed Gwenhywfar for "make installcheck".
-# Pass -DCMAKE_PREFIX_PATH=<prefix> and -DGWENHYWFAR_EXPECTED_VERSION=<version>.
+# Pass -DCMAKE_PREFIX_PATH=<prefix>, -DGWENHYWFAR_EXPECTED_VERSION=<version>
+# and -DCONSUMER_GENERATED_DIR=<directory with the typemaker output>.
 cmake_minimum_required(VERSION 3.10)
 project(gwenhywfar_consumer C)
 
 find_package(gwenhywfar ${GWENHYWFAR_EXPECTED_VERSION} EXACT REQUIRED)
 
-add_executable(consumer consumer.c)
+add_executable(consumer consumer.c
+  ${CONSUMER_GENERATED_DIR}/consumer_type1.c
+  ${CONSUMER_GENERATED_DIR}/consumer_type2.c)
+target_include_directories(consumer PRIVATE ${CONSUMER_GENERATED_DIR})
 target_link_libraries(consumer PRIVATE gwenhywfar::core)
 
 enable_testing()

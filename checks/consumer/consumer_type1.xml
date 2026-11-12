@@ -1,0 +1,17 @@
+<!-- A type with an enum for typemaker; see Makefile.am. -->
+
+<types>
+  <type id="CONSUMER_TYPE1" prefix="Consumer_Type1" class="Type1"
+        access="public" filename="consumer_type1">
+    <subtypes>
+      <type id="KIND" mode="enum" prefix="Kind" access="public">
+        <values>
+          <value value="1">first</value>
+          <value>second</value>
+        </values>
+      </type>
+    </subtypes>
+    <elem name="name" type="char" ptr="1" />
+    <elem name="kind" type="KIND" />
+  </type>
+</types>
