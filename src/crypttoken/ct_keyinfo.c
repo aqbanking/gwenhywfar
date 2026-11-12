@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 /* code headers */
 
@@ -25,11 +26,11 @@ GWEN_INHERIT_FUNCTIONS(GWEN_CRYPT_TOKEN_KEYINFO)
 GWEN_CRYPT_TOKEN_KEYSTATUS GWEN_Crypt_Token_KeyStatus_fromString(const char *p_s)
 {
   if (p_s && *p_s) {
-    if (strcasecmp(p_s, "free")==0)
+    if (GWEN_Text_Compare(p_s, "free", 1)==0)
       return GWEN_Crypt_Token_KeyStatusFree;
-    else if (strcasecmp(p_s, "new")==0)
+    else if (GWEN_Text_Compare(p_s, "new", 1)==0)
       return GWEN_Crypt_Token_KeyStatusNew;
-    else if (strcasecmp(p_s, "active")==0)
+    else if (GWEN_Text_Compare(p_s, "active", 1)==0)
       return GWEN_Crypt_Token_KeyStatusActive;
   }
   return GWEN_Crypt_Token_KeyStatusUnknown;

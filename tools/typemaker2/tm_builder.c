@@ -777,6 +777,7 @@ int Typemaker2_Builder_WriteFile(TYPEMAKER2_BUILDER *tb,
     /* add some needed headers */
     fprintf(f, "#include <gwenhywfar/misc.h>\n");
     fprintf(f, "#include <gwenhywfar/debug.h>\n");
+    fprintf(f, "#include <gwenhywfar/text.h>\n");
 
     /* write code headers */
     fprintf(f, "\n");

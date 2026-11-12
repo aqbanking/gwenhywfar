@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 /* code headers */
 
@@ -25,13 +26,13 @@ GWEN_TREE_FUNCTIONS(GWEN_PARAM, GWEN_Param)
 GWEN_PARAM_DATATYPE GWEN_Param_DataType_fromString(const char *p_s)
 {
   if (p_s && *p_s) {
-    if (strcasecmp(p_s, "int")==0)
+    if (GWEN_Text_Compare(p_s, "int", 1)==0)
       return GWEN_Param_DataType_Int;
-    else if (strcasecmp(p_s, "bool")==0)
+    else if (GWEN_Text_Compare(p_s, "bool", 1)==0)
       return GWEN_Param_DataType_Bool;
-    else if (strcasecmp(p_s, "float")==0)
+    else if (GWEN_Text_Compare(p_s, "float", 1)==0)
       return GWEN_Param_DataType_Float;
-    else if (strcasecmp(p_s, "string")==0)
+    else if (GWEN_Text_Compare(p_s, "string", 1)==0)
       return GWEN_Param_DataType_String;
   }
   return GWEN_Param_DataType_Unknown;
@@ -40,9 +41,9 @@ GWEN_PARAM_DATATYPE GWEN_Param_DataType_fromString(const char *p_s)
 GWEN_PARAM_TYPE GWEN_Param_Type_fromString(const char *p_s)
 {
   if (p_s && *p_s) {
-    if (strcasecmp(p_s, "simple")==0)
+    if (GWEN_Text_Compare(p_s, "simple", 1)==0)
       return GWEN_Param_Type_Simple;
-    else if (strcasecmp(p_s, "choice")==0)
+    else if (GWEN_Text_Compare(p_s, "choice", 1)==0)
       return GWEN_Param_Type_Choice;
   }
   return GWEN_Param_Type_Unknown;

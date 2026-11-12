@@ -13,6 +13,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 /* code headers */
 
@@ -24,13 +25,13 @@ GWEN_LIST2_FUNCTIONS(GWEN_SAR_FILEHEADER, GWEN_SarFileHeader)
 GWEN_SAR_FILEHEADER_FTYPE GWEN_SarFileHeader_FType_fromString(const char *p_s)
 {
   if (p_s && *p_s) {
-    if (strcasecmp(p_s, "none")==0)
+    if (GWEN_Text_Compare(p_s, "none", 1)==0)
       return GWEN_SarFileHeader_FType_None;
-    else if (strcasecmp(p_s, "file")==0)
+    else if (GWEN_Text_Compare(p_s, "file", 1)==0)
       return GWEN_SarFileHeader_FType_File;
-    else if (strcasecmp(p_s, "dir")==0)
+    else if (GWEN_Text_Compare(p_s, "dir", 1)==0)
       return GWEN_SarFileHeader_FType_Dir;
-    else if (strcasecmp(p_s, "symLink")==0)
+    else if (GWEN_Text_Compare(p_s, "symLink", 1)==0)
       return GWEN_SarFileHeader_FType_SymLink;
   }
   return GWEN_SarFileHeader_FType_Unknown;
@@ -39,9 +40,9 @@ GWEN_SAR_FILEHEADER_FTYPE GWEN_SarFileHeader_FType_fromString(const char *p_s)
 GWEN_SAR_FILEHEADER_STATUS GWEN_SarFileHeader_Status_fromString(const char *p_s)
 {
   if (p_s && *p_s) {
-    if (strcasecmp(p_s, "active")==0)
+    if (GWEN_Text_Compare(p_s, "active", 1)==0)
       return GWEN_SarFileHeader_Status_Active;
-    else if (strcasecmp(p_s, "deleted")==0)
+    else if (GWEN_Text_Compare(p_s, "deleted", 1)==0)
       return GWEN_SarFileHeader_Status_Deleted;
   }
   return GWEN_SarFileHeader_Status_Unknown;

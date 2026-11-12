@@ -266,7 +266,7 @@ int TM2C_BuildEnumFromString(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty)
         if (i++)
           GWEN_Buffer_AppendString(tbuf, "else ");
 
-        GWEN_Buffer_AppendArgs(tbuf, "if (strcasecmp(p_s, \"%s\")==0)\n", sItemName);
+        GWEN_Buffer_AppendArgs(tbuf, "if (GWEN_Text_Compare(p_s, \"%s\", 1)==0)\n", sItemName);
         GWEN_Buffer_AppendArgs(tbuf, "      return %s%c%s;\n", prefix, toupper(*sItemName), sItemName+1);
 
         ti=Typemaker2_Item_List_Next(ti);

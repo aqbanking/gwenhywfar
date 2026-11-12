@@ -99,13 +99,13 @@ int write_c_enums(GWEN_UNUSED ARGUMENTS *args, GWEN_XMLNODE *node,
             return -1;
           }
           if (first)
-            GWEN_SyncIo_WriteString(sio, "    if (strcasecmp(s, \"");
+            GWEN_SyncIo_WriteString(sio, "    if (GWEN_Text_Compare(s, \"");
           else
-            GWEN_SyncIo_WriteString(sio, "    else if (strcasecmp(s, \"");
+            GWEN_SyncIo_WriteString(sio, "    else if (GWEN_Text_Compare(s, \"");
           s=GWEN_XMLNode_GetData(nnn);
           assert(s);
           GWEN_SyncIo_WriteString(sio, s);
-          GWEN_SyncIo_WriteLine(sio, "\")==0)");
+          GWEN_SyncIo_WriteLine(sio, "\", 1)==0)");
           GWEN_SyncIo_WriteString(sio, "      return ");
 
           GWEN_Buffer_AppendByte(tprefix, toupper(*s));
@@ -2859,7 +2859,7 @@ int write_code_file_c(ARGUMENTS *args, GWEN_XMLNODE *node)
   GWEN_SyncIo_WriteLine(sio, "#include <gwenhywfar/debug.h>");
   GWEN_SyncIo_WriteLine(sio, "#include <assert.h>");
   GWEN_SyncIo_WriteLine(sio, "#include <stdlib.h>");
-  GWEN_SyncIo_WriteLine(sio, "#include <strings.h>");
+  GWEN_SyncIo_WriteLine(sio, "#include <gwenhywfar/text.h>");
   GWEN_SyncIo_WriteLine(sio, "");
 
   /* write headers */
