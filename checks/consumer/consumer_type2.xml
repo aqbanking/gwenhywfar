@@ -1,0 +1,36 @@
+<?xml?>
+<!-- A type with an enum for typemaker2; see Makefile.am. -->
+
+<tm2>
+  <type id="CONSUMER_TYPE2" type="pointer">
+    <lang id="c">
+      <identifier>CONSUMER_TYPE2</identifier>
+      <prefix>Consumer_Type2</prefix>
+      <flags>
+        with_db
+        with_list1
+      </flags>
+    </lang>
+
+    <enums>
+      <enum id="CONSUMER_TYPE2_KIND" prefix="Consumer_Type2_Kind_" type="CONSUMER_TYPE2_KIND">
+        <item name="first" value="1"></item>
+        <item name="second"></item>
+      </enum>
+    </enums>
+
+    <members>
+      <member name="name" type="char_ptr">
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="kind" type="int" enum="CONSUMER_TYPE2_KIND">
+        <access>public</access>
+        <flags>enum</flags>
+      </member>
+    </members>
+  </type>
+</tm2>
