@@ -15,7 +15,7 @@
 
 
 struct GWEN_HTTP_SESSION {
-  GWEN_INHERIT_ELEMENT(GWEN_HTTP_SESSION);
+  GWEN_INHERIT_ELEMENT(GWEN_HTTP_SESSION)
 
   char *url;
   char *defaultProtocol;

@@ -68,7 +68,7 @@ extern "C" {
  * GWEN_TREE_FUNCTION_DEFS(MYSTRUCT, MyStruct);
  *
  * struct MYSTRUCT {
- *   GWEN_TREE_ELEMENT(MYSTRUCT);
+ *   GWEN_TREE_ELEMENT(MYSTRUCT)
  *   int myData;
  * }
  *
