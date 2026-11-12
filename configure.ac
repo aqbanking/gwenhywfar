@@ -1137,7 +1137,11 @@ AC_MSG_RESULT($enable_werror)
 
 WERROR=""
 if test "$enable_werror" != "no"; then
-  WERROR="-Werror"
+  if test "$gwen_cv_c_msvc" = "yes"; then
+    WERROR="-WX"
+  else
+    WERROR="-Werror"
+  fi
 fi
 AC_SUBST(WERROR)
 
