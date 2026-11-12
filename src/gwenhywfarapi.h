@@ -40,7 +40,7 @@
 /* building Gwenhywfar */
 #  if GWENHYWFAR_SYS_IS_WINDOWS
 /* for windows */
-#    ifdef __declspec
+#    if defined(__declspec) || defined(_MSC_VER)
 #      define GWENHYWFAR_API __declspec (dllexport)
 #    else /* if __declspec */
 #      define GWENHYWFAR_API
@@ -57,7 +57,7 @@
 /* not building Gwenhywfar */
 #  if GWENHYWFAR_SYS_IS_WINDOWS
 /* for windows */
-#    ifdef __declspec
+#    if defined(__declspec) || defined(_MSC_VER)
 #      define GWENHYWFAR_API __declspec (dllimport)
 #    else /* if __declspec */
 #      define GWENHYWFAR_API
