@@ -247,6 +247,16 @@ if test "$gwen_cv_c_msvc" = "yes"; then
   gwen_abs_srcdir=`cd "$srcdir" && pwd`
   CPPFLAGS="$CPPFLAGS -I$gwen_abs_srcdir/compat/msvc"
 fi
+# Import library names on Windows, for the CMake package files
+if test "$gwen_cv_c_msvc" = "yes"; then
+  GWEN_IMPLIB_PREFIX=""
+  GWEN_IMPLIB_SUFFIX=".dll.lib"
+else
+  GWEN_IMPLIB_PREFIX="lib"
+  GWEN_IMPLIB_SUFFIX=".dll.a"
+fi
+AC_SUBST(GWEN_IMPLIB_PREFIX)
+AC_SUBST(GWEN_IMPLIB_SUFFIX)
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_OBJC
