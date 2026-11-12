@@ -5,6 +5,9 @@ DIST_SUBDIRS=admin data m4 src plugins tools gui test doc po checks
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = config.rpath  \
+ compat/msvc/strings.h \
+ compat/msvc/unistd.h \
+ compat/msvc/sys/time.h \
  ChangeLog \
  README.W32 \
  README.DARWIN \
