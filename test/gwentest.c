@@ -45,7 +45,6 @@
 #include <gwenhywfar/gwenthread.h>
 #ifdef OS_WIN32
 # include <winsock2.h>
-# define strcasecmp(a, b) strcmp(a, b)
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>
