@@ -1,5 +1,9 @@
 
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/debug.h>
