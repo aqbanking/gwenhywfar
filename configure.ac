@@ -529,6 +529,7 @@ case "$OS_TYPE" in
 esac
 
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+AM_CONDITIONAL(IS_MSVC, [test "$gwen_cv_c_msvc" = "yes"])
 AC_SUBST(gwenhywfar_sys_is_windows)
 AC_SUBST(gwenbuild_tool)
 
@@ -1458,6 +1459,7 @@ AC_CONFIG_FILES([Doxyfile
                  gwenhywfar.spec
                  gwenhywfar.iss
                  checks/Makefile
+                 checks/consumer/Makefile
                  data/Makefile
                  doc/Makefile
                  doc/dialog/Makefile
