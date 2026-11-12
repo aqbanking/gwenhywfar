@@ -43,7 +43,7 @@ struct GWEN_CTF_CONTEXT {
 
 
 
-static GWENHYWFAR_CB void GWEN_CTF_Context_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_CTF_Context_freeData(void *bp, void *p);
 
 
 

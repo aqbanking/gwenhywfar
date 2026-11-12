@@ -10,8 +10,8 @@
 #import "CocoaHLineView.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WHLine_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WHLine_SetIntProperty(GWEN_WIDGET *w,
 								   GWEN_DIALOG_PROPERTY prop,
 								   int index,
 								   int value,
@@ -43,8 +43,8 @@ int CocoaGui_WHLine_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WHLine_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WHLine_GetIntProperty(GWEN_WIDGET *w,
 								   GWEN_DIALOG_PROPERTY prop,
 								   int index,
 								   int defaultValue) {

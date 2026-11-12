@@ -78,8 +78,8 @@ GWEN_CRYPTMGR *GWEN_CryptMgrKeys_new(const char *localName,
 
 
 
-GWENHYWFAR_CB
-void GWEN_CryptMgrKeys_FreeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB
+GWEN_CryptMgrKeys_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_CRYPTMGR_KEYS *xcm;
 
@@ -112,8 +112,8 @@ void GWEN_CryptMgrKeys_SetPeerKey(GWEN_CRYPTMGR *cm,
 
 
 
-GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_SignData(GWEN_CRYPTMGR *cm,
+int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_SignData(GWEN_CRYPTMGR *cm,
                                const uint8_t *pData, uint32_t lData,
                                GWEN_BUFFER *dbuf)
 {
@@ -186,8 +186,8 @@ int GWEN_CryptMgrKeys_SignData(GWEN_CRYPTMGR *cm,
 
 
 
-GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_VerifyData(GWEN_CRYPTMGR *cm,
+int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_VerifyData(GWEN_CRYPTMGR *cm,
                                  const uint8_t *pData, uint32_t lData,
                                  const uint8_t *pSignature, uint32_t lSignature)
 {
@@ -283,8 +283,8 @@ int GWEN_CryptMgrKeys_VerifyData(GWEN_CRYPTMGR *cm,
 
 
 
-GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_EncryptKey(GWEN_CRYPTMGR *cm,
+int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_EncryptKey(GWEN_CRYPTMGR *cm,
                                  const uint8_t *pData, uint32_t lData,
                                  GWEN_BUFFER *dbuf)
 {
@@ -336,8 +336,8 @@ int GWEN_CryptMgrKeys_EncryptKey(GWEN_CRYPTMGR *cm,
 
 
 
-GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_DecryptKey(GWEN_CRYPTMGR *cm,
+int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_DecryptKey(GWEN_CRYPTMGR *cm,
                                  const uint8_t *pData, uint32_t lData,
                                  GWEN_BUFFER *dbuf)
 {

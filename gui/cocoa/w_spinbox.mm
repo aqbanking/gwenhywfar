@@ -19,8 +19,8 @@ GWEN_INHERIT(GWEN_WIDGET, W_SPINBOX)
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
 									 GWEN_DIALOG_PROPERTY prop,
 									 int index,
 									 int value,
@@ -79,8 +79,8 @@ int CocoaGui_WSpinBox_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
 									 GWEN_DIALOG_PROPERTY prop,
 									 int index,
 									 int defaultValue) {
@@ -122,8 +122,8 @@ int CocoaGui_WSpinBox_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
 									  GWEN_DIALOG_PROPERTY prop,
 									  int index,
 									  const char *value,
@@ -155,8 +155,8 @@ int CocoaGui_WSpinBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
+static const char*GWENHYWFAR_CB
+CocoaGui_WSpinBox_GetCharProperty(GWEN_WIDGET *w,
 											  GWEN_DIALOG_PROPERTY prop,
 											  int index,
 											  const char *defaultValue) {

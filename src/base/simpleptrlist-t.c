@@ -69,8 +69,8 @@ static void TestType_free(TEST_TYPE *tt);
 static int TestType_CalcHash(TEST_TYPE *tt);
 static int TestType_TestHash(const TEST_TYPE *tt);
 
-static GWENHYWFAR_CB void _attachToTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
-static GWENHYWFAR_CB void _detachFromTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
+static void GWENHYWFAR_CB _attachToTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
+static void GWENHYWFAR_CB _detachFromTestType(GWEN_SIMPLEPTRLIST *pl, void *p);
 
 
 static int GWENHYWFAR_CB test1(GWEN_TEST_MODULE *mod);

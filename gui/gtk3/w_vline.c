@@ -11,8 +11,8 @@
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WVLine_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+Gtk3Gui_WVLine_SetIntProperty(GWEN_WIDGET *w,
                                   GWEN_DIALOG_PROPERTY prop,
                                   GWEN_UNUSED int index,
                                   int value,
@@ -45,8 +45,8 @@ int Gtk3Gui_WVLine_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WVLine_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+Gtk3Gui_WVLine_GetIntProperty(GWEN_WIDGET *w,
                                   GWEN_DIALOG_PROPERTY prop,
                                   GWEN_UNUSED int index,
                                   int defaultValue)

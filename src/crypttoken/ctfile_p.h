@@ -37,7 +37,7 @@ struct GWEN_CRYPT_TOKEN_FILE {
   GWEN_CRYPT_TOKEN_FILE_WRITE_FN writeFn;
 };
 
-static GWENHYWFAR_CB void GWEN_Crypt_TokenFile_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_Crypt_TokenFile_freeData(void *bp, void *p);
 
 
 static int GWEN_Crypt_TokenFile__OpenFile(GWEN_CRYPT_TOKEN *ct, int wr, uint32_t gid);

@@ -50,7 +50,7 @@ GWEN_PLUGIN *configmgr_dir_factory(GWEN_PLUGIN_MANAGER *pm,
 
 
 GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url);
-GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB GWEN_ConfigMgrDir_FreeData(void *bp, void *p);
 
 
 int GWENHYWFAR_CB GWEN_ConfigMgrDir_GetGroup(GWEN_CONFIGMGR *mgr,

@@ -45,8 +45,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static GWENHYWFAR_CB void _attachToTable(GWEN_SIMPLEPTRLIST *pl, void *p);
-static GWENHYWFAR_CB void _detachFromTable(GWEN_SIMPLEPTRLIST *pl, void *p);
+static void GWENHYWFAR_CB _attachToTable(GWEN_SIMPLEPTRLIST *pl, void *p);
+static void GWENHYWFAR_CB _detachFromTable(GWEN_SIMPLEPTRLIST *pl, void *p);
 
 static int GWEN_IdList64__Sort(GWEN_IDLIST64 *idl, int ascending);
 static int __compAscending(const void *pa, const void *pb);
@@ -510,7 +510,7 @@ int GWEN_IdList64_DelId(GWEN_IDLIST64 *idl, uint64_t wantedId)
 
 
 
-static GWENHYWFAR_CB void _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
+static void GWENHYWFAR_CB _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 {
   GWEN_IDTABLE64 *ft;
 
@@ -520,7 +520,7 @@ static GWENHYWFAR_CB void _attachToTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, voi
 
 
 
-static GWENHYWFAR_CB void _detachFromTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
+static void GWENHYWFAR_CB _detachFromTable(GWEN_UNUSED GWEN_SIMPLEPTRLIST *pl, void *p)
 {
   GWEN_IDTABLE64 *ft;
 

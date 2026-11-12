@@ -11,8 +11,8 @@
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
 										GWEN_DIALOG_PROPERTY prop,
 										int index,
 										int value,
@@ -56,8 +56,8 @@ int CocoaGui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
 										GWEN_DIALOG_PROPERTY prop,
 										int index,
 										int defaultValue) {
@@ -90,8 +90,8 @@ int CocoaGui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
 										 GWEN_DIALOG_PROPERTY prop,
 										 int index,
 										 const char *value,
@@ -110,8 +110,8 @@ int CocoaGui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
+static const char*GWENHYWFAR_CB
+CocoaGui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
 												 GWEN_DIALOG_PROPERTY prop,
 												 int index,
 												 const char *defaultValue) {
@@ -128,8 +128,8 @@ const char* CocoaGui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+static int GWENHYWFAR_CB
+CocoaGui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	
 	
 	CocoaScrollBox *scrollView;

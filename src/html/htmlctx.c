@@ -75,8 +75,8 @@ GWEN_XML_CONTEXT *HtmlCtx_new(uint32_t flags)
 
 
 
-GWENHYWFAR_CB
-void HtmlCtx_FreeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB
+HtmlCtx_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   HTML_XMLCTX *xctx;
   HTML_GROUP *g;

@@ -22,8 +22,8 @@ GWEN_INHERIT(GWEN_WIDGET, W_PROGRESSBAR)
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
 										 GWEN_DIALOG_PROPERTY prop,
 										 int index,
 										 int value,
@@ -103,8 +103,8 @@ int CocoaGui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
 										 GWEN_DIALOG_PROPERTY prop,
 										 int index,
 										 int defaultValue) {
@@ -151,8 +151,8 @@ int CocoaGui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
 										  GWEN_DIALOG_PROPERTY prop,
 										  int index,
 										  const char *value,
@@ -165,8 +165,8 @@ int CocoaGui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
+static const char*GWENHYWFAR_CB
+CocoaGui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
 												  GWEN_DIALOG_PROPERTY prop,
 												  int index,
 												  const char *defaultValue) {

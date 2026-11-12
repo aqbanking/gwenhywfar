@@ -138,7 +138,7 @@ int GWEN_Gui_WriteDialogPrefs(const char *groupName,
  * maybe containing HTML).
  * Please see @ref GWEN_Gui_Print for details.
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_PRINT_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_PRINT_FN)(GWEN_GUI *gui,
                                               const char *docTitle,
                                               const char *docType,
                                               const char *descr,
@@ -148,7 +148,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_PRINT_FN)(GWEN_GUI *gui,
 /**
  * This function retrieves a pasword or pin.
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_GETPASSWORD_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_GETPASSWORD_FN)(GWEN_GUI *gui,
                                                     uint32_t flags,
                                                     const char *token,
                                                     const char *title,
@@ -163,7 +163,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_GETPASSWORD_FN)(GWEN_GUI *gui,
 /**
  * This functions sets the status of a password.
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_SETPASSWORDSTATUS_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_SETPASSWORDSTATUS_FN)(GWEN_GUI *gui,
                                                           const char *token,
                                                           const char *pin,
                                                           GWEN_GUI_PASSWORD_STATUS status,
@@ -182,7 +182,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_SETPASSWORDSTATUS_FN)(GWEN_GUI *gui,
  * @param s the message to be logged (this is the raw message from the caller)
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_LOG_HOOK_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_LOG_HOOK_FN)(GWEN_GUI *gui,
                                                  const char *logDomain,
                                                  GWEN_LOGGER_LEVEL priority, const char *s);
 
@@ -195,19 +195,19 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_LOG_HOOK_FN)(GWEN_GUI *gui,
  *
  */
 /*@{*/
-typedef int GWENHYWFAR_CB(*GWEN_GUI_WAITFORSOCKETS_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_WAITFORSOCKETS_FN)(GWEN_GUI *gui,
                                                        GWEN_SOCKET_LIST2 *readSockets,
                                                        GWEN_SOCKET_LIST2 *writeSockets,
                                                        int msecs,
                                                        uint32_t guiid);
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_CHECKCERT_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_CHECKCERT_FN)(GWEN_GUI *gui,
                                                   const GWEN_SSLCERTDESCR *cert,
                                                   GWEN_SYNCIO *sio,
                                                   uint32_t guiid);
 
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
                                                      const char *caption,
                                                      GWEN_GUI_FILENAME_TYPE fnt,
                                                      uint32_t flags,
@@ -215,13 +215,13 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_GET_FILENAME_FN)(GWEN_GUI *gui,
                                                      GWEN_BUFFER *pathBuffer,
                                                      uint32_t guiid);
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_GETSYNCIO_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_GETSYNCIO_FN)(GWEN_GUI *gui,
                                                   const char *url,
                                                   const char *defaultProto,
                                                   int defaultPort,
                                                   GWEN_SYNCIO **pSio);
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,
                                                                 const char *text,
                                                                 unsigned char *buffer,
                                                                 unsigned int bufLength);
@@ -235,26 +235,26 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_KEYDATAFROMTEXT_OPENSSL_FN)(GWEN_GUI *gui,
  */
 /*@{*/
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_EXEC_DIALOG_FN)(GWEN_GUI *gui,
                                                     GWEN_DIALOG *dlg,
                                                     uint32_t guiid);
 
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_OPEN_DIALOG_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_OPEN_DIALOG_FN)(GWEN_GUI *gui,
                                                     GWEN_DIALOG *dlg,
                                                     uint32_t guiid);
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_CLOSE_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg);
+typedef int (GWENHYWFAR_CB *GWEN_GUI_CLOSE_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg);
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_RUN_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
+typedef int (GWENHYWFAR_CB *GWEN_GUI_RUN_DIALOG_FN)(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
 
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_READ_DIALOG_PREFS_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_READ_DIALOG_PREFS_FN)(GWEN_GUI *gui,
                                                           const char *groupName,
                                                           const char *altName,
                                                           GWEN_DB_NODE **pDb);
 
-typedef int GWENHYWFAR_CB(*GWEN_GUI_WRITE_DIALOG_PREFS_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_WRITE_DIALOG_PREFS_FN)(GWEN_GUI *gui,
                                                            const char *groupName,
                                                            GWEN_DB_NODE *db);
 
@@ -346,7 +346,7 @@ GWEN_GUI_GETSYNCIO_FN GWEN_Gui_SetGetSyncIoFn(GWEN_GUI *gui, GWEN_GUI_GETSYNCIO_
  * Please see @ref GWEN_Gui_MessageBox for details.
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_MESSAGEBOX_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_MESSAGEBOX_FN)(GWEN_GUI *gui,
                                       uint32_t flags,
                                       const char *title,
                                       const char *text,
@@ -359,7 +359,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_MESSAGEBOX_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_InputBox for details.
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_INPUTBOX_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_INPUTBOX_FN)(GWEN_GUI *gui,
                                     uint32_t flags,
                                     const char *title,
                                     const char *text,
@@ -372,7 +372,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_INPUTBOX_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_ShowBox for details.
  *
  */
-typedef uint32_t GWENHYWFAR_CB(*GWEN_GUI_SHOWBOX_FN)(GWEN_GUI *gui,
+typedef uint32_t (GWENHYWFAR_CB *GWEN_GUI_SHOWBOX_FN)(GWEN_GUI *gui,
                                         uint32_t flags,
                                         const char *title,
                                         const char *text,
@@ -382,13 +382,13 @@ typedef uint32_t GWENHYWFAR_CB(*GWEN_GUI_SHOWBOX_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_HideBox for details.
  *
  */
-typedef void GWENHYWFAR_CB(*GWEN_GUI_HIDEBOX_FN)(GWEN_GUI *gui, uint32_t id);
+typedef void (GWENHYWFAR_CB *GWEN_GUI_HIDEBOX_FN)(GWEN_GUI *gui, uint32_t id);
 
 /**
  * Please see @ref GWEN_Gui_ProgressStart for details.
  *
  */
-typedef uint32_t GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_START_FN)(GWEN_GUI *gui,
+typedef uint32_t (GWENHYWFAR_CB *GWEN_GUI_PROGRESS_START_FN)(GWEN_GUI *gui,
                                                uint32_t progressFlags,
                                                const char *title,
                                                const char *text,
@@ -399,7 +399,7 @@ typedef uint32_t GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_START_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_ProgressAdvance for details.
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_ADVANCE_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_PROGRESS_ADVANCE_FN)(GWEN_GUI *gui,
                                             uint32_t id,
                                             uint64_t progress);
 
@@ -408,7 +408,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_ADVANCE_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_ProgressSetTotal for details.
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_SETTOTAL_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_PROGRESS_SETTOTAL_FN)(GWEN_GUI *gui,
                                              uint32_t id,
                                              uint64_t total);
 
@@ -416,7 +416,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_SETTOTAL_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_ProgressLog for details.
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_LOG_FN)(GWEN_GUI *gui,
+typedef int (GWENHYWFAR_CB *GWEN_GUI_PROGRESS_LOG_FN)(GWEN_GUI *gui,
                                         uint32_t id,
                                         GWEN_LOGGER_LEVEL level,
                                         const char *text);
@@ -424,7 +424,7 @@ typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_LOG_FN)(GWEN_GUI *gui,
  * Please see @ref GWEN_Gui_ProgressEnd for details.
  *
  */
-typedef int GWENHYWFAR_CB(*GWEN_GUI_PROGRESS_END_FN)(GWEN_GUI *gui, uint32_t id);
+typedef int (GWENHYWFAR_CB *GWEN_GUI_PROGRESS_END_FN)(GWEN_GUI *gui, uint32_t id);
 /*@}*/
 
 

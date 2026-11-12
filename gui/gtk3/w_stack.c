@@ -20,8 +20,8 @@
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WStack_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+Gtk3Gui_WStack_SetIntProperty(GWEN_WIDGET *w,
                                   GWEN_DIALOG_PROPERTY prop,
                                   GWEN_UNUSED int index,
                                   int value,
@@ -58,8 +58,8 @@ int Gtk3Gui_WStack_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WStack_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+Gtk3Gui_WStack_GetIntProperty(GWEN_WIDGET *w,
                                   GWEN_DIALOG_PROPERTY prop,
                                   GWEN_UNUSED int index,
                                   int defaultValue)
@@ -92,8 +92,8 @@ int Gtk3Gui_WStack_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WStack_SetCharProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+Gtk3Gui_WStack_SetCharProperty(GWEN_WIDGET *w,
                                    GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
                                    GWEN_UNUSED int index,
                                    GWEN_UNUSED const char *value,
@@ -112,8 +112,8 @@ int Gtk3Gui_WStack_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char *Gtk3Gui_WStack_GetCharProperty(GWEN_WIDGET *w,
+static const char *GWENHYWFAR_CB
+Gtk3Gui_WStack_GetCharProperty(GWEN_WIDGET *w,
                                            GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
                                            GWEN_UNUSED int index,
                                            const char *defaultValue)
@@ -131,8 +131,8 @@ const char *Gtk3Gui_WStack_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WStack_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
+static int GWENHYWFAR_CB
+Gtk3Gui_WStack_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
 {
   GtkWidget *g;
   GtkWidget *gChild;

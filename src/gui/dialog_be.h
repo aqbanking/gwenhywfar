@@ -39,27 +39,27 @@ extern "C" {
 #endif
 
 
-typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
+typedef int (GWENHYWFAR_CB *GWEN_DIALOG_SETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
                                                           GWEN_WIDGET *w,
                                                           GWEN_DIALOG_PROPERTY prop,
                                                           int index,
                                                           int value,
                                                           int doSignal);
 
-typedef int GWENHYWFAR_CB(*GWEN_DIALOG_GETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
+typedef int (GWENHYWFAR_CB *GWEN_DIALOG_GETINTPROPERTY_FN)(GWEN_DIALOG *dlg,
                                                           GWEN_WIDGET *w,
                                                           GWEN_DIALOG_PROPERTY prop,
                                                           int index,
                                                           int defaultValue);
 
-typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
+typedef int (GWENHYWFAR_CB *GWEN_DIALOG_SETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
                                                            GWEN_WIDGET *w,
                                                            GWEN_DIALOG_PROPERTY prop,
                                                            int index,
                                                            const char *value,
                                                            int doSignal);
 
-typedef const char *GWENHYWFAR_CB(*GWEN_DIALOG_GETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
+typedef const char *(GWENHYWFAR_CB *GWEN_DIALOG_GETCHARPROPERTY_FN)(GWEN_DIALOG *dlg,
                                                                    GWEN_WIDGET *w,
                                                                    GWEN_DIALOG_PROPERTY prop,
                                                                    int index,

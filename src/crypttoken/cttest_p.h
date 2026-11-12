@@ -33,7 +33,7 @@ struct GWEN_CRYPT_TOKEN_TEST {
   GWEN_CRYPT_KEY_LIST *keyList;
 };
 
-static GWENHYWFAR_CB void GWEN_Crypt_TokenTest_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_Crypt_TokenTest_freeData(void *bp, void *p);
 
 
 

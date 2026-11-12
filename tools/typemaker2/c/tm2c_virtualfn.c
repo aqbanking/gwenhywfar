@@ -58,11 +58,12 @@ int TM2C_BuildDefineVirtualFns(TYPEMAKER2_BUILDER *tb, TYPEMAKER2_TYPE *ty, cons
         }
         GWEN_Buffer_AppendString(tbuf, s);
 
+        GWEN_Buffer_AppendString(tbuf, "  (");
         if (Typemaker2_VirtualFn_GetFlags(vf) & TYPEMAKER2_FLAGS_GWEN_CB) {
-          GWEN_Buffer_AppendString(tbuf, " GWENHYWFAR_CB");
+          GWEN_Buffer_AppendString(tbuf, "GWENHYWFAR_CB ");
         }
 
-        GWEN_Buffer_AppendArgs(tbuf, "  (*%s_", Typemaker2_Type_GetIdentifier(ty));
+        GWEN_Buffer_AppendArgs(tbuf, "*%s_", Typemaker2_Type_GetIdentifier(ty));
 
         s=Typemaker2_VirtualFn_GetName(vf);
         if (!(s && *s)) {

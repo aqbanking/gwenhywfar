@@ -32,7 +32,7 @@
 #include <gwenhywfar/debug.h>
 
 
-static GWENHYWFAR_CB int GWEN_List1__defaultSortFn(GWEN_UNUSED const void *a, GWEN_UNUSED const void *b,
+static int GWENHYWFAR_CB GWEN_List1__defaultSortFn(GWEN_UNUSED const void *a, GWEN_UNUSED const void *b,
                                                    GWEN_UNUSED int ascending)
 {
   return 0;

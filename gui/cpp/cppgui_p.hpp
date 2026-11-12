@@ -68,7 +68,7 @@ class CppGuiLinker {
                                        GWEN_BUFFER *pathBuffer,
                                        uint32_t guiid);
 
-  static GWENHYWFAR_CB void freeData(void *bp, void *p);
+  static void GWENHYWFAR_CB freeData(void *bp, void *p);
 };
 
 

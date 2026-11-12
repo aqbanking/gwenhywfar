@@ -24,25 +24,25 @@ struct GWEN_CRYPTMGR_KEYS {
   int ownPeerKey;
 };
 
-static GWENHYWFAR_CB
-void GWEN_CryptMgrKeys_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB
+GWEN_CryptMgrKeys_FreeData(void *bp, void *p);
 
-static GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_SignData(GWEN_CRYPTMGR *cm,
+static int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_SignData(GWEN_CRYPTMGR *cm,
                                const uint8_t *pData, uint32_t lData,
                                GWEN_BUFFER *dbuf);
-static GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_EncryptKey(GWEN_CRYPTMGR *cm,
+static int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_EncryptKey(GWEN_CRYPTMGR *cm,
                                  const uint8_t *pData, uint32_t lData,
                                  GWEN_BUFFER *dbuf);
 
-static GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_VerifyData(GWEN_CRYPTMGR *cm,
+static int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_VerifyData(GWEN_CRYPTMGR *cm,
                                  const uint8_t *pData, uint32_t lData,
                                  const uint8_t *pSignature, uint32_t lSignature);
 
-static GWENHYWFAR_CB
-int GWEN_CryptMgrKeys_DecryptKey(GWEN_CRYPTMGR *cm,
+static int GWENHYWFAR_CB
+GWEN_CryptMgrKeys_DecryptKey(GWEN_CRYPTMGR *cm,
                                  const uint8_t *pData, uint32_t lData,
                                  GWEN_BUFFER *dbuf);
 

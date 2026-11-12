@@ -50,7 +50,7 @@ extern "C" {
  *
  */
 /*@{*/
-typedef void GWENHYWFAR_CB(*GWEN_INHERIT_FREEDATAFN)(void *baseData,
+typedef void (GWENHYWFAR_CB *GWEN_INHERIT_FREEDATAFN)(void *baseData,
                                                      void *data);
 
 GWEN_LIST_FUNCTION_LIB_DEFS(GWEN_INHERITDATA, GWEN_InheritData, GWENHYWFAR_API)

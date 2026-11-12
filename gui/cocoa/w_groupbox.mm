@@ -11,8 +11,8 @@
 #import "CocoaGroupBox.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGroupBox_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WGroupBox_SetIntProperty(GWEN_WIDGET *w,
 									  GWEN_DIALOG_PROPERTY prop,
 									  int index,
 									  int value,
@@ -56,8 +56,8 @@ int CocoaGui_WGroupBox_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGroupBox_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WGroupBox_GetIntProperty(GWEN_WIDGET *w,
 									  GWEN_DIALOG_PROPERTY prop,
 									  int index,
 									  int defaultValue) {
@@ -93,8 +93,8 @@ int CocoaGui_WGroupBox_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGroupBox_SetCharProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WGroupBox_SetCharProperty(GWEN_WIDGET *w,
 									   GWEN_DIALOG_PROPERTY prop,
 									   int index,
 									   const char *value,
@@ -123,8 +123,8 @@ int CocoaGui_WGroupBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WGroupBox_GetCharProperty(GWEN_WIDGET *w,
+static const char*GWENHYWFAR_CB
+CocoaGui_WGroupBox_GetCharProperty(GWEN_WIDGET *w,
 											   GWEN_DIALOG_PROPERTY prop,
 											   int index,
 											   const char *defaultValue) {
@@ -148,8 +148,8 @@ const char* CocoaGui_WGroupBox_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGroupBox_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+static int GWENHYWFAR_CB
+CocoaGui_WGroupBox_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	CocoaGroupBox *box;
 	//GtkWidget *gChild;
 	//uint32_t cflags;

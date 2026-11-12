@@ -2200,8 +2200,8 @@ int GWENHYWFAR_CB GWEN_Crypt_TokenFile__GenerateKey(GWEN_CRYPT_TOKEN *ct,
 
 
 
-GWENHYWFAR_CB
-void GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB
+GWEN_Crypt_TokenFile_freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_CRYPT_TOKEN_FILE *lct;
 

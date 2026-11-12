@@ -20,12 +20,12 @@
 
 
 
-typedef GWEN_CRYPT_TOKEN *GWENHYWFAR_CB
-(*GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN)(GWEN_PLUGIN *pl,
+typedef GWEN_CRYPT_TOKEN *
+(GWENHYWFAR_CB *GWEN_CRYPT_TOKEN_PLUGIN_CREATETOKEN_FN)(GWEN_PLUGIN *pl,
                                           const char *name);
 
-typedef int GWENHYWFAR_CB
-(*GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN)(GWEN_PLUGIN *pl,
+typedef int
+(GWENHYWFAR_CB *GWEN_CRYPT_TOKEN_PLUGIN_CHECKTOKEN_FN)(GWEN_PLUGIN *pl,
                                          GWEN_BUFFER *name);
 
 

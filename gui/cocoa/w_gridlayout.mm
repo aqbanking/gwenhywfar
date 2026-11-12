@@ -24,8 +24,8 @@
 #import "CocoaGridLayout.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
 										GWEN_DIALOG_PROPERTY prop,
 										int index,
 										int value,
@@ -57,8 +57,8 @@ int CocoaGui_WGridLayout_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
 										GWEN_DIALOG_PROPERTY prop,
 										int index,
 										int defaultValue) {
@@ -88,8 +88,8 @@ int CocoaGui_WGridLayout_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
+static int GWENHYWFAR_CB
+CocoaGui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
 										 GWEN_DIALOG_PROPERTY prop,
 										 int index,
 										 const char *value,
@@ -107,8 +107,8 @@ int CocoaGui_WGridLayout_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
+static const char*GWENHYWFAR_CB
+CocoaGui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
 												 GWEN_DIALOG_PROPERTY prop,
 												 int index,
 												 const char *defaultValue) {
@@ -125,8 +125,8 @@ const char* CocoaGui_WGridLayout_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+static int GWENHYWFAR_CB
+CocoaGui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	CocoaGridLayout *gridLayout;
 	NSView *childView;
 	uint32_t cflags;
@@ -206,8 +206,8 @@ int CocoaGui_WGridLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) 
 
 
 
-/*static GWENHYWFAR_CB
- void Gtk2Gui_WGridLayout_FreeData(void *bp, void *p) {
+/*static void GWENHYWFAR_CB
+ Gtk2Gui_WGridLayout_FreeData(void *bp, void *p) {
  GTK2_GRIDLAYOUT_WIDGET *xw;
  
  xw=(GTK2_GRIDLAYOUT_WIDGET*) p;

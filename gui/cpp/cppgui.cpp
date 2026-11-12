@@ -190,8 +190,8 @@ int CppGuiLinker::GetFileName(GWEN_GUI *gui,
 
 
 
-GWENHYWFAR_CB
-void CppGuiLinker::freeData(void *bp, void *p) {
+void GWENHYWFAR_CB
+CppGuiLinker::freeData(void *bp, void *p) {
   CppGui *xgui;
 
   DBG_NOTICE(0, "CppGuiLinker: Freeing CppGui");

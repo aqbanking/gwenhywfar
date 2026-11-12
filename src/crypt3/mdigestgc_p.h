@@ -32,7 +32,7 @@ struct GWEN_MDIGEST_GC {
 
 
 static GWEN_MDIGEST *GWEN_MDigest_Gc_new(GWEN_CRYPT_HASHALGOID a);
-static GWENHYWFAR_CB void GWEN_Digest_Gc_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB GWEN_Digest_Gc_freeData(void *bp, void *p);
 
 static int GWEN_MDigest_Gc_Begin(GWEN_MDIGEST *md);
 static int GWEN_MDigest_Gc_Update(GWEN_MDIGEST *md, const uint8_t *buf, unsigned int l);
