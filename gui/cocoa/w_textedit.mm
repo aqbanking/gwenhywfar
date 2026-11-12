@@ -10,12 +10,12 @@
 #import "CocoaLineTextField.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 int value,
-									 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 int value,
+					 int doSignal) {
 	CocoaLineTextField *textField;
 	
 	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -60,11 +60,11 @@ int CocoaGui_WTextEdit_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 int defaultValue) {
 	CocoaLineTextField *textField;
 	
 	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -99,12 +99,12 @@ int CocoaGui_WTextEdit_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
-									  GWEN_DIALOG_PROPERTY prop,
-									  int index,
-									  const char *value,
-									  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
+					  GWEN_DIALOG_PROPERTY prop,
+					  int index,
+					  const char *value,
+					  int doSignal) {
 	CocoaLineTextField *textField;
 	
 	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -128,11 +128,11 @@ int CocoaGui_WTextEdit_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
-											  GWEN_DIALOG_PROPERTY prop,
-											  int index,
-											  const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WTextEdit_GetCharProperty(GWEN_WIDGET *w,
+ GWEN_DIALOG_PROPERTY prop,
+ int index,
+ const char *defaultValue) {
 	CocoaLineTextField *textField;
 	
 	textField=(CocoaLineTextField*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));

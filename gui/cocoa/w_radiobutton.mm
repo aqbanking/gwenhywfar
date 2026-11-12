@@ -10,12 +10,12 @@
 #import "CocoaRadioButton.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WRadioButton_SetIntProperty(GWEN_WIDGET *w,
-										 GWEN_DIALOG_PROPERTY prop,
-										 int index,
-										 int value,
-										 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WRadioButton_SetIntProperty(GWEN_WIDGET *w,
+						 GWEN_DIALOG_PROPERTY prop,
+						 int index,
+						 int value,
+						 int doSignal) {
 	NSButton *radioButton;
 	
 	radioButton = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -65,11 +65,11 @@ int CocoaGui_WRadioButton_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WRadioButton_GetIntProperty(GWEN_WIDGET *w,
-										 GWEN_DIALOG_PROPERTY prop,
-										 int index,
-										 int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WRadioButton_GetIntProperty(GWEN_WIDGET *w,
+						 GWEN_DIALOG_PROPERTY prop,
+						 int index,
+						 int defaultValue) {
 	NSButton *radioButton;
 	
 	radioButton = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -106,12 +106,12 @@ int CocoaGui_WRadioButton_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WRadioButton_SetCharProperty(GWEN_WIDGET *w,
-										  GWEN_DIALOG_PROPERTY prop,
-										  int index,
-										  const char *value,
-										  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WRadioButton_SetCharProperty(GWEN_WIDGET *w,
+						  GWEN_DIALOG_PROPERTY prop,
+						  int index,
+						  const char *value,
+						  int doSignal) {
 	NSButton *radioButton;
 	
 	radioButton = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -136,11 +136,11 @@ int CocoaGui_WRadioButton_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WRadioButton_GetCharProperty(GWEN_WIDGET *w,
-												  GWEN_DIALOG_PROPERTY prop,
-												  int index,
-												  const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WRadioButton_GetCharProperty(GWEN_WIDGET *w,
+  GWEN_DIALOG_PROPERTY prop,
+  int index,
+  const char *defaultValue) {
 	NSButton *radioButton;
 	
 	radioButton = (NSButton*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));

@@ -10,12 +10,12 @@
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WImage_SetIntProperty(GWEN_WIDGET *w,
-                                  GWEN_DIALOG_PROPERTY prop,
-                                  int index,
-                                  int value,
-                                  int doSignal)
+static int GWENHYWFAR_CB
+Gtk3Gui_WImage_SetIntProperty(GWEN_WIDGET *w,
+                              GWEN_DIALOG_PROPERTY prop,
+                              int index,
+                              int value,
+                              int doSignal)
 {
   GtkWidget *g;
 
@@ -44,11 +44,11 @@ int Gtk3Gui_WImage_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WImage_GetIntProperty(GWEN_WIDGET *w,
-                                  GWEN_DIALOG_PROPERTY prop,
-                                  int index,
-                                  int defaultValue)
+static int GWENHYWFAR_CB
+Gtk3Gui_WImage_GetIntProperty(GWEN_WIDGET *w,
+                              GWEN_DIALOG_PROPERTY prop,
+                              int index,
+                              int defaultValue)
 {
   GtkWidget *g;
 

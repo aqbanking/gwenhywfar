@@ -12,12 +12,12 @@
 #import "CocoaWindowContentView.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WDialog_SetIntProperty(GWEN_WIDGET *w,
-									GWEN_DIALOG_PROPERTY prop,
-									int index,
-									int value,
-									int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WDialog_SetIntProperty(GWEN_WIDGET *w,
+					GWEN_DIALOG_PROPERTY prop,
+					int index,
+					int value,
+					int doSignal) {
 	NSWindow *window = nil;
 	
 	window=(NSWindow*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -62,11 +62,11 @@ int CocoaGui_WDialog_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WDialog_GetIntProperty(GWEN_WIDGET *w,
-									GWEN_DIALOG_PROPERTY prop,
-									int index,
-									int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WDialog_GetIntProperty(GWEN_WIDGET *w,
+					GWEN_DIALOG_PROPERTY prop,
+					int index,
+					int defaultValue) {
 	NSWindow *window = nil;
 	
 	window=(NSWindow*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -97,12 +97,12 @@ int CocoaGui_WDialog_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WDialog_SetCharProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 const char *value,
-									 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WDialog_SetCharProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 const char *value,
+					 int doSignal) {
 	NSWindow *window = nil;
 	
 	NSLog(@"CocoaGui_WDialog_SetCharProperty");
@@ -129,11 +129,11 @@ int CocoaGui_WDialog_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WDialog_GetCharProperty(GWEN_WIDGET *w,
-											 GWEN_DIALOG_PROPERTY prop,
-											 int index,
-											 const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WDialog_GetCharProperty(GWEN_WIDGET *w,
+GWEN_DIALOG_PROPERTY prop,
+int index,
+const char *defaultValue) {
 	NSWindow *window = nil;
 	
 	window=(NSWindow*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -154,8 +154,8 @@ const char* CocoaGui_WDialog_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WDialog_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+static int GWENHYWFAR_CB
+CocoaGui_WDialog_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	
 	NSLog(@"CocoaGui_WDialog_AddChildGuiWidget");
 	

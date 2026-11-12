@@ -296,7 +296,7 @@ int GWEN_Crypt_KeyRsa_GeneratePair2(unsigned int nbits, int use65537e,
 
 
 
-GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
+int GWENHYWFAR_CB GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
                                          const uint8_t *pInData,
                                          uint32_t inLen,
                                          uint8_t *pSignatureData,
@@ -367,7 +367,7 @@ GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Sign(GWEN_CRYPT_KEY *k,
 
 
 
-static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
+static int GWENHYWFAR_CB GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
                                                   const uint8_t *pInData,
                                                   uint32_t inLen,
                                                   const uint8_t *pSignatureData,
@@ -446,7 +446,7 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Verify(GWEN_CRYPT_KEY *k,
 
 
 
-static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
+static int GWENHYWFAR_CB GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
                                                     const uint8_t *pInData,
                                                     uint32_t inLen,
                                                     uint8_t *pOutData,
@@ -505,7 +505,7 @@ static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Encipher(GWEN_CRYPT_KEY *k,
 
 
 
-static GWENHYWFAR_CB int GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
+static int GWENHYWFAR_CB GWEN_Crypt_KeyRsa_Decipher(GWEN_CRYPT_KEY *k,
                                                     const uint8_t *pInData,
                                                     uint32_t inLen,
                                                     uint8_t *pOutData,
@@ -638,8 +638,8 @@ static int GWEN_Crypt_KeyRsa__MpiToBuffer(const gcry_mpi_t mpi, unsigned char *b
 
 
 
-static GWENHYWFAR_CB
-void GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p)
+static void GWENHYWFAR_CB
+GWEN_Crypt_KeyRsa_freeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_CRYPT_KEY_RSA *xk;
 

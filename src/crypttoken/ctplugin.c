@@ -131,8 +131,8 @@ GWEN_PLUGIN *GWEN_Crypt_Token_Plugin_new(GWEN_PLUGIN_MANAGER *mgr,
 
 
 
-GWENHYWFAR_CB
-void GWEN_Crypt_Token_Plugin_FreeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB
+GWEN_Crypt_Token_Plugin_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_CRYPT_TOKEN_PLUGIN *xpl;
 

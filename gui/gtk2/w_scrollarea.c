@@ -11,12 +11,12 @@
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
-                                       GWEN_DIALOG_PROPERTY prop,
-                                       GWEN_UNUSED int index,
-                                       int value,
-                                       GWEN_UNUSED int doSignal)
+static int GWENHYWFAR_CB
+Gtk2Gui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
+                                   GWEN_DIALOG_PROPERTY prop,
+                                   GWEN_UNUSED int index,
+                                   int value,
+                                   GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
@@ -53,11 +53,11 @@ int Gtk2Gui_WScrollArea_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
-                                       GWEN_DIALOG_PROPERTY prop,
-                                       GWEN_UNUSED int index,
-                                       int defaultValue)
+static int GWENHYWFAR_CB
+Gtk2Gui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
+                                   GWEN_DIALOG_PROPERTY prop,
+                                   GWEN_UNUSED int index,
+                                   int defaultValue)
 {
   GtkWidget *g;  /* text view */
   GtkWidget *gs; /* scrollable window */
@@ -95,12 +95,12 @@ int Gtk2Gui_WScrollArea_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
-                                        GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
-                                        GWEN_UNUSED int index,
-                                        GWEN_UNUSED const char *value,
-                                        GWEN_UNUSED int doSignal)
+static int GWENHYWFAR_CB
+Gtk2Gui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
+                                    GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                                    GWEN_UNUSED int index,
+                                    GWEN_UNUSED const char *value,
+                                    GWEN_UNUSED int doSignal)
 {
   GtkWidget *g;         /* scrollable window */
   GtkWidget *gContent;  /* vbox */
@@ -118,11 +118,11 @@ int Gtk2Gui_WScrollArea_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char *Gtk2Gui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
-                                                GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
-                                                GWEN_UNUSED int index,
-                                                const char *defaultValue)
+static const char *GWENHYWFAR_CB
+Gtk2Gui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
+                                    GWEN_UNUSED GWEN_DIALOG_PROPERTY prop,
+                                    GWEN_UNUSED int index,
+                                    const char *defaultValue)
 {
   GtkWidget *gs; /* scrollable window */
   GtkWidget *g;  /* vbox */
@@ -140,8 +140,8 @@ const char *Gtk2Gui_WScrollArea_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
+static int GWENHYWFAR_CB
+Gtk2Gui_WScrollArea_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild)
 {
   GtkWidget *g;
   GtkWidget *gChild;

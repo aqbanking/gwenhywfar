@@ -12,12 +12,12 @@
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WHLayout_SetIntProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 int value,
-									 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WHLayout_SetIntProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 int value,
+					 int doSignal) {
 	CocoaHLayout *hlayout;
 	
 	hlayout=(CocoaHLayout*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -45,11 +45,11 @@ int CocoaGui_WHLayout_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WHLayout_GetIntProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WHLayout_GetIntProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 int defaultValue) {
 	CocoaHLayout *hlayout;
 	
 	hlayout=(CocoaHLayout*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -75,12 +75,12 @@ int CocoaGui_WHLayout_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WHLayout_SetCharProperty(GWEN_WIDGET *w,
-									  GWEN_DIALOG_PROPERTY prop,
-									  int index,
-									  const char *value,
-									  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WHLayout_SetCharProperty(GWEN_WIDGET *w,
+					  GWEN_DIALOG_PROPERTY prop,
+					  int index,
+					  const char *value,
+					  int doSignal) {
 	/*CocoaHLayout *hlayout;
 	
 	hlayout=(CocoaHLayout*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -94,11 +94,11 @@ int CocoaGui_WHLayout_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WHLayout_GetCharProperty(GWEN_WIDGET *w,
-											  GWEN_DIALOG_PROPERTY prop,
-											  int index,
-											  const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WHLayout_GetCharProperty(GWEN_WIDGET *w,
+ GWEN_DIALOG_PROPERTY prop,
+ int index,
+ const char *defaultValue) {
 	/*CocoaHLayout *hlayout;
 	
 	hlayout=(CocoaHLayout*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -112,8 +112,8 @@ const char* CocoaGui_WHLayout_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+static int GWENHYWFAR_CB
+CocoaGui_WHLayout_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	CocoaHLayout *hlayout;
 	NSView *childView;
 	uint32_t cflags;

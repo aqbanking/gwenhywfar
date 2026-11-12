@@ -129,19 +129,19 @@ enum {
  * (see @ref GWEN_DialogEvent_ResultHandled and following) or a GWEN_ERROR
  * code.
  */
-typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
-                                                      GWEN_DIALOG_EVENTTYPE t,
-                                                      const char *sender);
+typedef int (GWENHYWFAR_CB *GWEN_DIALOG_SIGNALHANDLER)(GWEN_DIALOG *dlg,
+                                                       GWEN_DIALOG_EVENTTYPE t,
+                                                       const char *sender);
 
 /**
  * New signal handler definition. This one allows conveying arguments.
  * The meaning of the arguments depends on the signal.
  */
-typedef int GWENHYWFAR_CB(*GWEN_DIALOG_SIGNALHANDLER2)(GWEN_DIALOG *dlg,
-                                                       GWEN_DIALOG_EVENTTYPE t,
-                                                       const char *sender,
-                                                       int intArg,
-                                                       const char *stringArg);
+typedef int (GWENHYWFAR_CB *GWEN_DIALOG_SIGNALHANDLER2)(GWEN_DIALOG *dlg,
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender,
+                                                        int intArg,
+                                                        const char *stringArg);
 
 
 

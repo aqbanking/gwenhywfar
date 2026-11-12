@@ -11,12 +11,12 @@
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
-										 GWEN_DIALOG_PROPERTY prop,
-										 int index,
-										 int value,
-										 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
+						 GWEN_DIALOG_PROPERTY prop,
+						 int index,
+						 int value,
+						 int doSignal) {
 	
 	CocoaTextBrowser *textBrowser;
 	textBrowser = (CocoaTextBrowser*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_CONTENT));
@@ -58,11 +58,11 @@ int CocoaGui_WTextBrowser_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
-										 GWEN_DIALOG_PROPERTY prop,
-										 int index,
-										 int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
+						 GWEN_DIALOG_PROPERTY prop,
+						 int index,
+						 int defaultValue) {
 	CocoaTextBrowser *textBrowser;
 	textBrowser = (CocoaTextBrowser*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_CONTENT));
 	assert(textBrowser);
@@ -92,12 +92,12 @@ int CocoaGui_WTextBrowser_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
-										  GWEN_DIALOG_PROPERTY prop,
-										  int index,
-										  const char *value,
-										  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
+						  GWEN_DIALOG_PROPERTY prop,
+						  int index,
+						  const char *value,
+						  int doSignal) {
 	CocoaTextBrowser *textBrowser;
 	textBrowser = (CocoaTextBrowser*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_CONTENT));
 	assert(textBrowser);
@@ -134,11 +134,11 @@ int CocoaGui_WTextBrowser_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
-												  GWEN_DIALOG_PROPERTY prop,
-												  int index,
-												  const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WTextBrowser_GetCharProperty(GWEN_WIDGET *w,
+  GWEN_DIALOG_PROPERTY prop,
+  int index,
+  const char *defaultValue) {
 	CocoaTextBrowser *textBrowser;
 	textBrowser = (CocoaTextBrowser*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_CONTENT));
 	assert(textBrowser);

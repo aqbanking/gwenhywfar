@@ -96,29 +96,29 @@ extern "C" {
 #endif
 
 
-typedef int GWENHYWFAR_CB(*GWEN_WIDGET_SETINTPROPERTY_FN)(GWEN_WIDGET *w,
-                                                          GWEN_DIALOG_PROPERTY prop,
-                                                          int index,
-                                                          int value,
-                                                          int doSignal);
-
-typedef int GWENHYWFAR_CB(*GWEN_WIDGET_GETINTPROPERTY_FN)(GWEN_WIDGET *w,
-                                                          GWEN_DIALOG_PROPERTY prop,
-                                                          int index,
-                                                          int defaultValue);
-
-typedef int GWENHYWFAR_CB(*GWEN_WIDGET_SETCHARPROPERTY_FN)(GWEN_WIDGET *w,
+typedef int (GWENHYWFAR_CB *GWEN_WIDGET_SETINTPROPERTY_FN)(GWEN_WIDGET *w,
                                                            GWEN_DIALOG_PROPERTY prop,
                                                            int index,
-                                                           const char *value,
+                                                           int value,
                                                            int doSignal);
 
-typedef const char *GWENHYWFAR_CB(*GWEN_WIDGET_GETCHARPROPERTY_FN)(GWEN_WIDGET *w,
-                                                                   GWEN_DIALOG_PROPERTY prop,
-                                                                   int index,
-                                                                   const char *defaultValue);
+typedef int (GWENHYWFAR_CB *GWEN_WIDGET_GETINTPROPERTY_FN)(GWEN_WIDGET *w,
+                                                           GWEN_DIALOG_PROPERTY prop,
+                                                           int index,
+                                                           int defaultValue);
 
-typedef int GWENHYWFAR_CB(*GWEN_WIDGET_ADDCHILDGUIWIDGET_FN)(GWEN_WIDGET *w, GWEN_WIDGET *wChild);
+typedef int (GWENHYWFAR_CB *GWEN_WIDGET_SETCHARPROPERTY_FN)(GWEN_WIDGET *w,
+                                                            GWEN_DIALOG_PROPERTY prop,
+                                                            int index,
+                                                            const char *value,
+                                                            int doSignal);
+
+typedef const char *(GWENHYWFAR_CB *GWEN_WIDGET_GETCHARPROPERTY_FN)(GWEN_WIDGET *w,
+                                                                    GWEN_DIALOG_PROPERTY prop,
+                                                                    int index,
+                                                                    const char *defaultValue);
+
+typedef int (GWENHYWFAR_CB *GWEN_WIDGET_ADDCHILDGUIWIDGET_FN)(GWEN_WIDGET *w, GWEN_WIDGET *wChild);
 
 
 

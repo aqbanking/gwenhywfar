@@ -6542,7 +6542,7 @@ int testPss3(void)
 
 
 
-static GWENHYWFAR_CB void _threadTestFn(GWEN_UNUSED GWEN_THREAD *thr)
+static void GWENHYWFAR_CB _threadTestFn(GWEN_UNUSED GWEN_THREAD *thr)
 {
   fprintf(stdout, "This is from the thread, now sleeping for 10 secs.\n");
   sleep(10);

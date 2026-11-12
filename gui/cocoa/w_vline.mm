@@ -10,12 +10,12 @@
 #import "CocoaVLineView.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WVLine_SetIntProperty(GWEN_WIDGET *w,
-								   GWEN_DIALOG_PROPERTY prop,
-								   int index,
-								   int value,
-								   int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WVLine_SetIntProperty(GWEN_WIDGET *w,
+				   GWEN_DIALOG_PROPERTY prop,
+				   int index,
+				   int value,
+				   int doSignal) {
 	CocoaVLineView *vLineView;
 	
 	vLineView=(CocoaVLineView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -44,11 +44,11 @@ int CocoaGui_WVLine_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WVLine_GetIntProperty(GWEN_WIDGET *w,
-								   GWEN_DIALOG_PROPERTY prop,
-								   int index,
-								   int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WVLine_GetIntProperty(GWEN_WIDGET *w,
+				   GWEN_DIALOG_PROPERTY prop,
+				   int index,
+				   int defaultValue) {
 	CocoaVLineView *vLineView;
 	
 	vLineView=(CocoaVLineView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));

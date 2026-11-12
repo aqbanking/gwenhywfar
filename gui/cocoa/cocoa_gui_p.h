@@ -28,29 +28,29 @@ struct COCOA_GUI {
 
 
 
-static GWENHYWFAR_CB
-void Cocoa_Gui_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB
+Cocoa_Gui_FreeData(void *bp, void *p);
 
-static GWENHYWFAR_CB
-int COCOA_Gui_ExecDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, uint32_t guiid);
+static int GWENHYWFAR_CB
+COCOA_Gui_ExecDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, uint32_t guiid);
 
-static GWENHYWFAR_CB
-int COCOA_Gui_OpenDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, uint32_t guiid);
+static int GWENHYWFAR_CB
+COCOA_Gui_OpenDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, uint32_t guiid);
 
-static GWENHYWFAR_CB
-int COCOA_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg);
+static int GWENHYWFAR_CB
+COCOA_Gui_CloseDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg);
 
-static GWENHYWFAR_CB
-int COCOA_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
+static int GWENHYWFAR_CB
+COCOA_Gui_RunDialog(GWEN_GUI *gui, GWEN_DIALOG *dlg, int timeout);
 
-static GWENHYWFAR_CB
-int COCOA_Gui_GetFileName(GWEN_GUI *gui,
-                          const char *caption,
-                          GWEN_GUI_FILENAME_TYPE fnt,
-                          uint32_t flags,
-                          const char *patterns,
-                          GWEN_BUFFER *pathBuffer,
-                          uint32_t guiid);
+static int GWENHYWFAR_CB
+COCOA_Gui_GetFileName(GWEN_GUI *gui,
+                      const char *caption,
+                      GWEN_GUI_FILENAME_TYPE fnt,
+                      uint32_t flags,
+                      const char *patterns,
+                      GWEN_BUFFER *pathBuffer,
+                      uint32_t guiid);
 
 
 #endif

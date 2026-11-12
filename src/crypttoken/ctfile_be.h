@@ -17,11 +17,11 @@
 
 
 
-typedef int GWENHYWFAR_CB
-(*GWEN_CRYPT_TOKEN_FILE_READ_FN)(GWEN_CRYPT_TOKEN *ct, int fd, uint32_t gid);
+typedef int
+(GWENHYWFAR_CB *GWEN_CRYPT_TOKEN_FILE_READ_FN)(GWEN_CRYPT_TOKEN *ct, int fd, uint32_t gid);
 
-typedef int GWENHYWFAR_CB
-(*GWEN_CRYPT_TOKEN_FILE_WRITE_FN)(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid);
+typedef int
+(GWENHYWFAR_CB *GWEN_CRYPT_TOKEN_FILE_WRITE_FN)(GWEN_CRYPT_TOKEN *ct, int fd, int cre, uint32_t gid);
 
 
 

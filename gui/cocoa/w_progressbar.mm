@@ -22,12 +22,12 @@ GWEN_INHERIT(GWEN_WIDGET, W_PROGRESSBAR)
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
-										 GWEN_DIALOG_PROPERTY prop,
-										 int index,
-										 int value,
-										 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
+						 GWEN_DIALOG_PROPERTY prop,
+						 int index,
+						 int value,
+						 int doSignal) {
 	CocoaProgressbar *progressbar;
 	W_PROGRESSBAR *xw;
 	
@@ -103,11 +103,11 @@ int CocoaGui_WProgressBar_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
-										 GWEN_DIALOG_PROPERTY prop,
-										 int index,
-										 int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
+						 GWEN_DIALOG_PROPERTY prop,
+						 int index,
+						 int defaultValue) {
 	CocoaProgressbar *progressbar;
 	W_PROGRESSBAR *xw;
 	
@@ -151,12 +151,12 @@ int CocoaGui_WProgressBar_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
-										  GWEN_DIALOG_PROPERTY prop,
-										  int index,
-										  const char *value,
-										  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
+						  GWEN_DIALOG_PROPERTY prop,
+						  int index,
+						  const char *value,
+						  int doSignal) {
 	DBG_WARN(GWEN_LOGDOMAIN,
 			 "Function is not appropriate for this type of widget (%s)",
 			 GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));
@@ -165,11 +165,11 @@ int CocoaGui_WProgressBar_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
-												  GWEN_DIALOG_PROPERTY prop,
-												  int index,
-												  const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WProgressBar_GetCharProperty(GWEN_WIDGET *w,
+  GWEN_DIALOG_PROPERTY prop,
+  int index,
+  const char *defaultValue) {
 	DBG_WARN(GWEN_LOGDOMAIN,
 			 "Function is not appropriate for this type of widget (%s)",
 			 GWEN_Widget_Type_toString(GWEN_Widget_GetType(w)));

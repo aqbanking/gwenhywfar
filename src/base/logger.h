@@ -35,7 +35,7 @@ extern "C" {
 #include <gwenhywfar/buffer.h>
 
 
-typedef void GWENHYWFAR_CB(*GWEN_LOGGERFUNCTIONLOG)(const char *s);
+typedef void (GWENHYWFAR_CB *GWEN_LOGGERFUNCTIONLOG)(const char *s);
 
 typedef enum {
   GWEN_LoggerType_Console,

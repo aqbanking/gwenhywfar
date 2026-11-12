@@ -11,12 +11,12 @@
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WCheckBox_SetIntProperty(GWEN_WIDGET *w,
-                                     GWEN_DIALOG_PROPERTY prop,
-                                     GWEN_UNUSED int index,
-                                     int value,
-                                     GWEN_UNUSED int doSignal)
+static int GWENHYWFAR_CB
+Gtk2Gui_WCheckBox_SetIntProperty(GWEN_WIDGET *w,
+                                 GWEN_DIALOG_PROPERTY prop,
+                                 GWEN_UNUSED int index,
+                                 int value,
+                                 GWEN_UNUSED int doSignal)
 {
   GtkButton *g;
 
@@ -54,11 +54,11 @@ int Gtk2Gui_WCheckBox_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WCheckBox_GetIntProperty(GWEN_WIDGET *w,
-                                     GWEN_DIALOG_PROPERTY prop,
-                                     GWEN_UNUSED int index,
-                                     int defaultValue)
+static int GWENHYWFAR_CB
+Gtk2Gui_WCheckBox_GetIntProperty(GWEN_WIDGET *w,
+                                 GWEN_DIALOG_PROPERTY prop,
+                                 GWEN_UNUSED int index,
+                                 int defaultValue)
 {
   GtkButton *g;
 
@@ -92,12 +92,12 @@ int Gtk2Gui_WCheckBox_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk2Gui_WCheckBox_SetCharProperty(GWEN_WIDGET *w,
-                                      GWEN_DIALOG_PROPERTY prop,
-                                      GWEN_UNUSED int index,
-                                      const char *value,
-                                      GWEN_UNUSED int doSignal)
+static int GWENHYWFAR_CB
+Gtk2Gui_WCheckBox_SetCharProperty(GWEN_WIDGET *w,
+                                  GWEN_DIALOG_PROPERTY prop,
+                                  GWEN_UNUSED int index,
+                                  const char *value,
+                                  GWEN_UNUSED int doSignal)
 {
   GtkButton *g;
 
@@ -120,11 +120,11 @@ int Gtk2Gui_WCheckBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char *Gtk2Gui_WCheckBox_GetCharProperty(GWEN_WIDGET *w,
-                                              GWEN_DIALOG_PROPERTY prop,
-                                              GWEN_UNUSED int index,
-                                              const char *defaultValue)
+static const char *GWENHYWFAR_CB
+Gtk2Gui_WCheckBox_GetCharProperty(GWEN_WIDGET *w,
+                                  GWEN_DIALOG_PROPERTY prop,
+                                  GWEN_UNUSED int index,
+                                  const char *defaultValue)
 {
   GtkButton *g;
 

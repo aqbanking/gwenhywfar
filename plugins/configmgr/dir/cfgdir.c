@@ -131,7 +131,7 @@ GWEN_CONFIGMGR *GWEN_ConfigMgrDir_new(const char *url)
 
 
 
-GWENHYWFAR_CB void GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p)
+void GWENHYWFAR_CB GWEN_ConfigMgrDir_FreeData(GWEN_UNUSED void *bp, void *p)
 {
   GWEN_CONFIGMGR_DIR *xcfg;
 

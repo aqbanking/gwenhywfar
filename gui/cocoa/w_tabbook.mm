@@ -10,12 +10,12 @@
 #import "CocoaTabView.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTabBook_SetIntProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 int value,
-									 int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WTabBook_SetIntProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 int value,
+					 int doSignal) {
 	CocoaTabView *tabView;
 	
 	tabView=(CocoaTabView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -47,11 +47,11 @@ int CocoaGui_WTabBook_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTabBook_GetIntProperty(GWEN_WIDGET *w,
-									 GWEN_DIALOG_PROPERTY prop,
-									 int index,
-									 int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WTabBook_GetIntProperty(GWEN_WIDGET *w,
+					 GWEN_DIALOG_PROPERTY prop,
+					 int index,
+					 int defaultValue) {
 	CocoaTabView *tabView;
 	
 	tabView=(CocoaTabView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -79,12 +79,12 @@ int CocoaGui_WTabBook_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTabBook_SetCharProperty(GWEN_WIDGET *w,
-									  GWEN_DIALOG_PROPERTY prop,
-									  int index,
-									  const char *value,
-									  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WTabBook_SetCharProperty(GWEN_WIDGET *w,
+					  GWEN_DIALOG_PROPERTY prop,
+					  int index,
+					  const char *value,
+					  int doSignal) {
 	CocoaTabView *tabView;
 	
 	tabView=(CocoaTabView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -98,11 +98,11 @@ int CocoaGui_WTabBook_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WTabBook_GetCharProperty(GWEN_WIDGET *w,
-											  GWEN_DIALOG_PROPERTY prop,
-											  int index,
-											  const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WTabBook_GetCharProperty(GWEN_WIDGET *w,
+ GWEN_DIALOG_PROPERTY prop,
+ int index,
+ const char *defaultValue) {
 	CocoaTabView *tabView;
 	
 	tabView=(CocoaTabView*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -116,8 +116,8 @@ const char* CocoaGui_WTabBook_GetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WTabBook_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
+static int GWENHYWFAR_CB
+CocoaGui_WTabBook_AddChildGuiWidget(GWEN_WIDGET *w, GWEN_WIDGET *wChild) {
 	CocoaTabView *tabView;
 	const char *s;
 	

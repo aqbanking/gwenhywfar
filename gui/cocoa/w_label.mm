@@ -10,12 +10,12 @@
 #import "CocoaLabel.h"
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WLabel_SetIntProperty(GWEN_WIDGET *w,
-								   GWEN_DIALOG_PROPERTY prop,
-								   int index,
-								   int value,
-								   int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WLabel_SetIntProperty(GWEN_WIDGET *w,
+				   GWEN_DIALOG_PROPERTY prop,
+				   int index,
+				   int value,
+				   int doSignal) {
 	CocoaLabel *labelTextField;
 	
 	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -59,11 +59,11 @@ int CocoaGui_WLabel_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WLabel_GetIntProperty(GWEN_WIDGET *w,
-								   GWEN_DIALOG_PROPERTY prop,
-								   int index,
-								   int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WLabel_GetIntProperty(GWEN_WIDGET *w,
+				   GWEN_DIALOG_PROPERTY prop,
+				   int index,
+				   int defaultValue) {
 	CocoaLabel *labelTextField;
 	
 	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -99,12 +99,12 @@ int CocoaGui_WLabel_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WLabel_SetCharProperty(GWEN_WIDGET *w,
-									GWEN_DIALOG_PROPERTY prop,
-									int index,
-									const char *value,
-									int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WLabel_SetCharProperty(GWEN_WIDGET *w,
+					GWEN_DIALOG_PROPERTY prop,
+					int index,
+					const char *value,
+					int doSignal) {
 	CocoaLabel *labelTextField;
 	
 	labelTextField=(CocoaLabel*)(GWEN_Widget_GetImplData(w, COCOA_DIALOG_WIDGET_REAL));
@@ -130,8 +130,8 @@ int CocoaGui_WLabel_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WLabel_GetCharProperty(GWEN_WIDGET *w,
+static const char*GWENHYWFAR_CB
+CocoaGui_WLabel_GetCharProperty(GWEN_WIDGET *w,
 											GWEN_DIALOG_PROPERTY prop,
 											int index,
 											const char *defaultValue) {

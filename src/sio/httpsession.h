@@ -267,7 +267,7 @@ int GWEN_HttpSession_SendStatus(GWEN_HTTP_SESSION *sess,
  */
 /*@{*/
 
-typedef int GWENHYWFAR_CB(*GWEN_HTTPSESSION_INITSYNCIO_FN)(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
+typedef int (GWENHYWFAR_CB *GWEN_HTTPSESSION_INITSYNCIO_FN)(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
 GWENHYWFAR_API GWEN_HTTPSESSION_INITSYNCIO_FN GWEN_HttpSession_SetInitSyncIoFn(GWEN_HTTP_SESSION *sess,
                                                                                GWEN_HTTPSESSION_INITSYNCIO_FN f);
 

@@ -25,7 +25,7 @@ GWEN_INHERIT(GWEN_THREAD, TEST_THREAD)
 
 
 static void GWENHYWFAR_CB _freeData(GWEN_UNUSED void *bp, void *p);
-static GWENHYWFAR_CB void _threadRun_cb(GWEN_UNUSED GWEN_THREAD *thr);
+static void GWENHYWFAR_CB _threadRun_cb(GWEN_UNUSED GWEN_THREAD *thr);
 
 
 

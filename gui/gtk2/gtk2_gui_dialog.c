@@ -133,7 +133,7 @@ GtkWidget *Gtk2Gui_Dialog_GetMainWidget(const GWEN_DIALOG *dlg)
 
 
 
-GWENHYWFAR_CB int Gtk2Gui_Dialog_SetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
+int GWENHYWFAR_CB Gtk2Gui_Dialog_SetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                 GWEN_WIDGET *w,
                                                 GWEN_DIALOG_PROPERTY prop,
                                                 int index,
@@ -145,7 +145,7 @@ GWENHYWFAR_CB int Gtk2Gui_Dialog_SetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_CB int Gtk2Gui_Dialog_GetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
+int GWENHYWFAR_CB Gtk2Gui_Dialog_GetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                 GWEN_WIDGET *w,
                                                 GWEN_DIALOG_PROPERTY prop,
                                                 int index,
@@ -156,7 +156,7 @@ GWENHYWFAR_CB int Gtk2Gui_Dialog_GetIntProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_CB int Gtk2Gui_Dialog_SetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
+int GWENHYWFAR_CB Gtk2Gui_Dialog_SetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                  GWEN_WIDGET *w,
                                                  GWEN_DIALOG_PROPERTY prop,
                                                  int index,
@@ -168,7 +168,7 @@ GWENHYWFAR_CB int Gtk2Gui_Dialog_SetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
 
 
 
-GWENHYWFAR_CB const char *Gtk2Gui_Dialog_GetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
+const char *GWENHYWFAR_CB Gtk2Gui_Dialog_GetCharProperty(GWEN_UNUSED GWEN_DIALOG *dlg,
                                                          GWEN_WIDGET *w,
                                                          GWEN_DIALOG_PROPERTY prop,
                                                          int index,

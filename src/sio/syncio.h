@@ -229,18 +229,18 @@ int GWEN_SyncIo_Helper_CopyFile(const char *srcPath, const char *destPath);
  *
  */
 /*@{*/
-typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_CONNECT_FN)(GWEN_SYNCIO *sio);
-typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_DISCONNECT_FN)(GWEN_SYNCIO *sio);
-typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_FLUSH_FN)(GWEN_SYNCIO *sio);
+typedef int (GWENHYWFAR_CB *GWEN_SYNCIO_CONNECT_FN)(GWEN_SYNCIO *sio);
+typedef int (GWENHYWFAR_CB *GWEN_SYNCIO_DISCONNECT_FN)(GWEN_SYNCIO *sio);
+typedef int (GWENHYWFAR_CB *GWEN_SYNCIO_FLUSH_FN)(GWEN_SYNCIO *sio);
 
 
-typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_READ_FN)(GWEN_SYNCIO *sio,
+typedef int (GWENHYWFAR_CB *GWEN_SYNCIO_READ_FN)(GWEN_SYNCIO *sio,
                                                  uint8_t *buffer,
                                                  uint32_t size);
 
 
 
-typedef GWENHYWFAR_CB int (*GWEN_SYNCIO_WRITE_FN)(GWEN_SYNCIO *sio,
+typedef int (GWENHYWFAR_CB *GWEN_SYNCIO_WRITE_FN)(GWEN_SYNCIO *sio,
                                                   const uint8_t *buffer,
                                                   uint32_t size);
 /*@}*/

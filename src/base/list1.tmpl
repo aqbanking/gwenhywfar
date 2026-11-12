@@ -50,7 +50,7 @@ extern "C" {
   /**
    * This function is called from within @ref @FN_PREFIX@_List_SetSortFn().
    */
-  typedef int GWENHYWFAR_CB (*@TYPENAME@_LIST_SORT_FN)(const @TYPENAME@ *a, const @TYPENAME@ *b, int ascending);
+  typedef int (GWENHYWFAR_CB *@TYPENAME@_LIST_SORT_FN)(const @TYPENAME@ *a, const @TYPENAME@ *b, int ascending);
 
 
   /** @internal */

@@ -11,12 +11,12 @@
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
-									  GWEN_DIALOG_PROPERTY prop,
-									  int index,
-									  int value,
-									  int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
+					  GWEN_DIALOG_PROPERTY prop,
+					  int index,
+					  int value,
+					  int doSignal) {
 	CocoaComboBox *comboBox = nil;
 	CocoaPopUpButton *popUp = nil;
 	
@@ -65,11 +65,11 @@ int CocoaGui_WComboBox_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WComboBox_GetIntProperty(GWEN_WIDGET *w,
-									  GWEN_DIALOG_PROPERTY prop,
-									  int index,
-									  int defaultValue) {
+static int GWENHYWFAR_CB
+CocoaGui_WComboBox_GetIntProperty(GWEN_WIDGET *w,
+					  GWEN_DIALOG_PROPERTY prop,
+					  int index,
+					  int defaultValue) {
 	CocoaComboBox *comboBox = nil;
 	CocoaPopUpButton *popUp = nil;
 	
@@ -124,12 +124,12 @@ int CocoaGui_WComboBox_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int CocoaGui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
-									   GWEN_DIALOG_PROPERTY prop,
-									   int index,
-									   const char *value,
-									   int doSignal) {
+static int GWENHYWFAR_CB
+CocoaGui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
+					   GWEN_DIALOG_PROPERTY prop,
+					   int index,
+					   const char *value,
+					   int doSignal) {
 	CocoaComboBox *comboBox = nil;
 	CocoaPopUpButton *popUp = nil;
 	
@@ -176,11 +176,11 @@ int CocoaGui_WComboBox_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char* CocoaGui_WComboBox_GetCharProperty(GWEN_WIDGET *w,
-											   GWEN_DIALOG_PROPERTY prop,
-											   int index,
-											   const char *defaultValue) {
+static const char*GWENHYWFAR_CB
+CocoaGui_WComboBox_GetCharProperty(GWEN_WIDGET *w,
+  GWEN_DIALOG_PROPERTY prop,
+  int index,
+  const char *defaultValue) {
 	CocoaComboBox *comboBox = nil;
 	CocoaPopUpButton *popUp = nil;
 	

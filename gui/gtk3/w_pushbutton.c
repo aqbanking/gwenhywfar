@@ -11,12 +11,12 @@
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WPushButton_SetIntProperty(GWEN_WIDGET *w,
-                                       GWEN_DIALOG_PROPERTY prop,
-                                       GWEN_UNUSED int index,
-                                       int value,
-                                       GWEN_UNUSED int doSignal)
+static int GWENHYWFAR_CB
+Gtk3Gui_WPushButton_SetIntProperty(GWEN_WIDGET *w,
+                                   GWEN_DIALOG_PROPERTY prop,
+                                   GWEN_UNUSED int index,
+                                   int value,
+                                   GWEN_UNUSED int doSignal)
 {
   GtkButton *g;
 
@@ -50,11 +50,11 @@ int Gtk3Gui_WPushButton_SetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WPushButton_GetIntProperty(GWEN_WIDGET *w,
-                                       GWEN_DIALOG_PROPERTY prop,
-                                       GWEN_UNUSED int index,
-                                       int defaultValue)
+static int GWENHYWFAR_CB
+Gtk3Gui_WPushButton_GetIntProperty(GWEN_WIDGET *w,
+                                   GWEN_DIALOG_PROPERTY prop,
+                                   GWEN_UNUSED int index,
+                                   int defaultValue)
 {
   GtkButton *g;
 
@@ -86,12 +86,12 @@ int Gtk3Gui_WPushButton_GetIntProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-int Gtk3Gui_WPushButton_SetCharProperty(GWEN_WIDGET *w,
-                                        GWEN_DIALOG_PROPERTY prop,
-                                        GWEN_UNUSED int index,
-                                        const char *value,
-                                        GWEN_UNUSED int doSignal)
+static int GWENHYWFAR_CB
+Gtk3Gui_WPushButton_SetCharProperty(GWEN_WIDGET *w,
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    GWEN_UNUSED int index,
+                                    const char *value,
+                                    GWEN_UNUSED int doSignal)
 {
   GtkButton *g;
 
@@ -114,11 +114,11 @@ int Gtk3Gui_WPushButton_SetCharProperty(GWEN_WIDGET *w,
 
 
 
-static GWENHYWFAR_CB
-const char *Gtk3Gui_WPushButton_GetCharProperty(GWEN_WIDGET *w,
-                                                GWEN_DIALOG_PROPERTY prop,
-                                                GWEN_UNUSED int index,
-                                                const char *defaultValue)
+static const char *GWENHYWFAR_CB
+Gtk3Gui_WPushButton_GetCharProperty(GWEN_WIDGET *w,
+                                    GWEN_DIALOG_PROPERTY prop,
+                                    GWEN_UNUSED int index,
+                                    const char *defaultValue)
 {
   GtkButton *g;
 
