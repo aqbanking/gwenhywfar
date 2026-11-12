@@ -840,7 +840,9 @@ iconv (cd, NULL, NULL, NULL, NULL);],[
 		LIBS="${_libs}"
 		LDFLAGS="${_ldflags}"])]))
 fi
-AC_DEFINE_UNQUOTED(HAVE_ICONV, $WITH_ICONV, [Defined if libiconv is available])
+if test "$WITH_ICONV" = "1"; then
+  AC_DEFINE(HAVE_ICONV, 1, [Defined if libiconv is available])
+fi
 AC_SUBST(WITH_ICONV)
 AC_SUBST(ICONV_LIBS)
 
