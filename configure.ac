@@ -23,6 +23,19 @@ AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR([src/gwenhywfarapi.h])
 AC_CONFIG_HEADERS([config.h])
 
+dnl MSVC has no <strings.h>; its <string.h> provides the same functions
+dnl under other names.
+AH_BOTTOM([
+#ifdef _MSC_VER
+# ifndef strcasecmp
+#  define strcasecmp _stricmp
+# endif
+# ifndef strncasecmp
+#  define strncasecmp _strnicmp
+# endif
+#endif
+])
+
 ###-------------------------------------------------------------------------
 #
 # versions
