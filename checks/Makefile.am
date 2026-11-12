@@ -7,6 +7,8 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/os \
  -I$(top_srcdir)/src/parser @all_includes@
 
+SUBDIRS = consumer
+
 noinst_PROGRAMS=checks check_urlfns
 checks_SOURCES=\
  main.c \
