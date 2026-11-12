@@ -71,12 +71,12 @@ public:
 
   FXApp *getApp() { return m_app;};
 
-  FOX16GUI_API static FXString getRawText(const char *text);
-  FOX16GUI_API static FXString getHtmlText(const char *text);
+  static FXString getRawText(const char *text);
+  static FXString getHtmlText(const char *text);
 
   FXWindow *getGuiWindow(uint32_t id);
 
-  FOX16GUI_API static FOX16_Gui *getFgGui();
+  static FOX16_Gui *getFgGui();
 
   virtual int openDialog(GWEN_DIALOG *dlg, uint32_t guiid);
   virtual int closeDialog(GWEN_DIALOG *dlg);

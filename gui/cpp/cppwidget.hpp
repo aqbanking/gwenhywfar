@@ -44,7 +44,7 @@ public:
   virtual ~CppWidget();
 
   GWEN_WIDGET *getCInterface();
-  static CPPGUI_API CppWidget *getWidget(GWEN_WIDGET *w);
+  static CppWidget *getWidget(GWEN_WIDGET *w);
 
   CppDialog *getDialog();
 

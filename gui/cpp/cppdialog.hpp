@@ -44,7 +44,7 @@ public:
 
   GWEN_DIALOG *getCInterface();
 
-  static CPPGUI_API CppDialog *getDialog(GWEN_DIALOG *dlg);
+  static CppDialog *getDialog(GWEN_DIALOG *dlg);
 
 protected:
   GWEN_DIALOG *_dialog;

@@ -17,11 +17,7 @@
 /* building Cpp */
 #  if GWENHYWFAR_SYS_IS_WINDOWS
 /* for windows */
-#    ifdef __declspec
-#      define CPPGUI_API __declspec (dllexport)
-#    else /* if __declspec */
-#      define CPPGUI_API
-#    endif /* if NOT __declspec */
+#    define CPPGUI_API __declspec (dllexport)
 #  else
 /* for non-win32 */
 #    ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
@@ -34,11 +30,7 @@
 /* not building Cpp */
 #  if GWENHYWFAR_SYS_IS_WINDOWS
 /* for windows */
-#    ifdef __declspec
-#      define CPPGUI_API __declspec (dllimport)
-#    else /* if __declspec */
-#      define CPPGUI_API
-#    endif /* if NOT __declspec */
+#    define CPPGUI_API __declspec (dllimport)
 #  else
 /* for non-win32 */
 #    define CPPGUI_API

@@ -56,7 +56,7 @@ public:
   CppGui();
   virtual ~CppGui();
 
-  static CPPGUI_API CppGui *getCppGui();
+  static CppGui *getCppGui();
 
   GWEN_GUI *getCInterface();
 
