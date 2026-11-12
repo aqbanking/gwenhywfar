@@ -257,6 +257,27 @@ else
 fi
 AC_SUBST(GWEN_IMPLIB_PREFIX)
 AC_SUBST(GWEN_IMPLIB_SUFFIX)
+# Prefix for the CMake package files in $libdir/cmake/<package>: relative
+# to their directory when libdir is inside the prefix, so that the
+# installation can move and native CMake on Windows sees no MSYS paths
+gwen_prefix=$prefix
+test "x$gwen_prefix" = xNONE && gwen_prefix=$ac_default_prefix
+gwen_libdir=`
+  prefix=$gwen_prefix
+  test "x$exec_prefix" = xNONE && exec_prefix=$prefix
+  eval gwen_dir="$libdir"
+  eval echo "$gwen_dir"`
+case $gwen_libdir in
+  "$gwen_prefix"/*)
+    gwen_up=`echo "${gwen_libdir#"$gwen_prefix"/}/cmake/x" | sed 's|[^/][^/]*|..|g'`
+    GWEN_CMAKE_PREFIX="\${CMAKE_CURRENT_LIST_DIR}/$gwen_up"
+    ;;
+  *)
+    GWEN_CMAKE_PREFIX=$gwen_prefix
+    ;;
+esac
+AC_SUBST(GWEN_CMAKE_PREFIX)
+AM_SUBST_NOTMAKE(GWEN_CMAKE_PREFIX)
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_OBJC

@@ -24,7 +24,8 @@ find_dependency(Qt@QT_MAJOR_VERSION@Core)
 find_dependency(Qt@QT_MAJOR_VERSION@Widgets)
 
 
-set_and_check(prefix "@prefix@")
+get_filename_component(prefix "@GWEN_CMAKE_PREFIX@" ABSOLUTE)
+set_and_check(prefix "${prefix}")
 set_and_check(exec_prefix "@exec_prefix@")
 set_and_check(includedir "@includedir@")
 set_and_check(${CMAKE_FIND_PACKAGE_NAME}_INCLUDE_DIRS "@gwenhywfar_headerdir@")
