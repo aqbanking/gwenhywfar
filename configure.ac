@@ -489,7 +489,7 @@ case "$OS_TYPE" in
 
         gwenhywfar_os_lib="os/windows/libos.la"
         GWEN_OS="windows"
-	all_libraries="${all_libraries} -lwsock32"
+	all_libraries="${all_libraries} -lwsock32 -ladvapi32"
         gwenbuild_tool=""
     	;;
     *)
