@@ -54,6 +54,7 @@
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/x509v3.h>
+# include <openssl/pem.h>
 # include <openssl/core_names.h>
 #else
 # include <gnutls/gnutls.h>
@@ -998,6 +999,58 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
 
 
 
+/* Reads DH parameters for server mode; replaces the per-key-length tmp_dh_callback, which OpenSSL 3 deprecated */
+static int GWEN_SyncIo_Tls_SetDhParams(GWEN_SYNCIO_TLS *xio)
+{
+  FILE *f;
+  BIO *bio;
+  EVP_PKEY *dh;
+  EVP_PKEY_CTX *pctx;
+  int rv;
+
+  f=fopen(xio->dhParamFile, "r");
+  if (f==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No DH file found at \"%s\"", xio->dhParamFile);
+    return GWEN_ERROR_IO;
+  }
+
+  bio=BIO_new_fp(f, BIO_NOCLOSE);
+  dh=bio?PEM_read_bio_Parameters(bio, NULL):NULL;
+  BIO_free(bio);
+  fclose(f);
+  if (dh==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "SSL Error: Bad DH file");
+    ERR_clear_error();
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* check for usability */
+  pctx=EVP_PKEY_CTX_new_from_pkey(NULL, dh, NULL);
+  rv=pctx?EVP_PKEY_param_check(pctx):0;
+  EVP_PKEY_CTX_free(pctx);
+  if (rv!=1) {
+    char errBuf[256];
+
+    GWEN_SyncIo_Tls_ErrorText(SSL_ERROR_SSL, errBuf, sizeof(errBuf));
+    DBG_ERROR(GWEN_LOGDOMAIN, "SSL DH_check error: %s", errBuf);
+    ERR_clear_error();
+    EVP_PKEY_free(dh);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* DH params seem to be ok */
+  if (SSL_CTX_set0_tmp_dh_pkey(xio->ssl_ctx, dh)!=1) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "SSL Error: Could not set DH parameters");
+    ERR_clear_error();
+    EVP_PKEY_free(dh);
+    return GWEN_ERROR_GENERIC;
+  }
+  return 0;
+}
+
+
+
 static int GWEN_SyncIo_Tls_IsIpAddress(const char *s)
 {
   ASN1_OCTET_STRING *ip;
@@ -1221,6 +1274,17 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
       SSL_CTX_set_verify(xio->ssl_ctx,
                          SSL_VERIFY_PEER,
                          GWEN_SyncIo_Tls_VerifyCallBack);
+
+    /* possibly set DH params, otherwise use the RFC 7919 groups (as GnuTLS does) */
+    if (xio->dhParamFile) {
+      rv=GWEN_SyncIo_Tls_SetDhParams(xio);
+      if (rv<0) {
+        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
+    else
+      SSL_CTX_set_dh_auto(xio->ssl_ctx, 1);
   }
   else {
     /* active connection */
