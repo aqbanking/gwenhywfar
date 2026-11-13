@@ -370,8 +370,28 @@ int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf)
  * src/crypt/ossl/nl_ssl.c and src/crypt/ossl/bio_netlayer.c (removed in da13b417), and
  * GWEN_NetTransportSSL_StartDisconnect() from src/crypt/ossl/nettransportssl.c (removed in e43961fb). */
 
+static CRYPTO_ONCE gwen_syncio_tls_once=CRYPTO_ONCE_STATIC_INIT;
 static int gwen_syncio_tls_sslidx=-1;
 static BIO_METHOD *bio_syncio_methods=NULL;
+
+
+
+static void GWEN_SyncIo_Tls_InitOnce(void)
+{
+  gwen_syncio_tls_sslidx=SSL_get_ex_new_index(0, 0, 0, 0, 0);
+
+  /* BIO methods are opaque since OpenSSL 1.1, and BIO type indexes are a process-wide resource of OpenSSL, so
+   * all connections share one BIO method, which lives until the process ends */
+  bio_syncio_methods=BIO_meth_new(BIO_get_new_index() | BIO_TYPE_SOURCE_SINK, "GWEN_SyncIo");
+  if (bio_syncio_methods) {
+    BIO_meth_set_write(bio_syncio_methods, BIO_syncio_write);
+    BIO_meth_set_read(bio_syncio_methods, BIO_syncio_read);
+    BIO_meth_set_puts(bio_syncio_methods, BIO_syncio_puts);
+    BIO_meth_set_ctrl(bio_syncio_methods, BIO_syncio_ctrl);
+    BIO_meth_set_create(bio_syncio_methods, BIO_syncio_create);
+    BIO_meth_set_destroy(bio_syncio_methods, BIO_syncio_destroy);
+  }
+}
 
 
 
@@ -380,27 +400,13 @@ BIO *BIO_syncio_new(GWEN_SYNCIO *sio)
   BIO *bio;
 
   assert(sio);
-  if (bio_syncio_methods==NULL) {
-    /* BIO methods are opaque since OpenSSL 1.1 */
-    bio_syncio_methods=BIO_meth_new(BIO_TYPE_SOCKET, "GWEN_SyncIo");
-    if (bio_syncio_methods==NULL)
-      return NULL;
-    BIO_meth_set_write(bio_syncio_methods, BIO_syncio_write);
-    BIO_meth_set_read(bio_syncio_methods, BIO_syncio_read);
-    BIO_meth_set_puts(bio_syncio_methods, BIO_syncio_puts);
-    BIO_meth_set_ctrl(bio_syncio_methods, BIO_syncio_ctrl);
-    BIO_meth_set_create(bio_syncio_methods, BIO_syncio_create);
-    BIO_meth_set_destroy(bio_syncio_methods, BIO_syncio_destroy);
-  }
   bio=BIO_new(bio_syncio_methods);
   if (bio==NULL)
     return NULL;
-
   BIO_set_data(bio, sio);
   GWEN_SyncIo_Attach(sio);
   /* GWEN_SyncIo_Tls disconnects the base layer itself */
   BIO_set_shutdown(bio, BIO_NOCLOSE);
-
   return bio;
 }
 
@@ -423,13 +429,15 @@ int BIO_syncio_destroy(BIO *bio)
     GWEN_SYNCIO *sio;
 
     sio=(GWEN_SYNCIO *) BIO_get_data(bio);
-    if (BIO_get_shutdown(bio)) {
-      /* disconnect layer */
-      GWEN_SyncIo_Disconnect(sio);
-      BIO_set_init(bio, 0);
-      BIO_clear_flags(bio, ~0);
+    if (sio) {
+      if (BIO_get_shutdown(bio)) {
+        /* disconnect layer */
+        GWEN_SyncIo_Disconnect(sio);
+        BIO_set_init(bio, 0);
+        BIO_clear_flags(bio, ~0);
+      }
+      GWEN_SyncIo_free(sio); /* detach from syncio */
     }
-    GWEN_SyncIo_free(sio); /* detach from syncio */
     return 1;
   }
   else
@@ -958,19 +966,24 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
 int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
 {
   GWEN_SYNCIO_TLS *xio;
+  uint32_t lflags;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
 
-  if (gwen_syncio_tls_sslidx==-1) {
-    gwen_syncio_tls_sslidx=SSL_get_ex_new_index(0, 0, 0, 0, 0);
-    assert(gwen_syncio_tls_sslidx!=-1);
+  lflags=GWEN_SyncIo_GetFlags(sio);
+  DBG_INFO(GWEN_LOGDOMAIN, "Preparing SSL (%08x)", lflags);
+
+  if (CRYPTO_THREAD_run_once(&gwen_syncio_tls_once, GWEN_SyncIo_Tls_InitOnce)!=1 ||
+      gwen_syncio_tls_sslidx==-1 || bio_syncio_methods==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not initialize OpenSSL data");
+    return GWEN_ERROR_GENERIC;
   }
 
   /* socket ready now setup SSL */
   ERR_clear_error();
-  if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE)
+  if (lflags & GWEN_SYNCIO_FLAGS_PASSIVE)
     xio->ssl_ctx=SSL_CTX_new(TLS_server_method());
   else
     xio->ssl_ctx=SSL_CTX_new(TLS_client_method());
