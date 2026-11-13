@@ -803,13 +803,47 @@ static void GWEN_SyncIo_Tls_BnToHex(const BIGNUM *bn, GWEN_BUFFER *kbuf)
 
 
 
+/* Sets a fingerprint of the certificate with the given setter, returns an error if no digest could be built */
+static int GWEN_SyncIo_Tls_SetFingerPrint(GWEN_SSLCERTDESCR *cd, X509 *cert, const EVP_MD *mdType,
+                                          void (*setFn)(GWEN_SSLCERTDESCR *el, const char *d))
+{
+  unsigned int  md_size=0;
+  unsigned char md[EVP_MAX_MD_SIZE];
+  GWEN_BUFFER *dbuf;
+
+  if (!X509_digest(cert, mdType, md, &md_size)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Error building fingerprint of the certificate");
+    ERR_clear_error();
+    return GWEN_ERROR_GENERIC;
+  }
+  if (!md_size) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Empty fingerprint of the certificate");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
+                                                               md_size, dbuf, 2, ':', 0)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Could not convert fingerprint to hex");
+  }
+  else {
+    setFn(cd, GWEN_Buffer_GetStart(dbuf));
+  }
+  GWEN_Buffer_free(dbuf);
+  return 0;
+}
+
+
+
+/* Returns NULL if a fingerprint could not be built, as the GnuTLS build then rejects the certificate */
 GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
 {
   const X509_NAME *nm;
   const ASN1_TIME *d;
   EVP_PKEY *pktmp;
-  unsigned int  md_size;
-  unsigned char md[EVP_MAX_MD_SIZE];
   char *s;
   GWEN_SSLCERTDESCR *cd;
 
@@ -910,88 +944,11 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
     EVP_PKEY_free(pktmp);
   } /* if there is a pubkey */
 
-  /* fingerprint (MD5) */
-  md_size=0;
-  if (!X509_digest(cert, EVP_md5(), md, &md_size)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Error building fingerprint of the certificate");
-    ERR_clear_error();
-  }
-  if (!md_size) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Empty fingerprint of the certificate");
+  if (GWEN_SyncIo_Tls_SetFingerPrint(cd, cert, EVP_md5(), GWEN_SslCertDescr_SetFingerPrint) ||
+      GWEN_SyncIo_Tls_SetFingerPrint(cd, cert, EVP_sha1(), GWEN_SslCertDescr_SetFingerPrintSha1) ||
+      GWEN_SyncIo_Tls_SetFingerPrint(cd, cert, EVP_sha512(), GWEN_SslCertDescr_SetFingerPrintSha512)) {
     GWEN_SslCertDescr_free(cd);
     return NULL;
-  }
-  else {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
-                                                                 md_size, dbuf, 2, ':', 0)) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Could not convert fingerprint to hex");
-    }
-    else {
-      GWEN_SslCertDescr_SetFingerPrint(cd, GWEN_Buffer_GetStart(dbuf));
-    }
-    GWEN_Buffer_free(dbuf);
-  }
-
-  /* fingerprint (SHA1) */
-  md_size=0;
-  if (!X509_digest(cert, EVP_sha1(), md, &md_size)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Error building fingerprint of the certificate");
-    ERR_clear_error();
-  }
-  if (!md_size) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Empty fingerprint of the certificate");
-    GWEN_SslCertDescr_free(cd);
-    return NULL;
-  }
-  else {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
-                                                                 md_size, dbuf, 2, ':', 0)) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Could not convert fingerprint to hex");
-    }
-    else {
-      GWEN_SslCertDescr_SetFingerPrintSha1(cd, GWEN_Buffer_GetStart(dbuf));
-    }
-    GWEN_Buffer_free(dbuf);
-  }
-
-  /* fingerprint (SHA512) */
-  md_size=0;
-  if (!X509_digest(cert, EVP_sha512(), md, &md_size)) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Error building fingerprint of the certificate");
-    ERR_clear_error();
-  }
-  if (!md_size) {
-    DBG_ERROR(GWEN_LOGDOMAIN,
-              "Empty fingerprint of the certificate");
-    GWEN_SslCertDescr_free(cd);
-    return NULL;
-  }
-  else {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
-                                                                 md_size, dbuf, 2, ':', 0)) {
-      DBG_ERROR(GWEN_LOGDOMAIN,
-                "Could not convert fingerprint to hex");
-    }
-    else {
-      GWEN_SslCertDescr_SetFingerPrintSha512(cd, GWEN_Buffer_GetStart(dbuf));
-    }
-    GWEN_Buffer_free(dbuf);
   }
 
   return cd;
@@ -1355,11 +1312,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     xio->ssl_ctx=SSL_CTX_new(TLS_client_method());
 
   if (xio->ssl_ctx==NULL || GWEN_SyncIo_Tls_Setup(sio)) {
-    SSL_free(xio->ssl);
-    xio->ssl=0;
-    SSL_CTX_free(xio->ssl_ctx);
-    xio->ssl_ctx=0;
-    xio->bio=0; /* freed by SSL_free() */
+    GWEN_SyncIo_Tls_UndoPrepare(sio);
     ERR_clear_error();
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup SSL connection");
     return GWEN_ERROR_GENERIC;
@@ -1382,14 +1335,13 @@ void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio)
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
 
-  if (xio->prepared) {
-    SSL_free(xio->ssl);
-    xio->ssl=0;
-    SSL_CTX_free(xio->ssl_ctx);
-    xio->ssl_ctx=0;
-    xio->bio=0; /* freed by SSL_free() */
-    xio->prepared=0;
-  }
+  /* SSL_free() and SSL_CTX_free() accept NULL, so this also cleans up after a failed GWEN_SyncIo_Tls_Prepare() */
+  SSL_free(xio->ssl);
+  xio->ssl=0;
+  SSL_CTX_free(xio->ssl_ctx);
+  xio->ssl_ctx=0;
+  xio->bio=0; /* freed by SSL_free() */
+  xio->prepared=0;
 }
 
 
