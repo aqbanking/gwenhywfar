@@ -2709,6 +2709,28 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio)
 
 #ifdef GWEN_TLS_OPENSSL
 
+/* Calls SSL_shutdown() until it does not want to read or write any more */
+static int GWEN_SyncIo_Tls_SslShutdown(SSL *ssl)
+{
+  int rv;
+
+  for (;;) {
+    ERR_clear_error();
+    rv=SSL_shutdown(ssl);
+    if (rv<0) {
+      int sslerr;
+
+      sslerr=SSL_get_error(ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ ||
+          sslerr==SSL_ERROR_WANT_WRITE)
+        continue; /* would block */
+    }
+    return rv;
+  }
+}
+
+
+
 int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio)
 {
   GWEN_SYNCIO_TLS *xio;
@@ -2722,7 +2744,6 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio)
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
 
-  /* check status */
   if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
     DBG_INFO(GWEN_LOGDOMAIN, "Not connected");
     GWEN_SyncIo_Tls_UndoPrepare(sio);
@@ -2730,15 +2751,54 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio)
     return GWEN_ERROR_NOT_CONNECTED;
   }
 
-  rv=SSL_shutdown(xio->ssl);
-  if (!rv)
-    rv=SSL_shutdown(xio->ssl);
+  rv=GWEN_SyncIo_Tls_SslShutdown(xio->ssl);
+  if (!rv) {
+    /* our close_notify is sent, now read up to the close_notify of the other side (discarding data received
+     * before it), as gnutls_bye(GNUTLS_SHUT_RDWR) does in the GnuTLS build */
+    for (;;) {
+      char buffer[256];
+      int sslerr;
 
-  if (rv==1 || rv==-1) {
-    /* connection closed */
-    DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+      ERR_clear_error();
+      rv=SSL_read(xio->ssl, buffer, sizeof(buffer));
+      if (rv>0)
+        continue;
+      sslerr=SSL_get_error(xio->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ ||
+          sslerr==SSL_ERROR_WANT_WRITE)
+        continue; /* would block */
+      if (sslerr==SSL_ERROR_ZERO_RETURN)
+        /* close_notify of the other side received, complete the shutdown */
+        rv=GWEN_SyncIo_Tls_SslShutdown(xio->ssl);
+      else if (GWEN_SyncIo_Tls_IsUnexpectedEof(sslerr))
+        /* the other side closes the connection without close_notify after ours, so accept it as closed, as
+         * gnutls_bye() does */
+        rv=1;
+      break;
+    }
   }
 
+  if (rv!=1) {
+    char errBuf[256];
+    int sslerr;
+
+    sslerr=SSL_get_error(xio->ssl, rv);
+    GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
+    DBG_ERROR(GWEN_LOGDOMAIN, "SSL_shutdown: %d (%s)", sslerr, errBuf);
+    GWEN_Gui_ProgressLog2(0,
+                          GWEN_LoggerLevel_Info,
+                          I18N("Error on SSL_shutdown: %d (%s)"),
+                          sslerr,
+                          errBuf);
+    ERR_clear_error();
+    GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+    GWEN_SyncIo_Tls_UndoPrepare(sio);
+    GWEN_SyncIo_Disconnect(baseIo);
+    return GWEN_ERROR_SSL;
+  }
+
+  /* connection closed */
+  DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
   GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
   GWEN_SyncIo_Tls_UndoPrepare(sio);
   GWEN_SyncIo_Disconnect(baseIo);
@@ -2807,12 +2867,8 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
         } /* if EOF without close_notify */
         else {
           if (sslerr==SSL_ERROR_ZERO_RETURN) {
+            /* close_notify received, report EOF */
             DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
-            GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
-            GWEN_SyncIo_Tls_UndoPrepare(sio);
-            GWEN_SyncIo_Disconnect(baseIo);
-
-            /* connection closed, no real error */
             return 0;
           }
           else {
