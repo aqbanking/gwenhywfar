@@ -54,6 +54,7 @@
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/x509v3.h>
+# include <openssl/core_names.h>
 #else
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
@@ -771,10 +772,30 @@ GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(const ASN1_TIME *d)
 
 
 
+/* Hex string of a big number, with a leading zero byte if the top bit is set (as GnuTLS exports it) */
+static void GWEN_SyncIo_Tls_BnToHex(const BIGNUM *bn, GWEN_BUFFER *kbuf)
+{
+  unsigned char buffer[1025];
+  int l;
+
+  l=BN_num_bytes(bn);
+  if (l<=0 || l>(int)(sizeof(buffer)-1))
+    return;
+  buffer[0]=0;
+  l=BN_bn2bin(bn, buffer+1);
+  if (buffer[1] & 0x80)
+    GWEN_Text_ToHexBuffer((const char *) buffer, l+1, kbuf, 0, 0, 0);
+  else
+    GWEN_Text_ToHexBuffer((const char *)(buffer+1), l, kbuf, 0, 0, 0);
+}
+
+
+
 GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
 {
   const X509_NAME *nm;
   const ASN1_TIME *d;
+  EVP_PKEY *pktmp;
   unsigned int  md_size;
   unsigned char md[EVP_MAX_MD_SIZE];
   char *s;
@@ -848,6 +869,34 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
       DBG_ERROR(GWEN_LOGDOMAIN, "Error in notAfter date");
     }
   }
+
+  pktmp=X509_get_pubkey(cert);
+  if (pktmp) {
+    if (EVP_PKEY_is_a(pktmp, "RSA")) {
+      BIGNUM *n=NULL;
+      BIGNUM *e=NULL;
+      GWEN_BUFFER *kbuf;
+
+      kbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      if (EVP_PKEY_get_bn_param(pktmp, OSSL_PKEY_PARAM_RSA_N, &n)==1 && n) {
+        GWEN_SyncIo_Tls_BnToHex(n, kbuf);
+        if (GWEN_Buffer_GetUsedBytes(kbuf))
+          GWEN_SslCertDescr_SetPubKeyModulus(cd, GWEN_Buffer_GetStart(kbuf));
+        GWEN_Buffer_Reset(kbuf);
+      }
+
+      if (EVP_PKEY_get_bn_param(pktmp, OSSL_PKEY_PARAM_RSA_E, &e)==1 && e) {
+        GWEN_SyncIo_Tls_BnToHex(e, kbuf);
+        if (GWEN_Buffer_GetUsedBytes(kbuf))
+          GWEN_SslCertDescr_SetPubKeyExponent(cd, GWEN_Buffer_GetStart(kbuf));
+      }
+      GWEN_Buffer_free(kbuf);
+      BN_free(n);
+      BN_free(e);
+      ERR_clear_error();
+    } /* if there is data for the public key */
+    EVP_PKEY_free(pktmp);
+  } /* if there is a pubkey */
 
   /* fingerprint (MD5) */
   md_size=0;
