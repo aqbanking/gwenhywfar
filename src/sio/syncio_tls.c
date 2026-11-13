@@ -700,11 +700,15 @@ int GWEN_SyncIo_Tls_VerifyCallBack(int preverify_ok, X509_STORE_CTX *ctx)
 
 
 
+/* Returns the first entry of the given type as UTF-8, escaped as in RFC 4514 like the GnuTLS backend returns it.
+ * The GnuTLS backend reads these entries into a buffer of 63 bytes and leaves out longer ones, so this does the
+ * same. */
 char *GWEN_SyncIo_Tls_GetCertEntry(const X509_NAME *nm, int nid)
 {
   const X509_NAME_ENTRY *e;
-  const unsigned char *p;
-  int len;
+  BIO *bio;
+  char *p;
+  long len;
   int lastpos;
   char *cpy;
 
@@ -715,15 +719,22 @@ char *GWEN_SyncIo_Tls_GetCertEntry(const X509_NAME *nm, int nid)
       break;
     e=X509_NAME_get_entry(nm, lastpos);
     assert(e);
-    /* X509_NAME_ENTRY is opaque since OpenSSL 1.1 */
-    p=ASN1_STRING_get0_data(X509_NAME_ENTRY_get_data(e));
-    len=ASN1_STRING_length(X509_NAME_ENTRY_get_data(e));
-    if (p) {
+    bio=BIO_new(BIO_s_mem());
+    if (bio &&
+        ASN1_STRING_print_ex(bio, X509_NAME_ENTRY_get_data(e), ASN1_STRFLGS_ESC_2253 | ASN1_STRFLGS_UTF8_CONVERT)>=0) {
+      len=BIO_get_mem_data(bio, &p);
+      if (len>62) {
+        BIO_free(bio);
+        return 0;
+      }
       cpy=(char *)malloc(len+1);
       memmove(cpy, p, len);
       cpy[len]=0;
+      BIO_free(bio);
       return cpy;
     }
+    BIO_free(bio);
+    ERR_clear_error();
   } /* for */
 
   return 0;
