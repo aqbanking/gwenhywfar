@@ -1272,7 +1272,7 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
                          GWEN_SyncIo_Tls_VerifyCallBack);
     else
       SSL_CTX_set_verify(xio->ssl_ctx,
-                         SSL_VERIFY_PEER,
+                         SSL_VERIFY_NONE,
                          GWEN_SyncIo_Tls_VerifyCallBack);
 
     /* possibly set DH params, otherwise use the RFC 7919 groups (as GnuTLS does) */
