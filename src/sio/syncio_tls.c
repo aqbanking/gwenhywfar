@@ -1295,7 +1295,7 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     xio->ssl=0;
     SSL_CTX_free(xio->ssl_ctx);
     xio->ssl_ctx=0;
-    xio->bio=0; /* FIXME: Does SSL_free free this ? */
+    xio->bio=0; /* freed by SSL_free() */
     ERR_clear_error();
     DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup SSL connection");
     return GWEN_ERROR_GENERIC;
@@ -1323,7 +1323,7 @@ void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio)
     xio->ssl=0;
     SSL_CTX_free(xio->ssl_ctx);
     xio->ssl_ctx=0;
-    xio->bio=0; /* FIXME: Does SSL_free free this ? */
+    xio->bio=0; /* freed by SSL_free() */
     xio->prepared=0;
   }
 }
@@ -2822,11 +2822,15 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
 
-  /* check status */
   if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not connected");
-    return GWEN_ERROR_INVALID;
+    DBG_INFO(GWEN_LOGDOMAIN, "Not connected");
+    GWEN_SyncIo_Tls_UndoPrepare(sio);
+    GWEN_SyncIo_Disconnect(baseIo);
+    return GWEN_ERROR_NOT_CONNECTED;
   }
+
+  if (size==0)
+    return 0;
 
   assert(xio->ssl);
 
@@ -2841,49 +2845,47 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
     rv=SSL_read(xio->ssl, buffer, (int) size);
     if (rv<1) {
       int sslerr;
+      char errBuf[256];
 
       sslerr=SSL_get_error(xio->ssl, rv);
       if (sslerr==SSL_ERROR_WANT_READ ||
           sslerr==SSL_ERROR_WANT_WRITE)
         continue; /* would block */
-      else {
-        if (GWEN_SyncIo_Tls_IsUnexpectedEof(sslerr)) {
-          /* EOF of the base layer without close_notify */
-          DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
-                   sslerr,
-                   GWEN_SyncIo_Tls_ErrorString(sslerr));
-          ERR_clear_error();
-          GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
-          GWEN_SyncIo_Tls_UndoPrepare(sio);
-          GWEN_SyncIo_Disconnect(baseIo);
-          if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!), ignoring.");
-            return 0; /* report EOF */
-          }
-          else {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!)");
-            return GWEN_ERROR_SSL_PREMATURE_CLOSE;
-          }
-        } /* if EOF without close_notify */
-        else {
-          if (sslerr==SSL_ERROR_ZERO_RETURN) {
-            /* close_notify received, report EOF */
-            DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
-            return 0;
-          }
-          else {
-            char errBuf[256];
 
-            GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
-            DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-            if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
-              ERR_print_errors_fp(stderr); /* DEBUG */
-            DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
-            ERR_clear_error();
-            return GWEN_ERROR_READ;
-          }
-        } /* if !(error is syscall and errno==0) */
-      } /* if error is not wantRead or wantWrite */
+      if (sslerr==SSL_ERROR_ZERO_RETURN) {
+        /* close_notify received, report EOF */
+        DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+        return 0;
+      }
+
+      GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
+      if (GWEN_SyncIo_Tls_IsUnexpectedEof(sslerr)) {
+        /* EOF of the base layer without close_notify */
+        DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+                 sslerr, errBuf);
+        ERR_clear_error();
+        GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+        GWEN_SyncIo_Tls_UndoPrepare(sio);
+        GWEN_SyncIo_Disconnect(baseIo);
+        if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!), ignoring.");
+          return 0; /* report EOF */
+        }
+        else {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!)");
+          return GWEN_ERROR_SSL_PREMATURE_CLOSE;
+        }
+      }
+
+      DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+      if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+        ERR_print_errors_fp(stderr); /* DEBUG */
+      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
+      ERR_clear_error();
+      GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+      GWEN_SyncIo_Tls_UndoPrepare(sio);
+      GWEN_SyncIo_Disconnect(baseIo);
+      return GWEN_ERROR_SSL;
     } /* if rv<1 */
     break;
   }
@@ -2920,11 +2922,15 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
 
-  /* check status */
   if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected");
-    return GWEN_ERROR_INVALID;
+    DBG_INFO(GWEN_LOGDOMAIN, "Not connected");
+    GWEN_SyncIo_Tls_UndoPrepare(sio);
+    GWEN_SyncIo_Disconnect(baseIo);
+    return GWEN_ERROR_NOT_CONNECTED;
   }
+
+  if (size==0)
+    return 0;
 
   assert(xio->ssl);
 
@@ -2939,51 +2945,28 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
     rv=SSL_write(xio->ssl, buffer, (int) size);
     if (rv<1) {
       int sslerr;
+      char errBuf[256];
 
       sslerr=SSL_get_error(xio->ssl, rv);
       if (sslerr==SSL_ERROR_WANT_READ ||
           sslerr==SSL_ERROR_WANT_WRITE)
         continue; /* would block */
-      else {
-        if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
-                    sslerr,
-                    GWEN_SyncIo_Tls_ErrorString(sslerr));
-          GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
-          GWEN_SyncIo_Tls_UndoPrepare(sio);
-          GWEN_SyncIo_Disconnect(baseIo);
 
-          /* connection closed, no real error */
-          return 0;
-        } /* if error is syscall and errno==0 */
-        else {
-          if (sslerr==SSL_ERROR_ZERO_RETURN) {
-            DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
-            GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
-            GWEN_SyncIo_Tls_UndoPrepare(sio);
-            GWEN_SyncIo_Disconnect(baseIo);
-
-            /* connection closed, no real error */
-            return 0;
-          }
-          else {
-            char errBuf[256];
-
-            GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
-            DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-            if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
-              ERR_print_errors_fp(stderr); /* DEBUG */
-            DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
-            GWEN_Gui_ProgressLog2(0,
-                                  GWEN_LoggerLevel_Error,
-                                  I18N("Error on SSL_write: %d (%s)"),
-                                  sslerr,
-                                  errBuf);
-            ERR_clear_error();
-            return GWEN_ERROR_READ;
-          }
-        } /* if !(error is syscall and errno==0) */
-      } /* if error is not wantRead or wantWrite */
+      GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
+      DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+      if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+        ERR_print_errors_fp(stderr); /* DEBUG */
+      DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
+      GWEN_Gui_ProgressLog2(0,
+                            GWEN_LoggerLevel_Error,
+                            I18N("Error on SSL_write: %d (%s)"),
+                            sslerr,
+                            errBuf);
+      ERR_clear_error();
+      GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+      GWEN_SyncIo_Tls_UndoPrepare(sio);
+      GWEN_SyncIo_Disconnect(baseIo);
+      return GWEN_ERROR_SSL;
     } /* if rv<1 */
     break;
   }
