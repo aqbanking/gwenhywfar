@@ -68,6 +68,9 @@ GWEN_INHERIT(GWEN_SYNCIO, GWEN_SYNCIO_TLS)
 const char *SYNCIO_TLS_SYSTEM_CERTFILES[]= {
   "/etc/ssl/certs/ca-certificates.crt",
   "/etc/ssl/ca-bundle.pem",
+#ifdef GWEN_TLS_OPENSSL
+  "/etc/ssl/cert.pem",
+#endif
   NULL
 };
 #endif
@@ -851,6 +854,123 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
 
 
 
+static int GWEN_SyncIo_Tls_LoadVerifyLocations(SSL_CTX *ssl_ctx, const char *CAfile)
+{
+  int rv;
+
+  rv=SSL_CTX_load_verify_locations(ssl_ctx, CAfile, NULL);
+  if (rv==0) {
+    DBG_INFO(GWEN_LOGDOMAIN,
+             "SSL: Could not load certificate location "
+             "(was: \"%s\")",
+             CAfile);
+    ERR_clear_error();
+    return GWEN_ERROR_GENERIC;
+  }
+  DBG_INFO(GWEN_LOGDOMAIN, "Added trusted certs from [%s]", CAfile);
+  return 0;
+}
+
+
+
+/* Returns 1 if the trust store holds certificates; certificates in a hashed directory are only looked up on use and
+ * are not counted */
+static int GWEN_SyncIo_Tls_HasTrustedCerts(SSL_CTX *ssl_ctx)
+{
+  STACK_OF(X509_OBJECT) *objs;
+  int n;
+
+  objs=X509_STORE_get1_objects(SSL_CTX_get_cert_store(ssl_ctx));
+  n=objs?sk_X509_OBJECT_num(objs):0;
+  sk_X509_OBJECT_pop_free(objs, X509_OBJECT_free);
+  return (n>0)?1:0;
+}
+
+
+
+static int GWEN_SyncIo_Tls_AddTrustedCas(SSL_CTX *ssl_ctx)
+{
+  int trustFileSet=0;
+
+#if GWEN_TLS_USE_SYSTEM_CERTIFICATES
+  /* the system's default trust store as configured in OpenSSL; this also succeeds when the default locations do
+   * not exist (e.g. an OpenSSL installed by a package manager into its own prefix), so check what was loaded */
+  if (SSL_CTX_set_default_verify_paths(ssl_ctx)!=1) {
+    DBG_WARN(GWEN_LOGDOMAIN, "SSL_CTX_set_default_verify_paths() failed");
+    ERR_clear_error();
+  }
+  if (GWEN_SyncIo_Tls_HasTrustedCerts(ssl_ctx)) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Added default trusted certs from system");
+    trustFileSet=1;
+  }
+# ifdef OS_WIN32
+  /* the Windows certificate store (OpenSSL >= 3.2) */
+  if (SSL_CTX_load_verify_store(ssl_ctx, "org.openssl.winstore:")==1) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Added trusted certs from Windows certificate store");
+    trustFileSet=1;
+  }
+  else {
+    DBG_WARN(GWEN_LOGDOMAIN, "Could not load Windows certificate store");
+    ERR_clear_error();
+  }
+# endif
+#endif
+
+#ifdef OS_WIN32
+  if (trustFileSet==0) {
+    char defaultPath[2*_MAX_PATH+1];
+    const char *defaultFile = "ca-bundle.crt";
+    GWEN_STRINGLIST *paths;
+    GWEN_BUFFER *nbuf;
+    int rv;
+
+    if (GWEN_Directory_GetPrefixDirectory(defaultPath, sizeof(defaultPath))) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Could not get install prefix");
+      return GWEN_ERROR_GENERIC;
+    }
+    if (strcat_s(defaultPath, sizeof(defaultPath), "\\share\\gwenhywfar")) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No memory on creating search path");
+      return GWEN_ERROR_GENERIC;
+    }
+
+    paths=GWEN_StringList_new();
+    GWEN_StringList_AppendString(paths, defaultPath, 0, 0);
+
+    nbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Directory_FindFileInPaths(paths, defaultFile, nbuf);
+    GWEN_StringList_free(paths);
+    if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "Using default ca-bundle from [%s]", GWEN_Buffer_GetStart(nbuf));
+      if (GWEN_SyncIo_Tls_LoadVerifyLocations(ssl_ctx, GWEN_Buffer_GetStart(nbuf))==0)
+        trustFileSet=1;
+    }
+    GWEN_Buffer_free(nbuf);
+  }
+#else
+  if (trustFileSet==0) {
+    int i;
+
+    for (i=0; SYNCIO_TLS_SYSTEM_CERTFILES[i]; i++) {
+      const char *sCertFile=SYNCIO_TLS_SYSTEM_CERTFILES[i];
+
+      if (0==GWEN_Directory_GetPath(sCertFile, GWEN_PATH_FLAGS_NAMEMUSTEXIST | GWEN_PATH_FLAGS_VARIABLE)) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Found system-wide cert bundle in %s", sCertFile);
+        if (GWEN_SyncIo_Tls_LoadVerifyLocations(ssl_ctx, sCertFile)==0)
+          trustFileSet=1;
+        break;
+      }
+    }
+  }
+#endif
+
+  if (trustFileSet==0) {
+    DBG_WARN(GWEN_LOGDOMAIN, "No default bundle file found");
+  }
+  return 0;
+}
+
+
+
 int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
 {
   GWEN_SYNCIO_TLS *xio;
@@ -901,22 +1021,24 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
   }
 
   /* setup locations of certificates */
+  if (lflags & GWEN_SYNCIO_TLS_FLAGS_ADD_TRUSTED_CAS) {
+    rv=GWEN_SyncIo_Tls_AddTrustedCas(xio->ssl_ctx);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
   if (xio->localTrustFile) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate locations");
-    rv=SSL_CTX_load_verify_locations(xio->ssl_ctx,
-                                     xio->localTrustFile,
-                                     NULL);
-    if (rv==0) {
-      DBG_INFO(GWEN_LOGDOMAIN,
-               "SSL: Could not load certificate location "
-               "(was: \"%s\")",
-               xio->localTrustFile);
-      ERR_clear_error();
-      return -1;
+    rv=GWEN_SyncIo_Tls_LoadVerifyLocations(xio->ssl_ctx, xio->localTrustFile);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
     }
   }
 
-  /* setup server stuff */
+  /* setup server stuff (OpenSSL accepts X.509 v1 trust anchors, GWEN_SYNCIO_TLS_FLAGS_ALLOW_V1_CA_CRT needs
+   * no setting) */
   if (lflags & GWEN_SYNCIO_FLAGS_PASSIVE) {
     if (lflags & GWEN_SYNCIO_TLS_FLAGS_REQUEST_CERT)
       SSL_CTX_set_verify(xio->ssl_ctx,
