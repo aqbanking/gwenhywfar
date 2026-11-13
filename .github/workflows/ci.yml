@@ -14,7 +14,7 @@ jobs:
   autotools:
     name: >-
       autotools (${{ matrix.os }},
-      ${{ matrix.cc }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
+      ${{ matrix.cc }}${{ format(', {0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -85,6 +85,50 @@ jobs:
             cc: clang
             cxx: clang++
             guis: cocoa
+          # The builds above again with OpenSSL instead of GnuTLS, on each
+          # system that has OpenSSL 3.5 or later (Ubuntu 24.04 has 3.0).
+          - os: ubuntu-26.04
+            cc: gcc-14
+            cxx: g++-14
+            guis: gtk2 gtk3 qt5
+            tls: openssl
+          - os: ubuntu-26.04
+            cc: gcc-15
+            cxx: g++-15
+            guis: gtk2 gtk3 qt5
+            tls: openssl
+          - os: ubuntu-26.04
+            cc: clang-20
+            cxx: clang++-20
+            guis: gtk3 qt6
+            tls: openssl
+          - os: ubuntu-26.04
+            cc: clang-21
+            cxx: clang++-21
+            guis: gtk3 qt6
+            tls: openssl
+          - os: ubuntu-26.04
+            cc: clang-22
+            cxx: clang++-22
+            guis: gtk3 qt6
+            tls: openssl
+          # The newest OpenSSL 4.x, from Homebrew
+          - os: macos-26
+            cc: clang
+            cxx: clang++
+            guis: cocoa
+            tls: openssl
+            openssl: openssl@4
+          - os: macos-15
+            cc: clang
+            cxx: clang++
+            guis: cocoa
+            tls: openssl
+          - os: macos-15-intel
+            cc: clang
+            cxx: clang++
+            guis: cocoa
+            tls: openssl
           # Builds with ASan and UBSan. They skip the -Werror build and
           # "make distcheck", which the builds above already run.
           - os: ubuntu-26.04
@@ -103,6 +147,24 @@ jobs:
             cxx: clang++
             guis: none
             sanitizer_flags: *asan-ubsan
+          - os: ubuntu-26.04
+            cc: gcc-15
+            cxx: g++-15
+            guis: none
+            tls: openssl
+            sanitizer_flags: *asan-ubsan
+          - os: ubuntu-26.04
+            cc: clang-22
+            cxx: clang++-22
+            guis: none
+            tls: openssl
+            sanitizer_flags: *asan-ubsan
+          - os: macos-26
+            cc: clang
+            cxx: clang++
+            guis: none
+            tls: openssl
+            sanitizer_flags: *asan-ubsan
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
@@ -111,13 +173,16 @@ jobs:
       # "gwentest modules".
       CONFIGURE_FLAGS: >-
         --disable-network-checks --enable-testcode
+        --with-tls=${{ matrix.tls || 'gnutls' }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Install dependencies
-        run: .github/ci/install-deps.sh ${{ matrix.guis }}
+        run: >-
+          .github/ci/install-deps.sh ${{ matrix.guis }}
+          ${{ matrix.tls == 'openssl' && (matrix.openssl || 'openssl') || '' }}
       - name: Bootstrap
         id: bootstrap
         run: make -f Makefile.cvs
@@ -212,7 +277,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: logs-autotools-${{ matrix.os }}-${{ matrix.cc }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          name: logs-autotools-${{ matrix.os }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
           if-no-files-found: ignore
           path: |
             config.log
@@ -228,7 +293,7 @@ jobs:
   autotools-msys2:
     name: >-
       autotools-msys2 (${{ matrix.os }}, ${{ matrix.msystem }},
-      ${{ matrix.cc }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
+      ${{ matrix.cc }}${{ format(', {0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -263,12 +328,44 @@ jobs:
           - os: windows-11-arm
             cc: msvc
             msystem: CLANGARM64
+          # The builds above again with OpenSSL instead of GnuTLS.
+          - os: windows-2025
+            cc: gcc
+            msystem: UCRT64
+            tls: openssl
+          - os: windows-2025
+            cc: msvc
+            msystem: UCRT64
+            tls: openssl
+          - os: windows-2022
+            cc: msvc
+            msystem: UCRT64
+            tls: openssl
+          - os: windows-2025
+            cc: msvc
+            msystem: UCRT64
+            tls: openssl
+            sanitizer_flags: -fsanitize=address -Z7
+          - os: windows-2025
+            cc: clang
+            msystem: CLANG64
+            tls: openssl
+            sanitizer_flags: *asan-ubsan
+          - os: windows-11-arm
+            cc: clang
+            msystem: CLANGARM64
+            tls: openssl
+          - os: windows-11-arm
+            cc: msvc
+            msystem: CLANGARM64
+            tls: openssl
     defaults:
       run:
         shell: msys2 {0}
     env:
       CONFIGURE_FLAGS: >-
         --disable-network-checks --enable-testcode --with-guis=none
+        --with-tls=${{ matrix.tls || 'gnutls' }}
       GWEN_ARTIFACT: gwenhywfar-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
     steps:
       - name: Keep line endings
@@ -292,6 +389,7 @@ jobs:
           pacboy: >-
             toolchain:p autotools:p pkgconf:p gettext-tools:p cmake:p
             gnutls:p libgcrypt:p libgpg-error:p
+            ${{ matrix.tls == 'openssl' && 'openssl:p' || '' }}
       - name: Bootstrap
         id: bootstrap
         run: make -f Makefile.cvs
@@ -381,7 +479,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: logs-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          name: logs-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
           if-no-files-found: ignore
           path: |
             config.log
