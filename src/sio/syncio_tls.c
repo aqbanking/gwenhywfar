@@ -656,22 +656,44 @@ void GWEN_SyncIo_Tls_InfoCallBack(const SSL *s, int where, int ret)
 
 
 
+/* Never aborts the handshake: like the GnuTLS build, it records the verification errors as
+ * GWEN_SSL_CERT_FLAGS_*, and the application decides about the certificate in GWEN_SyncIo_Tls_CheckCert(). */
 int GWEN_SyncIo_Tls_VerifyCallBack(int preverify_ok, X509_STORE_CTX *ctx)
 {
   int err;
 
   err=X509_STORE_CTX_get_error(ctx);
   if (!preverify_ok) {
+    SSL *ssl;
+    GWEN_SYNCIO *sio;
+    GWEN_SYNCIO_TLS *xio;
+
     DBG_DEBUG(GWEN_LOGDOMAIN, "Verify error %d: \"%s\"",
               err, X509_verify_cert_error_string(err));
+
+    ssl=X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
+    sio=SSL_get_ex_data(ssl, gwen_syncio_tls_sslidx);
+    assert(sio);
+    xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+    assert(xio);
+
+    /* every error makes the certificate invalid, as GNUTLS_CERT_INVALID does */
+    xio->verifyFlags|=GWEN_SSL_CERT_FLAGS_INVALID;
     if (err==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
+        err==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT ||
+        err==X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE ||
         err==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
         err==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Unknown certificate, will not abort yet");
-      return 1;
+      xio->verifyFlags|=GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND;
     }
+    else if (err==X509_V_ERR_CERT_SIGNATURE_FAILURE ||
+             err==X509_V_ERR_CRL_SIGNATURE_FAILURE)
+      xio->verifySignatureFailure=1;
+    else if (err==X509_V_ERR_CERT_REVOKED)
+      xio->verifyFlags|=GWEN_SSL_CERT_FLAGS_REVOKED;
   }
-  return preverify_ok;
+  return 1;
 }
 
 
@@ -1121,6 +1143,8 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
     return GWEN_ERROR_GENERIC;
   }
 
+  xio->verifyFlags=0;
+  xio->verifySignatureFailure=0;
   xio->prepared=1;
 
   return 0;
@@ -1153,10 +1177,9 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
   GWEN_SYNCIO_TLS *xio;
   X509 *cert;
   char *certbuf;
-  long vr;
-  const char *s;
-  int isError;
   GWEN_SSLCERTDESCR *cd;
+  time_t t0;
+  uint32_t errFlags=0;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
@@ -1168,150 +1191,72 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
   }
   xio->peerCertFlags=0;
 
+  t0=time(NULL);
+  if (t0<0) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Could not get system time");
+    errFlags|=GWEN_SSL_CERT_FLAGS_SYSTEM;
+  }
+
   cert=SSL_get1_peer_certificate(xio->ssl);
   if (!cert) {
-    DBG_WARN(GWEN_LOGDOMAIN, "Peer did not send a certificate");
+    DBG_INFO(GWEN_LOGDOMAIN, "Peer did not send a certificate");
     return GWEN_ERROR_NO_DATA;
   }
 
   certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
   DBG_INFO(GWEN_LOGDOMAIN, "Got a certificate: %s", certbuf);
+  OPENSSL_free(certbuf);
 
   /* setup certificate */
-  isError=0;
   cd=GWEN_SyncIo_Tls_Cert2Descr(cert);
-  X509_free(cert);
-
-  /* setup statusText and statusCode */
-  vr=SSL_get_verify_result(xio->ssl);
-  switch (vr) {
-
-  case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-    s=I18N("New certificate");
-    break;
-
-  case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-    s=I18N("Unable to get issuer certificate");
-    break;
-
-  case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
-    s=I18N("Unable to decrypt cert signature");
-    isError=1;
-    break;
-
-  case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
-    s=I18N("Unable to decode issuer public key");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_SIGNATURE_FAILURE:
-    s=I18N("Cert signature failure");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_NOT_YET_VALID:
-    s=I18N("Cert not yet valid");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_HAS_EXPIRED:
-    s=I18N("Cert has expired");
-    isError=1;
-    break;
-
-  case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-    s=I18N("Self-signed root cert");
-    break;
-
-  case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-    s=I18N("Self-signed cert");
-    break;
-
-  case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
-    s=I18N("Unable to verify leaf signature");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_CHAIN_TOO_LONG:
-    s=I18N("Cert chain too long");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_REVOKED:
-    s=I18N("Cert revoked");
-    isError=1;
-    break;
-
-  case X509_V_ERR_INVALID_CA:
-    s=I18N("Invalid CA");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_UNTRUSTED:
-    s=I18N("Cert untrusted");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CERT_REJECTED:
-    s=I18N("Cert rejected");
-    isError=1;
-    break;
-
-  case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
-  case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
-  case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
-  case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
-  case X509_V_ERR_PATH_LENGTH_EXCEEDED:
-  case X509_V_ERR_INVALID_PURPOSE:
-    s=I18N("Formal error in certificate");
-    isError=1;
-    break;
-
-  case X509_V_ERR_OUT_OF_MEM:
-    s=I18N("Out of memory");
-    isError=1;
-    break;
-
-  case X509_V_ERR_UNABLE_TO_GET_CRL:
-    s=I18N("Unable to get CRL");
-    isError=1;
-    break;
-
-  case X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE:
-    s=I18N("Unable to decrypt CRL signature");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CRL_SIGNATURE_FAILURE:
-    s=I18N("CRL signature failure");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CRL_NOT_YET_VALID:
-    s=I18N("CRL not yet valid");
-    isError=1;
-    break;
-
-  case X509_V_ERR_CRL_HAS_EXPIRED:
-    s=I18N("CRL has expired");
-    isError=1;
-    break;
-
-  case X509_V_OK:
-    s=I18N("Certificate is valid");
-    break;
-
-  default:
-    s=I18N("Unknown SSL error");
-    isError=1;
+  if (cd==NULL) {
+    X509_free(cert);
+    return GWEN_ERROR_GENERIC;
   }
 
-  GWEN_SslCertDescr_SetStatusText(cd, s);
-  GWEN_SslCertDescr_SetIsError(cd, isError);
+  /* results of the verification during the handshake */
+  errFlags|=xio->verifyFlags;
+  if (errFlags & GWEN_SSL_CERT_FLAGS_SIGNER_NOT_FOUND) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Signer not found");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("Signer not found"));
+  }
+  if (xio->verifySignatureFailure) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Certificate signature failure");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("Certificate signature failure"));
+  }
+  if (errFlags & GWEN_SSL_CERT_FLAGS_INVALID) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Certificate is not trusted");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("Certificate is not trusted"));
+  }
+  if (errFlags & GWEN_SSL_CERT_FLAGS_REVOKED) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Certificate has been revoked");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("Certificate has been revoked"));
+  }
+
+  /* activation and expiration time */
+  if (GWEN_SslCertDescr_GetNotBefore(cd)==NULL || GWEN_SslCertDescr_GetNotAfter(cd)==NULL)
+    errFlags|=GWEN_SSL_CERT_FLAGS_BAD_DATA;
+  if (ASN1_TIME_cmp_time_t(X509_get0_notBefore(cert), t0)==1) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Cert is not yet active");
+    errFlags|=GWEN_SSL_CERT_FLAGS_NOT_ACTIVE;
+  }
+  if (ASN1_TIME_cmp_time_t(X509_get0_notAfter(cert), t0)==-1) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Cert has expired");
+    errFlags|=GWEN_SSL_CERT_FLAGS_EXPIRED;
+  }
+  X509_free(cert);
+
+  /* done */
+  if (errFlags)
+    GWEN_SslCertDescr_SetIsError(cd, 1);
+  else
+    errFlags|=GWEN_SSL_CERT_FLAGS_OK;
+
+  GWEN_SyncIo_Tls_SetCertStatus(cd, errFlags);
 
   xio->peerCertDescr=cd;
+  xio->peerCertFlags=errFlags;
 
-  free(certbuf);
   return 0;
 }
 

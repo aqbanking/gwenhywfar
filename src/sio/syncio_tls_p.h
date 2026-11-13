@@ -60,6 +60,9 @@ struct GWEN_SYNCIO_TLS {
   BIO *bio;
   SSL_CTX *ssl_ctx;
   SSL *ssl;
+  /* GWEN_SSL_CERT_FLAGS_* collected by the verify callback during the handshake */
+  uint32_t verifyFlags;
+  int verifySignatureFailure;
 #else
   gnutls_session_t session;
   gnutls_certificate_credentials_t credentials;
