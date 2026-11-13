@@ -451,10 +451,12 @@ int BIO_syncio_destroy(BIO *bio)
 
 
 
+/* GWEN_ERROR_TIMEOUT and GWEN_ERROR_INTERRUPTED from the base layer make OpenSSL retry the operation, like
+ * EAGAIN and EINTR in the GnuTLS build. EOF of the base layer is reported by BIO_CTRL_EOF. */
 int BIO_syncio_read(BIO *bio, char *in, int inl)
 {
   DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Read(%d)", inl);
-  if (in!=NULL) {
+  if (in!=NULL && inl>0) {
     GWEN_SYNCIO *sio;
     int rv;
 
@@ -466,8 +468,12 @@ int BIO_syncio_read(BIO *bio, char *in, int inl)
     }
 
     rv=GWEN_SyncIo_Read(sio, (uint8_t *) in, (uint32_t) inl);
-    if (rv>=0) {
+    if (rv>0) {
       return rv;
+    }
+    else if (rv==0) {
+      BIO_set_flags(bio, BIO_FLAGS_IN_EOF);
+      return 0;
     }
     else if (rv==GWEN_ERROR_TIMEOUT || rv==GWEN_ERROR_INTERRUPTED) {
       BIO_set_retry_read(bio);
@@ -486,7 +492,7 @@ int BIO_syncio_read(BIO *bio, char *in, int inl)
 int BIO_syncio_write(BIO *bio, const char *out, int outl)
 {
   DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Write(%d)", outl);
-  if (out!=NULL) {
+  if (out!=NULL && outl>0) {
     GWEN_SYNCIO *sio;
     int rv;
 
@@ -515,7 +521,7 @@ int BIO_syncio_write(BIO *bio, const char *out, int outl)
 
 
 
-long BIO_syncio_ctrl(BIO *bio, int cmd, long num, void *ptr)
+long BIO_syncio_ctrl(BIO *bio, int cmd, long num, GWEN_UNUSED void *ptr)
 {
   long rv=1;
 
@@ -536,6 +542,11 @@ long BIO_syncio_ctrl(BIO *bio, int cmd, long num, void *ptr)
 
   case BIO_CTRL_SET_CLOSE:
     BIO_set_shutdown(bio, (int)num);
+    break;
+
+  case BIO_CTRL_EOF:
+    /* OpenSSL asks this to tell an EOF without close_notify (premature close) from an I/O error */
+    rv=BIO_test_flags(bio, BIO_FLAGS_IN_EOF)?1:0;
     break;
 
   case BIO_CTRL_RESET:
@@ -566,6 +577,16 @@ int BIO_syncio_puts(BIO *bp, const char *str)
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
   }
   return rv;
+}
+
+
+
+/* Returns 1 if the base layer reached EOF without close_notify from the peer (premature close). OpenSSL reports
+ * this when the BIO answers BIO_CTRL_EOF, as the first entry of the error queue (OpenSSL 4 adds a system error
+ * after it). */
+static int GWEN_SyncIo_Tls_IsUnexpectedEof(int sslerr)
+{
+  return (sslerr==SSL_ERROR_SSL && ERR_GET_REASON(ERR_peek_error())==SSL_R_UNEXPECTED_EOF_WHILE_READING);
 }
 
 
@@ -1568,7 +1589,7 @@ int GWEN_SyncIo_Tls_Handshake(GWEN_SYNCIO *sio)
         continue; /* would block */
 
       GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
-      if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+      if (GWEN_SyncIo_Tls_IsUnexpectedEof(sslerr)) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
                   sslerr, errBuf);
       }
@@ -2766,17 +2787,24 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
           sslerr==SSL_ERROR_WANT_WRITE)
         continue; /* would block */
       else {
-        if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+        if (GWEN_SyncIo_Tls_IsUnexpectedEof(sslerr)) {
+          /* EOF of the base layer without close_notify */
           DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
                    sslerr,
                    GWEN_SyncIo_Tls_ErrorString(sslerr));
+          ERR_clear_error();
           GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
           GWEN_SyncIo_Tls_UndoPrepare(sio);
           GWEN_SyncIo_Disconnect(baseIo);
-
-          /* connection closed, no real error */
-          return 0;
-        } /* if error is syscall and errno==0 */
+          if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_TLS_FLAGS_IGN_PREMATURE_CLOSE) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!), ignoring.");
+            return 0; /* report EOF */
+          }
+          else {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Detected premature disconnect by server (violates specs!)");
+            return GWEN_ERROR_SSL_PREMATURE_CLOSE;
+          }
+        } /* if EOF without close_notify */
         else {
           if (sslerr==SSL_ERROR_ZERO_RETURN) {
             DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
