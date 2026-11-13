@@ -6772,7 +6772,8 @@ static const char gwentest_network[]="needs network";
 #define GWENTEST_ENTRY_INTERACTIVE(a,b) \
   GWEN_FUNCS_ENTRY_HELP(a, b, gwentest_interactive)
 
-/* a command without arguments that runs until stopped and has no result */
+/* a diagnostic command without arguments that has no result, such as
+ * one that runs until stopped or a stress loop */
 #define GWENTEST_ENTRY_TOOL(a,b) \
   GWEN_FUNCS_ENTRY_HELP(a, b, gwentest_tool)
 
@@ -6818,7 +6819,7 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("des2", testDES2),
   GWEN_FUNCS_ENTRY("des3", testDES3),
   GWEN_FUNCS_ENTRY_ARGS("des4", testDES4),
-  GWEN_FUNCS_ENTRY("des5", testDES5),
+  GWENTEST_ENTRY_TOOL("des5", testDES5),
   GWEN_FUNCS_ENTRY_ARGS("des6", testDES6),
   GWEN_FUNCS_ENTRY_ARGS("dlg", testDialog),
   GWEN_FUNCS_ENTRY("env", testEnviron),
