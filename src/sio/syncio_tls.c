@@ -744,39 +744,18 @@ char *GWEN_SyncIo_Tls_GetCertEntry(const X509_NAME *nm, int nid)
 
 GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(const ASN1_TIME *d)
 {
-  /* ASN1_TIME is opaque since OpenSSL 1.1 */
-  if (ASN1_STRING_get0_data(d)) {
-    const char *s;
-    unsigned int i;
-    GWEN_TIME *ti;
-    int year, month, day;
-    int hour, min, sec=0;
-    int isUtc;
+  struct tm tm;
 
-    s=(const char *)(ASN1_STRING_get0_data(d));
-    i=strlen(s);
-    if (i<10) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Bad time expression (%s)", s);
-      return 0;
-    }
-    isUtc=(s[i-1]=='Z');
-    year=((s[0]-'0')*10)+(s[1]-'0');
-    if (year<100) {
-      if (year<90)
-        year+=2000;
-      else
-        year+=1900;
-    }
-    month=(((s[2]-'0')*10)+(s[3]-'0'))-1;
-    day=((s[4]-'0')*10)+(s[5]-'0');
-    hour=((s[6]-'0')*10)+(s[7]-'0');
-    min=((s[8]-'0')*10)+(s[9]-'0');
-    if (i>11)
-      sec=((s[10]-'0')*10)+(s[11]-'0');
-    ti=GWEN_Time_new(year, month, day, hour, min, sec, isUtc);
+  /* ASN1_TIME_to_tm() handles UTCTime and GeneralizedTime (dates from 2050) */
+  if (d && ASN1_TIME_to_tm(d, &tm)==1) {
+    GWEN_TIME *ti;
+
+    ti=GWEN_Time_new(tm.tm_year+1900, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, 1);
     return ti;
   }
   else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Bad time expression");
+    ERR_clear_error();
     return 0;
   }
 }
