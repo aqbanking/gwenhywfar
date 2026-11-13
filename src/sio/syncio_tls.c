@@ -53,6 +53,7 @@
 #ifdef GWEN_TLS_OPENSSL
 # include <openssl/ssl.h>
 # include <openssl/err.h>
+# include <openssl/x509v3.h>
 #else
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
@@ -876,6 +877,21 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
 
 
 
+static int GWEN_SyncIo_Tls_IsIpAddress(const char *s)
+{
+  ASN1_OCTET_STRING *ip;
+
+  ip=a2i_IPADDRESS(s);
+  if (ip) {
+    ASN1_OCTET_STRING_free(ip);
+    return 1;
+  }
+  ERR_clear_error();
+  return 0;
+}
+
+
+
 static int GWEN_SyncIo_Tls_LoadVerifyLocations(SSL_CTX *ssl_ctx, const char *CAfile)
 {
   int rv;
@@ -1088,8 +1104,16 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
 
   if (lflags & GWEN_SYNCIO_FLAGS_PASSIVE)
     SSL_set_accept_state(xio->ssl);
-  else
+  else {
     SSL_set_connect_state(xio->ssl);
+    /* if hostname set try to set it (SNI must not contain an IP address) */
+    if (xio->hostName && !GWEN_SyncIo_Tls_IsIpAddress(xio->hostName)) {
+      if (SSL_set_tlsext_host_name(xio->ssl, xio->hostName)!=1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "SSL_set_tlsext_host_name(%s) failed, ignoring", xio->hostName);
+        ERR_clear_error();
+      }
+    }
+  }
 
   /* set info callback */
   SSL_set_info_callback(xio->ssl, GWEN_SyncIo_Tls_InfoCallBack);
