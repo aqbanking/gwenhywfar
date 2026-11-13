@@ -1,0 +1,331 @@
+# Builds and tests Gwenhywfar with autotools on Linux, macOS and Windows.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  autotools:
+    name: >-
+      autotools (${{ matrix.os }},
+      ${{ matrix.cc }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Each gcc and clang version that the Ubuntu runner images
+          # provide, except gcc 13 on ubuntu-26.04, which ubuntu-24.04
+          # covers.
+          - os: ubuntu-24.04
+            cc: gcc-12
+            cxx: g++-12
+            guis: gtk2 gtk3 qt5
+          - os: ubuntu-24.04
+            cc: gcc-13
+            cxx: g++-13
+            guis: gtk2 gtk3 qt5
+          - os: ubuntu-24.04
+            cc: gcc-14
+            cxx: g++-14
+            guis: gtk2 gtk3 qt5
+          - os: ubuntu-24.04
+            cc: clang-16
+            cxx: clang++-16
+            guis: gtk3 qt6
+          - os: ubuntu-24.04
+            cc: clang-17
+            cxx: clang++-17
+            guis: gtk3 qt6
+          - os: ubuntu-24.04
+            cc: clang-18
+            cxx: clang++-18
+            guis: gtk3 qt6
+          - os: ubuntu-26.04
+            cc: gcc-14
+            cxx: g++-14
+            guis: gtk2 gtk3 qt5
+          - os: ubuntu-26.04
+            cc: gcc-15
+            cxx: g++-15
+            guis: gtk2 gtk3 qt5
+          - os: ubuntu-26.04
+            cc: clang-20
+            cxx: clang++-20
+            guis: gtk3 qt6
+          - os: ubuntu-26.04
+            cc: clang-21
+            cxx: clang++-21
+            guis: gtk3 qt6
+          - os: ubuntu-26.04
+            cc: clang-22
+            cxx: clang++-22
+            guis: gtk3 qt6
+          # macos-26 and macos-15 run on arm64, macos-15-intel on x86_64.
+          - os: macos-26
+            cc: clang
+            cxx: clang++
+            guis: cocoa
+          - os: macos-15
+            cc: clang
+            cxx: clang++
+            guis: cocoa
+          - os: macos-15-intel
+            cc: clang
+            cxx: clang++
+            guis: cocoa
+          # Builds with ASan and UBSan. They skip the -Werror build and
+          # "make distcheck", which the builds above already run.
+          - os: ubuntu-26.04
+            cc: gcc-15
+            cxx: g++-15
+            guis: none
+            sanitizer_flags: &asan-ubsan >-
+              -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined
+          - os: ubuntu-26.04
+            cc: clang-22
+            cxx: clang++-22
+            guis: none
+            sanitizer_flags: *asan-ubsan
+          - os: macos-26
+            cc: clang
+            cxx: clang++
+            guis: none
+            sanitizer_flags: *asan-ubsan
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      # "--enable-testcode" makes the unit-test framework available as
+      # "gwentest modules".
+      CONFIGURE_FLAGS: >-
+        --disable-network-checks --enable-testcode
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install dependencies
+        run: .github/ci/install-deps.sh ${{ matrix.guis }}
+      - name: Bootstrap
+        id: bootstrap
+        run: make -f Makefile.cvs
+      - &enable-sanitizers
+        name: Enable sanitizers
+        if: ${{ matrix.sanitizer_flags }}
+        run: |
+          {
+            echo "CFLAGS=${{ matrix.sanitizer_flags }}"
+            echo "CXXFLAGS=${{ matrix.sanitizer_flags }}"
+            echo "UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1"
+            # des5 runs one million DES rounds, which takes hours with the
+            # sanitizers.
+            echo "GWENTEST_SKIP=des5"
+          } >>"$GITHUB_ENV"
+      # This build uses different flags, so it has its own build directory.
+      # It runs with "-k" so that the log lists every warning, and its
+      # result does not stop the build and tests below.
+      - name: Build with --enable-error-on-warning
+        if: ${{ !matrix.sanitizer_flags }}
+        continue-on-error: true
+        run: |
+          mkdir _werror
+          cd _werror
+          ../configure $CONFIGURE_FLAGS --with-guis="${{ matrix.guis }}" \
+            --enable-error-on-warning
+          make -k -j"$(getconf _NPROCESSORS_ONLN)"
+      # gwentest runs after "make install", because some tests load plugins.
+      - name: Configure
+        if: ${{ !cancelled() && steps.bootstrap.outcome == 'success' }}
+        run: >-
+          ./configure --prefix="$PWD/_inst" $CONFIGURE_FLAGS
+          --with-guis="${{ matrix.guis }}"
+      - name: Build
+        id: build
+        if: ${{ !cancelled() && steps.bootstrap.outcome == 'success' }}
+        run: make -j"$(getconf _NPROCESSORS_ONLN)"
+      - name: make check
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make -k -j"$(getconf _NPROCESSORS_ONLN)" check
+      - name: make install
+        id: install
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make install
+      # "make distcheck" runs installcheck in the other builds.
+      - name: make installcheck
+        if: >-
+          ${{ !cancelled() && steps.install.outcome == 'success'
+          && matrix.sanitizer_flags }}
+        run: make installcheck
+      - name: gwentest
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: .github/ci/run-gwentest.sh test/gwentest gwentest-logs
+      - name: make distcheck
+        if: >-
+          ${{ !cancelled() && steps.build.outcome == 'success'
+          && !matrix.sanitizer_flags }}
+        run: >-
+          make -j"$(getconf _NPROCESSORS_ONLN)" distcheck
+          DISTCHECK_CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-guis='${{ matrix.guis }}'"
+      - name: Upload logs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-autotools-${{ matrix.os }}-${{ matrix.cc }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          if-no-files-found: ignore
+          path: |
+            config.log
+            _werror/config.log
+            **/test-suite.log
+            **/*.trs
+            gwentest-logs/
+
+  # Windows builds in the UCRT64 environment of MSYS2. The MinGW job uses
+  # the gcc of MSYS2. The MSVC jobs compile with cl.exe from Visual Studio
+  # and link against the MinGW-built GnuTLS and libgcrypt of MSYS2. The
+  # clang job builds in the CLANG64 environment.
+  autotools-msys2:
+    name: >-
+      autotools-msys2 (${{ matrix.os }}, ${{ matrix.msystem }},
+      ${{ matrix.cc }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            cc: gcc
+            msystem: UCRT64
+          # windows-2025 has Visual Studio 2026, windows-2022 has
+          # Visual Studio 2022.
+          - os: windows-2025
+            cc: msvc
+            msystem: UCRT64
+          - os: windows-2022
+            cc: msvc
+            msystem: UCRT64
+          # MSVC has only AddressSanitizer. -Z7 keeps the debug information
+          # in the object files, so parallel compiles do not share a .pdb.
+          - os: windows-2025
+            cc: msvc
+            msystem: UCRT64
+            sanitizer_flags: -fsanitize=address -Z7
+          # The gcc of MinGW has no sanitizers, but the clang of MSYS2 has.
+          - os: windows-2025
+            cc: clang
+            msystem: CLANG64
+            sanitizer_flags: *asan-ubsan
+    defaults:
+      run:
+        shell: msys2 {0}
+    env:
+      CONFIGURE_FLAGS: >-
+        --disable-network-checks --enable-testcode --with-guis=none
+    steps:
+      - name: Keep line endings
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up MSVC
+        if: ${{ matrix.cc == 'msvc' }}
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          # The MSVC job needs the Visual Studio environment in PATH.
+          path-type: ${{ matrix.cc == 'msvc' && 'inherit' || 'minimal' }}
+          install: make
+          pacboy: >-
+            toolchain:p autotools:p pkgconf:p gettext-tools:p cmake:p
+            gnutls:p libgcrypt:p libgpg-error:p
+      - name: Bootstrap
+        id: bootstrap
+        run: make -f Makefile.cvs
+      - *enable-sanitizers
+      - name: Select MSVC tools
+        if: ${{ matrix.cc == 'msvc' }}
+        run: |
+          # /usr/bin/link (coreutils) would hide link.exe of MSVC.
+          rm -f /usr/bin/link.exe
+          [ -f ar-lib ] || cp "$(automake --print-libdir)/ar-lib" .
+          {
+            echo "CC=$PWD/compile cl -nologo"
+            echo "CXX=$PWD/compile cl -nologo"
+            echo "AR=$PWD/ar-lib lib"
+            echo "LD=link"
+            # lib.exe indexes its archives itself; binutils ranlib would
+            # rewrite them in a form that lib.exe misreads.
+            echo "RANLIB=:"
+          } >>"$GITHUB_ENV"
+          # MSVC import libraries, headers and pkg-config files of the
+          # MinGW-built libraries, in a prefix of their own.
+          pacman -S --noconfirm --needed "${MINGW_PACKAGE_PREFIX}-tools"
+          .github/ci/msvc-deps.sh "$PWD/_deps" \
+            gnutls libgcrypt gpg-error openssl
+          # The MSYS2 login profile resets PKG_CONFIG_PATH in every step,
+          # so the configure steps pass this one to configure instead.
+          echo "MSVC_PKG_CONFIG_PATH=$PWD/_deps/lib/pkgconfig" >>"$GITHUB_ENV"
+      - name: Build with --enable-error-on-warning
+        if: ${{ !matrix.sanitizer_flags }}
+        continue-on-error: true
+        run: |
+          mkdir _werror
+          cd _werror
+          ../configure $CONFIGURE_FLAGS --enable-error-on-warning \
+            ${MSVC_PKG_CONFIG_PATH:+PKG_CONFIG_PATH="$MSVC_PKG_CONFIG_PATH"}
+          make -k -j"$(getconf _NPROCESSORS_ONLN)"
+      # As on Linux and macOS, gwentest runs after "make install". On
+      # Windows, Gwenhywfar looks for plugins relative to the .exe, so the
+      # registry points gwentest to the installed plugins instead.
+      - name: Configure
+        if: ${{ !cancelled() && steps.bootstrap.outcome == 'success' }}
+        run: >-
+          ./configure --prefix="$PWD/_inst" $CONFIGURE_FLAGS
+          ${MSVC_PKG_CONFIG_PATH:+PKG_CONFIG_PATH="$MSVC_PKG_CONFIG_PATH"}
+      - name: Build
+        id: build
+        if: ${{ !cancelled() && steps.bootstrap.outcome == 'success' }}
+        run: make -j"$(getconf _NPROCESSORS_ONLN)"
+      - name: make check
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make -k -j"$(getconf _NPROCESSORS_ONLN)" check
+      - name: make install
+        id: install
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make install
+      - name: make installcheck
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: make installcheck
+      - name: Register the installed plugins
+        id: register
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: pwsh
+        run: |
+          $plugindir = (Get-Item _inst/lib/gwenhywfar/plugins/*).FullName
+          New-Item -Force -Path HKLM:\Software\Gwenhywfar\Paths |
+            New-ItemProperty -Name plugindir -Value $plugindir
+      - name: gwentest
+        if: ${{ !cancelled() && steps.register.outcome == 'success' }}
+        run: .github/ci/run-gwentest.sh test/gwentest gwentest-logs
+      - name: Upload logs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          if-no-files-found: ignore
+          path: |
+            config.log
+            _werror/config.log
+            **/test-suite.log
+            **/*.trs
+            gwentest-logs/
