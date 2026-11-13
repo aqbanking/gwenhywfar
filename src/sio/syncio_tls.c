@@ -45,13 +45,19 @@
 #include <gwenhywfar/text.h>
 
 #include <assert.h>
+#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
-#include <gcrypt.h>
+#ifdef GWEN_TLS_OPENSSL
+# include <openssl/ssl.h>
+# include <openssl/err.h>
+#else
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
+# include <gcrypt.h>
+#endif
 
 
 
@@ -324,6 +330,7 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_GetPeerCertDescr(const GWEN_SYNCIO *sio)
 
 
 
+#ifndef GWEN_TLS_OPENSSL
 int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf)
 {
   FILE *f;
@@ -352,7 +359,889 @@ int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf)
   fclose(f);
   return 0;
 }
+#endif
 
+
+
+
+#ifdef GWEN_TLS_OPENSSL
+
+/* The OpenSSL code below is the OpenSSL implementation that Gwenhywfar used until 2007, ported to GWEN_SYNCIO:
+ * src/crypt/ossl/nl_ssl.c and src/crypt/ossl/bio_netlayer.c (removed in da13b417), and
+ * GWEN_NetTransportSSL_StartDisconnect() from src/crypt/ossl/nettransportssl.c (removed in e43961fb). */
+
+static int gwen_syncio_tls_sslidx=-1;
+static BIO_METHOD *bio_syncio_methods=NULL;
+
+
+
+BIO *BIO_syncio_new(GWEN_SYNCIO *sio)
+{
+  BIO *bio;
+
+  assert(sio);
+  if (bio_syncio_methods==NULL) {
+    /* BIO methods are opaque since OpenSSL 1.1 */
+    bio_syncio_methods=BIO_meth_new(BIO_TYPE_SOCKET, "GWEN_SyncIo");
+    if (bio_syncio_methods==NULL)
+      return NULL;
+    BIO_meth_set_write(bio_syncio_methods, BIO_syncio_write);
+    BIO_meth_set_read(bio_syncio_methods, BIO_syncio_read);
+    BIO_meth_set_puts(bio_syncio_methods, BIO_syncio_puts);
+    BIO_meth_set_ctrl(bio_syncio_methods, BIO_syncio_ctrl);
+    BIO_meth_set_create(bio_syncio_methods, BIO_syncio_create);
+    BIO_meth_set_destroy(bio_syncio_methods, BIO_syncio_destroy);
+  }
+  bio=BIO_new(bio_syncio_methods);
+  if (bio==NULL)
+    return NULL;
+
+  BIO_set_data(bio, sio);
+  GWEN_SyncIo_Attach(sio);
+  /* GWEN_SyncIo_Tls disconnects the base layer itself */
+  BIO_set_shutdown(bio, BIO_NOCLOSE);
+
+  return bio;
+}
+
+
+
+int BIO_syncio_create(BIO *bio)
+{
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Create");
+  BIO_set_init(bio, 1);
+  BIO_clear_flags(bio, ~0);
+  return 1;
+}
+
+
+
+int BIO_syncio_destroy(BIO *bio)
+{
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Destroy");
+  if (bio) {
+    GWEN_SYNCIO *sio;
+
+    sio=(GWEN_SYNCIO *) BIO_get_data(bio);
+    if (BIO_get_shutdown(bio)) {
+      /* disconnect layer */
+      GWEN_SyncIo_Disconnect(sio);
+      BIO_set_init(bio, 0);
+      BIO_clear_flags(bio, ~0);
+    }
+    GWEN_SyncIo_free(sio); /* detach from syncio */
+    return 1;
+  }
+  else
+    return 0;
+}
+
+
+
+int BIO_syncio_read(BIO *bio, char *in, int inl)
+{
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Read(%d)", inl);
+  if (in!=NULL) {
+    GWEN_SYNCIO *sio;
+    int rv;
+
+    sio=(GWEN_SYNCIO *) BIO_get_data(bio);
+    BIO_clear_retry_flags(bio);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "No syncio in BIO");
+      return -1;
+    }
+
+    rv=GWEN_SyncIo_Read(sio, (uint8_t *) in, (uint32_t) inl);
+    if (rv>=0) {
+      return rv;
+    }
+    else if (rv==GWEN_ERROR_TIMEOUT || rv==GWEN_ERROR_INTERRUPTED) {
+      BIO_set_retry_read(bio);
+      return -1;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+
+
+int BIO_syncio_write(BIO *bio, const char *out, int outl)
+{
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Write(%d)", outl);
+  if (out!=NULL) {
+    GWEN_SYNCIO *sio;
+    int rv;
+
+    sio=(GWEN_SYNCIO *) BIO_get_data(bio);
+    BIO_clear_retry_flags(bio);
+    if (sio==NULL) {
+      DBG_INFO(GWEN_LOGDOMAIN, "No syncio in BIO");
+      return -1;
+    }
+
+    rv=GWEN_SyncIo_Write(sio, (const uint8_t *) out, (uint32_t) outl);
+    if (rv>=0) {
+      return rv;
+    }
+    else if (rv==GWEN_ERROR_TIMEOUT || rv==GWEN_ERROR_INTERRUPTED) {
+      BIO_set_retry_write(bio);
+      return -1;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+
+
+long BIO_syncio_ctrl(BIO *bio, int cmd, long num, void *ptr)
+{
+  long rv=1;
+
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Ctl(%d, %li)", cmd, num);
+  switch (cmd) {
+
+  case BIO_C_GET_FD:
+    rv=-1;
+    break;
+
+  case BIO_CTRL_GET_CLOSE:
+    rv=BIO_get_shutdown(bio);
+    break;
+
+  case BIO_CTRL_FLUSH:
+    rv=1;
+    break;
+
+  case BIO_CTRL_SET_CLOSE:
+    BIO_set_shutdown(bio, (int)num);
+    break;
+
+  case BIO_CTRL_RESET:
+  case BIO_C_FILE_SEEK:
+  case BIO_C_FILE_TELL:
+  case BIO_CTRL_INFO:
+  case BIO_C_SET_FD:
+  case BIO_CTRL_PENDING:
+  case BIO_CTRL_WPENDING:
+  case BIO_CTRL_DUP:
+  default:
+    rv=0;
+    break;
+  }
+  return rv;
+}
+
+
+
+int BIO_syncio_puts(BIO *bp, const char *str)
+{
+  int l, rv;
+
+  DBG_VERBOUS(GWEN_LOGDOMAIN, "BIO method: Puts(\"%s\")", str);
+  l=strlen(str);
+  rv=BIO_syncio_write(bp, str, l);
+  if (rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  }
+  return rv;
+}
+
+
+
+const char *GWEN_SyncIo_Tls_ErrorString(unsigned int e)
+{
+  const char *s;
+
+  switch (e) {
+  case SSL_ERROR_NONE:             s="SSL: None"; break;
+#ifdef SSL_ERROR_ZERO_RETURN
+  case SSL_ERROR_ZERO_RETURN:      s="SSL: connection closed"; break;
+#endif
+  case SSL_ERROR_WANT_READ:        s="SSL: Want to read"; break;
+  case SSL_ERROR_WANT_WRITE:       s="SSL: Want to write"; break;
+#ifdef SSL_ERROR_WANT_CONNECT
+  case SSL_ERROR_WANT_CONNECT:     s="SSL: Want to connect"; break;
+#endif
+#ifdef SSL_ERROR_WANT_ACCEPT
+  case SSL_ERROR_WANT_ACCEPT:      s="SSL: Want to accept"; break;
+#endif
+#ifdef SSL_ERROR_WANT_X509_LOOKUP
+  case SSL_ERROR_WANT_X509_LOOKUP: s="SSL: Want to lookup certificate"; break;
+#endif
+  case SSL_ERROR_SYSCALL:          s=strerror(errno); break;
+  case SSL_ERROR_SSL:              s="SSL: protocol error"; break;
+  default:                         s="SSL: Unknown error"; break;
+  } /* switch */
+  return s;
+}
+
+
+
+void GWEN_SyncIo_Tls_InfoCallBack(const SSL *s, int where, int ret)
+{
+  const char *str;
+  int w;
+
+  w=where& ~SSL_ST_MASK;
+  if (w & SSL_ST_CONNECT)
+    str="SSL_connect";
+  else if (w & SSL_ST_ACCEPT)
+    str="SSL_accept";
+  else
+    str="undefined";
+
+  if (where & SSL_CB_LOOP) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "%s: %s", str, SSL_state_string_long(s));
+  }
+  else if (where & SSL_CB_ALERT) {
+    str=(where & SSL_CB_READ)?"read":"write";
+    DBG_DEBUG(GWEN_LOGDOMAIN, "SSL3 alert %s: %s: %s",
+              str,
+              SSL_alert_type_string_long(ret),
+              SSL_alert_desc_string_long(ret));
+  }
+  else if (where & SSL_CB_EXIT) {
+    if (ret==0) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "%s: failed in \"%s\"",
+                str,
+                SSL_state_string_long(s));
+    }
+    else if (ret<0) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "%s: error in \"%s\"",
+                str,
+                SSL_state_string_long(s));
+    }
+  }
+}
+
+
+
+int GWEN_SyncIo_Tls_VerifyCallBack(int preverify_ok, X509_STORE_CTX *ctx)
+{
+  int err;
+
+  err=X509_STORE_CTX_get_error(ctx);
+  if (!preverify_ok) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Verify error %d: \"%s\"",
+              err, X509_verify_cert_error_string(err));
+    if (err==X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
+        err==X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
+        err==X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Unknown certificate, will not abort yet");
+      return 1;
+    }
+  }
+  return preverify_ok;
+}
+
+
+
+char *GWEN_SyncIo_Tls_GetCertEntry(X509_NAME *nm, int nid)
+{
+  X509_NAME_ENTRY *e;
+  const unsigned char *p;
+  int len;
+  int lastpos;
+  char *cpy;
+
+  lastpos=-1;
+  for (;;) {
+    lastpos=X509_NAME_get_index_by_NID(nm, nid, lastpos);
+    if (lastpos==-1)
+      break;
+    e=X509_NAME_get_entry(nm, lastpos);
+    assert(e);
+    /* X509_NAME_ENTRY is opaque since OpenSSL 1.1 */
+    p=ASN1_STRING_get0_data(X509_NAME_ENTRY_get_data(e));
+    len=ASN1_STRING_length(X509_NAME_ENTRY_get_data(e));
+    if (p) {
+      cpy=(char *)malloc(len+1);
+      memmove(cpy, p, len);
+      cpy[len]=0;
+      return cpy;
+    }
+  } /* for */
+
+  return 0;
+}
+
+
+
+GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(ASN1_TIME *d)
+{
+  /* ASN1_TIME is opaque since OpenSSL 1.1 */
+  if (ASN1_STRING_get0_data(d)) {
+    const char *s;
+    unsigned int i;
+    GWEN_TIME *ti;
+    int year, month, day;
+    int hour, min, sec=0;
+    int isUtc;
+
+    s=(const char *)(ASN1_STRING_get0_data(d));
+    i=strlen(s);
+    if (i<10) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad time expression (%s)", s);
+      return 0;
+    }
+    isUtc=(s[i-1]=='Z');
+    year=((s[0]-'0')*10)+(s[1]-'0');
+    if (year<100) {
+      if (year<90)
+        year+=2000;
+      else
+        year+=1900;
+    }
+    month=(((s[2]-'0')*10)+(s[3]-'0'))-1;
+    day=((s[4]-'0')*10)+(s[5]-'0');
+    hour=((s[6]-'0')*10)+(s[7]-'0');
+    min=((s[8]-'0')*10)+(s[9]-'0');
+    if (i>11)
+      sec=((s[10]-'0')*10)+(s[11]-'0');
+    ti=GWEN_Time_new(year, month, day, hour, min, sec, isUtc);
+    return ti;
+  }
+  else {
+    return 0;
+  }
+}
+
+
+
+GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
+{
+  X509_NAME *nm;
+  ASN1_TIME *d;
+  unsigned int  md_size;
+  unsigned char md[EVP_MAX_MD_SIZE];
+  char *s;
+  GWEN_SSLCERTDESCR *cd;
+
+  nm=X509_get_subject_name(cert);
+
+  /* setup certificate descr */
+  cd=GWEN_SslCertDescr_new();
+
+  s=GWEN_SyncIo_Tls_GetCertEntry(nm, NID_commonName);
+  if (s) {
+    GWEN_SslCertDescr_SetCommonName(cd, s);
+    free(s);
+  }
+
+  s=GWEN_SyncIo_Tls_GetCertEntry(nm, NID_organizationName);
+  if (s) {
+    GWEN_SslCertDescr_SetOrganizationName(cd, s);
+    free(s);
+  }
+
+  s=GWEN_SyncIo_Tls_GetCertEntry(nm, NID_organizationalUnitName);
+  if (s) {
+    GWEN_SslCertDescr_SetOrganizationalUnitName(cd, s);
+    free(s);
+  }
+
+  s=GWEN_SyncIo_Tls_GetCertEntry(nm, NID_countryName);
+  if (s) {
+    GWEN_SslCertDescr_SetCountryName(cd, s);
+    free(s);
+  }
+
+  s=GWEN_SyncIo_Tls_GetCertEntry(nm, NID_localityName);
+  if (s) {
+    GWEN_SslCertDescr_SetLocalityName(cd, s);
+    free(s);
+  }
+
+  s=GWEN_SyncIo_Tls_GetCertEntry(nm, NID_stateOrProvinceName);
+  if (s) {
+    GWEN_SslCertDescr_SetStateOrProvinceName(cd, s);
+    free(s);
+  }
+
+  d=X509_get_notBefore(cert);
+  if (d) {
+    GWEN_TIME *ti;
+
+    ti=GWEN_SyncIo_Tls_ASN_GetTime(d);
+    if (ti) {
+      GWEN_SslCertDescr_SetNotBefore(cd, ti);
+      GWEN_Time_free(ti);
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in notBefore date");
+    }
+  }
+
+  d=X509_get_notAfter(cert);
+  if (d) {
+    GWEN_TIME *ti;
+
+    ti=GWEN_SyncIo_Tls_ASN_GetTime(d);
+    if (ti) {
+      GWEN_SslCertDescr_SetNotAfter(cd, ti);
+      GWEN_Time_free(ti);
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error in notAfter date");
+    }
+  }
+
+  if (!X509_digest(cert, EVP_md5(), md, &md_size)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Error building fingerprint of the certificate");
+  }
+  if (!md_size) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Empty fingerprint of the certificate");
+  }
+  else {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
+                                                                 md_size, dbuf, 2, ':', 0)) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not convert fingerprint to hex");
+    }
+    else {
+      GWEN_SslCertDescr_SetFingerPrint(cd, GWEN_Buffer_GetStart(dbuf));
+    }
+    GWEN_Buffer_free(dbuf);
+  }
+
+  return cd;
+}
+
+
+
+int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+  int rv;
+  uint32_t lflags;
+  GWEN_SYNCIO *baseIo;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  baseIo=GWEN_SyncIo_GetBaseIo(sio);
+  assert(baseIo);
+
+  lflags=GWEN_SyncIo_GetFlags(sio);
+
+  /* enable all workarounds for bugs in other SSL implementation for
+   * maximum compatibility */
+  SSL_CTX_set_options(xio->ssl_ctx, SSL_OP_ALL);
+
+  if (xio->localCertFile && xio->localKeyFile) {
+    /* load own certificate file */
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate and keys");
+    rv=SSL_CTX_use_certificate_chain_file(xio->ssl_ctx,
+                                          xio->localCertFile);
+    if (!rv) {
+      int sslerr;
+
+      sslerr=SSL_get_error(xio->ssl, rv);
+      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading certfile: %s (%d)",
+               GWEN_SyncIo_Tls_ErrorString(sslerr),
+               sslerr);
+      return -1;
+    }
+
+    /* load keys */
+    rv=SSL_CTX_use_PrivateKey_file(xio->ssl_ctx,
+                                   xio->localKeyFile,
+                                   SSL_FILETYPE_PEM);
+    if (!rv) {
+      int sslerr;
+
+      sslerr=SSL_get_error(xio->ssl, rv);
+      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading keyfile: %s (%d)",
+               GWEN_SyncIo_Tls_ErrorString(sslerr),
+               sslerr);
+      return -1;
+    }
+    if (!SSL_CTX_check_private_key(xio->ssl_ctx)) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "Private key does not match the certificate public key");
+      return -1;
+    }
+  }
+
+  /* setup locations of certificates */
+  if (xio->localTrustFile) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate locations");
+    rv=SSL_CTX_load_verify_locations(xio->ssl_ctx,
+                                     xio->localTrustFile,
+                                     NULL);
+    if (rv==0) {
+      DBG_INFO(GWEN_LOGDOMAIN,
+               "SSL: Could not load certificate location "
+               "(was: \"%s\")",
+               xio->localTrustFile);
+      return -1;
+    }
+  }
+
+  /* setup server stuff */
+  if (lflags & GWEN_SYNCIO_FLAGS_PASSIVE) {
+    if (lflags & GWEN_SYNCIO_TLS_FLAGS_REQUEST_CERT)
+      SSL_CTX_set_verify(xio->ssl_ctx,
+                         SSL_VERIFY_PEER |
+                         SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+                         GWEN_SyncIo_Tls_VerifyCallBack);
+    else
+      SSL_CTX_set_verify(xio->ssl_ctx,
+                         SSL_VERIFY_PEER,
+                         GWEN_SyncIo_Tls_VerifyCallBack);
+  }
+  else {
+    /* active connection */
+    SSL_CTX_set_verify(xio->ssl_ctx,
+                       SSL_VERIFY_PEER,
+                       GWEN_SyncIo_Tls_VerifyCallBack);
+  }
+
+  xio->ssl=SSL_new(xio->ssl_ctx);
+  SSL_set_ex_data(xio->ssl, gwen_syncio_tls_sslidx, sio);
+
+  if (lflags & GWEN_SYNCIO_FLAGS_PASSIVE)
+    SSL_set_accept_state(xio->ssl);
+  else
+    SSL_set_connect_state(xio->ssl);
+
+  /* set info callback */
+  SSL_set_info_callback(xio->ssl, GWEN_SyncIo_Tls_InfoCallBack);
+
+  /* tell SSL to use our BIO */
+  xio->bio=BIO_syncio_new(baseIo);
+  SSL_set_bio(xio->ssl, xio->bio, xio->bio);
+
+  return 0;
+}
+
+
+
+int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  if (gwen_syncio_tls_sslidx==-1) {
+    gwen_syncio_tls_sslidx=SSL_get_ex_new_index(0, 0, 0, 0, 0);
+    assert(gwen_syncio_tls_sslidx!=-1);
+  }
+
+  /* socket ready now setup SSL */
+  if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE)
+    xio->ssl_ctx=SSL_CTX_new(SSLv23_server_method());
+  else
+    xio->ssl_ctx=SSL_CTX_new(SSLv23_client_method());
+
+  if (GWEN_SyncIo_Tls_Setup(sio)) {
+    SSL_free(xio->ssl);
+    xio->ssl=0;
+    SSL_CTX_free(xio->ssl_ctx);
+    xio->ssl_ctx=0;
+    xio->bio=0; /* FIXME: Does SSL_free free this ? */
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup SSL conntection");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  xio->prepared=1;
+
+  return 0;
+}
+
+
+
+void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  if (xio->prepared) {
+    SSL_free(xio->ssl);
+    xio->ssl=0;
+    SSL_CTX_free(xio->ssl_ctx);
+    xio->ssl_ctx=0;
+    xio->bio=0; /* FIXME: Does SSL_free free this ? */
+    xio->prepared=0;
+  }
+}
+
+
+
+int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+  X509 *cert;
+  char *certbuf;
+  long vr;
+  const char *s;
+  int isError;
+  GWEN_SSLCERTDESCR *cd;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  if (xio->peerCertDescr) {
+    GWEN_SslCertDescr_free(xio->peerCertDescr);
+    xio->peerCertDescr=NULL;
+  }
+  xio->peerCertFlags=0;
+
+  cert=SSL_get_peer_certificate(xio->ssl);
+  if (!cert) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Peer did not send a certificate");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  certbuf=X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+  DBG_INFO(GWEN_LOGDOMAIN, "Got a certificate: %s", certbuf);
+
+  /* setup certificate */
+  isError=0;
+  cd=GWEN_SyncIo_Tls_Cert2Descr(cert);
+  X509_free(cert);
+
+  /* setup statusText and statusCode */
+  vr=SSL_get_verify_result(xio->ssl);
+  switch (vr) {
+
+  case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+    s=I18N("New certificate");
+    break;
+
+  case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+    s=I18N("Unable to get issuer certificate");
+    break;
+
+  case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+    s=I18N("Unable to decrypt cert signature");
+    isError=1;
+    break;
+
+  case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+    s=I18N("Unable to decode issuer public key");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+    s=I18N("Cert signature failure");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_NOT_YET_VALID:
+    s=I18N("Cert not yet valid");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_HAS_EXPIRED:
+    s=I18N("Cert has expired");
+    isError=1;
+    break;
+
+  case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+    s=I18N("Self-signed root cert");
+    break;
+
+  case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+    s=I18N("Self-signed cert");
+    break;
+
+  case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+    s=I18N("Unable to verify leaf signature");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+    s=I18N("Cert chain too long");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_REVOKED:
+    s=I18N("Cert revoked");
+    isError=1;
+    break;
+
+  case X509_V_ERR_INVALID_CA:
+    s=I18N("Invalid CA");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_UNTRUSTED:
+    s=I18N("Cert untrusted");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CERT_REJECTED:
+    s=I18N("Cert rejected");
+    isError=1;
+    break;
+
+  case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+  case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+  case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
+  case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
+  case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+  case X509_V_ERR_INVALID_PURPOSE:
+    s=I18N("Formal error in certificate");
+    isError=1;
+    break;
+
+  case X509_V_ERR_OUT_OF_MEM:
+    s=I18N("Out of memory");
+    isError=1;
+    break;
+
+  case X509_V_ERR_UNABLE_TO_GET_CRL:
+    s=I18N("Unable to get CRL");
+    isError=1;
+    break;
+
+  case X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE:
+    s=I18N("Unable to decrypt CRL signature");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CRL_SIGNATURE_FAILURE:
+    s=I18N("CRL signature failure");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CRL_NOT_YET_VALID:
+    s=I18N("CRL not yet valid");
+    isError=1;
+    break;
+
+  case X509_V_ERR_CRL_HAS_EXPIRED:
+    s=I18N("CRL has expired");
+    isError=1;
+    break;
+
+  case X509_V_OK:
+    s=I18N("Certificate is valid");
+    break;
+
+  default:
+    s=I18N("Unknown SSL error");
+    isError=1;
+  }
+
+  GWEN_SslCertDescr_SetStatusText(cd, s);
+  GWEN_SslCertDescr_SetIsError(cd, isError);
+
+  xio->peerCertDescr=cd;
+
+  free(certbuf);
+  return 0;
+}
+
+
+
+void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  /* show info about used cipher */
+  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Notice) {
+    SSL_CIPHER *ci;
+    char buffer[256];
+    const char *p;
+
+    ci=SSL_get_current_cipher(xio->ssl);
+    assert(ci);
+
+    p=SSL_CIPHER_description(ci, buffer, sizeof(buffer));
+    DBG_INFO(GWEN_LOGDOMAIN, "Connected using \"%s\"", p);
+  }
+}
+
+
+
+int GWEN_SyncIo_Tls_Handshake(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+  int rv;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  for (;;) {
+    /* check for established SSL */
+    ERR_clear_error();
+    if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE) {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Calling accept");
+      rv=SSL_accept(xio->ssl);
+    }
+    else {
+      DBG_VERBOUS(GWEN_LOGDOMAIN, "Calling connect");
+      rv=SSL_connect(xio->ssl);
+    }
+
+    if (rv!=1) {
+      int sslerr;
+
+      sslerr=SSL_get_error(xio->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ ||
+          sslerr==SSL_ERROR_WANT_WRITE)
+        continue; /* would block */
+      else {
+        if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+                    sslerr,
+                    GWEN_SyncIo_Tls_ErrorString(sslerr));
+          return GWEN_ERROR_SSL;
+        } /* if error is syscall and errno==0 */
+        else {
+          if (sslerr==SSL_ERROR_ZERO_RETURN) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+            return GWEN_ERROR_SSL;
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+            if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+              ERR_print_errors_fp(stderr); /* DEBUG */
+            DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+                     GWEN_SyncIo_Tls_ErrorString(sslerr),
+                     sslerr);
+            return GWEN_ERROR_SSL;
+          }
+        } /* if !(error is syscall and errno==0) */
+      } /* if error is not wantRead or wantWrite */
+    } /* if error */
+    break;
+  }
+
+  /* now logically connected */
+  DBG_INFO(GWEN_LOGDOMAIN, "Logically connected");
+  return 0;
+}
+
+#else /* GWEN_TLS_OPENSSL */
 
 
 
@@ -1288,6 +2177,8 @@ int GWEN_SyncIo_Tls_Handshake(GWEN_SYNCIO *sio)
   return 0;
 }
 
+#endif /* GWEN_TLS_OPENSSL */
+
 
 
 void GWEN_SyncIo_Tls_SetCertStatus(GWEN_SSLCERTDESCR *certDescr, uint32_t errFlags)
@@ -1440,6 +2331,250 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Connect(GWEN_SYNCIO *sio)
     }
   }
 }
+
+
+
+#ifdef GWEN_TLS_OPENSSL
+
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Disconnect(GWEN_SYNCIO *sio)
+{
+  GWEN_SYNCIO_TLS *xio;
+  GWEN_SYNCIO *baseIo;
+  int rv;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  baseIo=GWEN_SyncIo_GetBaseIo(sio);
+  assert(baseIo);
+
+  /* check status */
+  if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Not connected");
+    GWEN_SyncIo_Tls_UndoPrepare(sio);
+    GWEN_SyncIo_Disconnect(baseIo);
+    return GWEN_ERROR_NOT_CONNECTED;
+  }
+
+  rv=SSL_shutdown(xio->ssl);
+  if (!rv)
+    rv=SSL_shutdown(xio->ssl);
+
+  if (rv==1 || rv==-1) {
+    /* connection closed */
+    DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+  }
+
+  GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+  GWEN_SyncIo_Tls_UndoPrepare(sio);
+  GWEN_SyncIo_Disconnect(baseIo);
+  return 0;
+}
+
+
+
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
+                                       uint8_t *buffer,
+                                       uint32_t size)
+{
+  GWEN_SYNCIO_TLS *xio;
+  GWEN_SYNCIO *baseIo;
+  int rv;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  baseIo=GWEN_SyncIo_GetBaseIo(sio);
+  assert(baseIo);
+
+  /* check status */
+  if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Socket is not connected");
+    return GWEN_ERROR_INVALID;
+  }
+
+  assert(xio->ssl);
+
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Reading up to %d bytes while status \"%s\"",
+            (int) size,
+            SSL_state_string_long(xio->ssl));
+
+  for (;;) {
+    /* try to read */
+    ERR_clear_error();
+    rv=SSL_read(xio->ssl, buffer, (int) size);
+    if (rv<1) {
+      int sslerr;
+
+      sslerr=SSL_get_error(xio->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ ||
+          sslerr==SSL_ERROR_WANT_WRITE)
+        continue; /* would block */
+      else {
+        if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+          DBG_INFO(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+                   sslerr,
+                   GWEN_SyncIo_Tls_ErrorString(sslerr));
+          GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+          GWEN_SyncIo_Tls_UndoPrepare(sio);
+          GWEN_SyncIo_Disconnect(baseIo);
+
+          /* connection closed, no real error */
+          return 0;
+        } /* if error is syscall and errno==0 */
+        else {
+          if (sslerr==SSL_ERROR_ZERO_RETURN) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+            GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+            GWEN_SyncIo_Tls_UndoPrepare(sio);
+            GWEN_SyncIo_Disconnect(baseIo);
+
+            /* connection closed, no real error */
+            return 0;
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+            /*ERR_print_errors_fp(stderr);*/ /* DEBUG */
+            DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+                     GWEN_SyncIo_Tls_ErrorString(sslerr),
+                     sslerr);
+            return GWEN_ERROR_READ;
+          }
+        } /* if !(error is syscall and errno==0) */
+      } /* if error is not wantRead or wantWrite */
+    } /* if rv<1 */
+    break;
+  }
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
+  GWEN_Text_LogString((const char *) buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  if (getenv("GWEN_SSL_DEBUG")) {
+    FILE *f;
+
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
+    f=fopen("/tmp/read.bin", "a+");
+    if (!f) {
+      DBG_INFO(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
+    }
+    else {
+      if (fwrite(buffer, rv, 1, f)!=1) {
+        DBG_INFO(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
+      }
+      if (fclose(f)) {
+        DBG_INFO(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
+      }
+    }
+  }
+
+  return rv;
+}
+
+
+
+int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
+                                        const uint8_t *buffer,
+                                        uint32_t size)
+{
+  GWEN_SYNCIO_TLS *xio;
+  GWEN_SYNCIO *baseIo;
+  int rv;
+
+  assert(sio);
+  xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
+  assert(xio);
+
+  baseIo=GWEN_SyncIo_GetBaseIo(sio);
+  assert(baseIo);
+
+  /* check status */
+  if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Socket is not connected");
+    return GWEN_ERROR_INVALID;
+  }
+
+  assert(xio->ssl);
+
+  DBG_DEBUG(GWEN_LOGDOMAIN,
+            "Writing up to %d bytes while status \"%s\"",
+            (int) size,
+            SSL_state_string_long(xio->ssl));
+
+  for (;;) {
+    /* try to write */
+    ERR_clear_error();
+    rv=SSL_write(xio->ssl, buffer, (int) size);
+    if (rv<1) {
+      int sslerr;
+
+      sslerr=SSL_get_error(xio->ssl, rv);
+      if (sslerr==SSL_ERROR_WANT_READ ||
+          sslerr==SSL_ERROR_WANT_WRITE)
+        continue; /* would block */
+      else {
+        if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+                    sslerr,
+                    GWEN_SyncIo_Tls_ErrorString(sslerr));
+          GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+          GWEN_SyncIo_Tls_UndoPrepare(sio);
+          GWEN_SyncIo_Disconnect(baseIo);
+
+          /* connection closed, no real error */
+          return 0;
+        } /* if error is syscall and errno==0 */
+        else {
+          if (sslerr==SSL_ERROR_ZERO_RETURN) {
+            DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+            GWEN_SyncIo_SetStatus(sio, GWEN_SyncIo_Status_Disconnected);
+            GWEN_SyncIo_Tls_UndoPrepare(sio);
+            GWEN_SyncIo_Disconnect(baseIo);
+
+            /* connection closed, no real error */
+            return 0;
+          }
+          else {
+            DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+            ERR_print_errors_fp(stderr); /* DEBUG */
+            DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
+                      GWEN_SyncIo_Tls_ErrorString(sslerr),
+                      sslerr);
+            return GWEN_ERROR_READ;
+          }
+        } /* if !(error is syscall and errno==0) */
+      } /* if error is not wantRead or wantWrite */
+    } /* if rv<1 */
+    break;
+  }
+
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes:", rv);
+  GWEN_Text_LogString((const char *) buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+
+  if (getenv("GWEN_SSL_DEBUG")) {
+    FILE *f;
+
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
+    f=fopen("/tmp/written.bin", "a+");
+    if (!f) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
+    }
+    else {
+      if (fwrite(buffer, rv, 1, f)!=1) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
+      }
+      if (fclose(f)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
+      }
+    }
+  }
+
+  return rv;
+}
+
+#else /* GWEN_TLS_OPENSSL */
 
 
 
@@ -1601,9 +2736,4 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
   return rv;
 }
 
-
-
-
-
-
-
+#endif /* GWEN_TLS_OPENSSL */

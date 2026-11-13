@@ -15,6 +15,9 @@
 # version. We set it to one here.
 %define release 1.%{disttag}%{distver}
 
+# "rpmbuild --with openssl" uses OpenSSL instead of GnuTLS for TLS
+%bcond_with openssl
+
 
 Summary: A multi-platform helper library for other libraries
 Name: %{name}
@@ -26,7 +29,12 @@ License: LGPL
 Packager: Martin Preuss <martin@libchipcard.de>
 URL: http://sourceforge.net/projects/gwenhywfar
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: openssl-devel gettext
+BuildRequires: openssl-devel gettext libgcrypt-devel
+%if %{with openssl}
+BuildRequires: openssl-devel >= 3.5
+%else
+BuildRequires: gnutls-devel
+%endif
 Prereq: /sbin/ldconfig
 
 %description
@@ -48,7 +56,7 @@ compiling programs using Gwenhywfar.
 %setup -q
 
 %build
-%configure --disable-static --with-openssl-libs=%{_libdir}
+%configure --disable-static --with-openssl-libs=%{_libdir} --with-tls=%{?with_openssl:openssl}%{!?with_openssl:gnutls}
 make
 
 %install

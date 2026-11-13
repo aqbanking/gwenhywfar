@@ -50,7 +50,8 @@ Gwenhywfar includes the following features:
 Requirements
 ============
 
-- GnuTLS >= 1.4 (>=2.0.1 recommended)
+- GnuTLS >= 2.9.8, or OpenSSL >= 3.5 when configured with
+  "--with-tls=openssl"
 - libgcrypt (>=1.2.0)
 - pkg-config
 

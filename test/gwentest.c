@@ -74,7 +74,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <gnutls/gnutls.h>
+#ifndef GWEN_TLS_OPENSSL
+# include <gnutls/gnutls.h>
+#endif
 #include <gcrypt.h>
 
 #ifdef WITH_ZIP_TEST
@@ -3152,6 +3154,7 @@ int testCrypt3Rsa4(void)
 
 
 
+#ifndef GWEN_TLS_OPENSSL
 int testGnutls(void)
 {
   gnutls_session_t session;
@@ -3232,6 +3235,7 @@ int testGnutls(void)
   DBG_ERROR(0, "Ok.");
   return 0;
 }
+#endif
 
 
 
@@ -7343,7 +7347,9 @@ const GWEN_FUNCS tests[] = {
   GWEN_FUNCS_ENTRY("floatdouble", testFloatDouble),
   GWEN_FUNCS_ENTRY_ARGS("fslock", testFsLock),
   GWEN_FUNCS_ENTRY_ARGS("fslock2", testFsLock2),
+#ifndef GWEN_TLS_OPENSSL
   GWENTEST_ENTRY_NETWORK("gtls", testGnutls),
+#endif
   GWEN_FUNCS_ENTRY_ARGS("hashtree", testHashTree),
   GWEN_FUNCS_ENTRY_ARGS("http1", testHttp1),
   GWEN_FUNCS_ENTRY_ARGS("http2", testHttp2),

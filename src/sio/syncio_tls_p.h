@@ -27,18 +27,23 @@
 #define GWENHYWFAR_SYNCIO_TLS_P_H
 
 #include <gwenhywfar/syncio_tls.h>
+#include <gwenhywfar/gwentime.h>
 
-#include <gnutls/gnutls.h>
-
-
-#if GNUTLS_VERSION_NUMBER < 0x030204
-#  define GWEN_TLS_CIPHER_PRIORITIES_DEFAULT      "SECURE256:SECURE128"
+#ifdef GWEN_TLS_OPENSSL
+# include <openssl/ssl.h>
 #else
-#  define GWEN_TLS_CIPHER_PRIORITIES_DEFAULT      "PFS:SECURE128"
-#endif
+# include <gnutls/gnutls.h>
 
-#define GWEN_TLS_CIPHER_PRIORITIES_UNSAFE         "SECURE128"
-#define GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE "-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC"
+
+# if GNUTLS_VERSION_NUMBER < 0x030204
+#  define GWEN_TLS_CIPHER_PRIORITIES_DEFAULT      "SECURE256:SECURE128"
+# else
+#  define GWEN_TLS_CIPHER_PRIORITIES_DEFAULT      "PFS:SECURE128"
+# endif
+
+# define GWEN_TLS_CIPHER_PRIORITIES_UNSAFE         "SECURE128"
+# define GWEN_TLS_CIPHER_PRIORITIES_DISABLE_UNSAFE "-ARCFOUR-128:-AES-128-CBC:-CAMELLIA-128-CBC:-3DES-CBC"
+#endif
 
 
 
@@ -51,8 +56,14 @@ struct GWEN_SYNCIO_TLS {
 
   char *hostName;
 
+#ifdef GWEN_TLS_OPENSSL
+  BIO *bio;
+  SSL_CTX *ssl_ctx;
+  SSL *ssl;
+#else
   gnutls_session_t session;
   gnutls_certificate_credentials_t credentials;
+#endif
 
   int prepared;
 
@@ -82,10 +93,30 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
 static int GWENHYWFAR_CB GWEN_SyncIo_Tls_Internal_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
 
 
+#ifndef GWEN_TLS_OPENSSL
 static int GWEN_SyncIo_Tls__readFile(const char *fname, GWEN_BUFFER *buf);
+#endif
 
+#ifdef GWEN_TLS_OPENSSL
+static BIO *BIO_syncio_new(GWEN_SYNCIO *sio);
+static int BIO_syncio_create(BIO *bio);
+static int BIO_syncio_destroy(BIO *bio);
+static int BIO_syncio_read(BIO *bio, char *in, int inl);
+static int BIO_syncio_write(BIO *bio, const char *out, int outl);
+static long BIO_syncio_ctrl(BIO *bio, int cmd, long num, void *ptr);
+static int BIO_syncio_puts(BIO *bp, const char *str);
+
+static int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio);
+static const char *GWEN_SyncIo_Tls_ErrorString(unsigned int e);
+static void GWEN_SyncIo_Tls_InfoCallBack(const SSL *s, int where, int ret);
+static int GWEN_SyncIo_Tls_VerifyCallBack(int preverify_ok, X509_STORE_CTX *ctx);
+static char *GWEN_SyncIo_Tls_GetCertEntry(X509_NAME *nm, int nid);
+static GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(ASN1_TIME *d);
+static GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert);
+#else
 static ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len);
 static ssize_t GWEN_SyncIo_Tls_Push(gnutls_transport_ptr_t p, const void *buf, size_t len);
+#endif
 
 
 void GWEN_SyncIo_Tls_UndoPrepare(GWEN_SYNCIO *sio);

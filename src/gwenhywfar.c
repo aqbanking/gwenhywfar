@@ -59,7 +59,9 @@
 
 #include "binreloc.h"
 
-#include <gnutls/gnutls.h>
+#ifndef GWEN_TLS_OPENSSL
+# include <gnutls/gnutls.h>
+#endif
 
 
 /* for regkey stuff */
@@ -98,7 +100,9 @@ int GWEN_Init(void)
     if (err)
       return err;
 
+#ifndef GWEN_TLS_OPENSSL
     gnutls_global_init();
+#endif
 
     if (gwen_binreloc_initialized==0) {
 #ifdef ENABLE_BINRELOC
@@ -395,7 +399,9 @@ int GWEN_Fini(void)
                 "Could not deinitialze module Logger");
     }
 
+#ifndef GWEN_TLS_OPENSSL
     gnutls_global_deinit();
+#endif
 
   }
 

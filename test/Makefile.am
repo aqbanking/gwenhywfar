@@ -1,5 +1,5 @@
 AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
- $(LIBGNUTLS_CFLAGS) $(LIBGCRYPT_CFLAGS) $(GPG_ERROR_CFLAGS) \
+ $(LIBTLS_CFLAGS) $(LIBGCRYPT_CFLAGS) $(GPG_ERROR_CFLAGS) \
  -I$(top_srcdir)/src/base \
  -I$(top_srcdir)/src/crypt \
  -I$(top_srcdir)/src/io \
@@ -16,7 +16,7 @@ noinst_HEADERS=\
 noinst_PROGRAMS=gwentest
 gwentest_SOURCES=gwentest.c testthread.c
 gwentest_LDADD=$(top_builddir)/src/libgwenhywfar.la \
-  $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(GPG_ERROR_LIBS) \
+  $(LIBGCRYPT_LIBS) $(LIBTLS_LIBS) $(GPG_ERROR_LIBS) \
   $(top_builddir)/src/base/libbase.la
 
 TESTS = tls-tests.sh

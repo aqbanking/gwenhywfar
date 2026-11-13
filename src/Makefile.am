@@ -5,7 +5,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
  -I$(top_srcdir)/src/net2 \
  -I$(top_srcdir)/src/html \
  -I$(top_srcdir)/src/parser \
- $(LIBGNUTLS_CFLAGS) \
+ $(LIBTLS_CFLAGS) \
  $(all_includes)
 
 AM_CFLAGS=$(visibility_cflags) @WERROR@
@@ -65,7 +65,7 @@ libgwenhywfar_la_LIBADD=\
   sar/libsar.la \
   xmlcmd/libxmlcmd.la \
   msgio/libgwenmsgio.la \
-  test_framework/libtestframework.la $(i18n_libs) $(PTHREAD_CFLAGS) $(PTHREAD_LIBS) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBGNUTLS_LIBS) $(LIBXML_LIBS) $(LIBLD_LIBS) $(all_libraries)
+  test_framework/libtestframework.la $(i18n_libs) $(PTHREAD_CFLAGS) $(PTHREAD_LIBS) $(ICONV_LIBS) $(LIBGCRYPT_LIBS) $(LIBTLS_LIBS) $(LIBXML_LIBS) $(LIBLD_LIBS) $(all_libraries)
 
 libgwenhywfar_la_CFLAGS=$(PTHREAD_CFLAGS)
 
