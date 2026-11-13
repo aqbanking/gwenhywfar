@@ -849,13 +849,18 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
     }
   }
 
+  /* fingerprint (MD5) */
+  md_size=0;
   if (!X509_digest(cert, EVP_md5(), md, &md_size)) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Error building fingerprint of the certificate");
+    ERR_clear_error();
   }
   if (!md_size) {
     DBG_ERROR(GWEN_LOGDOMAIN,
               "Empty fingerprint of the certificate");
+    GWEN_SslCertDescr_free(cd);
+    return NULL;
   }
   else {
     GWEN_BUFFER *dbuf;
@@ -868,6 +873,62 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
     }
     else {
       GWEN_SslCertDescr_SetFingerPrint(cd, GWEN_Buffer_GetStart(dbuf));
+    }
+    GWEN_Buffer_free(dbuf);
+  }
+
+  /* fingerprint (SHA1) */
+  md_size=0;
+  if (!X509_digest(cert, EVP_sha1(), md, &md_size)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Error building fingerprint of the certificate");
+    ERR_clear_error();
+  }
+  if (!md_size) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Empty fingerprint of the certificate");
+    GWEN_SslCertDescr_free(cd);
+    return NULL;
+  }
+  else {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
+                                                                 md_size, dbuf, 2, ':', 0)) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not convert fingerprint to hex");
+    }
+    else {
+      GWEN_SslCertDescr_SetFingerPrintSha1(cd, GWEN_Buffer_GetStart(dbuf));
+    }
+    GWEN_Buffer_free(dbuf);
+  }
+
+  /* fingerprint (SHA512) */
+  md_size=0;
+  if (!X509_digest(cert, EVP_sha512(), md, &md_size)) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Error building fingerprint of the certificate");
+    ERR_clear_error();
+  }
+  if (!md_size) {
+    DBG_ERROR(GWEN_LOGDOMAIN,
+              "Empty fingerprint of the certificate");
+    GWEN_SslCertDescr_free(cd);
+    return NULL;
+  }
+  else {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    if (GWEN_Text_ToHexBuffer(/* GCC4 pointer-signedness fix: */ (char *)md,
+                                                                 md_size, dbuf, 2, ':', 0)) {
+      DBG_ERROR(GWEN_LOGDOMAIN,
+                "Could not convert fingerprint to hex");
+    }
+    else {
+      GWEN_SslCertDescr_SetFingerPrintSha512(cd, GWEN_Buffer_GetStart(dbuf));
     }
     GWEN_Buffer_free(dbuf);
   }
