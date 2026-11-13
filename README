@@ -119,6 +119,10 @@ For the exact format of the cipher priority list and its default, please
 consult the GnuTLS documentation, section "Priority strings":
 http://gnutls.org/manual/html_node/Priority-Strings.html
 
+This variable applies to the GnuTLS build only. A build configured with
+"--with-tls=openssl" always uses the default ciphers of OpenSSL, and it
+logs a warning when the variable is set.
+
 
 Registry Keys
 =============

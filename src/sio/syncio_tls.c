@@ -1115,6 +1115,7 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
   int rv;
   uint32_t lflags;
   GWEN_SYNCIO *baseIo;
+  const char *custom_ciphers;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
@@ -1128,6 +1129,15 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
   /* enable all workarounds for bugs in other SSL implementation for
    * maximum compatibility */
   SSL_CTX_set_options(xio->ssl_ctx, SSL_OP_ALL);
+
+  /* the cipher list is that of OpenSSL; a GnuTLS priority string has no meaning here */
+  custom_ciphers=getenv("GWEN_TLS_CIPHER_PRIORITIES");
+  if (custom_ciphers && *custom_ciphers) {
+    DBG_WARN(GWEN_LOGDOMAIN, "GWEN_TLS_CIPHER_PRIORITIES is only used with GnuTLS, ignoring it");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
+                         I18N("TLS: The variable GWEN_TLS_CIPHER_PRIORITIES has no effect with OpenSSL, ignoring it."));
+  }
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Using OpenSSL default ciphers."));
 
   if (xio->localCertFile && xio->localKeyFile) {
     char errBuf[256];
@@ -1417,22 +1427,108 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
 void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio)
 {
   GWEN_SYNCIO_TLS *xio;
+  const SSL_CIPHER *ci;
+  const char *s;
+  int kxNid;
+  int cipherNid;
+  GWEN_BUFFER *cbuf;
+  GWEN_BUFFER *sbuf;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
 
+  ci=SSL_get_current_cipher(xio->ssl);
+  assert(ci);
+
   /* show info about used cipher */
-  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Notice) {
-    const SSL_CIPHER *ci;
+  if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info) {
     char buffer[256];
     const char *p;
 
-    ci=SSL_get_current_cipher(xio->ssl);
-    assert(ci);
-
     p=SSL_CIPHER_description(ci, buffer, sizeof(buffer));
     DBG_INFO(GWEN_LOGDOMAIN, "Connected using \"%s\"", p);
+  }
+
+  cipherNid=SSL_CIPHER_get_cipher_nid(ci);
+
+  cbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  sbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* protocol */
+  s=SSL_get_version(xio->ssl);
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "Protocol: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+  GWEN_Buffer_AppendString(sbuf, ":");
+
+  /* key exchange algorithm: the group for TLS 1.3, the key exchange method of the cipher suite otherwise */
+  kxNid=SSL_CIPHER_get_kx_nid(ci);
+  if (kxNid==NID_kx_any)
+    s=SSL_get0_group_name(xio->ssl);
+  else {
+    s=(kxNid==NID_undef)?NULL:OBJ_nid2sn(kxNid);
+    if (s && strncmp(s, "Kx", 2)==0)
+      s+=2;
+  }
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "Key exchange algorithm: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+  GWEN_Buffer_AppendString(sbuf, "-");
+
+  /* cipher */
+  s=(cipherNid==NID_undef)?NULL:OBJ_nid2ln(cipherNid);
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "cipher algorithm: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+  GWEN_Buffer_AppendString(sbuf, ":");
+
+  /* MAC algorithm */
+  if (SSL_CIPHER_is_aead(ci))
+    s="AEAD";
+  else {
+    int mdNid;
+
+    mdNid=SSL_CIPHER_get_digest_nid(ci);
+    s=(mdNid==NID_undef)?NULL:OBJ_nid2ln(mdNid);
+  }
+  if (s && *s) {
+    if (GWEN_Buffer_GetUsedBytes(cbuf))
+      GWEN_Buffer_AppendString(cbuf, " ");
+    GWEN_Buffer_AppendString(cbuf, "MAC algorithm: ");
+    GWEN_Buffer_AppendString(cbuf, s);
+    GWEN_Buffer_AppendString(sbuf, s);
+  }
+
+  DBG_NOTICE(GWEN_LOGDOMAIN, "%s", GWEN_Buffer_GetStart(cbuf));
+  GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("TLS: SSL-Ciphers negotiated: %s"), GWEN_Buffer_GetStart(sbuf));
+  GWEN_Buffer_free(cbuf);
+  GWEN_Buffer_free(sbuf);
+
+  /* possibly show warning */
+  switch (cipherNid) {
+  case NID_rc4:
+  case NID_rc4_40:
+  case NID_des_ede3_cbc:
+  case NID_aes_128_cbc:
+  case NID_camellia_128_cbc:
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("TLS: Warning - The server has chosen unsafe SSL-Ciphers!"));
+    break;
+  default:
+    break;
   }
 }
 
