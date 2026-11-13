@@ -110,8 +110,8 @@ static int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio);
 static const char *GWEN_SyncIo_Tls_ErrorString(unsigned int e);
 static void GWEN_SyncIo_Tls_InfoCallBack(const SSL *s, int where, int ret);
 static int GWEN_SyncIo_Tls_VerifyCallBack(int preverify_ok, X509_STORE_CTX *ctx);
-static char *GWEN_SyncIo_Tls_GetCertEntry(X509_NAME *nm, int nid);
-static GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(ASN1_TIME *d);
+static char *GWEN_SyncIo_Tls_GetCertEntry(const X509_NAME *nm, int nid);
+static GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(const ASN1_TIME *d);
 static GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert);
 #else
 static ssize_t GWEN_SyncIo_Tls_Pull(gnutls_transport_ptr_t p, void *buf, size_t len);

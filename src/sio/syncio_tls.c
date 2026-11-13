@@ -645,9 +645,9 @@ int GWEN_SyncIo_Tls_VerifyCallBack(int preverify_ok, X509_STORE_CTX *ctx)
 
 
 
-char *GWEN_SyncIo_Tls_GetCertEntry(X509_NAME *nm, int nid)
+char *GWEN_SyncIo_Tls_GetCertEntry(const X509_NAME *nm, int nid)
 {
-  X509_NAME_ENTRY *e;
+  const X509_NAME_ENTRY *e;
   const unsigned char *p;
   int len;
   int lastpos;
@@ -676,7 +676,7 @@ char *GWEN_SyncIo_Tls_GetCertEntry(X509_NAME *nm, int nid)
 
 
 
-GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(ASN1_TIME *d)
+GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(const ASN1_TIME *d)
 {
   /* ASN1_TIME is opaque since OpenSSL 1.1 */
   if (ASN1_STRING_get0_data(d)) {
@@ -719,8 +719,8 @@ GWEN_TIME *GWEN_SyncIo_Tls_ASN_GetTime(ASN1_TIME *d)
 
 GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
 {
-  X509_NAME *nm;
-  ASN1_TIME *d;
+  const X509_NAME *nm;
+  const ASN1_TIME *d;
   unsigned int  md_size;
   unsigned char md[EVP_MAX_MD_SIZE];
   char *s;
@@ -767,7 +767,7 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
     free(s);
   }
 
-  d=X509_get_notBefore(cert);
+  d=X509_get0_notBefore(cert);
   if (d) {
     GWEN_TIME *ti;
 
@@ -781,7 +781,7 @@ GWEN_SSLCERTDESCR *GWEN_SyncIo_Tls_Cert2Descr(X509 *cert)
     }
   }
 
-  d=X509_get_notAfter(cert);
+  d=X509_get0_notAfter(cert);
   if (d) {
     GWEN_TIME *ti;
 
@@ -947,9 +947,9 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
 
   /* socket ready now setup SSL */
   if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE)
-    xio->ssl_ctx=SSL_CTX_new(SSLv23_server_method());
+    xio->ssl_ctx=SSL_CTX_new(TLS_server_method());
   else
-    xio->ssl_ctx=SSL_CTX_new(SSLv23_client_method());
+    xio->ssl_ctx=SSL_CTX_new(TLS_client_method());
 
   if (GWEN_SyncIo_Tls_Setup(sio)) {
     SSL_free(xio->ssl);
@@ -1008,7 +1008,7 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
   }
   xio->peerCertFlags=0;
 
-  cert=SSL_get_peer_certificate(xio->ssl);
+  cert=SSL_get1_peer_certificate(xio->ssl);
   if (!cert) {
     DBG_WARN(GWEN_LOGDOMAIN, "Peer did not send a certificate");
     return GWEN_ERROR_NO_DATA;
@@ -1167,7 +1167,7 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio)
 
   /* show info about used cipher */
   if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Notice) {
-    SSL_CIPHER *ci;
+    const SSL_CIPHER *ci;
     char buffer[256];
     const char *p;
 
