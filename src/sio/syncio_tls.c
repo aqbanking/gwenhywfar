@@ -2888,26 +2888,12 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
     break;
   }
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes:", rv);
-  GWEN_Text_LogString((const char *) buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Read %d bytes", rv);
 
-  if (getenv("GWEN_SSL_DEBUG")) {
-    FILE *f;
-
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
-    f=fopen("/tmp/read.bin", "a+");
-    if (!f) {
-      DBG_INFO(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
-    }
-    else {
-      if (fwrite(buffer, rv, 1, f)!=1) {
-        DBG_INFO(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
-      }
-      if (fclose(f)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
-      }
-    }
-  }
+#ifdef GWEN_TLS_DEBUG
+  DBG_ERROR(0, "Received this:");
+  GWEN_Text_DumpString((const char *) buffer, rv, 2);
+#endif
 
   return rv;
 }
@@ -2925,6 +2911,11 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_TLS, sio);
   assert(xio);
+
+#ifdef GWEN_TLS_DEBUG
+  DBG_ERROR(0, "Sending this:");
+  GWEN_Text_DumpString((const char *) buffer, size, 2);
+#endif
 
   baseIo=GWEN_SyncIo_GetBaseIo(sio);
   assert(baseIo);
@@ -2997,26 +2988,7 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
     break;
   }
 
-  DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes:", rv);
-  GWEN_Text_LogString((const char *) buffer, rv, GWEN_LOGDOMAIN, GWEN_LoggerLevel_Verbous);
-
-  if (getenv("GWEN_SSL_DEBUG")) {
-    FILE *f;
-
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Saving...");
-    f=fopen("/tmp/written.bin", "a+");
-    if (!f) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "fopen: %s", strerror(errno));
-    }
-    else {
-      if (fwrite(buffer, rv, 1, f)!=1) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "fwrite: %s", strerror(errno));
-      }
-      if (fclose(f)) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "fclose: %s", strerror(errno));
-      }
-    }
-  }
+  DBG_DEBUG(GWEN_LOGDOMAIN, "Written %d bytes", rv);
 
   return rv;
 }
