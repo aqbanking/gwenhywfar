@@ -586,6 +586,25 @@ const char *GWEN_SyncIo_Tls_ErrorString(unsigned int e)
 
 
 
+/* Appends the text of the most recent entry in the OpenSSL error queue, which tells more than
+ * GWEN_SyncIo_Tls_ErrorString() */
+static void GWEN_SyncIo_Tls_ErrorText(int sslerr, char *buffer, size_t bufferSize)
+{
+  unsigned long e;
+
+  e=ERR_peek_last_error();
+  if (e) {
+    char ebuf[200];
+
+    ERR_error_string_n(e, ebuf, sizeof(ebuf));
+    snprintf(buffer, bufferSize, "%s: %s", GWEN_SyncIo_Tls_ErrorString(sslerr), ebuf);
+  }
+  else
+    snprintf(buffer, bufferSize, "%s", GWEN_SyncIo_Tls_ErrorString(sslerr));
+}
+
+
+
 void GWEN_SyncIo_Tls_InfoCallBack(const SSL *s, int where, int ret)
 {
   const char *str;
@@ -598,6 +617,7 @@ void GWEN_SyncIo_Tls_InfoCallBack(const SSL *s, int where, int ret)
     str="SSL_accept";
   else
     str="undefined";
+  (void) str; /* only used by debug output, which may be compiled out */
 
   if (where & SSL_CB_LOOP) {
     DBG_DEBUG(GWEN_LOGDOMAIN, "%s: %s", str, SSL_state_string_long(s));
@@ -844,17 +864,15 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
   SSL_CTX_set_options(xio->ssl_ctx, SSL_OP_ALL);
 
   if (xio->localCertFile && xio->localKeyFile) {
+    char errBuf[256];
+
     /* load own certificate file */
     DBG_DEBUG(GWEN_LOGDOMAIN, "Loading certificate and keys");
     rv=SSL_CTX_use_certificate_chain_file(xio->ssl_ctx,
                                           xio->localCertFile);
     if (!rv) {
-      int sslerr;
-
-      sslerr=SSL_get_error(xio->ssl, rv);
-      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading certfile: %s (%d)",
-               GWEN_SyncIo_Tls_ErrorString(sslerr),
-               sslerr);
+      GWEN_SyncIo_Tls_ErrorText(SSL_ERROR_SSL, errBuf, sizeof(errBuf));
+      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading certfile: %s", errBuf);
       return -1;
     }
 
@@ -863,12 +881,8 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
                                    xio->localKeyFile,
                                    SSL_FILETYPE_PEM);
     if (!rv) {
-      int sslerr;
-
-      sslerr=SSL_get_error(xio->ssl, rv);
-      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading keyfile: %s (%d)",
-               GWEN_SyncIo_Tls_ErrorString(sslerr),
-               sslerr);
+      GWEN_SyncIo_Tls_ErrorText(SSL_ERROR_SSL, errBuf, sizeof(errBuf));
+      DBG_INFO(GWEN_LOGDOMAIN, "SSL error reading keyfile: %s", errBuf);
       return -1;
     }
     if (!SSL_CTX_check_private_key(xio->ssl_ctx)) {
@@ -889,6 +903,7 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
                "SSL: Could not load certificate location "
                "(was: \"%s\")",
                xio->localTrustFile);
+      ERR_clear_error();
       return -1;
     }
   }
@@ -913,6 +928,10 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
   }
 
   xio->ssl=SSL_new(xio->ssl_ctx);
+  if (xio->ssl==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "SSL_new() failed");
+    return -1;
+  }
   SSL_set_ex_data(xio->ssl, gwen_syncio_tls_sslidx, sio);
 
   if (lflags & GWEN_SYNCIO_FLAGS_PASSIVE)
@@ -925,6 +944,10 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
 
   /* tell SSL to use our BIO */
   xio->bio=BIO_syncio_new(baseIo);
+  if (xio->bio==NULL) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Could not create BIO");
+    return -1;
+  }
   SSL_set_bio(xio->ssl, xio->bio, xio->bio);
 
   return 0;
@@ -946,18 +969,20 @@ int GWEN_SyncIo_Tls_Prepare(GWEN_SYNCIO *sio)
   }
 
   /* socket ready now setup SSL */
+  ERR_clear_error();
   if (GWEN_SyncIo_GetFlags(sio) & GWEN_SYNCIO_FLAGS_PASSIVE)
     xio->ssl_ctx=SSL_CTX_new(TLS_server_method());
   else
     xio->ssl_ctx=SSL_CTX_new(TLS_client_method());
 
-  if (GWEN_SyncIo_Tls_Setup(sio)) {
+  if (xio->ssl_ctx==NULL || GWEN_SyncIo_Tls_Setup(sio)) {
     SSL_free(xio->ssl);
     xio->ssl=0;
     SSL_CTX_free(xio->ssl_ctx);
     xio->ssl_ctx=0;
     xio->bio=0; /* FIXME: Does SSL_free free this ? */
-    DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup SSL conntection");
+    ERR_clear_error();
+    DBG_ERROR(GWEN_LOGDOMAIN, "Could not setup SSL connection");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -1204,35 +1229,31 @@ int GWEN_SyncIo_Tls_Handshake(GWEN_SYNCIO *sio)
 
     if (rv!=1) {
       int sslerr;
+      char errBuf[256];
 
       sslerr=SSL_get_error(xio->ssl, rv);
       if (sslerr==SSL_ERROR_WANT_READ ||
           sslerr==SSL_ERROR_WANT_WRITE)
         continue; /* would block */
+
+      GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
+      if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
+                  sslerr, errBuf);
+      }
+      else if (sslerr==SSL_ERROR_ZERO_RETURN) {
+        DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
+      }
       else {
-        if (sslerr==SSL_ERROR_SYSCALL && errno==0) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Connection just went down (%d: %s)",
-                    sslerr,
-                    GWEN_SyncIo_Tls_ErrorString(sslerr));
-          return GWEN_ERROR_SSL;
-        } /* if error is syscall and errno==0 */
-        else {
-          if (sslerr==SSL_ERROR_ZERO_RETURN) {
-            DBG_INFO(GWEN_LOGDOMAIN, "Connection closed");
-            return GWEN_ERROR_SSL;
-          }
-          else {
-            DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-            if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
-              ERR_print_errors_fp(stderr); /* DEBUG */
-            DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
-                     GWEN_SyncIo_Tls_ErrorString(sslerr),
-                     sslerr);
-            return GWEN_ERROR_SSL;
-          }
-        } /* if !(error is syscall and errno==0) */
-      } /* if error is not wantRead or wantWrite */
-    } /* if error */
+        DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
+        if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+          ERR_print_errors_fp(stderr); /* DEBUG */
+        DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
+      }
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("TLS Handshake Error: %d (%s)"), sslerr, errBuf);
+      ERR_clear_error();
+      return GWEN_ERROR_SSL;
+    }
     break;
   }
 
@@ -2436,11 +2457,14 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Read(GWEN_SYNCIO *sio,
             return 0;
           }
           else {
+            char errBuf[256];
+
+            GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
             DBG_INFO(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-            /*ERR_print_errors_fp(stderr);*/ /* DEBUG */
-            DBG_INFO(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
-                     GWEN_SyncIo_Tls_ErrorString(sslerr),
-                     sslerr);
+            if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+              ERR_print_errors_fp(stderr); /* DEBUG */
+            DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
+            ERR_clear_error();
             return GWEN_ERROR_READ;
           }
         } /* if !(error is syscall and errno==0) */
@@ -2537,11 +2561,19 @@ int GWENHYWFAR_CB GWEN_SyncIo_Tls_Write(GWEN_SYNCIO *sio,
             return 0;
           }
           else {
+            char errBuf[256];
+
+            GWEN_SyncIo_Tls_ErrorText(sslerr, errBuf, sizeof(errBuf));
             DBG_ERROR(GWEN_LOGDOMAIN, "List of pending SSL errors:");
-            ERR_print_errors_fp(stderr); /* DEBUG */
-            DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)",
-                      GWEN_SyncIo_Tls_ErrorString(sslerr),
-                      sslerr);
+            if (GWEN_Logger_GetLevel(GWEN_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+              ERR_print_errors_fp(stderr); /* DEBUG */
+            DBG_ERROR(GWEN_LOGDOMAIN, "SSL error: %s (%d)", errBuf, sslerr);
+            GWEN_Gui_ProgressLog2(0,
+                                  GWEN_LoggerLevel_Error,
+                                  I18N("Error on SSL_write: %d (%s)"),
+                                  sslerr,
+                                  errBuf);
+            ERR_clear_error();
             return GWEN_ERROR_READ;
           }
         } /* if !(error is syscall and errno==0) */
