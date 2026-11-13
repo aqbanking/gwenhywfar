@@ -1257,6 +1257,34 @@ int GWEN_SyncIo_Tls_GetPeerCert(GWEN_SYNCIO *sio)
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("Certificate has been revoked"));
   }
 
+  /* host name */
+  if (xio->hostName) {
+    ASN1_OCTET_STRING *ip;
+    int matches;
+
+    DBG_INFO(GWEN_LOGDOMAIN, "Checking hostname [%s]", xio->hostName);
+    ip=a2i_IPADDRESS(xio->hostName);
+    if (ip) {
+      matches=(X509_check_ip(cert, ASN1_STRING_get0_data(ip), ASN1_STRING_length(ip), 0)==1);
+      ASN1_OCTET_STRING_free(ip);
+    }
+    else
+      matches=(X509_check_host(cert, xio->hostName, 0, X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS, NULL)==1);
+    ERR_clear_error();
+    if (!matches) {
+      DBG_WARN(GWEN_LOGDOMAIN, "Certificate was not issued for this host");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("Certificate was not issued for this host"));
+      errFlags|=GWEN_SSL_CERT_FLAGS_BAD_HOSTNAME;
+    }
+    else {
+      DBG_INFO(GWEN_LOGDOMAIN, "Cert is for this server");
+    }
+  }
+  else {
+    DBG_WARN(GWEN_LOGDOMAIN, "Hostname is not set, unable to verify the sender");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, I18N("No hostname to verify the sender!"));
+  }
+
   /* activation and expiration time */
   if (GWEN_SslCertDescr_GetNotBefore(cd)==NULL || GWEN_SslCertDescr_GetNotAfter(cd)==NULL)
     errFlags|=GWEN_SSL_CERT_FLAGS_BAD_DATA;
