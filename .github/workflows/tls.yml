@@ -1,0 +1,108 @@
+# Compares the TLS layer built with GnuTLS and with OpenSSL: both builds
+# run the local TLS tests ("make check" in test/) and must produce the
+# same record. With the oldest supported OpenSSL, both builds also connect
+# to the HBCI PIN/TAN servers of AqBanking's German bank data
+# (test/tls-survey.sh) and must report the same about each server.
+#
+# Runs when the TLS code, its tests or this workflow change, or when
+# started by hand.
+
+name: TLS
+
+on:
+  push:
+    paths:
+      - configure.ac
+      - src/sio/syncio_tls*
+      - test/Makefile.am
+      - test/gwentest.c
+      - test/tls-*.sh
+      - test/testdata/tls/**
+      - .github/ci/install-deps.sh
+      - .github/workflows/tls.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tls:
+    name: TLS (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # OpenSSL 3.5, the oldest version the OpenSSL build supports
+          - name: ubuntu-26.04
+            os: ubuntu-26.04
+            container: ''
+            survey: true
+          # OpenSSL 4; no runner image has it yet
+          - name: ubuntu-26.10
+            os: ubuntu-24.04
+            container: ubuntu:26.10
+    steps:
+      # The tools that the runner images have and the container does not
+      - name: Install tools
+        if: ${{ matrix.container }}
+        run: |
+          apt-get update -q
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+            --no-install-recommends build-essential git ca-certificates bzip2
+          # gettext 1.0 keeps gettext.m4 (AM_GNU_GETTEXT) outside the
+          # search path of aclocal.
+          echo "ACLOCAL_PATH=/usr/share/gettext/m4" >>"$GITHUB_ENV"
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install dependencies
+        run: .github/ci/install-deps.sh none openssl
+      - name: Show TLS library versions
+        run: pkg-config --print-errors --modversion gnutls openssl
+      - name: Bootstrap
+        run: make -f Makefile.cvs
+      - name: Build
+        run: |
+          for tls in gnutls openssl; do
+            mkdir "_$tls"
+            (cd "_$tls" &&
+             ../configure --with-tls="$tls" --with-guis=none \
+               --disable-network-checks &&
+             make -j"$(getconf _NPROCESSORS_ONLN)")
+          done
+      - name: TLS tests
+        run: |
+          rv=0
+          for tls in gnutls openssl; do
+            make -C "_$tls/test" check || rv=1
+          done
+          exit $rv
+      - name: Compare the records
+        run: diff -u _gnutls/test/tls-record.txt _openssl/test/tls-record.txt
+      - name: Get the bank data
+        if: ${{ matrix.survey }}
+        run: |
+          git clone -q --depth 1 https://git.aquamaniac.de/git/aqbanking _aqbanking
+          tar -xjf _aqbanking/src/libs/plugins/bankinfo/generic/de.tar.bz2 \
+            -C _aqbanking de/banks.data
+      - name: Survey
+        if: ${{ matrix.survey }}
+        run: |
+          mkdir _survey
+          cd _survey
+          sh ../test/tls-survey.sh ../_aqbanking/de/banks.data \
+            ../_gnutls/test/gwentest ../_openssl/test/gwentest
+      - name: Upload records and logs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: tls-${{ matrix.name }}
+          if-no-files-found: ignore
+          path: |
+            _*/config.log
+            _*/test/tls-record.txt
+            _survey/tls-survey-*.txt

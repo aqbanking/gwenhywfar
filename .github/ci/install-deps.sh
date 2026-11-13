@@ -1,9 +1,9 @@
 #!/bin/sh
 # Installs the build dependencies of Gwenhywfar on a GitHub-hosted Ubuntu
-# or macOS runner. The arguments name the GUIs to build (for example
-# "gtk3 qt5"), and "openssl" for a build with --with-tls=openssl; the
-# packages for those are installed as well. On macOS, "openssl" installs
-# OpenSSL 3 and "openssl@4" OpenSSL 4.
+# or macOS runner, or in an Ubuntu container. The arguments name the GUIs
+# to build (for example "gtk3 qt5"), and "openssl" for a build with
+# --with-tls=openssl; the packages for those are installed as well. On
+# macOS, "openssl" installs OpenSSL 3 and "openssl@4" OpenSSL 4.
 set -eu
 
 case "$(uname -s)" in
@@ -21,9 +21,14 @@ case "$(uname -s)" in
         *) echo "No Ubuntu packages known for '$g'" >&2; exit 1 ;;
       esac
     done
-    sudo apt-get update -q
+    # A container runs as root and has no sudo.
+    sudo=sudo
+    if test "$(id -u)" = 0; then
+      sudo=
+    fi
+    $sudo apt-get update -q
     # shellcheck disable=SC2086
-    sudo DEBIAN_FRONTEND=noninteractive \
+    $sudo env DEBIAN_FRONTEND=noninteractive \
       apt-get install -y -q --no-install-recommends $pkgs
     ;;
   Darwin)
