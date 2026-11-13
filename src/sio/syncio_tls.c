@@ -1139,6 +1139,9 @@ int GWEN_SyncIo_Tls_Setup(GWEN_SYNCIO *sio)
   }
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Using OpenSSL default ciphers."));
 
+  /* protect against too-many-known-ca problem */
+  SSL_CTX_set_max_cert_list(xio->ssl_ctx, 64*1024);
+
   if (xio->localCertFile && xio->localKeyFile) {
     char errBuf[256];
 
