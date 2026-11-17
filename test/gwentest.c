@@ -40,6 +40,7 @@
 #include <gwenhywfar/idlist64.h>
 #include <gwenhywfar/timestamp.h>
 #include <gwenhywfar/tag16-t.h>
+#include <gwenhywfar/text-t.h>
 #include <gwenhywfar/quicksort-t.h>
 #include <gwenhywfar/testframework.h>
 #include <gwenhywfar/gwenthread.h>
@@ -6938,6 +6939,12 @@ int testModules(int argc, char **argv)
   }
 
   rv=GWEN_Tag16_AddTests(TestFramework_GetModulesRoot(tf));
+  if (rv<0) {
+    fprintf(stderr, "Adding module failed.\n");
+    return 2;
+  }
+
+  rv=GWEN_Text_AddTests(TestFramework_GetModulesRoot(tf));
   if (rv<0) {
     fprintf(stderr, "Adding module failed.\n");
     return 2;

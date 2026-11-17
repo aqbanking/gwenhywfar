@@ -12,6 +12,8 @@ EXTRA_DIST=$(typefiles) \
   xmlglobalize.c \
   tag16-t.c \
   tag16-t.h \
+  text-t.c \
+  text-t.h \
   README.xml2db
 
 noinst_LTLIBRARIES=libparser.la
