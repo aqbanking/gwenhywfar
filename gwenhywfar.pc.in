@@ -28,6 +28,7 @@ Name: gwenhywfar
 Description: A multi-platform helper library for other libraries
 
 Version: @VERSION@
+Requires.private: @gwenhywfar_requires_private@
 Libs: @gwenhywfar_ldflags@ @gwenhywfar_libs@
 Cflags: -I@gwenhywfar_headerdir@
 

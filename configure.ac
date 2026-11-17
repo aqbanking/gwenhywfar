@@ -746,6 +746,9 @@ AC_DEFINE_UNQUOTED(NEED_LIBGCRYPT_VERSION, "$NEED_LIBGCRYPT_VERSION", [Required 
 NEED_LIBGCRYPT_MODULE="libgcrypt >= $NEED_LIBGCRYPT_VERSION"
 AC_SUBST(NEED_LIBGCRYPT_MODULE)
 PKG_CHECK_MODULES([LIBGCRYPT], [$NEED_LIBGCRYPT_MODULE])
+# Modules that libgwenhywfar links against, for Requires.private in
+# gwenhywfar.pc
+gwenhywfar_requires_private="$NEED_LIBGCRYPT_MODULE"
 
 
 
@@ -754,6 +757,7 @@ PKG_CHECK_MODULES([LIBGCRYPT], [$NEED_LIBGCRYPT_MODULE])
 # check for library for common error values and messages in GnuPG components
 #
 PKG_CHECK_MODULES([GPG_ERROR], [gpg-error])
+gwenhywfar_requires_private="$gwenhywfar_requires_private, gpg-error"
 
 
 
@@ -762,7 +766,9 @@ PKG_CHECK_MODULES([GPG_ERROR], [gpg-error])
 # check for libgnutls
 #
 
-PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 2.9.8])
+NEED_GNUTLS_MODULE="gnutls >= 2.9.8"
+PKG_CHECK_MODULES([LIBGNUTLS], [$NEED_GNUTLS_MODULE])
+gwenhywfar_requires_private="$gwenhywfar_requires_private, $NEED_GNUTLS_MODULE"
 
 
 ###-------------------------------------------------------------------------
@@ -1014,7 +1020,9 @@ AM_CONDITIONAL(WITH_LIBXML2_CODE, [test "$gwen_with_libxml2_code" = "yes"])
 if test "$gwen_with_libxml2_code" = "yes"; then
   AC_DEFINE(GWEN_COMPILE_LIBXML2_CODE, 1, [if libxml2-code is wanted])
   PKG_CHECK_MODULES(LIBXML,  [libxml-2.0])
+  gwenhywfar_requires_private="$gwenhywfar_requires_private, libxml-2.0"
 fi
+AC_SUBST(gwenhywfar_requires_private)
 
 
 
