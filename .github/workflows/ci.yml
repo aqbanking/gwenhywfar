@@ -106,6 +106,7 @@ jobs:
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
+      GWEN_ARTIFACT: gwenhywfar-autotools-${{ matrix.os }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
       # "--enable-testcode" makes the unit-test framework available as
       # "gwentest modules".
       CONFIGURE_FLAGS: >-
@@ -167,11 +168,32 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/gwenhywfar.tar.gz" gwenhywfar
       - name: Upload the installation
+        id: upload
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         uses: actions/upload-artifact@v7
         with:
-          name: gwenhywfar-autotools-${{ matrix.os }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          name: ${{ env.GWEN_ARTIFACT }}
           path: ${{ runner.temp }}/gwenhywfar.tar.gz
+      # The "variants" job collects these descriptions, so that projects
+      # that build on Gwenhywfar can take their build matrix from them.
+      - &describe-installation
+        name: Describe the installation
+        id: describe
+        if: ${{ !cancelled() && steps.upload.outcome == 'success' }}
+        shell: bash
+        env:
+          MATRIX: ${{ toJSON(matrix) }}
+        run: >-
+          jq -c --arg job "$GITHUB_JOB" --arg artifact "$GWEN_ARTIFACT"
+          '. + {job: $job, artifact: $artifact}' <<<"$MATRIX"
+          >"$RUNNER_TEMP/variant-$GWEN_ARTIFACT.json"
+      - &upload-description
+        name: Upload the description
+        if: ${{ !cancelled() && steps.describe.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: variant-${{ env.GWEN_ARTIFACT }}
+          path: ${{ runner.temp }}/variant-${{ env.GWEN_ARTIFACT }}.json
       # "make distcheck" runs installcheck in the other builds.
       - name: make installcheck
         if: >-
@@ -247,6 +269,7 @@ jobs:
     env:
       CONFIGURE_FLAGS: >-
         --disable-network-checks --enable-testcode --with-guis=none
+      GWEN_ARTIFACT: gwenhywfar-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
     steps:
       - name: Keep line endings
         shell: pwsh
@@ -334,11 +357,14 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: tar -C "$GWEN_PREFIX/.." -czf "$GWEN_PREFIX.tar.gz" gwenhywfar
       - name: Upload the installation
+        id: upload
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         uses: actions/upload-artifact@v7
         with:
-          name: gwenhywfar-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ format('-{0}', matrix.openssl || matrix.tls || 'gnutls') }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          name: ${{ env.GWEN_ARTIFACT }}
           path: ${{ runner.temp }}/gwenhywfar.tar.gz
+      - *describe-installation
+      - *upload-description
       - name: Register the installed plugins
         id: register
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
@@ -363,3 +389,23 @@ jobs:
             **/test-suite.log
             **/*.trs
             test/installcheck/*.log
+
+  # Lists the uploaded installations in the "variants" artifact: one
+  # entry per build, with its matrix entry, its job and the name of its
+  # installation artifact.
+  variants:
+    needs: [autotools, autotools-msys2]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: variant-*
+          merge-multiple: true
+          path: variants
+      - name: Merge the descriptions
+        run: jq -s . variants/*.json >variants.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: variants
+          path: variants.json
