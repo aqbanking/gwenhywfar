@@ -67,6 +67,11 @@ jobs:
             cc: clang-22
             cxx: clang++-22
             guis: gtk3 qt6
+          # Linux on arm64.
+          - os: ubuntu-24.04-arm
+            cc: gcc-14
+            cxx: g++-14
+            guis: gtk2 gtk3 qt5
           # macos-26 and macos-15 run on arm64, macos-15-intel on x86_64.
           - os: macos-26
             cc: clang
@@ -229,6 +234,13 @@ jobs:
             cc: clang
             msystem: CLANG64
             sanitizer_flags: *asan-ubsan
+          # Windows on arm64, in the CLANGARM64 environment of MSYS2.
+          - os: windows-11-arm
+            cc: clang
+            msystem: CLANGARM64
+          - os: windows-11-arm
+            cc: msvc
+            msystem: CLANGARM64
     defaults:
       run:
         shell: msys2 {0}
@@ -246,6 +258,8 @@ jobs:
       - name: Set up MSVC
         if: ${{ matrix.cc == 'msvc' }}
         uses: ilammy/msvc-dev-cmd@v1.13.0
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
       - uses: msys2/setup-msys2@v2
         with:
           msystem: ${{ matrix.msystem }}
