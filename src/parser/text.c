@@ -2132,7 +2132,7 @@ int GWEN_Text_ReplaceVars(const char *s, GWEN_BUFFER *dbuf, GWEN_TEXT_REPLACE_VA
         else {
           int len;
           char *name=NULL;
-          char index=0;
+          int index=0;
           char *rawName;
           int rv;
           int maxLen=-1;
