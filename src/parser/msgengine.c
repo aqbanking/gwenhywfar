@@ -63,6 +63,8 @@ static int _readNonBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf,
 			    char escapeChar, const char *delimiters, int size, const char *dataType);
 static int _skipBinValue(GWEN_BUFFER *msgbuf);
 static int _readBinValueHeader(GWEN_BUFFER *msgbuf);
+static int _writeNumValue(GWEN_BUFFER *gbuf, GWEN_BUFFER *data, GWEN_XMLNODE *node);
+static int _writeStringValue(GWEN_MSGENGINE *e, GWEN_BUFFER *gbuf, GWEN_BUFFER *data, GWEN_XMLNODE *node);
 
 static int _groupReadElement(GWEN_MSGENGINE *e,
                              GWEN_BUFFER *msgbuf,
@@ -459,10 +461,10 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   int rv;
 
   /* get some sizes */
-  minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize", "0"));
-  maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize", "0"));
-  fixSize=atoi(GWEN_XMLNode_GetProperty(node, "size", "0"));
-  filler=atoi(GWEN_XMLNode_GetProperty(node, "filler", "0"));
+  minsize=GWEN_XMLNode_GetIntProperty(node, "minsize", 0);
+  maxsize=GWEN_XMLNode_GetIntProperty(node, "maxsize", 0);
+  fixSize=GWEN_XMLNode_GetIntProperty(node, "size", 0);
+  filler=GWEN_XMLNode_GetIntProperty(node, "filler", 0);
   type=GWEN_XMLNode_GetProperty(node, "type", "ASCII");
   name=GWEN_XMLNode_GetProperty(node, "name", "<unnamed>");
   startPos=GWEN_Buffer_GetPos(gbuf);
@@ -477,13 +479,7 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
     return -1;
   }
 
-  rv=1;
-  if (e->typeWritePtr) {
-    rv=e->typeWritePtr(e,
-                       gbuf,
-                       data,
-                       node);
-  }
+  rv=(e->typeWritePtr)?e->typeWritePtr(e, gbuf, data, node):1;
   if (rv==-1) {
     DBG_INFO(GWEN_LOGDOMAIN, "External type writing failed");
     return -1;
@@ -491,9 +487,6 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   else if (rv==1) {
     /* type not handled externally, so handle it myself */
     if (strcasecmp(type, "bin")==0) {
-      DBG_DEBUG(GWEN_LOGDOMAIN, "Writing binary data (%d bytes added to %d bytes)",
-                GWEN_Buffer_GetUsedBytes(data),
-		GWEN_Buffer_GetUsedBytes(gbuf));
       if (GWEN_Buffer_AppendArgs(gbuf, "@%d@", GWEN_Buffer_GetUsedBytes(data))) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
         return -1;
@@ -501,131 +494,22 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
       GWEN_Buffer_AppendBuffer(gbuf, data);
     } /* if type is "bin" */
     else if (strcasecmp(type, "num")==0) {
-      //int num;
-      unsigned int len;
-      unsigned int lj;
-
-      //num=atoi(GWEN_Buffer_GetPosPointer(data));
-      len=strlen(GWEN_Buffer_GetPosPointer(data));
-
-      if (atoi(GWEN_XMLNode_GetProperty(node, "leftfill", "0"))) {
-        if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
-          return -1;
-        }
-
-        /* fill left */
-        for (lj=0; lj<(maxsize-len); lj++)
-          GWEN_Buffer_AppendByte(gbuf, '0');
-
-        /* write value */
-        for (lj=0; lj<len; lj++)
-          GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
-      }
-      else if (atoi(GWEN_XMLNode_GetProperty(node, "rightfill", "0"))) {
-        if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
-          return -1;
-        }
-
-        /* write value */
-        for (lj=0; lj<len; lj++)
-          GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
-
-        /* fill right */
-        for (lj=0; lj<(maxsize-len); lj++)
-          GWEN_Buffer_AppendByte(gbuf, '0');
-      }
-      else {
-        if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Maxsize in XML file is higher than the buffer size");
-          return -1;
-        }
-        for (lj=0; lj<len; lj++)
-          GWEN_Buffer_AppendByte(gbuf, GWEN_Buffer_ReadByte(data));
+      rv=_writeNumValue(gbuf, data, node);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return -1;
       }
     } /* if type is num */
     else {
-      /* TODO: Check for valids */
-      const char *p;
-      int lastWasEscape;
-      unsigned int pcount;
-
-      p=GWEN_Buffer_GetPosPointer(data);
-      pcount=0;
-      lastWasEscape=0;
-      while (*p && pcount<GWEN_Buffer_GetUsedBytes(data)) {
-        int c;
-
-        c=(unsigned char)*p;
-        if (lastWasEscape) {
-          lastWasEscape=0;
-          switch (c) {
-          case 'r':
-            c='\r';
-            break;
-          case 'n':
-            c='\n';
-            break;
-          case 'f':
-            c='\f';
-            break;
-          case 't':
-            c='\t';
-            break;
-          default:
-            c=(unsigned char)*p;
-          } /* switch */
-        }
-        else {
-          if (*p=='\\') {
-            lastWasEscape=1;
-            c=-1;
-          }
-          else
-            c=(unsigned char)*p;
-        }
-        if (c!=-1) {
-          int needsEscape;
-
-          needsEscape=0;
-          if (c==e->escapeChar)
-            needsEscape=1;
-          else {
-            if (e->charsToEscape)
-              if (strchr(e->charsToEscape, c))
-                needsEscape=1;
-          }
-          if (needsEscape) {
-            /* write escape char */
-            if (GWEN_Buffer_AppendByte(gbuf,
-                                       e->escapeChar)) {
-              return -1;
-            }
-          }
-          if (GWEN_Buffer_AppendByte(gbuf, c)) {
-            return -1;
-          }
-        }
-        p++;
-        pcount++;
-      } /* while */
-      if (pcount<GWEN_Buffer_GetUsedBytes(data)) {
-        DBG_WARN(GWEN_LOGDOMAIN, "Premature end of string (%d<%d)",
-                 pcount, GWEN_Buffer_GetUsedBytes(data));
-      }
-      if (*p) {
-        DBG_WARN(GWEN_LOGDOMAIN,
-                 "String for \"%s\" (type %s) is longer than expected "
-                 "(no #0 at pos=%d)",
-                 name, type,
-                 GWEN_Buffer_GetUsedBytes(data)-1);
+      rv=_writeStringValue(e, gbuf, data, node);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return -1;
       }
     } /* if type is not BIN */
   } /* if type not external */
   else {
-    DBG_INFO(GWEN_LOGDOMAIN, "Type \"%s\" (for %s) is external (write)",
-             type, name);
+    DBG_INFO(GWEN_LOGDOMAIN, "Type \"%s\" (for %s) is external (write)", type, name);
 
   } /* if external type */
 
@@ -644,6 +528,132 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
 
     for (j=bs; j<fixSize; j++)
       GWEN_Buffer_AppendByte(gbuf, (unsigned char)filler);
+  }
+
+  return 0;
+}
+
+
+
+int _writeNumValue(GWEN_BUFFER *gbuf, GWEN_BUFFER *data, GWEN_XMLNODE *node)
+{
+  unsigned int len;
+  int maxsize;
+
+  maxsize=GWEN_XMLNode_GetIntProperty(node, "maxsize", 0);
+  len=strlen(GWEN_Buffer_GetPosPointer(data));
+
+  if (GWEN_XMLNode_GetIntProperty(node, "leftfill", 0)) {
+    if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+      return -1;
+    }
+    if (maxsize-len)
+      GWEN_Buffer_FillWithBytes(gbuf, '0', (maxsize-len));
+    GWEN_Buffer_AppendString(gbuf, GWEN_Buffer_GetPosPointer(data));
+  }
+  else if (GWEN_XMLNode_GetIntProperty(node, "rightfill", 0)) {
+    if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
+      return -1;
+    }
+    GWEN_Buffer_AppendString(gbuf, GWEN_Buffer_GetPosPointer(data));
+    if (maxsize-len)
+      GWEN_Buffer_FillWithBytes(gbuf, '0', (maxsize-len));
+  }
+  else {
+    if (GWEN_Buffer_AllocRoom(gbuf, maxsize+1)) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Maxsize in XML file is higher than the buffer size");
+      return -1;
+    }
+    GWEN_Buffer_AppendString(gbuf, GWEN_Buffer_GetPosPointer(data));
+  }
+  return 0;
+}
+
+
+
+int _writeStringValue(GWEN_MSGENGINE *e, GWEN_BUFFER *gbuf, GWEN_BUFFER *data, GWEN_XMLNODE *node)
+{
+  const char *p;
+  int lastWasEscape;
+  unsigned int pcount;
+  const char *dataType;
+  const char *name;
+
+  /* get some sizes */
+  dataType=GWEN_XMLNode_GetProperty(node, "type", "ASCII");
+  name=GWEN_XMLNode_GetProperty(node, "name", "<unnamed>");
+
+  p=GWEN_Buffer_GetPosPointer(data);
+  pcount=0;
+  lastWasEscape=0;
+  while (*p && pcount<GWEN_Buffer_GetUsedBytes(data)) {
+    int c;
+
+    c=(unsigned char)*p;
+    if (lastWasEscape) {
+      lastWasEscape=0;
+      switch (c) {
+      case 'r':
+	c='\r';
+	break;
+      case 'n':
+	c='\n';
+	break;
+      case 'f':
+	c='\f';
+	break;
+      case 't':
+	c='\t';
+	break;
+      default:
+	c=(unsigned char)*p;
+      } /* switch */
+    }
+    else {
+      if (*p=='\\') {
+	lastWasEscape=1;
+	c=-1;
+      }
+      else
+	c=(unsigned char)*p;
+    }
+    if (c!=-1) {
+      int needsEscape;
+
+      needsEscape=0;
+      if (c==e->escapeChar)
+	needsEscape=1;
+      else {
+	if (e->charsToEscape)
+	  if (strchr(e->charsToEscape, c))
+	    needsEscape=1;
+      }
+      if (needsEscape) {
+	/* write escape char */
+	if (GWEN_Buffer_AppendByte(gbuf,
+				   e->escapeChar)) {
+	  return -1;
+	}
+      }
+      if (GWEN_Buffer_AppendByte(gbuf, c)) {
+	return -1;
+      }
+    }
+    p++;
+    pcount++;
+  } /* while */
+  if (pcount<GWEN_Buffer_GetUsedBytes(data)) {
+    DBG_WARN(GWEN_LOGDOMAIN, "Premature end of string (%d<%d)",
+	     pcount, GWEN_Buffer_GetUsedBytes(data));
+  }
+  if (*p) {
+    DBG_WARN(GWEN_LOGDOMAIN,
+	     "String for \"%s\" (type %s) is longer than expected "
+	     "(no #0 at pos=%d)",
+	     name, dataType,
+	     GWEN_Buffer_GetUsedBytes(data)-1);
   }
 
   return 0;
