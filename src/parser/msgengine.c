@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Jul 04 2003
- copyright   : (C) 2019 by Martin Preuss
+ copyright   : (C) 2026 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -43,8 +43,19 @@
 #include <ctype.h>
 
 
+/* ------------------------------------------------------------------------------------------------
+ * defs
+ * ------------------------------------------------------------------------------------------------
+ */
+
 #define BINHEADER_MAXDIGITS 6
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 static int _readBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf);
@@ -65,10 +76,19 @@ static int _groupReadElement(GWEN_MSGENGINE *e,
 
 
 
-
+/* ------------------------------------------------------------------------------------------------
+ * list and inherit code
+ * ------------------------------------------------------------------------------------------------
+ */
 
 GWEN_INHERIT_FUNCTIONS(GWEN_MSGENGINE)
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * code
+ * ------------------------------------------------------------------------------------------------
+ */
 
 GWEN_MSGENGINE *GWEN_MsgEngine_new(void)
 {
@@ -469,25 +489,15 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
     return -1;
   }
   else if (rv==1) {
-    int i;
-
     /* type not handled externally, so handle it myself */
     if (strcasecmp(type, "bin")==0) {
       DBG_DEBUG(GWEN_LOGDOMAIN, "Writing binary data (%d bytes added to %d bytes)",
                 GWEN_Buffer_GetUsedBytes(data),
-                GWEN_Buffer_GetUsedBytes(gbuf));
-      if (GWEN_Buffer_AllocRoom(gbuf, 10+GWEN_Buffer_GetUsedBytes(data))) {
+		GWEN_Buffer_GetUsedBytes(gbuf));
+      if (GWEN_Buffer_AppendArgs(gbuf, "@%d@", GWEN_Buffer_GetUsedBytes(data))) {
         DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
         return -1;
       }
-      sprintf(GWEN_Buffer_GetPosPointer(gbuf),
-              "@%d@",
-              GWEN_Buffer_GetUsedBytes(data));
-
-
-      i=strlen(GWEN_Buffer_GetPosPointer(gbuf));
-      GWEN_Buffer_IncrementPos(gbuf, i);
-      GWEN_Buffer_AdjustUsedBytes(gbuf);
       GWEN_Buffer_AppendBuffer(gbuf, data);
     } /* if type is "bin" */
     else if (strcasecmp(type, "num")==0) {
