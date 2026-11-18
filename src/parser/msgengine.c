@@ -50,6 +50,8 @@
 static int _readBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf);
 static int _readNonBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf,
 			    char escapeChar, const char *delimiters, int size, const char *dataType);
+static int _skipBinValue(GWEN_BUFFER *msgbuf);
+static int _readBinValueHeader(GWEN_BUFFER *msgbuf);
 
 static int _groupReadElement(GWEN_MSGENGINE *e,
                              GWEN_BUFFER *msgbuf,
@@ -2938,51 +2940,12 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
 int _readBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf)
 {
-  int rv;
-  char c;
-  int binLen=0;
-  int numDigits=0;
+  int binLen;
 
-  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (@num@ expected)");
-    return -1;
-  }
-
-  /* read header */
-  rv=GWEN_Buffer_ReadByte(msgbuf);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  c=(char) rv;
-  if (c!='@') {
-    DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
-    return -1;
-  }
-
-  while(1) {
-    rv=GWEN_Buffer_ReadByte(msgbuf);
-    if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-    c=(char) rv;
-    if (c=='@')
-      break;
-    else if (c>='0' && c<='9') {
-      if (numDigits>BINHEADER_MAXDIGITS) {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Too many digits in bin header (%d)", numDigits);
-	return -1;
-      }
-      binLen*=10;
-      binLen+=(c-'0');
-      numDigits++;
-    }
-    else {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected character");
-      return -1;
-    }
+  binLen=_readBinValueHeader(msgbuf);
+  if (binLen<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", binLen);
+    return binLen;
   }
 
   /* read binary data into dest buffer */
@@ -3050,6 +3013,81 @@ int _readNonBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf,
   return 0;
 }
 
+
+
+int _skipBinValue(GWEN_BUFFER *msgbuf)
+{
+  int binLen;
+
+  binLen=_readBinValueHeader(msgbuf);
+  if (binLen<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", binLen);
+    return binLen;
+  }
+
+  /* skip binary data */
+  if (GWEN_Buffer_GetBytesLeft(msgbuf) < (unsigned) binLen) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (binary beyond end)");
+    return -1;
+  }
+
+  GWEN_Buffer_IncrementPos(msgbuf, binLen);
+  return 0;
+}
+
+
+
+int _readBinValueHeader(GWEN_BUFFER *msgbuf)
+{
+  int rv;
+  char c;
+  int binLen=0;
+  int numDigits=0;
+
+  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (@num@ expected)");
+    return -1;
+  }
+
+  /* read header */
+  rv=GWEN_Buffer_ReadByte(msgbuf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  c=(char) rv;
+  if (c!='@') {
+    DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
+    return -1;
+  }
+
+  while(1) {
+    rv=GWEN_Buffer_ReadByte(msgbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    c=(char) rv;
+    if (c=='@')
+      break;
+    else if (c>='0' && c<='9') {
+      if (numDigits>BINHEADER_MAXDIGITS) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Too many digits in bin header (%d)", numDigits);
+	return -1;
+      }
+      binLen*=10;
+      binLen+=(c-'0');
+      numDigits++;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected character");
+      return -1;
+    }
+  }
+
+  return binLen;
+}
 
 
 
@@ -3621,34 +3659,14 @@ int GWEN_MsgEngine_SkipSegment(GWEN_UNUSED GWEN_MSGENGINE *e,
         esc=1;
       }
       else if (c=='@') {
-        /* skip binary data */
-        char lbuffer[16];
-        char *p;
-        int l;
+	int rv;
 
-        p=lbuffer;
-        while (1) {
-          nc=GWEN_Buffer_ReadByte(msgbuf);
-          if (nc<0) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
-            return -1;
-          }
-          if (nc=='@')
-            break;
-          *p=nc;
-          p++;
-        } /* while */
-        *p=0;
-        if (sscanf(lbuffer, "%d", &l)!=1) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Bad number format");
-          return -1;
-        }
-        if (GWEN_Buffer_GetUsedBytes(msgbuf)-GWEN_Buffer_GetPos(msgbuf)
-            < (unsigned) l) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (binary beyond end)");
-          return -1;
-        }
-        GWEN_Buffer_IncrementPos(msgbuf, l);
+	GWEN_Buffer_DecrementPos(msgbuf, 1); /* put back for skip fn */
+	rv=_skipBinValue(msgbuf);
+	if (rv<0) {
+	  DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	  return rv;
+	}
       }
       else if (c==delimiter) {/* segment-end */
         return 0;
