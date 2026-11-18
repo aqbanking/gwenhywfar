@@ -2875,12 +2875,11 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
         return -1;
       }
       else {
-        char lbuffer[16];
+	char lbuffer[16];
+	int numDigits=0;
         int c;
-        char *p;
         int l;
 
-        p=lbuffer;
         c=GWEN_Buffer_ReadByte(msgbuf);
         if (c!='@') {
           DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
@@ -2895,19 +2894,26 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
             return -1;
           }
           if (c=='@')
-            break;
-          *p=(char)c;
-          p++;
+	    break;
+	  if (numDigits<(sizeof(lbuffer)-1)) {
+	    lbuffer[numDigits++]=(char) c;
+	    lbuffer[numDigits]=0;
+	  }
+	  else {
+	    DBG_ERROR(GWEN_LOGDOMAIN, "too many digits (expected \"@num@\")");
+	    return -1;
+	  }
         } /* while */
-        *p=0;
-        if (c!='@') {
+	if (c!='@') {
           DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
           return -1;
         }
+
         if (sscanf(lbuffer, "%d", &l)!=1) {
           DBG_ERROR(GWEN_LOGDOMAIN, "Bad number format");
           return -1;
-        }
+	}
+
         DBG_DEBUG(GWEN_LOGDOMAIN, "Reading binary: %d bytes from pos %d (msgsize=%d)",
                   l,
                   GWEN_Buffer_GetPos(msgbuf),
