@@ -29,7 +29,6 @@
 #define DISABLE_DEBUGLOG
 /*#define HEAVY_DEBUG_MSGENGINE*/
 
-
 #include <gwenhywfar/gwenhywfarapi.h>
 #include <msgengine_p.h>
 #include <gwenhywfar/xml.h>
@@ -44,7 +43,13 @@
 #include <ctype.h>
 
 
+#define BINHEADER_MAXDIGITS 6
 
+
+
+static int _readBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf);
+static int _readNonBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf,
+			    char escapeChar, const char *delimiters, int size, const char *dataType);
 
 static int _groupReadElement(GWEN_MSGENGINE *e,
                              GWEN_BUFFER *msgbuf,
@@ -2842,148 +2847,42 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
   unsigned int minnum;
   GWEN_MSGENGINE_TRUSTLEVEL trustLevel;
   //unsigned int posInMsg;
-  const char *type;
+  const char *valueType;
   int rv;
   unsigned int realSize;
 
   /* get some sizes */
   //posInMsg=GWEN_Buffer_GetPos(msgbuf);
   realSize=0;
-  size=atoi(GWEN_XMLNode_GetProperty(node, "size", "0"));
-  minsize=atoi(GWEN_XMLNode_GetProperty(node, "minsize", "0"));
-  maxsize=atoi(GWEN_XMLNode_GetProperty(node, "maxsize", "0"));
-  minnum=atoi(GWEN_XMLNode_GetProperty(node, "minnum", "1"));
-  type=GWEN_XMLNode_GetProperty(node, "type", "ASCII");
+  size=GWEN_XMLNode_GetIntProperty(node, "size", 0);
+  minsize=GWEN_XMLNode_GetIntProperty(node, "minsize", 0);
+  maxsize=GWEN_XMLNode_GetIntProperty(node, "maxsize", 0);
+  minnum=GWEN_XMLNode_GetIntProperty(node, "minnum", 1);
+  valueType=GWEN_XMLNode_GetProperty(node, "type", "ASCII");
 
-  rv=1;
-  if (e->typeReadPtr) {
-    rv=e->typeReadPtr(e,
-                      msgbuf,
-                      node,
-                      vbuf,
-                      e->escapeChar,
-                      delimiters);
-  }
+  rv=(e->typeReadPtr)?e->typeReadPtr(e, msgbuf, node, vbuf, e->escapeChar, delimiters):1;
   if (rv==-1) {
-    DBG_INFO(GWEN_LOGDOMAIN, "External type reading failed on type \"%s\"", type);
+    DBG_INFO(GWEN_LOGDOMAIN, "External type reading failed on type \"%s\"", valueType);
     return -1;
   }
   else if (rv==1) {
-    if (strcasecmp(type, "bin")==0) {
-      if (GWEN_Buffer_GetBytesLeft(msgbuf)==0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (@num@ expected)");
-        return -1;
-      }
-      else {
-	char lbuffer[16];
-	int numDigits=0;
-        int c;
-        int l;
-
-        c=GWEN_Buffer_ReadByte(msgbuf);
-        if (c!='@') {
-          DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
-          return -1;
-        }
-
-        c=0;
-        while (GWEN_Buffer_GetBytesLeft(msgbuf)>0) {
-          c=GWEN_Buffer_ReadByte(msgbuf);
-          if (c==-1) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "\"@\" expected");
-            return -1;
-          }
-          if (c=='@')
-	    break;
-	  if (numDigits<(sizeof(lbuffer)-1)) {
-	    lbuffer[numDigits++]=(char) c;
-	    lbuffer[numDigits]=0;
-	  }
-	  else {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "too many digits (expected \"@num@\")");
-	    return -1;
-	  }
-        } /* while */
-	if (c!='@') {
-          DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
-          return -1;
-        }
-
-        if (sscanf(lbuffer, "%d", &l)!=1) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Bad number format");
-          return -1;
-	}
-
-        DBG_DEBUG(GWEN_LOGDOMAIN, "Reading binary: %d bytes from pos %d (msgsize=%d)",
-                  l,
-                  GWEN_Buffer_GetPos(msgbuf),
-                  GWEN_Buffer_GetUsedBytes(msgbuf));
-        if (GWEN_Buffer_GetBytesLeft(msgbuf) < (unsigned) l) {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (binary beyond end)");
-          return -1;
-        }
-        if (GWEN_Buffer_AppendBytes(vbuf,
-                                    GWEN_Buffer_GetPosPointer(msgbuf),
-                                    l)) {
-          DBG_DEBUG(GWEN_LOGDOMAIN, "Called from here");
-          return -1;
-        }
-        GWEN_Buffer_IncrementPos(msgbuf, l);
+    if (strcasecmp(valueType, "bin")==0) {
+      rv=_readBinValue(msgbuf, vbuf);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return -1;
       }
     } /* if bin */
     else {
-      /* type is not bin */
-      int lastWasEscape;
-      int isEscaped;
-      int br;
-
-      isEscaped=0;
-      lastWasEscape=0;
-
-      br=0;
-      while (GWEN_Buffer_GetBytesLeft(msgbuf) &&
-             (size==0 || br<(int)size)) {
-        int c;
-
-        c=GWEN_Buffer_ReadByte(msgbuf);
-        if (lastWasEscape) {
-          lastWasEscape=0;
-          isEscaped=1;
-        }
-        else {
-          isEscaped=0;
-          if (c==e->escapeChar) {
-            lastWasEscape=1;
-            c=-1;
-          }
-        }
-        if (c!=-1) {
-          if (!isEscaped && (c && strchr(delimiters, c)!=0)) {
-            /* delimiter found, step back */
-            GWEN_Buffer_DecrementPos(msgbuf, 1);
-            break;
-          }
-          else {
-            if (c=='\\' || iscntrl(c)) {
-              DBG_WARN(GWEN_LOGDOMAIN,
-                       "Found a bad character (%02x) in type \"%s\", "
-                       "converting to SPACE",
-                       (unsigned int)c,
-                       type);
-              c=' ';
-            }
-            if (GWEN_Buffer_AppendByte(vbuf, c)) {
-              DBG_DEBUG(GWEN_LOGDOMAIN, "Called from here");
-              return -1;
-            }
-            br++;
-          }
-        }
-      } /* while */
+      rv=_readNonBinValue(msgbuf, vbuf, e->escapeChar, delimiters, size, valueType);
+      if (rv<0) {
+	DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+	return -1;
+      }
     } /* if !bin */
   } /* if type not external */
   else {
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Type \"%s\" is external (read)", type);
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Type \"%s\" is external (read)", valueType);
   }
 
   realSize=GWEN_Buffer_GetUsedBytes(vbuf);
@@ -3005,16 +2904,13 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
   /* check minimum size */
   if (minsize!=0 && realSize<minsize) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Value too short (%d<%d).",
-             realSize,
-             minsize);
+    DBG_INFO(GWEN_LOGDOMAIN, "Value too short (%d<%d).", realSize, minsize);
     return -1;
   }
 
   /* check maximum size */
   if (maxsize!=0 && realSize>maxsize) {
-    DBG_INFO(GWEN_LOGDOMAIN, "Value too long (%d>%d).",
-             realSize, maxsize);
+    DBG_INFO(GWEN_LOGDOMAIN, "Value too long (%d>%d).", realSize, maxsize);
     return -1;
   }
 
@@ -3028,20 +2924,134 @@ int GWEN_MsgEngine__ReadValue(GWEN_MSGENGINE *e,
 
       ustart=GWEN_Buffer_GetPos(msgbuf)-realSize;
       descr=GWEN_XMLNode_GetProperty(node, "name", 0);
-      if (GWEN_MsgEngine_AddTrustInfo(e,
-                                      GWEN_Buffer_GetStart(vbuf),
-                                      realSize,
-                                      descr,
-                                      trustLevel,
-                                      ustart)) {
-        DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-        return -1;
+      if (GWEN_MsgEngine_AddTrustInfo(e, GWEN_Buffer_GetStart(vbuf), realSize, descr, trustLevel, ustart)) {
+	DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+	return -1;
       }
     }
   }
 
   return 0;
 }
+
+
+
+int _readBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf)
+{
+  int rv;
+  char c;
+  int binLen=0;
+  int numDigits=0;
+
+  if (GWEN_Buffer_GetBytesLeft(msgbuf)==0) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (@num@ expected)");
+    return -1;
+  }
+
+  /* read header */
+  rv=GWEN_Buffer_ReadByte(msgbuf);
+  if (rv<0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  c=(char) rv;
+  if (c!='@') {
+    DBG_ERROR(GWEN_LOGDOMAIN, "\"@num@\" expected");
+    return -1;
+  }
+
+  while(1) {
+    rv=GWEN_Buffer_ReadByte(msgbuf);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    c=(char) rv;
+    if (c=='@')
+      break;
+    else if (c>='0' && c<='9') {
+      if (numDigits>BINHEADER_MAXDIGITS) {
+	DBG_ERROR(GWEN_LOGDOMAIN, "Too many digits in bin header (%d)", numDigits);
+	return -1;
+      }
+      binLen*=10;
+      binLen+=(c-'0');
+      numDigits++;
+    }
+    else {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Unexpected character");
+      return -1;
+    }
+  }
+
+  /* read binary data into dest buffer */
+  if (GWEN_Buffer_GetBytesLeft(msgbuf) < (unsigned) binLen) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Premature end of message (binary beyond end)");
+    return -1;
+  }
+
+  if (GWEN_Buffer_AppendBytes(vbuf, GWEN_Buffer_GetPosPointer(msgbuf), binLen)) {
+    DBG_DEBUG(GWEN_LOGDOMAIN, "Called from here");
+    return -1;
+  }
+  GWEN_Buffer_IncrementPos(msgbuf, binLen);
+  return 0;
+}
+
+
+
+int _readNonBinValue(GWEN_BUFFER *msgbuf, GWEN_BUFFER *vbuf,
+		     char escapeChar, const char *delimiters, int size, const char *dataType)
+{
+  /* type is not bin */
+  int lastWasEscape=0;
+  int bytesAdded=0;
+
+  while((size==0) || (bytesAdded<size)) {
+    int rv;
+    uint8_t c;
+
+    rv=GWEN_Buffer_ReadByte(msgbuf);
+    if (rv<0)
+      break;
+
+    c=(uint8_t) rv;
+    if (lastWasEscape) {
+      lastWasEscape=0;
+
+      if (GWEN_Buffer_AppendByte(vbuf, c)) {
+	DBG_DEBUG(GWEN_LOGDOMAIN, "Called from here");
+	return -1;
+      }
+      bytesAdded++;
+    }
+    else if (c==escapeChar) {
+      lastWasEscape=1;
+    }
+    else if (c && strchr(delimiters, c)!=0) {
+      /* delimiter found, step back */
+      GWEN_Buffer_DecrementPos(msgbuf, 1);
+      break;
+    }
+    else {
+      if (c=='\\' || iscntrl(c)) {
+	DBG_WARN(GWEN_LOGDOMAIN, "Bad character (%02x) in type \"%s\", converting to SPACE", c, dataType);
+	c=' ';
+      }
+      if (GWEN_Buffer_AppendByte(vbuf, c)) {
+	DBG_DEBUG(GWEN_LOGDOMAIN, "Called from here");
+	return -1;
+      }
+      bytesAdded++;
+    }
+  }
+
+  return 0;
+}
+
+
+
 
 
 
