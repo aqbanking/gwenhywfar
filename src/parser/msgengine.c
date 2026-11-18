@@ -510,7 +510,6 @@ int GWEN_MsgEngine__WriteValue(GWEN_MSGENGINE *e,
   } /* if type not external */
   else {
     DBG_INFO(GWEN_LOGDOMAIN, "Type \"%s\" (for %s) is external (write)", type, name);
-
   } /* if external type */
 
   /* fill data */
