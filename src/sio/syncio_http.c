@@ -42,6 +42,9 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
+
+
 
 
 
@@ -849,7 +852,7 @@ int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio)
   GWEN_SYNCIO *baseIo;
   GWEN_BUFFER *tbuf;
   int rv;
-  int csize;
+  unsigned int csize;
 
   assert(sio);
   xio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, GWEN_SYNCIO_HTTP, sio);
@@ -884,8 +887,13 @@ int GWEN_SyncIo_Http_ReadChunkSize(GWEN_SYNCIO *sio)
     GWEN_Buffer_free(tbuf);
     return GWEN_ERROR_BAD_DATA;
   }
+  if (csize>INT_MAX) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid chunk size [%s]", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+    return GWEN_ERROR_BAD_DATA;
+  }
 
-  xio->currentReadChunkSize=csize;
+  xio->currentReadChunkSize=(int)csize;
 
   GWEN_Buffer_free(tbuf);
   return 0;
