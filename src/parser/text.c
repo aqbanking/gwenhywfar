@@ -1889,14 +1889,15 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
       if (src[1]=='#') {
         unsigned char num=0;
 
-        src++;
-        src++;
+        src++;  /* skip ampersand */
+        src++;  /* skip hash sign */
         while (*src && isdigit((int)*src)) {
           num*=10;
           num+=(*src)-'0';
           src++;
         }
-        src++;
+        if (*src==';')
+          src++;
         GWEN_TEXT__APPENDCHAR(num);
       }
       else if (strncmp(src+1, "szlig;", 6)==0) {
