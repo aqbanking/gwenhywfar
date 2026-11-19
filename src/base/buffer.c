@@ -292,6 +292,12 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size)
     }
     return GWEN_ERROR_PERMISSIONS;
   }
+
+  if ((bf->bytesUsed+(size+1))<(bf->bytesUsed)) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Adding size would wrap counters!");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
+
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
   if (bf->bytesUsed+(size+1) > bf->bufferSize) {
     /* need to realloc */
