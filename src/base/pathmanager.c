@@ -47,6 +47,11 @@
 # include <winreg.h>
 #endif
 
+#ifdef __APPLE__
+#include <CoreFoundation/CoreFoundation.h>
+#include <limits.h>
+#endif
+
 
 static GWEN_DB_NODE *gwen__paths=0;
 
@@ -725,4 +730,73 @@ int GWEN_PathManager_AddPathFromWinReg(GWEN_UNUSED const char *callingLib,
 
 #endif /* OS_WIN32 */
 
+#ifdef __APPLE__
+int GWEN_PathManager_AddPathFromBundleResource(const char *callingLib,
+                                              const char *destLib,
+                                              const char *pathName,
+                                              const char *bundleId,
+                                              const char *subdir)
+{
+  CFStringRef id;
+  CFBundleRef bundle;
+  CFURLRef resourcesURL;
+  char resourcePath[PATH_MAX];
+  Boolean rv;
+  GWEN_BUFFER *buf;
+
+  id = CFStringCreateWithCString(kCFAllocatorDefault, bundleId, kCFStringEncodingUTF8);
+
+  bundle = CFBundleGetBundleWithIdentifier(id);
+  CFRelease(id);
+
+  if (bundle == NULL)
+  {
+    DBG_INFO(GWEN_LOGDOMAIN, "Bundle with id [%s] does not exist", bundleId);
+    return 1;
+  }
+
+  resourcesURL = CFBundleCopyResourcesDirectoryURL(bundle);
+
+  if (resourcesURL == NULL)
+  {
+    DBG_INFO(GWEN_LOGDOMAIN, "Resources URL of bundle [%s] is NULL.", bundleId);
+    return 1;
+  }
+
+  rv = CFURLGetFileSystemRepresentation(resourcesURL,
+                                        true,
+                                        (UInt8 *)resourcePath,
+                                        sizeof(resourcePath));
+  CFRelease(resourcesURL);
+
+  if (!rv) {
+    DBG_INFO(GWEN_LOGDOMAIN, "Failed to get file system representation of URL.");
+    return 1;
+  }
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Buffer_AppendString(buf, resourcePath);
+  if (*subdir!=GWEN_DIR_SEPARATOR)
+    GWEN_Buffer_AppendString(buf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(buf, subdir);
+
+  DBG_INFO(GWEN_LOGDOMAIN, "Adding path [%s]", GWEN_Buffer_GetStart(buf));
+  rv=GWEN_PathManager_AddPath(callingLib, destLib, pathName, GWEN_Buffer_GetStart(buf));
+  GWEN_Buffer_free(buf);
+  return rv;
+}
+
+#else /* __APPLE__ */
+
+int GWEN_PathManager_AddPathFromBundleResource(const char *callingLib,
+                                              const char *destLib,
+                                              const char *pathName,
+                                              const char *bundleId,
+                                              const char *subdir)
+{
+  return 0;
+}
+
+#endif /* __APPLE__ */
 

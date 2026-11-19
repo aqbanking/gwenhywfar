@@ -181,6 +181,7 @@ int GWEN_PathManager_AddRelPath(const char *callingLib,
                                 const char *pathName,
                                 const char *pathValue,
                                 GWEN_PATHMANAGER_RELMODE rm);
+
 /**
  * Add a directory path entry to a registered path entry in the
  * global GWEN_PathManager by looking up the directory path in the
@@ -216,6 +217,32 @@ int GWEN_PathManager_AddPathFromWinReg(const char *callingLib,
                                        const char *pathName,
                                        const char *keypath,
                                        const char *varname);
+
+/**
+ * Add a directory path entry to a registered path entry in the
+ * global GWEN_PathManager by looking up the directory path within
+ * an Apple CFBundle's resources.
+
+ * @param callingLib The name of the library that adds this path entry.
+ *
+ * @param destLib The name of the library that this path is supposed to
+ * belong to.
+ *
+ * @param pathName A string identifier for this registered path.
+ *
+ * @param bundleId The bundle identifier, e. g. "de.aqbanking.Gwenhywfar".
+ *
+ * @param subdir The path within the bundle's resources directoy.
+ *
+ * @return Zero on success, or nonzero if the @c pathName or the
+ * registry key was not found.
+ */
+GWENHYWFAR_API
+int GWEN_PathManager_AddPathFromBundleResource(const char *callingLib,
+                                              const char *destLib,
+                                              const char *pathName,
+                                              const char *bundleId,
+                                              const char *subdir);
 
 /**
  * Insert a directory path entry to a registered path entry in the
