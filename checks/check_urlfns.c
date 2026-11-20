@@ -139,5 +139,58 @@ int main(GWEN_UNUSED int argc, GWEN_UNUSED char **argv)
                           /*GetProtocol*/ "file",
                           /*GetServer*/   NULL)));
 
+
+  // Authority '@' must not cross into path, query, or fragment
+  url = GWEN_Url_fromString("https://legit.example/path/@attacker.invalid");
+  test_assert(url != NULL);
+  test_assert(GWEN_Url_GetUserName(url) == NULL);
+  test_assert(GWEN_Url_GetPassword(url) == NULL);
+  test_strcmp(GWEN_Url_GetProtocol(url), "https");
+  test_strcmp(GWEN_Url_GetServer(url), "legit.example");
+  test_assert(GWEN_Url_GetPort(url) == 443);
+  test_strcmp(GWEN_Url_GetPath(url), "/path/@attacker.invalid");
+  GWEN_Url_free(url);
+
+  url = GWEN_Url_fromString("https://legit.example?user=@attacker.invalid&role=admin#frag");
+  test_assert(url != NULL);
+  test_assert(GWEN_Url_GetUserName(url) == NULL);
+  test_strcmp(GWEN_Url_GetServer(url), "legit.example");
+  test_assert(GWEN_Url_GetPort(url) == 443);
+  test_strcmp(GWEN_DB_GetCharValue(GWEN_Url_GetVars(url), "user", 0, ""), "@attacker.invalid");
+  test_strcmp(GWEN_DB_GetCharValue(GWEN_Url_GetVars(url), "role", 0, ""), "admin");
+  GWEN_Url_free(url);
+
+  url = GWEN_Url_fromString("https://legit.example:8443#@attacker.invalid");
+  test_assert(url != NULL);
+  test_assert(GWEN_Url_GetUserName(url) == NULL);
+  test_strcmp(GWEN_Url_GetServer(url), "legit.example");
+  test_assert(GWEN_Url_GetPort(url) == 8443);
+  test_strcmp(GWEN_Url_GetPath(url), "/");
+  GWEN_Url_free(url);
+
+  url = GWEN_Url_fromString("https://legit.example#attacker.invalid");
+  test_assert(url != NULL);
+  test_strcmp(GWEN_Url_GetServer(url), "legit.example");
+  test_assert(GWEN_Url_GetPort(url) == 443);
+  GWEN_Url_free(url);
+
+  // IPv6 literals and strict authority/port validation
+  url = GWEN_Url_fromString("https://[2001:db8::1]:8443/fints");
+  test_assert(url != NULL);
+  test_strcmp(GWEN_Url_GetServer(url), "[2001:db8::1]");
+  test_assert(GWEN_Url_GetPort(url) == 8443);
+  test_strcmp(GWEN_Url_GetPath(url), "/fints");
+  GWEN_Url_free(url);
+
+  test_assert(GWEN_Url_fromString("https://user@/path") == NULL);
+  test_assert(GWEN_Url_fromString("https://user@:443/path") == NULL);
+  test_assert(GWEN_Url_fromString("https:///path") == NULL);
+  test_assert(GWEN_Url_fromString("https://host:/path") == NULL);
+  test_assert(GWEN_Url_fromString("https://host:-80/path") == NULL);
+  test_assert(GWEN_Url_fromString("https://host:70000/path") == NULL);
+  test_assert(GWEN_Url_fromString("https://host:443abc/path") == NULL);
+  test_assert(GWEN_Url_fromString("https://[::1/path") == NULL);
+  test_assert(GWEN_Url_fromString("https://[::1]evil/path") == NULL);
+
   return g_testSuccess;
 }
