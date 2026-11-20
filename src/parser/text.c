@@ -1836,10 +1836,11 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len)
       int j;
 
       for (j=0; j<i; j++) {
-        if ((((unsigned char)*s) & 0xc0)!=0xc0) {
+        if ((((unsigned char)*s) & 0xc0)!=0x80) {
           DBG_ERROR(GWEN_LOGDOMAIN,
                     "Invalid UTF8 sequence at pos %d (rel %d of %d)",
                     handled, j, i);
+          return -1;
         }
         s++;
       }
@@ -1887,18 +1888,58 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
     x=(unsigned char)*src;
     if (x=='&') {
       if (src[1]=='#') {
-        unsigned char num=0;
+        const char *p=src+2;
+        uint32_t cp=0;
+        int digits=0;
 
-        src++;  /* skip ampersand */
-        src++;  /* skip hash sign */
-        while (*src && isdigit((int)*src)) {
-          num*=10;
-          num+=(*src)-'0';
-          src++;
+        if (*p=='x' || *p=='X') {
+          p++;
+          while (*p && isxdigit((unsigned char)*p)) {
+            unsigned char c=(unsigned char)*p;
+            uint32_t d;
+
+            if (c>='0' && c<='9')
+              d=c-'0';
+            else if (c>='a' && c<='f')
+              d=10+(c-'a');
+            else
+              d=10+(c-'A');
+            if (cp<=0x10FFFF)
+              cp=(cp<<4)|d;
+            digits=1;
+            p++;
+          }
         }
-        if (*src==';')
-          src++;
-        GWEN_TEXT__APPENDCHAR(num);
+        else {
+          while (*p && isdigit((unsigned char)*p)) {
+            if (cp<=0x10FFFF)
+              cp=cp*10u+(uint32_t)((*p)-'0');
+            digits=1;
+            p++;
+          }
+        }
+        if (digits && *p==';' && cp>=1 && cp<=0x10FFFF && !(cp>=0xD800 && cp<=0xDFFF)) {
+          if (cp<=0x7F) {
+            GWEN_TEXT__APPENDCHAR(cp);
+          }
+          else if (cp<=0x7FF) {
+            GWEN_TEXT__APPENDCHAR(0xC0 | ((cp>>6) & 0x1F));
+            GWEN_TEXT__APPENDCHAR(0x80 | (cp & 0x3F));
+          }
+          else if (cp<=0xFFFF) {
+            GWEN_TEXT__APPENDCHAR(0xE0 | ((cp>>12) & 0x0F));
+            GWEN_TEXT__APPENDCHAR(0x80 | ((cp>>6) & 0x3F));
+            GWEN_TEXT__APPENDCHAR(0x80 | (cp & 0x3F));
+          }
+          else {
+            GWEN_TEXT__APPENDCHAR(0xF0 | ((cp>>18) & 0x07));
+            GWEN_TEXT__APPENDCHAR(0x80 | ((cp>>12) & 0x3F));
+            GWEN_TEXT__APPENDCHAR(0x80 | ((cp>>6) & 0x3F));
+            GWEN_TEXT__APPENDCHAR(0x80 | (cp & 0x3F));
+          }
+          src=p+1;
+          match=1;
+        }
       }
       else if (strncmp(src+1, "szlig;", 6)==0) {
         GWEN_TEXT__APPENDCHAR(0xc3);

@@ -9,7 +9,7 @@ AM_CPPFLAGS= -I$(gwenhywfar_symlinkdir) \
 
 SUBDIRS = consumer
 
-noinst_PROGRAMS=checks check_urlfns
+noinst_PROGRAMS=checks check_urlfns check_text
 checks_SOURCES=\
  main.c \
  db.c \
@@ -18,14 +18,16 @@ checks_SOURCES=\
  syncio_https.c
 
 check_urlfns_SOURCES = check_urlfns.c
+check_text_SOURCES = check_text.c
 
 
 noinst_HEADERS = checks.h
 
 checks_LDADD=$(top_builddir)/src/libgwenhywfar.la 
 check_urlfns_LDADD = $(top_builddir)/src/libgwenhywfar.la
+check_text_LDADD = $(top_builddir)/src/libgwenhywfar.la
 
-TESTS = checks check_urlfns
+TESTS = checks check_urlfns check_text
 
 sources:
 
