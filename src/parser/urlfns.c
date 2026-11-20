@@ -28,6 +28,12 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
   const char *s;
   const char *p;
   int starts_with_drive_letter = 0;
+  int had_userinfo = 0;
+
+  if (!str || !*str) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Empty url");
+    return 0;
+  }
 
   url=GWEN_Url_new();
   dbVars=GWEN_DB_Group_new("vars");
@@ -40,7 +46,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
   /* Check for a drive letter, which occurs on windows, but this will
      always be one single alpha character followed by a colon followed
      by a directory separator. */
-  if (s && isalpha(s[0]) && s[1] == ':'
+  if (s && isalpha((unsigned char)s[0]) && s[1] == ':'
       && (s[2] == '/' || s[2] == '\\')) {
     starts_with_drive_letter = 1;
   }
@@ -68,12 +74,22 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
     return 0;
   }
 
-  /* read user/password */
-  p=strchr(s, '@');
+  /* read user/password (only inside authority, before path/query/fragment) */
+  if (!starts_with_drive_letter) {
+    p=s;
+    while (*p && *p!='@' && *p!='/' && *p!='\\' && *p!='?' && *p!='#')
+      p++;
+    if (*p!='@')
+      p=0;
+  }
+  else
+    p=0;
   if (p) {
     char *upw;
     char *pw;
     char *pat;
+
+    had_userinfo = 1;
 
     upw=(char *)malloc(p-s+1);
     assert(upw);
@@ -97,7 +113,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
 
   /* Do we now have a drive letter? (After the protocol?) */
   if (!starts_with_drive_letter
-      && s && isalpha(s[0]) && s[1] == ':'
+      && s && isalpha((unsigned char)s[0]) && s[1] == ':'
       && (s[2] == '/' || s[2] == '\\')) {
     starts_with_drive_letter = 1;
   }
@@ -108,45 +124,89 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
     GWEN_Url_free(url);
     return 0;
   }
-  p=s;
-  while (!starts_with_drive_letter && *p && *p!=':' && *p!='/' && *p!='?')
+  if (!starts_with_drive_letter && *s=='[') {
+    p=s+1;
+    while (*p && *p!=']' && *p!='/' && *p!='\\' && *p!='?' && *p!='#')
+      p++;
+    if (*p!=']' || p==s+1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid IPv6 host literal in url \"%s\"", str);
+      GWEN_Url_free(url);
+      return 0;
+    }
     p++;
-  if (p!=s) {
-    char *buf;
+    if (*p && *p!=':' && *p!='/' && *p!='\\' && *p!='?' && *p!='#') {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Invalid character after IPv6 host literal in url \"%s\"", str);
+      GWEN_Url_free(url);
+      return 0;
+    }
+    {
+      char *buf;
 
-    /* got server */
-    buf=(char *)malloc(p-s+1);
-    assert(buf);
-    memmove(buf, s, p-s+1);
-    buf[p-s]=0;
-    GWEN_Url_SetServer(url, buf);
-    DBG_DEBUG(GWEN_LOGDOMAIN, "Server: [%s]", buf);
-    free(buf);
-    s=p;
+      buf=(char *)malloc(p-s+1);
+      assert(buf);
+      memmove(buf, s, p-s);
+      buf[p-s]=0;
+      GWEN_Url_SetServer(url, buf);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Server: [%s]", buf);
+      free(buf);
+      s=p;
+    }
+  }
+  else {
+    p=s;
+    while (!starts_with_drive_letter && *p && *p!=':' && *p!='/' && *p!='\\' && *p!='?' && *p!='#')
+      p++;
+    if (p!=s) {
+      char *buf;
+
+      /* got server */
+      buf=(char *)malloc(p-s+1);
+      assert(buf);
+      memmove(buf, s, p-s);
+      buf[p-s]=0;
+      GWEN_Url_SetServer(url, buf);
+      DBG_DEBUG(GWEN_LOGDOMAIN, "Server: [%s]", buf);
+      free(buf);
+      s=p;
+    }
+  }
+
+  if (!GWEN_Url_GetServer(url) &&
+      (had_userinfo ||
+       (url->protocol && (strcasecmp(url->protocol, "http")==0 || strcasecmp(url->protocol, "https")==0)))) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No server given in url \"%s\"", str);
+    GWEN_Url_free(url);
+    return 0;
   }
 
   /* get port */
   if (*s==':') {
     p=++s;
-    while (*p && *p!='?' && *p!='/')
+    while (*p && *p!='?' && *p!='/' && *p!='\\' && *p!='#')
       p++;
-    if (p!=s) {
-      char *buf;
-      int port;
+    if (p==s || (p-s)>5) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Bad port in url \"%s\"", str);
+      GWEN_Url_free(url);
+      return 0;
+    }
+    else {
+      int port=0;
+      const char *q;
 
-      /* got port */
-      buf=(char *)malloc(p-s+1);
-      assert(buf);
-      memmove(buf, s, p-s+1);
-      buf[p-s]=0;
-      if (sscanf(buf, "%d", &port)!=1) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad port (%s) in url \"%s\"", buf, str);
-        free(buf);
+      for (q=s; q<p; q++) {
+        if (*q<'0' || *q>'9') {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Bad port in url \"%s\"", str);
+          GWEN_Url_free(url);
+          return 0;
+        }
+        port=port*10+(*q-'0');
+      }
+      if (port<1 || port>65535) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Port out of range (%d) in url \"%s\"", port, str);
         GWEN_Url_free(url);
         return 0;
       }
       url->port=port;
-      free(buf);
       s=p;
     }
   }
@@ -160,9 +220,9 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
   }
 
   /* get path */
-  if (starts_with_drive_letter || *s=='/') {
+  if (starts_with_drive_letter || *s=='/' || *s=='\\') {
     p=s;
-    while (*p && *p!='?')
+    while (*p && *p!='?' && *p!='#')
       p++;
     if (p!=s) {
       char *buf;
@@ -180,12 +240,12 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
   }
   else {
     GWEN_Url_SetPath(url, "/");
-    if (*s)
+    if (*s && *s!='?' && *s!='#')
       s++;
   }
 
   /* read vars */
-  while (*s && *s=='?') {
+  while (*s && (*s=='?' || *s=='&')) {
     GWEN_BUFFER *bName;
     GWEN_BUFFER *bValue;
 
@@ -193,7 +253,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
     bValue=GWEN_Buffer_new(0, 256, 0, 1);
     s++;
     p=s;
-    while (*p && *p!='&' && *p!='=')
+    while (*p && *p!='&' && *p!='=' && *p!='#')
       p++;
     if (p!=s)
       GWEN_Buffer_AppendBytes(bName, s, (p-s));
@@ -201,7 +261,7 @@ GWEN_URL *GWEN_Url_fromString(const char *str)
     if (*p=='=') {
       s++;
       p=s;
-      while (*p && *p!='&')
+      while (*p && *p!='&' && *p!='#')
         p++;
       if (p!=s)
         GWEN_Buffer_AppendBytes(bValue, s, (p-s));
