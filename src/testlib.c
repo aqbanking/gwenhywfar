@@ -14,6 +14,12 @@
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/gwendate.h>
 #include <gwenhywfar/syncio.h>
+#include <gwenhywfar/syncio_http.h>
+#include <gwenhywfar/syncio_memory.h>
+#include <gwenhywfar/syncio_buffered.h>
+#include <gwenhywfar/msgengine.h>
+#include <gwenhywfar/xml.h>
+#include <gwenhywfar/error.h>
 #include <gwenhywfar/json.h>
 #include <gwenhywfar/json_read.h>
 #include <gwenhywfar/json_dump.h>
@@ -409,6 +415,146 @@ int test_json(const char *fname, const char *sSearch)
 
 
 
+static int check_parser_bounds(void)
+{
+  GWEN_XMLNODE *defs;
+  GWEN_MSGENGINE *e;
+  GWEN_BUFFER *mbuf;
+  GWEN_DB_NODE *gr;
+  GWEN_MSGENGINE_TRUSTEDDATA *td;
+  GWEN_MSGENGINE_TRUSTEDDATA *tdNext;
+  GWEN_BUFFER *b64;
+  GWEN_BUFFER *fixed;
+  char big64a[65];
+  char small4a[5];
+  char small4b[5];
+  char fixedRaw[2];
+  unsigned char *httpResp;
+  uint8_t readTmp[64];
+  GWEN_SYNCIO *memIo;
+  GWEN_SYNCIO *bufIo;
+  GWEN_SYNCIO *httpIo;
+  const char *xmlDefs=
+    "<GROUPs>"
+    "  <GROUPdef id=\"SegHead\" delimiter=\":\" hide=\"1\">"
+    "    <ELEM name=\"code\" type=\"AN\" maxsize=\"6\" />"
+    "    <ELEM name=\"seq\" type=\"num\" maxsize=\"15\" />"
+    "    <ELEM name=\"version\" type=\"num\" maxsize=\"3\" />"
+    "  </GROUPdef>"
+    "</GROUPs>";
+  int rv;
+
+  defs=GWEN_XMLNode_fromString(xmlDefs, (int)strlen(xmlDefs), GWEN_XML_FLAGS_DEFAULT);
+  ASSERT(defs!=NULL);
+  e=GWEN_MsgEngine_new();
+  ASSERT(e!=NULL);
+  GWEN_MsgEngine_SetDefinitions(e, defs, 1);
+
+  mbuf=GWEN_Buffer_new(0, 64, 0, 1);
+  GWEN_Buffer_AppendString(mbuf, "HXXXX:2:1'");
+  GWEN_Buffer_Rewind(mbuf);
+  gr=GWEN_DB_Group_new("msg");
+  rv=GWEN_MsgEngine_ReadMessage(e, "SEG", mbuf, gr, GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO);
+  ASSERT(rv==1);
+  ASSERT(GWEN_MsgEngine_TakeTrustInfo(e)==NULL);
+  GWEN_DB_Group_free(gr);
+  GWEN_Buffer_free(mbuf);
+
+  mbuf=GWEN_Buffer_new(0, 64, 0, 1);
+  GWEN_Buffer_AppendString(mbuf, "HXXXX:2:1+'");
+  GWEN_Buffer_Rewind(mbuf);
+  gr=GWEN_DB_Group_new("msg");
+  rv=GWEN_MsgEngine_ReadMessage(e, "SEG", mbuf, gr, GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO);
+  ASSERT(rv==1);
+  ASSERT(GWEN_MsgEngine_TakeTrustInfo(e)==NULL);
+  GWEN_DB_Group_free(gr);
+  GWEN_Buffer_free(mbuf);
+  GWEN_MsgEngine_free(e);
+
+  e=GWEN_MsgEngine_new();
+  ASSERT(e!=NULL);
+  memset(big64a, 'A', 64);
+  big64a[64]=0;
+  memcpy(small4a, "1234", 5);
+  memcpy(small4b, "1234", 5);
+  rv=GWEN_MsgEngine_AddTrustInfo(e, big64a, 64, "head", GWEN_MsgEngineTrustLevelHigh, 0);
+  ASSERT(rv==0);
+  rv=GWEN_MsgEngine_AddTrustInfo(e, small4a, 4, "pin1", GWEN_MsgEngineTrustLevelHigh, 70);
+  ASSERT(rv==0);
+  rv=GWEN_MsgEngine_AddTrustInfo(e, small4b, 4, "pin2", GWEN_MsgEngineTrustLevelHigh, 80);
+  ASSERT(rv==0);
+  td=GWEN_MsgEngine_TakeTrustInfo(e);
+  ASSERT(td!=NULL);
+  rv=GWEN_MsgEngine_TrustedData_CreateReplacements(td);
+  ASSERT(rv==0);
+  tdNext=GWEN_MsgEngine_TrustedData_GetNext(td);
+  ASSERT(tdNext!=NULL);
+  ASSERT(GWEN_MsgEngine_TrustedData_GetNext(tdNext)!=NULL);
+  ASSERT(strcmp(GWEN_MsgEngine_TrustedData_GetReplacement(tdNext),
+                GWEN_MsgEngine_TrustedData_GetReplacement(GWEN_MsgEngine_TrustedData_GetNext(tdNext)))==0);
+  while (td) {
+    GWEN_MSGENGINE_TRUSTEDDATA *next;
+
+    next=GWEN_MsgEngine_TrustedData_GetNext(td);
+    GWEN_MsgEngine_TrustedData_free(td);
+    td=next;
+  }
+  GWEN_MsgEngine_free(e);
+
+  b64=GWEN_Buffer_new(0, 32, 0, 1);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"TQ==", 0, b64)==0);
+  ASSERT(GWEN_Buffer_GetUsedBytes(b64)==1 && strcmp(GWEN_Buffer_GetStart(b64), "M")==0);
+  GWEN_Buffer_Reset(b64);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"TQ==", 4, b64)==0);
+  ASSERT(GWEN_Buffer_GetUsedBytes(b64)==1 && strcmp(GWEN_Buffer_GetStart(b64), "M")==0);
+  GWEN_Buffer_Reset(b64);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"TWE=", 4, b64)==0);
+  ASSERT(GWEN_Buffer_GetUsedBytes(b64)==2 && strcmp(GWEN_Buffer_GetStart(b64), "Ma")==0);
+  GWEN_Buffer_Reset(b64);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"TWFu", 4, b64)==0);
+  ASSERT(GWEN_Buffer_GetUsedBytes(b64)==3 && strcmp(GWEN_Buffer_GetStart(b64), "Man")==0);
+  GWEN_Buffer_Reset(b64);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"====", 0, b64)<0);
+  GWEN_Buffer_Reset(b64);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"A===", 0, b64)<0);
+  GWEN_Buffer_Reset(b64);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"AB=C", 0, b64)<0);
+  GWEN_Buffer_free(b64);
+
+  fixed=GWEN_Buffer_new(fixedRaw, (uint32_t)sizeof(fixedRaw), 0, 0);
+  ASSERT(fixed!=NULL);
+  GWEN_Buffer_SubMode(fixed, GWEN_BUFFER_MODE_DYNAMIC | GWEN_BUFFER_MODE_ABORT_ON_MEMFULL);
+  ASSERT(GWEN_Base64_Decode((const unsigned char *)"TWFu", 0, fixed)<0);
+  GWEN_Buffer_free(fixed);
+
+  httpResp=(unsigned char *)malloc(270000);
+  ASSERT(httpResp!=NULL);
+  memset(httpResp, 'X', 70000);
+  memcpy(httpResp, "HTTP/1.1 200 ", 13);
+  httpResp[70000]='\n';
+  memIo=GWEN_SyncIo_Memory_fromBuffer(httpResp, 70001);
+  bufIo=GWEN_SyncIo_Buffered_new(memIo);
+  httpIo=GWEN_SyncIo_Http_new(bufIo);
+  ASSERT(GWEN_SyncIo_Connect(httpIo)==0);
+  rv=GWEN_SyncIo_Read(httpIo, readTmp, (uint32_t)sizeof(readTmp));
+  ASSERT(rv==GWEN_ERROR_BUFFER_OVERFLOW);
+  GWEN_SyncIo_free(httpIo);
+
+  memcpy(httpResp, "HTTP/1.1 200 OK\r\nX-Big: ", 24);
+  memset(httpResp+24, 'Y', 265000);
+  memcpy(httpResp+24+265000, "\r\n\r\n", 4);
+  memIo=GWEN_SyncIo_Memory_fromBuffer(httpResp, 24+265000+4);
+  bufIo=GWEN_SyncIo_Buffered_new(memIo);
+  httpIo=GWEN_SyncIo_Http_new(bufIo);
+  ASSERT(GWEN_SyncIo_Connect(httpIo)==0);
+  rv=GWEN_SyncIo_Read(httpIo, readTmp, (uint32_t)sizeof(readTmp));
+  ASSERT(rv==GWEN_ERROR_BUFFER_OVERFLOW);
+  GWEN_SyncIo_free(httpIo);
+  free(httpResp);
+
+  return 0;
+}
+
 int main(int argc, char **argv)
 {
   int rv;
@@ -426,6 +572,7 @@ int main(int argc, char **argv)
        check_directory() ||
        check_list() ||
        check_constlist()
+       || check_parser_bounds()
        || print_paths()
        ;
   }
