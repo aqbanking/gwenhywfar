@@ -40,15 +40,17 @@ void HtmlFont_free(HTML_FONT *fnt)
 {
   if (fnt) {
     assert(fnt->refCount);
-    if (fnt->refCount>1)
-      fnt->refCount--;
-    else {
-      GWEN_LIST_FINI(HTML_FONT, fnt);
-      GWEN_INHERIT_FINI(HTML_FONT, fnt);
-      free(fnt->fontName);
+    if (fnt->refCount) {
+      if (fnt->refCount>1)
+	fnt->refCount--;
+      else {
+	GWEN_LIST_FINI(HTML_FONT, fnt);
+	GWEN_INHERIT_FINI(HTML_FONT, fnt);
+	free(fnt->fontName);
 
-      fnt->refCount=0;
-      GWEN_FREE_OBJECT(fnt);
+	fnt->refCount=0;
+	GWEN_FREE_OBJECT(fnt);
+      }
     }
   }
 }
