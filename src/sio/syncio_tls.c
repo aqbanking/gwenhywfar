@@ -1049,7 +1049,11 @@ static int GWEN_SyncIo_Tls_HasTrustedCerts(SSL_CTX *ssl_ctx)
   STACK_OF(X509_OBJECT) *objs;
   int n;
 
+#ifdef HAVE_X509_STORE_GET1_OBJECTS
   objs=X509_STORE_get1_objects(SSL_CTX_get_cert_store(ssl_ctx));
+#else
+  objs=NULL;
+#endif
   n=objs?sk_X509_OBJECT_num(objs):0;
   sk_X509_OBJECT_pop_free(objs, X509_OBJECT_free);
   return (n>0)?1:0;
@@ -1509,8 +1513,13 @@ void GWEN_SyncIo_Tls_ShowCipherInfo(GWEN_SYNCIO *sio)
 
   /* key exchange algorithm: the group for TLS 1.3, the key exchange method of the cipher suite otherwise */
   kxNid=SSL_CIPHER_get_kx_nid(ci);
-  if (kxNid==NID_kx_any)
+  if (kxNid==NID_kx_any) {
+#ifdef HAVE_SSL_GET0_GROUP_NAME
     s=SSL_get0_group_name(xio->ssl);
+#else
+    s=NULL;
+#endif
+  }
   else {
     s=(kxNid==NID_undef)?NULL:OBJ_nid2sn(kxNid);
     if (s && strncmp(s, "Kx", 2)==0)

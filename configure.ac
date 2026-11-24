@@ -376,6 +376,9 @@ AC_CHECK_FUNCS([snprintf])
 AC_CHECK_FUNCS([symlink setlocale])
 AC_CHECK_FUNCS([srandom random])
 
+AC_CHECK_FUNCS([SSL_get0_group_name])
+AC_CHECK_FUNCS([X509_STORE_get1_objects])
+
 # Init binreloc
 AM_BINRELOC
 
@@ -777,7 +780,7 @@ esac
 AC_MSG_RESULT([$gwen_tls])
 
 if test "$gwen_tls" = "openssl"; then
-  NEED_TLS_MODULE="openssl >= 3.5"
+  NEED_TLS_MODULE="openssl >= 3.0"
   AC_DEFINE(GWEN_TLS_OPENSSL, 1, [Defined if OpenSSL is used for TLS instead of GnuTLS])
 else
   NEED_TLS_MODULE="gnutls >= 2.9.8"
