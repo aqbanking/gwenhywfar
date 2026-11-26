@@ -35,6 +35,7 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#include <limits.h>
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
 #endif
@@ -1801,50 +1802,76 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len)
   int count;
   int handled;
 
-  if (len==0)
-    len=strlen(s);
+  if (!s || len<0)
+    return -1;
+  if (len==0) {
+    size_t slen=strlen(s);
+    if (slen>(size_t)INT_MAX)
+      return -1;
+    len=(int)slen;
+  }
   count=0;
   handled=0;
   while (handled<len) {
     unsigned char c;
-    int i;
+    int seq_len;
 
-    c=(unsigned char)*s;
-    if ((c & 0xfe)==0xfc)
-      i=5;
-    else if ((c & 0xfc)==0xf8)
-      i=4;
-    else if ((c & 0xf8)==0xf0)
-      i=3;
-    else if ((c & 0xf0)==0xe0)
-      i=2;
-    else if ((c & 0xe0)==0xc0)
-      i=1;
-    else if (c & 0x80) {
+    c=(unsigned char)s[handled];
+    if (c<0x80)
+      seq_len=1;
+    else if (c>=0xC2 && c<=0xDF)
+      seq_len=2;
+    else if (c>=0xE0 && c<=0xEF)
+      seq_len=3;
+    else if (c>=0xF0 && c<=0xF4)
+      seq_len=4;
+    else {
       DBG_ERROR(GWEN_LOGDOMAIN, "Invalid UTF8 character at pos %d", handled);
       return -1;
     }
-    else
-      i=0;
-    if (handled+i+1>len) {
+
+    if (seq_len>len-handled) {
       DBG_ERROR(GWEN_LOGDOMAIN,
                 "Incomplete UTF8 sequence at pos %d", handled);
       return -1;
     }
-    s++;
-    if (i) {
-      int j;
 
-      for (j=0; j<i; j++) {
-        if ((((unsigned char)*s) & 0xc0)!=0xc0) {
-          DBG_ERROR(GWEN_LOGDOMAIN,
-                    "Invalid UTF8 sequence at pos %d (rel %d of %d)",
-                    handled, j, i);
-        }
-        s++;
+    if (seq_len==2) {
+      unsigned char c1=(unsigned char)s[handled+1];
+      if (c1<0x80 || c1>0xBF) {
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Invalid UTF8 sequence at pos %d (rel 0 of 1)", handled);
+        return -1;
       }
     }
-    handled+=i+1;
+    else if (seq_len==3) {
+      unsigned char c1=(unsigned char)s[handled+1];
+      unsigned char c2=(unsigned char)s[handled+2];
+      if ((c==0xE0 && (c1<0xA0 || c1>0xBF)) ||
+          (c==0xED && (c1<0x80 || c1>0x9F)) ||
+          (c!=0xE0 && c!=0xED && (c1<0x80 || c1>0xBF)) ||
+          c2<0x80 || c2>0xBF) {
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Invalid UTF8 sequence at pos %d", handled);
+        return -1;
+      }
+    }
+    else if (seq_len==4) {
+      unsigned char c1=(unsigned char)s[handled+1];
+      unsigned char c2=(unsigned char)s[handled+2];
+      unsigned char c3=(unsigned char)s[handled+3];
+      if ((c==0xF0 && (c1<0x90 || c1>0xBF)) ||
+          (c==0xF4 && (c1<0x80 || c1>0x8F)) ||
+          (c!=0xF0 && c!=0xF4 && (c1<0x80 || c1>0xBF)) ||
+          c2<0x80 || c2>0xBF ||
+          c3<0x80 || c3>0xBF) {
+        DBG_ERROR(GWEN_LOGDOMAIN,
+                  "Invalid UTF8 sequence at pos %d", handled);
+        return -1;
+      }
+    }
+
+    handled+=seq_len;
     count++;
   } /* while */
 
@@ -1855,29 +1882,16 @@ int GWEN_Text_CountUtf8Chars(const char *s, int len)
 
 int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
 {
-  char *pdst;
-  uint32_t roomLeft;
-  uint32_t bytesAdded;
+#define GWEN_TEXT__APPENDCHAR(chr)                                     \
+  do {                                                                 \
+    int rv_append;                                                     \
+    rv_append=GWEN_Buffer_AppendByte(buf, (char)(unsigned char)(chr)); \
+    if (rv_append<0)                                                   \
+      return rv_append;                                                \
+  } while (0)
 
-#define GWEN_TEXT__APPENDCHAR(chr)                     \
-  if (roomLeft<2) {                                   \
-    if (bytesAdded) {                                 \
-      GWEN_Buffer_IncrementPos(buf, bytesAdded);      \
-      GWEN_Buffer_AdjustUsedBytes(buf);               \
-    }                                                 \
-    GWEN_Buffer_AllocRoom(buf, 2);                    \
-    pdst=GWEN_Buffer_GetPosPointer(buf);              \
-    roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf); \
-    bytesAdded=0;                                     \
-   }                                                  \
-   *(pdst++)=(unsigned char)chr;                      \
-   *pdst=0;                                           \
-   bytesAdded++;                                      \
-  roomLeft--
-
-  pdst=GWEN_Buffer_GetPosPointer(buf);
-  roomLeft=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
-  bytesAdded=0;
+  if (!src || !buf)
+    return GWEN_ERROR_INVALID;
 
   while (*src) {
     unsigned char x;
@@ -1887,18 +1901,71 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
     x=(unsigned char)*src;
     if (x=='&') {
       if (src[1]=='#') {
-        unsigned char num=0;
+        const char *p=src+2;
+        uint32_t codepoint=0;
+        int hasDigits=0;
+        int overflow=0;
 
-        src++;  /* skip ampersand */
-        src++;  /* skip hash sign */
-        while (*src && isdigit((int)*src)) {
-          num*=10;
-          num+=(*src)-'0';
-          src++;
+        if (*p=='x' || *p=='X') {
+          p++;
+          while (*p && isxdigit((unsigned char)*p)) {
+            uint32_t digit;
+
+            hasDigits=1;
+            if (*p>='0' && *p<='9')
+              digit=(uint32_t)(*p-'0');
+            else if (*p>='a' && *p<='f')
+              digit=(uint32_t)(*p-'a'+10);
+            else
+              digit=(uint32_t)(*p-'A'+10);
+            if (codepoint>(0x10FFFFu-digit)/16u) {
+              overflow=1;
+            }
+            else {
+              codepoint=(codepoint*16u)+digit;
+            }
+            p++;
+          }
         }
-        if (*src==';')
-          src++;
-        GWEN_TEXT__APPENDCHAR(num);
+        else {
+          while (*p && isdigit((unsigned char)*p)) {
+            uint32_t digit=(uint32_t)(*p-'0');
+
+            hasDigits=1;
+            if (codepoint>(0x10FFFFu-digit)/10u) {
+              overflow=1;
+            }
+            else {
+              codepoint=(codepoint*10u)+digit;
+            }
+            p++;
+          }
+        }
+
+        if (hasDigits && !overflow && *p==';' &&
+            codepoint>=1u && codepoint<=0x10FFFFu &&
+            !(codepoint>=0xD800u && codepoint<=0xDFFFu)) {
+          if (codepoint<=0x7Fu) {
+            GWEN_TEXT__APPENDCHAR(codepoint);
+          }
+          else if (codepoint<=0x7FFu) {
+            GWEN_TEXT__APPENDCHAR(0xC0u | (codepoint >> 6));
+            GWEN_TEXT__APPENDCHAR(0x80u | (codepoint & 0x3Fu));
+          }
+          else if (codepoint<=0xFFFFu) {
+            GWEN_TEXT__APPENDCHAR(0xE0u | (codepoint >> 12));
+            GWEN_TEXT__APPENDCHAR(0x80u | ((codepoint >> 6) & 0x3Fu));
+            GWEN_TEXT__APPENDCHAR(0x80u | (codepoint & 0x3Fu));
+          }
+          else {
+            GWEN_TEXT__APPENDCHAR(0xF0u | (codepoint >> 18));
+            GWEN_TEXT__APPENDCHAR(0x80u | ((codepoint >> 12) & 0x3Fu));
+            GWEN_TEXT__APPENDCHAR(0x80u | ((codepoint >> 6) & 0x3Fu));
+            GWEN_TEXT__APPENDCHAR(0x80u | (codepoint & 0x3Fu));
+          }
+          src=p+1;
+          match=1;
+        }
       }
       else if (strncmp(src+1, "szlig;", 6)==0) {
         GWEN_TEXT__APPENDCHAR(0xc3);
@@ -1964,11 +2031,6 @@ int GWEN_Text_UnescapeXmlToBuffer(const char *src, GWEN_BUFFER *buf)
       GWEN_TEXT__APPENDCHAR(*(src++));
     }
   } /* while */
-
-  if (bytesAdded) {
-    GWEN_Buffer_IncrementPos(buf, bytesAdded);
-    GWEN_Buffer_AdjustUsedBytes(buf);
-  }
 
   return 0;
 #undef GWEN_TEXT__APPENDCHAR
