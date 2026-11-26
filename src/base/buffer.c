@@ -293,13 +293,13 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size)
     return GWEN_ERROR_PERMISSIONS;
   }
 
-  if ((bf->bytesUsed+(size+1))<(bf->bytesUsed)) {
+  if (size==(uint32_t)-1 || bf->bytesUsed>(uint32_t)-1-(size+1U)) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Adding size would wrap counters!");
     return GWEN_ERROR_BUFFER_OVERFLOW;
   }
 
   /*DBG_VERBOUS(GWEN_LOGDOMAIN, "Allocating %d bytes", size);*/
-  if (bf->bytesUsed+(size+1) > bf->bufferSize) {
+  if (bf->bytesUsed+(size+1U) > bf->bufferSize) {
     /* need to realloc */
     uint32_t nsize;
     uint32_t noffs;
@@ -319,13 +319,24 @@ int GWEN_Buffer_AllocRoom(GWEN_BUFFER *bf, uint32_t size)
     reserved=bf->ptr-bf->realPtr;
     /* this is the raw number of bytes we need (we always add a NULL
      * character) */
-    nsize=bf->bytesUsed+(size+1)-bf->bufferSize;
+    nsize=bf->bytesUsed+(size+1U)-bf->bufferSize;
     /* round it up */
-    nsize=(nsize+(bf->step-1));
-    nsize&=~(bf->step-1);
+    if (bf->step>1U) {
+      if (nsize>(uint32_t)-1-(bf->step-1U)) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Step rounding would wrap buffer size!");
+        return GWEN_ERROR_BUFFER_OVERFLOW;
+      }
+      nsize=(nsize+(bf->step-1U));
+      nsize&=~(bf->step-1U);
+    }
     /* store number of additional bytes to allocate */
     noffs=nsize;
     /* add current size to it */
+    if (nsize>(uint32_t)-1-bf->realBufferSize ||
+        nsize+bf->realBufferSize==(uint32_t)-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Realloc size would wrap buffer size!");
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
     nsize+=bf->realBufferSize;
     if (nsize>bf->hardLimit) {
       DBG_ERROR(GWEN_LOGDOMAIN,
@@ -534,7 +545,9 @@ uint32_t GWEN_Buffer_GetMaxUnsegmentedWrite(GWEN_BUFFER *bf)
 {
   assert(bf);
 
-  return (bf->bufferSize-(bf->bytesUsed+1));
+  if (bf->bufferSize==0 || bf->bytesUsed>=bf->bufferSize-1U)
+    return 0;
+  return (bf->bufferSize-1U)-bf->bytesUsed;
 }
 
 
@@ -1092,40 +1105,109 @@ int GWENHYWFAR_CB GWEN_Buffer_CacheFn_Free(void *ptr)
 
 int GWEN_Buffer_AppendArgs(GWEN_BUFFER *bf, const char *fmt, ...)
 {
-
   va_list list;
   char *p;
-  int maxUnsegmentedWrite;
+  uint32_t avail;
+  uint32_t savedUsed;
   int rv;
+  int allocRv;
 
-  GWEN_Buffer_AllocRoom(bf, 256);
+  assert(bf);
+  if (!fmt) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Missing format string");
+    return GWEN_ERROR_INVALID;
+  }
+  if (bf->mode & GWEN_BUFFER_MODE_READONLY) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Read-only mode");
+    if (bf->mode & GWEN_BUFFER_MODE_ABORT_ON_MEMFULL) {
+      abort();
+    }
+    return GWEN_ERROR_PERMISSIONS;
+  }
+  if (bf->pos>bf->bufferSize || bf->bytesUsed>bf->bufferSize) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Buffer counters exceed buffer size");
+    return GWEN_ERROR_BUFFER_OVERFLOW;
+  }
 
-  maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
-  p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+  savedUsed=bf->bytesUsed;
+  if (bf->mode & GWEN_BUFFER_MODE_DYNAMIC) {
+    (void)GWEN_Buffer_AllocRoom(bf, 256);
+  }
+
+  if (bf->ptr && bf->pos==bf->bytesUsed && bf->pos<bf->bufferSize) {
+    avail=bf->bufferSize-bf->pos;
+    p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+  }
+  else {
+    avail=0;
+    p=0;
+  }
 
   /* prepare list for va_arg */
   va_start(list, fmt);
-  rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+  rv=vsnprintf(p, (size_t)avail, fmt, list);
   va_end(list);
   if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+    DBG_ERROR(GWEN_LOGDOMAIN, "Error on vsnprintf (%d)", rv);
+    if (bf->ptr && savedUsed<bf->bufferSize)
+      bf->ptr[savedUsed]=0;
     return GWEN_ERROR_GENERIC;
   }
-  else if (rv>=maxUnsegmentedWrite) {
-    GWEN_Buffer_AllocRoom(bf, rv+1);
-    maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
+  else if ((uint32_t)rv>=avail) {
+    uint32_t neededFromUsed;
+
+    if (bf->ptr && savedUsed<bf->bufferSize)
+      bf->ptr[savedUsed]=0;
+    if ((uint32_t)rv==(uint32_t)-1) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Formatted output exceeds uint32_t range");
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
+    if (bf->pos>bf->bytesUsed) {
+      uint32_t gap=bf->pos-bf->bytesUsed;
+
+      if ((uint32_t)rv>(uint32_t)-1-gap)
+        return GWEN_ERROR_BUFFER_OVERFLOW;
+      neededFromUsed=gap+(uint32_t)rv;
+    }
+    else {
+      neededFromUsed=(uint32_t)rv;
+    }
+    allocRv=GWEN_Buffer_AllocRoom(bf, neededFromUsed);
+    if (allocRv<0) {
+      DBG_DEBUG(GWEN_LOGDOMAIN, "AllocRoom failed (%d)", allocRv);
+      return allocRv;
+    }
+    avail=(bf->ptr && bf->pos<bf->bufferSize)?(bf->bufferSize-bf->pos):0U;
+    if ((uint32_t)rv>=avail) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Buffer overflow after allocation");
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
     p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
     va_start(list, fmt);
-    rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+    rv=vsnprintf(p, (size_t)avail, fmt, list);
     va_end(list);
     if (rv<0) {
-      DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on vsnprintf (%d)", rv);
+      if (bf->ptr && savedUsed<bf->bufferSize)
+        bf->ptr[savedUsed]=0;
       return GWEN_ERROR_GENERIC;
+    }
+    if ((uint32_t)rv>=avail) {
+      if (bf->ptr && savedUsed<bf->bufferSize)
+        bf->ptr[savedUsed]=0;
+      return GWEN_ERROR_BUFFER_OVERFLOW;
     }
   }
   if (rv>0) {
-    GWEN_Buffer_IncrementPos(bf, rv);
-    GWEN_Buffer_AdjustUsedBytes(bf);
+    allocRv=GWEN_Buffer_IncrementPos(bf, (uint32_t)rv);
+    if (allocRv<0)
+      return allocRv;
+    allocRv=GWEN_Buffer_AdjustUsedBytes(bf);
+    if (allocRv<0)
+      return allocRv;
+  }
+  else if (bf->ptr && bf->bytesUsed<bf->bufferSize) {
+    bf->ptr[bf->bytesUsed]=0;
   }
 
   return 0;
