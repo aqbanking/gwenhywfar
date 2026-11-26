@@ -441,17 +441,35 @@ int GWEN_SyncIo_Http_ReadLine(GWEN_SYNCIO *sio, GWEN_BUFFER *tbuf)
     uint8_t *p;
     uint32_t l;
 
-    GWEN_Buffer_AllocRoom(tbuf, 1024);
+    if (GWEN_Buffer_GetUsedBytes(tbuf)>=65536) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "HTTP line exceeds maximum size");
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
+    rv=GWEN_Buffer_AllocRoom(tbuf, 1024);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
     p=(uint8_t *) GWEN_Buffer_GetPosPointer(tbuf);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    if (l==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No space left in HTTP line buffer");
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
     rv=GWEN_SyncIo_Read(baseIo, p, l);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
     else if (rv>0) {
-      GWEN_Buffer_IncrementPos(tbuf, rv);
-      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      int irv;
+
+      irv=GWEN_Buffer_IncrementPos(tbuf, (uint32_t)rv);
+      if (irv<0)
+        return irv;
+      irv=GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (irv<0)
+        return irv;
       if (p[rv-1]==10) {
         p[rv-1]=0;
         break;
@@ -790,18 +808,47 @@ int GWEN_SyncIo_Http_ReadHeader(GWEN_SYNCIO *sio)
   pos=0;
   do {
     uint8_t *p;
+    uint32_t l;
 
-    GWEN_Buffer_AllocRoom(tbuf, 1024);
+    if (GWEN_Buffer_GetUsedBytes(tbuf)>=262144) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "HTTP header exceeds maximum size");
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
+    rv=GWEN_Buffer_AllocRoom(tbuf, 1024);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(tbuf);
+      return rv;
+    }
     p=(uint8_t *) GWEN_Buffer_GetPosPointer(tbuf);
-    rv=GWEN_SyncIo_Read(baseIo, p, 1024);
+    l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
+    if (l==0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "No space left in HTTP header buffer");
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_BUFFER_OVERFLOW;
+    }
+    if (l>1024)
+      l=1024;
+    rv=GWEN_SyncIo_Read(baseIo, p, l);
     if (rv<0) {
       DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf);
       return rv;
     }
     else if (rv>0) {
-      GWEN_Buffer_IncrementPos(tbuf, rv);
-      GWEN_Buffer_AdjustUsedBytes(tbuf);
+      int irv;
+
+      irv=GWEN_Buffer_IncrementPos(tbuf, (uint32_t)rv);
+      if (irv<0) {
+        GWEN_Buffer_free(tbuf);
+        return irv;
+      }
+      irv=GWEN_Buffer_AdjustUsedBytes(tbuf);
+      if (irv<0) {
+        GWEN_Buffer_free(tbuf);
+        return irv;
+      }
       if (p[rv-1]==10) {
         uint32_t npos;
 

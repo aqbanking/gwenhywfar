@@ -2351,19 +2351,20 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
                 pvalue=GWEN_XMLNode_GetData(dn);
                 if (pvalue) {
                   char pbuffer[256];
+                  int plen;
 
                   /* check whether the value is a property */
                   p=pvalue;
                   while (*p && isspace((int)*p))
                     p++;
-                  if (strlen(path)+strlen(pname)+2>sizeof(pbuffer)) {
+                  if (*path)
+                    plen=snprintf(pbuffer, sizeof(pbuffer), "%s/%s", path, pname);
+                  else
+                    plen=snprintf(pbuffer, sizeof(pbuffer), "%s", pname);
+                  if (plen<0 || (size_t)plen>=sizeof(pbuffer)) {
                     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
                     return -1;
                   }
-                  if (*path)
-                    sprintf(pbuffer, "%s/%s", path, pname);
-                  else
-                    sprintf(pbuffer, "%s", pname);
                   GWEN_StringList_AppendString(sl,
                                                pbuffer,
                                                0,
@@ -2459,28 +2460,29 @@ int GWEN_MsgEngine__ShowGroup(GWEN_MSGENGINE *e,
           /* find group */
           char pbuffer[256];
           const char *npath;
+          int plen;
 
           /* get configuration */
           gname=GWEN_XMLNode_GetProperty(n, "name", 0);
           if (gname) {
             if (loopNr==0) {
-              if (strlen(path)+strlen(gname)+1>sizeof(pbuffer)) {
+              plen=snprintf(pbuffer, sizeof(pbuffer), "%s/%s", path, gname);
+              if (plen<0 || (size_t)plen>=sizeof(pbuffer)) {
                 DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
                 return -1;
               }
-              sprintf(pbuffer, "%s/%s", path, gname);
               npath=pbuffer;
             }
             else {
               /* this is not the first one, so create new name */
-              if (strlen(path)+strlen(gname)+10>sizeof(pbuffer)) {
+              if (*path)
+                plen=snprintf(pbuffer, sizeof(pbuffer), "%s/%s%d", path, gname, loopNr);
+              else
+                plen=snprintf(pbuffer, sizeof(pbuffer), "%s%d", gname, loopNr);
+              if (plen<0 || (size_t)plen>=sizeof(pbuffer)) {
                 DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
                 return -1;
               }
-              if (*path)
-                sprintf(pbuffer, "%s/%s%d", path, gname, loopNr);
-              else
-                sprintf(pbuffer, "%s%d", gname, loopNr);
               /* get the value of the given var */
               npath=pbuffer;
             }
@@ -2683,19 +2685,20 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
                 pvalue=GWEN_XMLNode_GetData(dn);
                 if (pvalue) {
                   char pbuffer[256];
+                  int plen;
 
                   /* check whether the value is a property */
                   p=pvalue;
                   while (*p && isspace((int)*p))
                     p++;
-                  if (strlen(path)+strlen(pname)+2>sizeof(pbuffer)) {
+                  if (*path)
+                    plen=snprintf(pbuffer, sizeof(pbuffer), "%s/%s", path, pname);
+                  else
+                    plen=snprintf(pbuffer, sizeof(pbuffer), "%s", pname);
+                  if (plen<0 || (size_t)plen>=sizeof(pbuffer)) {
                     DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
                     return -1;
                   }
-                  if (*path)
-                    sprintf(pbuffer, "%s/%s", path, pname);
-                  else
-                    sprintf(pbuffer, "%s", pname);
                   DBG_INFO(GWEN_LOGDOMAIN, "Found preset value for %s", pbuffer);
                   GWEN_StringList_AppendString(sl,
                                                pbuffer,
@@ -2757,6 +2760,7 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
         const char *gtype;
         char pbuffer[256];
         const char *npath;
+        int plen;
 
         gtype=GWEN_XMLNode_GetProperty(n, "type", 0);
         if (!gtype) {
@@ -2776,15 +2780,14 @@ int GWEN_MsgEngine__ListGroup(GWEN_MSGENGINE *e,
         /* get configuration */
         gname=GWEN_XMLNode_GetProperty(n, "name", 0);
         if (gname) {
-          if (strlen(path)+strlen(gname)+1>sizeof(pbuffer)) {
+          if (*path)
+            plen=snprintf(pbuffer, sizeof(pbuffer), "%s/%s", path, gname);
+          else
+            plen=snprintf(pbuffer, sizeof(pbuffer), "%s", gname);
+          if (plen<0 || (size_t)plen>=sizeof(pbuffer)) {
             DBG_ERROR(GWEN_LOGDOMAIN, "Buffer too small");
             return -1;
           }
-
-          if (*path)
-            sprintf(pbuffer, "%s/%s", path, gname);
-          else
-            sprintf(pbuffer, "%s", gname);
           npath=pbuffer;
         } /* if name given */
         else
@@ -3483,10 +3486,12 @@ int _groupReadElement(GWEN_MSGENGINE *e,
 
           if (1!=sscanf(GWEN_Buffer_GetStart(vbuf), "%d", &z)) {
             DBG_INFO(GWEN_LOGDOMAIN, "Value for \"%s\" is not an integer", name);
+            GWEN_Buffer_free(vbuf);
             return -1;
           }
           if (GWEN_DB_SetIntValue(gr, GWEN_DB_FLAGS_DEFAULT, name, z)) {
             DBG_INFO(GWEN_LOGDOMAIN, "Could not set int value for \"%s\"", name);
+            GWEN_Buffer_free(vbuf);
             return -1;
           }
         } /* if type is int */
@@ -3497,6 +3502,7 @@ int _groupReadElement(GWEN_MSGENGINE *e,
                                    name,
                                    GWEN_Buffer_GetStart(vbuf))) {
             DBG_INFO(GWEN_LOGDOMAIN, "Could not set value for \"%s\"", name);
+            GWEN_Buffer_free(vbuf);
             return -1;
           }
         } /* if !bin */
@@ -3789,23 +3795,28 @@ int GWEN_MsgEngine_ReadMessage(GWEN_MSGENGINE *e,
         return -1;
       }
       if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
-        unsigned int usize;
+        unsigned int endPos;
 
-        usize=GWEN_Buffer_GetPos(mbuf)-ustart-1;
+        endPos=GWEN_Buffer_GetPos(mbuf);
+        if (endPos>ustart && (endPos-ustart)>1) {
+          unsigned int usize;
+
+          usize=endPos-ustart-1;
 #if 0
-        GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart,
-                             usize,
-                             stderr, 1);
+          GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+ustart,
+                               usize,
+                               stderr, 1);
 #endif
-        if (GWEN_MsgEngine_AddTrustInfo(e,
-                                        GWEN_Buffer_GetStart(mbuf)+ustart,
-                                        usize,
-                                        p,
-                                        GWEN_MsgEngineTrustLevelHigh,
-                                        ustart)) {
-          DBG_INFO(GWEN_LOGDOMAIN, "called from here");
-          GWEN_DB_Group_free(tmpdb);
-          return -1;
+          if (GWEN_MsgEngine_AddTrustInfo(e,
+                                          GWEN_Buffer_GetStart(mbuf)+ustart,
+                                          usize,
+                                          p,
+                                          GWEN_MsgEngineTrustLevelHigh,
+                                          ustart)) {
+            DBG_INFO(GWEN_LOGDOMAIN, "called from here");
+            GWEN_DB_Group_free(tmpdb);
+            return -1;
+          }
         }
       } /* if trustInfo handling wanted */
     }
@@ -3888,14 +3899,27 @@ GWEN_MSGENGINE_TRUSTEDDATA *GWEN_MsgEngine_TrustedData_new(const char *data,
 {
   GWEN_MSGENGINE_TRUSTEDDATA *td;
 
-  assert(data);
-  assert(size);
+  if (!data || !size) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid trusted data");
+    return NULL;
+  }
   GWEN_NEW_OBJECT(GWEN_MSGENGINE_TRUSTEDDATA, td);
+  if (!td)
+    return NULL;
   td->data=(char *)malloc(size);
-  assert(td->data);
+  if (!td->data) {
+    GWEN_FREE_OBJECT(td);
+    return NULL;
+  }
   memmove(td->data, data, size);
-  if (description)
+  if (description) {
     td->description=strdup(description);
+    if (!td->description) {
+      free(td->data);
+      GWEN_FREE_OBJECT(td);
+      return NULL;
+    }
+  }
   td->trustLevel=trustLevel;
   td->size=size;
   return td;
@@ -4026,10 +4050,9 @@ int GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
     std=td;
     match=0;
     while (std && std!=ntd) {
-
-      match=1;
-      if (std->size==ntd->size) {
-        for (i=0; i<td->size; i++) {
+      if (std->size==ntd->size && std->data && ntd->data) {
+        match=1;
+        for (i=0; i<ntd->size; i++) {
           if (std->data[i]!=ntd->data[i]) {
             match=0;
             break;
@@ -4046,12 +4069,17 @@ int GWEN_MsgEngine_TrustedData_CreateReplacements(GWEN_MSGENGINE_TRUSTEDDATA
 
     if (match) {
       /* copy the found match */
-      rp=strdup(std->replacement);
+      rp=std->replacement ? strdup(std->replacement) : NULL;
+      if (!rp)
+        return GWEN_ERROR_MEMORY_FULL;
     }
     else {
       /* this is a new one */
+      if (ntd->size==(unsigned int)-1)
+        return GWEN_ERROR_INVALID;
       rp=(char *)malloc(ntd->size+1);
-      assert(rp);
+      if (!rp)
+        return GWEN_ERROR_MEMORY_FULL;
 
       if (ntd->size==1) {
         if (count>=0x10)
@@ -4104,9 +4132,10 @@ int GWEN_MsgEngine_AddTrustInfo(GWEN_MSGENGINE *e,
   GWEN_MSGENGINE_TRUSTEDDATA *td;
   int match;
 
-  assert(e);
-  assert(data);
-  assert(size);
+  if (!e || !data || !size) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Invalid trust info arguments");
+    return GWEN_ERROR_INVALID;
+  }
 
   if (!description)
     description="";
@@ -4144,6 +4173,8 @@ int GWEN_MsgEngine_AddTrustInfo(GWEN_MSGENGINE *e,
                                       size,
                                       description,
                                       trustLevel);
+    if (!td)
+      return GWEN_ERROR_MEMORY_FULL;
     GWEN_LIST_ADD(GWEN_MSGENGINE_TRUSTEDDATA, td, &(e->trustInfos));
   }
   else {
